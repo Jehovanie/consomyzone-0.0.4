@@ -2,18 +2,40 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        <link rel="stylesheet" href="{{asset('assets/css/main.css')}}">
+        <link rel="stylesheet" href="{{asset('assets/css/bootstrap/bootstrap.min.css')}}">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin=""/>
+        <link rel="stylesheet" href="{{asset('assets/css/responsif_main.css')}}">
+        <script src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js" integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=" crossorigin=""></script>
+        <script src="{{asset('assets/js/function.js')}}" defer></script>
+        <script src="{{asset("assets/js/app.js")}}" defer></script>
+
+        {# // <script src="{{asset('assets/js/function_respons.js')}}" defer></script> #}
+        <script src="{{asset('assets/js/main.js')}}" defer></script>
+        <script src="{{asset("assets/js/account/linkActive.js")}}" defer></script>
+		<script src="{{asset("assets/js/function.js")}}" defer></script>
+	    <script src="{{ asset('assets/js/franceGeoJson.js') }}" defer></script>
+	    <script src="{{ asset('assets/js/centers_tous.js') }}" defer></script>
+
+        {# --------------------- marker MarkerCluster --------------------------- #}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css" integrity="sha512-ENrTWqddXrLJsQS2A86QmvA17PkJ0GVm1bqj5aTgpeMAfDKN2+SIOLpKG8R/6KkimnhTb+VW5qqUHB/r1zaRgg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css" integrity="sha512-fYyZwU1wU0QWB4Yutd/Pvhy5J1oWAwFXun1pt+Bps04WSe4Aq6tyHlT4+MHSJhD8JlLfgLuC4CbCnX5KHSjyCg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster-src.min.js" integrity="sha512-tWZsle/wNvFCP/7BHWNf3yG/6Ic1YVPT+1Soyag9zzZcga1St3oAa+IgvrT3ZxBLY/njmSEr0EcQoPUrH+UfNg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+
         {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
         {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
     <body>
         {% block body %}{% endblock %}
+        <script src="{{asset('assets/js/bootstrap/bootstrap.min.js')}}"></script>
+        <script src="{{asset('assets/js/const.js')}}"></script>
+
     </body>
 </html>
