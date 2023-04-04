@@ -1408,78 +1408,46 @@ function addMapFermeStation(nom_dep=null, id_dep=null){
 function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
 
     fetch("/getLatitudeLongitudeStation/?max="+price_max + "&min="+ price_min+"&type="+ type+"&nom_dep="+ nom_dep +"&id_dep="+id_dep, {
-
-            method: 'get',
-
+        method: 'get',
     })
-
         .then(result => result.json())
-
         .then(parsedResult => {
 
-
-
-            ///delete chargement
-
-            create_map_content();
-
-
-
             ///delete old map
-
             const cart_map = document.getElementById("map");
-
             const parent_map = cart_map.parentElement;
 
             parent_map.removeChild(cart_map);
 
-
-
-
-
-            ///generate new map
-
+            // ///generate new map
             const div = document.createElement("div");
-
             div.setAttribute("id", "map")
-
             parent_map.appendChild(div);
 
-
-
-
+            ///delete chargement
+            var map=create_map_content();
 
             if( parsedResult ){
 
-
-
                 /// change the number of result in div
-
                 if( document.getElementById("content_nombre_result_js_jheo")){
-
                     document.getElementById("content_nombre_result_js_jheo").innerText = parsedResult.length;
-
                 }
 
-
-
-                var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-
-                    maxZoom: 20,
-
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-
-                })
+                // var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                //     maxZoom: 20,
+                //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+                // })
 
                 // var latlng = L.latLng(-37.89, 175.46);
 
 
 
-                var latlng = L.latLng(46.227638, 2.213749);
+                // var latlng = L.latLng(46.227638, 2.213749);
 
 
 
-                var map = L.map('map', {center: latlng, zoom: 5, layers: [tiles]});
+                // var map = L.map('map', {center: latlng, zoom: 5, layers: [tiles]});
 
 
 
@@ -1490,40 +1458,26 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                     });
 
                 ///// 0 -> 4717
-
                 parsedResult.forEach(item => {
 
-                    
-
                     // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-
                     var pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
-
-                   
-
+                    
                     const ad = "<br>Adresse: " + item.adresse + " .";
-
                     const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
 
 
 
                     var title = "Station: " + item.nom + ". Id: " + item.id + ". Departement: " + item.departementCode +"." + ad + link;
-
-                     
-
                     var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { title: title,icon: setIcon("assets/icon/icon_essance.png") });
 
                     marker.bindPopup(title);
-
                     markers.addLayer(marker);
 
                 } )
-
-
-
+                console.log("this is map")
+                console.log(map);
                 map.addLayer(markers);
-
-
 
                 if( nom_dep && id_dep ){
 
@@ -1624,19 +1578,12 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                 */
 
             }else{
-
                 console.log("ERREUR : L'erreur se produit par votre réseaux.")
-
             }
-
         })
-
-        .catch(e => {
-
-            console.log(e);
-
-        })
-
+        // .catch(e => {
+        //     console.log(e);
+        // })
 }
 
 

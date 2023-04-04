@@ -13,13 +13,13 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 			const input_max = document.querySelector(".input_max")
 			////request with filter for all type.
 
-			// filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value), "tous")
+			filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value), "tous")
 		}else{
 			all_checkbox.forEach(item => {
 				item.checked=false;
 			})
 			///return list vide
-			// filterByPrice(2.5,3, "tous")
+			filterByPrice(2.5,3, "tous")
 		}
 		changeDapartLinkCurrent("tous")
 	})
@@ -47,7 +47,7 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 			const input_max = document.querySelector(".input_max")
 			////request with filter for all type.
 			changeDapartLinkCurrent(type.join("@"))
-			// filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value),type.join("@"))
+			filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value),type.join("@"))
 
 		})
 	}
@@ -57,14 +57,11 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 }
 
 /// script for filtre slide bar
-const rangeInput = document.querySelectorAll( ".range_input input"),
-priceInput = document.querySelectorAll( ".price_input input"),
-progress = document.querySelector(".slider .proggress");
+const rangeInput = document.querySelectorAll( ".range_input input");
+const priceInput = document.querySelectorAll( ".price_input input");
+const progress = document.querySelector(".slider .proggress");
 
-let priceGap = 0.1;
-
-let minVal_sortie = 0,
-maxVal_sortie = 0;
+let priceGap = 0.1, minVal_sortie = 0,maxVal_sortie = 0;
 
 priceInput.forEach(input => {
 	const type=[];
@@ -96,7 +93,7 @@ priceInput.forEach(input => {
 		maxVal_sortie = maxVal;
 		if(document.querySelector(".checkbox_filter .checkbox").checked){
 			changeDapartLinkCurrent(type.join("@"))
-			// filterByPrice(minVal_sortie, maxVal_sortie, "tous")
+			filterByPrice(minVal_sortie, maxVal_sortie, "tous")
 		}else{
 			const all_check_box = document.querySelectorAll(".checkbox_filter .checkbox");
 			let tab_check = [];
@@ -106,7 +103,7 @@ priceInput.forEach(input => {
 				}
 			}
 			changeDapartLinkCurrent(type.join("@"))
-			// filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"))
+			filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"))
 		}
 
     })
@@ -139,7 +136,7 @@ rangeInput.forEach(input => {
 	input.addEventListener("mouseup", () => {
 		if(document.querySelector(".checkbox_filter .checkbox").checked){
 			changeDapartLinkCurrent("tous")
-			// filterByPrice(minVal_sortie, maxVal_sortie, "tous")
+			filterByPrice(minVal_sortie, maxVal_sortie, "tous")
 		}else{
 			const all_check_box = document.querySelectorAll(".checkbox_filter .checkbox");
 			/// format type filter using for the filter.
@@ -150,8 +147,22 @@ rangeInput.forEach(input => {
 				}
 			}
 			changeDapartLinkCurrent(tab_check.join("@"))
-			// filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"))
+			filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"))
 		}
 	})
 
 })
+
+/* THIS FUNCTION USE ONLY TO SET THE URL ON STATION TO SYNCHRONISE THE LINK DEPART WITH CHECKBOX FILTER */
+function changeDapartLinkCurrent(type){
+
+	const all_link= document.querySelectorAll(".plus");
+	all_link.forEach(item => {
+		if( item.getAttribute("href").split("?").length > 1 ){
+			item.setAttribute("href", item.getAttribute("href").split("?")[0]+ "?type="+ type)
+		}else{
+			item.setAttribute("href", item.getAttribute("href")+ "?type="+ type)
+		}
+	})
+
+}
