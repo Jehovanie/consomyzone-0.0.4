@@ -1,0 +1,124 @@
+.content_main{
+    display: block;
+}
+
+.content_filter_global{
+    /* display: flex; */
+    display: block;
+    /* justify-content: space-between; */
+    justify-content: center;
+    align-items: center;
+    /* padding: 15px 10px; */
+    padding:10px;
+    background-color: lightgray;
+}
+
+.content_checkbox_filter{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.checkbox_filter{
+    display: block;
+}
+
+.content_filter_slide_bar{
+    display: block;
+    width: 95%;
+    margin:auto;
+}
+
+.price_input{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.field{
+    display: flex;
+    margin: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.field span{
+    padding: 5px  10px;
+}
+
+.field input{
+    width : 100%;
+    height: 100%;
+    outline: none;
+    font-size: 19px;
+    text-align: center;
+    -moz-appearence: textfield;
+}
+
+.input_min, .input_max{
+    -webkit-appearence: none;
+}
+
+.separator{
+    width : 25px;
+    display: flex;
+    font-size: 19px;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider{
+    height : 5px;
+    border-radius: 5px;
+    background-color: lightgray;
+    position : relative;
+}
+
+.slider .proggress{
+    height : 5px;
+    /* left: 25%;
+    right : 25%; */
+    left: 0%;
+    right: 0%;
+    position : absolute;
+    background-color: blue;
+    border-radius:  5px;
+}
+
+
+.range_input{
+    position: relative;
+}
+.range_input input {
+    position : absolute;
+    top: -5px;
+    height: 5px;
+    width : 100%;
+    background : none;
+    pointer-events: none;
+    appearance:none;
+    -webkit-appearance:none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb{
+    height: 17px;
+    width : 17px;
+    border-radius: 50%;
+    pointer-events: auto;
+    appearance: none;
+    -webkit-appearance: none;
+    background : blue;
+}
+
+input[type="range"]::-moz-slider-thumb{
+    height: 17px;
+    width : 17px;
+    border: none;
+    border-radius: 50%;
+    pointer-events: auto;
+    -moz-appearance: none;
+    background : blue;
+}
