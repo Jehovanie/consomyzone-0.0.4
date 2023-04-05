@@ -1,0 +1,182 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/message/message.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/message/message.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/message/eventStrem_message.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+    <main>
+        <div class="content_left_menu_account fixed-top mt-5 col">
+            <div class="left_menu">
+                {% include "shard/account_navleft.html.twig" %}
+            </div>
+        </div>
+
+        
+        <div class="fixed-top">
+            {{ include('shard/account_navbar.html.twig') }}
+        </div>
+
+        <div class="content_block_message">
+            <div class="row">
+                <div class="col-sm-10 col-md-9 col-lg-9 mx-auto content_message_js_jheo">
+
+                    <div class="content_message" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
+                        {# en tête messages  #}
+                        <div class="content_entete content_entete_js_jheo" data-toggle-id-user-to={{userToProfil.id}} >
+                            {% dump(userToProfil.photo_profile) %}
+                            <div class="content_img">
+                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/') ~ userToProfil.photo_profile  : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
+                            </div>
+
+                            <div class="profil">
+                                <h3>{{ userToProfil.firstname  ~ " " ~  userToProfil.lastname }}</h3>
+                                <h4> {{userToProfil.email }} </h4>
+                            </div>
+
+                            <a href="{{ path("user_profil", {"user_id":userToProfil.id })}}">Voir son profil.</a>
+
+                        </div>
+                        
+                        <hr>
+
+                        {% if userToProfil.message|length > 0  %}
+
+                                {% for msg in userToProfil.message %}
+
+                                    {# ////user connnected #}
+                                    {% if msg.isForMe is same as("0") %}
+                                        <div class="message" id={{"message_" ~ msg.id}}>
+                                            <div class="avatar_message right_place">
+                                                <div>
+                                                    <span>{{msg.datetime}}</span>
+
+                                                    <div class="message_single">
+                                                        {% if msg.content is defined and msg.content.text is defined %}
+                                                            <p>{{msg.content ? msg.content.text : "" }}</p>
+                                                        {% endif %}
+                                                        
+                                                        {% if msg.content.images is defined and msg.content.images|length > 0  %}
+                                                            <div class="content_image_message image_right">
+                                                                {% for image in msg.content.images %}
+                                                                    <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                        
+                                                </div>  
+                                                <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+                                            </div>
+                                        </div>
+
+                                    {# ////user to talk by: other #}
+                                    {% else %}
+
+                                        <div class="message" id={{"message_" ~ msg.id}}>
+                                            <div class="avatar_message left_place">
+
+                                                {#---------  photo de profil ---------- #}
+                                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/'~ userToProfil.photo_profile)   : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
+                                                <div>
+                                                    <span>{{msg.datetime}}</span>
+
+                                                    <div class="message_single">
+                                                        {% if msg.content is defined and msg.content.text is defined %}
+                                                            <p>{{msg.content ? msg.content.text : "" }}</p>
+                                                        {% endif %}
+                                                        {% if msg.content.images is defined and msg.content.images|length > 0  %}
+                                                            <div class="content_image_message image_left">
+                                                                {% for image in msg.content.images %}
+                                                                    <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>                                
+                                            </div>
+                                        </div>
+
+                                    {% endif %}
+                                    
+                                {% endfor %}
+
+                        {% else %}
+                            <p class="text-center"> Envoyer lui Hello!!!</p>
+                        {% endif %}
+
+                        <div class="content_input_message content_input_message_js_jheo" data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{userToProfil.id}} >
+                            
+                            <div class="input_message">
+
+                                {# record for voice... #}
+                                <i class="fa-solid fa-microphone outer_icon_micro"></i>
+
+                                {# input file image #}
+                                <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file outer_icon_message">
+                                    <input type="file"  class="first-input" multiple aria-disabled> 
+                                </i>
+
+                                {# if the user put many image #}
+                                <div class="globla_message">
+                                    <div class="content_image_input content_image_input_js_jheo">
+                                        <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file_under_image"></i>
+
+                                        {# <img src="/assets/image/message2.jpg" alt="image input">
+                                        <img src="/assets/image/message2.jpg" alt="image input">
+                                        <img src="/assets/image/message2.jpg" alt="image input">
+                                        <img src="/assets/image/message2.jpg" alt="image input"> #}
+                                    </div>
+                                    <textarea  rows="1" type="text" placeholder="Votre message" name="message" class="input_message_js_jheo" ></textarea>
+                                </div>
+
+                                {# to send message  #}
+                                <i class="fa-solid fa-paper-plane outer_icon_message btn_send_message_js_jheo "></i>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {# list des amis dans le tribu G  #}
+                <div class="col-sm-2 col-md-3 col-lg-3 mx-auto">
+                    <div class="content_amis">
+                        <ul>
+                       
+                            {% for amis in amisTributG %}
+                                {# don't show current user connected #}
+                                {% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+                                
+                                    <a href="{{path('app_message') ~ '?user_id=' ~ amis.id }}"
+                                       data-toggle-user-id = {{amis.id}}
+                                       tooltip={{amis.email}} 
+                                       class="list_amis_to_chat">
+
+                                        <img src="{{ ( amis.photo != null) ? asset('uploads/users/photos/') ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
+                                        <h6>{{amis.firstname ~ " " ~ amis.lastname }} </h6>
+                                    </a>
+                                   
+                                {% endif %}
+
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
+

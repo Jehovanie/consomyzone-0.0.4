@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Restaurant ConsoMyZone
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('asset/css/restaurant/app.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script>
+{% endblock %}
+
+
+{% block body %}
+	{% include 'shard/navbar.twig' %}
+	<div class="row">
+		<div class="col" id="tous">
+			{% include 'shard/restaurant/specific_resto_navleft.twig' %}
+		</div>
+		<div class="col">
+			<div class="content_cart_map">
+				<div class="cart_map">
+					<div class="chargement_content" id="toggle_chargement">
+						<div class="content_box">
+							<div class="box">
+								<div class="under_box"></div>
+							</div>
+						</div>
+					</div>
+					<div id="map" class="map"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+

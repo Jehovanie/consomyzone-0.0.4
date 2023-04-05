@@ -1,0 +1,698 @@
+<script>
+
+
+	
+	/*********************** Agenda *****************/
+	/**
+	* @author Elie Andriatsitohaina <elie@geomadagascar.com>
+	*/
+    let tableTribu = tbl_pub.replace(/_publication$/, "")
+	let tableAgenda = tbl_pub.replace(/_publication$/, "_agenda")
+	let tableActionAgenda = tableAgenda+"_action";
+	
+	let pastille_tribu_t = tableTribu.split("_")[3].trim().toUpperCase().charAt(0);
+
+	const currentDate = document.querySelector(".current-date"),
+    calendar = document.querySelector(".calendar"),
+    prevNextIcon = document.querySelectorAll(".icons span");
+
+    /* creation calendrier */
+    let daysName = document.createElement("ul");
+    let daysNumber = document.createElement("ul");
+    daysName.classList ="weeks";
+    daysNumber.classList ="days";
+    
+    // getting new date, current year and month
+    let date = new Date(),
+    currYear = date.getFullYear(),
+    currMonth = date.getMonth();
+
+    // Listes des mois et liste des jour
+    const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
+                  "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    const days = ["Dim","Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
+
+    for(day of days){
+      let daysLi = document.createElement("li")
+      daysLi.textContent = day;
+      daysName.appendChild(daysLi)
+    }
+
+    calendar.appendChild(daysName);
+    calendar.appendChild(daysNumber);
+
+    let daysTag = document.querySelector(".days");
+
+    const renderCalendar = () => {
+        let firstDayofMonth = new Date(currYear, currMonth, 1).getDay(), 
+        lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate(),
+        lastDayofMonth = new Date(currYear, currMonth, lastDateofMonth).getDay(), 
+        lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate(); 
+        let liTag = "";
+
+        for (let i = firstDayofMonth; i > 0; i--) {
+            liTag += "<li class='inactive'>" + (lastDateofLastMonth - i + 1) +"</li>";
+        }
+
+        for (let i = 1; i <= lastDateofMonth; i++) {
+            // adding active class to li if the current day, month, and year matched
+            let isToday = i === date.getDate() && currMonth === new Date().getMonth() 
+                         && currYear === new Date().getFullYear() ? "active" : "";
+
+			let dateLabel = i < 10 ? "0"+i : i;
+			let monthLabel = (currMonth+1) < 10 ? "0"+(currMonth+1) : (currMonth+1)
+
+			let dateSimple = currYear+ "-"+monthLabel+"-"+dateLabel;
+
+			testHasAgenda(tableAgenda, dateSimple, i)
+
+            liTag += "<li class='" +isToday+" current-day-"+i +"' onclick=\"mouseOverEvent("+i+",this)\">"+i+"</li>";
+        }
+
+        for (let i = lastDayofMonth; i < 6; i++) { 
+            liTag += "<li class='inactive' >"+ (i - lastDayofMonth + 1) +"</li>"
+        }
+
+		if(currentDate != null){
+			currentDate.innerText = `${months[currMonth]} ${currYear}`; // passing current mon and yr as currentDate text
+        	
+		}
+		daysTag.innerHTML = liTag;
+        
+    }
+    renderCalendar();
+
+    prevNextIcon.forEach(icon => { 
+        icon.addEventListener("click", () => { 
+            currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
+
+            if(currMonth < 0 || currMonth > 11) { 
+                date = new Date(currYear, currMonth);
+                currYear = date.getFullYear(); 
+                currMonth = date.getMonth(); 
+            } else {
+                date = new Date(); 
+            }
+            renderCalendar();
+        });
+    });
+
+	function formEventShow(elem){
+
+		let div = document.querySelector("#form_event")
+		if(div.style.display=="block"){
+			elem.innerHTML ="<i class='bi bi-plus'></i> Créer "
+			div.style.display="none"
+		}else{
+			div.style.display="block"
+			elem.innerHTML ="<i class='bi bi-backspace'></i> Fermer "
+		}
+	}
+
+	const createNewEventForm = (debut, fin) => {
+
+		document.querySelector("#agenda-fetched").innerHTML = `
+			<div class="mt-2 mb-2">
+				<button class="btn btn-info" onclick="formEventShow(this)"> <i class="bi bi-plus"></i> Créer </button>
+			</div>
+			<div id="form_event" style="display:none;">
+			<div class="row g-2 mt-2">
+				<div class="col-md">
+					<div class="form-floating">
+						<select class="form-select" id="agenda-type" onchange="eventAgendaType(this, '${debut}')">
+							<option selected>Type d'agenda</option>
+							<option value="1">Événement</option>
+							<option value="2">Tâche</option>
+							<option value="3">Rappel</option>
+							{% if has_restaurant == true %}
+								<option id="repas" value="4">Repas</option>
+							{% endif %}
+							
+						</select>
+						<label for="floatingSelectGrid">Créer...</label>
+					</div>
+				</div>
+				<div class="col-md">
+					<div class="form-floating">
+						<input type="text" class="form-control" id="agenda-title" placeholder="Ecire le titre">
+						<label for="floatingInputGrid">Titre</label>
+					</div>
+				</div>
+				
+			</div>
+
+			<div id="choixRepas" class="row g-2 mt-2" style="display:none;">
+				<div class="col-6">
+					<div class="form-floating">
+						<input type="text" class="form-control" id="restaurant" placeholder="Rechercher" onkeyup="searchResto(this)">
+						<label for="restaurant">Restaurant</label>
+					</div>
+					
+				</div>
+
+				<div class="col-2">
+					<div class="">
+						<input type="button" class="btn btn-primary h-100" value="Pastiller" id="btn-pastille" onclick="pastiller()" style="display:none;">
+					</div>
+					
+				</div>
+
+				<div class="col-4">
+					<div class="form-floating">
+						<input type="number" class="form-control" id="participant" min="0" value="50">
+						<label for="participant">Participants</label>
+					</div>
+					
+				</div>
+
+				<div class="list-group" style="z-index:99999999999; position:relative;height:120px;display:none;" id="result_resto">
+				</div>
+				
+			</div>
+
+			<div class="row g-2 mt-2">
+				<div class="col-12">
+					<div class="form-floating">
+						<input type="text" class="form-control" id="agenda-desc" value="">
+						<label for="floatingInputGrid">Déscription</label>
+					</div>
+					
+				</div>
+				
+			</div>
+			
+			<div class="row g-2 mt-2">
+				<div class="col-6">
+					<div class="form-floating">
+						<input type="datetime-local" class="form-control" id="agenda-from" value="${debut}">
+						<label for="floatingInputGrid">De</label>
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-floating">
+						<input type="datetime-local" class="form-control" id="agenda-to" value="${fin}">
+						<label for="floatingInputGridd">Au</label>
+					</div>
+				</div>
+			</div>
+
+			<span onclick="openMap()" class="btn btn-light"><i class="bi bi-geo-alt-fill"></i> Ajouter une localisation</span>
+			<div class="row g-2 mt-2 mb-2" style="display:none;" id="div-map">
+				<input type="hidden" id="agenda-lat">
+				<input type="hidden" id="agenda-lng">
+				<div id="new_map" style="width:100%; height : 150px;"></div>
+			</div>
+
+			<div class="row g-2 mt-2 mb-2">
+				<input type="button" class="btn btn-outline-primary" onclick="saveAgenda()" id="" value="Enregistrer">
+			</div>
+
+			<div class="alert alert-success mt-2" role="alert" style="display:none;" id="agenda-success"><i class="bi bi-check2-circle"> </i>
+				Agenda sauvegardé avec succès
+			</div>
+
+			</div>`;
+	   	
+	}
+
+	function getCurrentDateTime(date){
+		
+		let date_clicked = document.querySelector("#current-date").textContent;
+		let classNames = ""+document.querySelector(".current-day-"+date).classList;
+
+		let monthName = date_clicked.replace(/[0-9]/g,"");
+		let indexOfMonth = months.indexOf(monthName.trim())+1;
+		let annee = document.querySelector("#current-date").textContent.replace(/[^0-9]/g,"")
+
+		let dateLabel =date < 10 ? "0"+date : date;
+		let moisLabel =indexOfMonth < 10 ? "0"+indexOfMonth : indexOfMonth;
+
+		let dateSimple = annee+"-"+moisLabel+"-"+dateLabel;
+
+		return dateSimple;
+	}
+
+	function openMap(){
+
+		document.querySelector("#div-map").style.display ="block"
+		let map = L.map("new_map").setView([48.864716, 2.349014], 13);
+
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 20,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map);
+		
+		let marker = L.marker([48.864716, 2.349014]).addTo(map);
+		map.on('click', function(e){
+			marker.setLatLng(e.latlng)
+			document.querySelector("#agenda-lat").value = e.latlng.lat
+			document.querySelector("#agenda-lng").value = e.latlng.lng
+		});
+	}
+
+	const mouseOverEvent =(date, elem)=>{
+
+		document.querySelectorAll("li").forEach(element =>{
+
+			element.classList.remove("clicked");
+
+			if(element.classList.contains("active")){
+				element.style.color = "white";
+			}else if(element.classList.contains("inactive")){
+				element.style.color = "#aaa";
+			}else{
+				element.style.color = "#333";
+			}
+			
+		})
+		
+		elem.classList.add("clicked");
+		elem.style.color = "white";
+
+		document.querySelector("#agenda-fetched").style.display ="block";
+	
+		let dateSimple = getCurrentDateTime(date);
+
+		let dateFormatStart = dateSimple +" 00:00:01";
+		let dateFormatEnd = dateSimple +" 23:59:59";
+
+		createNewEventForm(dateFormatStart,dateFormatEnd);
+
+		getAgendaByDatetime(tableAgenda,dateSimple);
+      
+    }
+
+	function getAgendaByDatetime(table_name,datetime){
+		fetch('/user/get_agenda_by_date/'+table_name+"/"+datetime)
+		.then(response => response.json())
+		.then(data => {
+			let res = ""
+
+			if(data.length>0){
+				for(let agenda of data){
+					let desc = agenda.description != null ? agenda.description : "";
+					let resto = (agenda.restaurant).trim() != ""? "<p>Restaurant : " + agenda.restaurant+ " <br>Participants : " + agenda.participant +"</p>": ""; 
+					res +=`
+						<a href="/user/tribut/get-detail-agenda/${table_name}/${agenda.id}" class="list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-between">
+							<h5 class="mb-1">${agenda.title}</h5>
+							<small> ${differenceDay(agenda.from_date)}</small>
+							</div>
+							<i>${desc}</i>
+							${resto}
+							<p class="mb-1">Date : ${agenda.from_date +" - "+agenda.to_date}</p>
+							<small><i class="bi bi-calendar-check-fill"> </i>${agenda.type}</small>
+						</a>
+						`;
+				}
+				document.querySelector("#agenda-fetched").innerHTML += `<div class="list-group mt-2 mb-2" id="list-group">
+																	${res}
+																	</div>`;
+			}
+			
+		});
+
+	}
+	
+	function differenceDay(dayStart){
+		let d1 = new Date();   
+		let d2 = new Date(dayStart);   
+			
+		let diff = d2.getTime() - d1.getTime();
+
+		let daydiff = diff / (1000 * 60 * 60 * 24);  
+		let dayRound =  Math.round(daydiff * 10)/10;
+
+		if(dayRound >= 1){
+			return "dans "+dayRound+" jour(s)"
+		}else if(dayRound <= -1){
+			return "il y a "+Math.abs(dayRound)+" jour(s)"
+		}else{
+			return "aujourd'hui"
+		}
+	}
+
+	function getAgendaByType(table_name,type){
+		fetch('/user/get_agenda_by_type/'+table_name+"/"+type)
+		.then(response => response.json())
+		.then(data => {
+			let resStatu0 = "";
+			let resStatu1 = "";
+			
+			if(data.length>0){
+				for(let agenda of data){
+
+					let kilasy = "drag-drop";
+
+					if("{{ app.user.id }}" != agenda.user_id){
+						kilasy = "not-drag-drop";
+					}else{
+						kilasy = "drag-drop";
+					}
+
+					let desc = agenda.description != null? agenda.description : "";
+					let resto = (agenda.restaurant).trim() != ""? "<p>Restaurant : " + agenda.restaurant+ "</p> <p>Participants : " + agenda.participant+ "</p>" : ""; 
+					
+					if(agenda.status==0){
+						
+						resStatu0 += ` <div id="yes-drop" class=${kilasy}>
+									<input type="hidden" id='agenda_id_${agenda.id}' value="${agenda.id}">
+									<input type="hidden" id='user_id_${agenda.user_id}' value="${agenda.user_id}">
+									<h5 class="card-title">${agenda.title}</h5>
+									<h6 class="card-subtitle mb-2 text-muted">${desc}</h6>
+									<hr>
+									${resto}
+									<p>Début : ${agenda.from_date}</p>
+									<p>Fin   : ${agenda.to_date}</p>
+									<a href='/user/tribut/get-detail-agenda/${table_name}/${agenda.id}' class="card-link" >Voir plus...</a>
+								</div> `;
+					}else{
+						resStatu1 += ` <div id="yes-drop" class=${kilasy}>
+									<input type="hidden" id='agenda_id_${agenda.id}' value="${agenda.id}">
+									<input type="hidden" id='user_id_${agenda.user_id}' value="${agenda.user_id}">
+									<h5 class="card-title">${agenda.title}</h5>
+									<h6 class="card-subtitle mb-2 text-muted">${desc}</h6>
+									<hr>
+									${resto}
+									<p>Début : ${agenda.from_date}</p>
+									<p>Fin   : ${agenda.to_date}</p>
+									<a href='/user/tribut/get-detail-agenda/${table_name}/${agenda.id}' class="card-link" >Voir plus...</a>
+								</div> `;
+					}
+					
+				}
+			}
+			document.querySelector("#agenda-fetched").innerHTML = `<div class="container text-center">
+						<div class="row mt-2 mb-2">
+							<div class="col-6"><i class="bi bi-exclamation-octagon badge bg-info"> En cours</i></div>
+							<div class="col-6"><i class="bi bi-check2-circle badge bg-success"> Términé</i></div>
+
+							<div class="col-6">
+								<div id="inner-dropzone" class="dropzone">
+								` + resStatu0 + `
+								</div>
+							</div>
+							<div class="col-6">
+							
+								<div id="outer-dropzone" class="dropzone">
+								` + resStatu1 + `
+								</div>
+							</div>
+						</div>
+						`;
+		});
+
+	}
+
+	
+	function saveAgenda(){
+		let typeAgenda = document.querySelector("#agenda-type").value
+		let typeFinal = "";
+
+		switch (typeAgenda) {
+			case "1":
+				typeFinal ="Événement"
+				break;
+			case "2":
+				typeFinal ="Tâche"
+				break;
+			case "3":
+				typeFinal ="Rappel"
+				break;
+			case "4":
+				typeFinal ="Repas"
+				break;
+			default:
+				typeFinal ="Indéfinie"
+		}
+
+		let data = {
+			"title": document.querySelector("#agenda-title").value,
+			"type": typeFinal,
+			"resto": document.querySelector("#restaurant").value,
+			"participant": document.querySelector("#participant").value,
+			"desc": document.querySelector("#agenda-desc").value,
+			"to": document.querySelector("#agenda-to").value.replace(/T/g," ")+":00",
+			"from": document.querySelector("#agenda-from").value.replace(/T/g," ")+":00",
+			"lat": document.querySelector("#agenda-lat").value,
+			"lng": document.querySelector("#agenda-lng").value
+		}
+
+		fetch(new Request("/user/new_agenda/" + tableAgenda, {
+		method: "POST",
+		headers: {
+		'Accept': 'application/json',
+		'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data)
+		})).then(req => req.json()).then(message => {
+			document.querySelector("#agenda-success").textContent = message;
+			document.querySelector("#agenda-success").style.display = "block";
+		});
+		console.log(data);
+	}
+
+	function testHasAgenda(tablename, date, i){
+		fetch("/user/has_agenda/"+tablename+"/"+date)
+		.then(response => response.text())
+		.then(data => {
+			if(data=="true"){
+				document.querySelector(".current-day-"+i).classList.add("hasEvent");
+			}
+		})
+		
+	}
+
+	function updateAgenda(table, data){
+		fetch(new Request("/user/update_agenda/"+table, {
+			method: "POST",
+			headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(data)
+			})).then(req => req.json()).then(message => {
+				console.log(message);
+		})
+	}
+
+	let changeType = document.querySelector("#data-view");
+	
+	document.querySelectorAll("#modal_evenement > div > div > div.modal-header > div > ul > li").forEach(item =>{
+		item.addEventListener("click", function(){
+			//console.log(item.textContent)
+			if(item.textContent.trim() != "Calendrier"){
+				document.querySelector("#agenda").style.display ="none";
+				document.querySelector(".tooltipss").style.display ="block";
+				changeType.innerHTML = "<i class='bi bi-eye'></i> " + item.textContent
+				
+				getAgendaByType(tableAgenda,item.textContent.trim())
+			}else{
+				document.querySelector("#agenda").style.display ="block";
+				document.querySelector(".tooltipss").style.display ="block";
+				document.querySelector("#agenda-fetched").style.display ="none";
+				changeType.innerHTML = "<i class='bi bi-eye'></i> " + item.textContent; 
+				renderCalendar();
+			}
+			
+		})
+	})
+	
+
+	/* The dragging code for '.draggable' from the demo above
+	* applies to this demo as well so it doesn't have to be repeated. */
+
+	interact('.drag-drop')
+	  .draggable({
+	    inertia: false,
+	    modifiers: [
+	      interact.modifiers.restrictRect({
+	        restriction: 'child',//parent si meme chemin
+	        endOnly: true
+	      })
+	    ],
+	    autoScroll: true,
+	    // dragMoveListener from the dragging demo above
+	    listeners: { move: dragMoveListener }
+	  })
+
+	function dragMoveListener (event) {
+	    var target = event.target,
+	        // keep the dragged position in the data-x/data-y attributes
+	        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+	        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+	    // translate the element
+	    target.style.webkitTransform =
+	    target.style.transform =
+	      'translate(' + x + 'px, ' + y + 'px)';
+
+	    // update the posiion attributes
+	    target.setAttribute('data-x', x);
+	    target.setAttribute('data-y', y);
+	  }
+
+	  // this is used later in the resizing demo
+	  window.dragMoveListener = dragMoveListener;
+
+
+	    // enable draggables to be dropped into this
+	    interact('.dropzone').dropzone({
+	      accept: '#yes-drop',
+	      overlap: 0.75,
+
+	      // listen for drop related events:
+
+	      ondropactivate: function (event) {
+	        // add active dropzone feedback
+	        event.target.classList.add('drop-active');
+	      },
+	      ondragenter: function (event) {
+	        var draggableElement = event.relatedTarget,
+	            dropzoneElement = event.target;
+
+	        // feedback the possibility of a drop
+	        dropzoneElement.classList.add('drop-target');
+	        draggableElement.classList.add('can-drop');
+	        //draggableElement.textContent = 'Dragged in';
+	      },
+	      ondragleave: function (event) {
+	        // remove the drop feedback style
+	        event.target.classList.remove('drop-target');
+	        event.relatedTarget.classList.remove('can-drop');
+	        //event.relatedTarget.textContent = 'Dragged out';
+	      },
+	      ondrop: function (event) {
+	        //event.relatedTarget.textContent = 'Dropped';
+			
+			let status = event.target.id == "outer-dropzone"? 1 : 0;
+
+			let id= event.relatedTarget.querySelector("[id^=agenda_id_]").value
+			let user_id= event.relatedTarget.querySelector("[id^=user_id_]").value
+			let inputHiddenParent = event.relatedTarget;
+			let type= document.querySelector("#data-view").textContent.trim()
+			let data = {
+				id : id,
+				status : status
+			}
+
+			updateAgenda(tableAgenda, data)
+			
+			getAgendaByType(tableAgenda,type)
+
+	      },
+	      ondropdeactivate: function (event) {
+	        // remove active dropzone feedback
+	        event.target.classList.remove('drop-active');
+	        event.target.classList.remove('drop-target');
+	      }
+	    });
+
+
+		function eventAgendaType(type, debut){
+
+			if(type.value == 4){
+				document.querySelector("#agenda-from").value = debut.substring(0, 10) +" 12:00:00";
+				document.querySelector("#agenda-to").value = debut.substring(0, 10) +" 14:00:00";
+				document.querySelector("#choixRepas").style.display = ""
+			}else{
+				document.querySelector("#choixRepas").style.display = "none"
+				document.querySelector("#participant").value = ""
+				document.querySelector("#restaurant").value = ""
+			}
+
+		}
+
+		function searchResto(elem){
+			document.querySelector("#btn-pastille").style.display="none";
+			
+			fetch("/user/tribut/get_resto/"+tableTribu+"_restaurant/"+elem.value)
+			.then(res => res.json())
+			.then(data =>{
+				console.log(data)
+				let avatar = data.avatar
+				let list = data.list
+				if(list.length > 0){
+					document.querySelector("#result_resto").style.display ="block"
+					let res =""
+					//console.log(data)
+					for(let resto of list){
+						let avtr = "{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}"
+						if(resto.isPelleted == 1){
+ 							res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><img id='roundedImg' style='min-height: 40px; min-width:40px; max-width:40px; max-height: 40px;' class='rounded-circle border border-1' src="+avtr+"><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='true' onclick='setResto(this)'> "+resto.denomination_f.trim()+"</a><small class='float-end text-danger'><i>Déjà pastillé</i></small></li>"
+						
+						}else{
+							res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='false' onclick='setResto(this)'>"+resto.denomination_f.trim()+"</a><small class='float-end'><i>"+resto.adresse.trim().toLowerCase()+"</i></small></li>"
+						
+						}
+						//let adress = resto.numvoie.trim()+' '+resto.typevoie.trim()+' '+resto.nomvoie.trim()+' '+resto.codpost.trim()+', '+resto.compvoie.trim()+' '+resto.commune.trim()
+						//console.log(resto.denomination_f)
+					}
+					document.querySelector("#result_resto").innerHTML ="<ul style='overflow-y:scroll;height:120px;'>"+res+"</ul>"
+				
+				}else{
+					
+					document.querySelector("#result_resto").innerHTML ="<b class='text-danger'>Aucun resultat ne correspond votre recherche</b>"
+				}
+				
+			})
+		}
+
+		function saveRestaurant(){
+			let data ={
+				name : document.querySelector("#restaurant").value,
+				id_resto :document.querySelector("#restaurant").getAttribute("data-idresto")
+			}
+			//console.log(data);
+
+			fetch(new Request("/user/tribut/save_resto/"+tableTribu+"_restaurant", {
+				method: "POST",
+				headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+				})).then(req => req.json()).then(message => {
+					console.log(message);
+			})
+
+			document.querySelector("#result_resto").style.display="none";
+		}
+
+		function pastiller(){
+			saveRestaurant();
+			document.querySelector("#btn-pastille").value ="Pastillé"
+			document.querySelector("#btn-pastille").disabled = true
+		}
+
+
+		function setResto(elem){
+			document.querySelector("#restaurant").value = elem.textContent.trim()
+
+			let estPastille = elem.getAttribute("data-ispelleted")
+			let idresto = elem.getAttribute("data-idresto")
+
+			if(estPastille!="true"){
+				document.querySelector("#btn-pastille").style.display="block";
+				document.querySelector("#btn-pastille").value ="Pastiller"
+				document.querySelector("#btn-pastille").disabled = false
+			}else{
+				document.querySelector("#btn-pastille").style.display="none";
+			}
+			document.querySelector("#result_resto").style.display="none";
+
+			document.querySelector("#restaurant").setAttribute("data-idresto",idresto);
+			
+
+			//let address = elem.getAttribute("data-address");
+
+			//var map = L.map('map').setView([0, 0], 5);
+			
+			console.log(idresto);
+
+		}
+
+	
+	/*********************** End Agenda *****************/
+
+</script>

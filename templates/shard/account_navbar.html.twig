@@ -1,0 +1,134 @@
+
+<nav class="navbar navbar-light navbar-expand-lg fixed-top">
+	<div class="container-fluid nav-bar row">
+		<a class="navbar-brand col-md-2" href="{{path('all_departement_touts')}}">
+			<img src="{{asset('assets/image/logo.jpg')}}" alt="logo" width="200">
+		</a>
+		<div class="recherche-navbar-account col-md-5 ">
+			{% include "shard/account_bar_de_recherche.html.twig" %}
+		</div>
+		<div class="collapse navbar-collapse col-md-2" id="navbarSupportedContent">
+			<ul class="navbar-nav ms-auto mb-2 mb-lg-0 icons-pdp ">
+					<li class="nav-item dropdown message">
+
+						<div class="content_message_nav_bar dropdown-toggle icon_message" aria-current="page" data-bs-toggle="dropdown">
+							<div class="badge_message">
+								<span class="nbr_message_jheo_js">0</span>
+							</div>
+							
+							<a class="nav-link">
+								<img class="nav-icon" src="{{asset('assets/image/icon-chat.png')}}" alt="">
+							</a>
+						</div>
+
+
+						{# <a class="nav-link dropdown-toggle" aria-current="page" data-bs-toggle="dropdown">
+							<img class="nav-icon" src="{{asset('assets/image/icon-chat.png')}}" alt="">
+						</a> #}
+						<div class="dropdown-menu message_popup">
+							<h4 class="mx-3 fw-bolder">Message</h4>
+							<hr>
+							<div class="mx-3 card_message content_card_message_jheo_js">
+								{# <div class="show_single_message_popup back_gray">
+									<img src="{{asset('assets/image/message1.jpg')}}" alt="Profil">
+									<div class="content_info_message_popup">
+										<h5>Lorem, ipsum dolor.</h5>
+										<p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, debitis...</p>
+									</div>
+								</div>
+
+								<div class="show_single_message_popup back_gray">
+									<img src="{{asset('assets/image/message1.jpg')}}" alt="Profil">
+									<div class="content_info_message_popup">
+										<h5>Lorem, ipsum dolor.</h5>
+										<p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, debitis...</p>
+									</div>
+								</div> #}
+							</div>
+						</div>
+					</li>
+					<li class="nav-item dropdown notification notification_jheo_js">
+						<div class="content_notification dropdown-toggle icon_notification" aria-current="page" data-bs-toggle="dropdown">
+							<div class="badge_notification">
+								<span class="nbr_notification_jheo_js">0</span>
+							</div>
+							
+							<a class="nav-link">
+								<img class="nav-icon" src="{{asset('assets/image/icon-notification.png')}}" alt="">
+							</a>
+						</div>
+						<div class="dropdown-menu notification_popup">
+							<h4 class="mx-3 fw-bolder">Notification</h4>
+							<a class="btn btn-secondary tous_marquer_comme_lu mx-3 tous_marquer_comme_lu_js_jheo" href="#">Tout marquer comme lu</a>
+							<hr>
+							<div class="mx-3 card_notification content_card_notification_jheo_js">
+								{# CONTENT NOTIFICATION POPUP  #}
+							</div>
+						</div>
+					</li>
+					<li class="nav-item dropdown menu-account-pdp">
+						<a class="nav-link dropdown " href="javascript:void(0)"  id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<img class="nav-icon" src="{{asset('assets/image/icon-menu.png')}}" alt="">
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li>
+								<a class="dropdown-item" href="#">Action</a>
+							</li>
+							<li>
+								<a class="dropdown-item" href="#">Another action</a>
+							</li>
+							<li><hr class="dropdown-divider"></li>
+							<li>
+								<a class="dropdown-item" href="{{path('app_logout')}}">Déconnexion</a>
+							</li>
+						</ul>
+					</li>
+
+
+					{% if app.user.type is same as("supplier")%}
+						<li class="nav-item avatar-account-pdp">
+
+							{% if app.user.isLabled %}
+								<div class="labelC-rond-account"><h5 class="text-center ">F</h5></div>
+							{% endif %}
+							
+							{% if statusTribut.status is same as("fondateur") and statusTribut.verified is same as(true) %}
+								<a class="nav-link {% if app.user.isLabled %}avatar-account-square-labelC-fondateur {% else %} avatar-account-square-fondateur{% endif %}" href="{{path('app_account')}}">
+									<img src="{{asset('assets/image/img_avatar3.png')}}" alt="">
+								</a>
+							{% else %}
+								<a class="nav-link {% if app.user.isLabled %}avatar-account-square-labelC {% else %} avatar-account-square{% endif %}" href="{{path('app_account')}}">
+									<img src="{{asset('assets/image/img_avatar3.png')}}" alt="">
+								</a>
+							{% endif %}
+						</li>
+
+					{% elseif app.user.type is same as("consumer")%}
+					
+						
+						{% if statusTribut.status is same as("fondateur") and statusTribut.verified is same as(true) %}
+							<li class="nav-item avatar-account-pdp">
+								<a class="nav-link avatar-account-fondateur" href="{{path('app_account')}}">
+									<img src="{{asset('assets/image/img_avatar3.png')}}" alt="">
+								</a>
+								
+							</li>
+						{% else %}
+							<li class="nav-item avatar-account-pdp">
+								<a class="nav-link avatar-account" href="{{path('app_account')}}">
+									<img src="{{asset('assets/image/img_avatar3.png')}}" alt="">
+								</a>
+								
+							</li>
+						{% endif %}
+					{% endif %}
+					
+					
+				</ul>
+			</div>
+	</div>
+</nav>
+
+{# content data important on back #}
+<div class="information_user_conected_jheo_js" data-toggle-user-id={{app.user.id}} data-toggle-notif={{app.user.tablenotification}} data-toggle-msg={{app.user.tablemessage}}></div>
+

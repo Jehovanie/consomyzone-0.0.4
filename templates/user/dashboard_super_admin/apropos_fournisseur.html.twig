@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    ConsoMyZone : Fournisseurs
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/dashboard/apropos.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+	<main>
+		<div class="content_left_menu_account fixed-top mt-5 col">
+			<div class="left_menu">
+				{% include ("shard/account_navleft.html.twig" )%}
+			</div>
+		</div>
+		<div class="fixed-top">
+			{{ include('shard/account_navbar.html.twig') }}
+		</div>
+
+		<div class="row account">
+			<center>
+				<h1>
+					<i class="fa-solid fa-user"></i>
+					Apropos
+				</h1>
+			</center>
+
+			<div class="container col content_global_super_admin ">
+				<div class="card-apropos-admin">
+					<div class="row">
+						<div class="col-md-3 me-4 card">
+							<div class="row">
+								<div class="col-md-3 mt-4">
+									<i class="fa-solid fa-solid-admin fa-user"></i>
+								</div>
+								<div class="col">
+									<h1>{{supplier.firstname}}</h1>
+									<p>{{supplier.lastname}}</p>
+								</div>
+							</div>
+							
+						</div>
+						<div class="col-md-4 me-4 card">
+							<div class="row mt-4">
+								<div class="col-md-3">
+									<i class="fa-solid fa-solid-admin fa-envelope"></i>
+								</div>
+								<div class="col mt-2">
+									<p>{{user.email}}</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4 me-4 card">
+							<div class="row mt-4">
+								<div class="col-md-2">
+									<i class="fa-solid fa-solid-admin fa-address-card"></i>
+								</div>
+								<div class="col mt-2">
+									<p>{{supplier.commune}}</p>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="card card-categoerie mt-3">
+						<table class="table table-sm">
+							<thead>
+								<tr>
+									<th>Autre Information</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+                                <tr>
+									<td>Type </td>
+									<td>{{(user.type) is same as("supplier")? "Fournisseur" : "" }}</td>
+								</tr>
+								<tr>
+									<td>Addresse Postal </td>
+									<td>{{supplier.codePostal}}</td>
+								</tr>
+								<tr>
+									<td>Code APE </td>
+									<td>{{supplier.codeape}}</td>
+								</tr>
+                                <tr>
+									<td>Commerce </td>
+									<td>{{supplier.commerce}}</td>
+								</tr>
+                                <tr>
+									<td>Num Rue</td>
+									<td>{{supplier.numRue}}</td>
+								</tr>
+                                <tr>
+									<td>Pays </td>
+									<td>{{supplier.pays}}</td>
+								</tr>
+                                <tr>
+									<td>Web Site </td>
+									<td>{{supplier.website}}</td>
+								</tr>
+                                <tr>
+									<td>Twitter </td>
+									<td>{{supplier.twitter}}</td>
+								</tr>
+                                <tr>
+									<td>Facebook </td>
+									<td>{{supplier.facebook}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+                     <div class="card mt-3 p-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4>Valider</h4>
+                                </div>
+                                <div class="col-md-6">
+                                    <button 
+                                        id="1"
+                                        class="btn btn-success validating_super_admin_fournisseur_js_jheo"
+                                        data-toggle-id={{user.id}}
+
+                                        {{user.isLabled is same as(true) ? "disabled": ""}}
+                                    >
+                                        Oui
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+				</div>
+			</div>
+		</div>
+
+
+	</main>
+
+
+{% endblock %}
