@@ -37,17 +37,27 @@
 
 {% block body %}
 
-	<div id="settingProfilId">
-
-		<div class="content_left_menu_account fixed-top mt-5 col">
-			<div class="left_menu">
-				{% include "shard/account_navleft.html.twig" %}
+	<div id="settingProfilId" class="row">
+		<div class="col">
+			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+				<div class="left_menu">
+					{% include "shard/account_navleft.html.twig" %}
+				</div>
+			</div>
+			<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+				<div class="left_menu">
+					{% include "shard/account_navleft_mobile.html.twig" %}
+				</div>
 			</div>
 		</div>
-		<div class="fixed-top">
+
+		<div class="fixed-top col">
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
-		<div class="row account">
+
+		<!-- for PC -->
+
+		<div class="col row account">
 			<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
 				<symbol id="check-circle-fill" fill="currentColor" viewbox="0 0 16 16">
 					<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -58,22 +68,21 @@
 			</svg>
 			<div class="col content_global ">
 				<div class="right_content">
-					<div class="container">
+					<div class="">
 						<div class="row" style="height:100%; margin-top:10%">
 							{% if app.request.get('message') %}
 
-								<div style="margin-left:20%" class="alert alert-success w-50">
+								<div style="margin-left:0%" class="alert alert-success w-50">
 									<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
 									{{ app.request.get('message') }}
 								</div>
 
 							{% endif %}
-							<div class="col-lg-9 col-md-9 col-sm-9" style="height:100%; margin-left:10%">
-								<div class="container">
-									<br>
+							<div class="col-lg-9 tribut_t_reponsive" style="height:100%; margin-left:10%">
+								<div class="container container-custom">
 									<div class="card card-pub p-3 bgPersonnalisee mb-5">
 										<div class="row">
-											<div class="col-12 w-25">
+											<div class="col-12 w-25 profilTribu">
 												<img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}
 												">
 												{% if roles == "Fondateur" %}
@@ -89,19 +98,54 @@
 													
 												{% endif %}
 											</div>
-											<div class="col-12 w-75 text-white">
+											<div class="col-12 text-white">
 												<h4 style="margin-left:20px;margin-top:5%;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
 												<small style="margin-left:20px;">
 													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
 												</small>
 											</div>
-											<div class="container col-2">
-												{#<h4 style="margin-left:20px;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
+											{# <div class="container col-2">
+												<h4 style="margin-left:20px;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
 												<small style="margin-left:20px;">
 													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
-												</small>#}
-											</div>
-											<nav class="col-10">
+												</small>
+											</div> #}
+											<nav class="col-12 responsif-none-mobile">
+												<ul id="navBarTribu">
+													<li class="listNavBarTribu">
+														<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+													</li>
+													{% if has_restaurant == true %}
+													
+													<li class="listNavBarTribu restoNotHide">
+														<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
+													</li>
+
+													{% endif %}
+													
+													<li class="listNavBarTribu dropdown" style="">
+														<a href="" class="dropdown-toggle" data-bs-toggle="dropdownNavBarTribu" aria-expanded="false">
+															<i class="bi bi-three-dots-vertical"></i>
+														</a>
+														<ul id="dropdownNavBarTribu" class="dropdown-menu">
+
+															<li class="">
+																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
+															</li>
+															<li class="">
+																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
+															</li>
+															<li class="">
+																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
+															</li>
+
+														</ul>
+
+													</li>
+												</ul>
+											</nav>
+
+											<nav class="col-12 responsif-none">
 												<ul id="navBarTribu">
 													<li class="listNavBarTribu">
 														<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
@@ -139,13 +183,14 @@
 													</li>
 												</ul>
 											</nav>
+
 										</div>
 										<div class="mt-5 p-3" id="photos" style="display:none;"></div>
 										<div class="mt-5 p-3" id="invitations" style="display:none;"></div>
 										<div class="mt-5 p-3" id="restaurants" style="display:none;"></div>
-										<div class="row p-3 mt-4"></div>
+										{# <div class="row p-3 mt-4"></div> #}
 
-										<div id="showCreatePub" class="card mb-2">
+										<div id="showCreatePub" class="card mb-2 responsif-none">
 											<div class="row p-3">
 												<div class="col-1 rounded-circle">
 													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
@@ -170,6 +215,38 @@
 													<div class="col-3 text-center" style="cursor:pointer;">
 														<i class="bi bi-pencil-square"></i>
 															Article
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div id="showCreatePub" class="card mb-2 responsif-none-mobile">
+											<div class="row p-3">
+												<div class="col-1 rounded-circle">
+													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
+												</div>
+												<div class="col-11">
+													<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+												</div>
+												<div class="row mt-3">
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-play-btn-fill"></i>
+															{# Vidéo #}
+													</div>
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-geo-alt-fill">
+														</i>
+														{# Localisation #}
+													</div>
+													<div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
+														<i class="bi bi-calendar2-event-fill">
+														</i>
+														{# Agenda #}
+
+													</div>
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-pencil-square"></i>
+															{# Article #}
 													</div>
 												</div>
 											</div>
@@ -326,10 +403,14 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- end PC -->
+
 	</div>
 </div>
 
 	{% include "tribu_t/script.html.twig" %}
 	{% include "tribu_t/modal_publication.html.twig" %}
 	{% include "agenda/script.agenda.html.twig" %}
+	{% include "shard/script.html.twig" %}
 {% endblock %}

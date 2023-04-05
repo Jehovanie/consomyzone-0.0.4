@@ -5,6 +5,9 @@
     .leaflet-control-zoom{
         display: block !important;
     }
+    .responsif-none-mobile{
+        display: none !important;
+    }
 
 }
 
@@ -188,6 +191,96 @@
             width: 100vw;
             height: 100vh;
         }
+        .content_list_menu{
+            width: 60px !important;
+        }
 
+        .account-profils{
+            width: 60px !important;
+        }
+
+
+        .account-profils .rounded-circle{
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 6px;
+            margin-bottom: 13px;
+            overflow-y: scroll !important;
+
+        }
+
+        .content_global , .right_content{
+            width: 100vw;
+            margin-right: 5px;
+        }
+
+        .tribut_t_reponsive{
+            width: 100vw !important;
+            margin-left: 0px !important;
+        }
+        .container-custom{
+            padding: 2px !important;
+            margin-left: 2px !important;
+        }
+
+        .logo{
+            width: 140px !important;
+        }
+        .profilTribu{
+            width: 50vw !important;
+            max-width: 200px !important;
+        }
+        .img_account, .nav-icon{
+            width: 30px !important;
+            margin-top: 22px !important;
+        }
+        .img_menu{
+            margin-top: 0 !important;
+        }
+
+        .navbar-mobile{
+            width: 100vw !important;
+            height: 66px !important;
+        }
+
+        .badge_message, .badge_notification{
+            top: 18px !important;
+            left: 18px !important;
+        }
+
+        .fw-bolder{
+            width: 95vw !important;
+        }
+
+        .navbar-brand{
+            font-size: large !important;
+            margin-right: 0 !important;
+        }
+        
+        .container-invitation{
+            margin-left: 70px !important;
+            margin-top: 30px !important;
+            /* width: 100vw !important; */
+            float: left;
+        }
+        #panneau{
+            margin: -50px !important;
+            width: 100vw !important;
+        }
+        #onglets{
+            margin-top: 70px !important;
+        }
+        .demande , .invitation-conf, #contenus{
+            width: 80vw !important;
+        }
+
+        .content_left_menu_account_mobile{
+            width: 20vw !important;
+        }
+
+        .notification_popup , .message_popup{
+           margin-left: 50px;
+           width: 80vw;
+        }
 
 }

@@ -81,7 +81,7 @@ body{
 
 .right_content {
     display: block;
-    width: 85%;
+    width: 85vw;
     /* width: 78%; */
     position: relative;
     height: 100%;

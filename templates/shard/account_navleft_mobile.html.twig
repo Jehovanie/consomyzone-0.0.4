@@ -1,19 +1,19 @@
 <div class="d-flex flex-column align-items-stretch flex-shrink-0 position-sticky">
 	<div class="content_list_menu mt-5">
-		<div class="account-profils row mt-5">
+		<div class="account-profils">
 		
 			{# <img style="min-height: 100px; min-width:100px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src="{{asset('assets/image/message1.jpg')}}" alt="{{ profil[0].getFirstname }}">
 			<div class="col m-auto"> #}
-			<div class="col-4 m-auto">
+			<div class="m-auto">
 				{# <img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src="{% if profil[0].getPhotoProfil != null %} /uploads/profils/photos/{{profil[0].getPhotoProfil}} {% else %} /assets/image/cheerful-curly-business-girl-wearing-glasses.jpg {% endif %}" alt="{{ profil[0].getFirstname }}"> #}
-				<img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+				<img id="profilPartisant" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
 				
 			</div>
-			<div class="col-8 m-auto">
+			{# <div class="col-8 m-auto">
 				<h4 id="firstNameProfil">{{ profil[0].getFirstname }}</h4>
 				<h4 id="lastNameProfil">{{ profil[0].getLastname }}</h4>
-			</div>
-			<label style="margin-left:10%;" for="fileInputProfil">
+			</div> #}
+			<label style="margin-left:15px;" for="fileInputProfil">
 				<i style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
 			</label>
 			<input type="file" name="fileInputProfil" id="fileInputProfil" style="display:none;visibility:none;" accept="image/*">
@@ -30,7 +30,7 @@
 			<li class="nav-item account_js">
 				<a href="{{path("app_account")}}" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-newspaper fa-lg"></i>
-					<span>Actualité</span>
+					{# <span>Actualité</span> #}
 				</a>
 			</li>
 
@@ -38,7 +38,7 @@
 				<a href="{{ path("app_invitation") }}" class="nav-link link-dark not_autorised">
 					{# <i class="bi bi-people-fill fa-lg"></i> #}
 					<i class="fa-solid fa-user-group fa-solid-nav"> </i>
-					<span>&nbsp;Invitations</span>
+					{# <span>&nbsp;Invitations</span> #}
 				</a>
 			</li>
 
@@ -46,7 +46,7 @@
 				<li class="nav-item dashboard_super_js">
 					<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#super-admin-collapse" aria-expanded="false">
 						<i class="fa-solid fa-chart-line fa-users fa-solid-nav  fa-lg"></i>
-						<span>Super Admin</span>
+						{# <span>Super Admin</span> #}
 					</a>
 
 					<div class="collapse" id="super-admin-collapse">
@@ -70,14 +70,14 @@
 				<li class="nav-item dashboard_js">
 					<a href="{{path("app_dashboard_fondateur")}}" class="nav-link link-dark">
 						<i class="fa-solid fa-chart-line fa-users fa-solid-nav  fa-lg"></i>
-						<span>Fondateur</span>
+						{# <span>Fondateur</span> #}
 					</a>
 				</li>
 			{% elseif statusTribut.status is same as("moderateur") and statusTribut.verified is same as(true) %}
 				<li class="nav-item">
 					<a href="{{path("app_dashboard_fondateur")}}" class="nav-link link-dark">
 						<i class="fa-solid fa-chart-line fa-users fa-solid-nav  fa-lg"> </i>
-						<span>Modérateur</span>
+						{# <span>Modérateur</span> #}
 					</a>
 				</li>
 			{% endif %}
@@ -86,13 +86,13 @@
 			 	<li class="nav-item">
 					<a href="{{path("app_choose_etab")}}" class="nav-link link-dark">
 						<i class="fa-solid fa-circle-plus fa-users fa-solid-nav  fa-lg"> </i>
-						<span>Ajoutez votre etablissement</span>
+						{# <span>Ajoutez votre etablissement</span> #}
 					</a>
 				</li>
 				<li class="nav-item">
 					<a href="{{path('app_list_de_mes_etablissement')}}" class="nav-link link-dark" >
 						<i class="fa-solid fa-list fa-solid-nav  fa-lg"> </i>
-						<span>Liste de mes établissements</span>
+						{# <span>Liste de mes établissements</span> #}
 					</a>
 				</li>
 			{% endif %}
@@ -102,7 +102,7 @@
 				{# <a href="" class="nav-link link-dark not_autorised"> #}
 				<a href="{{ path("user_profil", {"user_id":app.user.id })}}" class="nav-link link-dark">
 					<i class="fa-solid fa-solid-nav fa-user  fa-lg"></i>
-					<span>Profil</span>
+					{# <span>Profil</span> #}
 				</a>
 			</li>
 
@@ -111,7 +111,7 @@
 				{# <a href="{{path("setting_user_account")}}" class="nav-link link-dark"> #}
 				<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
 					<img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'>
-					<span>Tribu T</span>
+					{# <span>Tribu T</span> #}
 				</a>
 
 				<div class="collapse" id="tribut-collapse">
@@ -140,7 +140,7 @@
 				{# <a href="{{path("setting_user_account")}}" class="nav-link link-dark"> #}
 				<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#customize-collapse" aria-expanded="false">
 					<img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'>
-					<span>Paramètre</span>
+					{# <span>Paramètre</span> #}
 				</a>
 
 				<div class="collapse" id="customize-collapse">
@@ -162,25 +162,25 @@
             <li class="nav-item message_js">
 				<a href="{{path('app_message')}}" class="nav-link link-dark not_autorised">
                     <i class="fa-solid fa-solid-nav fa-comments  fa-lg"></i>
-					<span>Message</span>
+					{# <span>Message</span> #}
 				</a>
 			</li>
 			<li class="nav-item">
 				<a href="#" class="nav-link link-dark not_autorised">
 					<img src="{{asset('assets/image/icon-language.png')}}" alt="icon" width='25'>
-					<span>Langage</span>
+					{# <span>Langage</span> #}
 				</a>
 			</li>
 			<li class="nav-item">
 				<a href="#" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-bell  fa-lg"></i>
-					<span>Paramètre de notification</span>
+					{# <span>Paramètre de notification</span> #}
 				</a>
 			</li>
 			<li class="nav-item mb-5">
 				<a href="#" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-users  fa-lg"></i>
-					<span>Les tribus suivies</span>
+					{# <span>Les tribus suivies</span> #}
 				</a>
 			</li>
 
