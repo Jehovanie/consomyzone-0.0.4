@@ -2,9 +2,13 @@
     display: block;
 }
 
+.filter_other_mobile{
+    display: none;
+}
+
 .content_filter_global{
     /* display: flex; */
-    display: block;
+    /* display: block; */
     /* justify-content: space-between; */
     justify-content: center;
     align-items: center;
@@ -27,6 +31,18 @@
     display: block;
     width: 95%;
     margin:auto;
+}
+
+.content_cart_map{
+    position:relative;
+}
+
+.cta_filter_mobile{
+    position: absolute;
+    z-index: 1000;
+    right: 5px;
+    top: 5px;
+    border-radius: 50%;
 }
 
 .price_input{
@@ -121,4 +137,11 @@ input[type="range"]::-moz-slider-thumb{
     pointer-events: auto;
     -moz-appearance: none;
     background : blue;
+}
+
+.cta_filter_other_mobile{
+    position: absolute;
+    z-index: 1000;
+    right: 20px;
+    top: 20px;
 }

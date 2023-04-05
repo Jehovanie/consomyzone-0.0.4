@@ -26,7 +26,13 @@
                 {% include 'shard/station/station_navleft.twig' %}
             </div>
             <div class="col">
-                <div class="content_filter_global">
+                <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                   <i class="fa-solid fa-filter"></i>
+                </button>
+                <button class="btn btn-primary filter_other_mobile cta_filter_other_mobile" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+                <div class="collapse content_filter_global filter_other_mobile"  id="collapseExample">
                     {% include 'shard/station/filterStation.html.twig' %}
                 </div>
                 <div class="content_cart_map">
@@ -44,4 +50,5 @@
             </div>
         </div>
     </div>
+        {% include 'shard/station/modalFilterStation.html.twig' %}
 {% endblock %}
