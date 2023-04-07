@@ -26,15 +26,21 @@
                 {% include 'shard/station/station_navleft.twig' %}
             </div>
             <div class="col">
+                {# modal filter it's show when the screen is like mobile #}
                 <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
                    <i class="fa-solid fa-filter"></i>
                 </button>
+
+                {# collapse filter it's show when the screen other than mobile #}
                 <button class="btn btn-primary filter_other_mobile cta_filter_other_mobile" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <i class="fa-solid fa-filter"></i>
                 </button>
-                <div class="collapse content_filter_global filter_other_mobile"  id="collapseExample">
-                    {% include 'shard/station/filterStation.html.twig' %}
+                
+                {# filter collapse #}
+                <div class="collapse content_filter_global filter_other_mobile content_filter_global_jheo_js"  id="collapseExample">
+                    {# {% include 'shard/station/filterStation.html.twig' %} #}
                 </div>
+
                 <div class="content_cart_map">
                     <div class="cart_map">
                         <div class="chargement_content" id="toggle_chargement">
@@ -50,5 +56,7 @@
             </div>
         </div>
     </div>
-        {% include 'shard/station/modalFilterStation.html.twig' %}
+
+    {# filter modal  #}
+    {% include 'shard/station/modalFilterStation.html.twig' %}
 {% endblock %}

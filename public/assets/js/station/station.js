@@ -1,6 +1,9 @@
 /// script to manager the user select  in filter checkbox.
 if( document.querySelectorAll(".checkbox_filter .checkbox")){
+	/// filter checkbox type station
 	const all_checkbox = document.querySelectorAll(".checkbox_filter .checkbox");
+
+	///station all type
 	const checkbox_type_tous = document.querySelector(".checkbox_filter #tous_type_filter");
 	
 	////special for the checkbout tous.

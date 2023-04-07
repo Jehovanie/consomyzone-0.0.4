@@ -16,7 +16,7 @@
         padding: 0;
         box-sizing: border-box;
         border: none !important;
-        transition: all 0.3s ease;
+        /* transition: all 0.3s ease; */
     }
     .responsif-none{
         display: none !important;
