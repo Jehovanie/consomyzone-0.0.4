@@ -11,6 +11,7 @@
 {% block javascripts %}
 	<script src="{{asset('assets/js/station/data_station.js')}}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/station/station.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/station/fetchLeftSide.js') }}" defer></script>
     {# // <script  src="{{ asset('assets/js/station/chercher.js') }}" defer></script> #}
 
 {% endblock %}
@@ -24,7 +25,7 @@
             <div class="responsif-none" id="tous">
                 {% include 'shard/station/station_navleft.twig' %}
             </div>
-            <div>
+            <div class="content">
                 {# modal filter it's show when the screen is like mobile #}
                 <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
                    <i class="fa-solid fa-filter"></i>
@@ -39,7 +40,6 @@
                 <div class="collapse content_filter_global filter_other_mobile content_filter_global_jheo_js"  id="collapseExample">
                     {# CONTENT FILTER ADD ON JS #}
                 </div>
-
                 <div class="content_cart_map">
                     <div class="cart_map">
                         <div class="chargement_content" id="toggle_chargement">
@@ -49,11 +49,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="content_show_list_mobile fetch_list_departement_jheo_js">
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </div>
                         <div id="map" class="map"></div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="row content_left_side_mobile">
+            {% include 'shard/station/fetchLeftSide.html.twig' %}
+        </div>
+
+        
     </div>
 
     {# filter modal  #}

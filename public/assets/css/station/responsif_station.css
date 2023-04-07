@@ -61,4 +61,8 @@
     .price_input{
         margin-bottom: 5px;
     }
+
+    .content_show_list_mobile , .content_left_side_mobile{
+        display: none;
+    }
 }
