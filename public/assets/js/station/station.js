@@ -1,3 +1,10 @@
+let dep_name= null, dep_code= null;
+
+if( document.querySelector(".content_info_js")){
+	const content_info= document.querySelector(".content_info_js");
+	dep_name= content_info.getAttribute("data-dep-name");
+	dep_code= content_info.getAttribute("data-dep-code")
+}
 /// script to manager the user select  in filter checkbox.
 if( document.querySelectorAll(".checkbox_filter .checkbox")){
 	/// filter checkbox type station
@@ -16,13 +23,13 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 			const input_max = document.querySelector(".input_max")
 			////request with filter for all type.
 
-			filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value), "tous")
+			filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value), "tous",dep_name,dep_code)
 		}else{
 			all_checkbox.forEach(item => {
 				item.checked=false;
 			})
 			///return list vide
-			filterByPrice(2.5,3, "tous")
+			filterByPrice(2.5,3, "tous",dep_name,dep_code)
 		}
 		changeDapartLinkCurrent("tous")
 	})
@@ -50,7 +57,7 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 			const input_max = document.querySelector(".input_max")
 			////request with filter for all type.
 			changeDapartLinkCurrent(type.join("@"))
-			filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value),type.join("@"))
+			filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value),type.join("@"),dep_name,dep_code)
 
 		})
 	}
@@ -96,7 +103,7 @@ priceInput.forEach(input => {
 		maxVal_sortie = maxVal;
 		if(document.querySelector(".checkbox_filter .checkbox").checked){
 			changeDapartLinkCurrent(type.join("@"))
-			filterByPrice(minVal_sortie, maxVal_sortie, "tous")
+			filterByPrice(minVal_sortie, maxVal_sortie, "tous",dep_name,dep_code)
 		}else{
 			const all_check_box = document.querySelectorAll(".checkbox_filter .checkbox");
 			let tab_check = [];
@@ -106,7 +113,7 @@ priceInput.forEach(input => {
 				}
 			}
 			changeDapartLinkCurrent(type.join("@"))
-			filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"))
+			filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"),dep_name,dep_code)
 		}
 
     })
@@ -135,11 +142,11 @@ rangeInput.forEach(input => {
 		maxVal_sortie = maxVal;
     })
 
-
-	input.addEventListener("mouseup", () => {
+	const event= screen.width < 991 ? "pointerup" : "mouseup";
+	input.addEventListener(event, () => {
 		if(document.querySelector(".checkbox_filter .checkbox").checked){
 			changeDapartLinkCurrent("tous")
-			filterByPrice(minVal_sortie, maxVal_sortie, "tous")
+			filterByPrice(minVal_sortie, maxVal_sortie, "tous",dep_name,dep_code)
 		}else{
 			const all_check_box = document.querySelectorAll(".checkbox_filter .checkbox");
 			/// format type filter using for the filter.
@@ -150,7 +157,7 @@ rangeInput.forEach(input => {
 				}
 			}
 			changeDapartLinkCurrent(tab_check.join("@"))
-			filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"))
+			filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"),dep_name,dep_code)
 		}
 	})
 

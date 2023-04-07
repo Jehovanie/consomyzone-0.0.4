@@ -10,7 +10,6 @@
 
 {% block javascripts %}
 	<script src="{{asset('assets/js/station/data_station.js')}}" defer></script>
-    {# // <script type="text/javascript" src="{{ asset('assets/js/station/filter_station.js') }}" defer></script> #}
     <script type="text/javascript" src="{{ asset('assets/js/station/station.js') }}" defer></script>
     {# // <script  src="{{ asset('assets/js/station/chercher.js') }}" defer></script> #}
 
@@ -22,10 +21,10 @@
     </div>
     <div class="content_main">
         <div class="row">
-            <div class="col responsif-none" id="tous">
+            <div class="responsif-none" id="tous">
                 {% include 'shard/station/station_navleft.twig' %}
             </div>
-            <div class="col">
+            <div>
                 {# modal filter it's show when the screen is like mobile #}
                 <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
                    <i class="fa-solid fa-filter"></i>
@@ -38,7 +37,7 @@
                 
                 {# filter collapse #}
                 <div class="collapse content_filter_global filter_other_mobile content_filter_global_jheo_js"  id="collapseExample">
-                    {# {% include 'shard/station/filterStation.html.twig' %} #}
+                    {# CONTENT FILTER ADD ON JS #}
                 </div>
 
                 <div class="content_cart_map">

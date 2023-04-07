@@ -1430,32 +1430,13 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
             if( parsedResult ){
 
                 /// change the number of result in div
-                if( document.getElementById("content_nombre_result_js_jheo")){
-                    document.getElementById("content_nombre_result_js_jheo").innerText = parsedResult.length;
+                if( document.querySelector(".content_nombre_result_js_jheo")){
+                    document.querySelector(".content_nombre_result_js_jheo").innerText = parsedResult.length;
                 }
 
-                // var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                //     maxZoom: 20,
-                //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-                // })
-
-                // var latlng = L.latLng(-37.89, 175.46);
-
-
-
-                // var latlng = L.latLng(46.227638, 2.213749);
-
-
-
-                // var map = L.map('map', {center: latlng, zoom: 5, layers: [tiles]});
-
-
-
                 var markers = L.markerClusterGroup({ 
-
-                        chunkedLoading: true
-
-                    });
+                    chunkedLoading: true
+                });
 
                 ///// 0 -> 4717
                 parsedResult.forEach(item => {
@@ -1475,107 +1456,61 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                     markers.addLayer(marker);
 
                 } )
-                console.log("this is map")
-                console.log(map);
+
                 map.addLayer(markers);
 
                 if( nom_dep && id_dep ){
 
-                        
-
                     /// mise a jour de liste
-
                     const parent_elements= document.querySelector(".list_result")
-
                     const elements= document.querySelectorAll(".element")
-
+                    console.log(elements.length)
                     elements.forEach(element => {
-
                         element.parentElement.removeChild(element);
-
                     })
 
+                    parsedResult.forEach(element => {
+                        parent_elements.querySelector("ul").innerHTML += `
+                            <li class="card-list element">
+                                <div class="row container-depart pt-4 element" id="${element.id}">
+                                    <div class="col-md-9">
+                                        <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>
+                                        <ul>
+                                            <li> E 85: ${element.prixE85}€</li>
+                                            <li> Gplc: ${element.prixGplc}€ </li>
+                                            <li> Sp 95:${element.prixSp95}€ </li>
+                                            <li> Sp 95 E 10:${element.prixSp95E10}€</li>
+                                            <li> Sp 98:${element.prixSp98}€</li>
+                                            <li> Gasoil:${element.prixGasoil}€</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a id="open-detail-station" onclick="getDetailStation('${id_dep}','${nom_dep}','${element.id}')">
+                                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
-
-                    if(document.querySelector(".plus_result")){
-
-                        parent_elements.removeChild(document.querySelector(".plus_result"))
-
-                    }
-
-
-
-                    parsedResult.forEach(new_element => {
-
-
-
-                        // <div class="element" id="{{station.id}}">
-
-                        const div_new_element = document.createElement("div");
-
-                        div_new_element.setAttribute("class", "element")
-
-                        div_new_element.setAttribute("id", new_element.id);
-
-
-
-
-
-                        // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-
-                        const s_p = document.createElement("p");
-
-                        s_p.innerHTML = "<span class='id_departement'>"+ new_element.nom+" </span>" +  new_element.adresse
-
-
-
-                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-
-                        const a= document.createElement("a");
-
-                        a.setAttribute("class", "plus")
-
-                        a.setAttribute("href", "/station/departement/"+ id_dep +"/"+ nom_dep +"/details/" + new_element.id )
-
-                        a.innerText = "Voir details";
-
-
-
-                        /// integre dom under the element
-
-                        div_new_element.appendChild(s_p);
-
-                        div_new_element.appendChild(a);
-
+                                                <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
+                                                stroke="none">
+                                                    <path d="M2375 4954 c-231 -24 -462 -78 -641 -149 -782 -310 -1321 -993 -1440
+                                                    -1824 -21 -141 -23 -445 -5 -581 23 -170 77 -398 116 -485 8 -16 26 -59 40
+                                                    -95 175 -426 486 -804 870 -1056 1052 -689 2449 -398 3148 658 313 473 437
+                                                    1008 360 1568 -135 995 -920 1789 -1923 1945 -101 15 -440 28 -525 19z m285
+                                                    -395 c108 -17 187 -60 254 -137 32 -37 72 -96 90 -132 l31 -65 3 -519 3 -519
+                                                    332 6 c183 3 418 3 523 -1 188 -7 192 -8 256 -40 172 -85 278 -295 249 -496
+                                                    -23 -164 -114 -297 -249 -363 l-76 -38 -518 -3 -517 -3 -3 -517 -3 -517 -28
+                                                    -59 c-79 -170 -238 -266 -437 -266 -199 0 -358 96 -437 266 l-28 59 -3 517 -3
+                                                    517 -517 3 -518 3 -76 38 c-176 87 -280 295 -249 497 21 138 112 279 221 343
+                                                    98 57 120 59 652 59 l487 -1 3 517 3 517 29 62 c16 35 35 68 42 74 8 6 14 20
+                                                    14 29 0 47 174 151 280 169 77 12 115 12 190 0z"/>
+                                                </g>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
                         
-
-                        ///integre new element in each element.
-
-                        parent_elements.appendChild(div_new_element);
-
+                        `
                     })
-
-
-
                 }
-
-                /*
-
-                <div class="element" id="{{station.id}}">
-
-                    <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-
-
-
-                    <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-
-                        Voir details
-
-                    </a>
-
-                </div>
-
-                */
 
             }else{
                 console.log("ERREUR : L'erreur se produit par votre réseaux.")

@@ -2,19 +2,30 @@ checkScreen();
 
 
 window.addEventListener('load', () => {
-    filterByPrice(0,2.5,"tous")
-    // let dataStation=null;
-    // fetch("/getLatitudeLongitudeStation")
-    //     .then(response => response.json())
-    //     .then(response => {
-    //         dataStation = response;
-    //         filterStation(0, 2.5, "tous")
-            
-    //     })
-    window.onresize = () => { 
-        console.log("on resize") 
-        checkScreen() 
-    };
+    if( document.querySelector(".content_info_js")){
+        const parsedUrl = new URL(window.location.href);
+        const type= parsedUrl.searchParams.get("type") ? parsedUrl.searchParams.get("type") : "tous"
+        const content_info= document.querySelector(".content_info_js");
+        filterByPrice(0,2.5,type, content_info.getAttribute("data-dep-name"), content_info.getAttribute("data-dep-code"))
+        
+        if( type !== "tous"){
+            const tab_type= type.split("@").map(item => item.substring(4).toLocaleLowerCase());
+            console.log(tab_type);
+            const all_checkboxes= document.querySelectorAll(".checkbox_filter .checkbox");
+            Array.from(all_checkboxes).forEach( checkbox => {
+                if( !tab_type.includes(checkbox.getAttribute("id"))){
+                    checkbox.checked= false;
+                }
+            })
+        }
+    }else{
+        filterByPrice(0,2.5,"tous")
+    }
+    
+    ///event on resize
+    // window.onresize = () => { 
+    //     checkScreen() 
+    // };
 });
 
 // function filterStation(price_min, price_max, type,nom_dep=null, id_dep=null){
