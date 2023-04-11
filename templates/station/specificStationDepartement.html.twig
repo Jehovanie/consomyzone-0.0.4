@@ -5,6 +5,7 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/station/app.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/station/app_specifique.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/station/responsif_station.css')}}">
 {% endblock %}
 
@@ -14,6 +15,7 @@
 	<script src="{{asset('assets/js/station/data_station.js')}}" defer></script>
 	<script src="{{asset('assets/js/station/station.js')}}" defer></script>
 	<script src="{{asset('assets/js/station/details.js')}}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/station/fetchLeftSideSpecifique.js') }}" defer></script>
 	{# // <script type="text/javascript" src="{{ asset('assets/js/station/centers_data_station.js') }}" defer></script> #}
     
 {% endblock %}
@@ -52,13 +54,23 @@
 								</div>
 							</div>
 						</div>
+						<div class="content_show_list_mobile fetch_list_departement_specifique_jheo_js">
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </div>
 						<div id="map" class="map"></div>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<div class="row content_left_side_mobile content_left_side_mobile_js_jheo">
+            {% include 'shard/station/fetchLeftSideSpecifique.html.twig' %}
+        </div>
+
 	</div>
 	{# filter modal  #}
     {% include 'shard/station/modalFilterStation.html.twig' %}
+	{% include 'shard/station/modalDetailMobil.html.twig' %}
+
 {% endblock %}
 

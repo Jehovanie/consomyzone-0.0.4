@@ -59,23 +59,15 @@ class StationController extends AbstractController
     }
 
     /**
-
      * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
-
      */
-
      public function getDepartement(DepartementRepository $departementRepository): Response
-
-     {
+    {
          return $this->render('shard/station/fetchLeftSide.html.twig', [
              "departements" => $departementRepository->getDep(),
          ]);
-     }
+    }
  
-
-
-
-
 
     /**
 
@@ -112,6 +104,17 @@ class StationController extends AbstractController
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
+
+    /**
+    * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
+    */
+    public function getStationInSpecifiqueDepart(DepartementRepository $departementRepository): Response
+    {
+        return $this->render('shard/station/fetchLeftSideSpecifique.html.twig', [
+            "departements" => $departementRepository->getDep(),
+        ]);
+    }
+
 
 
 

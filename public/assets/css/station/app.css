@@ -161,7 +161,7 @@ input[type="range"]::-moz-slider-thumb{
 .content_left_side_mobile{
     display: block;
     background-color: white;
-    min-height: 100vh;
+    max-height: 100vh;
     transform: translateX(-100%);
 
     position:absolute;
@@ -169,6 +169,12 @@ input[type="range"]::-moz-slider-thumb{
     right: 0%;
     left: 0%;
     z-index: 10000;
+    overflow-y:hidden;
+}
+.content_card{
+    display: block;
+    height: 80vh;
+    overflow: scroll;
 }
 
 .plus{

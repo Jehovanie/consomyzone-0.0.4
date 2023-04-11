@@ -1,0 +1,39 @@
+.content_list_station_left{
+    padding-left: 0;
+}
+.card_list{
+    list-style: none;
+    background-color: #e7e7e7;
+    width: 90vw;
+    margin: auto;
+    margin-bottom: 20px;
+    border-radius: 40px;
+    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+    font-size: 11pt;
+    padding: 15px;
+}
+.card_list ul{
+    padding-left: 2rem;
+}
+
+.open_detail{
+    width: 20%;
+    display: block;
+    margin: auto;
+    height: 50px;
+}
+
+.content_tow_cta{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.modal-content{
+    border: 1px solid rgba(0,0,0,.2) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6 !important;
+}

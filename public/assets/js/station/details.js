@@ -254,7 +254,7 @@
 
 //         });
 
-//     });
+//     }); btn_retours_specifique_jheo_js
 
 // }
 
@@ -273,6 +273,24 @@ function getDetailStation(depart_name, depart_code, id) {
         }).then(r => { 
            document.querySelector("#content-details-station").innerHTML = null
            document.querySelector("#content-details-station").innerHTML = r
+        })
+    
+}
+
+function getDetailStationForMobile(depart_name, depart_code, id) {
+    document.querySelector(".btn_retours_specifique_jheo_js").click();
+    // console.log(depart_name, depart_code, id)
+
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+    fetch(`/station/departement/${depart_name}/${depart_code}/details/${id}`)
+        .then(response => {
+            console.log("response mobile...")
+            console.log(response)
+            return response.text()
+        }).then(r => { 
+           document.querySelector(".content_detail_js_jheo").innerHTML = null
+           document.querySelector(".content_detail_js_jheo").innerHTML = r
         })
     
 }
