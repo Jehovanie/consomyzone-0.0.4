@@ -21,6 +21,7 @@
         {% include 'shard/navbar.twig' %}
     </div>
     <div class="content_main">
+        
         <div class="row">
             <div class="responsif-none" id="tous">
                 {% include 'shard/station/station_navleft.twig' %}
@@ -62,9 +63,10 @@
             {% include 'shard/station/fetchLeftSide.html.twig' %}
         </div>
 
-        
+        <button type="button" class="d-none get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
 
     {# filter modal  #}
     {% include 'shard/station/modalFilterStation.html.twig' %}
+    {% include 'shard/station/modalDetailMobil.html.twig' %}
 {% endblock %}

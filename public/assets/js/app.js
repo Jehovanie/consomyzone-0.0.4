@@ -1255,18 +1255,13 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                 parsedResult.forEach(item => {
 
                     // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-                    let pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim() + "/details/" + item.id;
+                    // let pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim() + "/details/" + item.id;
                     let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            
-                    const ad = "<br>Adresse: " + item.adresse + " .";
-                    const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-
-                    let title = "Station: " + item.nom + ". Id: " + item.id + ". Departement: " + item.departementCode +"." + ad + link;
                     let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { icon: setIcon("assets/icon/icon_essance.png") });
                    
                     marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
                     marker.on('click', () => {
-                        window.location = pathDetails;
+                        getDetailStationNotMobile(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                     })
 
                     markers.addLayer(marker);
