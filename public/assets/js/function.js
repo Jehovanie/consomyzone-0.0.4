@@ -5,7 +5,7 @@ function create_map_content(){
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
 	})
-	var latlng = L.latLng(46.227638, 2.213749);
+	var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
 
     var container = L.DomUtil.get('map');
     if(container != null){
@@ -14,7 +14,6 @@ function create_map_content(){
     
     var map = L.map('map', { center: latlng, zoom: 9, layers: [tiles] });
     console.log("map create")
-    map.setView([51.505, -0.09], 13);
 
     addControlPlaceholders(map);
     
