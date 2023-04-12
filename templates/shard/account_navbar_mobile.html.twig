@@ -120,6 +120,7 @@
 
 		if(style.marginLeft == "70px"){
 			//leftInvitation.style = "margin-left :30px !important"
+			console.log("margin-left : 70px")
 			if(document.querySelector(".demande")){
 				document.querySelector(".demande").style = "width:95vw !important"
 			}
@@ -130,7 +131,7 @@
 				document.querySelector("#contenus").style = "width:95vw !important"
 			}
 			if(document.querySelector(".content_right_profil")){
-				document.querySelector(".content_right_profil").style = "margin-left:10px !important;width:95vw !important"
+				document.querySelector(".content_right_profil").style = "margin-left:-42px !important;width:100vw !important"
 			}
 			if(document.querySelector(".content_right_actualite")){
 				document.querySelector(".content_right_actualite").style = "margin-left:0px !important;width:100vw !important"
@@ -152,17 +153,17 @@
 				document.querySelector(".setting_mobile").style = "margin-left:10px !important;margin-right: 10px !important;width: 100% !important"
 			}
 			if(document.querySelector(".securityForm")){
-				document.querySelector(".securityForm").style = "margin-left:10px !important;margin-right: 10px !important;width: 100% !important"
+				document.querySelector(".securityForm").style = "margin-left:0px !important;margin-right: 10px !important;width: 100% !important"
 			}
-			// if(document.querySelector(".security_mobile")){
-			// 	document.querySelector(".security_mobile").style = "margin-left:-20px !important;margin-right: 10px !important;width: 100% !important"
-			// }
+			if(document.querySelector(".security_mobile")){
+			document.querySelector(".security_mobile").style = "width: 95vw !important"
+			}
 			if(document.querySelector(".col_confidentialite")){
 				document.querySelector(".col_confidentialite").style = "margin-left:-7px !important;margin-right: 10px !important;width: 100% !important"
 			}
-			// if(document.querySelector(".confidentialite_mobile")){
-			// 	document.querySelector(".confidentialite_mobile").style = "margin-left:-7px !important;margin-right: 10px !important;width: 100% !important"
-			// }
+			if(document.querySelector(".container-invitation")){
+				document.querySelector(".container-invitation").style = "margin-left:25px !important;margin-right: 10px !important;width: 100% !important"
+			}
 			if(document.querySelector(".card_mobile")){
 				document.querySelectorAll(".card_mobile").forEach(element => {
 					if(element.style.marginLeft=="0px"){
@@ -178,6 +179,7 @@
 			}
 			
 		}else{
+			console.log("margin-left : 0px")
 			leftInvitation.style = "margin-left :70px !important;"
 			if(document.querySelector(".invitation-conf")){
 				document.querySelector(".invitation-conf").style = "width:85vw !important"
@@ -189,7 +191,7 @@
 				document.querySelector("#contenus").style = "width:85vw !important"
 			}
 			if(document.querySelector(".content_right_profil")){
-				document.querySelector(".content_right_profil").style = "left:-20px;margin-left:70px !important;width:85vw !important"
+				document.querySelector(".content_right_profil").style = "left:-60px;margin-left:70px !important;width:85vw !important"
 			}
 			if(document.querySelector(".content_right_actualite")){
 				document.querySelector(".content_right_actualite").style = "left:-25px;margin-left:70px !important;width:90vw !important"
@@ -211,7 +213,7 @@
 				document.querySelector(".setting_mobile").style = "margin-left:0px !important;margin-right: 10px !important;width: 100% !important"
 			}
 			if(document.querySelector(".security_mobile")){
-				document.querySelector(".security_mobile").style = "margin-left:-10px !important;margin-right: 10px !important;width: 95% !important"
+				document.querySelector(".security_mobile").style = "margin-left:0px !important;margin-right: 85px !important;width: 98% !important"
 			}
 			if(document.querySelector(".col_confidentialite")){
 				document.querySelector(".col_confidentialite").style = "margin-left:-7px !important;margin-right: 10px !important;width: 95% !important"

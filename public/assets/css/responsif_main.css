@@ -318,9 +318,9 @@
 
         .content_right_profil{
             position: relative !important;
-            margin-left: 10px !important;
+            margin-left: -43px !important;
             top: 10px !important;
-            width: 95vw !important;
+            width: 100vw !important;
         }
         
         .mobile-responsive{
@@ -473,7 +473,7 @@
         }
 
         .security_mobile{
-            margin-left: 0px !important;
+            margin-left: 5px !important;
         }
 
         /* .confidentialite_mobile{
