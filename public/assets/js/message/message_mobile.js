@@ -165,10 +165,10 @@ function sendMessage(message, image_list){
         body: JSON.stringify( {
 
             /// current connecter
-            from: document.querySelector(".content_input_message_js_jheo_mobile").getAttribute("data-toggle-userfrom-id"),
+            from: document.querySelector(".content_image_input_js_jheo_mobile").getAttribute("data-toggle-userfrom-id-mobile"),
             
             /// user to talk
-            to: document.querySelector(".content_input_message_js_jheo_mobile").getAttribute("data-toggle-userto-id"),
+            to: document.querySelector(".content_image_input_js_jheo_mobile").getAttribute("data-toggle-userto-id-mobile"),
 
             ///message content
             message: message.replace("\n", ""),
@@ -179,21 +179,21 @@ function sendMessage(message, image_list){
     .then(result => { 
 
         ///change status message
-        const content_loading = document.querySelector(".content_loading");
-        content_loading.innerHTML = "<i class='fa-solid fa-check'></i>";
+        const content_loading_mobile = document.querySelector(".content_loading_mobile");
+        content_loading_mobile.innerHTML = "<i class='fa-solid fa-check'></i>";
 
         //// change the id the last message.
         const message_sent= document.querySelector("#message_id");
         message_sent.setAttribute("id","message_" + result.id);
 
         setTimeout(() => {
-            content_loading.parentElement.removeChild(content_loading);
+            content_loading_mobile.parentElement.removeChild(content_loading_mobile);
         }, 2000);
 
     }).catch((e) => {
 
-        const content_loading = document.querySelector(".content_loading");
-        content_loading.innerHTML = "<i class='fa-solid fa-circle-exclamation error_message_status'></i>";
+        const content_loading_mobile = document.querySelector(".content_loading_mobile");
+        content_loading_mobile.innerHTML = "<i class='fa-solid fa-circle-exclamation error_message_status'></i>";
     })
 }
 
@@ -234,9 +234,9 @@ function handleMessageResponse(date, message,image_list=null,image,status){
     ///generate content_image is exit
     if(image_list &&  image_list.length > 0 ){
 
-        // <div class="content_image_message image_right">
+        // <div class="content_loading_mobile image_right">
         const div_content_message_image = document.createElement("div")
-        div_content_message_image.className = "content_image_message image_right"
+        div_content_message_image.className = "content_loading_mobile image_right"
 
 
         image_list.forEach((element, index) => {
@@ -256,11 +256,11 @@ function handleMessageResponse(date, message,image_list=null,image,status){
             /// --------------------------------
 
 
-            // <div class="content_image_message image_right"> >>> img
+            // <div class="content_loading_mobile image_right"> >>> img
             div_content_message_image.appendChild(img);
         });
 
-        // <div class="message_single"> >>> ... ,  <div class="content_image_message image_right">
+        // <div class="message_single"> >>> ... ,  <div class="content_loading_mobile image_right">
         div_message_single.appendChild(div_content_message_image);
     }
 
@@ -275,13 +275,13 @@ function handleMessageResponse(date, message,image_list=null,image,status){
 
     if(!status){
 
-        const content_loading = document.createElement("div");
+        const content_loading_mobile = document.createElement("div");
 
-        content_loading.classList.add("content_loading");
+        content_loading_mobile.classList.add("content_loading_mobile");
 
-        content_loading.innerHTML= "<i class='fa-solid fa-spinner loading'></i>"
+        content_loading_mobile.innerHTML= "<i class='fa-solid fa-spinner loading'></i>"
 
-        div.appendChild(content_loading);
+        div.appendChild(content_loading_mobile);
 
     }
 

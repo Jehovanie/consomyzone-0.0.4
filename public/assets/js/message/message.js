@@ -2,6 +2,13 @@
 //scroll_to_bottom.scrollTop = scroll_to_bottom.scrollHeight;
 
 //// ON THE PAGE CHAT BOX
+if(screen.width > 1000){
+
+document.querySelector(".mode_mobile").remove()
+
+}else{
+    document.querySelector(".mode_pc").remove()
+}
 
 ///check btn send and input msg
 if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector(".input_message_js_jheo")){
@@ -49,6 +56,7 @@ if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector
             const img = document.createElement("img")
             img.src = uploaded_image
             img.setAttribute("alt","Image upload")
+            img.setAttribute("style", "width:100px; height:100px");
             document.querySelector(".content_image_input_js_jheo").style.display= "flex"
 
             const parentImage = document.querySelector(".content_image_input_js_jheo")
@@ -245,6 +253,7 @@ function handleMessageResponse(date, message,image_list=null,image,status){
             img.setAttribute("id", "image_sended_"+ index );
             img.setAttribute("alt", "Image sended");
             img.setAttribute("class", "image_temp_js_jheo");
+           //img.setAttribute("style", "width:100px; height:100px");
 
             /// on dev -----------------------------
             console.log("on dev");

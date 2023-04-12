@@ -10,7 +10,7 @@
 				class="row d-flex justify-content-center">
 				{# <div class="col-md-10 col-lg-8 col-xl-6"> #}
 
-				<div class="card" id="chat2" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
+				<div class="card content_message" id="chat2" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
 					<div
 						class="card-header fixed-top d-flex justify-content-between align-items-center p-3 bg-white card_mobile" style="margin-top:60px; margin-left:0px">
 						{# <div class="row content_entete_js_jheo" data-toggle-id-user-to={{userToProfil.id}}> #}
@@ -136,7 +136,7 @@
                                                         {% endif %}
                                                         
                                                         {% if msg.content.images is defined and msg.content.images|length > 0  %}
-                                                            <div class="content_image_message image_right">
+                                                            <div class="content_image_message_mobile image_right">
                                                                 {% for image in msg.content.images %}
                                                                     <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
                                                                 {% endfor %}
@@ -165,7 +165,7 @@
                                                             <p>{{msg.content ? msg.content.text : "" }}</p>
                                                         {% endif %}
                                                         {% if msg.content.images is defined and msg.content.images|length > 0  %}
-                                                            <div class="content_image_message image_left">
+                                                            <div class="content_image_message_mobile image_left">
                                                                 {% for image in msg.content.images %}
                                                                     <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
                                                                 {% endfor %}
@@ -186,49 +186,39 @@
 
 
 					</div>
-					<div class="card-footer fixed-bottom text-muted d-flex justify-content-start align-items-center p-3 bg-white card_mobile" style="margin-left:0px" data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{userToProfil.id}}>
+					<div class="card-footer fixed-bottom text-muted d-flex justify-content-start align-items-center p-3 bg-white card_mobile" style="margin-left:0px">
 						<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp" alt="avatar 3" style="width: 40px; height: 100%;">
-						{# <input type="text" class="form-control form-control-lg" id="" placeholder="Type message">
-						<a class="ms-1 text-muted" href="#!">
-							<i class="fas fa-paperclip"></i>
-						</a>
-						<a class="ms-3 text-muted" href="#!">
-							<i class="fas fa-smile"></i>
-						</a>
-						<a class="ms-3" href="#!">
-							<i class="fas fa-paper-plane"></i>
-						</a> #}
-
-                        
+						<div class="content_input_message content_input_message_js_jheo mode_mobile" data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{userToProfil.id}} >
+                            
                             <div class="input_message w-100">
-
 
                                 {# if the user put many image #}
                                 <div class="globla_message w-100">
-                                    <div class="content_image_input_mobile content_image_input_js_jheo">
-                                        <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file_under_image_mobile" style="display:none"></i>
+                                    <div class="content_image_input content_image_input_js_jheo">
+                                        {# <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file_under_image"></i> #}
 
                                         {# <img src="/assets/image/message2.jpg" alt="image input">
                                         <img src="/assets/image/message2.jpg" alt="image input">
                                         <img src="/assets/image/message2.jpg" alt="image input">
                                         <img src="/assets/image/message2.jpg" alt="image input"> #}
                                     </div>
-                                    <textarea  rows="1" type="text" placeholder="Votre message" name="message" class="input_message_js_jheo_mobile" ></textarea>
+                                    <textarea  rows="1" type="text" placeholder="Votre message" name="message" class="w-100 input_message_js_jheo" ></textarea>
                                 </div>
 
-                                
-                                {# record for voice... #}
+								{# record for voice... #}
                                 <i class="fa-solid fa-microphone outer_icon_micro"></i>
 
                                 {# input file image #}
-                                <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file outer_icon_message_mobile" style="margin-bottom:27px">
-                                    <input type="file" class="first-input" multiple="" aria-disabled=""> 
+                                <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file outer_icon_message">
+                                    <input type="file"  class="first-input" multiple aria-disabled> 
                                 </i>
 
                                 {# to send message  #}
-                                <i class="fa-solid fa-paper-plane outer_icon_message btn_send_message_js_jheo_mobile "></i>
+                                <i class="fa-solid fa-paper-plane outer_icon_message btn_send_message_js_jheo "></i>
 
                             </div>
+                        </div>
+
 					</div>
 				</div>
 

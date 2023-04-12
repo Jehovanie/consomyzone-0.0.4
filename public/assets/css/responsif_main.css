@@ -483,10 +483,15 @@
             margin-left: 10px !important;
         }
 
-        /* .card_mobile{
-            margin-left: 70px !important;
+        /* .outer_icon_message_mobile{
+            margin-bottom: 17px !important;
         } */
 
+        #profilTribu {
+            min-width: 100% !important;
+            text-align: center;
+            margin-left: 10px !important;
+        }
       
 
 
