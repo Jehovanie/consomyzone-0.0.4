@@ -386,17 +386,7 @@ function getDetailStation(depart_name, depart_code, id) {
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
 
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
-
-    fetch(`/station/departement/${depart_name}/${depart_code}/details/${id}`)
-        .then(response => {
-            return response.text()
-        }).then(r => { 
-           document.querySelector("#content-details-station").innerHTML = null
-           document.querySelector("#content-details-station").innerHTML = r
-        })
-    
+    fetchDetails("#content-details-station", depart_name,depart_code,id)
 }
 
 function getDetailStationForMobile(depart_name, depart_code, id) {
@@ -409,14 +399,20 @@ function getDetailStationForMobile(depart_name, depart_code, id) {
         document.querySelector(".get_action_detail_on_map_js_jheo").click();
     }
 
+    fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
+}
+
+function fetchDetails(selector, departName, departCode,id){
+
     const myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
 
-    fetch(`/station/departement/${depart_name}/${depart_code}/details/${id}`)
+    fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
         .then(response => {
             return response.text()
         }).then(r => { 
-           document.querySelector(".content_detail_js_jheo").innerHTML = null
-           document.querySelector(".content_detail_js_jheo").innerHTML = r
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
         })
+    
 }
