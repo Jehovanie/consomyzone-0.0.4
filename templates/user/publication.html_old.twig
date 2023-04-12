@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Tribut T
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/agenda/agenda.css')}}">
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+	<style>
+		a {
+			text-decoration: none;
+		}
+		.foot a {
+			color: black;
+		}
+	</style>
+
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+
+
+{% endblock %}
+
+
+{% block body %}
+
+	<div id="settingProfilId">
+
+		<div class="content_left_menu_account fixed-top mt-5 col">
+			<div class="left_menu">
+				{% include "shard/account_navleft.html.twig" %}
+			</div>
+		</div>
+		<div class="fixed-top">
+			{{ include('shard/account_navbar.html.twig') }}
+		</div>
+		<div class="row account">
+			<div class="col content_global ">
+				<div class="right_content">
+					<div class="container">
+						<div class="row" style="height:100%; margin-top:10%">
+							<div class="col-lg-6 col-md-6 col-sm-6" style="height:100%; margin-left:10%">
+								<h1>Liste de vos publications</h1>
+								{% if publication is defined %}
+									<div class="showPubBlock">
+										{% if publication | length > 0 %}
+										{% for pub in publication %}
+											{% for pubs  in pub["publications"] %}
+												
+											<div class="card mb-2" id="pub_number_{{pubs.id}}">
+
+												<div class="card-header">
+
+													<a href="{{ path("user_profil", {"user_id":pubs.user_id }) }}">
+														<i>{{pubs.userfullname}}</i>
+													</a>
+													<i class="bi bi-play-fill"></i>
+													<a href="/user/tribu/publication/{{ pub["table"] ~ "_publication" }}">
+														<i class="bi bi-collection"></i>
+														{{pub[0].name | replace({"$": "'"})}}
+													</a>
+
+												</div>
+
+												<div class="card-body">
+													<a href="/user/tribu/publication/{{ pub["table"] ~ "_publication#pub_number_" ~ pubs.id }}">
+													<p style="color:black;" class="card-text">{{pubs.publication}}</p>
+
+													{% if pubs.photo != null %}
+
+														<div style="max-heigth:100%; max-width: 100%;">
+															<img width="50%;" heigth="100px;" src="{{asset('assets/publications/photos/') ~ pubs.photo}}" class="" alt="">
+														</div>
+
+													{% endif %}
+													<p class="card-text">
+														<i>
+															<small class="text-muted">Publié le
+																{{pubs.datetime|date("d/m/Y h:m:s")}}
+
+															</small>
+
+														</i>
+														<span class="badge text-bg-primary" style="background-color:#0d6efd;">
+															<i class="bi bi-eye-fill"></i>
+
+															{% if pubs.confidentiality == 1 %}
+																Publique
+															{% elseif pubs.confidentiality == 2 %}
+																Ami(e)s
+															{% else %}
+																Moi uniquement
+															{% endif %}
+														</span>
+													</p>
+													</a>
+												</div>
+
+											</div>
+
+											{% endfor %}
+
+										{% endfor %}
+										{% else %}
+										<p class="text-center">Aucune publication de votre part pour le moment</p>
+										{% endif %}
+
+									</div>
+
+								{% endif %}
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div></div>{% endblock %}

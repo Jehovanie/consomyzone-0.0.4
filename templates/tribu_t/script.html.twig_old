@@ -1,0 +1,576 @@
+<script>
+
+let tbl_pub = "{{ table_pub }}";
+
+let invitationsContainer = document.querySelector("#invitations");
+
+let photosContainer = document.querySelector("#photos");
+
+let showCreatePub = document.querySelector("#showCreatePub");
+
+let showPub = document.querySelector(".showPubBlock");
+
+let table_com = tbl_pub.replace(/_publication$/, "_commentaire");
+
+document.querySelector("#btnShowModalAddPub").addEventListener("click", () => {
+    document.querySelector("#publication_legend").value = "";
+    document.querySelector("#publication_confidentiality").value = "1";
+});
+
+/*function showInvitations(){
+
+    let table = tbl_pub.replace(/_publication$/, "")
+
+    let ul = document.createElement('ul');
+
+    ul.classList.add("list-group");
+
+    fetch(new Request("/user/tribu/show/invitations/" + table, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => {
+            console.log(data);
+            let li = "";
+            let status = "";
+            if(data.length > 0){
+                for (let invitation of data) {
+                    if(invitation.status == 0){
+                        status = "En attente"
+                    }else if(invitation.status == 1){
+                        status = "Acceptée"
+                    }else{
+                        status = "Rejetée"
+                    }
+                    li += `<li class="list-group-item">
+                                <a href="/user/profil/${invitation.user_id}">${invitation.fullname}</a>
+                                <button class="btn btn-sm btn-secondary float-end">
+                                    ${status}
+                                </button>
+                            </li>`;
+                }
+                ul.innerHTML = li;
+                invitationsContainer.appendChild(ul);
+            }else{
+                invitationsContainer.style.textAlign = "center"
+                invitationsContainer.innerHTML = "Aucune invitation pour le moment";
+                photosContainer.style.display = "none"
+                photosContainer.innerHTML = "";
+            }
+
+            if (invitationsContainer.style.display == "none") {
+                invitationsContainer.style.display = "block"
+                photosContainer.style.display = "none"
+                photosContainer.innerHTML = "";
+                showCreatePub.style.display = "none"
+                showPub.style.display = "none"
+            }else{
+                invitationsContainer.innerHTML = "";               
+                invitationsContainer.style.display = "none"
+                showCreatePub.style.display = "block"
+                showPub.style.display = "block"
+                photosContainer.style.display = "none"
+                photosContainer.innerHTML = "";
+            }
+
+        });
+}*/
+
+function sendInvitation(table){
+    data = {"table": table}
+    console.log(JSON.stringify(data));
+    fetch("/user/tribu/send/invitation", {
+            method: "POST",
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+
+        } ).then(response => response.json())
+        .then(text => {
+            console.log(text);
+            document.querySelector("#successMessageBlock").style.display = "block";
+            document.querySelector("#successMessage").innerHTML = text;
+            setTimeout(()=>{
+                document.querySelector("#successMessageBlock").style.display="none";
+            }, 5000)
+    })
+}
+
+function showInvitations(){
+
+    let table = tbl_pub.replace(/_publication$/, "")
+
+    let ul = document.createElement('ul');
+
+    ul.classList.add("list-group");
+
+    fetch(new Request("/user/tribu/show/invitations/" + table, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => {
+            console.log(data);
+            let li = `<div id="successMessageBlock" style="margin-left:10%;display:none;margin-bottom:5px;">
+					<svg color="green" class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/>
+					</svg>
+					<span id="successMessage">Invitation envoyée à tous les membres</span>
+				</div><div class="row mb-3" style="margin-left:3px"> <button style="margin-left:3px" class="btn btn-sm btn-outline-primary col-3" onclick='sendInvitation("{{table_tribu}}")'>
+												Inviter votre tribu G
+											</button>
+											<a style="margin-left:3px" href="{{ path("add_member_tribut", {"tribu_name" : table_tribu }) }}" class="btn btn-sm btn-outline-primary col-3">
+												Inviter une personne
+											</a>
+											<button style="margin-left:3px" type="button" class="btn btn-outline-danger col-3 invitation_email_home_js" data-bs-toggle="modal" data-bs-target="#modal_sendEmail" data-bs-whatever="@mdo">
+												Inviter par e-mail
+											</button> </div>`;
+            let status = "";
+	    document.querySelector("#modal_sendEmail").setAttribute("data-table", "{{table_tribu}}")
+            if(data.length > 0){
+                for (let invitation of data) {
+                    if(invitation.status == 0){
+                        status = "En attente"
+                    }else if(invitation.status == 1){
+                        status = "Acceptée"
+                    }else{
+                        status = "Rejetée"
+                    }
+                    li += `<li class="list-group-item">
+                                <a href="/user/profil/${invitation.user_id}">${invitation.fullname}</a>
+                                <button class="btn btn-sm btn-secondary float-end">
+                                    ${status}
+                                </button>
+                            </li>`;
+                }
+                ul.innerHTML = li;
+                invitationsContainer.appendChild(ul);
+            }else{
+                ul.innerHTML = li;
+                invitationsContainer.appendChild(ul);
+                /*invitationsContainer.style.textAlign = "center"
+                invitationsContainer.innerHTML = "Aucune invitation pour le moment";
+                photosContainer.style.display = "none"
+                photosContainer.innerHTML = "";*/
+            }
+
+            if (invitationsContainer.style.display == "none") {
+                invitationsContainer.style.display = "block"
+                photosContainer.style.display = "none"
+                photosContainer.innerHTML = "";
+                showCreatePub.style.display = "none"
+                showPub.style.display = "none"
+            }else{
+                invitationsContainer.innerHTML = "";               
+                invitationsContainer.style.display = "none"
+                showCreatePub.style.display = "block"
+                showPub.style.display = "block"
+                photosContainer.style.display = "none"
+                photosContainer.innerHTML = "";
+            }
+
+        });
+}
+
+function showActualites(){
+    invitationsContainer.innerHTML = "";               
+    invitationsContainer.style.display = "none"
+    showCreatePub.style.display = "block"
+    showPub.style.display = "block"
+    photosContainer.style.display = "none"
+    photosContainer.innerHTML = "";
+}
+
+function showPhotos(table_pub){
+    /*
+    let icone = document.createElement('i');
+    icone.classList.add("bi");
+    icone.classList.add("bi-arrows-collapse");
+    icone.style.cursor = "pointer";
+    photosContainer.appendChild(icone);
+    */
+    fetch(new Request("/user/tribu/photos/" + table_pub, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => {
+            console.log(data);
+            if(data.length > 0){
+                for (let photo of data) {
+                    let img = document.createElement('img');
+                    //img.classList.add("w-25");
+                    img.style.height = "150px"
+                    img.style.width = "24%"
+                    img.style.cursor = "pointer"
+                    img.style.marginBottom = "2px"
+                    img.style.marginLeft = "2px"
+                    img.style.borderRadius = "5px"
+                    //img.src = '/assets/publications/photos/'+photo.photo;
+		    img.src = "{{asset('assets/publications/photos/')}}"+photo.photo;
+                    photosContainer.appendChild(img);
+                }
+            }else{
+                photosContainer.style.textAlign = "center"
+                photosContainer.innerHTML = "Aucune photo pour le moment";
+                invitationsContainer.innerHTML = "";               
+                invitationsContainer.style.display = "none"
+            }
+
+            if (photosContainer.style.display == "none") {
+                invitationsContainer.innerHTML = "";               
+                invitationsContainer.style.display = "none"
+                photosContainer.style.display = "block"
+                showCreatePub.style.display = "none"
+                showPub.style.display = "none"
+            }else{
+                photosContainer.innerHTML = "";               
+                photosContainer.style.display = "none"
+                showCreatePub.style.display = "block"
+                showPub.style.display = "block"
+                invitationsContainer.innerHTML = "";               
+                invitationsContainer.style.display = "none"
+            }
+
+        });
+
+}
+
+function getPub(pub_id, message, confid) {
+    document.querySelector("#pub_id_modif").value = pub_id;
+    document.querySelector("#option_modif").value = confid;
+    document.querySelector("#message-text_modif").innerHTML = message;
+}
+
+function updatePublication() { 
+
+		let data = {
+		"pub_id": document.querySelector("#pub_id_modif").value,
+		"confidentiality": document.querySelector("#option_modif").value,
+		"message": document.querySelector("#message-text_modif").value
+		}
+
+		fetch(new Request("/user/tribu/update_publication/{{ table_pub }}", {
+		method: "POST",
+		headers: {
+		'Accept': 'application/json',
+		'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data)
+		}));
+
+        location.reload();
+	
+}
+
+function setReaction(pub_id, reaction) {
+
+    let table_reaction = "{{ table_pub }}".replace(/_publication$/, "_reaction")
+
+    let data = {
+        "pub_id": pub_id,
+        "user_id_pub": document.querySelector("#user_id_" + pub_id).value,
+        "is_like": reaction,
+        "table_reaction": table_reaction
+    }
+
+    console.log(data)
+
+    fetch(new Request("/user/tribu/new_reaction", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })).then(x => x.json()).then(response => console.log(response));
+
+}
+
+function IsLike(pub_id, x) {
+    if (x.classList == "bi-heart-fill") {
+        x.classList.remove("bi-heart-fill")
+        x.classList.toggle("bi-heart");
+        x.style.color = "black";
+        setReaction(pub_id, 0);
+    } else {
+        x.classList.remove("bi-heart")
+        x.classList.add("bi-heart-fill");
+        x.style.color = "red";
+        setReaction(pub_id, 1);
+        console.log("addedd...")
+    }
+
+}
+
+let boutons = document.querySelectorAll("[id^=submitComment_]");
+let forms = document.querySelectorAll("[id^=form_]");
+forms.forEach((bouton) => {
+
+    bouton.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let i = e.target.id.replace(/[^0-9]/g, "");
+
+        // console.log("i : " + i); 
+
+        // console.log("table_com : " + table_com);
+
+        // console.log("new_comment : " + document.querySelector("#newComment_" + i).innerText);
+
+        let data = {
+            "table_com": table_com,
+            "pub_id": document.querySelector("#pub_id_" + i).value,
+            "user_id_pub": document.querySelector("#user_id_" + i).value,
+            "new_comment": document.querySelector("#newComment_" + i).innerText
+        }
+
+        if (document.querySelector("#newComment_" + i).innerText != "") {
+            fetch(new Request("/user/tribu/new_commentaire", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }));
+
+            document.querySelector("#newComment_" + i).innerText = "";
+
+        } else {
+            document.querySelector("#comment_vide_" + i).style.display = "block";
+            setTimeout(() => {
+                document.querySelector("#comment_vide_" + i).style.display = "none";
+            }, 2000);
+        }
+    });
+
+    let pubId = bouton.id.replace(/[^0-9]/g, "");
+
+    let source = new EventSource("/events/commentaires?pub_id=" + pubId + "&table=  {{ table_pub }}", { withCredentials: true });
+
+    source.onmessage = function (event) {
+
+        let nbrReact = JSON.parse(event.data)[0].reaction;
+
+        let contentNbReaction = document.querySelector("#nombreReaction" + pubId);
+
+        if (nbrReact > 0) {
+            contentNbReaction.textContent = nbrReact
+        } else {
+            contentNbReaction.textContent = "";
+        }
+
+        if(JSON.parse(event.data)[0].reactionStatus == 1){
+            contentNbReaction.nextElementSibling.classList.remove("bi-heart");
+            contentNbReaction.nextElementSibling.classList.add("bi-heart-fill");
+            contentNbReaction.nextElementSibling.style.color = "red";
+        }else{
+            contentNbReaction.nextElementSibling.classList.remove("bi-heart-fill");
+            contentNbReaction.nextElementSibling.classList.add("bi-heart");
+            contentNbReaction.nextElementSibling.style.color = "black";
+        }
+
+        let comments = "";
+        let commentSize = JSON.parse(event.data)[0].comments.length;
+
+        if (commentSize > 0) {
+            document.querySelector("#commentNotnul_" + pubId).style.display = "block";
+            document.querySelector("#nbComment" + pubId).innerHTML = commentSize + " <i class='bi bi-chat-square'></i>";
+        }else{
+            document.querySelector("#commentNotnul_" + pubId).style.display = "none";
+            document.querySelector("#nbComment" + pubId).innerHTML = "<i class='bi bi-chat-square'></i>";
+        }
+
+        function showRemoveUpdateComment(id){
+            let drop = `<span class="float-end dropstart">
+                <span id="modifComs" class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                </span>
+                <ul class="dropdown-menu">
+                    <li>
+                        <button data-bs-toggle="modal" data-bs-target="#modal_commentaire_modif" class="dropdown-item" onclick="restoreComment(${id})" >Modifier</button>
+                    </li>
+                    <li>
+                        <button onclick="confirmComment(${id})" data-bs-toggle="modal" data-bs-target="#deleteCommModalConfirm" class="dropdown-item" >Supprimer</button>
+                    </li>
+                </ul>
+            </span>`;
+
+            return drop;
+        }
+
+        let dropContent = "";
+
+        for (let result of JSON.parse(event.data)[0].comments) {
+            if(result.user_id != {{ app.user.id }}){
+                dropContent = "";
+            }else{
+                dropContent = showRemoveUpdateComment(result.id);
+            }
+            comments += `<div class="row card m-1 pt-2 pl-3">
+                                            <label><i class="bi bi-person-circle"></i>
+                                            <a href="/user/profil/${result.user_id
+                }"> ${result.userfullname
+                } </a><small>${diff4humans(new Date(JSON.parse(event.data)[0].now_date), new Date(result.datetime))
+                }</small>${dropContent}
+                                            </label><p id="content_comment_number_${result.id}">${result.commentaire
+                }</p>
+                                        </div>`;
+        }
+
+        document.querySelector("#comment" + pubId + " > div").innerHTML = comments;
+
+    };
+
+})
+
+function removePub(btn, id){
+    btn.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
+    fetch(new Request("/user/tribu/publication/remove/{{ table_pub}}/" + id, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => console.log(data));
+}
+
+function confirmComment(pub_id){
+            
+    document.querySelector("#data-pub-id-comm").value = pub_id;
+
+}
+
+function confirm(pub_id){
+            
+    document.querySelector("#data-pub-id").value = pub_id;
+
+}
+
+function removePublication(elem){
+    document.querySelector("#pub_number_"+elem.value+"_remove").remove();
+    fetch(new Request("/user/tribu/publication/remove/{{ table_pub}}/" + elem.value, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => console.log(data));
+
+}
+
+function removeCommentaire(comment_id){
+    document.querySelector("#content_comment_number_"+comment_id.value).parentElement.remove();
+    fetch(new Request("/user/tribu/publication/remove/"+table_com+"/" + comment_id.value, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => console.log(data));
+}
+
+function restoreComment(id){
+    let contetComs = document.querySelector("#content_comment_number_"+id);
+    document.querySelector("#comment_id_modif").value = id;
+    document.querySelector("#comment_text_modif").value = contetComs.textContent;
+
+}
+
+function updateCommentaire(){
+    let data = {
+        id : document.querySelector("#comment_id_modif").value,
+        commentaire : document.querySelector("#comment_text_modif").value
+    }
+    
+    fetch(new Request("/user/tribu/update_comment/"+table_com, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })).then(x => x.json()).then(response => console.log(response));
+    
+}
+
+function diff4humans(dateEnd, dateStart) {
+    var delta = Math.round((dateEnd - dateStart) / 1000); // en seconde
+
+    var minute = 60,
+        hour = minute * 60,
+        day = hour * 24,
+        week = day * 7;
+
+    var fuzzy;
+
+    if (delta < 30) {
+        fuzzy = "à l'instant";
+    } else if (delta < minute) {
+        fuzzy = 'il y a ' + delta + ' seconds';
+    } else if (delta < 2 * minute) {
+        fuzzy = 'il y a 1 minute'
+    } else if (delta < hour) {
+        fuzzy = 'il y a ' + Math.floor(delta / minute) + ' minutes';
+    } else if (Math.floor(delta / hour) == 1) {
+        fuzzy = 'il y a 1 heure'
+    } else if (delta < day) {
+        fuzzy = 'il y a ' + Math.floor(delta / hour) + ' heures';
+    } else if (delta < day * 2) {
+        fuzzy = 'hier';
+    } else {
+        fuzzy = 'il y a ' + Math.floor(delta / day) + ' jours';
+    }
+
+    return fuzzy;
+}
+
+let profilTribu = document.querySelector("#profilTribu");
+let fileInputTribu = document.querySelector("#fileInputTribu");
+let avatarTribu = "";
+
+if(fileInputTribu ){
+fileInputTribu.addEventListener("change", (e) => {
+
+        ///read file
+        const reader = new FileReader();
+
+        ////on load file
+        reader.addEventListener("load", () => {
+
+            avatarTribu = reader.result;
+
+            console.log(avatarTribu);
+
+            // Change profil
+            profilTribu.src = avatarTribu
+
+            let table = tbl_pub.replace(/_publication$/, "")
+
+            let data = {
+            image : avatarTribu
+            }
+
+            fetch(new Request("/user/tribu/update/avatar/"+table, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => console.log(response));
+
+        });
+
+        ///run event load in file reader.
+        reader.readAsDataURL(e.target.files[0]);
+
+    }
+)
+}
+</script>

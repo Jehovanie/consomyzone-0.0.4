@@ -1,0 +1,19 @@
+<div class="content_photos_js_jheo">
+    <!-- Gallery -->
+    <div class="row">
+        {% for double_photo  in photos|batch(2)  %}
+            <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                {% for single_photo in double_photo %}
+                    {% if single_photo.photo %}
+                        <img
+                            src={{asset("assets/publications/photos/" ~ single_photo.photo)}}
+                            class="w-100 shadow-1-strong rounded mb-4"
+                            alt="Boat on Calm Water"
+                            />
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Gallery -->
+</div>

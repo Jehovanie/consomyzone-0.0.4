@@ -1,0 +1,150 @@
+/* Import Google font - Poppins */
+.wrapper{
+  width: 450px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+.wrapper header{
+  display: flex;
+  align-items: center;
+  padding: 10px 30px 10px;
+  justify-content: space-between;
+}
+header .icons{
+  display: flex;
+}
+header .icons span{
+  height: 38px;
+  width: 38px;
+  margin: 0 1px;
+  cursor: pointer;
+  color: #878787;
+  text-align: center;
+  line-height: 38px;
+  font-size: 1.9rem;
+  user-select: none;
+  border-radius: 50%;
+}
+.icons span:last-child{
+  margin-right: -10px;
+}
+header .icons span:hover{
+  background: #f2f2f2;
+}
+header .current-date{
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+.calendar{
+  padding: 20px;
+}
+.calendar ul{
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  text-align: center;
+}
+.calendar .days{
+  margin-bottom: 20px;
+}
+.calendar li{
+  color: #333;
+  width: calc(100% / 7);
+  font-size: 1.07rem;
+}
+.calendar .weeks li{
+  font-weight: 500;
+  /*cursor: default;*/
+}
+.calendar .days li{
+  z-index: 1;
+  cursor: pointer;
+  position: relative;
+  margin-top: 30px;
+}
+.days li.inactive{
+  color: #aaa;
+}
+.days li.active{
+  color: #fff;
+  background-color: #fff;
+}
+.days li::before{
+  position: absolute;
+  content: "";
+  left: 50%;
+  top: 50%;
+  height: 40px;
+  width: 40px;
+  z-index: -1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.days li.active::before{
+  background: #9B59B6;
+}
+.days li:not(.active):hover::before{
+  background: #f2f2f2;
+}
+.days li.hasEvent::before{
+   background:lawngreen;
+   color: #fff;
+}
+
+/* Tooltip container */
+.tooltipss {
+  z-index: 9999;
+}
+/* DRAG END DROP */
+#outer-dropzone {
+  height: 100%;
+  width: 100%;
+}
+
+#inner-dropzone {
+  height: 100%;
+  width: 100%;
+}
+
+.dropzone {
+  /*background-color: #bfe4ff;*/
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  /*margin: 10px auto 30px;
+  padding: 10px;*/
+  width: 80%;
+  transition: background-color 0.3s;
+}
+
+.drop-active {
+  border-color: #aaa;
+}
+
+.drop-target {
+  /*background-color: #29e;*/
+  border-color: #fff;
+  border-style: solid;
+}
+
+.drag-drop, .not-drag-drop {
+  font-size:medium;
+  display: inline-block;
+  width: 100%;
+  padding: 2px 2px 2px;
+  box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+  margin: 4px 0 0 2px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-family: 'Poppins', sans-serif;
+
+  touch-action: none;
+  transform: translate(0px, 0px);
+
+  transition: background-color 0.3s;
+}
+
+.drag-drop.can-drop{
+  color: #000;
+  background-color: #4e4;
+}

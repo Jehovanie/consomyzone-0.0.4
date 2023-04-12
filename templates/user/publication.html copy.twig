@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Tribut T
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/agenda/agenda.css')}}">
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+	<style>
+		a {
+			text-decoration: none;
+		}
+		.foot a {
+			color: black;
+		}
+	</style>
+
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+
+
+{% endblock %}
+
+
+{% block body %}
+
+	<div id="settingProfilId">
+
+		<div class="content_left_menu_account fixed-top mt-5 col">
+			<div class="left_menu">
+				{% include "shard/account_navleft.html.twig" %}
+			</div>
+		</div>
+		<div class="fixed-top">
+			{{ include('shard/account_navbar.html.twig') }}
+		</div>
+		<div class="row account">
+			<div class="col content_global ">
+				<div class="right_content">
+					<div class="container">
+						<div class="row" style="height:100%; margin-top:10%">
+							<div class="col-lg-6 col-md-6 col-sm-6" style="height:100%; margin-left:10%">
+								<h1>Liste de vos publications</h1>
+								{% if publication is defined %}
+									<div class="showPubBlock">
+										{% for pub in publication %}
+											{% for pubs  in pub["publications"] %}
+												
+											<div class="card mb-2" id="pub_number_{{pubs.id}}">
+
+												<div class="card-header">
+
+													<a href="{{ path("user_profil", {"user_id":pubs.user_id }) }}">
+														<i>{{pubs.userfullname}}</i>
+													</a>
+													<i class="bi bi-play-fill"></i>
+													<a href="/user/tribu/publication/{{ pub["table"] ~ "_publication" }}">
+														<i class="bi bi-collection"></i>
+														{{pub[0].name | replace({"$": "'"})}}
+													</a>
+
+														<span class="float-end dropstart">
+															<span id="modifPub{{pubs.id}}" class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+																<i class="bi bi-three-dots" style="cursor:pointer"></i>
+															</span>
+															<ul class="dropdown-menu">
+																<li>
+																	<button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pubs.id}}", "{{pubs.publication}}".replace(/\n/gi,"<br>"), "{{pubs.confidentiality}}")'>Modifier</button>
+																</li>
+																<li>
+
+																	<button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pubs.id}})">
+																		Supprimer</button>
+																</li>
+															</ul>
+														</span>
+
+												</div>
+
+												<div class="card-body">
+
+													<p class="card-text">{{pubs.publication}}</p>
+
+													{% if pubs.photo != null %}
+
+														<div style="max-heigth:100%; max-width: 100%;">
+															<img width="50%;" heigth="100px;" src="/assets/publications/photos/{{pubs.photo}}" class="" alt="">
+														</div>
+
+													{% endif %}
+													<p class="card-text">
+														<i>
+															<small class="text-muted">Publié le
+																{{pubs.datetime|date("d/m/Y h:m:s")}}
+
+															</small>
+
+														</i>
+														<span class="badge text-bg-primary" style="background-color:#0d6efd;">
+															<i class="bi bi-eye-fill"></i>
+
+															{% if pubs.confidentiality == 1 %}
+																Publique
+															{% elseif pubs.confidentiality == 2 %}
+																Ami(e)s
+															{% else %}
+																Moi uniquement
+															{% endif %}
+														</span>
+													</p>
+												</div>
+
+
+												<div class="card-footer foot">
+													<div class="row text-center">
+														<div class="col-4">
+															<span>
+																<span id="nombreReaction{{pubs.id}}"></span>
+																<i class="{% if pubs.id == 1 %}bi-heart-fill{% else %}bi-heart{% endif %}" onclick="IsLike({{pubs.id}}, this)" style="cursor:pointer;"></i>
+															</span>
+														</div>
+														<div class="col-4">
+															<a data-bs-toggle="collapse" href="#commentaire{{pubs.id}}" id="nbComment{{pubs.id}}">
+
+																<i class="bi bi-chat-square"></i>
+															</a>
+														</div>
+														<div class="col-4">
+															<a data-bs-toggle="collapse" href="#collapseExample3" role="button">
+																1
+																<i class="bi bi-share"></i>
+															</a>
+														</div>
+													</div>
+
+												</div>
+
+												<div class="collapse m-2" id="commentaire{{pubs.id}}">
+													<div class="card card-body" id="comment{{pubs.id}}">
+														<label id="commentNotnul_{{pubs.id}}" style="display:none;">
+															Commentaires</label>
+														<div></div>
+
+														<form id="form_{{pubs.id}}">
+															<input type="hidden" value="{{pubs.id}}" id="pub_id_{{pubs.id}}">
+															<input type="hidden" value="{{pubs.user_id}}" id="user_id_{{pubs.id}}">
+															<div class="mb-3">
+																<textarea class="form-control" name="commentaire" id="newComment_{{pubs.id}}" placeholder="Votre commentaire..."></textarea>
+																<span id="comment_vide_{{pubs.id}}" class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+															</div>
+															<div class="row">
+																<div class="col-8"></div>
+																<div class="col-4">
+
+																	<input id="submitComment_{{pubs.id}}" type="submit" value="Envoyer" class="btn btn-primary float-end">
+
+																</div>
+															</div>
+														</form>
+
+													</div>
+												</div>
+
+
+											</div>
+
+											{% endfor %}
+
+										{% endfor %}
+
+									</div>
+
+								{% endif %}
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div></div>{% include "user/script.html.twig" %}{% endblock %}

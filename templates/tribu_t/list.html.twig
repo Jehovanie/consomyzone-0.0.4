@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Mes Tribus T
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/tribuT/tribut_invitation.js') }}" defer></script>
+	 <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+	<main>
+
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+			<symbol id="check-circle-fill" fill="currentColor" viewbox="0 0 16 16">
+				<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+			</symbol>
+		</svg>
+
+		<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+					<div class="left_menu">
+						{% include "shard/account_navleft.html.twig" %}
+					</div>
+				</div>
+				<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+					<div class="left_menu">
+						{% include "shard/account_navleft_mobile.html.twig" %}
+					</div>
+				</div>
+		<div class="navbar-mobile">
+			<div class="fixed-top col responsif-none">
+				{{ include('shard/account_navbar.html.twig') }}
+			</div>
+
+			<div class="fixed-top col responsif-none-mobile">
+				{{ include('shard/account_navbar_mobile.html.twig') }}
+			</div>
+		</div>
+
+		<div class="account mt-3 listTribu_t_mobile" id="container-mobile">
+
+				<center>
+					<h2>
+						<i class="fa-solid  fa-list"></i>
+						Liste des tribus
+					</h2>
+				</center>
+				<div id="successMessageBlock" style="display:none;margin-left:50%;">
+					<svg color="green" class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/>
+					</svg>
+					<span id="successMessage"></span>
+				</div>
+				<div class="content_global_super_admin mt-3">
+					<table class="table table-list-membre table-striped">
+						<thead class="thead-dark">
+							<tr>
+								<th>Nom de la Tribu</th>
+								<th>Déscription</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if mytribus|length > 0 %}
+								{% for item in mytribus %}
+									<tr data-table={{item["table"]}}>
+										<td>{{ item[0].name | replace({'$': "'"}) }}</td>
+										<td>{{ item[0].description | replace({'$': "'"}) }}</td>
+										<td class="text-end">
+											<a href="{{ path("publication_tribu", {"table" : item["table"] ~ "_publication" }) }}" class="btn btn-sm btn-outline-secondary">
+												Visiter
+											</a>
+											<a href="{{ path("show_member_tribut", {"table" : item["table"]}) }}" class="btn btn-sm btn-outline-info">
+												Partisant
+											</a>
+											<button class="btn btn-sm btn-outline-primary" onclick='sendInvitation("{{ item["table"] }}")'>
+												Inviter votre tribu G
+											</button>
+											<a href="{{ path("add_member_tribut", {"tribu_name" : item["table"]}) }}" class="btn btn-sm btn-outline-primary">
+												Inviter une personne
+											</a>
+											<button type="button" class="btn btn-outline-danger invitation_email_js_jheo" data-bs-toggle="modal" data-bs-target="#modal_sendEmail" data-bs-whatever="@mdo">
+												Inviter par e-mail
+											</button>
+										</td>
+									</tr>
+								{% endfor %}
+							{% else %}
+								<tr>
+									<td colspan="2" class="text-center">Aucune tribu</td>
+								</tr>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+
+		</div>
+	</main>
+
+	<!-- Modal -->
+	<div class="modal fade" id="modal_sendEmail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
+					<button type="button" class="btn-close close_modal_js_jheo" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form class="content_form_send_invitation_email_js_jheo">
+						<div class="form-group content_cc_css_jheo">
+							<label for="exampleFormControlInput1">Destinataires</label>
+							<input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="name@example.com">
+							<a href="#" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+								<span>Cc/Cci</span>
+							</a>
+						</div>
+
+						<div class="collapse" id="tribut-collapse">
+							<div class="form-group multiple_destination_css">
+								<label for="exampleFormControlInput1">Ajouter de Cc</label>
+								<input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="autre1@example.com,...">
+								<div class="content_chip content_chip_js_jheo">
+									{# CHIP E-MAIL HERE #}
+								</div>
+							</div>
+						</div>
+						<div class="form-group content_objet_css_jheo">
+							<label for="exampleFormControlInput2">Object</label>
+							<input type="text" class="form-control object_js_jheo" id="exampleFormControlInput2" placeholder="Object">
+						</div>
+
+						<div class="form-group">
+							<label for="exampleFormControlTextarea1">Description</label>
+							<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>
+						</div>
+						<div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger close_modal_js_jheo" data-bs-dismiss="modal">Fermer</button>
+								<button type="button" class="btn btn-primary btn_send_invitation_js_jheo">Envoyer l'invitation</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Modal-->
+	<script>
+		let div = document.querySelector("#successMessageBlock");
+		function sendInvitation(table){
+			data = {"table": table}
+			console.log(JSON.stringify(data));
+			fetch("/user/tribu/send/invitation", {
+					method: "POST",
+					headers:{
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(data)
+
+				} ).then(response => response.json())
+				.then(text => {
+					console.log(text);
+					div.style.display = "block";
+					document.querySelector("#successMessage").innerHTML = text;
+			})
+		}
+
+		setTimeout(() => {
+			if(div.style.display == "block"){
+				div.style.display = "none"
+			}
+		}, 5000);
+		
+
+	</script>
+
+
+
+
+
+{% endblock %}

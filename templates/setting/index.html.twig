@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone: Modification de profil
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+	<div id="settingProfilId">
+
+		<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+					<div class="left_menu">
+						{% include "shard/account_navleft.html.twig" %}
+					</div>
+				</div>
+				<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+					<div class="left_menu">
+						{% include "shard/account_navleft_mobile.html.twig" %}
+					</div>
+				</div>
+		<div class="navbar-mobile">
+			<div class="fixed-top col responsif-none">
+				{{ include('shard/account_navbar.html.twig') }}
+			</div>
+
+			<div class="fixed-top col responsif-none-mobile">
+				{{ include('shard/account_navbar_mobile.html.twig') }}
+			</div>
+		</div>
+
+		<div class=" account" id="container-mobile">
+
+			<div class=" content_global ">
+				<div class="right_content setting_mobile">
+					<div class="">
+
+						<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+							<symbol id="check-circle-fill" fill="currentColor" viewbox="0 0 16 16">
+								<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+							</symbol>
+						</svg>
+
+						<div class="row" style="margin-top:10%">
+							<div class="col-lg-9 col-sm-12  mx-auto">
+								<div class="">
+									<h3>Modifier votre profil</h3>
+									<div class="card card-pub mb-5">
+
+										{% if message != null %}
+											<div id="succesMessage" class="alert alert-success">
+												<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+												{{ message }}</div>
+										{% endif %}
+
+										{% if app.user.type == "consumer" %}
+											{{form(form)}}
+										{% else %}
+											{{form_start(form)}}
+
+											<div class="row container" id="setting_profil_consumer">
+
+												<div class="col-6 mt-3">
+
+													<div class="form-group mb-3">
+														{{ form_label(form.firstname , "Nom", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.firstname, {'attr': {'class': 'form-control'}}) }}
+													</div>
+													<div class="form-group mb-3">
+														{{ form_label(form.lastname , "Prénom", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.lastname, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+													<div class="form-group mb-3">
+														{{ form_label(form.telephone , "Téléphone mobile", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+													<div class="form-group mb-3">
+														{{ form_label(form.telFixe , "Téléphone fixe", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.telFixe, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+													<div class="form-group mb-3">
+														{{ form_label(form.numRue , "N° de rue", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.numRue, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+													<div class="form-group mb-3">
+														{{ form_label(form.codePostal , "Code postale", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.codePostal, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+													<div class="form-group mb-3">
+														{{ form_label(form.commune , "Commune", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.commune, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+
+												</div>
+
+												<div class="col-6 mt-3">
+
+													<div class="form-group mb-3">
+														{{ form_label(form.pays , "Pays", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.pays, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+													<div class="form-group mb-3">
+														{{ form_label(form.commerce , "Commerce", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.commerce, {'attr': {'class': 'form-control'}}) }}
+													</div>
+													<div class="form-group mb-3">
+														{{ form_label(form.codeape , "Code APE", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.codeape, {'attr': {'class': 'form-control'}}) }}
+													</div>
+													<div class="form-group mb-3">
+														{{ form_label(form.website , "Site Web", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.website, {'attr': {'class': 'form-control'}}) }}
+													</div>
+													<div class="form-group mb-3">
+														{{ form_label(form.facebook , "Facebook", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.facebook, {'attr': {'class': 'form-control'}}) }}
+													</div>
+													<div class="form-group mb-3">
+														{{ form_label(form.twitter , "Twitter", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_widget(form.twitter, {'attr': {'class': 'form-control'}}) }}
+													</div>
+
+												</div>
+												<div class="d-flex align-items-end flex-column mb-3">
+													<input class="btn btn-sm btn-primary w-25 ml-auto" type="submit" value="Modifier">
+												</div>
+
+											</div>
+
+											{{form_end(form)}}
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<script>
+
+		let profil_consumer_form = document.querySelector("#setting_profil_consumer");
+
+let profil_supplier_form = document.querySelector("#setting_profil_supplier");
+
+let succesMessage = document.querySelector("#succesMessage");
+
+if (succesMessage == null) {
+if (profil_consumer_form != null) {
+profil_consumer_form.style.paddingTop = '2%';
+} else {
+profil_supplier_form.style.paddingTop = '2%';
+}
+}
+	</script>
+{% endblock %}
