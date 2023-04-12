@@ -23,7 +23,7 @@
     }
 
     .listTribu_t_mobile{
-        margin-top: 50px !important;
+        margin-top: 100px !important;
     }
 
     .tribuT_form{
@@ -320,7 +320,7 @@
             position: relative !important;
             margin-left: -43px !important;
             top: 10px !important;
-            width: 100vw !important;
+            width:109vw !important;
         }
         
         .mobile-responsive{
