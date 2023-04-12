@@ -2,6 +2,10 @@
     display: block;
 }
 
+.mobile_box_shadow{
+    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+}
+
 .filter_other_mobile{
     display: none;
 }
@@ -225,68 +229,17 @@ input[type="range"]::-moz-slider-thumb{
     box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     height: 10vh;
     align-items: center;
     width: 95%;
+    padding: 25px;
 }
 
-/* @keyframes fullScreen {
-    0% {
-        width: 0%;
-        overflow-y: hidden;
-    }
+.btn_retours svg, .plus svg{
+    fill: #28BE21;
+}
 
-    10% {
-        width: 10%;
-        overflow-y: hidden;
-    }
-
-    20% {
-        width: 20%;
-        overflow-y: hidden;
-    }
-
-    30% {
-        width: 30%;
-        overflow-y: hidden;
-    }
-
-    40% {
-        width: 40%;
-        overflow-y: hidden;
-    }
-
-    50% {
-        width: 50%;
-        overflow-y: hidden;
-    }
-
-    60% {
-        width: 60%;
-        overflow-y: hidden;
-    }
-
-    70% {
-        width: 70%;
-        overflow-y: hidden;
-    }
-
-    80% {
-        width: 80%;
-        overflow-y: hidden;
-    }
-
-    90% {
-        width: 90%;
-        overflow-y: hidden;
-    }
-
-    100% {
-        width: 100%;
-        overflow-y: hidden;
-    }
-} */
 
 @keyframes translateFull {
     0% {

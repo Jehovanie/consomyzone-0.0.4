@@ -152,7 +152,7 @@ function create_map_content(){
                                     </g>
                                 </svg>
                             </li>
-                            <li class="station">
+                            <li class="station" id="mobile_station_js_jheo">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
                                 preserveAspectRatio="xMidYMid meet">
@@ -171,7 +171,6 @@ function create_map_content(){
                                         -27 3 -61z"/>
                                     </g>
                                 </svg>
-
                             </li>
                       </ul>
                         <div class="home">
@@ -278,7 +277,15 @@ function create_map_content(){
 
     // })
     addListFermeMobile()
+    addEventLocation()
+
     return map;
+}
+
+function addEventLocation(){
+    document.getElementById("mobile_station_js_jheo").addEventListener("click", () => {
+        location.assign("/station");
+    });
 }
 
 function addListFermeMobile() {

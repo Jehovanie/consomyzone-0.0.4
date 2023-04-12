@@ -1,4 +1,4 @@
-<nav class="navbar navbar-light navbar-light-left">
+<nav class="navbar navbar-light navbar-light-left mobile_box_shadow mb-3">
     <div class="content_headers">
         <div class="content_logo">
             <a href="#">
@@ -6,7 +6,7 @@
             </a>
         </div>
         <div class="btn_retours btn_retours_jheo_js">
-            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="5vw" height="5vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
+            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="10vw" height="5vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
                 <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
                     <path d="M634 986 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
@@ -42,35 +42,34 @@
         </div>
     </div>
 </nav>
-<hr>
+<div class="entete_text">
+    <div class="icon_svg">
+        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20vw" height="7vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
+            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#1111FE" stroke="none">
+                <path d="M397 942 c-13 -15 -17 -39 -17 -112 0 -79 3 -97 19 -114 15 -16 24
+                -51 35 -141 20 -148 20 -179 1 -195 -8 -7 -15 -28 -15 -46 l0 -34 184 0 c119
+                0 187 4 191 11 9 14 -2 55 -21 73 -12 13 -14 29 -8 86 6 64 9 70 29 70 38 0
+                55 -30 55 -98 0 -74 20 -102 73 -102 65 0 67 9 67 271 l0 235 -38 37 c-36 35
+                -62 47 -62 29 0 -5 11 -19 25 -32 14 -13 25 -27 25 -31 0 -5 -11 -25 -25 -45
+                -42 -62 -25 -144 31 -144 l24 0 0 -130 c0 -117 -2 -132 -20 -150 -24 -24 -30
+                -24 -55 -6 -15 11 -20 30 -23 84 -5 78 -19 100 -66 104 l-27 2 7 66 c5 47 13
+                73 30 93 21 25 24 39 24 106 0 64 -4 83 -21 105 l-20 26 -193 0 c-174 0 -195
+                -2 -209 -18z m368 -112 l0 -55 -157 -3 -158 -3 0 61 0 61 158 -3 157 -3 0 -55z
+                m195 -81 c0 -52 -2 -60 -17 -57 -26 5 -30 74 -7 99 9 10 19 19 21 19 1 0 3
+                -27 3 -61z"/>
+            </g>
+        </svg>
+    </div>
+    <div class="contet_text">
+        <p>
+            Station-service dans tous les départements.
+            (<small class="display-6 content_nombre_result_left_js_jheo">{{total_number_station}}</small>résultats)
+        </p>
+    </div>
+</div>
+        
 <div class="content_body_left_mobile">
     <div class="content_card">
-        <div class="entete_text">
-            <div class="icon_svg">
-                <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20vw" height="7vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-                    <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#1111FE" stroke="none">
-                        <path d="M397 942 c-13 -15 -17 -39 -17 -112 0 -79 3 -97 19 -114 15 -16 24
-                        -51 35 -141 20 -148 20 -179 1 -195 -8 -7 -15 -28 -15 -46 l0 -34 184 0 c119
-                        0 187 4 191 11 9 14 -2 55 -21 73 -12 13 -14 29 -8 86 6 64 9 70 29 70 38 0
-                        55 -30 55 -98 0 -74 20 -102 73 -102 65 0 67 9 67 271 l0 235 -38 37 c-36 35
-                        -62 47 -62 29 0 -5 11 -19 25 -32 14 -13 25 -27 25 -31 0 -5 -11 -25 -25 -45
-                        -42 -62 -25 -144 31 -144 l24 0 0 -130 c0 -117 -2 -132 -20 -150 -24 -24 -30
-                        -24 -55 -6 -15 11 -20 30 -23 84 -5 78 -19 100 -66 104 l-27 2 7 66 c5 47 13
-                        73 30 93 21 25 24 39 24 106 0 64 -4 83 -21 105 l-20 26 -193 0 c-174 0 -195
-                        -2 -209 -18z m368 -112 l0 -55 -157 -3 -158 -3 0 61 0 61 158 -3 157 -3 0 -55z
-                        m195 -81 c0 -52 -2 -60 -17 -57 -26 5 -30 74 -7 99 9 10 19 19 21 19 1 0 3
-                        -27 3 -61z"/>
-                    </g>
-                </svg>
-            </div>
-            <div class="contet_text">
-                <p>
-                    Station-service dans tous les départements.
-                    <span class="content_nombre_result_left_js_jheo">{{total_number_station}}</span>
-                    résultats
-                </p>
-            </div>
-        </div>
         
         <ul>
             {% for item in departements %}

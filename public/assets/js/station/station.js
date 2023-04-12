@@ -163,32 +163,3 @@ rangeInput.forEach(input => {
 
 })
 
-/* THIS FUNCTION USE ONLY TO SET THE URL ON STATION TO SYNCHRONISE THE LINK DEPART WITH CHECKBOX FILTER */
-function changeDapartLinkCurrent(type){
-
-	const all_link= document.querySelectorAll(".plus");
-	all_link.forEach(item => {
-		if( item.getAttribute("href").split("?").length > 1 ){
-			item.setAttribute("href", item.getAttribute("href").split("?")[0]+ "?type="+ type)
-		}else{
-			item.setAttribute("href", item.getAttribute("href")+ "?type="+ type)
-		}
-	})
-
-}
-
-function getDetailStationNotMobile(depart_name, depart_code, id) {
-    document.querySelector(".get_action_detail_on_map_js_jheo").click();
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
-    fetch(`/station/departement/${depart_name}/${depart_code}/details/${id}`)
-        .then(response => {
-            console.log("response mobile...")
-            console.log(response)
-            return response.text()
-        }).then(r => { 
-           document.querySelector(".content_detail_js_jheo").innerHTML = null
-           document.querySelector(".content_detail_js_jheo").innerHTML = r
-        })
-    
-}

@@ -61,14 +61,11 @@ priceInput = document.querySelectorAll( ".price_input input"),
 progress = document.querySelector(".slider .proggress");
 
 let priceGap = 0.1;
-
-let minVal_sortie = 0,
-maxVal_sortie = 0;
+let minVal_sortie = 0,maxVal_sortie = 0;
 
 priceInput.forEach(input => {
     input.addEventListener("input" , e => {
-        let minVal = parseFloat(priceInput[0].value),
-        maxVal = parseFloat(priceInput[1].value);
+        let minVal = parseFloat(priceInput[0].value), maxVal = parseFloat(priceInput[1].value);
 
         if( (maxVal - minVal >= priceGap) && maxVal <= 3 ){
             ///if active input is min input  
