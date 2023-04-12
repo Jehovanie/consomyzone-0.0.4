@@ -1,18 +1,36 @@
-function create_map_content(){
+function create_map_content(geos, id_dep=null){
     // {# <div id="map"  style="width: 100%;"></div> #}
     
     var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
+        maxZoom: 20,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
 	})
-	var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
-
+	// var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
+    const latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
+    const json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
+    const zoom = json ? (json.zoom ? json.zoom :centers[parseInt(id_dep)].zoom) : ( id_dep ? centers[parseInt(id_dep)].zoom : 9 );
+    const centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
+    
     var container = L.DomUtil.get('map');
     if(container != null){
         container._leaflet_id = null;
     }
     
-    var map = L.map('map', { center: latlng, zoom: 9, layers: [tiles] });
+    var map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
+    L.geoJson(geos,{
+        style:{
+            weight: 2,
+            opacity: 1,
+            color: (id_dep ) ? "red" : "#63A3F6",
+            dashArray: '3',
+            fillOpacity: 0
+        },
+        onEachFeature: function (feature, layer) {
+            layer.bindTooltip(feature.properties.nom);
+        }
+    }).addTo(map);
+    map.doubleClickZoom.disable();
+    
     console.log("map create")
 
     addControlPlaceholders(map);
@@ -37,7 +55,6 @@ function create_map_content(){
     
         },
         onClick: ()=>{
-            alert("toto")
         },
         onDragend: ()=>{
             
@@ -53,6 +70,7 @@ function create_map_content(){
     }).addTo(map);
 
     console.log(L.DomUtil.get(document.querySelector(".my-control")))
+
     var draggable = new L.Draggable(L.DomUtil.get(document.querySelector(".my-control")));
     draggable.enable();
     L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', ()=>{
@@ -206,7 +224,6 @@ function create_map_content(){
 
 
     L.control.myControl2 = function (opt2) {
-        
         return new L.Control.DockPannel2(opt2);
     }
 

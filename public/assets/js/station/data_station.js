@@ -162,6 +162,26 @@ function checkScreen(){
 
 /// FETCH AND ADD DATA STATION WITH FILTER ////////////////////////////////////////////////
 function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
+    const geos=[]
+
+    if (id_dep) {
+        if (id_dep == 20) {
+                for (let corse of ['2A', '2B'])
+                     geos.push(franceGeo.features.find(element => element.properties.code == corse))
+        } else {
+                geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
+        }
+    }else{
+        document.querySelectorAll("#list_departements .element").forEach(item => {
+            const dep = item.dataset.toggleDepartId
+            if (dep == 20) {
+                for (let corse of ['2A', '2B'])
+                     geos.push(franceGeo.features.find(element => element.properties.code == corse))
+            } else {
+                geos.push(franceGeo.features.find(element => element.properties.code == dep))
+            }
+        })
+    }
 
     fetch("/getLatitudeLongitudeStation/?max="+price_max + "&min="+ price_min+"&type="+ type+"&nom_dep="+ nom_dep +"&id_dep="+id_dep, {
         method: 'get',
@@ -181,7 +201,7 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
             parent_map.appendChild(div);
 
             ///delete chargement
-            var map=create_map_content();
+            var map=create_map_content(geos,id_dep);
 
             if( parsedResult ){
 
@@ -302,6 +322,22 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                         })
                     }
                 }
+
+                map.on("resize zoom", (e) => {
+                    const coordAndZoom = {
+                        zoom: e.target._zoom,
+                        coord:e.target._lastCenter
+                    }
+                    setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
+                })
+
+                map.on("dragend", (e) => {
+                    const coordAndZoom = {
+                        zoom: e.target.getZoom(),
+                        coord:e.target.getCenter()
+                    }
+                    setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
+                })
 
             }else{
                 console.log("ERREUR : L'erreur se produit par votre réseaux.")
