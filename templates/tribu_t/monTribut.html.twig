@@ -38,7 +38,7 @@
 
 {% block body %}
 
-	<div id="settingProfilId" class="">
+	<div id="settingProfilId" class="row">
 		<div class="col">
 			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
 				<div class="left_menu">
@@ -52,7 +52,7 @@
 			</div>
 		</div>
 
-		<div class="">
+		<div class="navbar-mobile">
 			<div class="fixed-top col responsif-none">
 				{{ include('shard/account_navbar.html.twig') }}
 			</div>
@@ -74,9 +74,9 @@
 					<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
 				</symbol>
 			</svg>
-			<div class="col content_global ">
-				<div class="right_content">
-					<div class="container" style="height:100vh; margin-bottom:200px;">
+			<div class="col content_global monTribu_mobile">
+				<div class="right_content contentTribu">
+					<div class="">
 						<div class="row" style="height:100%; margin-top:10%">
 							{% if app.request.get('message') %}
 
@@ -86,11 +86,11 @@
 								</div>
 
 							{% endif %}
-							<div class="col-lg-9 col-md-12 col-sm-12 tribut_t_reponsive" style="height:100%; margin-left:10%">
+							<div class="col-lg-9 tribut_t_reponsive" style="height:100%; margin-left:10%">
 								<div class="container container-custom">
-									<div class="card card-pub p-3 bgPersonnalisee_tribut">
-										<div class="row" >
-											<div class="col-12 w-25">
+									<div class="card card-pub p-3 bgPersonnalisee mb-5">
+										<div class="row">
+											<div class="col-12 w-25 profilTribu">
 												<img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}
 												">
 												{% if roles == "Fondateur" %}
@@ -106,18 +106,65 @@
 													
 												{% endif %}
 											</div>
-											<div class="col-12 w-75">
+											<div class="col-12 text-white tribuNameBlock">
 												<h4 style="margin-left:20px;margin-top:5%;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
 												<small style="margin-left:20px;">
 													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
 												</small>
 											</div>
-											<div class="container col-2"></div>
-											<nav class="col-10">
+											{# <div class="container col-2">
+												<h4 style="margin-left:20px;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
+												<small style="margin-left:20px;">
+													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
+												</small>
+											</div> #}
+											<nav class="col-12 responsif-none-mobile">
 												<ul id="navBarTribu">
 													<li class="listNavBarTribu">
 														<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
 													</li>
+													{% if has_restaurant == true %}
+													
+													<li class="listNavBarTribu restoNotHide">
+														<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
+													</li>
+
+													{% endif %}
+													
+													<li class="listNavBarTribu dropdown" style="">
+														<a href="" class="dropdown-toggle" data-bs-toggle="dropdownNavBarTribu" aria-expanded="false">
+															<i class="bi bi-three-dots-vertical"></i>
+														</a>
+														<ul id="dropdownNavBarTribu" class="dropdown-menu">
+
+															<li class="">
+																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
+															</li>
+															<li class="">
+																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
+															</li>
+															<li class="">
+																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
+															</li>
+
+														</ul>
+
+													</li>
+												</ul>
+											</nav>
+
+											<nav class="col-12 responsif-none">
+												<ul id="navBarTribu">
+													<li class="listNavBarTribu">
+														<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+													</li>
+													{% if has_restaurant == true %}
+													
+													<li class="listNavBarTribu restoNotHide">
+														<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
+													</li>
+
+													{% endif %}
 													<li class="listNavBarTribu">
 														<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
 													</li>
@@ -144,21 +191,20 @@
 													</li>
 												</ul>
 											</nav>
+
 										</div>
 										<div class="mt-5 p-3" id="photos" style="display:none;"></div>
 										<div class="mt-5 p-3" id="invitations" style="display:none;"></div>
-										<div class="row p-3 mt-5"></div>
+										<div class="mt-5 p-3" id="restaurants" style="display:none;"></div>
 										{# <div class="row p-3 mt-4"></div> #}
 
 										<div id="showCreatePub" class="card mb-2 responsif-none">
 											<div class="row p-3">
-												<div class="rangee row">
-													<div class="col-1 rounded-circle">
-														<img style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
-													</div>
-													<div class="col-11 user_button">
-														<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
-													</div>
+												<div class="col-1 rounded-circle">
+													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
+												</div>
+												<div class="col-11">
+													<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
 												</div>
 												<div class="row mt-3">
 													<div class="col-3 text-center" style="cursor:pointer;">
@@ -182,7 +228,7 @@
 											</div>
 										</div>
 
-										<div id="showCreatePub_mobile" class="card mb-2 responsif-none-mobile">
+										<div id="showCreatePub" class="card mb-2 responsif-none-mobile">
 											<div class="row p-3">
 												<div class="col-1 rounded-circle">
 													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
