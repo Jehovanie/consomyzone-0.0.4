@@ -3,11 +3,15 @@
 {% block title %}ConsoMyZone{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{asset('assets/css/tous/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{asset('assets/js/tous/addToMap.js')}}" defer></script>
+    {# <script src="{{asset('assets/js/home/data_home_poo.js')}}" defer></script> #}
+    {# <script src="{{asset('assets/js/tous/addToMap.js')}}" defer></script> #}
+    <script src="{{asset('assets/js/home/home.js')}}" defer></script>
+    <script src="{{asset('assets/js/home/data_home.js')}}" defer></script>
 {% endblock %}
 
 
@@ -16,10 +20,12 @@
         {% include 'shard/navbar.twig' %}
     </div>
     <div class="">
-        {# <div class="col responsif-none" id="tous">
-            {% include 'shard/navleft.twig' %}
-        </div> #}
-        <div >
+        <div class="content">
+            {# modal filter it's show when the screen is like mobile #}
+            <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="fa-solid fa-filter"></i>
+            </button>
+
             <div class="content_cart_map content_cart_map-respons">
                 <div class="cart_map">
                     <div class="chargement_content" id="toggle_chargement">
@@ -34,6 +40,6 @@
             </div>
         </div>
     </div>
-    
+    {% include 'shard/home/modalFilterHome.html.twig' %}
 
 {% endblock %}

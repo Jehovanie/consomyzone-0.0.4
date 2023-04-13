@@ -1,0 +1,26 @@
+/* small  */
+@media screen and (min-width:576px) { 
+
+}
+/* medium */
+@media screen and (min-width:768px) {
+
+}
+
+/* large  */
+@media screen and (min-width:992px) {
+    .filter_other_mobile{
+        display: none;
+    }
+    .content_filter {
+        width: 180px;
+        position: absolute;
+        top: 90px;
+        right: 15px;
+        z-index: 1000;
+        font-size: 0.8rem;
+    }
+    .content_filter_dep select {
+        font-size: 0.9rem;
+    }
+}

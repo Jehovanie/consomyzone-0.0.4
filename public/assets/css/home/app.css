@@ -1,0 +1,29 @@
+.content_filter {
+    display: block;
+    padding: 15px;
+    background-color: antiquewhite;
+    opacity: 0.8;
+    border-radius: 8px;
+    cursor: default;
+    font-size: 0.9rem;
+}
+
+.content_filter_dep {
+    display: block;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    z-index: 1000;
+}
+
+.content_filter_dep select{
+    font-size: 0.8rem;
+}
+
+.cta_filter_mobile {
+    position: absolute;
+    z-index: 1000;
+    right: 5px;
+    top: 5px;
+    border-radius: 50%;
+}

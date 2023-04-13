@@ -201,7 +201,7 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
             parent_map.appendChild(div);
 
             ///delete chargement
-            var map=create_map_content(geos,id_dep);
+            var map=create_map_content(geos,id_dep, "station");
 
             if( parsedResult ){
 

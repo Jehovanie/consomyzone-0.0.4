@@ -1,4 +1,4 @@
-function create_map_content(geos, id_dep=null){
+function create_map_content(geos, id_dep=null, map_for_type){
     // {# <div id="map"  style="width: 100%;"></div> #}
     
     var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -6,10 +6,21 @@ function create_map_content(geos, id_dep=null){
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
 	})
 	// var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
-    const latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
-    const json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
-    const zoom = json ? (json.zoom ? json.zoom :centers[parseInt(id_dep)].zoom) : ( id_dep ? centers[parseInt(id_dep)].zoom : 9 );
-    const centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
+    let latlng=null, json= null, zoom=null, centered=null;
+
+    if( map_for_type === "station"){
+        latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
+        json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
+        zoom = json ? (json.zoom ? json.zoom :centers[parseInt(id_dep)].zoom) : ( id_dep ? centers[parseInt(id_dep)].zoom : 9 );
+    }else if( map_for_type === "home"){
+        latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
+        json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
+        zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
+    }else{
+        alert("toto")
+    }
+    
+    centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
     
     var container = L.DomUtil.get('map');
     if(container != null){
@@ -29,6 +40,7 @@ function create_map_content(geos, id_dep=null){
             layer.bindTooltip(feature.properties.nom);
         }
     }).addTo(map);
+
     map.doubleClickZoom.disable();
     
     console.log("map create")
