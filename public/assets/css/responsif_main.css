@@ -38,6 +38,12 @@
         margin-left: 10% !important;
     }
 
+    .content_block_message{
+        margin-top: 120px !important;
+        height: 100% !important;
+        left : 360px !important;
+    }
+
 }
 
 @media screen and (max-width:1000px){
@@ -515,7 +521,9 @@
             margin-right: 0px !important;
         }
       
-
+        .paper_mobile{
+            margin-bottom: 15px !important;
+        }
 
 }
 
