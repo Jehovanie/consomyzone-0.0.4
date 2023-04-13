@@ -5,11 +5,11 @@ if( document.querySelector("#inscription_nom_commune")){
 
     //// dedecter et selectionner 
     const input_commune = document.querySelector("#inscription_nom_commune");
-    const content_options_communes = document.querySelector("#datalistOptionCommune");
+    const content_options_communes = document.querySelector("#inscription_faux_commune");
 
     //// dedecte et sélectionner
     const input_quartier = document.querySelector("#inscription_quartier");
-    const content_options_quartier = document.querySelector("#datalistOptionsQuartier");
+    const content_options_quartier = document.querySelector("#inscription_faux_quartier");
 
     ///set departement
     const input_hidden_departement = document.querySelector("#inscription_departement");
@@ -50,8 +50,8 @@ if( document.querySelector("#inscription_nom_commune")){
             input_codePostal.style.border = "";
 
             ///delete old value and set there to disable until user set code postal
-            deleteOption("datalistOptionCommune") /// id content_options for commune
-            deleteOption("datalistOptionsQuartier") /// id content_options for quartier
+            deleteOption("inscription_faux_commune") /// id content_options for commune
+            deleteOption("inscription_faux_quartier") /// id content_options for quartier
 
             ////get list commune related with the code postal
             const list_options_commune = commune.filter(item => e.target.value === item.codePostal);
@@ -76,7 +76,7 @@ if( document.querySelector("#inscription_nom_commune")){
         })
 
         ///when commmune setting
-        input_commune.addEventListener("change", (e) => {
+        content_options_communes.addEventListener("change", (e) => {
 
             //// active input quartier
             input_quartier.disabled = false;
@@ -89,10 +89,15 @@ if( document.querySelector("#inscription_nom_commune")){
                 ////get list quartie related with the commune
                 const list_options_quartier = t.filter(item => item.dr.substring(0,5) === commune_valid.codeInsee)
 
+                //nput_quartier.value = content_options_communes.value
+
                 /// if there is more quartier
                 if( list_options_quartier.length > 0 ){
                     list_options_quartier.forEach(item => {
+                        console.log(item)
+                        
                         createAndAddOption(item.co + " " + item.i, content_options_quartier )
+                        
                     })
                 }
             }
@@ -138,7 +143,10 @@ function deleteOption(content_options){
         i.disabled=true
     });
     const parent = document.querySelector("#" + content_options);
-    parent.querySelectorAll("option")?.forEach( i => i.remove());
+    if(parent.querySelectorAll("option")){
+        parent.querySelectorAll("option")?.forEach( i => i.remove());
+    }
+    
    
 }
 

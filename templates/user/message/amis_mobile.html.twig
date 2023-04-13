@@ -25,7 +25,39 @@
 
 
 						{# </div> #}
-						<button type="button" class="btn btn-primary btn-sm" data-mdb-ripple-color="dark">Amis</button>
+						{# <button type="button" class="btn btn-primary btn-sm" data-mdb-ripple-color="dark">Amis</button> #}
+
+						<!-- Example single danger button -->
+						<div class="btn-group">
+						<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+							Amis
+						</button>
+						<ul>
+                       
+                            
+                        </ul>
+						<ul class="dropdown-menu">
+							{% for amis in amisTributG %}
+                                {# don't show current user connected #}
+								<li>
+                                {% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+                                
+                                    <a href="{{path('app_message') ~ '?user_id=' ~ amis.id }}"
+                                       data-toggle-user-id = {{amis.id}}
+                                       tooltip={{amis.email}} 
+                                       class="list_amis_to_chat">
+
+                                        <img style="width:45px; height:45px; border-radius:50%" src="{{ ( amis.photo != null) ? asset('uploads/users/photos/') ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
+                                        <h6 style="margin-top:10px; margin-left:2px">{{amis.firstname ~ " " ~ amis.lastname }} </h6>
+                                    </a>
+                                   
+                                {% endif %}
+								</li>
+
+                            {% endfor %}
+
+						</ul>
+						</div>
 					</div>
 					<div class="card-body overflow-auto h-100 mb-5 bg-white" data-mdb-perfect-scrollbar="true" style="margin-top:60px; margin-left:0px">
 

@@ -973,3 +973,9 @@ function createBadgeNotifContent(){
     }
 
 }
+
+if(screen.width > 1000){
+    //alert("ça marche")
+    document.querySelector("#showCreatePub").classList.add("mt-5");
+    document.querySelector(".tribuNameBlock").classList.add("w-75");
+}

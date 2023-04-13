@@ -19,7 +19,7 @@
       .bgPersonnalisee{
         background-image: linear-gradient(#888888 285px, #ffffff 0%);
         border: none !important;
-        height: 450px !important;
+        /*height: 450px !important;*/
     }
 
     .listTribu_t_mobile{
@@ -237,7 +237,7 @@
 
         .tribut_t_reponsive{
             width: 100vw !important;
-            margin-left: 0px !important;
+            margin-left: 18px !important;
         }
         .container-custom{
             padding: 2px !important;
@@ -345,7 +345,7 @@
         .bgPersonnalisee{
             background-image: linear-gradient(#888888 320px, #ffffff 0%);
             border: none !important;
-            height: 450px !important;
+            /* height: 450px !important; */
         }
 
         ul#navBarTribu {
@@ -382,7 +382,7 @@
         }
 
         .contentImage-mobile{
-            width: 22% !important;
+            width: 180px !important;
         }
 
         #btnShowModalAddPub{
@@ -491,6 +491,15 @@
             min-width: 100% !important;
             text-align: center;
             margin-left: 10px !important;
+        }
+
+        .monTribu_mobile{
+            width: 100% !important;
+        }
+
+        .contentTribu{
+            margin-left: 0px !important;
+            margin-right: 0px !important;
         }
       
 
