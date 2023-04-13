@@ -19,14 +19,22 @@
       .bgPersonnalisee{
         background-image: linear-gradient(#888888 285px, #ffffff 0%);
         border: none !important;
-        /*height: 450px !important;*/
+        /* height: 450px !important; */
+    }
+    .bgPersonnalisee_tribut{
+        background-image: linear-gradient(#888888 320px, #ffffff 0%);
+        border: none !important;
+        /* height: 350px !important; */
     }
 
     .listTribu_t_mobile{
-        margin-top: 50px !important;
+        margin-top: 100px !important;
     }
 
     .tribuT_form{
+        margin-left: 10% !important;
+    }
+    .row_confidentiality{
         margin-left: 10% !important;
     }
 
@@ -318,9 +326,9 @@
 
         .content_right_profil{
             position: relative !important;
-            margin-left: 10px !important;
+            margin-left: -43px !important;
             top: 10px !important;
-            width: 95vw !important;
+            width:109vw !important;
         }
         
         .mobile-responsive{
@@ -347,6 +355,11 @@
             border: none !important;
             /* height: 450px !important; */
         }
+        .bgPersonnalisee_tribut{
+            background-image: linear-gradient(#888888 320px, #ffffff 0%);
+            border: none !important;
+        }
+
 
         ul#navBarTribu {
             list-style-type: none;
@@ -473,7 +486,7 @@
         }
 
         .security_mobile{
-            margin-left: 0px !important;
+            margin-left: 5px !important;
         }
 
         /* .confidentialite_mobile{
