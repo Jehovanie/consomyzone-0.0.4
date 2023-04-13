@@ -158,4 +158,68 @@ class HomeController extends AbstractController
         
         return $this->json($results);
     }
+
+
+    #[Route("/search/{type}" , name:"app_search" , methods: "GET")]
+    public function search(
+        Request $request,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        FermeGeomRepository $fermeGeomRepository,
+        BddRestoRepository $bddRestoRepository,
+        $type = null
+    ){
+
+        $cles0 = $request->query->get("cles0") ? trim($request->query->get("cles0")) : "";
+        $cles1 = $request->query->get("cles1") ? trim($request->query->get("cles1")) : "";
+        $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
+
+        // $size = $type !== "ferme" && $type !== "restaurant" && $type !== "station" && $type !== "station service" ? 6:20;
+        $size = $type ? 20:6;
+        // $size = 20;
+        
+        $all = [
+            "station" => $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
+            "ferme" => $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
+            "resto" => $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size),
+        ];
+
+
+        // dd($all["station"]);
+
+        switch (strtolower($type)){
+            case "ferme":
+                $results = $all["ferme"];
+                break;
+            case "restaurant":
+                $results = $all["resto"];
+                break;
+            case "station":
+            case "station service":
+                $results = $all["station"];
+                break;
+            default:
+                $results[0] = array_merge($all["station"][0] , $all["ferme"][0], $all["resto"][0]);
+                $results[1] = $all["station"][1] + $all["ferme"][1] + $all["resto"][1];
+                $results[2] = "tous";
+
+                break;
+        }
+        if(str_contains($request->getPathInfo(), '/api/search')){
+            return $this->json([
+                "results" => $results,
+                "type" => $type,
+                "cles0" => $cles0,
+                "cles1" => $cles1,
+            ], 200);
+        }
+
+
+        return $this->render("home/search_result.html.twig", [
+            "results" => $results,
+            "type" => $type,
+            "cles0" => $cles0,
+            "cles1" => $cles1,
+            "page" => $page
+        ]);
+    }
 }

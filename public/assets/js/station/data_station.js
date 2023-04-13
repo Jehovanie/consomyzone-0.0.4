@@ -29,6 +29,8 @@ window.addEventListener('load', () => {
     document.querySelector("#close-detail-station").addEventListener("click", () => { 
         document.getElementById("remove-detail-station").setAttribute("class", "hidden")
     })
+
+    setDataInLocalStorage("type", "station");
 });
 
 

@@ -33,3 +33,14 @@
     overflow: hidden;
     display: block;
 }
+
+.list_result_search{
+    width: auto !important;
+    height: auto !important;
+}
+
+.content_element{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

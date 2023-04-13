@@ -91,11 +91,8 @@ class BddRestoRepository extends ServiceEntityRepository
 
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
-
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-        // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
-        //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
-        // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+    
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,
@@ -142,18 +139,28 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
                 
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            $qb = $qb->where("p.dep LIKE :cles1")
-                ->orWhere("p.nomvoie LIKE :cles1")
-                ->orWhere("p.depName LIKE :cles1")
-                ->orWhere("p.typevoie LIKE :cles1")
-                ->orWhere("p.villenorm LIKE :cles1")
-                ->orWhere("p.commune LIKE :cles1")
-                ->orWhere("p.codpost LIKE :cles1")
-                ->orWhere("p.numvoie LIKE :cles1")
-                ->orWhere("p.denominationF LIKE :cles1")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if( strlen($mot_cles1) === 2 ){
+                
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("p.dep LIKE :cles1")
+                    ->orWhere("p.nomvoie LIKE :cles1")
+                    ->orWhere("p.depName LIKE :cles1")
+                    ->orWhere("p.typevoie LIKE :cles1")
+                    ->orWhere("p.villenorm LIKE :cles1")
+                    ->orWhere("p.commune LIKE :cles1")
+                    ->orWhere("p.codpost LIKE :cles1")
+                    ->orWhere("p.numvoie LIKE :cles1")
+                    ->orWhere("p.denominationF LIKE :cles1")
+                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
+                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
         }else {
+
             $qb = $qb->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
                 ->orWhere("(p.dep LIKE :cles0) AND ( p.nomvoie LIKE :cles1)")
                 ->orWhere("(p.dep LIKE :cles0) AND ( p.commune LIKE :cles1)")
@@ -168,6 +175,7 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.commune LIKE :cles1)")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
         }
         $qb = $qb->setFirstResult($page_current)
             ->setMaxResults($size)
@@ -191,17 +199,23 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            $count = $count->where("p.dep LIKE :cles1")
-                ->orWhere("p.nomvoie LIKE :cles1")
-                ->orWhere("p.depName LIKE :cles1")
-                ->orWhere("p.typevoie LIKE :cles1")
-                ->orWhere("p.villenorm LIKE :cles1")
-                ->orWhere("p.commune LIKE :cles1")
-                ->orWhere("p.codpost LIKE :cles1")
-                ->orWhere("p.numvoie LIKE :cles1")
-                ->orWhere("p.denominationF LIKE :cles1")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if( strlen($mot_cles1) === 2 ){
+                $count = $count->where("p.dep LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $count = $count->where("p.dep LIKE :cles1")
+                    ->orWhere("p.nomvoie LIKE :cles1")
+                    ->orWhere("p.depName LIKE :cles1")
+                    ->orWhere("p.typevoie LIKE :cles1")
+                    ->orWhere("p.villenorm LIKE :cles1")
+                    ->orWhere("p.commune LIKE :cles1")
+                    ->orWhere("p.codpost LIKE :cles1")
+                    ->orWhere("p.numvoie LIKE :cles1")
+                    ->orWhere("p.numvoie LIKE :cles1")
+                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
+                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
         }else {
             $count = $count->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
                 ->orWhere("(p.dep LIKE :cles0) AND ( p.nomvoie LIKE :cles1)")
@@ -327,10 +341,10 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.tel,
                     r.poiX,
                     r.poiY")
-            ->groupBy("r.denominationF, r.poiX, r.poiY")
-            ->having('count(r.denominationF)=1')
-            ->andHaving('count(r.poiX)=1')
-            ->andHaving('count(r.poiY) =1')
+            // ->groupBy("r.denominationF, r.poiX, r.poiY")
+            // ->having('count(r.denominationF)=1')
+            // ->andHaving('count(r.poiX)=1')
+            // ->andHaving('count(r.poiY) =1')
             ->getQuery()
             ->getResult();
     }

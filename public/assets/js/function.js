@@ -97,7 +97,7 @@ function create_map_content(geos, id_dep=null, map_for_type){
                 <div class="card-options-home hide" id="card">
                    <div class="options-container">
                         <ul>
-                            <li class="recherche">
+                            <li class="recherche" onclick="showModalSearch()">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="50" height="50" viewBox="0 0 128.000000 128.000000"
                                 preserveAspectRatio="xMidYMid meet">
@@ -1247,3 +1247,7 @@ function addControlPlaceholdersresto(map) {
     createCorner('horizontalmiddle', 'center');
 }
 
+
+function showModalSearch(){
+    alert("Please Show Modal Search...");
+}

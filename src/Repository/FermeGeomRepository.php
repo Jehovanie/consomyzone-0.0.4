@@ -391,14 +391,20 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->setParameter('cles0', '%'. $mot_cles0. '%' );
 
         }else if ( $mot_cles0 === "" && $mot_cles1 !== "" ){
-            $qb =  $qb->where("p.adresseFerme LIKE :cles1")
+            if( strlen($mot_cles1) === 2 ){
+                $qb =  $qb->where("p.departement LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $qb =  $qb->where("p.adresseFerme LIKE :cles1")
                     ->orWhere("p.departement LIKE :cles1")
                     ->orWhere("p.departementName LIKE :cles1")
                     ->orWhere("p.codePostal LIKE :cles1")
                     ->orWhere("p.nomFerme LIKE :cles1")
                     ->orWhere("p.motDuFermier LIKE :cles1")
                     ->orWhere("p.nomProprietaire LIKE :cles1")
+                    ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
                     ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
 
         }else{
             $qb =  $qb->where("(p.departementName LIKE :cles0) AND (p.adresseFerme LIKE :cles1)")
@@ -434,14 +440,20 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->setParameter('cles0', '%'. $mot_cles0. '%' );
 
         }else if ( $mot_cles0 === "" && $mot_cles1 !== "" ){
-            $count =  $count->where("p.adresseFerme LIKE :cles1")
+            if( strlen($mot_cles1) === 2 ){
+                $count =  $count->where("p.departement LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $count =  $count->where("p.adresseFerme LIKE :cles1")
                     ->orWhere("p.departement LIKE :cles1")
                     ->orWhere("p.departementName LIKE :cles1")
                     ->orWhere("p.codePostal LIKE :cles1")
                     ->orWhere("p.nomFerme LIKE :cles1")
                     ->orWhere("p.motDuFermier LIKE :cles1")
                     ->orWhere("p.nomProprietaire LIKE :cles1")
+                    ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
                     ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
 
         }else{
             $count =  $count->where("(p.departementName LIKE :cles0) AND (p.adresseFerme LIKE :cles1)")
