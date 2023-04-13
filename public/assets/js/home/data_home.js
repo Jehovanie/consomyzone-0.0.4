@@ -75,27 +75,6 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
             const resto = parsedResult.resto
 
             if( stations || fermes || resto ){
-
-                // var latlng = L.latLng(46.227638, 2.213749);
-                // console.log(getDataInLocalStorage("coordTous"))
-                // const json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
-                // const zoom = json.zoom ? json.zoom: 5;
-                // const center =json.coord ?  L.latLng(json.coord.lat,json.coord.lng) : latlng ;
-				// console.log("center "+ " "+ center+" zoom "+ zoom)
-                // var map = L.map('map', { center: center, zoom: zoom, layers: [tiles] });
-                //  console.log(geos)
-                // L.geoJson(geos,{
-                //     style:{
-                //         weight:1,
-                //         dashArray:'3',
-                //         fillOpacity: 0
-                //     },
-                //     onEachFeature: function (feature, layer) {
-                //         layer.bindTooltip(feature.properties.nom);
-                //     }
-                // }).addTo(map);
-
-                // map.doubleClickZoom.disable();
                 
                 var markers = L.markerClusterGroup({ 
                     chunkedLoading: true
@@ -105,8 +84,6 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                 if( stations ){
                     stations.forEach(item => {
                     
-                        // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-                        var pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
                         const miniFicheOnHover =setMiniFicheForStation(item.nom, item.adresse,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
                     
                         var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/icon_essanceB.png") });
@@ -119,7 +96,11 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                                 coord:e.target.__parent._cLatLng
                             }
                             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-                            // window.location = pathDetails;
+
+                            if( screen.width< 991 ){
+                                // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
+                                window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
+                            }
                         })
                         
                         markers.addLayer(marker);
@@ -309,7 +290,6 @@ function eventManagement(){
 	
 		alltype.forEach(item => {
 			item.addEventListener("click", (e) => checkStateCheckbox(e))
-            document.querySelector(".btn_close_modal_filter_jheo_js")?.click();
 		})
 	}
 
@@ -320,7 +300,7 @@ function eventManagement(){
 }
 
 function checkStateCheckbox(e){
-   
+    document.querySelector(".btn_close_modal_filter_jheo_js")?.click();
 
     localStorage.removeItem("coordTous")
     
@@ -525,10 +505,8 @@ function addMap(data,dep){
         if( stations.length > 0  ){
             stations.forEach(item => {
             
-                // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-                var pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
                 const miniFicheOnHover =setMiniFicheForStation(item.nom, item.adresse,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
-            
+                
                 var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/icon_essanceB.png") });
                 marker.bindTooltip(miniFicheOnHover,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
                 
@@ -539,7 +517,10 @@ function addMap(data,dep){
                         coord:e.target.__parent._cLatLng
                     }
                     setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-                    // window.location = pathDetails;
+                    if( screen.width<991 ){
+                        // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
+                        window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
+                    }
                 });
                 
                 markers.addLayer(marker);

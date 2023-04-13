@@ -11,7 +11,7 @@
 .content_filter_dep {
     display: block;
     position: absolute;
-    bottom: 15px;
+    top: 15px;
     left: 15px;
     z-index: 1000;
 }
@@ -26,4 +26,10 @@
     right: 5px;
     top: 5px;
     border-radius: 50%;
+}
+
+.content_body{
+    height: 100vh;
+    overflow: hidden;
+    display: block;
 }

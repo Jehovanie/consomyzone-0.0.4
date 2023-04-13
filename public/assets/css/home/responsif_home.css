@@ -23,4 +23,10 @@
     .content_filter_dep select {
         font-size: 0.9rem;
     }
+    .content_filter_dep {
+        top:auto;
+        bottom:15px;
+        left: 15px;
+        z-index: 1000;
+    }
 }

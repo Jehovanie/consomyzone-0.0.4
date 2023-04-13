@@ -1,3 +1,8 @@
+body {
+    background-color: white !important;
+    overflow-x: hidden;
+}
+
 .content_main{
     display: block;
 }
@@ -240,6 +245,11 @@ input[type="range"]::-moz-slider-thumb{
     fill: #28BE21;
 }
 
+
+.navbar_mobile_datails{
+    display: block;
+    width: 100%;
+}
 
 @keyframes translateFull {
     0% {

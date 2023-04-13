@@ -210,35 +210,23 @@ class StationController extends AbstractController
 
 
     /**
-
      * DON'T CHANGE THIS ROUTE: This use in js file.
-
      * 
-
      * @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-
      */
-
     public function detailsStation(CodeapeRepository $codeApeRep, Status $status, StationServiceFrGeomRepository $stationServiceFrGeomRepository, $depart_code, $depart_name, $id)
-
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
         // dump($depart_code, $depart_name, $id);
         // dd($stationServiceFrGeomRepository->getDetailsStation($depart_code, $depart_name, $id));
-        return $this->render("shard/station/details.js.twig", [
-
+        return $this->render("station/detailStationMobile.html.twig", [
             "departCode" => $depart_code,
-
             "departName" => $depart_name,
-
             "station" => $stationServiceFrGeomRepository->getDetailsStation($depart_code, $depart_name, $id)[0],
-
             "profil" => $statusProfile["profil"],
-
             "statusTribut" => $statusProfile["statusTribut"],
-
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
