@@ -74,6 +74,7 @@ forms.forEach((bouton) => {
     let table_com = table_tribu + "_commentaire";
     console.log("table_com : " + table_com);
     bouton.addEventListener("submit", (e) => {
+
         e.preventDefault();
 
         let i = e.target.id.split("_tribu_t_")[0].replace(/[^0-9]/g, "");
@@ -84,7 +85,8 @@ forms.forEach((bouton) => {
             "table_com": table_com,
             "pub_id": document.querySelector("#pub_id_" + i + "_" + table_tribu).value,
             "user_id_pub": document.querySelector("#user_id_" + i + "_" + table_tribu).value,
-            "new_comment": document.querySelector("#newComment_" + i + "_" + table_tribu).value
+            "new_comment": document.querySelector("#newComment_" + i + "_" + table_tribu).value,
+            "audio" : ""
         }
 
         if (document.querySelector("#newComment_" + i + "_" + table_tribu).value != "") {

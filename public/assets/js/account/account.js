@@ -974,3 +974,11 @@ function createBadgeNotifContent(){
     }
 
 }
+
+let langue = localStorage.getItem("langue")
+
+if(langue){
+    console.log("langue exist")
+}else{
+    console.log("langue n'existe pas")
+}

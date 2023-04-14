@@ -1,4 +1,4 @@
-<div class="d-flex flex-column align-items-stretch flex-shrink-0 position-sticky">
+<div class="d-flex flex-column align-items-stretch flex-shrink-0 position-sticky" id="page-top">
 	<div class="content_list_menu mt-5">
 		<div class="account-profils row mt-5">
 		
@@ -30,7 +30,7 @@
 			<li class="nav-item account_js">
 				<a href="{{path("app_account")}}" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-newspaper fa-lg"></i>
-					<span>Actualité</span>
+					<span lng-tag="actualite">Actualité</span>
 				</a>
 			</li>
 
@@ -38,7 +38,7 @@
 				<a href="{{ path("app_invitation") }}" class="nav-link link-dark not_autorised">
 					{# <i class="bi bi-people-fill fa-lg"></i> #}
 					<i class="fa-solid fa-user-group fa-solid-nav"> </i>
-					<span>&nbsp;Invitations</span>
+					<span lng-tag="invitations">&nbsp;Invitations</span>
 				</a>
 			</li>
 
@@ -102,7 +102,7 @@
 				{# <a href="" class="nav-link link-dark not_autorised"> #}
 				<a href="{{ path("user_profil", {"user_id":app.user.id })}}" class="nav-link link-dark">
 					<i class="fa-solid fa-solid-nav fa-user  fa-lg"></i>
-					<span>Profil</span>
+					<span lng-tag="profil">Profil</span>
 				</a>
 			</li>
 
@@ -111,24 +111,24 @@
 				{# <a href="{{path("setting_user_account")}}" class="nav-link link-dark"> #}
 				<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
 					<img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'>
-					<span>Tribu T</span>
+					<span lng-tag="tribu_t">Tribu T</span>
 				</a>
 
 				<div class="collapse" id="tribut-collapse">
 					<ul class="na-ul-right mr-5">
 						<li>
 							{# <a href="{{ path("mon_tribut") }}" class="na-text-right pr-5">Publications</a> #}
-							<a href="{{ path("publication_list") }}" class="na-text-right pr-5">Publications</a>
+							<a href="{{ path("publication_list") }}" class="na-text-right pr-5" lng-tag="publications">Publications</a>
 						</li>
 						<li>
-							<a href="{{ path("list_tribut_by_user") }}" class="na-text-right pr-5">Mes tribus</a>
+							<a href="{{ path("list_tribut_by_user") }}" class="na-text-right pr-5" lng-tag="mes_tribus">Mes tribus</a>
 						</li>
 						<li>
-							<a href="{{ path("create_tribu") }}" class="na-text-right">Créer une tribu</a>
+							<a href="{{ path("create_tribu") }}" class="na-text-right" lng-tag="creer_tribu">Créer une tribu</a>
 						</li>
 						<li>
 							{# <a href="{{ path("all_tribut") }}" class="na-text-right">Autres tribus</a> #}
-							<a href="#" class="na-text-right">Autres tribus</a>
+							<a href="#" class="na-text-right" lng-tag="autres_tribus">Autres tribus</a>
 						</li>
 					</ul>
 				</div>
@@ -140,19 +140,19 @@
 				{# <a href="{{path("setting_user_account")}}" class="nav-link link-dark"> #}
 				<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#customize-collapse" aria-expanded="false">
 					<img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'>
-					<span>Paramètre</span>
+					<span lng-tag="parametres">Paramètre</span>
 				</a>
 
 				<div class="collapse" id="customize-collapse">
 					<ul class="na-ul-right mr-5">
 						<li>
-							<a href="{{ path("account_setting") }}" class="na-text-right pr-5">Compte</a>
+							<a href="{{ path("account_setting") }}" class="na-text-right pr-5" lng-tag="compte">Compte</a>
 						</li>
 						<li>
-							<a href="{{ path("security_setting") }}" class="na-text-right">Sécurité</a>
+							<a href="{{ path("security_setting") }}" class="na-text-right" lng-tag="securite">Sécurité</a>
 						</li>
 						<li>
-							<a href="{{ path("confidential_setting") }}" class="na-text-right">Confidentialité</a>
+							<a href="{{ path("confidential_setting") }}" class="na-text-right" lng-tag="confidentialite">Confidentialité</a>
 							{#<a href="#" class="na-text-right">Confidentialité</a>#}
 						</li>
 					</ul>
@@ -162,25 +162,25 @@
             <li class="nav-item message_js">
 				<a href="{{path('app_message')}}" class="nav-link link-dark not_autorised">
                     <i class="fa-solid fa-solid-nav fa-comments  fa-lg"></i>
-					<span>Message</span>
+					<span lng-tag="message">Message</span>
 				</a>
 			</li>
 			<li class="nav-item">
-				<a href="#" class="nav-link link-dark not_autorised">
+				<a href="{{path('app_traduction')}}" class="nav-link link-dark not_autorised">
 					<img src="{{asset('assets/image/icon-language.png')}}" alt="icon" width='25'>
-					<span>Langage</span>
+					<span lng-tag="langage">Langage</span>
 				</a>
 			</li>
 			<li class="nav-item">
 				<a href="#" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-bell  fa-lg"></i>
-					<span>Paramètre de notification</span>
+					<span lng-tag="parametre_notification">Paramètre de notification</span>
 				</a>
 			</li>
 			<li class="nav-item mb-5">
 				<a href="#" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-users  fa-lg"></i>
-					<span>Les tribus suivies</span>
+					<span lng-tag="tribues_suivies">Les tribus suivies</span>
 				</a>
 			</li>
 

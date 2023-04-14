@@ -27,6 +27,9 @@
 	    <script src="{{ asset('assets/js/franceGeoJson.js') }}" defer></script>
 	    <script src="{{ asset('assets/js/centers_tous.js') }}" defer></script>
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
         {# --------------------- marker MarkerCluster --------------------------- #}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css" integrity="sha512-ENrTWqddXrLJsQS2A86QmvA17PkJ0GVm1bqj5aTgpeMAfDKN2+SIOLpKG8R/6KkimnhTb+VW5qqUHB/r1zaRgg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css" integrity="sha512-fYyZwU1wU0QWB4Yutd/Pvhy5J1oWAwFXun1pt+Bps04WSe4Aq6tyHlT4+MHSJhD8JlLfgLuC4CbCnX5KHSjyCg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
@@ -44,6 +47,7 @@
         {% block body %}{% endblock %}
         <script src="{{asset('assets/js/bootstrap/bootstrap.min.js')}}"></script>
         <script src="{{asset('assets/js/const.js')}}"></script>
+        <script src="{{ asset('assets/js/Langue/translate.js') }}" defer></script>
 
     </body>
 </html>

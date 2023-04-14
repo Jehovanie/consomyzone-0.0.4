@@ -19,6 +19,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use App\Service\MailService;
 use App\Service\Status;
+use App\Service\TributGService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SettingController extends AbstractController
@@ -356,6 +357,38 @@ class SettingController extends AbstractController
             //return $this->render('setting/password.html.twig', ["message" => $message, "isSuccess" => $this->isSuccess]);
             return $this->redirectToRoute('app_login', ["message" => $message, "isSuccess" => $this->isSuccess, "email" => $user_tmp[0]->getEmail()]);
         }
+    }
+
+    #[Route('/user/traduction', name: 'app_traduction')]
+    public function traduction(EntityManagerInterface $entityManager, TributGService $tributGService){
+        $user= $this->getUser();
+
+        $userType = $user->getType();
+
+        $userId = $user->getId();
+
+        $profil = "";
+
+
+
+
+
+
+
+        if($userType == "consumer") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+
+        }else{
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+
+        }
+        return $this->render('setting/traduction.html.twig', [
+            "profil" => $profil,
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
+
+        ]);
     }
 
 }
