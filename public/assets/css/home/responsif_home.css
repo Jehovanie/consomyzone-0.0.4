@@ -29,4 +29,12 @@
         left: 15px;
         z-index: 1000;
     }
+
+    .content_show_list_mobile{
+        display: none;
+    }
+    .list_item{
+        display: block;
+        width: 100% !important;
+    }
 }

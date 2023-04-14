@@ -78,7 +78,7 @@ function addMarker(map,data){
                         const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
                         getDetailSearchForMobile(link)
                     }else{
-
+                        getDetailStation(item.dep.toString().trim(), item.depName.trim(), item.id)
                     }
                     // window.location = "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
                 }else if ( item.ferme !== undefined ){
@@ -135,15 +135,41 @@ function getDetailSearchForMobile(link) {
         document.querySelector(".show_detail_for_mobile_js_jheo").click();
     }
 
-    fetchDetails(".content_detail_home_js_jheo",link)
+    fetchDetail(".content_detail_home_js_jheo",link)
 }
 
-function fetchDetails(selector, link){
+function fetchDetail(selector, link){
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
 
     fetch(link)
+        .then(response => {
+            return response.text()
+        }).then(r => { 
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
+        })
+    
+}
+
+
+function getDetailStation(depart_name, depart_code, id) { 
+    // console.log(depart_name, depart_code, id)
+
+    let remove = document.getElementById("remove-detail-station")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    fetchDetails("#content-details-station", depart_name,depart_code,id)
+}
+
+function fetchDetails(selector, departName, departCode,id){
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
         .then(response => {
             return response.text()
         }).then(r => { 

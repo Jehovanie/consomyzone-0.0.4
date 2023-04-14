@@ -506,6 +506,8 @@ function addMap(data,dep){
                     if( screen.width<991 ){
                         // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                         window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
+                    }else{
+                        getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                     }
                 });
                 
@@ -619,4 +621,14 @@ function fetchDetails(selector, link){
            document.querySelector(selector).innerHTML = r
         })
     
+}
+
+function getDetailStation(depart_name, depart_code, id) { 
+    // console.log(depart_name, depart_code, id)
+
+    let remove = document.getElementById("remove-detail-station")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    fetchDetails("#content-details-station", depart_name,depart_code,id)
 }

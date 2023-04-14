@@ -10,6 +10,7 @@
 {% block javascripts %}
     <script src="{{asset('assets/js/home/search.js')}}" defer></script>
     <script src="{{asset('assets/js/home/data_search.js')}}" defer></script>
+    <script src="{{asset('assets/js/home/details_seach.js')}}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/home/fetchLeftSide.js') }}" defer></script>
 
     {# <script src="{{asset('assets/js/home/data_home_poo.js')}}" defer></script> #}
@@ -54,6 +55,7 @@
         <button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
 
+    {% include 'shard/home/detail_home_navleft.twig' %}
     {% include 'shard/home/modalFilterHome.html.twig' %}
     {% include 'shard/home/modalDetailMobilHome.html.twig' %}
 
