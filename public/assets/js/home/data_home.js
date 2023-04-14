@@ -100,6 +100,8 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                             if( screen.width< 991 ){
                                 // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                                 window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
+                                // getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
+                            
                             }
                         })
                         
@@ -265,22 +267,6 @@ function generate_select_dep(parent, id_selected = null ){
     })
 }
 
-/// THIS FUNCTION USE ONLY TO SET THE MINIFICHE FOR STATION ON HOVER ///
-function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
-    const station = "<span class='fw-bolder'>STATION: </span> <br>" + nom+ ".";
-    const ad = "<br><span class='fw-bolder'>ADRESSE:</span> <br>" + adresse + ".";
-    const carburants = "<br><span class='fw-bolder'>CARBURANTS:</span>"
-                        + "<ul>"
-                            + "<li><span class='fw-bold'>SP 95:</span> "+ prixSp95+"€ </li>"
-                            + "<li><span class='fw-bold'>SP 95 E 10:</span> "+ prixSp95E10+"€ </li>"
-                            + "<li><span class='fw-bold'>SP 98:</span> "+ prixSp98+ "€ </li>"
-                            + "<li><span class='fw-bold'>Gasoil:</span> "+ prixGasoil+ "€ </li>"
-                            + "<li><span class='fw-bold'>E 85:</span> " + prixE85+ "€ </li>" 
-                            + "<li><span class='fw-bold'>GPLC:</span> "+ prixGplc+"€ </li>"
-                        + "</ul>";
-
-    return station + ad + carburants;
-}
 
 function eventManagement(){
 	
@@ -611,3 +597,26 @@ function addMap(data,dep){
     }
 }
 
+function getDetailHomeForMobile(link) {
+
+    if(document.querySelector(".show_detail_for_mobile_js_jheo")){
+        document.querySelector(".show_detail_for_mobile_js_jheo").click();
+    }
+
+    fetchDetails(".content_detail_home_js_jheo",link)
+}
+
+function fetchDetails(selector, link){
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    fetch(link)
+        .then(response => {
+            return response.text()
+        }).then(r => { 
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
+        })
+    
+}
