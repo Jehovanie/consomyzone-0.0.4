@@ -1,4 +1,4 @@
-function create_map_content(geos, id_dep=null, map_for_type){
+function create_map_content(geos, id_dep=null, map_for_type="home"){
     // {# <div id="map"  style="width: 100%;"></div> #}
     
     var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -16,8 +16,6 @@ function create_map_content(geos, id_dep=null, map_for_type){
         latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
         json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
         zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
-    }else{
-        alert("toto")
     }
     
     centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
@@ -1250,4 +1248,21 @@ function addControlPlaceholdersresto(map) {
 
 function showModalSearch(){
     alert("Please Show Modal Search...");
+}
+
+/// THIS FUNCTION USE ONLY TO SET THE MINIFICHE FOR STATION ON HOVER ///
+function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
+    const station = "<span class='fw-bolder'>STATION: </span> <br>" + nom+ ".";
+    const ad = "<br><span class='fw-bolder'>ADRESSE:</span> <br>" + adresse + ".";
+    const carburants = "<br><span class='fw-bolder'>CARBURANTS:</span>"
+                        + "<ul>"
+                            + "<li><span class='fw-bold'>SP 95:</span> "+ prixSp95+"€ </li>"
+                            + "<li><span class='fw-bold'>SP 95 E 10:</span> "+ prixSp95E10+"€ </li>"
+                            + "<li><span class='fw-bold'>SP 98:</span> "+ prixSp98+ "€ </li>"
+                            + "<li><span class='fw-bold'>Gasoil:</span> "+ prixGasoil+ "€ </li>"
+                            + "<li><span class='fw-bold'>E 85:</span> " + prixE85+ "€ </li>" 
+                            + "<li><span class='fw-bold'>GPLC:</span> "+ prixGplc+"€ </li>"
+                        + "</ul>";
+
+    return station + ad + carburants;
 }

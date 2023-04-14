@@ -251,6 +251,10 @@ input[type="range"]::-moz-slider-thumb{
     width: 100%;
 }
 
+.btn_close_style_customize{
+    margin: 0 !important;
+}
+
 @keyframes translateFull {
     0% {
         transform: translateX(-100%);

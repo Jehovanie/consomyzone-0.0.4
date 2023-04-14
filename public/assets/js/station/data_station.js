@@ -364,22 +364,6 @@ function changeDapartLinkCurrent(type){
 
 }
 
-/// THIS FUNCTION USE ONLY TO SET THE MINIFICHE FOR STATION ON HOVER ///
-function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
-    const station = "<span class='fw-bolder'>STATION: </span> <br>" + nom+ ".";
-    const ad = "<br><span class='fw-bolder'>ADRESSE:</span> <br>" + adresse + ".";
-    const carburants = "<br><span class='fw-bolder'>CARBURANTS:</span>"
-                        + "<ul>"
-                            + "<li><span class='fw-bold'>SP 95:</span> "+ prixSp95+"€ </li>"
-                            + "<li><span class='fw-bold'>SP 95 E 10:</span> "+ prixSp95E10+"€ </li>"
-                            + "<li><span class='fw-bold'>SP 98:</span> "+ prixSp98+ "€ </li>"
-                            + "<li><span class='fw-bold'>Gasoil:</span> "+ prixGasoil+ "€ </li>"
-                            + "<li><span class='fw-bold'>E 85:</span> " + prixE85+ "€ </li>" 
-                            + "<li><span class='fw-bold'>GPLC:</span> "+ prixGplc+"€ </li>"
-                        + "</ul>";
-
-    return station + ad + carburants;
-}
 
 function getDetailStation(depart_name, depart_code, id) { 
     // console.log(depart_name, depart_code, id)

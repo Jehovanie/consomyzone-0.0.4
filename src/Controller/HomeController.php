@@ -159,7 +159,7 @@ class HomeController extends AbstractController
         return $this->json($results);
     }
 
-
+    #[Route("/api/search/{type}" , name:"app_api_search" , methods: "GET")]
     #[Route("/search/{type}" , name:"app_search" , methods: "GET")]
     public function search(
         Request $request,
