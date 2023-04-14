@@ -67,14 +67,28 @@ function addMarker(map,data){
             marker.bindTooltip(miniFiche_HTML,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
             
             marker.on('click', () => {
-                alert("go to details...");
-                // if( item.resto !== undefined ){
-                //     window.location ="/restaurant/departement/"+item.depName + "/" + item.dep +"/details/" + item.id;
-                // }else if ( item.station !== undefined ){
-                //     window.location = "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
-                // }else if ( item.ferme !== undefined ){
-                //     window.location= "/ferme/departement/"+ item.depName + "/" + item.dep +"/details/" + item.id;
-                // }
+                if( item.resto !== undefined ){
+                    if(screen.width < 991 ){
+                        alert("mobile resto detail")
+                    }else{
+                        alert("resto detail")
+                    }   
+                }else if ( item.station !== undefined ){
+                    if( screen.width < 991){
+                        // window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
+                        getDetailSearchForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
+                    }else{
+
+                    }
+                    // window.location = "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
+                }else if ( item.ferme !== undefined ){
+                    if( screen.width < 991){
+                        alert("mobile ferme detail")
+                    }else{
+                        alert("ferme detail")
+                    }
+                    // window.location= "/ferme/departement/"+ item.depName + "/" + item.dep +"/details/" + item.id;
+                }
             })
 
             markers.addLayer(marker);
@@ -114,4 +128,28 @@ function removeAllMarkers(){
         markers.removeLayer(currentTabMarkers[i]);
     }
     map.removeLayer(markers);
+}
+
+function getDetailSearchForMobile(link) {
+
+    if(document.querySelector(".show_detail_for_mobile_js_jheo")){
+        document.querySelector(".show_detail_for_mobile_js_jheo").click();
+    }
+
+    fetchDetails(".content_detail_home_js_jheo",link)
+}
+
+function fetchDetails(selector, link){
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    fetch(link)
+        .then(response => {
+            return response.text()
+        }).then(r => { 
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
+        })
+    
 }

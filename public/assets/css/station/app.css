@@ -7,10 +7,6 @@ body {
     display: block;
 }
 
-.mobile_box_shadow{
-    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
-}
-
 .filter_other_mobile{
     display: none;
 }

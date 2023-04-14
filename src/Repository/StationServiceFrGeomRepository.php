@@ -360,7 +360,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
     ///jheo : get by cles
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1 , int $page = 1, $size = 20 )
     {
-        $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // $page_current =$page > 1 ? $page * 10 +1  : 0;
         // const { adresse:add, departementName: depName, departementCode: dep, nom } = item;
         // // showResultSearchNavBar("station", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder('p')
@@ -418,10 +418,14 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
         }
 
-        $qb = $qb->setFirstResult($page_current)
-            ->setMaxResults($size)
-            ->orderBy('p.nom', 'ASC')
-            ->getQuery();
+        // $qb = $qb->setFirstResult($page_current)
+        //     ->setMaxResults($size)
+        //     ->orderBy('p.nom', 'ASC')
+        //     ->getQuery();
+
+        $qb = $qb->orderBy('p.nom', 'ASC')
+                 ->getQuery();
+            
 
         $results =$qb->execute();
 

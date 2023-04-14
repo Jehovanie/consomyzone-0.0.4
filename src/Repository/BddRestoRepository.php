@@ -177,10 +177,14 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
 
         }
-        $qb = $qb->setFirstResult($page_current)
-            ->setMaxResults($size)
-            ->orderBy('p.nomvoie', 'ASC')
-            ->getQuery();
+        // $qb = $qb->setFirstResult($page_current)
+        //     ->setMaxResults($size)
+        //     ->orderBy('p.nomvoie', 'ASC')
+        //     ->getQuery();
+
+        $qb = $qb->orderBy('p.nomvoie', 'ASC')
+                 ->getQuery();
+            
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();

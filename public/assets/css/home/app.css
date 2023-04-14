@@ -28,15 +28,57 @@
     border-radius: 50%;
 }
 
+.content_show_list_mobile{
+    display: block;
+    font-size: 2rem;
+    position: absolute;
+    z-index: 2000;
+    left: 10px;
+}
+
 .content_body{
     height: 100vh;
     overflow: hidden;
     display: block;
 }
 
+.content_headers{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+}
+.content_logo{
+    display: block;
+    width: 150px;
+    height: 70px;
+}
+.content_logo a img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.btn_retours{
+    display: block;
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    border-radius: 50%;
+}
+
+.entete_text{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.content_card ul{
+    padding-left: 0;
+}
 .list_result_search{
-    width: auto !important;
     height: auto !important;
+    width: 85% !important;
+    margin: auto;
+    margin-bottom: 20px;
 }
 
 .content_element{
@@ -47,4 +89,61 @@
 
 .btn_close_style_customize{
     margin: 0;
+}
+
+.content_card{
+    display: block;
+    height: 80vh;
+    overflow: scroll;
+}
+
+.list_item{
+    list-style: none;
+    background-color: #e7e7e7;
+    margin-bottom: 20px;
+    border-radius: 30px;
+    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+    font-size: 11pt;
+    display: flex;
+    justify-content: space-between;
+    height: 10vh;
+    align-items: center;
+    width: 95%;
+    padding: 25px;
+}
+
+.btn_retours svg, .plus svg{
+    fill: #28BE21;
+}
+
+.content_left_side_mobile{
+    display: block;
+    background-color: white;
+    max-height: 100vh;
+    transform: translateX(-100%);
+
+    position:absolute;
+    top:0%;
+    right: 0%;
+    left: 0%;
+    z-index: 10000;
+    overflow-y:hidden;
+}
+
+@keyframes translateFull {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+@keyframes unTranslateFull {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }

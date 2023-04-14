@@ -112,6 +112,10 @@ body {
     transform: scale(1.2);
 }
 
+.mobile_box_shadow{
+    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+}
+
 /* ***********specific_resto_navleft************** */
 .navleft .list-depart-all-specific {
     height: 75vh;
@@ -347,10 +351,11 @@ body {
 }
 
 .recherche-modale .modal-content{
-    width: 40vw;
+    width: 100%;
     height: 10vh;
     border-radius: 50px;
 }
+
 
 .recherche-modale .modal-content  .bar-de-recherche {
     display: flex;
@@ -358,7 +363,23 @@ body {
     justify-content: end;
     font-weight: bolder;
     margin: auto auto;
-    padding-top: 20px;
+}
+
+.my-controller, .retoure{
+    border: none !important;
+}
+
+.recherche-navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.recherche-modale .modal-content .bar-de-recherche {
+    display: flex;
+    width: 90%;
+    margin: auto auto;
 }
 
 .recherche-modale .modal-content .bar-de-recherche .input-recherche-navbar {

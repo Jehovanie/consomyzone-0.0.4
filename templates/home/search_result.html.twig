@@ -10,6 +10,8 @@
 {% block javascripts %}
     <script src="{{asset('assets/js/home/search.js')}}" defer></script>
     <script src="{{asset('assets/js/home/data_search.js')}}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/home/fetchLeftSide.js') }}" defer></script>
+
     {# <script src="{{asset('assets/js/home/data_home_poo.js')}}" defer></script> #}
     {# <script src="{{asset('assets/js/home/data_home.js')}}" defer></script> #}
 {% endblock %}
@@ -19,6 +21,7 @@
     <div class="responsif-none">
         {% include 'shard/navbar.twig' %}
     </div>
+    {% include 'shard/modalSearch.twig' %}
     <div class="content_main">
         
         <div class="row">
@@ -26,20 +29,6 @@
                 {% include 'shard/home/home_navleft.html.twig' %}
             </div>
             <div class="content">
-                {# modal filter it's show when the screen is like mobile #}
-                <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                   <i class="fa-solid fa-filter"></i>
-                </button>
-
-                {# collapse filter it's show when the screen other than mobile #}
-                <button class="btn btn-primary filter_other_mobile cta_filter_other_mobile" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa-solid fa-filter"></i>
-                </button>
-                
-                {# filter collapse #}
-                <div class="collapse content_filter_global filter_other_mobile content_filter_global_jheo_js"  id="collapseExample">
-                    {# CONTENT FILTER ADD ON JS #}
-                </div>
                 <div class="content_cart_map">
                     <div class="cart_map">
                         <div class="chargement_content" id="toggle_chargement">
@@ -49,8 +38,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="content_show_list_mobile fetch_list_departement_jheo_js">
-                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        <div class="content_show_list_mobile">
+                            <i class="fa-solid fa-circle-arrow-right fetch_list_departement_jheo_js"></i>
                         </div>
                         <div id="map" class="map"></div>
                     </div>
@@ -58,9 +47,14 @@
             </div>
         </div>
 
-        <button type="button" class="d-none get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
+        <div class="row content_left_side_mobile">
+            {% include 'shard/home/fetchLeftSide.html.twig' %}
+        </div>
+
+        <button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
 
     {% include 'shard/home/modalFilterHome.html.twig' %}
+    {% include 'shard/home/modalDetailMobilHome.html.twig' %}
 
 {% endblock %}

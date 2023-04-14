@@ -1247,7 +1247,8 @@ function addControlPlaceholdersresto(map) {
 
 
 function showModalSearch(){
-    alert("Please Show Modal Search...");
+    // alert("Please Show Modal Search...");
+    document.querySelector(".show_modal_search_for_mobile_js_jheo")?.click();
 }
 
 /// THIS FUNCTION USE ONLY TO SET THE MINIFICHE FOR STATION ON HOVER ///

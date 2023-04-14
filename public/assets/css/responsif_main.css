@@ -6,6 +6,11 @@
         display: block !important;
     }
 
+    .recherche-modale .modal-content{
+        width: 40vw;
+        height: 10vh;
+    }
+
 }
 
 @media screen and (max-width:1000px){
@@ -15,7 +20,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        border: none !important;
+        /* border: none !important; */
         /* transition: all 0.3s ease; */
     }
     .responsif-none{

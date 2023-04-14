@@ -244,37 +244,5 @@
 	</div>
 </nav>
 
-<div class="modal fade recherche-modale" id="recherche" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-            <div class="recherche-navbar">
-                <form action="/search" method="get" class="bar-de-recherche form_content_search_navbar_js">
-                    <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="De quoi avez-vous besoin ?">
-
-
-                    <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Adresse, quartier, ville, département">
-                    <datalist id="datalistOptions"></datalist>
-
-                    <button type="submit" class="btn_search_nav_bar_js_jheo">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                        width="30px" height="30px" viewBox="0 0 128.000000 128.000000"
-                        preserveAspectRatio="xMidYMid meet">
-
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                            stroke="none">
-                                <path d="M403 985 c-80 -39 -119 -81 -158 -169 -30 -69 -32 -127 -5 -200 59
-                                -155 226 -238 377 -187 34 12 74 21 88 21 35 0 85 50 85 85 0 14 9 54 21 88
-                                51 151 -32 318 -187 377 -81 30 -136 26 -221 -15z m226 -31 c124 -52 189 -196
-                                146 -325 -37 -111 -155 -188 -271 -176 -220 23 -318 283 -166 440 79 82 186
-                                105 291 61z"/>
-                                <path d="M789 451 l-35 -36 89 -97 c87 -95 91 -98 133 -98 l44 0 0 44 c0 42
-                                -3 46 -97 133 l-98 89 -36 -35z"/>
-                            </g>
-                        </svg>
-                    </button>
-                </form>
-            </div>
-		</div>
-	</div>
-</div>
+<button type="button" class="d-none show_modal_search_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#recherche"></button>
 
