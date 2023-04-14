@@ -1,0 +1,449 @@
+<?php
+
+namespace App\Repository;
+
+use App\Entity\StationServiceFrGeom;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<StationServiceFrGeom>
+ *
+ * @method StationServiceFrGeom|null find($id, $lockMode = null, $lockVersion = null)
+ * @method StationServiceFrGeom|null findOneBy(array $criteria, array $orderBy = null)
+ * @method StationServiceFrGeom[]    findAll()
+ * @method StationServiceFrGeom[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+
+class StationServiceFrGeomRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, StationServiceFrGeom::class);
+    }
+
+    public function add(StationServiceFrGeom $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(StationServiceFrGeom $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    ///jheo : prendre list stations dans un department donnéer.
+    public function getStationByDepartement($code,$name,$page)
+    {   
+        ///page current
+        $page_current = 10 * $page;
+        
+        ///correction des carractères speciaux;
+        $car_speciaux = array("é", "è");
+        $car_correction   = array("e", "e");
+        $new_nom_dep = str_replace($car_speciaux, $car_correction, $name);
+        
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                     'p.nom',
+                     'p.prixE85',
+                     'p.prixGplc',
+                     'p.prixSp95',
+                     'p.prixSp95E10',
+                     'p.prixSp98',
+                     'p.prixGasoil',
+                     'p.adresse')
+            ->setMaxResults(10)
+            ->where('p.departementCode LIKE :q')
+            // ->andWhere('p.departementName LIKE :k')
+            ->orderBy("p.nom", 'ASC')
+            ->setParameter('q', '%'. $code. '%' )
+            // ->setParameter('k', '%'. $new_nom_dep. '%' )
+            ->setFirstResult($page_current);
+
+        $query = $qb->getQuery();
+        return $query->execute();
+    }
+
+    ///jheo : prendre tous les lists de stations dans un department donnéer.
+    public function getAllStationInDepartement($code,$name = null )
+    {
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                     'p.nom',
+                     'p.latitude',
+                     'p.longitude',
+                     'p.adresse',
+                     'p.prixE85',
+                     'p.prixGplc',
+                     'p.prixSp95',
+                     'p.prixSp95E10',
+                     'p.prixSp98',
+                     'p.prixGasoil',
+                     'p.departementName',
+                     'p.departementCode')
+                     ->orderBy("p.nom", 'ASC');
+        if( $code === "20"){
+            $qb->where('p.departementCode = :q')
+                ->orWhere('p.departementCode = :k')
+                ->setParameter('q',  "2A" )
+                ->setParameter('k',  "2B");
+        }else{
+            $qb->where('p.departementCode = :q')
+                ->setParameter('q', $code );
+        }
+            // ->andWhere('p.departementName LIKE :k')
+            // ->setParameter('k', '%'. $new_nom_dep. '%' );
+
+        $query = $qb->getQuery();
+        return $query->execute();
+    }
+
+
+    ///jheo : prendre les details d'une station
+    public function getDetailsStation($code, $name, $id_station)
+    {
+        $car_speciaux = array("é", "è");
+        $car_correction   = array("e", "e");
+        $new_nom_dep = str_replace($car_speciaux, $car_correction, $name);
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                     'p.adresse',
+                     'p.automate2424',
+                     'p.departementCode',
+                     'p.departementName',
+                     'p.horaies',
+                     'p.nom',
+                     'p.prixE85',
+                     'p.prixGplc',
+                     'p.prixSp95',
+                     'p.prixSp95E10',
+                     'p.prixSp98',
+                     'p.prixGasoil',
+                     'p.latitude',
+                     'p.longitude',
+                     'p.services')
+            ->where('p.departementCode = :q')
+            // ->andWhere('p.departementName LIKE :k')
+            ->andWhere('p.id = :t')
+            ->setParameter('q', $code )
+            // ->setParameter('k', '%'. $new_nom_dep. '%' )
+            ->setParameter('t',$id_station);
+
+        $query = $qb->getQuery();
+        return $query->execute();
+
+    }
+
+    ///jheo : getLatitudeLongitude
+    public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null)
+    {
+
+
+        ////filter with min and max
+        if( $min || $max){
+            ////for one departement
+            if( $nom_dep && $id_dep ){
+
+                ///correction des carractères speciaux;
+                $car_speciaux = array("é", "è");
+                $car_correction   = array("e", "e");
+                $new_nom_dep = str_replace($car_speciaux, $car_correction, $nom_dep);
+
+                ////filter for all type
+                if( $type === "tous" ){
+                    // dd("ss ato");
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.latitude',
+                                'p.longitude',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.nom')
+                        ->where('(p.departementCode = :code ) AND (p.prixE85 BETWEEN :min AND :max)')
+                        ->orWhere('(p.departementCode = :code ) AND (p.prixGplc BETWEEN :min AND :max)')
+                        ->orWhere('(p.departementCode = :code ) AND (p.prixSp95 BETWEEN :min AND :max)')
+                        ->orWhere('(p.departementCode = :code ) AND (p.prixSp95E10 BETWEEN :min AND :max)')
+                        ->orWhere('(p.departementCode = :code ) AND (p.prixSp98 BETWEEN :min AND :max)' )
+                        ->orWhere('(p.departementCode = :code ) AND (p.prixGasoil BETWEEN :min AND :max)' )
+                        ->orderBy("p.nom", 'ASC')
+                        ->setParameter('code', $id_dep)
+                        // ->setParameter('nom', '%'.$new_nom_dep.'%' )
+                        ->setParameter('min', $min )
+                        ->setParameter('max', $max );
+                    // dd($qb->expr());
+
+                //// filter some type not all
+                }else{
+                    
+                    $var_type = explode("@", $type);
+                    
+                    
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.nom',
+                                'p.latitude',
+                                'p.longitude');
+
+                    //// iterate for different type
+                    $qb->where("(p.departementCode = :code) AND (p." . $var_type[0] . " BETWEEN :min AND :max)");
+                    for ( $i = 1; $i< count($var_type); $i++){
+                        $qb->orWhere("(p.departementCode = :code) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)");
+                    }
+                    $qb->setParameter('min', $min )
+                        ->setParameter('max', $max )
+                        ->setParameter('code', $id_dep );
+                }
+
+            /// for all departement
+            }else{
+                ////filter for all type
+                if( $type === "tous" ){
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.latitude',
+                                'p.longitude',
+                                'p.nom')  
+                        ->where('p.prixE85 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixGplc BETWEEN :min AND :max' )
+                        ->orWhere('p.prixSp95 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixSp95E10 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixSp98 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixGasoil BETWEEN :min AND :max' )
+                        ->setParameter('min', $min )
+                        ->setParameter('max', $max );
+
+                //// filter for some type
+                }else{
+
+                    $var_type = explode("@", $type);
+
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.nom',
+                                'p.latitude',
+                                'p.longitude');
+                                
+                    $qb->where("p." . $var_type[0] . " BETWEEN :min AND :max");
+                    for ( $i = 1; $i< count($var_type); $i++){
+                        $qb->orWhere("p." . $var_type[$i] . " BETWEEN :min AND :max");
+                    }
+                    $qb->setParameter('min', $min )
+                    ->setParameter('max', $max );
+                }
+            }
+        
+        //// filter first without min and max
+        }else{
+            $qb = $this->createQueryBuilder('p')
+                ->select('p.id',
+                        'p.adresse',
+                        'p.departementCode',
+                        'p.departementName',
+                        'p.prixE85',
+                        'p.prixGplc',
+                        'p.prixSp95',
+                        'p.prixSp95E10',
+                        'p.prixSp98',
+                        'p.prixGasoil',
+                        'p.nom',
+                        'p.latitude',
+                        'p.longitude');
+        }
+
+        $query = $qb->getQuery();
+        return $query->execute();
+    }
+
+    ///jheo : get number of row in database
+    public function getCountStation($code=null, $name=null){
+        if( $code || $name ){
+            ///correction des carractères speciaux;
+            $car_speciaux = array("é", "è");
+            $car_correction   = array("e", "e");
+            $new_nom_dep = str_replace($car_speciaux, $car_correction, $name);
+
+            $qb = $this->createQueryBuilder('p')
+                        ->select('count(p.id)')
+                        ->where('p.departementCode = :q')
+                        // ->andWhere('p.departementName LIKE :k')
+                        ->setParameter('q', $code );
+                        // ->setParameter('k', '%'. $new_nom_dep. '%' );
+
+        }else{
+            $qb = $this->createQueryBuilder('p')
+                        ->select('count(p.id)');
+        }
+
+        $query = $qb->getQuery();
+        return $query->execute();
+    }
+
+    public function addNote($idStation, $note)
+    {
+        return $this->createQueryBuilder("")
+            ->update(StationServiceFrGeom::class, "s")
+            ->set("s.note", ":note")
+            ->where('s.id=:idS')
+            ->setParameter("note", $note)
+            ->setParameter("idS", $idStation)
+            ->getQuery()
+            ->execute();
+    }
+
+    ///jheo : get by cles
+    public function getBySpecificClef(string $mot_cles0, string $mot_cles1 , int $page = 1, $size = 20 )
+    {
+        $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // const { adresse:add, departementName: depName, departementCode: dep, nom } = item;
+        // // showResultSearchNavBar("station", nom, add, dep, depName, id);
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                    'p.adresse as add',
+                    'p.departementCode as dep',
+                    'p.departementName as depName',
+                    'p.prixE85',
+                    'p.prixGplc',
+                    'p.prixSp95',
+                    'p.prixSp95E10',
+                    'p.prixSp98',
+                    'p.prixGasoil',
+                    'p.prixGasoil as station',
+                    'p.nom',
+                    'p.latitude as lat',
+                    'p.longitude as long',
+                    'p.services');
+
+        if( $mot_cles0 !== "" && $mot_cles1 === ""){
+            $qb = $qb->where("p.adresse LIKE :cles0")
+                ->orWhere("p.departementName LIKE :cles0")
+                ->orWhere("p.nom LIKE :cles0")
+                ->orWhere("p.services LIKE :cles0")
+                ->setParameter('cles0', '%'. $mot_cles0. '%' );
+
+        }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
+            $qb = $qb->where("p.adresse LIKE :cles1")
+                    ->orWhere("p.departementCode LIKE :cles1")
+                    ->orWhere("p.departementName LIKE :cles1")
+                    ->orWhere("p.nom LIKE :cles1")
+                    ->orWhere("p.services LIKE :cles1")
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+        }else{
+            $qb = $qb->where("(p.adresse LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+                ->orWhere("(p.adresse LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
+                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
+                ->orWhere("(p.departementName LIKE :cles0) AND ( p.adresse LIKE :cles1 )")
+                ->orWhere("(p.departementName LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+                ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+        }
+
+        $qb = $qb->setFirstResult($page_current)
+            ->setMaxResults($size)
+            ->orderBy('p.nom', 'ASC')
+            ->getQuery();
+
+        $results =$qb->execute();
+
+        $count = $this->createQueryBuilder("p")
+            ->select("COUNT(p.id) as total");
+
+        if( $mot_cles0 !== "" && $mot_cles1 === ""){
+            $count = $count->where("p.adresse LIKE :cles0")
+                ->orWhere("p.departementName LIKE :cles0")
+                ->orWhere("p.nom LIKE :cles0")
+                ->orWhere("p.services LIKE :cles0")
+                ->setParameter('cles0', '%'. $mot_cles0. '%' );
+
+        }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
+            $count = $count->where("p.adresse LIKE :cles1")
+                    ->orWhere("p.departementCode LIKE :cles1")
+                    ->orWhere("p.departementName LIKE :cles1")
+                    ->orWhere("p.nom LIKE :cles1")
+                    ->orWhere("p.services LIKE :cles1")
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+        }else{
+            $count = $count->where("(p.adresse LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+                ->orWhere("(p.adresse LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
+                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
+                ->orWhere("(p.departementName LIKE :cles0) AND ( p.adresse LIKE :cles1 )")
+                ->orWhere("(p.departementName LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+                ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+        }
+        $count = $count->getQuery()
+                ->getResult();
+
+        return [ $results , $count[0]["total"], "station"];
+    }
+//    /**
+//     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('s.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?StationServiceFrGeom
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
