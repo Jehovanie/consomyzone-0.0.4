@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block body %}
-    <nav class="navbar_mobile_datails navbar navbar-light navbar-light-left mobile_box_shadow mb-3">
+    {# <nav class="navbar_mobile_datails navbar navbar-light navbar-light-left mobile_box_shadow mb-3">
         <div class="content_headers">
             <div class="content_logo">
                 <a href="{{path("app_home")}}">
@@ -23,12 +23,13 @@
                 </a>
             </div>
         </div>
-    </nav>
+    </nav> #}
     <div class="content_body">
         <div class="row">
-            <div class="col-10 mx-auto">
+            <div class="col-12 mx-auto">
                 <div class="left_content_home">
-                    <div class="content_description">
+                    {# <div class="content_description"> #}
+                    <div>
                         <div class="description" data-toggle-latitude="{{(station.latitude)|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{(station.longitude)|format_number({fraction_digit: 6})}}" data-toggle-departement="{{(station.departementCode) ? station.departementCode : 0 }}" data-toggle-namestation="{{station.nom}}" data-toggle-adresse="{{station.adresse}}">
                             
                             <div class="row back-detail">

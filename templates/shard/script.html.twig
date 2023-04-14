@@ -1,0 +1,55 @@
+<script>
+let profilPartisant = document.querySelector("#profilPartisant");
+let fileInputProfil = document.querySelector("#fileInputProfil");
+let avatarPartisant = "";
+
+fileInputProfil.addEventListener("change", (e) => {
+
+        ///read file
+        const fileReader = new FileReader();
+
+        ////on load file
+        fileReader.addEventListener("load", () => {
+
+            avatarPartisant = fileReader.result;
+
+            console.log(avatarPartisant);
+
+            // Change profil
+            profilPartisant.src = avatarPartisant
+
+			if(document.querySelector("#roundedImg") != null){
+				document.querySelector("#roundedImg").src = avatarPartisant
+			}
+
+			let data = {
+            image : avatarPartisant
+            }
+
+            fetch(new Request("/user/profil/update/avatar", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => console.log(response));
+
+        });
+
+        ///run event load in file reader.
+        fileReader.readAsDataURL(e.target.files[0]);
+
+    })
+/*
+	let firstNameProfil = document.querySelector("#firstNameProfil")
+	let lastNameProfil = document.querySelector("#lastNameProfil")
+	let profileImage = document.querySelector("#profileImage")
+	var intials = firstNameProfil.textContent.charAt(0) + lastNameProfil.textContent.charAt(0);
+	profileImage.textContent = intials;
+*/
+
+function ssh(){
+    console.log("dadadada")
+}
+</script>

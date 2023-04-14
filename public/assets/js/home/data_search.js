@@ -75,8 +75,8 @@ function addMarker(map,data){
                     }   
                 }else if ( item.station !== undefined ){
                     if( screen.width < 991){
-                        // window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
-                        getDetailSearchForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
+                        const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
+                        getDetailSearchForMobile(link)
                     }else{
 
                     }
@@ -87,7 +87,6 @@ function addMarker(map,data){
                     }else{
                         alert("ferme detail")
                     }
-                    // window.location= "/ferme/departement/"+ item.depName + "/" + item.dep +"/details/" + item.id;
                 }
             })
 

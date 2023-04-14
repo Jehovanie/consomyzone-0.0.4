@@ -1,0 +1,31 @@
+<div class="content_member_js_jheo">
+    <div class="card mb-2">
+        <div class="card-header">
+            <h4>Partisants dans la tribu G</h4>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Prénom</th>
+                        <th scope="col">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% for item in membersTributG %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{item.firstname}}</td>
+                            <td>{{item.lastname}}</td>
+                            <td>{{item.email}}</td>
+                        </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

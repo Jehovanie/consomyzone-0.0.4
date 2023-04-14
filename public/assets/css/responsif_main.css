@@ -10,6 +10,44 @@
         width: 40vw;
         height: 10vh;
     }
+    .responsif-none-mobile{
+        display: none !important;
+    }
+
+    ul#navBarTribu {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: white;
+      }
+      .bgPersonnalisee{
+        background-image: linear-gradient(#888888 285px, #ffffff 0%);
+        border: none !important;
+        /* height: 450px !important; */
+    }
+    .bgPersonnalisee_tribut{
+        background-image: linear-gradient(#888888 320px, #ffffff 0%);
+        border: none !important;
+        /* height: 350px !important; */
+    }
+
+    .listTribu_t_mobile{
+        margin-top: 100px !important;
+    }
+
+    .tribuT_form{
+        margin-left: 10% !important;
+    }
+    .row_confidentiality{
+        margin-left: 10% !important;
+    }
+
+    .content_block_message{
+        margin-top: 120px !important;
+        height: 100% !important;
+        left : 360px !important;
+    }
 
 }
 
@@ -193,6 +231,304 @@
             width: 100vw;
             height: 100vh;
         }
+        .content_list_menu{
+            width: 60px !important;
+        }
 
+        .account-profils{
+            width: 60px !important;
+        }
+
+
+        .account-profils .rounded-circle{
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 6px;
+            margin-bottom: 13px;
+            overflow-y: scroll !important;
+
+        }
+
+        .content_global , .right_content{
+            width: 100vw;
+            margin-right: 5px;
+        }
+
+        .tribut_t_reponsive{
+            width: 100vw !important;
+            margin-left: 18px !important;
+        }
+        .container-custom{
+            padding: 2px !important;
+            margin-left: 2px !important;
+        }
+
+        .logo{
+            width: 140px !important;
+        }
+        .profilTribu{
+            width: 50vw !important;
+            max-width: 200px !important;
+            left: 0px !important;
+        }
+        .img_account, .nav-icon{
+            width: 30px !important;
+            margin-top: 22px !important;
+        }
+        .img_menu{
+            margin-top: 0 !important;
+        }
+
+        .navbar-mobile{
+            width: 100vw !important;
+            height: 66px !important;
+        }
+
+        .badge_message, .badge_notification{
+            top: 18px !important;
+            left: 18px !important;
+        }
+
+        .fw-bolder{
+            width: 95vw !important;
+        }
+
+        .navbar-brand{
+            font-size: large !important;
+            margin-right: 0 !important;
+        }
+        
+        .container-invitation{
+            margin-left: 30px !important;
+            margin-top: 30px !important;
+            /* width: 100vw !important; */
+            
+        }
+        #panneau{
+            margin: -50px !important;
+            width: 100vw !important;
+        }
+        #onglets{
+            margin-top: 70px !important;
+        }
+        .demande , .invitation-conf, #contenus{
+            width: 95vw !important;
+        }
+
+        .content_left_menu_account_mobile{
+            width: 20vw !important;
+        }
+
+        .notification_popup , .message_popup{
+            right: 2px !important;
+           width: 80vw !important;
+           left: 50px !important;
+        }
+
+        ul.dropdown-menu[data-bs-popper]{
+            width: 60px !important;
+            right: 2px !important;
+            float: right !important;
+            left: 56vw !important;
+        }
+        .na-ul-right{
+            margin-left: -10px !important;
+        }
+
+        .content_right_profil{
+            position: relative !important;
+            margin-left: -43px !important;
+            top: 10px !important;
+            width:109vw !important;
+        }
+        
+        .mobile-responsive{
+            margin-top: -10%;
+        }
+
+        #profilTribu{
+            min-width: 500%;
+            text-align: center;
+            margin-left: 50%;
+        }
+
+        label[for="fileInputTribu"]{
+            margin-left: 80px;
+        }
+
+        .tribuNameContent-mobile, #navBarTribu{
+            font-size: small;
+            color: black;
+        }
+
+        .bgPersonnalisee{
+            background-image: linear-gradient(#888888 320px, #ffffff 0%);
+            border: none !important;
+            /* height: 450px !important; */
+        }
+        .bgPersonnalisee_tribut{
+            background-image: linear-gradient(#888888 320px, #ffffff 0%);
+            border: none !important;
+        }
+
+
+        ul#navBarTribu {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            /*overflow: hidden;*/
+            background-color: white;
+          }
+
+          #navBarTribu > li:nth-child(3){
+            margin-top: 15px;
+          }
+
+          .dropDownMenu{
+            background-color: blue;
+            text-align: justify !important;
+          }
+          .colorWhite{
+            color: white !important;
+          }
+
+
+          .content_right_actualite {
+            width: 100% !important;
+            height: 100vh !important;
+            overflow-y: scroll;
+            /* overflow-x: hidden; */
+            position: relative !important;
+            right: 0;
+            top: 20px !important;
+            padding: 0px !important;
+            margin-left: 0px !important;
+        }
+
+        .contentImage-mobile{
+            width: 180px !important;
+        }
+
+        #btnShowModalAddPub{
+            width: 80% !important;
+            font-size: medium;
+        }
+
+        .user_button{
+            width: 80% !important;
+            margin-left: 25px !important;
+            font-size: small;
+        }
+
+        .rangee{
+            top: 10px !important;
+        }
+
+        .content_bloc_js_jheo{
+            margin-top: 15px !important;
+            background-color: transparent;
+            margin-bottom: 3px !important;
+            border-radius: 5px !important;
+        }
+
+
+        .publication_js_jheo{
+            margin-left: -15px !important;
+            margin-right: -15px !important;
+            margin-bottom: 5px !important;
+
+        }
+
+        .mobile-responsive{
+            margin-bottom: 50px !important;
+        }
+
+        .div_mobile{
+            padding: 0rem!important;
+        }
+
+        .nom_mobile{
+            margin-top: 100px !important;
+            width: 60%;
+        }
+
+        .profil_mobile{
+            margin-top: -10px !important;
+        }
+
+        .right_content{
+            margin-left: 0px !important;
+            margin-right: 15px !important;
+            width: 95vw !important;
+
+        }
+
+        .listpub_mobile{
+            margin-left: 0px !important;
+        }
+
+        .publication_mobile{
+            margin-left: 20px !important;
+        }
+
+        /* .listTribu_t_mobile{
+            margin-left: -150px !important;
+        }*/
+
+        .table-list-membre{
+            margin-left: 0px !important;
+            width: 100% !important;
+        }
+
+        .tribuT_mobile{
+            margin-left: 0px !important;
+            margin-right: 0px !important;
+            width: 100vw !important;
+        }
+
+        .tribuT_form{
+            /* margin-left: 30px !important; */
+            padding-right: 0px !important;
+            width: 95% !important
+        } 
+
+        .setting_mobile{
+            margin-left: 10px !important;
+        }
+
+        .security_mobile{
+            margin-left: 5px !important;
+        }
+
+        /* .confidentialite_mobile{
+            margin-left: -30px !important;
+        } */
+        .col_confidentialite{
+            margin-left: 10px !important;
+        }
+
+        /* .outer_icon_message_mobile{
+            margin-bottom: 17px !important;
+        } */
+
+        #profilTribu {
+            min-width: 100% !important;
+            text-align: center;
+            margin-left: 10px !important;
+        }
+
+        .monTribu_mobile{
+            width: 100% !important;
+        }
+
+        .contentTribu{
+            margin-left: 0px !important;
+            margin-right: 0px !important;
+        }
+      
+        .paper_mobile{
+            margin-bottom: 15px !important;
+        }
 
 }
+

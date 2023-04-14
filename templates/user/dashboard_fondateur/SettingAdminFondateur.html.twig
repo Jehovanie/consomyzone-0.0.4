@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <center>
+            <div class="row">
+                <div class="col-md-1">
+                    <a href="{{path("app_dashboard_fondateur")}}">
+                        <i class="fa-solid fa-arrow-left mt-3" ></i>
+                    </a>
+                </div>
+                <div class="col">
+                    <h2>Paramètre du fondateur </h2>
+                </div>
+            </div>
+        </center>
+
+        <div class="card-setting-validation-fondateur">
+            <div class="row">
+                <div class="col mt-2">
+                    <h5>Mode de validation des publications</h5>
+                </div>
+                <div class="col-md-4">
+                    <div class="switch-radio">
+                        <input type="radio" class="switch-radio-input radio-publi" name="view" value="auto-valid" id="auto-valid" checked data>
+                        <label for="auto-valid" class="switch-radio-label switch-radio-label-off">Auto</label>
+                        <input type="radio" class="switch-radio-input radio-publi" name="view" value="man-valid" id="man-valid">
+                        <label for="man-valid" class="switch-radio-label switch-radio-label-on">Man</label>
+                        <span class="switch-radio-selection"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col mt-2">
+                    <h5>Voir les signial</h5>
+                </div>
+                <div class="col-md-2">
+                    <i class="fa-solid fa-plus text-dark"></i>
+                </div>
+            </div>
+
+        </div>
+
+        
+
+    </div>
+
+	
+{% endblock %}
+

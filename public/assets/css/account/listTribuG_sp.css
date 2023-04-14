@@ -1,0 +1,49 @@
+.content_right{
+    display: block;
+    width: 78%;
+    overflow: scroll;
+    padding: 40px;
+    float: right;
+}
+
+.entete{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.entete h1 {
+    margin-left: 50px;
+}
+
+.content_cherche{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.content_cherche {
+    width: 30%;
+    position: relative;
+}
+
+.content_cherche input {
+    border-radius: 30px;
+    padding: 12px;
+    width: 100%;
+    padding-left: 20px;
+}
+
+.content_cherche button {
+    border-radius: 50%;
+    color: white;
+    position: absolute;
+    right: 7px;
+}
+
+a {
+    cursor: pointer;
+}
+
+.btn_search .fa-solid {
+    color: white;
+}

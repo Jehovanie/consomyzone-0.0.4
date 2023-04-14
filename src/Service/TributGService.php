@@ -171,9 +171,11 @@ class TributGService extends PDOConnexionService{
 
                         pub_id int(11) NOT NULL,
 
-                        commentaire VARCHAR(250) NOT NULL,
+                        commentaire VARCHAR(250) NULL,
 
                         userfullname VARCHAR(250) NOT NULL,
+
+                        audioname VARCHAR(250) NULL,
 
                         datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
@@ -953,7 +955,7 @@ class TributGService extends PDOConnexionService{
 
      */
 
-    public function handlePublicationComment( $publication_id , $user_comment_id, $comment ){
+    public function handlePublicationComment( $publication_id , $user_comment_id, $comment, $audioname ){
 
 
 
@@ -963,7 +965,7 @@ class TributGService extends PDOConnexionService{
 
 
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname) values (:user_id, :pub_id, :commentaire, :userfullname)");
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
 
 
 
@@ -974,6 +976,8 @@ class TributGService extends PDOConnexionService{
         $statement->bindParam(':commentaire', $comment);
 
         $statement->bindParam(':userfullname', $userfullname);
+
+        $statement->bindParam(':audioname', $audioname);
 
         
 

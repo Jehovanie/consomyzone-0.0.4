@@ -1,0 +1,284 @@
+<!-- Modal new publication-->
+<div class="modal fade" id="modal_publication" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {{form_start(newPub, {'method': 'POST'})}}
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle publication</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    {{form_row(newPub.legend)}}
+                </div>
+				<div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                    {{form_row(newPub.confidentiality)}}
+                </div>
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Photo</label>
+                    {{form_row(newPub.photo)}}
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
+                <input type="submit" class="btn btn-primary" value="Envoyer">
+            </div>
+        </div>
+    </div>
+    {{form_end(newPub)}}
+</div>
+<!-- End Modal-->
+
+<!-- Modal update publication-->
+<div class="modal fade" id="modal_publication_modif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modifier publication</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pub_id_modif">
+
+                <div class="mb-3">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    <textarea class="form-control" id="message-text_modif" maxlength="3000"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                    <select class="form-control" id="option_modif">
+                        <option value="1">Publique</option>
+                        <option value="2">Ami(e)s</option>
+                        <option value="3">Moi uniquement</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <input type="button" class="btn btn-primary" data-bs-dismiss="modal"  value="Modifier" onclick="updatePublication()">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal-->
+
+
+<!-- Modal update Com-->
+<div class="modal fade" id="modal_commentaire_modif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabelCom">Modifier commentaire</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="comment_id_modif">
+
+                <div class="mb-3">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    <textarea class="form-control" id="comment_text_modif" maxlength="3000"></textarea>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <input type="button" class="btn btn-primary" data-bs-dismiss="modal"  value="Modifier" onclick="updateCommentaire()">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal-->
+
+<!-- Modal Delete Pub-->
+<div class="modal fade" id="deletePubModalConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel_pub">Suppression</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <span>Voulez-vous confirmer la suppression ?</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Annuler</button>
+        <button type="button" class="btn btn-outline-danger" id="data-pub-id" onclick="removePublication(this)" data-bs-dismiss="modal"><i class="bi bi-trash3"></i> Oui</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+
+<!-- Modal Delete Com-->
+<div class="modal fade" id="deleteCommModalConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel_pub">Suppression</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <span>Voulez-vous confirmer la suppression ?</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Annuler</button>
+        <button type="button" class="btn btn-outline-danger" id="data-pub-id-comm" onclick="removeCommentaire(this)" data-bs-dismiss="modal"><i class="bi bi-trash3"></i> Oui</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+
+<!-- Modal agenda calendrier -->
+
+<div class="modal fade" id="modal_evenement" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="btn-group">
+					<button type="button" id="data-view" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="bi bi-eye"></i> Calendrier
+					</button>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#"><i class="bi bi-calendar-date"></i>  Calendrier</a></li>
+						<li><a class="dropdown-item" href="#"><i class="bi bi-calendar-event"></i>  Événement</a></li>
+						<li><a class="dropdown-item" href="#"><i class="bi bi-list-task"></i>  Tâche</a></li>
+						<li><a class="dropdown-item" href="#"><i class="bi bi-alarm-fill"></i>  Rappel</a></li>
+                        {% if has_restaurant == true %}
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-cup-hot"></i>  Repas</a></li>
+                        {% endif %}
+					</ul>
+				</div>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="wrapper " id="agenda" style="width:100%">
+					<header>
+						<small class="current-date" id="current-date"></small>
+						<div class="icons">
+							<span id="prev" class="material-symbols-rounded"><i class="bi bi-chevron-left"></i></span>
+							<span id="next" class="material-symbols-rounded"><i class="bi bi-chevron-right"></i></span>
+						</div>
+					</header>
+
+					<div class="calendar">
+					</div>
+
+				</div>
+
+				<div class="tooltipss mt-2">
+					<div class="card" style="width: 100%;padding-left:10px; padding-right:10px; " id="agenda-fetched">
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- end modal agenda -->
+
+<!-- Modal -->
+	<div class="modal fade" id="modal_sendEmail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
+					<button type="button" class="btn-close close_modal_js_jheo" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form class="content_form_send_invitation_email_js_jheo">
+						<div class="form-group content_cc_css_jheo">
+							<label for="exampleFormControlInput1">Destinataires</label>
+							<input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="name@example.com">
+							<a href="#" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+								<span>Cc/Cci</span>
+							</a>
+						</div>
+
+						<div class="collapse" id="tribut-collapse">
+							<div class="form-group multiple_destination_css">
+								<label for="exampleFormControlInput1">Ajouter de Cc</label>
+								<input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'email puis tapez la touche Entrée">
+								<div class="content_chip content_chip_js_jheo">
+									{# <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
+									<div  class="chip"><span>titi@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
+									<div  class="chip"><span>akak@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
+									<div  class="chip"><span>totk@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div> #}
+								</div>
+							</div>
+						</div>
+						<div class="form-group content_objet_css_jheo">
+							<label for="exampleFormControlInput2">Object</label>
+							<input type="text" class="form-control object_js_jheo" id="exampleFormControlInput2" placeholder="Object">
+						</div>
+
+						<div class="form-group">
+							<label for="exampleFormControlTextarea1">Description</label>
+							<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>
+						</div>
+						<div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger close_modal_js_jheo" data-bs-dismiss="modal">Fermer</button>
+								<button type="button" class="btn btn-primary btn_send_invitation_js_jheo">Envoyer l'invitation</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- End Modal-->
+
+<script>
+
+	function addPublication(){
+		let table = "{{table_pub}}";
+		let photo = document.getElementsByName('illustration')[0];
+		let message_body = document.querySelector("#message-text").value;
+		let confid = document.querySelector("#option_conf").value;
+		let data = {
+					publication : message_body,
+					confidentiality : confid,
+					photo :  photo.files[0]
+				}
+
+		console.log([data][0])
+				
+		fetch('/user/tribu/create/'+table, {
+
+			method:"POST",
+
+			body:JSON.stringify(data)
+
+		}).then(function(response){
+
+			return response.json();
+
+		}).then(function(responseData){
+
+			console.log("responseData : "+responseData);
+
+		});
+
+		/*const http = new XMLHttpRequest()
+		http.open('POST', '/user/tribu/create/'+table)
+		http.setRequestHeader('Content-type', 'application/json')
+		http.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+		http.send(JSON.stringify(data))
+		http.onload = function() {
+			console.log(http.responseText);
+			
+		}*/
+		
+	}
+</script>
+

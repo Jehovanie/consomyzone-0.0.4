@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+	<main>
+		<div class="content_left_menu_account fixed-top mt-5 col">
+			<div class="left_menu">
+				{% include ("shard/account_navleft.html.twig" )%}
+			</div>
+		</div>
+		<div class="fixed-top">
+			{{ include('shard/account_navbar.html.twig') }}
+		</div>
+
+		<div class="row account">
+			<center>
+				<h1>
+					<i class="fa-solid fa-users"></i>
+					Liste des membres tribu G
+				</h1>
+			</center>
+
+			<div class="container col content_global_super_admin ">
+				
+				<table class="table table-list-membre table-striped">
+					<thead class="thead-dark">
+						<tr>
+							<th>Nom </th>
+							<th>Prenom</th>
+							<th>Email</th>
+							<th>Adresse</th>
+							<th>Roles</th>
+							<th> </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>Fondateur <i class="fa-solid fa-triangle-exclamation text-danger"></i> <i class="fa-solid fa-thumbs-up text-success"></i></td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+						<tr>
+							<td>Rakoto</td>
+							<td>Papah</td>
+							<td>rakotopapah@gmail.com</td>
+							<td>ANY Atranony 120</td>
+							<td>User</td>
+							<td><a href="{{path('app_dashboardapropos_fondateur')}}" class="btn btn-primary">Administré</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+
+	</main>
+
+
+{% endblock %}

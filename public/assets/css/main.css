@@ -356,7 +356,6 @@ body {
     border-radius: 50px;
 }
 
-
 .recherche-modale .modal-content  .bar-de-recherche {
     display: flex;
     width: 90%;
@@ -411,3 +410,180 @@ body {
     margin-left: 95vw;
 }
 
+/* NAV account  */
+
+li.nav-item.avatar-account-pdp > a > img{
+    width: 45px;
+    height:45px;
+}
+
+.nav-item a{
+    display: flex;
+}
+
+.link_type_menu{
+    display: block;
+    margin-left: 15px;
+}
+
+.content_left_menu {
+    display: block;
+    width: 16%;
+    height: 100vh;
+    width: 160px;
+}
+
+.navbar {
+    box-shadow: 5px 5px 5px rgb(107 107 107 / 5%);
+    background-color: white;
+    padding-top : 0 !important;
+    z-index: 10;
+}
+
+.nav-bar{
+    margin-left: 15px;
+}
+
+.nav-link{
+    display: flex;
+    align-items: center
+}
+
+.content_entete_for_mobile{
+    display: none;
+}
+
+.content_menu_open{
+    display : none;
+}
+
+.content_left_menu{
+    border-right: 1px solid gray;
+    background-color: white;
+}
+
+.content_global{
+    height: 100%;
+}
+
+.content_cart_map {
+    display: block;
+    width: 98%;
+    margin: 0 auto;
+    height: 95%;
+    border-radius: 5px;
+}
+
+
+.right_content{
+    display: block;
+    width: 89%;
+    position: relative;
+    height : 100%;
+    float: right;
+}
+
+
+.b-example-divider {
+    display: flex;
+    justify-content: center;
+    padding-left: 10px;
+}
+
+.b-example-divider .fa-solid {
+    cursor: pointer;
+    font-size: 18pt;
+    font-weight: bolder;
+    margin-left: -56px;
+    margin-top: 28px;
+    margin-bottom: -57px;
+}
+
+.nav li{
+    margin : 10px 0;
+}
+
+li a .station {
+    /* width: 30px; */
+    height: 23px;
+}
+
+
+/* .active{
+    background-color : lightgray;
+} */
+.non_active{
+    cursor: not-allowed !important;
+}
+
+.vertical-line {
+    border-left: 1px solid #ccc;
+    display: inline-block;
+    height: 1080px;
+    margin: 0 180px;
+}
+
+/* jheo: special for filter: checkbox and slider bar. DON'T CHANGE THIS. */
+.bar-de-recherche{
+    display : flex;
+    width : 100%;
+    justify-content:end;
+    font-weight: bolder;
+}
+
+/* .content_filter_global{
+    width: 86%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
+    padding: 0 0 10px 0;
+    margin-right: 15px;
+} */
+
+  
+.content_description{
+    display: block;
+    width: 95%;
+    margin: 5px auto;
+    padding: 25px;
+    height: 98%;
+    background: white;
+    box-shadow: 0px 2px 7px 0px black;
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+    border-radius: 20px;
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.content_description::-webkit-scrollbar {
+    display: none;
+}
+
+.content_checkbox_filter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.content_input_pass{
+    position : relative;
+}
+.content_input_pass input{
+    z-index: 5;
+}
+.content_input_pass i{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+.content_left_menu_account{
+    z-index: 0 !important;
+}

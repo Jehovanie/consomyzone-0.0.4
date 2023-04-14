@@ -248,7 +248,9 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                     ////delete old card
 
-                    deleteCardElement();
+                    //deleteCardElement();
+
+                    document.querySelector(".content_card_notification_jheo_js").innerHTML ="";
 
 
 
@@ -971,4 +973,12 @@ function createBadgeNotifContent(){
 
     }
 
+}
+
+let langue = localStorage.getItem("langue")
+
+if(langue){
+    console.log("langue exist")
+}else{
+    console.log("langue n'existe pas")
 }

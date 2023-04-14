@@ -1,0 +1,139 @@
+<!-- Modal new publication-->
+<div class="modal fade" id="modal_publication_tributG" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {{form_start(new_publication, {'method': 'POST'})}}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle publication</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Message</label>
+                        {{form_row(new_publication.legend)}}
+                    </div>
+                    <div class="mb-3">
+                        <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                        {{form_row(new_publication.confidentiality)}}
+                    </div>
+                    <div class="mb-3">
+                        <label for="formFileMultiple" class="form-label">Photo</label>
+                        {{form_row(new_publication.photo)}}
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
+                    <input type="submit" class="btn btn-primary send_new_pub_js_jheo" value="Envoyer">
+                </div>
+            </div>
+        </div>
+    {{form_end(new_publication)}}
+</div>
+<!-- End Modal-->
+
+<!-- Modal update publication-->
+<div class="modal fade" id="modal_publication_modif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modifier publication</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pub_id_modif">
+
+                <div class="mb-3">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    <textarea class="form-control" id="message-text_modif" maxlength="3000"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                    <select class="form-control" id="option_modif">
+                        <option value="1">Publique</option>
+                        <option value="2">Ami(e)s</option>
+                        <option value="3">Moi uniquement</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <input type="button" class="btn btn-primary" data-bs-dismiss="modal"  value="Modifier" onclick="updatePublication()">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal-->
+
+
+<!-- Modal Delete Pub-->
+<div class="modal fade" id="deletePubModalConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel_pub">Suppression</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <span>Voulez-vous confirmer la suppression ?</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Annuler</button>
+        <button type="button" class="btn btn-outline-danger" id="data-pub-id" onclick="removePublication(this)" data-bs-dismiss="modal"><i class="bi bi-trash3"></i> Oui</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+
+
+<!-- Modal agenda calendrier -->
+
+<div class="modal fade" id="modal_evenement" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="btn-group">
+					<button type="button" id="data-view" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="bi bi-eye"></i> Calendrier
+					</button>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#"><i class="bi bi-calendar-date"></i>  Calendrier</a></li>
+						<li><a class="dropdown-item" href="#"><i class="bi bi-calendar-event"></i>  Événement</a></li>
+						<li><a class="dropdown-item" href="#"><i class="bi bi-list-task"></i>  Tâche</a></li>
+						<li><a class="dropdown-item" href="#"><i class="bi bi-alarm-fill"></i>  Rappel</a></li>
+                        {# <li><a class="dropdown-item" href="#"><i class="bi bi-cup-hot"></i>  Repas</a></li> #}
+					</ul>
+				</div>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="wrapper " id="agenda" style="width:100%">
+					<header>
+						<small class="current-date" id="current-date"></small>
+						<div class="icons">
+							<span id="prev" class="material-symbols-rounded"><i class="bi bi-chevron-left"></i></span>
+							<span id="next" class="material-symbols-rounded"><i class="bi bi-chevron-right"></i></span>
+						</div>
+					</header>
+
+					<div class="calendar">
+					</div>
+
+				</div>
+
+				<div class="tooltipss mt-2">
+					<div class="card" style="width: 100%;padding-left:10px; padding-right:10px; " id="agenda-fetched">
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- end modal agenda -->

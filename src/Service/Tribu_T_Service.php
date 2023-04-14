@@ -132,6 +132,8 @@ class Tribu_T_Service extends PDOConnexionService
 
                         commentaire VARCHAR(250) NOT NULL,
 
+                        audioname VARCHAR(250) NULL,
+
                         userfullname VARCHAR(250) NOT NULL,
 
                         datetime timestamp NOT NULL DEFAULT current_timestamp(),
@@ -648,11 +650,11 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    public function createComent($table_comment, $user_id, $pub_id, $commentaire)
+    public function createComent($table_comment, $user_id, $pub_id, $commentaire, $audioname)
 
     {
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname) values (:user_id, :pub_id, :commentaire, :userfullname)");
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
 
         $userfullname = $this->getFullName($user_id);
 
@@ -664,6 +666,7 @@ class Tribu_T_Service extends PDOConnexionService
 
         $statement->bindParam(':userfullname', $userfullname);
 
+        $statement->bindParam(':audioname', $audioname);
 
 
         $result = $statement->execute();
