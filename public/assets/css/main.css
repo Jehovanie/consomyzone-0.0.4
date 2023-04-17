@@ -201,6 +201,18 @@ body {
 }
 
 
+
+#close-detail-tous-resto {
+    position: absolute;
+    left: 40vh;
+    top: 10px;
+    fill: #1111FE;
+}
+
+#close-detail-tous-resto:hover {
+    fill: #000;
+}
+
 #close-detail-ferme {
     position: absolute;
     left: 40vh;
@@ -586,4 +598,16 @@ li a .station {
 }
 .content_left_menu_account{
     z-index: 0 !important;
+}
+
+/* WORK TOMM */
+.list-depart-all-detail-tous{
+    position: absolute;
+    width: 26vw !important;
+    height: 71vh;
+    z-index: 407;
+}
+
+.list-depart-all-detail-tous h4{
+    font-size: 14pt;
 }

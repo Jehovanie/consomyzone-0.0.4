@@ -361,7 +361,7 @@ class FermeGeomRepository extends ServiceEntityRepository
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 1, $size= 20 )
     {
-        // $page_current =$page > 1 ? $page * 10 +1  : 0;
+        $page_current =$page > 1 ? $page * 10 +1  : 0;
         // const { adresseFerme: add , departement: dep , departementName: depName, nomFerme: nom } = item ;
         // // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder('p')

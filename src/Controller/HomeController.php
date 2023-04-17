@@ -116,7 +116,7 @@ class HomeController extends AbstractController
             "departements" => $departementRepository->getDep(),
         ]);
     }
-
+    
     #[Route("/fetch-all-data-home" , name:"app_api_fetch_data", methods: "POST")]
     public function apiFetchDataAction(
         Request $request,

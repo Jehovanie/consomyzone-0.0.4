@@ -188,11 +188,11 @@ function getDetail(nom_dep, id_dep, id_restaurant) {
             return response.text()
         }).then(r => {
            document.querySelector("#content-details").innerHTML = null
-           document.querySelector("#content-details").innerHTML = r
+            document.querySelector("#content-details").innerHTML = r
+            
+            document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
+                remove.setAttribute("class", "hidden")
+            })
         })
     
 }
-
-document.querySelector("#close-detail").addEventListener("click", () => { 
-    remove.setAttribute("class", "hidden")
-})

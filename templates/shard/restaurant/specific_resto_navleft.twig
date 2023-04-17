@@ -132,7 +132,7 @@
                 <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
                     {% for restaurant in restaurants %}
                             <ul>
-                                <li class="card-list">
+                                <li class="card-list"  onclick="getDetail('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
                                     <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{(restaurant.poiY) ? restaurant.poiY : '0' }}" data-toggle-longitude="{{(restaurant.poiX) ? restaurant.poiX : '0'}}">
                                         <div class="col-md-9">
                                             <p>
@@ -142,7 +142,7 @@
                                             </p>
                                         </div>
                                         <div class="col-md-2">
-                                            <a id="open-detail" onclick="getDetail('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
+                                            <a id="open-detail">
                                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
                                                     <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 

@@ -91,8 +91,11 @@ class BddRestoRepository extends ServiceEntityRepository
 
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-    
+        // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
+        //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
+        // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,
@@ -345,10 +348,10 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.tel,
                     r.poiX,
                     r.poiY")
-            // ->groupBy("r.denominationF, r.poiX, r.poiY")
-            // ->having('count(r.denominationF)=1')
-            // ->andHaving('count(r.poiX)=1')
-            // ->andHaving('count(r.poiY) =1')
+            ->groupBy("r.denominationF, r.poiX, r.poiY")
+            ->having('count(r.denominationF)=1')
+            ->andHaving('count(r.poiX)=1')
+            ->andHaving('count(r.poiY) =1')
             ->getQuery()
             ->getResult();
     }

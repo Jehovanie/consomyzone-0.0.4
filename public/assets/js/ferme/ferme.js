@@ -36,8 +36,8 @@
 // 				});
 				
 // 			},
-// 			error : function(xhr, textStatus, errorThrown) { 
-// 				alert(textStatus); 
+// 			error : function(xhr, textStatus, errorThrown) {
+// 				alert(textStatus);
 // 				console.log('Ajax request failed.');
 // 			}
 // 		});
@@ -47,6 +47,7 @@
 // 	})
 // }
 /*format numero*/
+// let items = document.querySelector("#content-details-ferme > div > div.left_content_home > div > div > div.content_tel > ul > li")
 let items = document.querySelectorAll("body > main > div.content_global > div > div > div.left_content_home > div > div > div.content_tel > ul > li")
 items.forEach(item => {
 	let r = item.textContent.replace(/[^0-9]/g, "").split("")

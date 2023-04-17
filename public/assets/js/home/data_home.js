@@ -56,7 +56,6 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                 document.querySelector("#map").appendChild(content_filter);
             }
 
-
             const content_filter_dep = document.createElement("div");
             content_filter_dep.className = "content_filter_dep";
 
