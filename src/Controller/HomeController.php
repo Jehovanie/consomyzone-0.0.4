@@ -95,6 +95,13 @@ class HomeController extends AbstractController
                         "resto" => null,
                         "ferme" => $fermeGeomRepository->getLatitudeLongitudeFerme(),
                     ]);
+                
+                case "resto":
+                    return $this->json([
+                        "station" => null,
+                        "ferme" => null,
+                        "resto" => $bddRestoRepository->getAllOpenedRestos(),
+                    ]);
 
                 default:
                     break;

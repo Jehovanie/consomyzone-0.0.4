@@ -1,15 +1,10 @@
 <div class="content_home">
-<<<<<<< HEAD
-=======
-	
->>>>>>> worck-tomm
 	<div class="left_content_home">
 		<div class="content_description">
 			<div class="description" data-toggle-latitude="{{(station.latitude)|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{(station.longitude)|format_number({fraction_digit: 6})}}" data-toggle-departement="{{(station.departementCode) ? station.departementCode : 0 }}" data-toggle-namestation="{{station.nom}}" data-toggle-adresse="{{station.adresse}}">
 				
 				<div class="row back-detail">
 					<div class="content_entete_detail">
-<<<<<<< HEAD
 						{# <div class="content_retour">
 							<a href="{{path('specific_station_departement', {'depart_name':departName, 'depart_code': departCode }) }}">
 								<i class="fa-solid fa-arrow-left" title="list de département"></i>
@@ -19,17 +14,6 @@
 						{# <div class="content_bottom" id="hide_list">
 							<i class="fa-solid fa-eye-slash" aria-hidden="true"></i>
 						</div> #}
-=======
-						<div class="content_retour">
-							<a href="{{path('specific_station_departement', {'depart_name':departName, 'depart_code': departCode }) }}">
-								<i class="fa-solid fa-arrow-left" title="list de département"></i>
-							</a>
-						</div>
-
-						<div class="content_bottom" id="hide_list">
-							<i class="fa fa-eye-slash" aria-hidden="true"></i>
-						</div>
->>>>>>> worck-tomm
 					</div>
 
 					<div class="content_title col-lg-11">
@@ -56,7 +40,7 @@
 					{% endif %}
 				</div>
 
-				<div class="content_tow_cta">
+				<div class="content_tow_cta d-flex justify-content-evenly my-2">
 					<div class="site_web non_active">
 						<button class="btn btn-primary rounded" style="cursor: not-allowed;">
 							Lien :  site Web
@@ -64,7 +48,7 @@
 					</div>
 
 					<div class="iteneraire non_active">
-						<button class="btn btn-secondary rounded" style="cursor: not-allowed;">
+						<button class="btn btn-primary rounded" style="cursor: not-allowed;">
 							Itinéraire
 						</button>
 					</div>

@@ -100,7 +100,8 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                                 // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                                 window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
                                 // getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
-                            
+                            }else{
+                                getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                             }
                         })
                         
@@ -199,10 +200,7 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
         });
 }
 
-
-
 /* generate filter right */
-
 function generate_filter( parent , id, textContent , state = true , none = false ){
 
     const div_filter = document.createElement("div");
@@ -505,6 +503,8 @@ function addMap(data,dep){
                     if( screen.width<991 ){
                         // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                         window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
+                        // getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
+                    
                     }else{
                         getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                     }
@@ -538,6 +538,31 @@ function addMap(data,dep){
                     setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
                     // window.location = pathDetails;
 
+                    let screemMax = window.matchMedia("(max-width: 1000px)")
+                    let screemMin = window.matchMedia("(min-width: 1000px)")
+                    let remove = document.getElementById("remove-detail-ferme")
+                    
+                    if (screemMax.matches) {
+                        location.assign(pathDetails)
+                    } else if (screemMin.matches) {
+                        remove.removeAttribute("class", "hidden");
+                        remove.setAttribute("class", "navleft-detail fixed-top");
+                        var myHeaders = new Headers();
+                        myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
+                        fetch(pathDetails, myHeaders)
+                            .then(response => {
+                                return response.text()
+                            }).then(r => {
+                                document.querySelector("#content-details-ferme").innerHTML = null
+                                document.querySelector("#content-details-ferme").innerHTML = r
+                            
+                                document.querySelector("#close-detail-ferme").addEventListener("click", () => {
+                                    document.querySelector("#content-details-ferme").style.display = "none"
+                                })
+                                document.querySelector("#content-details-ferme").removeAttribute("style")
+                            })
+                    }
+
                 });
                 
                 markers.addLayer(marker);
@@ -550,7 +575,6 @@ function addMap(data,dep){
 
                 const departementName = item.depName
 
-                var pathDetails ="/restaurant/departement/"+ departementName + "/" + item.dep +"/details/" + item.id;
         
                 const adresseRestaurant=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
                 const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
@@ -569,6 +593,37 @@ function addMap(data,dep){
                     }
                     setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
                     // window.location = pathDetails;
+
+                    
+                    let screemMax = window.matchMedia("(max-width: 1000px)")
+                    let screemMin = window.matchMedia("(min-width: 1000px)")
+                    let remove = document.getElementById("remove-detail")
+                    
+                    if (screemMax.matches) {
+                        var pathDetails =`/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                        location.assign(pathDetails)
+                    } else if (screemMin.matches) {
+                        
+                        remove.removeAttribute("class", "hidden");
+                        remove.setAttribute("class", "navleft-detail fixed-top")
+
+                        var myHeaders = new Headers();
+                        myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+                        fetch(`/restaurant/departement/${departementName}/${item.dep}/details/${item.id}`, myHeaders)
+                            .then(response => {
+                                return response.text()
+                            }).then(r => {
+                            document.querySelector("#content-details").innerHTML = null
+                            document.querySelector("#content-details").innerHTML = r
+                            
+                            document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
+                                document.querySelector("#content-details").style.display = "none"
+                            })
+                            document.querySelector("#content-details").removeAttribute("style")
+                            
+                        })
+                        
+                    }
 
                 });
                 
@@ -604,10 +659,10 @@ function getDetailHomeForMobile(link) {
         document.querySelector(".show_detail_for_mobile_js_jheo").click();
     }
 
-    fetchDetails(".content_detail_home_js_jheo",link)
+    fetchDetailsVialink(".content_detail_home_js_jheo",link)
 }
 
-function fetchDetails(selector, link){
+function fetchDetailsVialink(selector, link){
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
@@ -620,14 +675,4 @@ function fetchDetails(selector, link){
            document.querySelector(selector).innerHTML = r
         })
     
-}
-
-function getDetailStation(depart_name, depart_code, id) { 
-    // console.log(depart_name, depart_code, id)
-
-    let remove = document.getElementById("remove-detail-station")
-    remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
-
-    fetchDetails("#content-details-station", depart_name,depart_code,id)
 }

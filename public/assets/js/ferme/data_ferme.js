@@ -1,13 +1,3 @@
-window.addEventListener('load', () => {
-    addMapFerme()
-    document.querySelectorAll("#list_departements > div> a").forEach(item => {
-        item.onclick = (e) => {
-            localStorage.removeItem("coordFerme")
-        }
-    })
-});
-
-
 function addMapFerme(nom_dep=null, id_dep=null){
     const geos = []
     let url;
@@ -43,31 +33,32 @@ function addMapFerme(nom_dep=null, id_dep=null){
                     // const nom_dep = item.departement.split(",")[1]?.toString().trim() ? item.departement.split(",")[1]?.toString().trim() : "unknow";
                     // const departementName = item.departementName ? item.departementName : "unknow";
                     const departementName = item.departementName
-					// @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
-					let pathDetails =`/ferme/departement/${departementName}/${item.departement}/details/${item.id}`
-			
                     const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-                    // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-
+                    
                     let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
-              
+                    
 					let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
-					 
+                    
                     marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                     marker.on('click', (e) => {
                         console.log(e)
-                         const coordAndZoom = {
+
+                        // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
+                        let pathDetails =`/ferme/departement/${departementName}/${item.departement}/details/${item.id}`
+                
+                        const coordAndZoom = {
                             zoom: e.target.__parent._zoom+1,
                             coord:e.target.__parent._cLatLng
                         }
                         setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
+
                         let screemMax = window.matchMedia("(max-width: 1000px)")
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         let remove = document.getElementById("remove-detail-ferme")
+
                         if (screemMax.matches) {
                             location.assign(pathDetails)
                         } else if (screemMin.matches) {
-                            
                             remove.removeAttribute("class", "hidden");
                             remove.setAttribute("class", "navleft-detail fixed-top")
                             var myHeaders = new Headers();
@@ -83,9 +74,7 @@ function addMapFerme(nom_dep=null, id_dep=null){
                                         document.querySelector("#content-details-ferme").style.display = "none"
                                     })
                                     document.querySelector("#content-details-ferme").removeAttribute("style")
-                                
                                 })
-                        
                         }
                         
                     })

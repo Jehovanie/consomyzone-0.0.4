@@ -4,6 +4,7 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
 {% endblock %}
 
@@ -31,6 +32,12 @@
             </div>
             <div class="content">
                 <div class="content_cart_map">
+                    <div id="remove-detail-ferme" class="hidden responsif-none">
+                        <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details-ferme"></div>
+                    </div>
+                    <div id="remove-detail" class="hidden responsif-none">
+                        <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
+                    </div>
                     <div class="cart_map">
                         <div class="chargement_content" id="toggle_chargement">
                             <div class="content_box">

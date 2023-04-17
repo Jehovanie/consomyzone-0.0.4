@@ -68,11 +68,34 @@ function addMarker(map,data){
             
             marker.on('click', () => {
                 if( item.resto !== undefined ){
-                    if(screen.width < 991 ){
-                        alert("mobile resto detail")
-                    }else{
-                        alert("resto detail")
-                    }   
+                    let screemMax = window.matchMedia("(max-width: 1000px)")
+                    let screemMin = window.matchMedia("(min-width: 1000px)")
+                    let remove = document.getElementById("remove-detail")
+                    if (screemMax.matches) {
+                        var pathDetails =`/restaurant-mobile/departement/${item.depName}/${item.dep}/details/${item.id}`;
+                        location.assign(pathDetails)
+
+                    } else if (screemMin.matches) {
+                        remove.removeAttribute("class", "hidden");
+                        remove.setAttribute("class", "navleft-detail fixed-top")
+
+                        var myHeaders = new Headers();
+                        myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+                        fetch(`/restaurant/departement/${item.depName.trim()}/${item.dep}/details/${item.id}`, myHeaders)
+                            .then(response => {
+                                return response.text()
+                            }).then(r => {
+                            document.querySelector("#content-details").innerHTML = null
+                            document.querySelector("#content-details").innerHTML = r
+                            
+                            document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
+                                document.querySelector("#content-details").style.display = "none"
+                            })
+                            document.querySelector("#content-details").removeAttribute("style")
+                            
+                        })
+                        
+                    } 
                 }else if ( item.station !== undefined ){
                     if( screen.width < 991){
                         const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
@@ -82,10 +105,31 @@ function addMarker(map,data){
                     }
                     // window.location = "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
                 }else if ( item.ferme !== undefined ){
-                    if( screen.width < 991){
-                        alert("mobile ferme detail")
-                    }else{
-                        alert("ferme detail")
+
+                    var pathDetails ="/ferme/departement/"+ item.depName.trim()  + "/" + item.dep +"/details/" + item.id;
+                    let screemMax = window.matchMedia("(max-width: 1000px)")
+                    let screemMin = window.matchMedia("(min-width: 1000px)")
+                    let remove = document.getElementById("remove-detail-ferme")
+                    
+                    if (screemMax.matches) {
+                        location.assign(pathDetails)
+                    } else if (screemMin.matches) {
+                        remove.removeAttribute("class", "hidden");
+                        remove.setAttribute("class", "navleft-detail fixed-top");
+                        var myHeaders = new Headers();
+                        myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
+                        fetch(pathDetails, myHeaders)
+                            .then(response => {
+                                return response.text()
+                            }).then(r => {
+                                document.querySelector("#content-details-ferme").innerHTML = null
+                                document.querySelector("#content-details-ferme").innerHTML = r
+                            
+                                document.querySelector("#close-detail-ferme").addEventListener("click", () => {
+                                    document.querySelector("#content-details-ferme").style.display = "none"
+                                })
+                                document.querySelector("#content-details-ferme").removeAttribute("style")
+                            })
                     }
                 }
             })

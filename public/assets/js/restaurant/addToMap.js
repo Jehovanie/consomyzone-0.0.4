@@ -4,5 +4,6 @@ window.addEventListener('load', () => {
         item.onclick = (e) => {
             localStorage.removeItem("coord")
         }
-    })  
+    }) 
+    setDataInLocalStorage("type", "restaurant");
 })

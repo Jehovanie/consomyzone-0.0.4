@@ -29,14 +29,14 @@
 		<div class="content_description">
 			<div class="description" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomFerme}}">
 				<div>
-					<div class="content_entete_detail">
+					{# <div class="content_entete_detail">
 						<a href="{{path('specific_departement', {'nom_dep': nom_dep, 'id_dep': id_dep}) }}">
 							<i class="fa-solid fa-arrow-left" title="list de département"></i>
 						</a>
 						<div class="content_bottom" id="hide_list">
 							<i class="fa fa-eye-slash" aria-hidden="true"></i>
 						</div>
-					</div>
+					</div> #}
 
 					{# /// nom et propriété #}
 					<div class="titre col titre-ferme">

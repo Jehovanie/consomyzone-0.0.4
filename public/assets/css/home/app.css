@@ -130,6 +130,11 @@
     overflow-y:hidden;
 }
 
+.navleft-detail {
+    /* height: 100vh; */
+    transform: translate(3vw, 15vh) !important;
+}
+
 @keyframes translateFull {
     0% {
         transform: translateX(-100%);

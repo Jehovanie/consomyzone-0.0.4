@@ -1036,6 +1036,45 @@ function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E
 }
 
 
+function getDetailStation(depart_name, depart_code, id) { 
+    // console.log(depart_name, depart_code, id)
+
+    let remove = document.getElementById("remove-detail-station")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    fetchDetails("#content-details-station", depart_name,depart_code,id)
+}
+
+function getDetailStationForMobile(depart_name, depart_code, id) {
+    // console.log(depart_name, depart_code, id)
+    if(document.querySelector(".btn_retours_specifique_jheo_js")){
+        document.querySelector(".btn_retours_specifique_jheo_js").click();
+    }
+
+    if(document.querySelector(".get_action_detail_on_map_js_jheo")){
+        document.querySelector(".get_action_detail_on_map_js_jheo").click();
+    }
+
+    fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
+}
+
+function fetchDetails(selector, departName, departCode,id){
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
+        .then(response => {
+            return response.text()
+        }).then(r => { 
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
+        })
+    
+}
+
+
 function addListFermeMobile() { 
     
     document.querySelector("#open-navleft-mobile").addEventListener('click', () => {
