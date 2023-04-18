@@ -24,6 +24,7 @@ function addMapFerme(nom_dep=null, id_dep=null){
 			if( parsedResult ){
 
                 var map=create_map_content(geos,id_dep, "home");
+                
 				var markers = L.markerClusterGroup({ 
                     chunkedLoading: true
                 });

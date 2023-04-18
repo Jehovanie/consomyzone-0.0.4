@@ -223,7 +223,7 @@ function create_map_content(geos, id_dep=null, map_for_type="home"){
                                     </g>
                                 </svg>
                             </li>
-                            <li class="home-mobile" id="home-mobile">
+                            <li class="home-mobile" id="home-mobile-connexion">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
                                     <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none">
                                         <path d="M2158 4700 c-97 -24 -184 -64 -271 -123 -37 -26 -71 -47 -75 -47 -18
@@ -371,7 +371,14 @@ function addEventLocation(){
     });
     document.getElementById("mobil-resto").addEventListener('click', () => { 
         location.assign('/restaurant')
+    });home-mobile
+
+    document.getElementById("home-mobile-connexion").addEventListener('click', () => { 
+        alert("toto")
+        location.assign('/connexion')
     });
+
+
 }
 
 function addListFermeMobile() {

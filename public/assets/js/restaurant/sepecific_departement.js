@@ -420,28 +420,18 @@ window.addEventListener('load', () => {
         position: 'verticalcenterl'//left
     }).addTo(map);
 
-    document.querySelector("#home-mobile").addEventListener('click', () => { 
-        location.assign('/')
-    })
-    // addListFermeMobile()
-    document.querySelector("#mobil-ferme").addEventListener('click', () => { 
-        location.assign('/ferme')
-    })
-
-    document.querySelector("#mobil-resto").addEventListener('click', () => { 
-        location.assign('/restaurant')
-      })
+    addEventLocation()
                 
 
-                map.doubleClickZoom.disable();
+      map.doubleClickZoom.disable();
 
-                markers = L.markerClusterGroup({
-                  chunkedLoading: true
-                });
+      markers = L.markerClusterGroup({
+        chunkedLoading: true
+      });
 
-                chargeMapAndMarkers(response1, map, markers)
+      chargeMapAndMarkers(response1, map, markers)
 
-              });
+    });
   } else {
     const dep = new URLSearchParams(window.location.href).get("id_dep")
 	  const url = "/Coord/Spec/Restaurant/" + dep;
