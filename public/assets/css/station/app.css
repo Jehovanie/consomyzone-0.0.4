@@ -155,7 +155,7 @@ input[type="range"]::-moz-slider-thumb{
     display: block;
     font-size: 2rem;
     position: absolute;
-    z-index: 1000;
+    z-index: 2000;
     left: 10px;
 }
 
@@ -205,7 +205,7 @@ input[type="range"]::-moz-slider-thumb{
     display:flex;
     align-items: center;
     justify-content: space-between;
-    width:100%;
+    width:94%;
 }
 
 .content_logo{
@@ -250,7 +250,7 @@ input[type="range"]::-moz-slider-thumb{
     padding: 25px;
 }
 
-.btn_retours svg, .plus svg{
+.plus svg{
     fill: #28BE21;
 }
 

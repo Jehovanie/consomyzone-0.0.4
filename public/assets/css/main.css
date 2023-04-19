@@ -409,6 +409,14 @@ body {
     fill: #000;
 }
 
+.btn_retours svg{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    fill: #fff;
+    background-color: #28BE21;
+}
+
 /* ***************Map**************** */
 
 #map {
