@@ -634,27 +634,3 @@ function addMap(data,dep){
         })
     }
 }
-
-function getDetailHomeForMobile(link) {
-
-    if(document.querySelector(".show_detail_for_mobile_js_jheo")){
-        document.querySelector(".show_detail_for_mobile_js_jheo").click();
-    }
-
-    fetchDetailsVialink(".content_detail_home_js_jheo",link)
-}
-
-function fetchDetailsVialink(selector, link){
-
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
-
-    fetch(link)
-        .then(response => {
-            return response.text()
-        }).then(r => { 
-           document.querySelector(selector).innerHTML = null
-           document.querySelector(selector).innerHTML = r
-        })
-    
-}

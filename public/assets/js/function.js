@@ -1042,6 +1042,30 @@ function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E
 }
 
 
+function getDetailHomeForMobile(link) {
+
+    if(document.querySelector(".show_detail_for_mobile_js_jheo")){
+        document.querySelector(".show_detail_for_mobile_js_jheo").click();
+    }
+
+    fetchDetailsVialink(".content_detail_home_js_jheo",link)
+}
+
+function fetchDetailsVialink(selector, link){
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    fetch(link)
+        .then(response => {
+            return response.text()
+        }).then(r => { 
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
+        })
+    
+}
+
 function getDetailStation(depart_name, depart_code, id, inHome=false) { 
     // console.log(depart_name, depart_code, id)
 

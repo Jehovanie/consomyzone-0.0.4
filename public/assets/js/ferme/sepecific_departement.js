@@ -219,13 +219,15 @@ function chargeMapAndMarkers(parsedResult, map, markers) {
             marker.on('click', (e) => {
                 
                 const coordAndZoom = {
-                zoom: e.target.__parent._zoom+1,
-                coord:e.target.__parent._cLatLng
+                    zoom: e.target.__parent._zoom+1,
+                    coord:e.target.__parent._cLatLng
                 }
-            setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
+
+                setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
+
                 let screemMax = window.matchMedia("(max-width: 1000px)")
                 let screemMin = window.matchMedia("(min-width: 1000px)")
-                let remove = document.getElementById("remove-detail-ferme-spec")
+                let remove = document.getElementById("remove-detail-ferme")
                 if (screemMax.matches) {
                     location.assign(pathDetailsMobile)
                 } else if (screemMin.matches) {
@@ -242,9 +244,9 @@ function chargeMapAndMarkers(parsedResult, map, markers) {
                             document.querySelector("#content-details-ferme").innerHTML = r
                         
                             document.querySelector("#close-detail-ferme").addEventListener("click", () => {
-                                document.querySelector("#content-details-ferme").style.display = "none"
+                                document.querySelector("#remove-detail-ferme").setAttribute("class", "hidden")
                             })
-                            document.querySelector("#content-details-ferme").removeAttribute("style")
+                            // document.querySelector("#content-details-ferme").removeAttribute("style")
                         
                         })
                 

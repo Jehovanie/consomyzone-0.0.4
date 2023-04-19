@@ -249,17 +249,20 @@ if( document.querySelector(".description")){
     });
 }
 
-let remove = document.getElementById("remove-detail-ferme-spec")
 function getDetailFerme(nom_dep, id_dep, id_ferme) { 
+    let remove = document.getElementById("remove-detail-ferme")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
+
+    document.querySelector("#content-details-ferme").innerHTML = null
+
     var myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
     fetch(`/ferme/departement/${nom_dep}/${id_dep}/details/${id_ferme}`, myHeaders)
         .then(response => {
             return response.text()
         }).then(r => { 
-           document.querySelector("#content-details-ferme").innerHTML = null
             document.querySelector("#content-details-ferme").innerHTML = r
 
             document.querySelector("#close-detail-ferme").addEventListener("click", () => { 
