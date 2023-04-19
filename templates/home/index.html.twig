@@ -28,9 +28,7 @@
             </button>
 
             <div class="content_cart_map content_cart_map-respons">
-                <div id="remove-detail-ferme" class="hidden responsif-none">
-                    <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details-ferme"></div>
-                </div>
+                
                 <div id="remove-detail" class="hidden responsif-none">
                     <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
                 </div>
@@ -49,7 +47,7 @@
         
         <button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
-    {% include 'shard/station/detail_station_navleft.twig' %}
+    {% include 'shard/home/detail_home_navleft.twig' %}
     {% include 'shard/home/modalFilterHome.html.twig' %}
-    {% include 'shard/home/modalDetailMobilHome.html.twig' %}
+    {% include 'shard/home/modal_detail_home_mobile.html.twig' %}
 {% endblock %}

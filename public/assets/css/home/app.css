@@ -135,6 +135,19 @@
     transform: translate(3vw, 15vh) !important;
 }
 
+.content_description{
+    height: 75vh !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.content_description::-webkit-scrollbar {
+    display: none;
+}
+.navbar_mobile_datails{
+    width:100%;
+}
+
+
 @keyframes translateFull {
     0% {
         transform: translateX(-100%);

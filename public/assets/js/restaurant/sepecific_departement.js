@@ -102,7 +102,7 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.l_ar);
                   }
                 }).addTo(map);
-                addControlPlaceholdersSpec(map)
+                addControlPlaceholdersresto(map)
                 L.Control.DockPannel = L.Control.extend({
         onAdd: function(map) {
             var el = L.DomUtil.create('button', 'leaflet-bar my-control');
@@ -470,7 +470,7 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.nom);
 					  }
           }).addTo(map);
-      addControlPlaceholdersSpec(map)
+          addControlPlaceholdersresto(map)
       
       L.Control.DockPannel = L.Control.extend({
         onAdd: function(map) {

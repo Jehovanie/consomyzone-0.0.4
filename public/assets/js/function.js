@@ -371,10 +371,9 @@ function addEventLocation(){
     });
     document.getElementById("mobil-resto").addEventListener('click', () => { 
         location.assign('/restaurant')
-    });home-mobile
+    });
 
     document.getElementById("home-mobile-connexion").addEventListener('click', () => { 
-        alert("toto")
         location.assign('/connexion')
     });
 
@@ -1043,14 +1042,15 @@ function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E
 }
 
 
-function getDetailStation(depart_name, depart_code, id) { 
+function getDetailStation(depart_name, depart_code, id, inHome=false) { 
     // console.log(depart_name, depart_code, id)
 
-    let remove = document.getElementById("remove-detail-station")
+    let remove = !inHome ? document.getElementById("remove-detail-station"): document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
 
-    fetchDetails("#content-details-station", depart_name,depart_code,id)
+    const id_selector= !inHome ? "#content-details-station": "#content-details-home";
+    fetchDetails(id_selector, depart_name,depart_code,id)
 }
 
 function getDetailStationForMobile(depart_name, depart_code, id) {
@@ -1077,6 +1077,45 @@ function fetchDetails(selector, departName, departCode,id){
         }).then(r => { 
            document.querySelector(selector).innerHTML = null
            document.querySelector(selector).innerHTML = r
+        })
+    
+}
+
+function getDetailsFerme(pathDetails, inHome=false){
+    let remove = !inHome ? document.getElementById("remove-detail-ferme"): document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+    
+    const id_selector= !inHome ? "#content-details-ferme": "#content-details-home";
+    fetchDetailFerme(id_selector, pathDetails);
+}
+
+function getDetailsFermeForMobile(pathDetails){
+    // location.assign(pathDetails)
+
+    // console.log(depart_name, depart_code, id)
+    if(document.querySelector(".btn_retours_specifique_jheo_js")){
+        document.querySelector(".btn_retours_specifique_jheo_js").click();
+    }
+
+    if(document.querySelector(".get_action_detail_on_map_js_jheo")){
+        document.querySelector(".get_action_detail_on_map_js_jheo").click();
+    }
+
+    // fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
+    fetchDetailFerme(".content_detail_js_jheo",pathDetails)
+}
+
+function fetchDetailFerme(selector,link){
+
+    let myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
+    fetch(link, myHeaders)
+        .then(response => {
+            return response.text()
+        }).then(r => {
+            document.querySelector(selector).innerHTML = null
+            document.querySelector(selector).innerHTML = r
         })
     
 }

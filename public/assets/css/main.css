@@ -166,10 +166,9 @@ body {
 /* *************detail_reto_navleft***************** */
 
 .navleft-detail{
-    background-color: #fff !important;
     width: 25vw;
     /* height: 100vh; */
-    box-shadow: -5px -5px 15px #4d4d4d !important;
+    /* box-shadow: -5px -5px 15px #4d4d4d !important; */
     transform: translate(28vw, 15vh);
     opacity: 1;
     transition: all 1.5s ease-out;
@@ -224,14 +223,14 @@ body {
     fill: #000;
 }
 
-#close-detail-station {
+#close-detail-home, #close-detail-station{
     position: absolute;
-    left: 40vh;
-    top: 10px;
+    top: 15px;
     fill: #1111FE;
+    right: 5px;
 }
 
-#close-detail-station:hover {
+#close-detail-home:hover ,#close-detail-station:hover {
     fill: #000;
 }
 /* ************NavBar************ */

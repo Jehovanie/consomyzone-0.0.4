@@ -14,15 +14,15 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
     }
 
     if( type){
-       if( nom_dep && id_dep){
+        if( nom_dep && id_dep){
            url = url + "&type=" + type;
             if (id_dep == 20) {
                 for (let corse of ['2A', '2B'])
                      geos.push(franceGeo.features.find(element => element.properties.code == corse))
             } else {
-                    geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
+                geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
             }
-       }else{
+        }else{
            url = url + "?type=" + type;
         //    for (let f of franceGeo.features) {
         //     geos.push(f)
@@ -96,12 +96,11 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                             }
                             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
 
+                            // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                             if( screen.width< 991 ){
-                                // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-                                window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
-                                // getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
+                                getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
                             }else{
-                                getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
+                                getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id,inHome=true)
                             }
                         })
                         
@@ -114,16 +113,13 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                 if( fermes ){
                     fermes.forEach(item => {
                         const departementName = item.departementName ? item.departementName : "unknow";
-                        var pathDetails ="/ferme/departement/"+ departementName + "/" + item.departement +"/details/" + item.id;
-
                         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
                         // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
 
                         var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement +"." + adress;
-
                         var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
-                        
                         marker.bindTooltip(title,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
+                        
                         
                         marker.on('click', (e) => {
                             console.log(e)
@@ -132,6 +128,16 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                                 coord:e.target.__parent._cLatLng
                             }
                             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
+
+                            let pathDetails =`/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+                            if( screen.width< 991 ){
+                                getDetailHomeForMobile(pathDetails)
+                            }else{
+                                getDetailsFerme(pathDetails, inHome=true)
+                            }
+
+                            // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
+                           
                             // window.location = pathDetails;
                         })
                         markers.addLayer(marker);
@@ -500,13 +506,11 @@ function addMap(data,dep){
                         coord:e.target.__parent._cLatLng
                     }
                     setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-                    if( screen.width<991 ){
-                        // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-                        window.location = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
-                        // getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
-                    
+                    // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
+                    if( screen.width< 991 ){
+                        getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id)
                     }else{
-                        getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
+                        getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id,inHome=true)
                     }
                 });
                 
@@ -517,12 +521,8 @@ function addMap(data,dep){
         ///all fermes
         if( fermes.length > 0 ){
             fermes.forEach(item => {
-                const departementName = item.departementName ? item.departementName : "unknow";
-                var pathDetails ="/ferme/departement/"+ departementName + "/" + item.departement +"/details/" + item.id;
 
                 const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-                // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-
                 var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement +"." + adress;
 
                 var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
@@ -537,30 +537,12 @@ function addMap(data,dep){
                     }
                     setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
                     // window.location = pathDetails;
-
-                    let screemMax = window.matchMedia("(max-width: 1000px)")
-                    let screemMin = window.matchMedia("(min-width: 1000px)")
-                    let remove = document.getElementById("remove-detail-ferme")
                     
-                    if (screemMax.matches) {
-                        location.assign(pathDetails)
-                    } else if (screemMin.matches) {
-                        remove.removeAttribute("class", "hidden");
-                        remove.setAttribute("class", "navleft-detail fixed-top");
-                        var myHeaders = new Headers();
-                        myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
-                        fetch(pathDetails, myHeaders)
-                            .then(response => {
-                                return response.text()
-                            }).then(r => {
-                                document.querySelector("#content-details-ferme").innerHTML = null
-                                document.querySelector("#content-details-ferme").innerHTML = r
-                            
-                                document.querySelector("#close-detail-ferme").addEventListener("click", () => {
-                                    document.querySelector("#content-details-ferme").style.display = "none"
-                                })
-                                document.querySelector("#content-details-ferme").removeAttribute("style")
-                            })
+                    let pathDetails =`/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+                    if( screen.width< 991 ){
+                        getDetailHomeForMobile(pathDetails)
+                    }else{
+                        getDetailsFerme(pathDetails, inHome=true)
                     }
 
                 });
