@@ -437,6 +437,10 @@ function addMap(data,dep){
         } else {
                 geos.push(franceGeo.features.find(element => element.properties.code == dep))
         }
+    }else{
+        for (let f of franceGeo.features) {
+            geos.push(f)
+        }
     }
     ///delete chargement
     var map=create_map_content(geos,dep, "home")
@@ -499,7 +503,7 @@ function addMap(data,dep){
                 var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/icon_essanceB.png") });
                 marker.bindTooltip(miniFicheOnHover,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
                 
-               marker.on('click', (e) => {
+                marker.on('click', (e) => {
                     console.log(e)
                     const coordAndZoom = {
                         zoom: e.target.__parent._zoom+1,
