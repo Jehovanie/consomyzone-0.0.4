@@ -159,6 +159,14 @@ input[type="range"]::-moz-slider-thumb{
     left: 10px;
 }
 
+.content_show_list_mobile svg{
+    fill: #fff;
+    background-color: #2343ac;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
 .content_main{
     position: relative;
 }
