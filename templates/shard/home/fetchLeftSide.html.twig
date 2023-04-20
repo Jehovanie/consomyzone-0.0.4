@@ -92,8 +92,13 @@
                             </p>
                         </div>
                         <div class="show_details">
+
                             {% set type = item.station is defined ? "station" : (item.ferme is defined ? "ferme" : "resto" ) %}
-                            {% set link = "/station/departement/" ~ item.dep|trans|trim ~ "/" ~ item.depName|trim ~ "/details/" ~ item.id %}
+                            {% if type is same as("station") %}
+                                {% set link = "/station/departement/" ~ item.dep|trans|trim ~ "/" ~ item.depName|trim ~ "/details/" ~ item.id %}
+                            {% elseif type is same as("ferme") %}
+                                {% set link = "/ferme/departement/" ~ item.depName|trans|trim ~ "/" ~ item.dep|trim ~ "/details/" ~ item.id %}
+                            {% endif %}
                             
                             <a class="plus" onclick="getDetailSearchForMobile('{{link}}')">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
