@@ -98,7 +98,7 @@ function addMarker(map,data){
                     } 
                 }else if ( item.station !== undefined ){
                     if( screen.width < 991){
-                        const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
+                        const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;
                         getDetailSearchForMobile(link)
                     }else{
                         getDetailStation(item.dep.toString().trim(), item.depName.trim(), item.id, inHome=true)
@@ -159,6 +159,10 @@ function removeAllMarkers(){
 }
 
 function getDetailSearchForMobile(link) {
+    
+    if(document.querySelector(".btn_retours_jheo_js")){
+        document.querySelector(".btn_retours_jheo_js").click();
+    }
 
     if(document.querySelector(".show_detail_for_mobile_js_jheo")){
         document.querySelector(".show_detail_for_mobile_js_jheo").click();
