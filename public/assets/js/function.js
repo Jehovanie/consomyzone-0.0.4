@@ -1,5 +1,8 @@
 let firstX =0
 let firstY=0
+/*
+
+*/
 function create_map_content(geos, id_dep=null, map_for_type="home"){
     // {# <div id="map"  style="width: 100%;"></div> #}
     
@@ -9,16 +12,19 @@ function create_map_content(geos, id_dep=null, map_for_type="home"){
 	})
 	// var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
     let latlng=null, json= null, zoom=null, centered=null;
-
+    
     if( map_for_type === "station"){
+
         latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
         json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
-        zoom = json ? (json.zoom ? json.zoom :centers[parseInt(id_dep)].zoom) : ( id_dep ? centers[parseInt(id_dep)].zoom : 9 );
+        zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : ( id_dep ? centers[parseInt(id_dep)].zoom : 6 );
     }else if( map_for_type === "home"){
+
         latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
         json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
         zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
     }else if( map_for_type === "ferme"){
+
         latlng = L.latLng(45.55401555223028, 3.9946391799233365);
         json=getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) :latlng
         zoom = json.zoom ? json.zoom: 5;

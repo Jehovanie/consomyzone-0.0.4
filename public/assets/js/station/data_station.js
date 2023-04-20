@@ -171,7 +171,7 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                 for (let corse of ['2A', '2B'])
                      geos.push(franceGeo.features.find(element => element.properties.code == corse))
         } else {
-                geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
+            geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
         }
     }else{
         document.querySelectorAll("#list_departements .element").forEach(item => {
