@@ -1047,6 +1047,19 @@ function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E
     return station + ad + carburants;
 }
 
+function setDefaultMiniFicherForStation(prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
+    const gazole= parseFloat(prixGasoil) !==0 ? `Gazole:${prixGasoil}€,`: ``;
+    const e_85= parseFloat(prixE85) !==0 ? `E85:${prixGasoil}€,`: ``;
+    const sp_95= parseFloat(prixSp95) !==0 ? `Sp95:${prixSp95}€,`: ``;
+    const sp_95_10= parseFloat(prixSp95E10) !==0 ? `Sp9510:${prixSp95E10}€,`: ``;
+    const sp_98= parseFloat(prixSp98) !==0 ? `Sp98${prixSp98}€,`: ``;
+    const gplc= parseFloat(prixGplc) !==0 ? `GPLC:${prixGplc}€,`: ``;
+
+    const default_mini_fiche= `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}${sp_95_10}${sp_98}${gplc}</div>`
+
+    return default_mini_fiche.length> 45 ? `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}<br/>${sp_95_10}${sp_98}${gplc}</div>` : default_mini_fiche
+}
+
 
 function getDetailHomeForMobile(link) {
 
@@ -1100,6 +1113,8 @@ function fetchDetails(selector, departName, departCode,id){
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    console.log(departName,departCode,id);
 
     fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
         .then(response => {
