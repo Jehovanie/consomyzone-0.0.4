@@ -1,5 +1,7 @@
 checkScreen();
 window.addEventListener('load', () => {
+    setDataInLocalStorage("type", "station");
+    
     if( document.querySelector(".content_info_js")){
         const parsedUrl = new URL(window.location.href);
         const type= parsedUrl.searchParams.get("type") ? parsedUrl.searchParams.get("type") : "tous"
@@ -30,7 +32,13 @@ window.addEventListener('load', () => {
         document.getElementById("remove-detail-station").setAttribute("class", "hidden")
     })
 
-    setDataInLocalStorage("type", "station");
+    if( document.querySelectorAll(".list_item_dep_station_js_jheo").length > 0 ){
+        document.querySelectorAll(".list_item_dep_station_js_jheo").forEach(card_dom => {
+            card_dom.addEventListener("click",() => {
+                card_dom.querySelector(".plus")?.click()
+            })
+        })
+    }
 });
 
 
@@ -362,4 +370,9 @@ function changeDapartLinkCurrent(type){
 		}
 	})
 
+}
+
+
+function handleClickOnCardLeft(e){
+    console.log(e)
 }
