@@ -164,7 +164,7 @@
 // });
 
 // document.querySelector("#open-detail").addEventListener("click", () => {
-//     const remove = document.getElementById("remove-detail")
+//     const remove = document.getElementById("remove-detail-spec-resto")
 //     remove.removeAttribute("class", "hidden");
 //     remove.setAttribute("class", "navleft-detail fixed-top")
     
@@ -176,18 +176,20 @@
 
 // })
 
-let remove = document.getElementById("remove-detail")
+let remove = document.getElementById("remove-detail-spec-resto")
 function getDetail(nom_dep, id_dep, id_restaurant) { 
     
-    remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if( remove){
+        remove.removeAttribute("class", "hidden");
+        remove.setAttribute("class", "navleft-detail fixed-top")
+    }
     var myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
     fetch(`/restaurant/departement/${nom_dep}/${id_dep}/details/${id_restaurant}`, myHeaders)
         .then(response => {
             return response.text()
         }).then(r => {
-           document.querySelector("#content-details").innerHTML = null
+            document.querySelector("#content-details").innerHTML = null
             document.querySelector("#content-details").innerHTML = r
             
             document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 

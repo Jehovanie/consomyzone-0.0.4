@@ -176,6 +176,7 @@ body {
     transform: translate(28vw, 15vh);
     opacity: 1;
     transition: all 1.5s ease-out;
+    border-radius: 15px;
 }
 
 .list-depart-all-detail {
