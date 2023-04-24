@@ -494,7 +494,7 @@ function setIcon(urlIcon) {
  */
 function addRestaurantToMap(nom_dep, code_dep) { 
     const geos=[]
-    document.querySelectorAll("#list_departements > ul > li > div").forEach(item => {
+    document.querySelectorAll("#list_departements > ul > li > a > div").forEach(item => {
         const dep=item.dataset.toggleDepartId
         geos.push(franceGeo.features.find(element => element.properties.code == dep))
         console.log(geos) 
