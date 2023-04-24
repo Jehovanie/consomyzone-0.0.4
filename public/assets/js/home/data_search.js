@@ -47,20 +47,20 @@ function addMarker(map,data){
 
                 address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.add;
                 miniFiche_HTML = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nom + ".</br><span class='fw-bolder'> Departement:</span>  <br>" + item.dep +"." + address_HTML;
-                image_icon= "ferme-logo-bleu.png";
+                image_icon= "icon-ferme-new-B.png";
             }else if( item.station !== undefined ){
 
                 miniFiche_HTML =setMiniFicheForStation(item.nom, item.add,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
-                image_icon= "icon_essanceB.png";
+                image_icon= "icon-station-new-B.png";
             }else if( item.resto !== undefined ){
 
                 const fullAdresse=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
                 address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + fullAdresse;
                 miniFiche_HTML = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + item.depName +"." + address_HTML;
-                image_icon= "icon-resto-bleu.png";
+                image_icon= "icon-resto-new-B.png";
             }
 
-            const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIcon(`assets/icon/${image_icon}`) });
+            const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIcon(`assets/icon/NewIcons/${image_icon}`) });
             
             currentTabMarkers.push(marker);
 
