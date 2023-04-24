@@ -1,5 +1,8 @@
 let firstX =0
 let firstY=0
+/*
+
+*/
 function create_map_content(geos, id_dep=null, map_for_type="home"){
     // {# <div id="map"  style="width: 100%;"></div> #}
     
@@ -9,16 +12,19 @@ function create_map_content(geos, id_dep=null, map_for_type="home"){
 	})
 	// var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
     let latlng=null, json= null, zoom=null, centered=null;
-
+    
     if( map_for_type === "station"){
+
         latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
         json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
-        zoom = json ? (json.zoom ? json.zoom :centers[parseInt(id_dep)].zoom) : ( id_dep ? centers[parseInt(id_dep)].zoom : 9 );
+        zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : ( id_dep ? centers[parseInt(id_dep)].zoom : 6 );
     }else if( map_for_type === "home"){
+
         latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
         json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
         zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
     }else if( map_for_type === "ferme"){
+
         latlng = L.latLng(45.55401555223028, 3.9946391799233365);
         json=getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) :latlng
         zoom = json.zoom ? json.zoom: 5;
@@ -491,9 +497,8 @@ function setIcon(urlIcon) {
  * @param {*} id_dep 
  */
 function addRestaurantToMap(nom_dep, code_dep) { 
-    const geos = []
-    
-    document.querySelectorAll("#list_departements > ul > li > div").forEach(item => {
+    const geos=[]
+    document.querySelectorAll("#list_departements > ul > li >  div").forEach(item => {
         const dep=item.dataset.toggleDepartId
         geos.push(franceGeo.features.find(element => element.properties.code == dep))
      })
@@ -1043,15 +1048,53 @@ function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E
     return station + ad + carburants;
 }
 
+function setDefaultMiniFicherForStation(prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
+    const gazole= parseFloat(prixGasoil) !==0 ? `Gazole:${prixGasoil}€,`: ``;
+    const e_85= parseFloat(prixE85) !==0 ? `E85:${prixGasoil}€,`: ``;
+    const sp_95= parseFloat(prixSp95) !==0 ? `Sp95:${prixSp95}€,`: ``;
+    const sp_95_10= parseFloat(prixSp95E10) !==0 ? `Sp9510:${prixSp95E10}€,`: ``;
+    const sp_98= parseFloat(prixSp98) !==0 ? `Sp98${prixSp98}€,`: ``;
+    const gplc= parseFloat(prixGplc) !==0 ? `GPLC:${prixGplc}€,`: ``;
 
-function getDetailStation(depart_name, depart_code, id) { 
+    const default_mini_fiche= `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}${sp_95_10}${sp_98}${gplc}</div>`
+
+    return default_mini_fiche.length> 45 ? `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}<br/>${sp_95_10}${sp_98}${gplc}</div>` : default_mini_fiche
+}
+
+
+function getDetailHomeForMobile(link) {
+
+    if(document.querySelector(".show_detail_for_mobile_js_jheo")){
+        document.querySelector(".show_detail_for_mobile_js_jheo").click();
+    }
+
+    fetchDetailsVialink(".content_detail_home_js_jheo",link)
+}
+
+function fetchDetailsVialink(selector, link){
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+
+    fetch(link)
+        .then(response => {
+            return response.text()
+        }).then(r => { 
+           document.querySelector(selector).innerHTML = null
+           document.querySelector(selector).innerHTML = r
+        })
+    
+}
+
+function getDetailStation(depart_name, depart_code, id, inHome=false) { 
     // console.log(depart_name, depart_code, id)
 
-    let remove = document.getElementById("remove-detail-station")
+    let remove = !inHome ? document.getElementById("remove-detail-station"): document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
 
-    fetchDetails("#content-details-station", depart_name,depart_code,id)
+    const id_selector= !inHome ? "#content-details-station": "#content-details-home";
+    fetchDetails(id_selector, depart_name,depart_code,id)
 }
 
 function getDetailStationForMobile(depart_name, depart_code, id) {
@@ -1072,12 +1115,53 @@ function fetchDetails(selector, departName, departCode,id){
     const myHeaders = new Headers();
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
 
+    console.log(departName,departCode,id);
+
     fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
         .then(response => {
             return response.text()
         }).then(r => { 
            document.querySelector(selector).innerHTML = null
            document.querySelector(selector).innerHTML = r
+        })
+    
+}
+
+function getDetailsFerme(pathDetails, inHome=false){
+    let remove = !inHome ? document.getElementById("remove-detail-ferme"): document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+    
+    const id_selector= !inHome ? "#content-details-ferme": "#content-details-home";
+    fetchDetailFerme(id_selector, pathDetails);
+}
+
+function getDetailsFermeForMobile(pathDetails){
+    // location.assign(pathDetails)
+
+    // console.log(depart_name, depart_code, id)
+    if(document.querySelector(".btn_retours_specifique_jheo_js")){
+        document.querySelector(".btn_retours_specifique_jheo_js").click();
+    }
+
+    if(document.querySelector(".get_action_detail_on_map_js_jheo")){
+        document.querySelector(".get_action_detail_on_map_js_jheo").click();
+    }
+
+    // fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
+    fetchDetailFerme(".content_detail_js_jheo",pathDetails)
+}
+
+function fetchDetailFerme(selector,link){
+
+    let myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
+    fetch(link, myHeaders)
+        .then(response => {
+            return response.text()
+        }).then(r => {
+            document.querySelector(selector).innerHTML = null
+            document.querySelector(selector).innerHTML = r
         })
     
 }

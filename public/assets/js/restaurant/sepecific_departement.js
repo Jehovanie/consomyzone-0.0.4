@@ -99,6 +99,8 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.l_ar);
                   }
                 }).addTo(map);
+                // addControlPlaceholdersresto(map)
+                
                 addControlPlaceholders(map)
                 L.Control.DockPannel = L.Control.extend({
                   onAdd: function(map) {
@@ -467,6 +469,7 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.nom);
 					  }
           }).addTo(map);
+          // addControlPlaceholdersresto(map)
       addControlPlaceholders(map)
       
       L.Control.DockPannel = L.Control.extend({

@@ -32,7 +32,7 @@
     display: block;
     font-size: 2rem;
     position: absolute;
-    z-index: 2000;
+    z-index: 1054;
     left: 10px;
 }
 
@@ -46,7 +46,7 @@
     display:flex;
     align-items: center;
     justify-content: space-between;
-    width:100%;
+    width: 95%;
 }
 .content_logo{
     display: block;
@@ -112,7 +112,7 @@
     padding: 25px;
 }
 
-.btn_retours svg, .plus svg{
+.plus svg{
     fill: #28BE21;
 }
 
@@ -134,6 +134,19 @@
     /* height: 100vh; */
     transform: translate(3vw, 15vh) !important;
 }
+
+.content_description{
+    height: 75vh !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.content_description::-webkit-scrollbar {
+    display: none;
+}
+.navbar_mobile_datails{
+    width:100%;
+}
+
 
 @keyframes translateFull {
     0% {

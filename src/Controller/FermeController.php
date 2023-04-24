@@ -231,35 +231,20 @@ class FermeController extends AbstractController
     }
 
     /** 
-
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
-
      * 
-
      * @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
-
      */
-
     public function detailsFerme(CodeapeRepository $codeApeRep, Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep, $id_ferme): Response
-
     {
-
         $statusProfile = $status->statusFondateur($this->getUser());
 
-
-
-        return $this->render("shard/ferme/details.js.twig", [
-
+        return $this->render("ferme/details_ferme.html.twig", [
             "details" => $fermeGeomRepository->getOneFerme($nom_dep, $id_dep, $id_ferme)[0],
-
             "id_dep" => $id_dep,
-
             "nom_dep" => $nom_dep,
-
             "profil" => $statusProfile["profil"],
-
             "statusTribut" => $statusProfile["statusTribut"],
-
             "codeApes" => $codeApeRep->getCode()
         ]);
     }

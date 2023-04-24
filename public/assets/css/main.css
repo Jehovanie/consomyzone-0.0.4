@@ -80,7 +80,9 @@ body {
     background-color: #e7e7e7;
     width: 18vw;
     height: 10vh;
-    margin-left: -30px;
+    /* margin-left: -40px; */
+    margin-left: -10px;
+    /* margin-left: -30px; */
     margin-bottom: 20px;
     margin-top: 15px;
     border-radius: 30px;
@@ -129,7 +131,8 @@ body {
     background-color: #e7e7e7;
     width: 18vw;
     height: 20vh;
-    margin-left: -40px;
+    /* margin-left: -40px; */
+    margin-left: -10px;
     margin-bottom: 20px;
     border-radius: 40px;
     box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
@@ -167,10 +170,9 @@ body {
 /* *************detail_reto_navleft***************** */
 
 .navleft-detail{
-    background-color: #fff !important;
     width: 25vw;
     /* height: 100vh; */
-    box-shadow: -5px -5px 15px #4d4d4d !important;
+    /* box-shadow: -5px -5px 15px #4d4d4d !important; */
     transform: translate(28vw, 15vh);
     opacity: 1;
     transition: all 1.5s ease-out;
@@ -225,14 +227,14 @@ body {
     fill: #000;
 }
 
-#close-detail-station {
+#close-detail-home, #close-detail-station{
     position: absolute;
-    left: 40vh;
-    top: 10px;
+    top: 15px;
     fill: #1111FE;
+    right: 5px;
 }
 
-#close-detail-station:hover {
+#close-detail-home:hover ,#close-detail-station:hover {
     fill: #000;
 }
 /* ************NavBar************ */
@@ -409,6 +411,14 @@ body {
 
 .recherche-modale .modal-content .bar-de-recherche button svg:hover {
     fill: #000;
+}
+
+.btn_retours svg{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    fill: #fff;
+    background-color: #28BE21;
 }
 
 /* ***************Map**************** */

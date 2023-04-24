@@ -3,7 +3,7 @@
 {% block title %}Ferme ConsoMyZone{% endblock %}
 
 {% block stylesheets %}
-	{# <link rel="stylesheet" href="{{asset('asset/css/ferme/app.css')}}"> #}
+	<link rel="stylesheet" href="{{asset('assets/css/ferme/app.css')}}">
 {% endblock %}
 
 
@@ -60,9 +60,6 @@
                     </g>
                 </svg>
             </div>
-            <div id="remove-detail-ferme" class="hidden responsif-none">
-                <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details-ferme"></div>
-            </div>
             <div class="content_cart_map">
                 <div class="cart_map">
                     <div class="chargement_content" id="toggle_chargement">
@@ -78,5 +75,9 @@
                 </div>
             </div>
         </div>
+        
+        <button type="button" class="d-none get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
+    {% include 'shard/ferme/detail_ferme_navleft.twig' %}
+    {% include 'shard/ferme/modalDetailMobil.html.twig' %}
 {% endblock %}

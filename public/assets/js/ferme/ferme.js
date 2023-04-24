@@ -19,4 +19,9 @@ window.addEventListener('load', () => {
 			item.textContent = item.textContent.replace(/[0-9]/g, "")+" "+num
 		})
 	}
+
+	//// HIDE DETAILS STATION POP UP
+	document.querySelector("#close-detail-ferme").addEventListener("click", () => { 
+		document.getElementById("remove-detail-ferme").setAttribute("class", "hidden")
+	})
 });
