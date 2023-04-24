@@ -56,9 +56,7 @@ window.addEventListener('load', () => {
   document.querySelectorAll("#all_ferme_in_dep > div > a").forEach(item => {
     item.onclick = () => {
       localStorage.removeItem("coord")
-
-    }
-     
+    }  
   })
 
   if (window.location.href.includes("/restaurant/arrondissement/specific")) {
@@ -73,7 +71,6 @@ window.addEventListener('load', () => {
     console.log(cntrJson["arrondissement"][codinsee])
     fetch(url).then(response =>response.json())
               .then(response1 => {
-                
                 tabArray = response1
                 // create_map_content()
                 // if (document.getElementById("content_nombre_result_js_jheo")) {
@@ -102,33 +99,33 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.l_ar);
                   }
                 }).addTo(map);
-                addControlPlaceholdersSpec(map)
+                addControlPlaceholders(map)
                 L.Control.DockPannel = L.Control.extend({
-        onAdd: function(map) {
-            var el = L.DomUtil.create('button', 'leaflet-bar my-control');
-            el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                            width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
-                            preserveAspectRatio="xMidYMid meet">
+                  onAdd: function(map) {
+                      var el = L.DomUtil.create('button', 'leaflet-bar my-control');
+                      el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                                      width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
+                                      preserveAspectRatio="xMidYMid meet">
 
-                                <g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)"
-                                fill="#fff" stroke="none">
-                                    <path d="M99 221 c-20 -20 -29 -39 -29 -61 0 -43 47 -90 90 -90 43 0 90 47 90
-                                    90 0 43 -47 90 -90 90 -22 0 -41 -9 -61 -29z"/>
-                                </g>
-                            </svg>`;
-            el.setAttribute("draggable","true")
-            return el;
-        },
-        onRemove: function(map) {
-    
-        },
-        onClick: ()=>{
-            alert("toto")
-        },
-        onDragend: ()=>{
-            
-        }
-    });
+                                          <g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)"
+                                          fill="#fff" stroke="none">
+                                              <path d="M99 221 c-20 -20 -29 -39 -29 -61 0 -43 47 -90 90 -90 43 0 90 47 90
+                                              90 0 43 -47 90 -90 90 -22 0 -41 -9 -61 -29z"/>
+                                          </g>
+                                      </svg>`;
+                      el.setAttribute("draggable","true")
+                      return el;
+                  },
+                  onRemove: function(map) {
+              
+                  },
+                  onClick: ()=>{
+                      alert("toto")
+                  },
+                  onDragend: ()=>{
+                      
+                  }
+                });
 
     L.control.myControl = function(opts) {
         return new L.Control.DockPannel(opts);
@@ -259,7 +256,7 @@ window.addEventListener('load', () => {
                                     </g>
                                 </svg>
                             </li>
-                            <li class="station">
+                            <li class="station"  id="mobile_station_js_jheo">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
                                 preserveAspectRatio="xMidYMid meet">
@@ -280,7 +277,7 @@ window.addEventListener('load', () => {
                                 </svg>
 
                             </li>
-                            <li class="home-mobile" id="home-mobile">
+                            <li class="home-mobile" id="home-mobile-connexion">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
                                 width="40px" height="40px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
@@ -420,7 +417,7 @@ window.addEventListener('load', () => {
         position: 'verticalcenterl'//left
     }).addTo(map);
 
-    addEventLocation()
+    addEventLocation() 
                 
 
       map.doubleClickZoom.disable();
@@ -435,7 +432,7 @@ window.addEventListener('load', () => {
   } else {
     const dep = new URLSearchParams(window.location.href).get("id_dep")
 	  const url = "/Coord/Spec/Restaurant/" + dep;
-	  console.log(url);
+	  console.log(dep);
     geos.push(franceGeo.features.find(element => element.properties.code == dep))
     fetch(url).then(response => response.json())
               .then(response1 => {
@@ -470,7 +467,7 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.nom);
 					  }
           }).addTo(map);
-      addControlPlaceholdersSpec(map)
+      addControlPlaceholders(map)
       
       L.Control.DockPannel = L.Control.extend({
         onAdd: function(map) {
@@ -628,7 +625,7 @@ window.addEventListener('load', () => {
                                     </g>
                                 </svg>
                             </li>
-                            <li class="station">
+                            <li class="station" id="mobile_station_js_jheo">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
                                 preserveAspectRatio="xMidYMid meet">
@@ -649,7 +646,7 @@ window.addEventListener('load', () => {
                                 </svg>
 
                             </li>
-                            <li class="home-mobile" id="home-mobile">
+                            <li class="home-mobile" id="home-mobile-connexion">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
                                 width="40px" height="40px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
@@ -789,17 +786,18 @@ window.addEventListener('load', () => {
         position: 'verticalcenterl'//left
     }).addTo(map);
 
-    document.querySelector("#home-mobile").addEventListener('click', () => { 
-        location.assign('/')
-    })
-    // addListFermeMobile()
-    document.querySelector("#mobil-ferme").addEventListener('click', () => { 
-        location.assign('/ferme')
-    })
+    // document.querySelector("#home-mobile").addEventListener('click', () => { 
+    //     location.assign('/')
+    // })
+    // // addListFermeMobile()
+    // document.querySelector("#mobil-ferme").addEventListener('click', () => { 
+    //     location.assign('/ferme')
+    // })
 
-    document.querySelector("#mobil-resto").addEventListener('click', () => { 
-        location.assign('/restaurant')
-      })
+    // document.querySelector("#mobil-resto").addEventListener('click', () => { 
+    //     location.assign('/restaurant')
+    //   })
+    addEventLocation()
       
       map.doubleClickZoom.disable();
 
