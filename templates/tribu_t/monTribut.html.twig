@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	
 	<style>
 		a {
 			text-decoration: none;
@@ -80,7 +81,7 @@
 						<div class="row" style="height:100%; margin-top:10%">
 							{% if app.request.get('message') %}
 
-								<div style="margin-left:0%" class="alert alert-success w-50">
+								<div style="margin-left:15%;width:80%;" class="alert alert-success">
 									<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
 									{{ app.request.get('message') }}
 								</div>
@@ -118,7 +119,7 @@
 													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
 												</small>
 											</div> #}
-											<nav class="col-12 responsif-none-mobile">
+											<nav class="col-12 responsif-none-mobile" style="margin-top: 55px;border: 1px gray solid;border-radius: 3px;padding: 3px 3px;">
 												<ul id="navBarTribu">
 													<li class="listNavBarTribu">
 														<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
@@ -131,24 +132,14 @@
 
 													{% endif %}
 													
-													<li class="listNavBarTribu dropdown" style="">
-														<a href="" class="dropdown-toggle" data-bs-toggle="dropdownNavBarTribu" aria-expanded="false">
-															<i class="bi bi-three-dots-vertical"></i>
-														</a>
-														<ul id="dropdownNavBarTribu" class="dropdown-menu">
-
-															<li class="">
-																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
-															</li>
-															<li class="">
-																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
-															</li>
-															<li class="">
-																<a class="dropdown-item souri-non-utilise" style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
-															</li>
-
-														</ul>
-
+													<li class="listNavBarTribu">
+														<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
+													</li>
+													<li class="listNavBarTribu">
+														<a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
+													</li>
+													<li class="listNavBarTribu">
+														<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
 													</li>
 												</ul>
 											</nav>
@@ -198,6 +189,7 @@
 										<div class="mt-5 p-3" id="restaurants" style="display:none;"></div>
 										{# <div class="row p-3 mt-4"></div> #}
 
+
 										<div id="showCreatePub" class="card mb-2 responsif-none">
 											<div class="row p-3">
 												<div class="col-1 rounded-circle">
@@ -211,7 +203,7 @@
 														<i class="bi bi-play-btn-fill"></i>
 															Vidéo
 													</div>
-													<div class="col-3 text-center" style="cursor:pointer;">
+													<div class="col-3 text-center" style="cursor:pointer;"  onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
 														<i class="bi bi-geo-alt-fill">
 														</i>Localisation
 													</div>
@@ -228,7 +220,7 @@
 											</div>
 										</div>
 
-										<div id="showCreatePub" class="card mb-2 responsif-none-mobile">
+										<div id="showCreatePub_mobile" class="card mb-2 mt-2 responsif-none-mobile">
 											<div class="row p-3">
 												<div class="col-1 rounded-circle">
 													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
@@ -241,7 +233,7 @@
 														<i class="bi bi-play-btn-fill"></i>
 															{# Vidéo #}
 													</div>
-													<div class="col-3 text-center" style="cursor:pointer;">
+													<div class="col-3 text-center" style="cursor:pointer;"  onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
 														<i class="bi bi-geo-alt-fill">
 														</i>
 														{# Localisation #}
@@ -376,11 +368,11 @@
 																	<div class="mb-3 row">
 																		<div class="row" id="soundClips"></div>
 	
-																		<div class="col-1 text-center">
+																		<div class="col-2 text-center">
 																			<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
 																			<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
 																		</div>
-																		<div class="col-11 mt-1">
+																		<div class="col-10 mt-1">
 																			<textarea class="form-control" name="commentaire" id="newComment_{{pub.id}}" placeholder = "Votre commentaire..."></textarea>
 																			<span id="comment_vide_{{pub.id}}" class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
 																		</div>
@@ -422,5 +414,5 @@
 	{% include "tribu_t/script.html.twig" %}
 	{% include "tribu_t/modal_publication.html.twig" %}
 	{% include "agenda/script.agenda.html.twig" %}
-	{% include "shard/script.html.twig" %}
+	{# {% include "shard/script.html.twig" %} #}
 {% endblock %}

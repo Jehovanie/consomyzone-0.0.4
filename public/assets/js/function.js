@@ -371,7 +371,7 @@ function addEventLocation(){
     });
     document.getElementById("mobil-resto").addEventListener('click', () => { 
         location.assign('/restaurant')
-    });home-mobile
+    });//home-mobile
 
     document.getElementById("home-mobile-connexion").addEventListener('click', () => { 
         alert("toto")

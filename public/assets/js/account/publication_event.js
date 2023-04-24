@@ -501,7 +501,7 @@ if( document.querySelector(".content_publication_js_jheo")){
 
 
 
-                                const div_mb_3 = document.createElement("div");
+                                /*const div_mb_3 = document.createElement("div");
 
                                 div_mb_3.classList.add("mb-3");
 
@@ -587,7 +587,29 @@ if( document.querySelector(".content_publication_js_jheo")){
 
 
 
-                            form.appendChild(row_btn)
+                            form.appendChild(row_btn)*/
+
+                            form.innerHTML = `
+                            <div class="mb-3 row">
+                                <div class="row" id="soundClips"></div>
+
+                                <div class="col-1 text-center">
+                                    <i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+                                    <i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+                                </div>
+                                <div class="col-11 mt-1">
+                                    <textarea class="form-control" name="commentaire" placeholder="Votre commentaire..." required=""></textarea>
+                                    <span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+                                </div>
+                                <div class="row" id="audiosPlayer"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8"></div>
+                                <div class="col-4 ">
+                                    <input type="button" value="Envoyer" class="btn btn-primary float-end" onclick="handleAndSentNotification(${publication.id}, ${publication.user_id})">
+                                </div>
+                            </div>
+                        `
 
 
 
@@ -624,6 +646,8 @@ if( document.querySelector(".content_publication_js_jheo")){
             const publication_id = publication.getAttribute("data-toggle-pub-id");
             const publication_user_id = publication.getAttribute("data-toggle-pub-user-id");
 
+            addAudio(publication,publication_id)
+
             if( document.querySelector(".form_comment_"+ publication_id)){
 
                 const form_content = document.querySelector(".form_comment_"+ publication_id);
@@ -638,13 +662,14 @@ if( document.querySelector(".content_publication_js_jheo")){
 
                     console.log(form_content.querySelector("textarea").length );
 
-                    if(form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 0 ){
+                    if((form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 0 ) || publication.querySelector("#audio_"+publication_id)){
 
                         createCardComment(
                             publication_id,
                             fullname,
                             datetime,
-                            form_content.querySelector("textarea").value 
+                            form_content.querySelector("textarea").value ,
+                            publication.querySelector("#audio_"+publication_id) ? publication.querySelector("#audio_"+publication_id).src:""
                         );
 
     
@@ -655,7 +680,9 @@ if( document.querySelector(".content_publication_js_jheo")){
 
                             publication_id,
 
-                            form_content.querySelector("textarea").value
+                            form_content.querySelector("textarea").value,
+
+                            publication
 
                         );
 
@@ -777,9 +804,18 @@ function isLike(pub_id, author_id) {
 
 }
 
-function handleCommentPublished(author_id, publication_id , comment){
+function handleCommentPublished(author_id, publication_id , comment, bouton){
 
+    let audioSrc = bouton.querySelector("#audio_" + publication_id) != null ? bouton.querySelector("#audio_" + publication_id).src : ""
+    if(bouton.querySelector("#audio_" + publication_id)){
+        console.log(bouton.querySelector("#audio_" + publication_id).src);
+    }
 
+    if(bouton.querySelector("#soundClips > div.clip")){
+        bouton.querySelector("#soundClips > div.clip").remove();
+        bouton.querySelector("#soundClips > div.iconeDelete").remove();
+        bouton.querySelector("#soundClips").style.display="none"
+    }
 
     fetch("/tributG/publications/comment", {
 
@@ -800,6 +836,7 @@ function handleCommentPublished(author_id, publication_id , comment){
             "publication_id": publication_id,
 
             "comment": comment,
+            "audio": audioSrc
 
         })
 
@@ -857,12 +894,15 @@ function fetchNotification(publication_id){
         }
 
 
-
         if (results.success ){
 
             if( results.comments.length > 0){
 
                 results.comments.forEach(comment => {
+                    let audio
+                    if(comment.audioname){
+                        audio = `/uploads/users/audios/${comment.audioname}`;
+                    }
 
                     createCardComment(
 
@@ -872,7 +912,9 @@ function fetchNotification(publication_id){
 
                         comment.datetime,
 
-                        comment.commentaire
+                        comment.commentaire,
+
+                        audio
 
                     );
 
@@ -886,7 +928,7 @@ function fetchNotification(publication_id){
 
 }
 
-function createCardComment(publication_id, user_fullname,datetime,comment ){
+function createCardComment(publication_id, user_fullname,datetime,comment=null, audio=null ){
 
 
 
@@ -929,19 +971,30 @@ function createCardComment(publication_id, user_fullname,datetime,comment ){
     card_body.appendChild(span_comment);
 
     
+    if(comment){
+        const p_comment = document.createElement("p")
 
-    const p_comment = document.createElement("p")
+        p_comment.classList.add("card-text")
 
-    p_comment.classList.add("card-text")
+        p_comment.innerText = comment;
 
-    p_comment.innerText = comment;
+        card_body.appendChild(p_comment);
+    }
+    
+    if(audio){
 
+        const audio_content = document.createElement("audio")
 
+        audio_content.classList.add("card-text")
 
-    card_body.appendChild(p_comment);
+        audio_content.setAttribute("controls", "")
 
+        audio_content.src = audio;
 
+        card_body.appendChild(audio_content);
 
+    }
+    
     card_comment.appendChild(card_body);
 
     
@@ -1084,4 +1137,118 @@ function removePublication(elem){
             console.log(error)
         })
 
+}
+
+function addAudio(bouton,id){
+    /* For sending media recorder */
+
+    var mediaRecorder
+    let record = bouton.querySelector("#start")
+    let stop = bouton.querySelector("#stop")
+    let soundClips = bouton.querySelector("#soundClips")
+
+    let dateForName = new Date();
+    let month = parseInt(dateForName.getMonth()) + 1
+    if(String(month).length < 2){
+        month = String("0"+month)
+    }
+
+    let dateString = dateForName.getDate() + "_" + month + "_" + dateForName.getFullYear();
+
+    record.addEventListener('click', event => {
+        if (navigator.mediaDevices) {
+        console.log("getUserMedia supported.");
+
+        const constraints = { audio: true };
+        let chunks = [];
+
+        navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then((stream) => {
+            mediaRecorder = new MediaRecorder(stream);
+
+            //visualize(stream);
+
+            mediaRecorder.start();
+            console.log(mediaRecorder.state);
+            console.log("recorder started");
+            record.style.display = "none";
+            stop.style.display = "block";
+
+            mediaRecorder.onstop = (e) => {
+                console.log("data available after MediaRecorder.stop() called.");
+
+                //const clipName = prompt("Enter a name for your sound clip");
+
+                const clipName = dateString+".oga";
+                const clipContainer = document.createElement("div");
+                const iconContainer = document.createElement("div");
+                //clipContainer.classList.add("container");
+                clipContainer.classList.add("col-5");
+                iconContainer.classList.add("col-1");
+                const audio = document.createElement("audio");
+                audio.id = "audio_"+id;
+                const deleteButton = document.createElement("i");
+
+                clipContainer.classList.add("clip");
+                iconContainer.classList.add("iconeDelete");
+                audio.setAttribute("controls", "");
+                audio.classList.add("ml-5");
+                deleteButton.classList.add("bi");
+                deleteButton.classList.add("bi-trash3");
+                deleteButton.style.color = "red"
+                deleteButton.style.marginLeft = "5px"
+                deleteButton.style.cursor = "pointer"
+                deleteButton.style.fontSize = "30px"
+                clipContainer.appendChild(audio);
+                iconContainer.appendChild(deleteButton);
+                soundClips.appendChild(clipContainer);
+                soundClips.appendChild(iconContainer);
+                soundClips.classList.add("mt-3");
+
+                bouton.querySelector("#soundClips").style.display = ""
+                
+                audio.controls = true;
+                const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
+                chunks = [];
+                console.log(blob)
+                //const audioURL = URL.createObjectURL(blob);
+                //audio.src = audioURL;
+                //console.log("recorder stopped");
+
+                var reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function () {
+                var base64String = reader.result;
+                audio.src = base64String
+                console.log('Base64 String - ', base64String);
+                }
+
+                deleteButton.onclick = (e) => {
+                const evtTgt = e.target;
+                evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode.previousElementSibling);
+                evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+                soundClips.classList.remove("mt-3");
+                //evtTgt.parentNode.parentNode.remove();
+                };
+            };
+
+            mediaRecorder.ondataavailable = (e) => {
+                chunks.push(e.data);
+            };
+            })
+            .catch((err) => {
+            alert("Veuillez vérifier votre micro !");
+            console.error(`The following error occurred: ${err}`);
+            });
+        }
+    });
+
+    stop.addEventListener('click', event => {
+        mediaRecorder.stop();
+        console.log(mediaRecorder.state);
+        console.log("recorder stopped");
+        record.style.display = "block";
+        stop.style.display = "none";
+    });
 }

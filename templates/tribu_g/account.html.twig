@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/account/agenda_tribuG.css')}}">
+    {# <link rel="stylesheet" href="{{asset('assets/css/account/agenda_tribuG.css')}}"> #}
+
+    <style>
+
+        .days li.clicked::before{
+			color :white;
+			background:#0d6efd;
+			border: 2px solid red;
+		}
+    
+    </style>
 {% endblock %}
 
 {% block javascripts %}
@@ -85,7 +95,7 @@
     </main>
 
     {% include "tribu_g/modal_publication.html.twig" %}
-    {# {% include "tribu_g/script_agenda_tribug.html.twig" %} #}
+    {% include "tribu_g/script_agenda_tribug.html.twig" %}
 
 {% endblock %}
 

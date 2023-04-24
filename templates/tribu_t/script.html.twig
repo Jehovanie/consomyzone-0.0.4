@@ -10,6 +10,8 @@ let restoContainer = document.querySelector("#restaurants");
 
 let showCreatePub = document.querySelector("#showCreatePub");
 
+let showCreatePub_mobile = document.querySelector("#showCreatePub_mobile");
+
 let showPub = document.querySelector(".showPubBlock");
 
 let table_com = tbl_pub.replace(/_publication$/, "_commentaire");
@@ -168,6 +170,7 @@ function showInvitations(){
             restoContainer.style.display = "none"
             restoContainer.innerHTML = "";
             showCreatePub.style.display = "none"
+            showCreatePub_mobile.style.display = "none"
             showPub.style.display = "none"
 
             /*if (invitationsContainer.style.display == "none") {
@@ -196,6 +199,7 @@ function showActualites(){
     invitationsContainer.innerHTML = "";               
     invitationsContainer.style.display = "none"
     showCreatePub.style.display = "block"
+     showCreatePub_mobile.style.display = "block"
     showPub.style.display = "block"
     photosContainer.style.display = "none"
     photosContainer.innerHTML = "";
@@ -226,7 +230,12 @@ function showPhotos(table_pub){
                     let img = document.createElement('img');
                     //img.classList.add("w-25");
                     img.style.height = "150px"
-                    img.style.width = "24%"
+                    if(screen.width>1000){
+                        img.style.width = "24%"
+                    }else{
+                        img.style.width = "48%"
+                    }
+                    
                     img.style.cursor = "pointer"
                     img.style.marginBottom = "2px"
                     img.style.marginLeft = "2px"
@@ -250,6 +259,7 @@ function showPhotos(table_pub){
             restoContainer.innerHTML = "";
             photosContainer.style.display = "block"
             showCreatePub.style.display = "none"
+             showCreatePub_mobile.style.display = "none"
             showPub.style.display = "none"
 
             /*if (photosContainer.style.display == "none") {
@@ -320,6 +330,7 @@ function showResto(){
             photosContainer.innerHTML = "";
             photosContainer.style.display = "none"
             showCreatePub.style.display = "none"
+             showCreatePub_mobile.style.display = "none"
             showPub.style.display = "none"
 
             /*if (photosContainer.style.display == "none") {
@@ -461,19 +472,14 @@ forms.forEach((bouton) => {
     let pubId = bouton.id.replace(/[^0-9]/g, "");
 
     let source = new EventSource("/events/commentaires?pub_id=" + pubId + "&table=  {{ table_pub }}", { withCredentials: true });
-
     source.onmessage = function (event) {
-
         let nbrReact = JSON.parse(event.data)[0].reaction;
-
         let contentNbReaction = document.querySelector("#nombreReaction" + pubId);
-
         if (nbrReact > 0) {
             contentNbReaction.textContent = nbrReact
         } else {
             contentNbReaction.textContent = "";
         }
-
         if(JSON.parse(event.data)[0].reactionStatus == 1){
             contentNbReaction.nextElementSibling.classList.remove("bi-heart");
             contentNbReaction.nextElementSibling.classList.add("bi-heart-fill");
@@ -483,10 +489,8 @@ forms.forEach((bouton) => {
             contentNbReaction.nextElementSibling.classList.add("bi-heart");
             contentNbReaction.nextElementSibling.style.color = "black";
         }
-
         let comments = "";
         let commentSize = JSON.parse(event.data)[0].comments.length;
-
         if (commentSize > 0) {
             document.querySelector("#commentNotnul_" + pubId).style.display = "block";
             document.querySelector("#nbComment" + pubId).innerHTML = commentSize + " <i class='bi bi-chat-square'></i>";
@@ -494,7 +498,6 @@ forms.forEach((bouton) => {
             document.querySelector("#commentNotnul_" + pubId).style.display = "none";
             document.querySelector("#nbComment" + pubId).innerHTML = "<i class='bi bi-chat-square'></i>";
         }
-
         function showRemoveUpdateComment(id){
             let drop = `<span class="float-end dropstart">
                 <span id="modifComs" class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
@@ -509,19 +512,22 @@ forms.forEach((bouton) => {
                     </li>
                 </ul>
             </span>`;
-
             return drop;
         }
-
         let dropContent = "";
 
-        for (let result of JSON.parse(event.data)[0].comments) {
-            let audio = "";
+        const commentsEvent = JSON.parse(event.data)[0].comments;
 
+        let newCommentsToShow = commentsEvent.filter(comment => document.querySelector("#comment"+comment.id))
+        console.log("newCommentsToShow : ")
+        console.log(newCommentsToShow)
+
+        for (let result of JSON.parse(event.data)[0].comments) {
+            
+            let audio = "";
             if(result.audioname){
                 audio = `<audio controls class="mt-2" src="/uploads/users/audios/${result.audioname}"></audio>`;
             }
-
             if(result.user_id != {{ app.user.id }}){
                 dropContent = "";
             }else{
@@ -537,9 +543,7 @@ forms.forEach((bouton) => {
                 }<br>${audio}</p>
                                         </div>`;
         }
-
         document.querySelector("#comment" + pubId + " > div").innerHTML = comments;
-
     };
 
     /* For sending media recorder */
@@ -800,5 +804,24 @@ fileInputTribu.addEventListener("change", (e) => {
     }
 )
 }
+
+document.querySelectorAll("#navBarTribu > li.listNavBarTribu > a").forEach(menu=>{
+    
+    menu.addEventListener("click", function(){
+        document.querySelectorAll("#navBarTribu > li.listNavBarTribu > a").forEach(item=>{
+            item.classList.remove("active")
+            item.classList.remove("text-white")
+            item.classList.add("text-primary")
+        })
+        if(menu.classList.contains("active") && menu.classList.contains("text-white") ){
+            menu.classList.remove("active")
+            menu.classList.remove("text-white")
+        }else{
+            menu.classList.add("active")
+            menu.classList.add("text-white")
+        }
+        
+    })
+})
 
 </script>

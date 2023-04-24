@@ -53,6 +53,17 @@
     .responsif-none-pc {
         display: none !important;
     }
+
+    .titre-invitation{
+        margin-left: 10% !important;
+    }
+
+    .right_content.contentTribu{
+        margin-left: 15% !important;
+    }
+    .table-list-membre{
+        margin-left: 25% !important;
+    }
 }
 
 @media screen and (max-width:1000px){
@@ -559,7 +570,7 @@
         }
         .img_account, .nav-icon{
             width: 30px !important;
-            margin-top: 22px !important;
+            margin-top: 0px !important;
         }
         .img_menu{
             margin-top: 0 !important;
@@ -571,8 +582,8 @@
         }
 
         .badge_message, .badge_notification{
-            top: 18px !important;
-            left: 18px !important;
+            top: -5px !important;
+            left: 15px !important;
         }
 
         .fw-bolder{
@@ -667,7 +678,7 @@
           }
 
           #navBarTribu > li:nth-child(3){
-            margin-top: 15px;
+            /* margin-top: 15px; */
           }
 
           .dropDownMenu{
@@ -814,6 +825,9 @@
       
         .paper_mobile{
             margin-bottom: 15px !important;
+        }
+        .membre-tribut{
+            margin-top: 20px !important;
         }
 
 }
