@@ -38,7 +38,7 @@ function addMapFerme(nom_dep=null, id_dep=null){
                     
                     let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
                     
-					let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
+					let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
                     
                     marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                     marker.on('click', (e) => {

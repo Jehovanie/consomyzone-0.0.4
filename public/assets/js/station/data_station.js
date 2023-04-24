@@ -227,7 +227,7 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                     // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                     // let pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim() + "/details/" + item.id;
                     let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-                    let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { icon: setIcon("assets/icon/icon_essance.png") });
+                    let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
                    
                     marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
                     marker.on('click', () => {

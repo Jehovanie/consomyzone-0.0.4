@@ -85,7 +85,7 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
                     
                         const miniFicheOnHover =setMiniFicheForStation(item.nom, item.adresse,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
                     
-                        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/icon_essanceB.png") });
+                        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
                         marker.bindTooltip(miniFicheOnHover,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
                         
                         marker.on('click', (e) => {
@@ -121,7 +121,7 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
 
                         var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement +"." + adress;
 
-                        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
+                        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
                         
                         marker.bindTooltip(title,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
                         
@@ -153,7 +153,7 @@ function addMapTous(nom_dep=null, id_dep=null, type=null){
     
                         var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName +"." + adress;
                   
-                        var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/icon-resto-bleu.png') });
+                        var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
                          
                         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                         marker.on('click', (e) => {
@@ -490,7 +490,7 @@ function addMap(data,dep){
             
                 const miniFicheOnHover =setMiniFicheForStation(item.nom, item.adresse,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
                 
-                var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/icon_essanceB.png") });
+                var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
                 marker.bindTooltip(miniFicheOnHover,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
                 
                marker.on('click', (e) => {
@@ -525,7 +525,7 @@ function addMap(data,dep){
 
                 var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement +"." + adress;
 
-                var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
+                var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
                 
                 marker.bindTooltip(title,{ direction:"auto", offset: L.point(0,-30)}).openTooltip();
                 
@@ -582,7 +582,7 @@ function addMap(data,dep){
 
                 var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName +"." + adress;
             
-                var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/icon-resto-bleu.png') });
+                var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
                     
                 marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                  marker.on('click', (e) => {

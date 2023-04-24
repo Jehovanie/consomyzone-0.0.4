@@ -37,7 +37,7 @@ window.addEventListener('load', () => {
 
                 var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
               
-                var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-resto-bleu.png') });
+                var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
 					 
                 marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
                 marker.on('click', (e) => {

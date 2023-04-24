@@ -475,7 +475,7 @@ function setIcon(urlIcon) {
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: url.origin+"/"+urlIcon, ///on dev
-        iconSize: [60, 50],
+        iconSize: [30, 45],
         iconAnchor: [30, 50],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
@@ -882,7 +882,7 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     
                     var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName +"." + adress;
                     
-					var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/icon-resto-bleu.png') });
+					var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
                     
                     marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                     marker.on('click', (e) => {

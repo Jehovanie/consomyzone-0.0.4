@@ -170,7 +170,7 @@ if( document.querySelector(".description")){
 
                             var title = "<span class='fw-bolder'>Ferme: </span> <br>" + item.nomFerme + ".<br><span class='fw-bolder'> Departement: </span> <br>" + item.departement +"." + adress;
 
-                            var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/ferme-logo-bleu.png') });
+                            var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
 
                             
 
