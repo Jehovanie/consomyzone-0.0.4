@@ -178,7 +178,6 @@
 
 let remove = document.getElementById("remove-detail")
 function getDetail(nom_dep, id_dep, id_restaurant) { 
-    
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
     var myHeaders = new Headers();
@@ -187,7 +186,7 @@ function getDetail(nom_dep, id_dep, id_restaurant) {
         .then(response => {
             return response.text()
         }).then(r => {
-           document.querySelector("#content-details").innerHTML = null
+            document.querySelector("#content-details").innerHTML = null
             document.querySelector("#content-details").innerHTML = r
             
             document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
