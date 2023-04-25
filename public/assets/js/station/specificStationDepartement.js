@@ -1,18 +1,23 @@
-window.addEventListener('load', () => {
+/* -------------------------------------------------------------------------------------------------- */
+/* THIS CODE USES THE  INSTANCE  of 'MarckerClusterStation' CREATED IN FILE new_data_station          */
+/*----------------------------------------------------------------------------------------------------*/
+
+
+if(document.querySelectorAll("#list_departements ul > li > div > a")){
     document.querySelectorAll("#list_departements ul > li > div > a").forEach(item => {
         item.onclick = () => {
             localStorage.removeItem("coordStation")
         }
     })
-});
-
+}
 // filter alphabet
+const letters=['','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+
+//const lettersL=letters.length
+let totalPages = letters.length-1, page = 1;
+
 // selecting required element
 const element = document.querySelector(".pagination_alphabet ul");
-const letters=['','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-//const lettersL=letters.length
-let totalPages = letters.length-1;
-let page = 1;
 
 //calling function with passing parameters and adding inside element which is ul tag
 element.innerHTML = createPagination(totalPages, page);
@@ -57,8 +62,10 @@ function createPagination(totalPages, page){
             plength = plength + 1;
         }
         if(page == plength){ //if page is equal to plength than assign active string in the active variable
-            active = "alphabet_active";
-            handleFilterFirstChar(letters[plength]);
+            if(OBJECT_MARKERS_STATION.getAlreadyInit()){
+                active = "alphabet_active";
+                handleFilterFirstChar(letters[plength]);
+            }
         }else{ //else leave empty to the active variable
             active = "";
         }
@@ -77,11 +84,17 @@ function createPagination(totalPages, page){
     if (page < totalPages) { //show the next button if the page value is less than totalPage(20)
         liTag += `<li class=" next" onclick="createPagination(totalPages, ${page + 1})"><span> <i class="fas fa-angle-right"></i></span></li>`;
     }
-
-    liTag += `<li class="list_alphabet" onclick="reverseList()"><span class="alphabet_element arrow_asc_desc_jheo_js asc_jheo_js"><i class="fa-solid fa-arrow-down-a-z"></i></span></li>`
+    const refreshData= `<li class="list_alphabet" onclick="refreshDataList()"><span class="alphabet_element arrow_refresh_data_jheo_js"><i class="fa-solid fa-arrows-rotate"></i></span></li>`
+    const cta_reverselist= `<li class="list_alphabet" onclick="reverseList()"><span class="alphabet_element arrow_asc_desc_jheo_js asc_jheo_js"><i class="fa-solid fa-arrow-down-a-z"></i></span></li>`
+    liTag += refreshData + cta_reverselist;
     element.innerHTML = liTag; //add li tag inside ul tag
 
-  return liTag; //reurn the li tag
+    if( page !== 0 && OBJECT_MARKERS_STATION.getAlreadyInit() ){
+        OBJECT_MARKERS_STATION.filterByFirstLetterOnName(letters[page])
+    }
+    OBJECT_MARKERS_STATION.setAlreadyInit(true)
+
+    return liTag; //reurn the li tag
 }
 
 
@@ -114,6 +127,7 @@ function reverseCardElement(){
 
 function handleFilterFirstChar(letter){
     const all_card_elements=document.querySelectorAll("#list_departements ul .card-list.element");
+    let count_not_hidden=0;
     for(let i=0 ; i<all_card_elements.length ; i++ ){
         if(all_card_elements[i].querySelector(".id_departement").innerText.charAt(0).toLowerCase() !== letter.toLowerCase()){
             all_card_elements[i].classList.add("hidden")
@@ -121,6 +135,21 @@ function handleFilterFirstChar(letter){
             if(all_card_elements[i].classList.contains("hidden")){
                 all_card_elements[i].classList.remove("hidden")
             }
+            count_not_hidden++;
         }
     }
+    document.querySelector(".content_nombre_result_js_jheo").innerText= count_not_hidden;
+}
+
+function refreshDataList(){
+    const all_card_elements=document.querySelectorAll("#list_departements ul .card-list.element");
+    for(let i=0 ; i<all_card_elements.length ; i++ ){
+        if(all_card_elements[i].classList.contains("hidden")){
+            all_card_elements[i].classList.remove("hidden")
+        }
+    }
+    document.querySelector(".content_nombre_result_js_jheo").innerText= all_card_elements.length;
+    document.querySelector(".alphabet_active").classList.remove("alphabet_active");
+
+    OBJECT_MARKERS_STATION.resetToDefaultMarkers();
 }

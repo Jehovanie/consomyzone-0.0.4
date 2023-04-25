@@ -104,7 +104,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             // ->andWhere('p.departementName LIKE :k')
             // ->setParameter('k', '%'. $new_nom_dep. '%' );
 
-        $query = $qb->getQuery();
+        $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
         return $query->execute();
     }
 
@@ -317,7 +317,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'p.longitude');
         }
 
-        $query = $qb->getQuery();
+        $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
         return $query->execute();
     }
 

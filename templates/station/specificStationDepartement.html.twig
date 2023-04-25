@@ -12,12 +12,14 @@
 
 {% block javascripts %}
 	{# // <script type="text/javascript" src="{{ asset('assets/js/station/specifique_filter.js') }}" defer></script> #}
-	<script src="{{asset('assets/js/station/data_station.js')}}" defer></script>
-	<script src="{{asset('assets/js/station/station.js')}}" defer></script>
-	<script src="{{asset('assets/js/station/details.js')}}" defer></script>
+	{# <script src="{{asset('assets/js/station/data_station.js')}}" defer></script> #}
+	<script type="text/javascript" src="{{ asset('assets/js/station/data_station_oop.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/station/new_data_station.js')}}" defer></script>
+
 	<script type="text/javascript" src="{{ asset('assets/js/station/specificStationDepartement.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/station/station.js')}}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/station/details.js')}}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/station/fetchLeftSideSpecifique.js') }}" defer></script>
-	{# // <script type="text/javascript" src="{{ asset('assets/js/station/centers_data_station.js') }}" defer></script> #}
     
 {% endblock %}
 
