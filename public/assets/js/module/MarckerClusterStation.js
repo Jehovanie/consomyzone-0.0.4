@@ -31,9 +31,16 @@ class MarckerClusterStation {
             this.data= this.default_data;
 
             this.removeMarker();
-            this.addMarker(this.data);
-            this.setNumberOfMarker();
             this.generateAllCard();
+            this.setNumberOfMarker();
+
+            if( document.querySelector(".alphabet_active span")){
+                this.filterByFirstLetterOnName(document.querySelector(".alphabet_active span").innerText)
+                handleFilterFirstChar(document.querySelector(".alphabet_active span").innerText)
+            }else{
+                this.addMarker(this.data);
+            }
+
 
         }catch(e){
             console.log(e)
