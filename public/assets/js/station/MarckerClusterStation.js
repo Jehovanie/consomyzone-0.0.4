@@ -268,8 +268,9 @@ class MarckerClusterStation {
 
 
     filterByFirstLetterOnName(letter){
-        this.removeMarker();
         const new_data= [];
+        this.removeMarker();
+        
         this.default_data.forEach(item => {
             if(item.nom.toLowerCase().charAt(0) === letter.toLowerCase()){
                 new_data.push(item)

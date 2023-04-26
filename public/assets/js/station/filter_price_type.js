@@ -1,6 +1,5 @@
 console.log(OBJECT_MARKERS_STATION)
-console.log(dep_name)
-console.log(dep_code)
+
 /// script to manager the user select  in filter checkbox.
 if( document.querySelectorAll(".checkbox_filter .checkbox")){
 	/// filter checkbox type station

@@ -193,14 +193,10 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                             ->setParameter('code', $id_dep);
                     }
                         
-                    $qb= $qb->setParameter('min', $min )
-                            ->setParameter('max', $max );
-
                 //// filter some type not all
                 }else{
                     
                     $var_type = explode("@", $type);
-                    
                     
                     $qb = $this->createQueryBuilder('p')
                         ->select('p.id',
@@ -218,16 +214,14 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.longitude');
 
                     
-                                //// iterate for different type
+                    //// iterate for different type
                     if( $id_dep === "20"){
                         $qb= $qb->where("(p.departementCode = :a OR p.departementCode = :b ) AND (p." . $var_type[0] . " BETWEEN :min AND :max)")
-                            ->setParameter('a',  "2A" )
+                            ->setParameter('a',  "2A")
                             ->setParameter('b',  "2B");
                     }else{
-                        $qb= $qb->setParameter('code', $id_dep)
-                            ->setParameter('code', $id_dep );
+                        $qb= $qb->where("(p.departementCode = :code) AND (p." . $var_type[0] . " BETWEEN :min AND :max)");
                     }
-
 
                     for ( $i = 1; $i< count($var_type); $i++){
                         if( $id_dep === "20"){
@@ -235,13 +229,17 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                     ->setParameter('a',  "2A" )
                                     ->setParameter('b',  "2B");
                         }else{
-                            $qb= $qb->orWhere("(p.departementCode = :code) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)")
-                                ->setParameter('code', $id_dep );
+                            $qb= $qb->orWhere("(p.departementCode = :code) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)");
                         }
                     }
-                    $qb->setParameter('min', $min )
-                        ->setParameter('max', $max );
                 }
+
+                if( $id_dep !== "20"){
+                    $qb->setParameter('code', $id_dep );
+                }
+
+                $qb->setParameter('min', $min )
+                   ->setParameter('max', $max );
 
             /// for all departement
             }else{
@@ -298,7 +296,6 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     ->setParameter('max', $max );
                 }
             }
-        
         //// filter first without min and max
         }else{
             $qb = $this->createQueryBuilder('p')
@@ -316,7 +313,6 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'p.latitude',
                         'p.longitude');
         }
-
         $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
         return $query->execute();
     }

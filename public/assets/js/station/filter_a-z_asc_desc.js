@@ -65,6 +65,7 @@ function createPagination(totalPages, page){
             if(OBJECT_MARKERS_STATION.getAlreadyInit()){
                 active = "alphabet_active";
                 handleFilterFirstChar(letters[plength]);
+                OBJECT_MARKERS_STATION.filterByFirstLetterOnName(letters[page])
             }
         }else{ //else leave empty to the active variable
             active = "";
@@ -89,9 +90,7 @@ function createPagination(totalPages, page){
     liTag += refreshData + cta_reverselist;
     element.innerHTML = liTag; //add li tag inside ul tag
 
-    if( page !== 0 && OBJECT_MARKERS_STATION.getAlreadyInit() ){
-        OBJECT_MARKERS_STATION.filterByFirstLetterOnName(letters[page])
-    }
+    
     OBJECT_MARKERS_STATION.setAlreadyInit(true)
 
     return liTag; //reurn the li tag
