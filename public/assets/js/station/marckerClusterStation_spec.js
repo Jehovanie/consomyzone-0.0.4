@@ -1,8 +1,13 @@
+//// check screen to add the screen filter. ////
 checkScreen();
+
+//// set type use if the user wants to search one.
 setDataInLocalStorage("type", "station");
 
+
+//// get information important to the station.
 const parsedUrl = new URL(window.location.href);
-const type= parsedUrl.searchParams.get("type") ? parsedUrl.searchParams.get("type") : "tous"
+const type= parsedUrl.searchParams.get("type") ? parsedUrl.searchParams.get("type") : "tous" /// type of esscence
 const content_info= document.querySelector(".content_info_js");
 const dep_name= content_info?.getAttribute("data-dep-name") ? content_info.getAttribute("data-dep-name") : null;
 const dep_code= content_info?.getAttribute("data-dep-code") ? content_info.getAttribute("data-dep-code") : null;
@@ -16,11 +21,12 @@ if( type !== "tous"){
     })
 }
 
+////INSTANCE ///
 const OBJECT_MARKERS_STATION= new MarckerClusterStation(0,2.5,type,dep_name, dep_code)
 OBJECT_MARKERS_STATION.onInit();
 
 
-//// HIDE DETAILS STATION POP UP
+//// HIDE DETAILS STATION POP UP //////
 document.querySelector("#close-detail-station").addEventListener("click", () => { 
     document.getElementById("remove-detail-station").setAttribute("class", "hidden")
 })

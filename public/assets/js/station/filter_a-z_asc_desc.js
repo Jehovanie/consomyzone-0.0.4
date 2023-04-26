@@ -1,6 +1,6 @@
-/* -------------------------------------------------------------------------------------------------- */
-/* THIS CODE USES THE  INSTANCE  of 'MarckerClusterStation' CREATED IN FILE new_data_station          */
-/*----------------------------------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------------------------------------ */
+/* THIS CODE USES THE  INSTANCE  of 'MarckerClusterStation' CREATED IN FILE marckerClusterStation_spec.js */
+/*--------------------------------------------------------------------------------------------------------*/
 
 
 if(document.querySelectorAll("#list_departements ul > li > div > a")){

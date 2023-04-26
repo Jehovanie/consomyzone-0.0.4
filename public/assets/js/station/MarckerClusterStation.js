@@ -187,7 +187,7 @@ class MarckerClusterStation {
             this.data.forEach(element => {
                 parent_elements.querySelector("ul").innerHTML += `
                     <li class="card-list element">
-                        <div class="row container-depart pt-4 element" id="${element.id}">
+                        <div class="row container-depart pt-4 element card_list_element_jheo_js" id="${element.id}">
                             <div class="col-md-9">
                                 <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>
                                 <ul>
@@ -200,7 +200,7 @@ class MarckerClusterStation {
                                 </ul>
                             </div>
                             <div class="col-md-2">
-                                <a id="open-detail-station" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')">
+                                <a class="open-detail-station open_detail_jheo_js" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')">
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
                                         <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
@@ -255,6 +255,15 @@ class MarckerClusterStation {
                 })
             }
         }
+
+        if( document.querySelectorAll(".card_list_element_jheo_js").length > 0 ){
+            document.querySelectorAll(".card_list_element_jheo_js").forEach(card_dom => {
+                card_dom.addEventListener("click",() => {
+                    card_dom.querySelector(".open_detail_jheo_js")?.click()
+                })
+            })
+        }
+        
     }
 
 
