@@ -265,7 +265,6 @@ class StationController extends AbstractController
 
 
             if ($nom_dep != "null" && $id_dep != "null") {
-
                 return $this->json(
 
                     $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type, $nom_dep, $id_dep)

@@ -227,6 +227,10 @@ input[type="range"]::-moz-slider-thumb{
     border-radius: 50%;
 }
 
+.choix_list_cart{
+    text-align: center;
+}
+
 .entete_text{
     display: flex;
     justify-content: space-between;

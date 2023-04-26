@@ -1,3 +1,7 @@
 .content_description {
     height: 75vh !important;
 }
+
+.choix_list_cart{
+    text-align: center;
+}
