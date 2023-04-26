@@ -28,6 +28,10 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 			OBJECT_MARKERS_STATION.filterByPrice(2.5,3, "tous")
 		}
 		changeDapartLinkCurrent("tous")
+
+		if(document.querySelector(".btn_close_filter_mobile_jheo_js")){
+			document.querySelector(".btn_close_filter_mobile_jheo_js").click();
+		}
 	})
 
 	////special for over the checkbox tous.
@@ -55,7 +59,10 @@ if( document.querySelectorAll(".checkbox_filter .checkbox")){
 			changeDapartLinkCurrent(type.join("@"))
 			// filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value),type.join("@"),dep_name,dep_code)
 			OBJECT_MARKERS_STATION.filterByPrice(parseFloat(input_min.value), parseFloat(input_max.value),type.join("@"))
-
+			
+			if(document.querySelector(".btn_close_filter_mobile_jheo_js")){
+				document.querySelector(".btn_close_filter_mobile_jheo_js").click();
+			}
 		})
 	}
 
@@ -114,7 +121,10 @@ priceInput.forEach(input => {
 			changeDapartLinkCurrent(type.join("@"))
 			// filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"),dep_name,dep_code)
 			OBJECT_MARKERS_STATION.filterByPrice(minVal_sortie, maxVal_sortie,tab_check.join("@"))
+		}
 
+		if(document.querySelector(".btn_close_filter_mobile_jheo_js")){
+			document.querySelector(".btn_close_filter_mobile_jheo_js").click();
 		}
 
     })
@@ -162,7 +172,9 @@ rangeInput.forEach(input => {
 			changeDapartLinkCurrent(tab_check.join("@"))
 			// filterByPrice(minVal_sortie, maxVal_sortie, tab_check.join("@"),dep_name,dep_code)
 			OBJECT_MARKERS_STATION.filterByPrice(minVal_sortie, maxVal_sortie,tab_check.join("@"))
-
+		}
+		if(document.querySelector(".btn_close_filter_mobile_jheo_js")){
+			document.querySelector(".btn_close_filter_mobile_jheo_js").click();
 		}
 	})
 
