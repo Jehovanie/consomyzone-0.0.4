@@ -108,19 +108,27 @@
                     <p  class="titre" data-toggle-deparement="{{nom_dep}}">
                         Les fermes du département:
                         <span class="fw-bolder">{{nom_dep}}, </span>
-                        <span>{{nomber_ferme}}</span> résultats
+                        <br>
+                        <span class="content_nombre_result_js_jheo">{{nomber_ferme}}</span> résultats
                     </p>
                 </div>
+                <div class="content_filter_trie content_filter_trie_jheo_js">
+                    <div class="pagination_alphabet pagination_alphabet_jheo_js">
+                        <ul>
+                            {# CONTENT LIST ALPHABET generate by js #}
+                        </ul>
+                    </div>
+				</div>
             </div>
             <div class="container list-depart-all-specific" id="Scrollbar">
-                <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
+                <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}" data-toggle-dep-name="{{nom_dep}}">
                     {% for  ferme in fermes %}
-                            <ul>
-                                <li class="card-list" onclick="getDetailFerme('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
+                            <ul class="content_list_ferme_spec_js_jheo">
+                                <li class="card-list name_ferme_js_jheo" onclick="getDetailFerme('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
                                     <div class="row container-depart pt-4 element" data-toggle-id="{{ferme.id}}" data-toggle-latitude ="{{(ferme.latitude) ? ferme.latitude : '0' }}" data-toggle-longitude="{{(ferme.longitude) ? ferme.longitude : '0'}}">
                                         <div class="col-md-9">
                                             <p>
-                                                {{ferme.nomFerme}} <br>
+                                                <span class="id_departement">{{ferme.nomFerme}} </span><br>
                                                 {{ferme.adresseFerme }}
                                             </p>
                                         </div>

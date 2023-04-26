@@ -4,12 +4,17 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/ferme/app.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/ferme/app_specifique.css')}}">
 {% endblock %}
 
 
 {% block javascripts %}
-	{# // <script src="{{asset('assets/js/ferme/data_ferme.js')}}" defer></script> #}
-	<script src="{{asset('assets/js/ferme/sepecific_departement.js')}}" defer></script>
+	<script src="{{asset('assets/js/ferme/data_ferme.js')}}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterFerme.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/ferme/marckerClusterFerme_spec.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/ferme/filter_a-z_asc_desc.js') }}" defer></script>
+	{# <script src="{{asset('assets/js/ferme/sepecific_departement.js')}}" defer></script> #}
 	<script src="{{asset('assets/js/ferme/details.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/ferme/ferme.js')}}" defer></script> #}
 {% endblock %}
