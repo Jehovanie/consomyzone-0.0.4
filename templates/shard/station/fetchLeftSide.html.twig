@@ -63,8 +63,11 @@
     <div class="contet_text">
         <p>
             Station-service dans tous les départements.
-            (<small class="display-6 content_nombre_result_left_js_jheo">{{total_number_station}}</small>résultats)
+            (<small class="content_nombre_result_left_js_jheo font-bolder">{{total_number_station}}</small>résultats)
         </p>
+    </div>
+    <div class="content_search_dep" type="button" data-bs-toggle="modal" data-bs-target="#search_specifique_dep">
+        <i class="fa-solid fa-search"></i>
     </div>
 </div>
         
@@ -104,4 +107,21 @@
             {% endfor %}
         </ul>
     </div>
+</div>
+
+
+<div class="modal fade" id="search_specifique_dep" tabindex="-1" aria-labelledby="search_specifique_depLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content custom_modal_content">
+      {# <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div> #}
+      <div class="modal-body">
+        <form class="content_input_search_dep">
+            <input class="input_search_dep" type="text" placeholder="Recherche par departement ">
+            <input type="submit" class="hidden">
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
