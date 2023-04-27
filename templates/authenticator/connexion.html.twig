@@ -17,8 +17,12 @@
 
 {% block body %}
 
-	<div class="content_nav_top ">
+	<div class="content_nav_top responsif-none">
 		{% include "shard/navbar.twig" %}
+	</div>
+
+	<div class="content_nav_top responsif-none-mobile">
+		{% include "shard/navbar_mobile.twig" %}
 	</div>
 
 	{# <div class="content_left_menu fixed-top">
@@ -31,7 +35,7 @@
 
 	<main>
 		<div class="content_global ">
-			<div class="right_content">
+			<div class="right_content" id="right_content_conn">
 			
 				{% if flash %}
 					<div class="custom-flash-inscription bg-danger">
@@ -201,6 +205,27 @@
 			</div>
 		</div>
 	</main>
+
+	<script>
+
+function sdds(elem){
+    //console.log("show")
+    let right_content = document.querySelector("#right_content_conn")
+
+    if(!elem.classList.contains("collapsed") && screen.width < 1000) {
+    // do smth
+        document.querySelector("#right_content_conn").style ="margin-right : 40px !important; z-index:1;";
+        console.log("show")
+    }else{
+        document.querySelector("#right_content_conn").style ="margin-right : 0px !important";
+		console.log("hide")
+    }
+
+    
+}
+
+ 
+</script>
 
 
 {% endblock %}

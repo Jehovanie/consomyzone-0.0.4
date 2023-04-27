@@ -618,8 +618,8 @@
 
         .notification_popup , .message_popup{
             right: 2px !important;
-           width: 80vw !important;
-           left: 50px !important;
+           width: 100vw !important;
+           /* left: 2px !important; */
         }
 
         ul.dropdown-menu[data-bs-popper]{
@@ -828,6 +828,12 @@
         }
         .membre-tribut{
             margin-top: 20px !important;
+        }
+        .detail_agenda_mobile_cont{
+            margin-left: 0px !important;
+        }
+        .detail_agenda_mobile{
+            margin-right: 0px !important;
         }
 
 }

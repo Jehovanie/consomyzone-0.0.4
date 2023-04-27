@@ -55,11 +55,11 @@
 				<a class="dropdown-item" href="#">Action</a>
 			</li>
 			<li>
-				<a class="dropdown-item" href="#">Another action</a>
+				<a class="dropdown-item" href="#" lng-tag="autre_action">Another action</a>
 			</li>
 			<li><hr class="dropdown-divider"></li>
 			<li>
-				<a class="dropdown-item" href="{{path('app_logout')}}">Déconnexion</a>
+				<a class="dropdown-item" href="{{path('app_logout')}}" lng-tag="deconnexion">Déconnexion</a>
 			</li>
 		</ul>
 	</a>
@@ -167,6 +167,9 @@
 			if(document.querySelector(".membre-tribut")){
 				document.querySelector(".membre-tribut").style = "margin-left:0px !important;width: 100% !important"
 			}
+			if(document.querySelector(".detail_agenda_mobile")){
+				document.querySelector(".detail_agenda_mobile").style = "margin-left:-10px !important;width: 100% !important"
+			}
 			if(document.querySelector(".card_mobile")){
 				document.querySelectorAll(".card_mobile").forEach(element => {
 					if(element.style.marginLeft=="0px"){
@@ -182,7 +185,7 @@
 			}
 			
 		}else{
-			//console.log("margin-left : 0px")
+			console.log("margin-left : 0px")
 			leftInvitation.style = "margin-left :70px !important;"
 			if(document.querySelector(".invitation-conf")){
 				document.querySelector(".invitation-conf").style = "width:85vw !important"
@@ -240,6 +243,13 @@
 			}
 			if(document.querySelector(".tribut_t_reponsive")){
 				document.querySelector(".tribut_t_reponsive").style = "margin-left:0px !important"
+			}
+
+			if(document.querySelector(".detail_agenda_mobile")){
+				document.querySelector(".detail_agenda_mobile").style = "margin-left:-10px !important;width: 100% !important"
+			}
+			if(document.querySelector(".detail_agenda_mobile_cont")){
+				document.querySelector(".detail_agenda_mobile_cont").style = "margin-left:-10px !important;width: 100% !important"
 			}
 			
 		}

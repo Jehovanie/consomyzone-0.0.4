@@ -298,7 +298,10 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                                     .then(html => {
 
-                                        document.querySelector(".content_text_js_jheo").innerHTML = html
+                                        document.querySelectorAll(".content_text_js_jheo").forEach(content=>{
+                                            content.innerHTML = html
+                                        })
+                                        //document.querySelector(".content_text_js_jheo").innerHTML = html
 
                                     })
 
@@ -424,27 +427,30 @@ if( document.querySelector(".notification_jheo_js")){
 
 if( document.querySelector(".tous_marquer_comme_lu_js_jheo")){
 
-    document.querySelector(".tous_marquer_comme_lu_js_jheo").addEventListener("click" , () => {
+    document.querySelectorAll(".tous_marquer_comme_lu_js_jheo").forEach(btn_lire_tous=>{
+        btn_lire_tous.addEventListener("click" , () => {
 
-        fetch("/user/notification/tous_marquer_lu",{
-
-            method: "POST",
-
-            headers: {
-
-                "content-type": "application/json; charset=utf",
-
-            }
-
-        }).then(response => response.json())
-
-        .then(response =>{
-
-            console.log(response)
-
+            fetch("/user/notification/tous_marquer_lu",{
+    
+                method: "POST",
+    
+                headers: {
+    
+                    "content-type": "application/json; charset=utf",
+    
+                }
+    
+            }).then(response => response.json())
+    
+            .then(response =>{
+    
+                console.log(response)
+    
+            })
+    
         })
-
     })
+    
 
 }
 
@@ -855,6 +861,7 @@ function createAndAddCardNotification(notif_id,parent_card, card_title_content, 
 
     const h5 = document.createElement("h5");
     h5.classList.add("card-title");
+    h5.setAttribute("lng-tag","nouvelle_notification")
     h5.innerText = card_title_content;
 
     card_body.appendChild(h5);

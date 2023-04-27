@@ -297,7 +297,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                                     .then(html => {
 
-                                        document.querySelector(".content_text_js_jheo").innerHTML = html
+                                        //document.querySelector(".content_text_js_jheo").innerHTML = html
 
                                     })
 
@@ -852,6 +852,7 @@ function createAndAddCardNotification(notif_id,parent_card, card_title_content, 
 
     const h5 = document.createElement("h5");
     h5.classList.add("card-title");
+    h5.setAttribute("lng-tag","nouvelle_notification")
     h5.innerText = card_title_content;
 
     card_body.appendChild(h5);
