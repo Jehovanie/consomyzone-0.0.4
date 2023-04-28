@@ -1,5 +1,7 @@
 checkScreen();
 window.addEventListener('load', () => {
+    setDataInLocalStorage("type", "station");
+    
     if( document.querySelector(".content_info_js")){
         const parsedUrl = new URL(window.location.href);
         const type= parsedUrl.searchParams.get("type") ? parsedUrl.searchParams.get("type") : "tous"
@@ -30,7 +32,14 @@ window.addEventListener('load', () => {
         document.getElementById("remove-detail-station").setAttribute("class", "hidden")
     })
 
-    setDataInLocalStorage("type", "station");
+    if( document.querySelectorAll(".list_item_dep_station_js_jheo").length > 0 ){
+        document.querySelectorAll(".list_item_dep_station_js_jheo").forEach(card_dom => {
+            card_dom.addEventListener("click",() => {
+                localStorage.removeItem("coordStation")
+                card_dom.querySelector(".plus")?.click()
+            })
+        })
+    }
 });
 
 
@@ -171,7 +180,7 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                 for (let corse of ['2A', '2B'])
                      geos.push(franceGeo.features.find(element => element.properties.code == corse))
         } else {
-                geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
+            geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
         }
     }else{
         document.querySelectorAll("#list_departements .element").forEach(item => {
@@ -227,15 +236,25 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                     // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
                     // let pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim() + "/details/" + item.id;
                     let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-                    let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
-                   
-                    marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
+                    let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-resto-new-B.png") });
+                    
+                    marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
+                    
+                    // marker.on('add', function () {
+                    //     marker.openPopup();
+                    // });
+                    
                     marker.on('click', () => {
                         if( screen.width < 991){
                             getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                         }else{
                             getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                         }
+                    })
+
+                    marker.on("mouseover", () => {
+                        marker.bindTooltip(miniFicheOnHover, {direction: "auto", offset: L.point(0, -30) }).openTooltip()
+                        marker.closePopup();
                     })
 
                     markers.addLayer(marker);
@@ -341,6 +360,45 @@ function filterByPrice(price_min, price_max, type,nom_dep=null, id_dep=null){
                     setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
                 })
 
+                var bounds;
+                var markersDisplayed = false;
+
+                map.on('moveend zoomend', function(e) {
+                    bounds = map.getBounds();
+                    var zoom = map.getZoom();
+                    if (zoom >8) {
+                        markers.eachLayer(function (layer) {
+                            if (bounds.contains(layer.getLatLng())) {
+                                markersDisplayed = true;
+                                layer.openPopup();
+                                layer.unbindTooltip()
+                            }
+                        });
+                    }
+                    else if (markersDisplayed) {
+                        markersDisplayed = false;
+                        markers.eachLayer(function (layer) {
+                            if (bounds.contains(layer.getLatLng())) {
+                                layer.closePopup();
+                            }
+                        });
+                    }
+                });
+                  
+                markers.on('clusterclick', function (e) {
+                    bounds = map.getBounds();
+                    var zoom = map.getZoom();
+                    var childMarkers = e.layer.getAllChildMarkers();
+                    if (zoom >8) {
+                        childMarkers.eachLayer(function (layer) {
+                            if (bounds.contains(layer.getLatLng())) {
+                                markersDisplayed = true;
+                                layer.openPopup();
+                            }
+                        });
+                    }
+                });
+
             }else{
                 console.log("ERREUR : L'erreur se produit par votre réseaux.")
             }
@@ -362,4 +420,9 @@ function changeDapartLinkCurrent(type){
 		}
 	})
 
+}
+
+
+function handleClickOnCardLeft(e){
+    console.log(e)
 }

@@ -1,13 +1,15 @@
 window.addEventListener('load', () => {
-    const idRestaurant = location.href.toString().split("/")[8]
-    const currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
-    if (document.querySelector(".FtBjOlVf") != null)
-         showModifArea(idRestaurant,currentUserId)
+    const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id")
+    const currentUserId = 0
+    if(document.querySelector(".FtBjOlVf"))
+        currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
+    // if (document.querySelector(".FtBjOlVf") != null)
+    //      showModifArea(idRestaurant,currentUserId)
     
-    if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
-        showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
-        showNoteGlobale(idRestaurant)
-    }
+    // if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
+    //     showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
+    //     showNoteGlobale(idRestaurant)
+    // }
 
     document.querySelector("#text-note").onkeyup = (e) => { 
         if (document.querySelector(".flash-msg-ERREUR")) {
@@ -65,8 +67,8 @@ window.addEventListener('load', () => {
             fetch(request).then(r => {
                 if (r.ok && r.status === 200) {
                     showModifArea(idRestaurant, currentUserId)
-                    if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
-                        showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
+                    if (document.querySelector("#see-tom-js")) {
+                        showNemberOfAvis(idRestaurant, document.querySelector("#see-tom-js"))
                         showNoteGlobale(idRestaurant)
                     }
                 }
@@ -81,17 +83,17 @@ window.addEventListener('load', () => {
         
         
     }
-    if(document.querySelector("#see-tom-js")){
-        document.querySelector("#see-tom-js").onclick = () => {
-            const d=document.querySelectorAll(".fIQYlf")
-            if(d.length > 0){
-                d.forEach(i=>{
-                    i.parentNode.removeChild(i)
-                })
-            }
-            showAvis(currentUserId,idRestaurant) 
-        }
-    }
+    // if(document.querySelector("#see-tom-js")){
+    //     document.querySelector("#see-tom-js").onclick = () => {
+    //         const d=document.querySelectorAll(".fIQYlf")
+    //         if(d.length > 0){
+    //             d.forEach(i=>{
+    //                 i.parentNode.removeChild(i)
+    //             })
+    //         }
+    //         showAvis(currentUserId,idRestaurant) 
+    //     }
+    // }
 
     if (document.querySelector("#UpDate-Avis-tom-js")) {
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 
@@ -172,9 +174,10 @@ function showNoteGlobale(idRestaurant) {
 
 
 function createGlobalNote(globalNote) {
-    let rankRange=[0,1,2,3,4]
-    let stars = document.querySelectorAll("body > main > div.content_global > div > "+
-        "div.content_home > div.left_content_home > div > div > div.content_note > div.start > i")
+    let rankRange = [0, 1, 2, 3, 4]
+    // let stars = document.querySelectorAll("body > main > div.content_global > div > "+
+    //     "div.content_home > div.left_content_home > div > div > div.content_note > div.start > i")
+    let stars = document.querySelectorAll("#details-coord > div.content_note > div.start > i")
     for (let star of stars) {
         if (rankRange.includes(parseInt(star.dataset.rank, 10))) {
             if(parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
@@ -203,7 +206,7 @@ function createNombreAvisContainer(parent,nombre) {
     //span.classList.add("nombre_avis")
     //span.innerText += nombre
     console.log(parent)
-    parent.firstElementChild.textContent= nombre+" avis"
+    parent.textContent= nombre+" avis"
     //parent.insertBefore(, parent.firstChild)
 
 }
@@ -288,7 +291,7 @@ function createModifArea(json,b) {
     pNom.textContent = json["user"]["pseudo"]
     const hr = document.createElement("hr")
     const divEtoile=document.createElement("div")
-    divEtoile.setAttribute("class", "lioTe col")
+    divEtoile.setAttribute("class", "lioTe col-6")
     const iStars1 = document.createElement("i")
     const iStars2 = document.createElement("i")
     const iStars3 = document.createElement("i")
@@ -301,7 +304,7 @@ function createModifArea(json,b) {
     
 
     const divBtn = document.createElement("button")
-    divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary col")
+    divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary")
     divBtn.setAttribute("onclick","_kidMo(event)")
     divBtn.dataset.bsToggle = "modal"
     divBtn.setAttribute("href" , "#exampleModalToggle")
@@ -354,7 +357,7 @@ function createShowAvisAreas(json,currentUserId) {
     pNom.textContent = json["user"]["pseudo"]
     const hr = document.createElement("hr")
     const divEtoile=document.createElement("div")
-    divEtoile.setAttribute("class", "lioTe col-md-4")
+    divEtoile.setAttribute("class", "lioTe  ms-5 col-6")
     const iStars1 = document.createElement("i")
     const iStars2 = document.createElement("i")
     const iStars3 = document.createElement("i")
@@ -367,7 +370,7 @@ function createShowAvisAreas(json,currentUserId) {
   
 
     const divBtn = document.createElement("button")
-    divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary col-md-3")
+    divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary")
     divBtn.setAttribute("onclick","_kidMo(event)")
     divBtn.dataset.bsToggle = "modal"
     divBtn.setAttribute("href" , "#exampleModalToggle")
@@ -388,7 +391,7 @@ function createShowAvisAreas(json,currentUserId) {
         divEtoile.after(divBtn)
     }
     const divComment = document.createElement("div")
-    divComment.setAttribute("class", "tnEmMeco")
+    divComment.setAttribute("class", "tnEmMeco text-center")
 
     const pComment = document.createElement("p")
     pComment.textContent = json["avis"]
@@ -414,3 +417,4 @@ function _kidMo(event) {
    document.querySelector("#text-note-modif").value=stars
    
 }
+

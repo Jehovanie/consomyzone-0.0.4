@@ -120,19 +120,39 @@
                             </g>
                         </svg>
                 </div>
-                <div class="col-md-10">
-                    <p  class="titre" data-toggle-deparement="{{nom_dep}}">
+                <div class="col-md-8">
+                    <p  class="titre nombre_de_resultat" data-toggle-deparement="{{nom_dep}}">
                         Les restaurants du département:
                         <span class="fw-bolder">{{nom_dep}}, </span>
-                        <span>{{nomber_resto}}</span> résultats
+                        <span class="nombre">{{nomber_resto}}</span> résultats
                     </p>
+                    
+                </div>
+                <div class="dropdown col-md-2">
+                    <a class="btn dropdown-toggle" title="Tire par" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li>
+                            <a class="dropdown-item active" onclick='reverseList(this)'>Croissant </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" onclick='reverseList(this)'>Décroissant</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="pagination">
+                    <ul>
+                        <!--pages or li are comes from javascript -->
+                        
+                    </ul>
                 </div>
             </div>
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
                     {% for restaurant in restaurants %}
                             <ul>
-                                <li class="card-list"  onclick="getDetail('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
+                                <li class="card-list"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')">
                                     <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{(restaurant.poiY) ? restaurant.poiY : '0' }}" data-toggle-longitude="{{(restaurant.poiX) ? restaurant.poiX : '0'}}">
                                         <div class="col-md-9">
                                             <p>

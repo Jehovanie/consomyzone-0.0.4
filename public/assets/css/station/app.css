@@ -155,8 +155,16 @@ input[type="range"]::-moz-slider-thumb{
     display: block;
     font-size: 2rem;
     position: absolute;
-    z-index: 1000;
+    z-index: 1054;
     left: 10px;
+}
+
+.content_show_list_mobile svg{
+    fill: #fff;
+    background-color: #2343ac;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
 
 .content_main{
@@ -176,6 +184,11 @@ input[type="range"]::-moz-slider-thumb{
     z-index: 10000;
     overflow-y:hidden;
 }
+
+.content_description {
+    height: 75vh !important;
+}
+
 .content_card{
     display: block;
     height: 80vh;
@@ -192,7 +205,7 @@ input[type="range"]::-moz-slider-thumb{
     display:flex;
     align-items: center;
     justify-content: space-between;
-    width:100%;
+    width:94%;
 }
 
 .content_logo{
@@ -237,7 +250,7 @@ input[type="range"]::-moz-slider-thumb{
     padding: 25px;
 }
 
-.btn_retours svg, .plus svg{
+.plus svg{
     fill: #28BE21;
 }
 

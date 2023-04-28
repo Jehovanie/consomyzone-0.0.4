@@ -1,5 +1,5 @@
 let tabArray = []
-let map
+let map = null
 let markers
 let tabMarker = []
 let centerss = []
@@ -16,6 +16,36 @@ centerss[77] = {
 }
 
 centerss[78] = {
+  lat: 47.218371,
+  lng: -1.553621,
+  zoom:9
+}
+
+centerss[91] = {
+  lat: 47.218371,
+  lng: -1.553621,
+  zoom:9
+}
+
+centerss[92] = {
+  lat: 47.218371,
+  lng: -1.553621,
+  zoom:9
+}
+
+centerss[93] = {
+  lat: 47.218371,
+  lng: -1.553621,
+  zoom:9
+}
+
+centerss[94] = {
+  lat: 47.218371,
+  lng: -1.553621,
+  zoom:9
+}
+
+centerss[95] = {
   lat: 47.218371,
   lng: -1.553621,
   zoom:9
@@ -50,6 +80,7 @@ centerss[75] = {
    
   }
 }
+
 
 window.addEventListener('load', () => {
   const geos = []
@@ -87,7 +118,7 @@ window.addEventListener('load', () => {
                 const json=getDataInLocalStorage("coord") ? JSON.parse(getDataInLocalStorage("coord")) :null
                 const zoom = json ? (json.zoom ? json.zoom :14) : 14;
                 const centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
-                let map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
+                map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
                 L.geoJson(geos,{style:{
                                 //fillColor: getColor(feature.properties.density),
                                 weight: 2,
@@ -99,6 +130,8 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.l_ar);
                   }
                 }).addTo(map);
+                // addControlPlaceholdersresto(map)
+                
                 addControlPlaceholders(map)
                 L.Control.DockPannel = L.Control.extend({
                   onAdd: function(map) {
@@ -436,7 +469,7 @@ window.addEventListener('load', () => {
     geos.push(franceGeo.features.find(element => element.properties.code == dep))
     fetch(url).then(response => response.json())
               .then(response1 => {
-
+                // alert("Success")
                   tabArray = response1
                   // create_map_content()
                   // if (document.getElementById("content_nombre_result_js_jheo")) {
@@ -453,7 +486,7 @@ window.addEventListener('load', () => {
                   const json=getDataInLocalStorage("coord") ? JSON.parse(getDataInLocalStorage("coord")) :null
                   const zoom = json ? (json.zoom ? json.zoom :centerss[parseInt(dep)].zoom) : centerss[parseInt(dep)].zoom;
                   const centered =json ?( json.coord ? L.latLng(json.coord.lat,json.coord.lng):latlng) : latlng ;
-                  let map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
+                  map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
                   console.log(latlng);
                   L.geoJson(geos, {
                     style: {
@@ -467,6 +500,7 @@ window.addEventListener('load', () => {
                             layer.bindTooltip(feature.properties.nom);
 					  }
           }).addTo(map);
+          // addControlPlaceholdersresto(map)
       addControlPlaceholders(map)
       
       L.Control.DockPannel = L.Control.extend({
@@ -804,23 +838,46 @@ window.addEventListener('load', () => {
       // map = L.map('map', {center: latlng, zoom: getDataInLocalStorage("zoom") ? getDataInLocalStorage("zoom"): 5 , layers: [tiles]});
 
       markers = L.markerClusterGroup({
-        chunkedLoading: true
+        chunkedLoading: true,
+        // iconCreateFunction: function (cluster) {
+        //   console.log(cluster._cLatLng.lat + "" + cluster._cLatLng.lng)
+        //                 console.log(cluster.getAllChildMarkers())
+        //                 // let tmp = cluster._cLatLng.lat + "" + cluster._cLatLng.lng
+        //                 // tmp = tmp.toString().replace(/[\-\.]/g, "")
+        //                 let sepcMarmerIsExist = false
+                        
+        //                 for (let g of  cluster.getAllChildMarkers()){
+                           
+        //                     let tmpCleCoord = g._latlng.lat + "" + g._latlng.lng
+        //                     tmpCleCoord = tmpCleCoord.toString().replace(/[\-\.]/g, "")
+        //                     if (cleCoord.replace(/[^0-9]/g, "") == tmpCleCoord) { 
+        //                         sepcMarmerIsExist = true;
+        //                         break;
+        //                     }
+                        
+        //                 }
+        //                 if (sepcMarmerIsExist) {
+                            
+        //                     return L.divIcon({
+        //                         html: '<span class="markers-spec" id="c' + name.replace(/[\s]/g, "_") + '">' + cluster.getChildCount() + '</span>',
+        //                         className: "spec_cluster",
+        //                          iconSize:L.point(35,35)
+        //                     });
+        //                 } else {
+        //                     return L.divIcon({
+        //                         html: '<span class="markers_tommy_js">' + cluster.getChildCount() + '</span>',
+        //                         className: "mycluster",
+        //                         iconSize:L.point(35,35)
+        //                     });
+        //                 }
+                            
+                       
+                  // },
+        //             spiderfyOnMaxZoom: true
       });
 
       chargeMapAndMarkers(tabArray, map, markers)
-
-                map.doubleClickZoom.disable();
-				  
-                  
-      // map = L.map('map', {center: latlng, zoom: getDataInLocalStorage("zoom") ? getDataInLocalStorage("zoom"): 5 , layers: [tiles]});
-                
-                  markers = L.markerClusterGroup({
-                    chunkedLoading: true
-                  });
-
-                  chargeMapAndMarkers(response1, map, markers)
-
-              });
+    });
   }
 });
 
@@ -835,6 +892,7 @@ const letters = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
 //const lettersL=letters.length
 let totalPages = letters.length - 1;
 let page = 1;
+let isTheFerstTime = true
 
 //calling function with passing parameters and adding inside element which is ul tag
 if (element) {
@@ -877,12 +935,22 @@ function createPagination(totalPages, page) {
     if (plength == 0) { //if plength is 0 than add +1 in plength value
       plength = plength + 1;
     }
-    if (page == plength) { //if page is equal to plength than assign active string in the active variable
-      active = "active";
-    } else { //else leave empty to the active variable
-      active = "";
+    if (!isTheFerstTime) {
+      if (page == plength  ) { //if page is equal to plength than assign active string in the active variable
+        active = "active";
+      } else { //else leave empty to the active variable
+        active = "";
+      }
     }
+    
     liTag += `<li class="numb ${active}" onclick="createPagination(totalPages, ${plength})"><span>${letters[plength]}</span></li>`;
+
+    // if (liTag) {
+    //   liTag += `<li class="numb ${active}" onclick="createPagination(totalPages, ${plength})"><span>${letters[plength]}</span></li>`;
+    // } else {
+    // liTag += `<li class="numb " onclick="createPagination(totalPages, ${plength})"><span>${letters[plength]}</span></li>`;
+      
+    // }
   }
 
   if (page < totalPages - 1) { //if page value is less than totalPage value by -1 then show the last li or page
@@ -895,76 +963,81 @@ function createPagination(totalPages, page) {
   if (page < totalPages) { //show the next button if the page value is less than totalPage(20)
     liTag += `<li class="btn next" onclick="createPagination(totalPages, ${page + 1})"><span> <i class="fas fa-angle-right"></i></span></li> <li class="btn next ms-4" onclick='refreshData()'><i class="fa-solid fa-arrows-rotate refreshData"></i></li>`;
   }
-   let xData = Array()
+  if (!isTheFerstTime) {
+    let xData = Array()
 
     element.innerHTML = liTag; //add li tag inside ul tag
 
+  
     let charAfilter = element.querySelector("li.active").textContent;
  
+    document.querySelectorAll("#all_ferme_in_dep > ul > li").forEach((ferme) => {
  
-    document.querySelectorAll("#all_ferme_in_dep > div.element").forEach((ferme) => {
+    // document.querySelectorAll("#all_ferme_in_dep > ul > li").forEach((ferme) => {
       let nomFerme = ferme.querySelector("p").textContent.trim();
       if (!nomFerme.startsWith(charAfilter)) {
         ferme.style.display = "none"
         ferme.classList.remove("miseho")
       } else {
-        // console.log(ferme.querySelector("p").textContent.trim());
         ferme.style.display = "block"
         ferme.classList.add("miseho")
-        //console.log("Latitude : " + ferme.dataset.toggleLatitude + "\tLongitude : " + ferme.dataset.toggleLongitude)
-        xData.push(filterData(ferme.dataset.toggleId));
-      
+        
+        xData.push(filterData(ferme.querySelector('.element').dataset.toggleId));
       }
 
     })
-  
-  
-  
-
-
     if (tabMarker.length > 0) {
-      //console.log(tabMarker)
+      
+      // console.log(tabMarker.length)
       for (let j = 0; j < tabMarker.length; j++) {
         markers.removeLayer(tabMarker[j]);
+        document.querySelector("p.nombre_de_resultat > span.nombre").textContent = document.querySelectorAll(".miseho").length
+          
       }
-
+      // console.log(map)
       map.removeLayer(markers);
-
-      tabMarker = [];
-
+    tabMarker = [];
+      if (xData.length > 0) {
+        // console.log(xData)
+        
+        chargeMapAndMarkers(xData, map, markers)
+      } 
     }
-
-    if (xData.length > 0) {
-      // console.log(xData)
-      chargeMapAndMarkers(xData, map, markers)
-
-    }
-
-    document.querySelector("p.nombre_de_resultat > span").textContent = document.querySelectorAll(".miseho").length
-
-    console.log(element.querySelector("li.active").textContent);
+  }
+   
   
+    
+  
+    // document.querySelector("p.nombre_de_resultat > span").textContent = document.querySelectorAll(".miseho").length
 
+    // console.log(element.querySelector("li.active").textContent);
+  
+    isTheFerstTime = false
   return liTag; //reurn the li tag
 }
-
-function chargeMapAndMarkers(response1, map, markers) {
+function setView(lat,lng) {
+  const latlng = L.latLng(lat, lng);
+  map.setView(latlng, 15);
+}
+function chargeMapAndMarkers(response1, map,markers) {
 
   //const departName = document.querySelector(".titre").getAttribute("data-toggle-deparement")
-
   ///// 0 -> 4717
+  
   response1.forEach(item => {
-   
     if(item.id){
       item = item
     }else{
       item = item[0]
     }
-    //console.log(item);
-    //console.log("item", item.depName)
+    
+    // console.log(item);
+    // console.log("item", item.depName)
     // const nom_dep = item.departement.split(",")[1]?.toString().trim() ? item.departement.split(",")[1]?.toString().trim() : "unknow";
     // const departementName = item.departementName ? item.departementName : "unknow";
     const departementName = item.depName
+  //  console.log(departementName)
+
     // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
     let pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
     const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
@@ -972,8 +1045,14 @@ function chargeMapAndMarkers(response1, map, markers) {
     // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
 
     var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-
-    var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
+    let MarkerCustom = L.Marker.extend({
+      options: {
+        cleNom: ""
+      }  
+      
+    })
+    var marker = new MarkerCustom(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),cleNom:item.denominationF });
+    //console.log(marker)
     tabMarker.push(marker)
     marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
     marker.on('click', (e) => {
@@ -1002,7 +1081,7 @@ function chargeMapAndMarkers(response1, map, markers) {
               document.querySelector("#content-details").innerHTML = null
               document.querySelector("#content-details").innerHTML = r
               
-              document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
+              document.querySelector("#close-detail-tous-resto").addEventListener("click", () => {
                   document.querySelector("#content-details").style.display = "none"
               })
               document.querySelector("#content-details").removeAttribute("style")
@@ -1011,11 +1090,17 @@ function chargeMapAndMarkers(response1, map, markers) {
           
       }
     });
+    
 
     markers.addLayer(marker);
+    
+    
   });
-
+ 
+  
+ 
   map.addLayer(markers);
+  
   map.on("resize zoom", (e) => {
       console.log(e)
       const coordAndZoom = {
@@ -1035,7 +1120,7 @@ function chargeMapAndMarkers(response1, map, markers) {
 }
 
 function filterData(id) {
-
+  // console.log(tabArray)
   let filteredData = tabArray.filter(position =>
     position.id == id
   )
@@ -1086,37 +1171,39 @@ function reverseList(e) {
 }
 
 function refreshData(){
-  //console.log("Mandeha ve?");
   document.querySelector("li.numb.active").classList.remove("active")
-  document.querySelectorAll("#all_ferme_in_dep > div.element").forEach((ferme) => {
-    ferme.style.display = "block"
-    if(!ferme.classList.toString().includes("miseho")) ferme.classList.add("miseho")    
-  })
-  document.querySelector("p.nombre_de_resultat > span").textContent = document.querySelectorAll("#all_ferme_in_dep > div.element").length
+    document.querySelectorAll("#all_ferme_in_dep > ul > li").forEach((ferme) => {
+      ferme.style.display = "block"
+      if (!ferme.classList.toString().includes("miseho")) {
+        ferme.classList.add("miseho")
+      }
+    })
+  document.querySelector("p.nombre_de_resultat > span.nombre").textContent = document.querySelectorAll("#all_ferme_in_dep > ul > li").length
 
 
   let xData = Array()
-
-  document.querySelectorAll("#all_ferme_in_dep > div.element.miseho").forEach((ferme) => {
+  document.querySelectorAll("#all_ferme_in_dep > ul > li.miseho").forEach((ferme) => {
     
-      xData.push(filterData(ferme.dataset.toggleId));
+      xData.push(filterData(ferme.querySelector('.element').dataset.toggleId));
 
   })
 
   
   if (tabMarker.length > 0) {
-    
     for (let j = 0; j < tabMarker.length; j++) {
       markers.removeLayer(tabMarker[j]);
+
     }
 
     map.removeLayer(markers);
 
     tabMarker = [];
-
+   
   }
 
   chargeMapAndMarkers(tabArray, map, markers)
 
 }
+
+
 

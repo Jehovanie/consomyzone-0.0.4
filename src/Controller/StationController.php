@@ -154,7 +154,6 @@ class StationController extends AbstractController
      */
 
     public function getFermeRepoSuite(StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request)
-
     {
 
         if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {
@@ -221,7 +220,7 @@ class StationController extends AbstractController
 
         // dump($depart_code, $depart_name, $id);
         // dd($stationServiceFrGeomRepository->getDetailsStation($depart_code, $depart_name, $id));
-        return $this->render("station/detailStationMobile.html.twig", [
+        return $this->render("station/detail_station.html.twig", [
             "departCode" => $depart_code,
             "departName" => $depart_name,
             "station" => $stationServiceFrGeomRepository->getDetailsStation($depart_code, $depart_name, $id)[0],

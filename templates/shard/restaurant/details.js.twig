@@ -1,5 +1,4 @@
-<div class="content_home responsif-none">
-	{# <nav class="navbar navbar-light navbar-light-left-detail fixed-top"> #}
+<div class="content_home responsif-none p-2">
 		<div id="close-detail-tous-resto">
 			<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
@@ -23,12 +22,11 @@
 				</g>
 			</svg>
 		</div>
-	{# </nav> #}
 	{# <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 mx-auto" style="height:100%"> #}
 <div class="left_content_home">
-	<div class="">
+	<div>
 		<div
-			class="description" id="details-coord" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+			class="description" id="details-coord" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
 
 
 			{# note avis   #}
@@ -235,11 +233,14 @@
 			<hr>
 
 			{% if (app.user) %}
-				<div class="content_one_cta">
-					<button id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
+				<div class="content_one_cta text-center">
+					<button class="btn btn-success" id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
 				</div>
 			{% endif %}
-
+			
 		</div>
 	</div>
 </div>
+
+
+

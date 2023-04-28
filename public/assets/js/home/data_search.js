@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
             geos.push(f)
         }
 
-        var map= create_map_content(geos)
+        var map= create_map_content(geos,null, "home")
         const { results } = response;
         
         all_data= results[0];
@@ -98,10 +98,10 @@ function addMarker(map,data){
                     } 
                 }else if ( item.station !== undefined ){
                     if( screen.width < 991){
-                        const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
+                        const link= "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;
                         getDetailSearchForMobile(link)
                     }else{
-                        getDetailStation(item.dep.toString().trim(), item.depName.trim(), item.id)
+                        getDetailStation(item.dep.toString().trim(), item.depName.trim(), item.id, inHome=true)
                     }
                     // window.location = "/station/departement/" + item.dep.toString().trim() + "/"+ item.depName.trim() + "/details/" + item.id;;
                 }else if ( item.ferme !== undefined ){
@@ -109,28 +109,13 @@ function addMarker(map,data){
                     var pathDetails ="/ferme/departement/"+ item.depName.trim()  + "/" + item.dep +"/details/" + item.id;
                     let screemMax = window.matchMedia("(max-width: 1000px)")
                     let screemMin = window.matchMedia("(min-width: 1000px)")
-                    let remove = document.getElementById("remove-detail-ferme")
-                    
+
                     if (screemMax.matches) {
-                        location.assign(pathDetails)
+                        getDetailHomeForMobile(pathDetails)
                     } else if (screemMin.matches) {
-                        remove.removeAttribute("class", "hidden");
-                        remove.setAttribute("class", "navleft-detail fixed-top");
-                        var myHeaders = new Headers();
-                        myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
-                        fetch(pathDetails, myHeaders)
-                            .then(response => {
-                                return response.text()
-                            }).then(r => {
-                                document.querySelector("#content-details-ferme").innerHTML = null
-                                document.querySelector("#content-details-ferme").innerHTML = r
-                            
-                                document.querySelector("#close-detail-ferme").addEventListener("click", () => {
-                                    document.querySelector("#content-details-ferme").style.display = "none"
-                                })
-                                document.querySelector("#content-details-ferme").removeAttribute("style")
-                            })
+                        getDetailsFerme(pathDetails, inHome=true)
                     }
+                    
                 }
             })
 
@@ -174,6 +159,10 @@ function removeAllMarkers(){
 }
 
 function getDetailSearchForMobile(link) {
+    
+    if(document.querySelector(".btn_retours_jheo_js")){
+        document.querySelector(".btn_retours_jheo_js").click();
+    }
 
     if(document.querySelector(".show_detail_for_mobile_js_jheo")){
         document.querySelector(".show_detail_for_mobile_js_jheo").click();
@@ -197,16 +186,20 @@ function fetchDetail(selector, link){
     
 }
 
-
-function getDetailStation(depart_name, depart_code, id) { 
-    // console.log(depart_name, depart_code, id)
-
-    let remove = document.getElementById("remove-detail-station")
-    remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
-
-    fetchDetails("#content-details-station", depart_name,depart_code,id)
+function getDetails(type,depart_name, depart_code, id ){
+    switch(type){
+        case "ferme":
+            let pathDetails =`/ferme/departement/${depart_name}/${depart_code}/details/${id}`
+            getDetailsFerme(pathDetails, inHome=true)
+            break;
+        case "station":
+            getDetailStation(depart_code,depart_name, id, inHome=true)
+            break;
+        default:
+            break
+    }
 }
+
 
 function fetchDetails(selector, departName, departCode,id){
 
