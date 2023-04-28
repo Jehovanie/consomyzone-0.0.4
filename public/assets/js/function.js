@@ -1188,11 +1188,81 @@ function addListFermeMobile() {
                     document.querySelector("#list-depart-mobile").style.transform = "translateX(-100vw)" 
                     document.querySelector("#open-navleft-mobile").style.opacity = 1
                 })
+
+                
+                if(document.querySelector(".content_input_search_dep_jheo_js")){
+                    document.querySelector(".content_input_search_dep_jheo_js").addEventListener("submit", (e) =>{
+                        e.preventDefault();
+                        if(document.querySelector(".input_search_dep_mobile_jheo_js").value){
+                            redirectToSerchFerme(document.querySelector(".input_search_dep_mobile_jheo_js").value)
+                        }
+                    })
+                }
             })  
         
         
     })
 }
+
+
+function redirectToSerchFerme(value){
+    const valueToSearch = value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
+    if (/^0[0-9]+$/.test(valueToSearch)) {
+        lookupByDepCodeFerme(valueToSearch)
+    } else if (/^0[0-9]+.[a-zA-Z]+/.test(valueToSearch)) {
+        const tmp = valueToSearch.replace(/[^0-9]/g, "")
+        lookupByDepCodeFerme(tmp)
+    } else if (/^[0-9]+.[a-zA-Z]+$/.test(valueToSearch)) {
+        const tmp = valueToSearch.replace(/[^0-9]/g, "")
+        if (tmp.split("").length === 1) { 
+            const p = `0${tmp}`
+            lookupByDepCodeFerme(p)
+        } else {
+            lookupByDepCodeFerme(tmp)
+        }
+    } else if (/[^0-9]/.test(valueToSearch)) {
+            lookupByDepNameFerme(valueToSearch)
+    }else {
+        if (valueToSearch.split("").length === 1) {
+            const tmp = `0${valueToSearch}`
+            lookupByDepCodeFerme(tmp)
+        } else {
+            lookupByDepCodeFerme(valueToSearch)
+        }
+    }
+}
+
+function lookupByDepNameFerme(g) {
+    DEP.depName.some((i,index) => {
+        if ((i.toLowerCase()) === g ) {
+             let code = DEP.depCode[index]
+            if (index >= 0 && index <= 8) {
+                // code = DEP.depCode[index].replace("0", "")
+                // window.location=`/ferme/departement/${code}/${i}`
+                window.location=`/ferme/departement/${i}/${code}`
+            } else {
+                // window.location=`/ferme/departement/${code}/${i}`
+                window.location=`/ferme/departement/${i}/${code}`
+            }
+        }
+    })
+}
+
+function lookupByDepCodeFerme(g) {
+    DEP.depCode.some((i,index) => {
+        if (i == g) {
+            let name = DEP.depName[index]
+            if (index >= 0 && index <= 8) {
+                // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
+                window.location=`/ferme/departement/${name}/${i}`
+            } else {
+                // window.location=`/ferme/departement/${i}/${name}`
+               window.location=`/ferme/departement/${name}/${i}`
+            }
+        }
+    })
+}
+
 // const nom_dep = 
 
 function addListDepartMobile(nom_dep, id_dep) {

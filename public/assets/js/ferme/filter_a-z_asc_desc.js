@@ -9,7 +9,9 @@ const letters=['','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P
 let totalPages = letters.length-1, page = 1;
 
 // selecting required element
-const element = document.querySelector(".pagination_alphabet ul");
+
+const class_content_trie = screen.width < 991 ? "pagination_alphabet_mobile_jheo_js" : "pagination_alphabet_jheo_js"
+const element = document.querySelector(`.${class_content_trie} ul`);
 
 //calling function with passing parameters and adding inside element which is ul tag
 element.innerHTML = createPagination(totalPages, page);

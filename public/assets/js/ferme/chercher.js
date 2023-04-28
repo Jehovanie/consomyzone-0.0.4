@@ -2,61 +2,33 @@ console.log(DEP)
 
 document.querySelector("#recherche-input-ferme-tom-js").onkeyup = (e) => {
     if (e.code === "Enter" || e.code === "NumpadEnter") { 
-        const valueToSearch = e.target.value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
-            if (/^0[0-9]+$/.test(valueToSearch)) {
-                lookupByDepCode(valueToSearch)
-            } else if (/^0[0-9]+.[a-zA-Z]+/.test(valueToSearch)) {
-                const tmp = valueToSearch.replace(/[^0-9]/g, "")
-                lookupByDepCode(tmp)
-            } else if (/^[0-9]+.[a-zA-Z]+$/.test(valueToSearch)) {
-                const tmp = valueToSearch.replace(/[^0-9]/g, "")
-                if (tmp.split("").length === 1) { 
-                    const p = `0${tmp}`
-                    lookupByDepCode(p)
-                } else {
-                    lookupByDepCode(tmp)
-                }
-            } else if (/[^0-9]/.test(valueToSearch)) {
-                    lookupByDepName(valueToSearch)
-            }else {
-                if (valueToSearch.split("").length === 1) {
-                    const tmp = `0${valueToSearch}`
-                    lookupByDepCode(tmp)
-                } else {
-                    lookupByDepCode(valueToSearch)
-                }
-            }
+        redirectToSerch(e.target.value)
     }
 }
-
-document.querySelector("#recherche-mobile-input-ferme-tom-js").onkeyup = (e) => {
-    if (e.code === "Enter" || e.code === "NumpadEnter") { 
-        const valueToSearch = e.target.value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
-            if (/^0[0-9]+$/.test(valueToSearch)) {
-                lookupByDepCode(valueToSearch)
-            } else if (/^0[0-9]+.[a-zA-Z]+/.test(valueToSearch)) {
-                const tmp = valueToSearch.replace(/[^0-9]/g, "")
-                lookupByDepCode(tmp)
-            } else if (/^[0-9]+.[a-zA-Z]+$/.test(valueToSearch)) {
-                const tmp = valueToSearch.replace(/[^0-9]/g, "")
-                if (tmp.split("").length === 1) { 
-                    const p = `0${tmp}`
-                    lookupByDepCode(p)
-                } else {
-                    lookupByDepCode(tmp)
-                }
-                
-            } else if (/[^0-9]/.test(valueToSearch)) {
-                    lookupByDepName(valueToSearch)
-            }else {
-                if (valueToSearch.split("").length === 1) {
-                    const tmp = `0${valueToSearch}`
-                    lookupByDepCode(tmp)
-                } else {
-                    
-                    lookupByDepCode(valueToSearch)
-                }
-            }
+function redirectToSerch(value){
+    const valueToSearch = value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
+    if (/^0[0-9]+$/.test(valueToSearch)) {
+        lookupByDepCode(valueToSearch)
+    } else if (/^0[0-9]+.[a-zA-Z]+/.test(valueToSearch)) {
+        const tmp = valueToSearch.replace(/[^0-9]/g, "")
+        lookupByDepCode(tmp)
+    } else if (/^[0-9]+.[a-zA-Z]+$/.test(valueToSearch)) {
+        const tmp = valueToSearch.replace(/[^0-9]/g, "")
+        if (tmp.split("").length === 1) { 
+            const p = `0${tmp}`
+            lookupByDepCode(p)
+        } else {
+            lookupByDepCode(tmp)
+        }
+    } else if (/[^0-9]/.test(valueToSearch)) {
+            lookupByDepName(valueToSearch)
+    }else {
+        if (valueToSearch.split("").length === 1) {
+            const tmp = `0${valueToSearch}`
+            lookupByDepCode(tmp)
+        } else {
+            lookupByDepCode(valueToSearch)
+        }
     }
 }
 
