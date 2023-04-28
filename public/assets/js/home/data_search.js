@@ -79,22 +79,7 @@ function addMarker(map,data){
                         remove.removeAttribute("class", "hidden");
                         remove.setAttribute("class", "navleft-detail fixed-top")
 
-                        var myHeaders = new Headers();
-                        myHeaders.append('Content-Type','text/plain; charset=UTF-8');
-                        fetch(`/restaurant/departement/${item.depName.trim()}/${item.dep}/details/${item.id}`, myHeaders)
-                            .then(response => {
-                                return response.text()
-                            }).then(r => {
-                            document.querySelector("#content-details").innerHTML = null
-                            document.querySelector("#content-details").innerHTML = r
-                            
-                            document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
-                                document.querySelector("#content-details").style.display = "none"
-                            })
-                            document.querySelector("#content-details").removeAttribute("style")
-                            
-                        })
-                        
+                        getDetailRestoSearch(item.depName, item.dep, item.id)
                     } 
                 }else if ( item.station !== undefined ){
                     if( screen.width < 991){
@@ -126,13 +111,11 @@ function addMarker(map,data){
         markers.on('clusterclick', function (a) {
             // a.layer is actually a cluster
             a.layer.zoomToBounds({padding: [20, 20]});
-            console.log('cluster ' + a.layer.getAllChildMarkers().length);
         });
 
         ////affiche les resultats.
         map.addLayer(markers);
         map.on("resize zoom", (e) => {
-            console.log(e)
             const coordAndZoom = {
                 zoom: e.target._zoom,
                 coord:e.target._lastCenter
@@ -141,7 +124,6 @@ function addMarker(map,data){
         })
 
         map.on("dragend", (e) => {
-            console.log(e.target.getCenter(), e.target.getZoom())
             const coordAndZoom = {
                 zoom: e.target.getZoom(),
                 coord:e.target.getCenter()
@@ -195,6 +177,12 @@ function getDetails(type,depart_name, depart_code, id ){
         case "station":
             getDetailStation(depart_code,depart_name, id, inHome=true)
             break;
+        case "resto":
+            let remove = document.getElementById("remove-detail")
+            remove.removeAttribute("class", "hidden");
+            remove.setAttribute("class", "navleft-detail fixed-top")
+
+            getDetailRestoSearch(depart_name,depart_code, id)
         default:
             break
     }
@@ -214,4 +202,23 @@ function fetchDetails(selector, departName, departCode,id){
            document.querySelector(selector).innerHTML = r
         })
     
+}
+
+function getDetailRestoSearch(depName, dep, id){
+    
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+    fetch(`/restaurant/departement/${depName.trim()}/${dep}/details/${id}`, myHeaders)
+        .then(response => {
+            return response.text()
+        }).then(r => {
+        document.querySelector("#content-details").innerHTML = null
+        document.querySelector("#content-details").innerHTML = r
+        
+        document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
+            document.querySelector("#content-details").style.display = "none"
+        })
+        document.querySelector("#content-details").removeAttribute("style")
+        
+    })
 }

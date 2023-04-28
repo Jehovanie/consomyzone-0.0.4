@@ -180,8 +180,9 @@ class HomeController extends AbstractController
         $cles1 = $request->query->get("cles1") ? trim($request->query->get("cles1")) : "";
         $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
 
-        $type= ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" ) ? $cles0: $type;
-        $cles0= ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" ) ? "": $cles0;
+        $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tous"  );
+        $type= $condition ? $cles0: $type;
+        $cles0= $condition ? "": $cles0;
         // $size = $type !== "ferme" && $type !== "restaurant" && $type !== "station" && $type !== "station service" ? 6:20;
         $size = $type ? 20:6;
         // $size = 20;
