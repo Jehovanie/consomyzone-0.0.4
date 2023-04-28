@@ -151,7 +151,7 @@ class MarckerClusterStation {
     addMarker(newData){
         newData.forEach(item => {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.nom });
             
             marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
             
@@ -164,6 +164,23 @@ class MarckerClusterStation {
                 }else{
                     getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
                 }
+
+                const url = new URL(window.location.href);
+                const icon_R= L.Icon.extend({
+                    options: {
+                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                    }
+                })
+                marker.setIcon(new icon_R);
+                if( this.marker_last_selected){
+                    const icon_B= L.Icon.extend({
+                        options: {
+                            iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
+                        }
+                    })
+                    this.marker_last_selected.setIcon(new icon_B)
+                }
+                this.marker_last_selected=marker;
             })
 
             marker.on("mouseover", () => {
