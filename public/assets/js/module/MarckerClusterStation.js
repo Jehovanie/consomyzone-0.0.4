@@ -151,7 +151,7 @@ class MarckerClusterStation {
     addMarker(newData){
         newData.forEach(item => {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.nom });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.id });
             
             marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
             
@@ -210,7 +210,7 @@ class MarckerClusterStation {
 
             this.data.forEach(element => {
                 parent_elements.querySelector("ul").innerHTML += `
-                    <li class="card-list element">
+                    <li class="card-list element open_detail_jheo_js" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
                         <div class="row container-depart pt-4 element card_list_element_jheo_js" id="${element.id}">
                             <div class="col-md-9">
                                 <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>
@@ -224,7 +224,7 @@ class MarckerClusterStation {
                                 </ul>
                             </div>
                             <div class="col-md-2">
-                                <a class="open-detail-station open_detail_jheo_js" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')">
+                                <a class="open-detail-station">
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
                                         <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
@@ -255,7 +255,7 @@ class MarckerClusterStation {
                 const parent_elements_mobile_on_left= document.querySelector(".content_list_station_left")
                 this.data.forEach(element => {
                     parent_elements_mobile_on_left.innerHTML += `
-                        <li class="card_list element" data-bs-toggle="modal" data-bs-target="#detailModalMobil" onclick="getDetailStationForMobile('${this.id_dep}','${this.nom_dep}','${element.id}')">
+                        <li class="card_list element open_detail_mobile_jheo_js" data-toggle-id='${element.id}'  data-bs-toggle="modal" data-bs-target="#detailModalMobil" onclick="getDetailStationForMobile('${this.id_dep}','${this.nom_dep}','${element.id}')">
                             <div class="row container-depart pt-4 element" id="${element.id}">
                                 <div class="col-md-9 col-sm-12">
                                     <p> 
@@ -280,10 +280,36 @@ class MarckerClusterStation {
             }
         }
 
-        if( document.querySelectorAll(".card_list_element_jheo_js").length > 0 ){
-            document.querySelectorAll(".card_list_element_jheo_js").forEach(card_dom => {
-                card_dom.addEventListener("click",() => {
-                    card_dom.querySelector(".open_detail_jheo_js")?.click()
+        const selector= screen.width < 991 ? "open_detail_mobile_jheo_js" : "open_detail_jheo_js";
+        if( document.querySelectorAll(`.${selector}`)){
+            const cta_details= document.querySelectorAll(`.${selector}`);
+            cta_details.forEach(cta_detail => {
+                cta_detail.addEventListener("click", () => {
+                    const url = new URL(window.location.href);
+                    this.markers.eachLayer(layer => {
+                        console.log(parseInt(cta_detail.getAttribute("data-toggle-id")))
+                        console.log(parseInt(layer.options.id_icon))
+
+                        if(parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))){
+                            const icon_R= L.Icon.extend({
+                                options: {
+                                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                                }
+                            })
+                            layer.setIcon(new icon_R);
+                            if( this.marker_last_selected){
+                                const icon_B= L.Icon.extend({
+                                    options: {
+                                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
+                                    }
+                                })
+                                this.marker_last_selected.setIcon(new icon_B)
+                            } 
+                            this.marker_last_selected= layer;
+                        }
+                        
+                    })
+
                 })
             })
         }

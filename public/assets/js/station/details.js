@@ -7,8 +7,6 @@ function getDetailStation(depart_name, depart_code, id) {
     myHeaders.append('Content-Type','text/plain; charset=UTF-8');
     fetch(`/station/departement/${depart_name}/${depart_code}/details/${id}`)
         .then(response => {
-            console.log(response)
-
             return response.text()
         }).then(r => { 
            document.querySelector("#content-details-station").innerHTML = null
