@@ -2,15 +2,18 @@
 
 document.querySelector(".recherche-input-station-tom-js").onkeyup =(e) => {
     if (e.code === "Enter" || e.code === "NumpadEnter") { 
-        redirectToSearch(e)
+        redirectToSearch(e.target.value)
     }
 }
 
-document.querySelector(".content_input_search_dep").addEventListener("submit", (e) =>{
-    redirectToSearch(e)
+document.querySelector(".content_input_search_dep_jheo_js").addEventListener("submit", (e) =>{
+    e.preventDefault();
+    if(document.querySelector(".input_search_dep_mobile_jheo_js").value){
+        redirectToSearch(document.querySelector(".input_search_dep_mobile_jheo_js").value)
+    }
 })
 
-function redirectToSearch(e){
+function redirectToSearch(value){
     
     let type_filter= null;
     if(document.querySelector("#tous_type_filter").checked){
@@ -26,7 +29,7 @@ function redirectToSearch(e){
         type_filter = tab_filter_type.join("@")
     }
 
-    const valueToSearch = e.target.value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
+    const valueToSearch = value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
 
     if (/^0[0-9]+$/.test(valueToSearch)) {
         lookupByDepCode(valueToSearch, type_filter)

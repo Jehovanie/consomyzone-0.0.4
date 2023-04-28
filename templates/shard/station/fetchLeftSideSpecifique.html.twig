@@ -83,13 +83,14 @@
                 (<small class="display-6 content_nombre_result_left_js_jheo">{{number_station}}</small> résultats)
             </p>
         </div>
+        <div class="content_search_dep" type="button" data-bs-toggle="modal" data-bs-target="#filter_specifique_station">
+           <i class="fa-solid fa-sort"></i>
+        </div>
     </div>
 </div>
 <div class="content_body_left_mobile">
-    <div class="content_card">
-        
-        
-        <ul class="content_list_station_left">
+    <div class="content_card" >
+        <ul class="content_list_station_left content_list_station_left_mobile_jheo_js">
             {% for  item in stations %}
                 <li class="card-list element">
                     <div class="row container-depart pt-4 element" id="{{item.id}}">
@@ -133,3 +134,23 @@
     </div>
 </div>
 {# {% include 'shard/station/modalDetailMobil.html.twig' %} #}
+
+
+<div class="modal fade" id="filter_specifique_station" tabindex="-1" aria-labelledby="filter_specifique_stationLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="hidden">
+            <button type="button" class="btn-close btn_close_filte_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="content_filter_trie content_filter_trie_mobile_jheo_js">
+                <div class="pagination_alphabet pagination_alphabet_mobile_jheo_js">
+                    <ul>
+                        {# CONTENT LIST ALPHABET generate by js #}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>

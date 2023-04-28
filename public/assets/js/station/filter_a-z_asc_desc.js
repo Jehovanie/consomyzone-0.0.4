@@ -17,7 +17,8 @@ const letters=['','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P
 let totalPages = letters.length-1, page = 1;
 
 // selecting required element
-const element = document.querySelector(".pagination_alphabet ul");
+const class_content_trie = screen.width < 991 ? "pagination_alphabet_mobile_jheo_js" : "pagination_alphabet_jheo_js"
+const element = document.querySelector(`.${class_content_trie} ul`);
 
 //calling function with passing parameters and adding inside element which is ul tag
 element.innerHTML = createPagination(totalPages, page);
@@ -116,19 +117,23 @@ function reverseList(){
 
 
 function reverseCardElement(){
-    const all_card_elements=document.querySelectorAll("#list_departements ul .card-list.element");
-    document.querySelector("#list_departements ul").innerHTML = "";
+    const class_selector= screen.width< 991 ? "content_list_station_left_mobile_jheo_js" : "content_list_station_left_jheo_js";
+    const all_card_elements=document.querySelectorAll(`.${class_selector} > .element`);
+    document.querySelector(`.${class_selector}`).innerHTML = "";
     for(let i= all_card_elements.length- 1 ; i>=0 ; i-- ){
-        document.querySelector("#list_departements ul").appendChild(all_card_elements[i]);
+        document.querySelector(`.${class_selector}`).appendChild(all_card_elements[i]);
     }
 }
 
 
 function handleFilterFirstChar(letter){
-    const all_card_elements=document.querySelectorAll("#list_departements ul .card-list.element");
+
+    const class_selector= screen.width < 991 ? "content_list_station_left_mobile_jheo_js" : "content_list_station_left_jheo_js";
+    const all_card_elements=document.querySelectorAll(`.${class_selector} > .element`);
+
     let count_not_hidden=0;
     for(let i=0 ; i<all_card_elements.length ; i++ ){
-        if(all_card_elements[i].querySelector(".id_departement").innerText.charAt(0).toLowerCase() !== letter.toLowerCase()){
+        if(all_card_elements[i].querySelector(".id_departement").innerText.trim().charAt(0).toLowerCase() !== letter.toLowerCase()){
             all_card_elements[i].classList.add("hidden")
         }else{
             if(all_card_elements[i].classList.contains("hidden")){
@@ -137,18 +142,32 @@ function handleFilterFirstChar(letter){
             count_not_hidden++;
         }
     }
-    document.querySelector(".content_nombre_result_js_jheo").innerText= count_not_hidden;
+    const content_total= screen.width < 991 ? "content_nombre_result_left_js_jheo" :  "content_nombre_result_js_jheo"
+    document.querySelector(`.${content_total}`).innerText= count_not_hidden;
+
+    closeFilterIfModal()
 }
 
 function refreshDataList(){
-    const all_card_elements=document.querySelectorAll("#list_departements ul .card-list.element");
+    const class_selector= screen.width < 991 ? "content_list_station_left_mobile_jheo_js" : "content_list_station_left_jheo_js";
+    const all_card_elements=document.querySelectorAll(`.${class_selector} > .element`);
     for(let i=0 ; i<all_card_elements.length ; i++ ){
         if(all_card_elements[i].classList.contains("hidden")){
             all_card_elements[i].classList.remove("hidden")
         }
     }
-    document.querySelector(".content_nombre_result_js_jheo").innerText= all_card_elements.length;
-    document.querySelector(".alphabet_active").classList.remove("alphabet_active");
 
+    const content_total= screen.width < 991 ? "content_nombre_result_left_js_jheo" :  "content_nombre_result_js_jheo"
+    document.querySelector(`.${content_total}`).innerText= all_card_elements.length;
+
+    document.querySelector(".alphabet_active").classList.remove("alphabet_active");
     OBJECT_MARKERS_STATION.resetToDefaultMarkers();
+
+    closeFilterIfModal()
+}
+
+function closeFilterIfModal(){
+    if( screen.width < 991 ){
+        document.querySelector(".btn_close_filte_jheo_js").click()
+    }
 }
