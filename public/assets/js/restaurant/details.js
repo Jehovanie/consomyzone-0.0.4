@@ -48,12 +48,39 @@ function getDetail(event, nom_dep, id_dep, id_restaurant, nomResto) {
         console.log(clusterMarker.getAllChildMarkers())
         markers.options = {
             showCoverageOnHover: false,
-            iconCreateFunction: function() {
-                return L.divIcon({ html: '<b>' + 'test' + '</b>' });
+            iconCreateFunction: function(cluster) {
+                let sepcMarmerIsExist = false
+                        
+                        for (let g of  cluster.getAllChildMarkers()){
+                           
+                            
+                            if (clusterMarker.getAllChildMarkers().includes(g)) { 
+                                console.log(g)
+                                sepcMarmerIsExist = true;
+                                break;
+                            }
+                        
+                        }
+                        if (sepcMarmerIsExist) {
+                            
+                            return L.divIcon({
+                                html: `<span class="markers-spec">${cluster.getChildCount()}</span>`,
+                                className: "spec_cluster",
+                                iconSize:L.point(35,35)
+                            });
+                        } else {
+                            return L.divIcon({
+                                html: '<span class="markers_tommy_js">' + cluster.getChildCount() + '</span>',
+                                className: "mycluster",
+                                iconSize:L.point(35,35)
+                            });
+                        }
+
+               
             }
         };
         
-        markers.refreshClusters(clusterMarker.getAllChildMarkers());
+        markers.refreshClusters();
         
     });
     
