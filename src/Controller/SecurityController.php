@@ -508,7 +508,7 @@ class SecurityController extends AbstractController
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-        return $this->redirect($signatureComponents->getSignedUrl());
+        // return $this->redirect($signatureComponents->getSignedUrl());
         ///-------------------------------------------------------///
 
 

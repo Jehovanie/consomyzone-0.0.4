@@ -479,8 +479,8 @@ function addControlPlaceholders(map) {
 function setIcon(urlIcon) {
     const url = new URL(window.location.href);
     var myIcon = L.icon({
-        // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
-        iconUrl: url.origin+"/"+urlIcon, ///on dev
+        iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
+        // iconUrl: url.origin+"/"+urlIcon, ///on dev
         iconSize: [30, 45],
         iconAnchor: [30, 50],
         popupAnchor: [0, -20],
