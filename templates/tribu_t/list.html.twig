@@ -50,7 +50,7 @@
 				<center>
 					<h2>
 						<i class="fa-solid  fa-list"></i>
-						Liste des tribus
+						<span lng-tag="tribu_list"> Liste des tribus</span>
 					</h2>
 				</center>
 				<div id="successMessageBlock" style="display:none;margin-left:50%;">
@@ -58,12 +58,12 @@
 					</svg>
 					<span id="successMessage"></span>
 				</div>
-				<div class="content_global_super_admin mt-3">
+				<div class="content_global_super_admin mt-3" style="overflow-x:auto;">
 					<table class="table table-list-membre table-striped">
 						<thead class="thead-dark">
 							<tr>
-								<th>Nom de la Tribu</th>
-								<th>Déscription</th>
+								<th lng-tag="tribu_nom">Nom de la Tribu</th>
+								<th lng-tag="description">Déscription</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
@@ -117,12 +117,12 @@
 						<div class="form-group content_cc_css_jheo">
 							<label for="exampleFormControlInput1">Destinataires</label>
 							<input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="name@example.com">
-							<a href="#" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+							<a href="#" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse-email" aria-expanded="false">
 								<span>Cc/Cci</span>
 							</a>
 						</div>
 
-						<div class="collapse" id="tribut-collapse">
+						<div class="collapse" id="tribut-collapse-email">
 							<div class="form-group multiple_destination_css">
 								<label for="exampleFormControlInput1">Ajouter de Cc</label>
 								<input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="autre1@example.com,...">

@@ -53,7 +53,7 @@
 						<div class="row" style="margin-top:10%">
 							<div class="col-lg-9 col-sm-12  mx-auto">
 								<div class="">
-									<h3>Modifier votre profil</h3>
+									<h3 lng-tag="modifier_profil">Modifier votre profil</h3>
 									<div class="card card-pub mb-5">
 
 										{% if message != null %}
@@ -72,31 +72,31 @@
 												<div class="col-6 mt-3">
 
 													<div class="form-group mb-3">
-														{{ form_label(form.firstname , "Nom", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.firstname , "Nom", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'nom'}}) }}
 														{{ form_widget(form.firstname, {'attr': {'class': 'form-control'}}) }}
 													</div>
 													<div class="form-group mb-3">
-														{{ form_label(form.lastname , "Prénom", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.lastname , "Prénom", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'prenom'}}) }}
 														{{ form_widget(form.lastname, {'attr': {'class': 'form-control'}}) }}
 													</div>
 
 													<div class="form-group mb-3">
-														{{ form_label(form.telephone , "Téléphone mobile", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.telephone , "Téléphone mobile", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'phone_mobile'}}) }}
 														{{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
 													</div>
 
 													<div class="form-group mb-3">
-														{{ form_label(form.telFixe , "Téléphone fixe", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.telFixe , "Téléphone fixe", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'phone_fixe'}}) }}
 														{{ form_widget(form.telFixe, {'attr': {'class': 'form-control'}}) }}
 													</div>
 
 													<div class="form-group mb-3">
-														{{ form_label(form.numRue , "N° de rue", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.numRue , "N° de rue", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'rue'}}) }}
 														{{ form_widget(form.numRue, {'attr': {'class': 'form-control'}}) }}
 													</div>
 
 													<div class="form-group mb-3">
-														{{ form_label(form.codePostal , "Code postale", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.codePostal , "Code postale", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'code_postale'}}) }}
 														{{ form_widget(form.codePostal, {'attr': {'class': 'form-control'}}) }}
 													</div>
 
@@ -111,7 +111,7 @@
 												<div class="col-6 mt-3">
 
 													<div class="form-group mb-3">
-														{{ form_label(form.pays , "Pays", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+														{{ form_label(form.pays , "Pays", {'label_attr': {'class': 'form_label fw-bolder','lng-tag' :'pays'}}) }}
 														{{ form_widget(form.pays, {'attr': {'class': 'form-control'}}) }}
 													</div>
 
@@ -138,7 +138,7 @@
 
 												</div>
 												<div class="d-flex align-items-end flex-column mb-3">
-													<input class="btn btn-sm btn-primary w-25 ml-auto mb-5" type="submit" value="Modifier">
+													<button lng-tag="modifier" class="btn btn-sm btn-primary w-25 ml-auto mb-5" type="submit">Modifier</button>
 												</div>
 
 											</div>

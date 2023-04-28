@@ -51,7 +51,7 @@
 										<img src={{ (autre_profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
 										
 										{% if app.user.id == app.request.get('user_id') %}
-											<a href="{{ path("account_setting") }}" class="btn btn-outline-primary" data-mdb-ripple-color="dark" style="z-index: 1;"><i class="bi bi-pencil-square"></i> Modifier</a>
+											<a href="{{ path("account_setting") }}" class="btn btn-outline-primary" data-mdb-ripple-color="dark" style="z-index: 1;"><i class="bi bi-pencil-square"></i> <span lng-tag="modifier">Modifier</span></a>
 										{% else %}
 											<a href="{{ path("app_message" ) ~ "?user_id=" ~  app.request.get('user_id')}}" class="btn btn-primary" data-mdb-ripple-color="dark" style="z-index: 1;"><i class="bi bi-messenger"></i> Message</a>
 										{% endif %}
@@ -78,7 +78,7 @@
 
 								<div class="card-body p-4 text-black">
 									<div class="">
-										<p class="lead fw-bolder mb-1">A propos</p>
+										<p class="lead fw-bolder mb-1" lng-tag="apropos">A propos</p>
 										<div class="row fw-light">
 											<div class="{% if type == "Fournisseur" %}col col-lg-6 col-md-6 col-sm-12 {% endif %} p-4" style="background-color: #f8f9fa;">
 												<p class="font-italic mb-1">

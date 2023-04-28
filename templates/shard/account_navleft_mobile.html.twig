@@ -4,13 +4,13 @@
 		
 			<div class="m-auto">
 				{# <img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src="{% if profil[0].getPhotoProfil != null %} /uploads/profils/photos/{{profil[0].getPhotoProfil}} {% else %} /assets/image/cheerful-curly-business-girl-wearing-glasses.jpg {% endif %}" alt="{{ profil[0].getFirstname }}"> #}
-				<img id="profilPartisant" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+				<img id="profilPartisant_mobile" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
 				
 			</div>
-			<label style="margin-left:15px;" for="fileInputProfil">
+			<label style="margin-left:15px;" for="fileInputProfil_mobile">
 				<i style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
 			</label>
-			<input type="file" name="fileInputProfil" id="fileInputProfil" style="display:none;visibility:none;" accept="image/*">
+			<input type="file" name="fileInputProfil_mobile" id="fileInputProfil_mobile" style="display:none;visibility:none;" accept="image/*">
 		</div>
 		<hr>
 		<ul class="nav flex-column icon-nav-left">
@@ -104,17 +104,17 @@
 				<ul class="na-ul-right dropdown-menu">
 						<li>
 							{# <a href="{{ path("mon_tribut") }}" class="na-text-right pr-5">Publications</a> #}
-							<a href="{{ path("publication_list") }}" class="na-text-right pr-5 dropdown-item">Publications</a>
+							<a href="{{ path("publication_list") }}" class="na-text-right pr-5 dropdown-item" lng-tag="publications">Publications</a>
 						</li>
 						<li>
-							<a href="{{ path("list_tribut_by_user") }}" class="na-text-right pr-5 dropdown-item">Mes tribus</a>
+							<a href="{{ path("list_tribut_by_user") }}" class="na-text-right pr-5 dropdown-item" lng-tag="mes_tribus">Mes tribus</a>
 						</li>
 						<li>
-							<a href="{{ path("create_tribu") }}" class="na-text-right dropdown-item">Créer une tribu</a>
+							<a href="{{ path("create_tribu") }}" class="na-text-right dropdown-item" lng-tag="creer_tribu">Créer une tribu</a>
 						</li>
 						<li>
 							{# <a href="{{ path("all_tribut") }}" class="na-text-right">Autres tribus</a> #}
-							<a href="#" class="na-text-right dropdown-item">Autres tribus</a>
+							<a href="#" class="na-text-right dropdown-item" lng-tag="autres_tribus">Autres tribus</a>
 						</li>
 					</ul>
 
@@ -135,13 +135,13 @@
 
 				<ul class="na-ul-right dropdown-menu">
 					<li>
-						<a href="{{ path("account_setting") }}" class="na-text-right pr-5 dropdown-item">Compte</a>
+						<a href="{{ path("account_setting") }}" class="na-text-right pr-5 dropdown-item" lng-tag="compte">Compte</a>
 					</li>
 					<li>
-						<a href="{{ path("security_setting") }}" class="na-text-right dropdown-item">Sécurité</a>
+						<a href="{{ path("security_setting") }}" class="na-text-right dropdown-item" lng-tag="securite">Sécurité</a>
 					</li>
 					<li>
-						<a href="{{ path("confidential_setting") }}" class="na-text-right dropdown-item">Confidentialité</a>
+						<a href="{{ path("confidential_setting") }}" class="na-text-right dropdown-item" lng-tag="confidentialite">Confidentialité</a>
 						{#<a href="#" class="na-text-right">Confidentialité</a>#}
 					</li>
 				</ul>
@@ -155,7 +155,7 @@
 				</a>
 			</li>
 			<li class="nav-item">
-				<a href="#" class="nav-link link-dark not_autorised">
+				<a href="{{path('app_traduction')}}"class="nav-link link-dark not_autorised">
 					<img src="{{asset('assets/image/icon-language.png')}}" alt="icon" width='25'>
 					{# <span>Langage</span> #}
 				</a>
@@ -177,3 +177,55 @@
 	</div>
 </div>
 
+<script>
+
+let fileInputProfil_mobile = document.querySelector("#fileInputProfil_mobile");
+
+fileInputProfil_mobile.addEventListener("change", (e) => {
+
+    ///read file
+    const fileReader_mob = new FileReader();
+
+    ////on load file
+    fileReader_mob.addEventListener("load", () => {
+
+        let avatarPartisant_mobile = fileReader_mob.result;
+
+        //console.log(avatarPartisant);
+
+        // Change profil
+		let profilPartisant_mobile = document.querySelector("#profilPartisant_mobile");
+        profilPartisant_mobile.src = avatarPartisant_mobile
+		//console.log(profilPartisant_mobile.src);
+
+        if(document.querySelector("#roundedImg") != null){
+            document.querySelector("#roundedImg").src = avatarPartisant_mobile
+        }
+
+        let data = {
+        image : avatarPartisant_mobile
+        }
+
+        fetch(new Request("/user/profil/update/avatar", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })).then(x => x.json()).then(response => console.log(response));
+
+    });
+
+    ///run event load in file reader.
+    fileReader_mob.readAsDataURL(e.target.files[0]);
+
+})
+/*
+let firstNameProfil = document.querySelector("#firstNameProfil")
+let lastNameProfil = document.querySelector("#lastNameProfil")
+let profileImage = document.querySelector("#profileImage")
+var intials = firstNameProfil.textContent.charAt(0) + lastNameProfil.textContent.charAt(0);
+profileImage.textContent = intials;
+*/
+</script>

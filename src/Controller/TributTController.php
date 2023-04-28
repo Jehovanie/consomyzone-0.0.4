@@ -1665,7 +1665,7 @@ class TributTController extends AbstractController
             "Amis",
             $object,
             // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+            $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
         );
 
 

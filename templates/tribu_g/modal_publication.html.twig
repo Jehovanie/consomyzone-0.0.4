@@ -137,3 +137,32 @@
 	</div>
 </div>
 <!-- end modal agenda -->
+
+<!-- modal Localisation -->
+<div class="modal fade " id="modal_localisation" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title">Votre position</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" >
+            <div class="mb-2">
+                <span id="pos-ip"></span><br><span id="pos-city"></span><br>
+                <span id="pos-region"></span><br><span id="pos-country"></span><br>
+                <span id="pos-lat"></span><br>
+                <span id="pos-long"></span>
+            </div>
+            {# <input type="button" class="btn btn-primary m-2" onclick="getPosition()" value="Afficher votre position"> #}
+            <div id="position_map" style="width:100%; height : 200px;">
+        </div>
+        
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- end modal localisation -->
