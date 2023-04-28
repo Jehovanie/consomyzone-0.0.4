@@ -90,8 +90,7 @@ class MarckerClusterStation {
                         layer.unbindTooltip()
                     }
                 });
-            }
-            else if (markersDisplayed) {
+            }else if (markersDisplayed) {
                 markersDisplayed = false;
                 markers.eachLayer(function (layer) {
                     if (bounds.contains(layer.getLatLng())) {
@@ -99,6 +98,8 @@ class MarckerClusterStation {
                     }
                 });
             }
+
+            // this.markers.refreshClusters();
         });
     }
 
@@ -143,9 +144,49 @@ class MarckerClusterStation {
     }
 
     createMarkersCluster(){
+        const that= this;
         this.markers = L.markerClusterGroup({ 
-            chunkedLoading: true
+            chunkedLoading: true,
+            
+            // iconCreateFunction: function (cluster) {
+            //     if(that.marker_last_selected){
+            //         let sepcMarmerIsExist = false;
+            //         const cleCoord= that.marker_last_selected._latlng.lat + "" + that.marker_last_selected._latlng.lng;
+            //         console.log("child Marker")
+            //         console.log(cluster)
+            //         for (let g of  cluster.getAllChildMarkers()){
+            //             let tmpCleCoord = g._latlng.lat + "" + g._latlng.lng
+            //             tmpCleCoord = tmpCleCoord.toString().replace(/[\-\.]/g, "")
+                        
+            //             if (cleCoord.replace(/[^0-9]/g, "") === tmpCleCoord) { 
+            //                 sepcMarmerIsExist = true;
+            //                 break;
+            //             }
+            //         }
+            //         if(sepcMarmerIsExist){
+            //             console.log("tokony")
+            //             return L.divIcon({
+            //                 html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+            //                 className: "spec_cluster",
+            //                 iconSize:L.point(35,35)
+            //             });
+            //         }else{
+            //             console.log("tss")
+            //             return L.divIcon({
+            //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+            //                 className: "mycluster",
+            //                 iconSize:L.point(35,35)
+            //             });
+            //         }
+            //     }
+            //     return L.divIcon({
+            //         html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+            //         className: "mycluster",
+            //         iconSize:L.point(35,35)
+            //     });
+            // },
         });
+        
     }
 
     addMarker(newData){
@@ -153,7 +194,7 @@ class MarckerClusterStation {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
             let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.id });
             
-            marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
+            // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
             
             // marker.on('add', function () {
             //     marker.openPopup();
@@ -287,8 +328,6 @@ class MarckerClusterStation {
                 cta_detail.addEventListener("click", () => {
                     const url = new URL(window.location.href);
                     this.markers.eachLayer(layer => {
-                        console.log(parseInt(cta_detail.getAttribute("data-toggle-id")))
-                        console.log(parseInt(layer.options.id_icon))
 
                         if(parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))){
                             const icon_R= L.Icon.extend({

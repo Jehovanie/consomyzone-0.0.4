@@ -648,3 +648,32 @@ li a .station {
     background-color: #FFF;
     border: 1px solid #84A2FA;
 }
+
+.mycluster {
+    width: 35px;
+    height: 35px;
+    background-color: greenyellow;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 15pt;
+}
+
+.spec_cluster{
+    background-color: red !important;
+    width: 35px !important;
+    height: 35px !important;
+    opacity: 1;
+    outline: none;
+    border-radius: 50%;
+}
+
+
+
+.markers-spec{
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    top: 10%;
+    font-size: 1.2rem;
+}
