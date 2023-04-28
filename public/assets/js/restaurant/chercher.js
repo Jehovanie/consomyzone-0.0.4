@@ -18,6 +18,7 @@ document.querySelector("#recherche-input-restaurant-tom-js").onkeyup = (e) => {
                 }
                 
             } else if (/[^0-9]/.test(valueToSearch)) {
+                alert('Please enter')
                     lookupByDepNameResto(valueToSearch)
             }else {
                 if (valueToSearch.split("").length === 1) {
@@ -84,7 +85,73 @@ function lookupByDepNameResto(g) {
                     window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
                 }
             }
-        } else {
+        }else if (DEP.depName[index] == 'Essonne') {
+            if ((i.toLowerCase()) === g) {
+                let code = DEP.depCode[index]
+                if (index >= 0 && index <= 8) {
+                    // code = DEP.depCode[index].replace("0", "")
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    // restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                } else {
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                }
+            }
+        }
+        else if (DEP.depName[index] == 'Hauts-de-Seine') {
+            if ((i.toLowerCase()) === g) {
+                let code = DEP.depCode[index]
+                if (index >= 0 && index <= 8) {
+                    // code = DEP.depCode[index].replace("0", "")
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    // restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                } else {
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                }
+            }
+        }else if (DEP.depName[index] == 'Seine-Saint-Denis') {
+            if ((i.toLowerCase()) === g) {
+                let code = DEP.depCode[index]
+                if (index >= 0 && index <= 8) {
+                    // code = DEP.depCode[index].replace("0", "")
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    // restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                } else {
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                }
+            }
+        }else if (DEP.depName[index] == 'Val-de-Marne') {
+            if ((i.toLowerCase()) === g) {
+                let code = DEP.depCode[index]
+                if (index >= 0 && index <= 8) {
+                    // code = DEP.depCode[index].replace("0", "")
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    // restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                } else {
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                }
+            }
+        }else if (DEP.depName[index] == 'Val-d-Oise') {
+            if ((i.toLowerCase()) === g) {
+                let code = DEP.depCode[index]
+                if (index >= 0 && index <= 8) {
+                    // code = DEP.depCode[index].replace("0", "")
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    // restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                } else {
+                    // window.location=`/ferme/departement/${code}/${i}`
+                    window.location = `/restaurant/specific?nom_dep=${i}&id_dep=${code}`
+                }
+            }
+        }else {
             if (DEP.depCode[index] == 'Yvelines') {
                 document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
                 document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
@@ -95,6 +162,21 @@ function lookupByDepNameResto(g) {
                 document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
                 document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
             }else if (DEP.depCode[index] == 'Paris') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == 'Essonne') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == 'Hauts-de-Seine') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == 'Seine-Saint-Denis') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == 'Val-de-Marne') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == 'Val-d-Oise') {
                 document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
                 document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
             } else {
@@ -159,7 +241,68 @@ function lookupByDepCodeResto(g) {
                 }
                 
             } 
-        } else {
+        }else if (DEP.depCode[index] == '91') {
+            if (i == g) {
+                let name = DEP.depName[index]
+                if (index >= 0 && index <= 8) {
+                    // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                } else {
+                    // window.location=`/ferme/departement/${i}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                }
+                
+            } 
+        }else if (DEP.depCode[index] == '92') {
+            if (i == g) {
+                let name = DEP.depName[index]
+                if (index >= 0 && index <= 8) {
+                    // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                } else {
+                    // window.location=`/ferme/departement/${i}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                }
+                
+            } 
+        }else if (DEP.depCode[index] == '93') {
+            if (i == g) {
+                let name = DEP.depName[index]
+                if (index >= 0 && index <= 8) {
+                    // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                } else {
+                    // window.location=`/ferme/departement/${i}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                }
+                
+            } 
+        }else if (DEP.depCode[index] == '94') {
+            if (i == g) {
+                let name = DEP.depName[index]
+                if (index >= 0 && index <= 8) {
+                    // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                } else {
+                    // window.location=`/ferme/departement/${i}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                }
+                
+            } 
+        }else if (DEP.depCode[index] == '95') {
+            if (i == g) {
+                let name = DEP.depName[index]
+                if (index >= 0 && index <= 8) {
+                    // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                } else {
+                    // window.location=`/ferme/departement/${i}/${name}`
+                    window.location=`/restaurant/specific?nom_dep=${name}&id_dep=${i}`
+                }
+                
+            } 
+        }
+        else {
             if (DEP.depCode[index] == '44') {
                 document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
                 document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
@@ -172,7 +315,23 @@ function lookupByDepCodeResto(g) {
             }else if (DEP.depCode[index] == '78') {
                 document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
                 document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
-            } else {
+            }else if (DEP.depCode[index] == '91') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == '92') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == '93') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == '94') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }else if (DEP.depCode[index] == '95') {
+                document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid #D5D9DB"
+                document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
+            }
+            else {
                 document.querySelector("#recherche-input-restaurant-tom-js").style.border = "1px solid red"
                 document.querySelector("#recherche-input-restaurant-tom-js").style.transition = "border 3s"
             }

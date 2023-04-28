@@ -46,11 +46,11 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto">
-                <li class="nav-item ms-4 icon-tous">
+                <li class="nav-item ms-5 icon-tous">
                     <a class="nav-link active" aria-current="page" href="{{path('app_home')}}">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
+                        <svg class="d-block" version="1.0" xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
-                            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
+                            <g  transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
                                 stroke="none">
                                 <path d="M2260 4855 c-489 -64 -935 -276 -1294 -616 -418 -396 -688 -970 -712
                                     -1514 -8 -181 4 -165 -118 -165 -87 0 -105 -3 -119 -18 -38 -42 -26 -72 154
@@ -83,9 +83,12 @@
                                 299 -30 16 -57 12 -84 -12z"/>
                             </g>
                         </svg>
+                        <p class="nav-tous">Tous</p>
                     </a>
+                        
+
 				</li>
-				<li class="nav-item ms-4 icon-ferme">
+				<li class="nav-item ms-5 icon-ferme">
                     <a class="nav-link active" aria-current="page" href="{{path('all_departement')}}">
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
@@ -118,9 +121,10 @@
                                 77 -87 60z"/>
                             </g>
                         </svg>
+                        <p class="nav-ferme">Ferme</p>
                     </a>
 				</li>
-				<li class="nav-item ms-4 icon-resto">
+				<li class="nav-item ms-5 icon-resto">
                     <a class="nav-link" href="{{path('restaurant_all_dep')}}">
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
@@ -150,10 +154,11 @@
                                 <path d="M580 245 c-16 -19 -1 -25 61 -25 56 0 84 14 59 30 -20 12 -108 9-120 -5z"/>
                             </g>
                         </svg>
+                        <p class="nav-resto">Restaurant</p>
                     </a>
 				</li>
 
-                <li class="nav-item ms-4 icon-station">
+                <li class="nav-item ms-5 icon-station">
                     <a class="nav-link" href="{{path('app_station')}}">
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                         width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
@@ -173,10 +178,11 @@
                                 -27 3 -61z"/>
                             </g>
                         </svg>
+                        <p class="nav-station">Station service</p>
                     </a>
 				</li>
 
-                <li class="nav-item ms-4 icon-recherche">
+                <li class="nav-item ms-5 icon-recherche">
                     <a class="nav-link" type="button" data-bs-toggle="modal" data-bs-target="#recherche">
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                         width="50" height="50" viewBox="0 0 128.000000 128.000000"
@@ -193,6 +199,7 @@
                                 -3 46 -97 133 l-98 89 -36 -35z"/>
                             </g>
                         </svg>
+                    <p class="nav-recherche">Recherche</p>
                     </a>
 				</li>
 			</ul>

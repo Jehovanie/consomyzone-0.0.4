@@ -11,3 +11,4 @@ if(document.querySelector("#open-navleft")){
         document.querySelector(".navleft").style.transition = "all 1.5s ease-out"
     })
 }
+

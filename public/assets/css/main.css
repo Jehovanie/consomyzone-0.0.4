@@ -70,7 +70,7 @@ body {
 }
 
 .navleft .list-depart-all{
-    height: 75vh;
+    height: 70vh;
     overflow-y: scroll;
 }
 
@@ -121,7 +121,7 @@ body {
 
 /* ***********specific_resto_navleft************** */
 .navleft .list-depart-all-specific {
-    height: 75vh;
+    height: 67vh;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -275,7 +275,7 @@ body {
     border-radius: 15PX;
     background-color: #DF01D7;
     fill: #fff !important;
-    transform: scale(1.3);
+    /* transform: scale(1.3); */
 }
 
 .navbar-light-bar .navbar-nav .icon-ferme a svg{
@@ -293,7 +293,7 @@ body {
     border-radius: 15PX;
     background-color: #1111FE;
     fill: #fff !important;
-    transform: scale(1.3);
+    /* transform: scale(1.3); */
 }
 
 .navbar-light-bar .navbar-nav .icon-resto a svg {
@@ -315,7 +315,7 @@ body {
     border-radius: 15PX;
     background-color: #000;
     fill: #fff;
-    transform: scale(1.3);
+    /* transform: scale(1.3); */
 }
 
 .navbar-light-bar .navbar-nav .icon-station a svg {
@@ -332,7 +332,7 @@ body {
     border-radius: 15PX;
     background-color: #28BE21;
     fill: #fff;
-    transform: scale(1.3);
+    /* transform: scale(1.3); */
 }
 
 .navbar-light-bar .navbar-nav .icon-recherche a svg {
@@ -350,7 +350,7 @@ body {
     border-radius: 15PX;
     background-color: #B40404;
     fill: #fff;
-    transform: scale(1.3);
+    /* transform: scale(1.3); */
 }
 
 .navbar-light-bar .navbar-brand img{
@@ -677,3 +677,28 @@ li a .station {
     top: 10%;
     font-size: 1.2rem;
 }
+.nav-tous {
+    margin: 50px auto -15px -42px;
+    color: #DF01D7;
+}
+
+.nav-ferme{
+    margin:50px auto -15px -47px;
+    color: #1111FE;
+}
+
+.nav-resto {
+    margin: 50px 5px -15px -60px;
+    color: #000;
+}
+
+.nav-station {
+    margin: 50px 5px -15px -75px;
+    color: #19911D;
+}
+
+.nav-recherche {
+    margin: 50px auto -15px -60px;
+    color: #B40404;
+}
+

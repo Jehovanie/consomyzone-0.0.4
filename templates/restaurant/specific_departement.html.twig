@@ -5,12 +5,14 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/restaurant/app.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/restaurant/sepecific_departement.css')}}">
 {% endblock %}
 
 {% block javascripts %}
 	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	<script src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
 	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
 	<script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
 {% endblock %}
 
@@ -75,5 +77,13 @@
 			</div>
 		</div>
 	</div>
+    {% if (app.user) %}
+        <div class="FtBjOlVf" data-dem="2ahUK:Ewip3tqU6Ob7AhW3gc:4B.{{app.user.id}}H:bAUBJQQ-EN6BAhzEAo"></div>
+    {% endif %}
+
+    {{ include('shard/restaurant/list_avis.html.twig') }}
+    {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
+    {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
+
 {% endblock %}
 

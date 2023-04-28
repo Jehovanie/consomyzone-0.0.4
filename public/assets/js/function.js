@@ -891,6 +891,9 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     
                     marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                     marker.on('click', (e) => {
+                        // marker.addEventListener('change', () => {
+                        //     marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-R.png') });
+                        // })
                         console.log(e)
                         const coordAndZoom = {
                             zoom: e.target.__parent._zoom+1,

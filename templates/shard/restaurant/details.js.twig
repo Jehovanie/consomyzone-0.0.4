@@ -26,7 +26,7 @@
 <div class="left_content_home">
 	<div>
 		<div
-			class="description" id="details-coord" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+			class="description" id="details-coord" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
 
 
 			{# note avis   #}
@@ -237,7 +237,10 @@
 					<button class="btn btn-success" id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
 				</div>
 			{% endif %}
-
+			
 		</div>
 	</div>
 </div>
+
+
+
