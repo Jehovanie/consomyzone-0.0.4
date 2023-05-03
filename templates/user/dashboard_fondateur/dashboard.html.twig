@@ -15,14 +15,14 @@
 	<main>
 		<div class="content_left_menu_account fixed-top mt-5 col">
 			<div class="left_menu">
-				{% include ("shard/account_navleft.html.twig" )%}
+				{{ include("shard/account_navleft.html.twig") }}
 			</div>
 		</div>
 		<div class="fixed-top">
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
 
-		<div class="row account">
+		<div class="row content_right_actualite">
 			<center>
 				<div class="row">
 					<div class="col">
@@ -40,8 +40,7 @@
 					
 			</center>
 
-			<div class="container col content_global_super_admin ">
-				
+			<div class="container">
 				<table class="table table-list-membre table-striped">
 					<thead class="thead-dark">
 						<tr>
@@ -90,9 +89,5 @@
 				</table>
 			</div>
 		</div>
-
-
 	</main>
-
-
 {% endblock %}

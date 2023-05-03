@@ -29,7 +29,7 @@ body{
 .content_right_actualite{
     display: block;
     width: 78%;
-    height: 80vh;
+    height: 87vh;
     overflow-y: scroll;
     overflow-x: hidden;
     
@@ -85,6 +85,12 @@ body{
     /* width: 78%; */
     position: relative;
     height: 100%;
+}
+
+.card-apropos-admin .card{
+    display: block;
+    height: 100%;
+    /* height: auto; */
 }
 
 .card-pub{
@@ -436,7 +442,8 @@ div.row-js>div.text-chat.up img{
 .content_global_super_admin {
     display: flex;
     justify-content: center;
-    height: 100%;
+    /* height: 100%; */
+    height: auto !important;
     /* overflow-y: scroll; */
     overflow-x: hidden;
 }
@@ -446,10 +453,10 @@ div.row-js>div.text-chat.up img{
     display: block;
 }
 
-.table-list-membre{
+/* .table-list-membre{
     width: 70%;
     margin-left: 250px;
-}
+} */
 
 .table-list-apropos{
     /* width: 70%; */
@@ -480,8 +487,7 @@ div.row-js>div.text-chat.up img{
 
 .card-categoerie{
     display: block;
-    /* width: 99%; */
-    /* margin-left: -11px; */
+    height: auto !important;
 }
 
 .card-categoerie .table{
