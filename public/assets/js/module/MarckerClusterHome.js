@@ -8,7 +8,7 @@ class MarckerClusterStation {
     async onInit(){
         try{
             this.getGeos()
-            this.map=create_map_content(this.geos,this.id_dep, "home");
+            this.map= await create_map_content(this.geos,this.id_dep, "home");
             this.createMarkersCluster();
 
             const url = (this.nom_dep || this.id_dep) ? `/getLatitudeLongitudeForAll/?nom_dep=${this.nom_dep}&id_dep=${this.id_dep}`: `/getLatitudeLongitudeForAll`;
@@ -161,7 +161,7 @@ class MarckerClusterStation {
                         }
                         setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
                         // window.location = pathDetails;
-                        
+
                         let screemMax = window.matchMedia("(max-width: 1000px)")
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         let remove = document.getElementById("remove-detail")
