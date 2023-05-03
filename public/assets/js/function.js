@@ -19,7 +19,6 @@ function create_map_content(geos, id_dep=null, map_for_type="home"){
         json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
         zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : ( id_dep ? centers[parseInt(id_dep)].zoom : 6 );
     }else if( map_for_type === "home"){
-
         latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
         json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
         zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
