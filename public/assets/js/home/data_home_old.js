@@ -638,3 +638,47 @@ function addMap(data,dep){
         })
     }
 }
+
+
+function changeType(e){
+    if( e.target.name === "filterTous"){
+        if( document.querySelector("#filterTous").checked){
+            document.querySelectorAll(".content_filter input").forEach(item => {
+                item.checked = true;
+            })
+        }else{
+            document.querySelectorAll(".content_filter input").forEach(item => {
+                item.checked = false;
+            })
+        }
+    }
+
+    const lists = ["filterFerme" , "filterStation", "filterResto" , "filterVehicule" , "filterCommerce"];
+
+    let result_temp = [];
+    let results = null ;
+    for (let item  of lists ) {
+        results = this.handleOnlyStateCheckbox(result_temp, item )
+        result_temp = results;
+    }
+
+    if( results.every(item => item.state === 1 ) ){
+        document.querySelector("#filterTous").checked = true;
+    }else{
+        document.querySelector("#filterTous").checked = false;
+    }
+    
+    this.removeMarker();
+    console.log(results)
+    results.forEach( item => {
+        const { type, state} = item;
+        if(type==="filterFerme" && state === 1 ){
+            this.addFerme(this.default_data.ferme)
+        }else if(type==="filterStation" && state === 1){
+            this.addStation(this.default_data.station)
+        }else if(type==="filterResto" && state === 1 ){
+            this.addResto(this.default_data.resto)
+        }
+    })
+    // this.map.addLayer(this.markers);
+}
