@@ -203,11 +203,18 @@ class FermeGeomRepository extends ServiceEntityRepository
             )->where('p.latitude BETWEEN :lat_min AND :lat_max')
             ->andWhere('p.longitude BETWEEN :lng_min AND :lng_max');
 
-        $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
-        $lat_max= $last["max"];
+        // $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
+        // $lat_max= $last["max"];
 
-        $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
-        $lng_max= count($new) > 0 ? $new["max"] : $last["min"];
+        // $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
+        // $lng_max= count($new) > 0 ? $new["max"] : $last["min"];
+
+
+        $lat_min=$last["min"];
+        $lat_max= count($new) > 0 ? $new["max"] : $last["max"];
+
+        $lng_min= count($new) > 0 ? $new["min"] : $last["min"];
+        $lng_max= $last["max"];
 
         ///(this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) 
         $qb= $qb->setParameter('lat_min', $lat_min["lat"])
