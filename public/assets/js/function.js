@@ -3,6 +3,23 @@ let firstY=0
 /*
 
 */
+
+function splitArrayToMultipleArray(tabToSplit){
+    const taille= 1000;
+    let tab_results= [];
+    let start_index = 0;
+    let end_index = taille;
+    const nbrTabResults = Math.ceil(tabToSplit.length/1000);
+    for(let i=0; i<nbrTabResults; i++){
+        tab_results.push(tabToSplit.slice(start_index, end_index));
+        start_index=end_index+1;
+        end_index += taille +1;
+        end_index= end_index > tabToSplit.length ? tabToSplit.length : end_index;
+    }
+    return tab_results;
+}
+
+
 async function create_map_content(geos, id_dep=null, map_for_type="home"){
     // {# <div id="map"  style="width: 100%;"></div> #}
    try{
@@ -20,25 +37,29 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
         
         if( map_for_type === "station"){
 
-            latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
+            latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
             zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : ( id_dep ? centers[parseInt(id_dep)].zoom : 6 );
         }else if( map_for_type === "home"){
-            latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
-            console.log(latlng)
-            json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
-            zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 8)) : (id_dep ? centers[parseInt(id_dep)].zoom : 8);
+
+            // latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
+            // json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
+            // zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 8)) : (id_dep ? centers[parseInt(id_dep)].zoom : 8);
+            
+            // latlng = L.latLng(latitude, longitude);
+            latlng= L.latLng(45.729191061299936, 2.4161955097725722);
+            json= latlng
+            zoom =9;
         }else if( map_for_type === "ferme"){
 
-            latlng = L.latLng(45.55401555223028, 3.9946391799233365);
+            latlng = L.latLng(latitude, longitude);
             json=getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) :latlng
             zoom = json.zoom ? json.zoom: 5;
         }else if( map_for_type === "resto"){
-            latlng = L.latLng(45.55401555223028, 3.9946391799233365);
+            latlng = L.latLng(latitude, longitude);
             json=getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) :latlng
             zoom = json.zoom ? json.zoom: 5;
         }
-        
         centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
         
         var container = L.DomUtil.get('map');
