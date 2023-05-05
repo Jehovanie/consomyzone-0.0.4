@@ -111,6 +111,8 @@
 
 	const createNewEventForm = (debut, fin) => {
 
+		document.querySelector("#agenda-fetched-past").innerHTML= ""
+
 		document.querySelector("#agenda-fetched").innerHTML = `
 			<div class="mt-2 mb-2">
 				<button class="btn btn-info" onclick="formEventShow(this)"> <i class="bi bi-plus"></i> Créer </button>
@@ -203,12 +205,12 @@
 				<div id="new_map" style="width:100%; height : 150px;"></div>
 			</div>
 
-			<div class="row g-2 mt-2 mb-2">
-				<input type="button" class="btn btn-outline-primary" onclick="saveAgenda()" id="" value="Enregistrer">
+			<div class="alert alert-success mt-2 mb-2" role="alert" style="display:none;" id="agenda-success"><i class="bi bi-check2-circle"> </i>
+				Agenda sauvegardé avec succès
 			</div>
 
-			<div class="alert alert-success mt-2" role="alert" style="display:none;" id="agenda-success"><i class="bi bi-check2-circle"> </i>
-				Agenda sauvegardé avec succès
+			<div class="row g-2 mt-2">
+				<input type="button" class="btn btn-outline-primary" onclick="saveAgenda()" id="" value="Enregistrer">
 			</div>
 
 			</div>`;
@@ -450,6 +452,15 @@
 			document.querySelector("#agenda-success").style.display = "block";
 		});
 		console.log(data);
+
+		document.querySelector("#agenda-title").value =""
+		document.querySelector("#restaurant").value =""
+		document.querySelector("#participant").value =""
+		document.querySelector("#agenda-desc").value=""
+
+		setTimeout(()=>{
+			document.querySelector("#agenda-success").style.display = "none";
+		},5000)
 	}
 
 	function testHasAgenda(tablename, date, i){
@@ -615,11 +626,11 @@
 				if(list.length > 0){
 					document.querySelector("#result_resto").style.display ="block"
 					let res =""
-					//console.log(data)
+					console.log(data)
 					for(let resto of list){
 						let avtr = "{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}"
 						if(resto.isPelleted == 1){
- 							res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><img id='roundedImg' style='min-height: 40px; min-width:40px; max-width:40px; max-height: 40px;' class='rounded-circle border border-1' src="+avtr+"><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='true' onclick='setResto(this)'> "+resto.denomination_f.trim()+"</a><small class='float-end text-danger'><i>Déjà pastillé</i></small></li>"
+ 							res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><img id='roundedImg' style='min-height: 40px; min-width:40px; max-width:40px; max-height: 40px;' class='rounded-circle border border-1' src="+avtr+"><a href='#' data-idresto='"+resto.id_pastille+"' data-isPelleted ='true' onclick='setResto(this)'> "+resto.denomination_f.trim()+"</a><small class='float-end text-danger'><i>Déjà pastillé</i></small></li>"
 						
 						}else{
 							res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='false' onclick='setResto(this)'>"+resto.denomination_f.trim()+"</a><small class='float-end'><i>"+resto.adresse.trim().toLowerCase()+"</i></small></li>"
@@ -673,7 +684,7 @@
 			let idresto = elem.getAttribute("data-idresto")
 
 			if(estPastille!="true"){
-				document.querySelector("#btn-pastille").style.display="block";
+				document.querySelector("#btn-pastille").style="display : block;margin-top: 10px;";
 				document.querySelector("#btn-pastille").value ="Pastiller"
 				document.querySelector("#btn-pastille").disabled = false
 			}else{
@@ -688,7 +699,7 @@
 
 			//var map = L.map('map').setView([0, 0], 5);
 			
-			console.log(idresto);
+			//console.log(idresto);
 
 		}
 

@@ -1278,8 +1278,9 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getRestoPastilles($tableResto){
 
+        $sql = "SELECT * from (SELECT $tableResto.id as id_pastille, $tableResto.id_resto, $tableResto.denomination_f, bdd_resto.id as id_unique, bdd_resto.dep as id_dep, bdd_resto.poi_y as latitude, bdd_resto.poi_x as longitude,  concat(bdd_resto.numvoie,' ',bdd_resto.typevoie,' ',bdd_resto.nomvoie,' ',bdd_resto.codpost,' ',bdd_resto.commune) as adresse FROM `tribu_t_2_data_engineer_restaurant` inner JOIN bdd_resto on $tableResto.id_resto = bdd_resto.clenum ORDER BY $tableResto.datetime DESC) as resto_pastille INNER JOIN departement ON resto_pastille.id_dep=departement.id";
 
-        $sql = "SELECT denomination_f FROM $tableResto ORDER BY datetime DESC";
+        //$sql = "SELECT * FROM $tableResto ORDER BY datetime DESC";
 
 
         $stmt = $this->getPDO()->prepare($sql);
