@@ -4,7 +4,7 @@ class MarckerClusterStation {
         this.nom_dep = nom_dep ? nom_dep : null;
         this.id_dep = id_dep ? id_dep : null;
         this.is_online= false;
-        this.time_on_setInterval= 400;
+        this.time_on_setInterval= 300;
     }
 
     async onInit(){
@@ -31,7 +31,7 @@ class MarckerClusterStation {
             
             this.default_data= await response.json();
             this.data= this.default_data;
-            console.log(this.data)
+            // console.log(this.data)
             this.bindAction();
         }catch(e){
             console.log(e)
@@ -318,6 +318,7 @@ class MarckerClusterStation {
                 coord:e.target._lastCenter
             }
             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
+            // console.log(coordAndZoom)
         })
 
         map.on("zoomend" , async (e) => {
@@ -326,8 +327,6 @@ class MarckerClusterStation {
             let minll=bounds.getSouthWest();
             let maxll=bounds.getNorthEast();
             const data= { "last":{ min: this.last_minll , max: this.last_maxll },"new": { min: minll , max: maxll } };
-
-            console.log(data);
 
             if( (this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) ){
                 ///same action update
