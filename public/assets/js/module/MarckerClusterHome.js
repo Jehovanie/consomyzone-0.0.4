@@ -100,6 +100,11 @@ class MarckerClusterStation {
     }
 
     addStation(dataStation){
+
+        // dataStation.forEach(item => {
+        //     this.settingSingleMarkerStation(item)
+        // })
+
         const tab_data_station= splitArrayToMultipleArray(dataStation);
 
         let i = 0;
@@ -115,6 +120,10 @@ class MarckerClusterStation {
     }
 
     addFerme(dataFerme){
+
+        // dataFerme.forEach(item => {
+        //     this.settingSingleMarkerFerme(item)
+        // })
         const tab_data_ferme= splitArrayToMultipleArray(dataFerme); 
 
         let i = 0;
@@ -172,15 +181,7 @@ class MarckerClusterStation {
             })
             marker.setIcon(new icon_R);
 
-            if( this.marker_last_selected){
-                const icon_B= L.Icon.extend({
-                    options: {
-                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
-                    }
-                })
-                this.marker_last_selected.setIcon(new icon_B)
-            }
-            this.marker_last_selected=marker;
+            this.updateLastMarkerSelected(marker,"station")
         })
                 
         this.markers.addLayer(marker);
@@ -219,15 +220,7 @@ class MarckerClusterStation {
             })
             marker.setIcon(new icon_R);
             
-            if( this.marker_last_selected){
-                const icon_B= L.Icon.extend({
-                    options: {
-                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-ferme-new-B.png"
-                    }
-                })
-                this.marker_last_selected.setIcon(new icon_B)
-            }
-            this.marker_last_selected=marker;
+            this.updateLastMarkerSelected(marker,"ferme")
         })
         this.markers.addLayer(marker);
     }
@@ -289,18 +282,33 @@ class MarckerClusterStation {
             })
             marker.setIcon(new icon_R);
             
-            if( this.marker_last_selected){
-                const icon_B= L.Icon.extend({
-                    options: {
-                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-B.png"
-                    }
-                })
-                this.marker_last_selected.setIcon(new icon_B)
-            }
-            this.marker_last_selected=marker;
+            this.updateLastMarkerSelected(marker, "resto")
         })
         
         this.markers.addLayer(marker);
+    }
+
+    updateLastMarkerSelected(marker,type){
+        const url = new URL(window.location.href);
+        if( this.marker_last_selected){
+            let icon_marker="";
+            if( this.marker_last_selected_type === "station"){
+                icon_marker= `${url.origin}/assets/icon/NewIcons/icon-station-new-B.png`;
+            }else if( this.marker_last_selected_type === "ferme"){
+                icon_marker= `${url.origin}/assets/icon/NewIcons/icon-ferme-new-B.png`;
+            }else if( this.marker_last_selected_type === "resto"){
+                icon_marker= `${url.origin}/assets/icon/NewIcons/icon-resto-new-B.png`;
+            }
+
+            const icon_B= L.Icon.extend({
+                options: {
+                    iconUrl: icon_marker
+                }
+            })
+            this.marker_last_selected.setIcon(new icon_B)
+        }
+        this.marker_last_selected=marker;
+        this.marker_last_selected_type = type;
     }
 
     addEventOnMap(map, markers){
@@ -471,8 +479,8 @@ class MarckerClusterStation {
         if( document.querySelector(".content_filter")){
             const alltype = document.querySelectorAll(".content_filter input");
             alltype.forEach(item => {
-                // item.addEventListener("click", (e) => this.changeType(e))
-                item.addEventListener("click", (e) => this.checkStateCheckbox(e))
+                item.addEventListener("click", (e) => this.changeType(e))
+                // item.addEventListener("click", (e) => this.checkStateCheckbox(e))
             })
         }
     
@@ -484,6 +492,8 @@ class MarckerClusterStation {
     }
 
     changeType(e){
+        document.querySelector(".btn_close_modal_filter_jheo_js")?.click();
+
         if( e.target.name === "filterTous"){
             if( document.querySelector("#filterTous").checked){
                 document.querySelectorAll(".content_filter input").forEach(item => {
@@ -531,23 +541,8 @@ class MarckerClusterStation {
     }
 
     checkStateCheckbox(e){
-        document.querySelector(".btn_close_modal_filter_jheo_js")?.click();
-    
         localStorage.removeItem("coordTous")
-        
-        ////state view checkbox if tous selected//////////////////
-        if( e.target.name === "filterTous"){
-            if( document.querySelector("#filterTous").checked){
-                document.querySelectorAll(".content_filter input").forEach(item => {
-                    item.checked = true;
-                })
-            }else{
-                document.querySelectorAll(".content_filter input").forEach(item => {
-                    item.checked = false;
-                })
-            }
-        }
-    
+
         const lists = ["filterFerme" , "filterStation", "filterResto" , "filterVehicule" , "filterCommerce"];
     
         let result_temp = [];
@@ -556,16 +551,12 @@ class MarckerClusterStation {
             results = this.handleOnlyStateCheckbox(result_temp, item )
             result_temp = results;
         }
-    
-        
-        if( results.every(item => item.state === 1 ) ){
-            document.querySelector("#filterTous").checked = true;
-        }else{
-            document.querySelector("#filterTous").checked = false;
-        }
+
         // console.log({"types" : results , "departement" : selected_input.length < 3 ? selected_input : null })
         const selected_input = document.querySelector(".input_select_dep_js_jheo").value;
-        this.fetchData( {"types" : results , "departement" : selected_input.length < 3 ? selected_input : null } );
+
+        this.filterDataByDep( {"types" : results , "departement" : selected_input.length < 3 ? selected_input : null } );
+        // this.fetchData( {"types" : results , "departement" : selected_input.length < 3 ? selected_input : null } );
     }
 
     handleOnlyStateCheckbox(tab , item ) {
@@ -584,6 +575,29 @@ class MarckerClusterStation {
             result = [ ...tab, state ]
         }
         return result;
+    }
+
+    filterDataByDep(object_filter){
+        console.log(object_filter)
+        const { types: results , departement: code_dep} = object_filter;
+
+        let data_ferme= [], data_station= [], data_resto= [];
+        results.forEach( item => {
+            const { type, state} = item;
+            if( state === 1){
+                if( type === "filterFerme"){
+                    data_ferme= this.default_data.ferme.filter(({ departement}) => parseInt(departement) === parseInt(code_dep) );
+                }else if( type === "filterStation"){
+                    data_station= this.default_data.station.filter(({ departementCode}) => parseInt(departementCode) === parseInt(code_dep) );
+                }else if(type === "filterResto"){
+                    data_resto= this.default_data.resto.filter(({ dep }) => parseInt(dep ) === parseInt(code_dep) );
+                } 
+            }
+        })
+        this.data = { ...this.data, "ferme": data_ferme, "station": data_station, "resto": data_resto }
+        console.log(this.data);
+        this.removeMarker();
+        this.addMarker(this.data)
     }
 
     async fetchData(data){
