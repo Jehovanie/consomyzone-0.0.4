@@ -11,10 +11,13 @@ class MarckerClusterStation {
     async onInit(){
         this.ALREADY_INIT = false;
         try{
-            const response= await fetch("/getLatitudeLongitudeStation/?max="+this.price_max + "&min="+ this.price_min+"&type="+ this.type+"&nom_dep="+ this.nom_dep +"&id_dep="+this.id_dep, {
-                method: 'get',
-            });
+            this.getGeos()
+            this.createMarkersCluster();
+            
+            const response= await fetch("/getLatitudeLongitudeStation/?max="+this.price_max + "&min="+ this.price_min+"&type="+ this.type+"&nom_dep="+ this.nom_dep +"&id_dep="+this.id_dep);
             this.default_data= await response.json();
+            this.map= await create_map_content(this.geos,this.id_dep, "station");
+
             this.data= this.default_data;
             this.bindAction()
         }catch(e){
@@ -58,9 +61,6 @@ class MarckerClusterStation {
     
 
     bindAction(){
-        this.getGeos()
-        this.map=create_map_content(this.geos,this.id_dep, "station");
-        this.createMarkersCluster();
         this.addMarker(this.data);
         this.addEventOnMap(this.map, this.markers);
         this.setNumberOfMarker();
@@ -201,9 +201,9 @@ class MarckerClusterStation {
             // });
             marker.on('click', () => {
                 if( screen.width < 991){
-                    getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
+                    getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }else{
-                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
+                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
