@@ -31,7 +31,7 @@ class MarckerClusterStation {
             
             this.default_data= await response.json();
             this.data= this.default_data;
-
+            console.log(this.data)
             this.bindAction();
         }catch(e){
             console.log(e)
@@ -325,10 +325,12 @@ class MarckerClusterStation {
             let bounds=map.getBounds();
             let minll=bounds.getSouthWest();
             let maxll=bounds.getNorthEast();
-            
+            const data= { "last":{ min: this.last_minll , max: this.last_maxll },"new": { min: minll , max: maxll } };
+
+            console.log(data);
+
             if( (this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) ){
                 ///same action update
-                const data= { "last":{ min: this.last_minll , max: this.last_maxll },"new": { min: minll , max: maxll } };
 
                 if(!this.is_online){
                     this.is_online=true;
@@ -367,7 +369,8 @@ class MarckerClusterStation {
             new_data.station= new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto= new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
 
-            this.addMarker(new_data);
+            
+            this.addMarker(this.checkeFilterType(new_data));
             this.is_online=false;
 
             // this.default_data= [ ...this.default_data, ...new_data ]
@@ -467,7 +470,6 @@ class MarckerClusterStation {
                 div_select.appendChild(option);
             })
             parent.appendChild(div_select);
-            // document.querySelector(".input_select_dep_js_jheo").addEventListener("change" , (e) => this.checkStateCheckbox(e))
             this.eventManagement();
         }catch(e){
             console.log(e)
@@ -480,12 +482,11 @@ class MarckerClusterStation {
             const alltype = document.querySelectorAll(".content_filter input");
             alltype.forEach(item => {
                 item.addEventListener("click", (e) => this.changeType(e))
-                // item.addEventListener("click", (e) => this.checkStateCheckbox(e))
             })
         }
     
         if( document.querySelector(".input_select_dep_js_jheo") ){
-            document.querySelector(".input_select_dep_js_jheo").addEventListener("change" , (e) => this.checkStateCheckbox(e))
+            document.querySelector(".input_select_dep_js_jheo").addEventListener("change" , (e) => this.checkStateSelectedDep(e))
         }else{
             console.log("event select dep not found")
         }
@@ -514,37 +515,18 @@ class MarckerClusterStation {
             results = this.handleOnlyStateCheckbox(result_temp, item )
             result_temp = results;
         }
-    
+
         if( results.every(item => item.state === 1 ) ){
             document.querySelector("#filterTous").checked = true;
         }else{
             document.querySelector("#filterTous").checked = false;
         }
-        
-        let data_ferme= [], data_station= [], data_resto= [];
-        results.forEach( item => {
-            const { type, state} = item;
-            if( state === 1){
-                if( type === "filterFerme"){
-                    data_ferme= this.default_data.ferme;
-                }else if( type === "filterStation"){
-                    data_station= this.default_data.station;
-                }else if(type === "filterResto"){
-                    data_resto= this.default_data.resto;
-                } 
-            }
-        })
-        this.data = { ...this.data, "ferme": data_ferme, "station": data_station, "resto": data_resto }
 
-        this.removeMarker();
-        this.addMarker(this.data)
+        this.filterDataByDep();
     }
 
-    checkStateCheckbox(e){
-        localStorage.removeItem("coordTous")
-
+    checkeFilterType(data){
         const lists = ["filterFerme" , "filterStation", "filterResto" , "filterVehicule" , "filterCommerce"];
-    
         let result_temp = [];
         let results = null ;
         for (let item  of lists ) {
@@ -552,11 +534,35 @@ class MarckerClusterStation {
             result_temp = results;
         }
 
-        // console.log({"types" : results , "departement" : selected_input.length < 3 ? selected_input : null })
-        const selected_input = document.querySelector(".input_select_dep_js_jheo").value;
+        const code_dep = document.querySelector(".input_select_dep_js_jheo").value.length < 3 ? document.querySelector(".input_select_dep_js_jheo").value : null ;
 
-        this.filterDataByDep( {"types" : results , "departement" : selected_input.length < 3 ? selected_input : null } );
-        // this.fetchData( {"types" : results , "departement" : selected_input.length < 3 ? selected_input : null } );
+        let data_ferme= [], data_station= [], data_resto= [];
+        results.forEach( item => {
+            const { type, state} = item;
+            if( state === 1){
+                if( type === "filterFerme"){
+                    data_ferme= code_dep ? data.ferme.filter(({ departement}) => parseInt(departement) === parseInt(code_dep) ): data.ferme;
+                }else if( type === "filterStation"){
+                    data_station= code_dep ? data.station.filter(({ departementCode}) => parseInt(departementCode) === parseInt(code_dep) ) : data.station;
+                }else if(type === "filterResto"){
+                    data_resto= code_dep ? data.resto.filter(({ dep }) => parseInt(dep ) === parseInt(code_dep) ) : data.resto;
+                } 
+            }
+        })
+
+        return { ferme: data_ferme , station: data_station , resto: data_resto }
+    }
+
+    checkStateSelectedDep(e){
+        localStorage.removeItem("coordTous")
+        this.filterDataByDep();
+        
+        const code_dep= e.target.value.length < 3 ? e.target.value : null;
+        if( code_dep){
+            this.map.setView(L.latLng(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng))
+            this.map.setZoom(centers[parseInt(code_dep)].zoom)
+        }
+
     }
 
     handleOnlyStateCheckbox(tab , item ) {
@@ -577,56 +583,12 @@ class MarckerClusterStation {
         return result;
     }
 
-    filterDataByDep(object_filter){
-        console.log(object_filter)
-        const { types: results , departement: code_dep} = object_filter;
-
-        let data_ferme= [], data_station= [], data_resto= [];
-        results.forEach( item => {
-            const { type, state} = item;
-            if( state === 1){
-                if( type === "filterFerme"){
-                    data_ferme= this.default_data.ferme.filter(({ departement}) => parseInt(departement) === parseInt(code_dep) );
-                }else if( type === "filterStation"){
-                    data_station= this.default_data.station.filter(({ departementCode}) => parseInt(departementCode) === parseInt(code_dep) );
-                }else if(type === "filterResto"){
-                    data_resto= this.default_data.resto.filter(({ dep }) => parseInt(dep ) === parseInt(code_dep) );
-                } 
-            }
-        })
-        this.data = { ...this.data, "ferme": data_ferme, "station": data_station, "resto": data_resto }
-        console.log(this.data);
+    filterDataByDep(){
+        const data_filtered= this.checkeFilterType(this.default_data);
+        this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
+        
         this.removeMarker();
         this.addMarker(this.data)
-    }
-
-    async fetchData(data){
-        const URL = "/fetch-all-data-home";
-        try {
-            const response= await fetch(URL,{
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)   
-            })
-            this.default_data= await response.json();
-            this.data= this.default_data;
-
-            this.removeMarker();
-
-            if( data.departement){
-                const new_center = L.latLng(centers[parseInt(data.departement)].lat, centers[parseInt(data.departement)].lng);
-                const new_zoom= centers[parseInt(data.departement)].zoom;
-                this.map.setView(new_center)
-                this.map.setZoom(new_zoom)
-            }
-
-            this.addMarker(this.data)
-        }catch( e ) {
-            console.log(e.message)
-        }
     }
 
     removeMarker(){
