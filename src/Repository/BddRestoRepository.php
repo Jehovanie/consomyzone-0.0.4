@@ -358,6 +358,8 @@ class BddRestoRepository extends ServiceEntityRepository
 
     public function getAllFilterByLatLong($data){
         extract($data); //// $last [ min [ lat , lng ], max [ lat, lng ] ], $new [ min [ lat, lng ], max [ lat, lng ] ]
+        // dump("-2.548957109000000 3.440684080123901 46.88474655000000 49.18113327026367 ");
+        // dd($data);
 
         $qb= $this->createQueryBuilder("r")
             ->select("r.id,
@@ -396,14 +398,20 @@ class BddRestoRepository extends ServiceEntityRepository
             ->having('count(r.denominationF)=1')
             ->andHaving('count(r.poiX)=1')
             ->andHaving('count(r.poiY) =1')
-            ->where('r.poiX BETWEEN :lat_min AND :lat_max')
-            ->andWhere('r.poiY BETWEEN :lng_min AND :lng_max');
+            ->where('r.poiY BETWEEN :lat_min AND :lat_max')
+            ->andWhere('r.poiX BETWEEN :lng_min AND :lng_max');
 
-        $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
-        $lat_max= $last["max"];
+        // $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
+        // $lat_max= $last["max"];
 
-        $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
-        $lng_max= count($new) > 0 ? $new["max"] : $last["min"];
+        // $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
+        // $lng_max= count($new) > 0 ? $new["max"] : $last["min"];
+
+        $lat_min=$last["max"];
+        $lat_max= count($new) > 0 ? $new["max"] : [ "lat" => 46.88474655000000];
+
+        $lng_min= count($new) > 0 ? $new["min"] : [ "lng" => -2.548957109000000];
+        $lng_max= $last["max"];
 
         ///(this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) 
         $qb= $qb->setParameter('lat_min', $lat_min["lat"])
