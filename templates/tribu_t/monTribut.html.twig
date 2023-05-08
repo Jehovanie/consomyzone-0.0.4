@@ -29,9 +29,10 @@
 {% block javascripts %}
 
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-	<script src="{{ asset('assets/js/tribuT/tribut_invitation.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" ></script>
+	<script  src="{{ asset('assets/js/tribuT/tribut_invitation.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/tribuT/avis_restaurant_tribuT.js') }}" defer></script>
 
 {% endblock %}
 
@@ -39,7 +40,7 @@
 {% block body %}
 
 	<div id="settingProfilId" class="row">
-		<div class="col">
+		<div class="col" data-tribu-us-rank="{{app.user.id}}">
 			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
 				<div class="left_menu">
 					{% include "shard/account_navleft.html.twig" %}
@@ -95,7 +96,7 @@
 												{% if roles == "Fondateur" %}
 
 													<label style="margin-left:40%;" for="fileInputTribu">
-														<i style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+														<i class="bi bi-camera-fill f" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
 													</label>
 													<input type="file" name="fileInputTribu" id="fileInputTribu" style="display:none;visibility:none;" accept="image/*">
 
@@ -251,11 +252,12 @@
 														<i class="bi bi-play-btn-fill"></i>
 														Vidéo
 													</div>
+													{# <div class="col-3 text-center" style="cursor:pointer;"> #}
 													<div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
 														<i class="bi bi-geo-alt-fill"></i>Localisation
 													</div>
 													<div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
-														<i class="bi bi-calendar2-event-fill"></i>Agenda
+														<i class="bi bi-calendar2-event-fill"></i> Agenda
 
 													</div>
 													<div class="col-3 text-center" style="cursor:pointer;">

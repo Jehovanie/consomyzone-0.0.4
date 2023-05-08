@@ -286,7 +286,7 @@ class ToutsController extends AbstractController
 
     
 
-    #[Route('/getLatitudeLongitudeForAll', name: 'for_explore_cat_tous')]
+    #[Route('/getLatitudeLongitudeForAll', name: 'for_explore_cat_tous', methods:["GET", "POST"])]
 
     public function getLatitudeLongitudeForAll(
         Status $status,
@@ -296,172 +296,22 @@ class ToutsController extends AbstractController
         BddRestoRepository $bddRestoRepository,
     )
     {
-
         $statusProfile = $status->statusFondateur($this->getUser());
-
-        $nom_dep = $request->query->get("nom_dep");
-
-        $id_dep = $request->query->get("id_dep");
-
-
-
-        $type = $request->query->get("type");
-
-
-
-        // dd($nom_dep, $id_dep );
-
-
-
-        if($nom_dep !=null && $id_dep !=null){
-
-
-
-            if( $type ){
-
-            
-
-                switch( $type){
-
-                    case "tous":
-
-                        return $this->json([
-
-                            "station" => $stationServiceFrGeomRepository->getAllStationInDepartement($id_dep,$nom_dep),
-
-                            "ferme" => $fermeGeomRepository->getAllFermeInDepartement($nom_dep, $id_dep),
-
-                            "profil" => $statusProfile["profil"],
-
-                            "statusTribut" => $statusProfile["statusTribut"]
-
-                        ]);
-
-                    case "station":
-
-                        return $this->json([
-
-                            "station" => $stationServiceFrGeomRepository->getAllStationInDepartement($id_dep,$nom_dep),
-
-                            "ferme" => null,
-
-                            "profil" => $statusProfile["profil"],
-
-                            "statusTribut" => $statusProfile["statusTribut"]
-
-                        ]);
-
-                    case "ferme":
-
-                        return $this->json([
-
-                            "station" => null,
-
-                            "ferme" => $fermeGeomRepository->getAllFermeInDepartement($nom_dep, $id_dep),
-
-                            "profil" => $statusProfile["profil"],
-
-                            "statusTribut" => $statusProfile["statusTribut"]
-
-                        ]);
-
-                    default:
-
-                        break;
-
-                }
-
-            }
-
-
-
-            return $this->json([
-
-                "station" => $stationServiceFrGeomRepository->getAllStationInDepartement(intval($id_dep),$nom_dep),
-
-                "ferme" => $fermeGeomRepository->getAllFermeInDepartement($nom_dep, $id_dep),
-
-                "profil" => $statusProfile["profil"],
-
-                "statusTribut" => $statusProfile["statusTribut"]
-
-            ]);
-
-        }
-
-
-
-        if( $type ){
-
-            
-
-            switch( $type){
-
-                case "tous":
-
-                    return $this->json([
-
-                        "station" => $stationServiceFrGeomRepository->getLatitudeLongitudeStation(),
-
-                        "ferme" => $fermeGeomRepository->getLatitudeLongitudeFerme(),
-
-                        "profil" => $statusProfile["profil"],
-
-                        "statusTribut" => $statusProfile["statusTribut"]
-
-                    ]);
-
-                case "station":
-
-                    return $this->json([
-
-                        "station" => $stationServiceFrGeomRepository->getLatitudeLongitudeStation(),
-
-                        "ferme" => null,
-
-                        "profil" => $statusProfile["profil"],
-
-                        "statusTribut" => $statusProfile["statusTribut"]
-
-                    ]);
-
-                case "ferme":
-
-                    return $this->json([
-
-                        "station" => null,
-
-                        "ferme" => $fermeGeomRepository->getLatitudeLongitudeFerme(),
-
-                        "profil" => $statusProfile["profil"],
-
-                        "statusTribut" => $statusProfile["statusTribut"]
-
-                    ]);
-
-                default:
-
-                    break;
-
-            }
-
-        }
-
-
+        $data = json_decode($request->getContent(), true);
 
         return $this->json([
-
-            "station" => $stationServiceFrGeomRepository->getLatitudeLongitudeStation(),
-
-            "ferme" => $fermeGeomRepository->getLatitudeLongitudeFerme(),
-
-            "resto" => $bddRestoRepository->getAllOpenedRestos(),
-
-            "profil" => $statusProfile["profil"],
-
-            "statusTribut" => $statusProfile["statusTribut"]
-
+            "station" => $stationServiceFrGeomRepository->getAllFilterByLatLong($data),
+            "ferme" => $fermeGeomRepository->getAllFilterByLatLong($data),
+            "resto" => $bddRestoRepository->getAllFilterByLatLong($data)
         ]);
+
+        // return $this->json([
+        //     "station" => $stationServiceFrGeomRepository->getLatitudeLongitudeStation(),
+        //     "ferme" => $fermeGeomRepository->getLatitudeLongitudeFerme(),
+        //     "resto" => $bddRestoRepository->getAllOpenedRestos(),
+        //     "profil" => $statusProfile["profil"],
+        //     "statusTribut" => $statusProfile["statusTribut"]
+        // ]);
 
     }
 }

@@ -355,6 +355,73 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getAllFilterByLatLong($data){
+        extract($data); //// $last [ min [ lat , lng ], max [ lat, lng ] ], $new [ min [ lat, lng ], max [ lat, lng ] ]
+        // dump("-2.548957109000000 3.440684080123901 46.88474655000000 49.18113327026367 ");
+        // dd($data);
+
+        $qb= $this->createQueryBuilder("r")
+            ->select("r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiX,
+                    r.poiY")
+            ->groupBy("r.denominationF, r.poiX, r.poiY")
+            ->having('count(r.denominationF)=1')
+            ->andHaving('count(r.poiX)=1')
+            ->andHaving('count(r.poiY) =1')
+            ->where('r.poiY BETWEEN :lat_min AND :lat_max')
+            ->andWhere('r.poiX BETWEEN :lng_min AND :lng_max');
+
+        // $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
+        // $lat_max= $last["max"];
+
+        // $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
+        // $lng_max= count($new) > 0 ? $new["max"] : $last["min"];
+
+        $lat_min=$last["min"];
+        $lat_max= count($new) > 0 ? $new["max"] : $last["max"];
+
+        $lng_min= count($new) > 0 ? $new["min"] : $last["min"];
+        $lng_max= $last["max"];
+
+        ///(this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) 
+        $qb= $qb->setParameter('lat_min', $lat_min["lat"])
+                ->setParameter('lat_max', $lat_max["lat"])
+                ->setParameter('lng_min', $lng_min["lng"])
+                ->setParameter('lng_max', $lng_max["lng"]);
+        
+        $query = $qb->getQuery();
+        return $query->execute();
+    }
     //    /**
     //     * @return BddResto[] Returns an array of BddResto objects
     //     */

@@ -68,7 +68,6 @@
         
     </nav>
     <div class="container-fluid list-depart">
-    <hr>
         <div class="head-left">
             <div class="row">
                 <div class="col-md-2">
@@ -127,8 +126,9 @@
                                 <li class="card-list name_ferme_js_jheo" onclick="getDetailFerme('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
                                     <div class="row container-depart pt-4 element" data-toggle-id="{{ferme.id}}" data-toggle-latitude ="{{(ferme.latitude) ? ferme.latitude : '0' }}" data-toggle-longitude="{{(ferme.longitude) ? ferme.longitude : '0'}}">
                                         <div class="col-md-9">
+                                            <p class="text-center fw-bold fs-6">{{ferme.nomFerme}} </p>
                                             <p>
-                                                <span class="id_departement">{{ferme.nomFerme}} </span><br>
+                                                <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                                 {{ferme.adresseFerme }}
                                             </p>
                                         </div>

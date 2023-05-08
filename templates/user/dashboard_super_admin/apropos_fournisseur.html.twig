@@ -24,7 +24,7 @@
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
 
-		<div class="row account">
+		<div class="row content_right_actualite">
 			<center>
 				<h1>
 					<i class="fa-solid fa-user"></i>
@@ -35,35 +35,41 @@
 			<div class="container col content_global_super_admin ">
 				<div class="card-apropos-admin">
 					<div class="row">
-						<div class="col-md-3 me-4 card">
-							<div class="row">
-								<div class="col-md-3 mt-4">
-									<i class="fa-solid fa-solid-admin fa-user"></i>
-								</div>
-								<div class="col">
-									<h1>{{supplier.firstname}}</h1>
-									<p>{{supplier.lastname}}</p>
+						<div class="col-md-4 mx-auto my-3">
+							<div class="card p-3">
+								<div class="row">
+									<div class="col-md-3 mt-4">
+										<i class="fa-solid fa-solid-admin fa-user"></i>
+									</div>
+									<div class="col">
+										<h1>{{supplier.firstname}}</h1>
+										<p>{{supplier.lastname}}</p>
+									</div>
 								</div>
 							</div>
 							
 						</div>
-						<div class="col-md-4 me-4 card">
-							<div class="row mt-4">
-								<div class="col-md-3">
-									<i class="fa-solid fa-solid-admin fa-envelope"></i>
-								</div>
-								<div class="col mt-2">
-									<p>{{user.email}}</p>
+						<div class="col-md-4 mx-auto my-3">
+							<div class="card p-3">
+								<div class="row mt-4">
+									<div class="col-md-3">
+										<i class="fa-solid fa-solid-admin fa-envelope"></i>
+									</div>
+									<div class="col mt-2">
+										<p>{{user.email}}</p>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-4 me-4 card">
-							<div class="row mt-4">
-								<div class="col-md-2">
-									<i class="fa-solid fa-solid-admin fa-address-card"></i>
-								</div>
-								<div class="col mt-2">
-									<p>{{supplier.commune}}</p>
+						<div class="col-md-4 mx-auto my-3">
+							<div class="card p-3">
+								<div class="row mt-4">
+									<div class="col-md-2">
+										<i class="fa-solid fa-solid-admin fa-address-card"></i>
+									</div>
+									<div class="col mt-2">
+										<p>{{supplier.commune}}</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -119,25 +125,24 @@
 						</table>
 					</div>
 
-                     <div class="card mt-3 p-3">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h4>Valider</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <button 
-                                        id="1"
-                                        class="btn btn-success validating_super_admin_fournisseur_js_jheo"
-                                        data-toggle-id={{user.id}}
+                    <div class="card p-3 my-3">
+						<div class="row">
+							<div class="col-md-6 mx-auto">
+								<h4>Valider</h4>
+							</div>
+							<div class="col-md-6 mx-auto">
+								<button 
+									id="1"
+									class="btn btn-success validating_super_admin_fournisseur_js_jheo"
+									data-toggle-id={{user.id}}
 
-                                        {{user.isLabled is same as(true) ? "disabled": ""}}
-                                    >
-                                        Oui
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
+									{{user.isLabled is same as(true) ? "disabled": ""}}
+								>
+									Oui
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

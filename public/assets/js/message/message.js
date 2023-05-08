@@ -300,25 +300,21 @@ function handleMessageResponse(date, message,image_list=null,image,status){
     const image_profil = document.querySelector(".content_message").getAttribute("data-toggle-current-profil")
 
     if( image_profil ){
-
-        // on dev-------------
-        console.log("on dev");
-        img.setAttribute("src","/uploads/users/photos/" +  image_profil );
-        /// ------------------------
-
-        // on prod-------------
-        // img.setAttribute("src","/public/uploads/users/photos/" +  image_profil );
-        /// ------------------------
+        if( IS_DEV_MODE){
+            console.log("on dev");
+            img.setAttribute("src","/uploads/users/photos/" +  image_profil );
+        }else{
+            img.setAttribute("src","/public/uploads/users/photos/" +  image_profil );
+        }
 
     }else{
-        // on dev-------------
-        console.log("on dev");
-        img.setAttribute("src", "/uploads/users/photos/img_avatar.png" );
         /// ------------------------
-
-        // on prod-------------
-        // img.setAttribute("src", "/public/uploads/users/photos/img_avatar.png" );
-        /// ------------------------
+        if( IS_DEV_MODE){
+            console.log("on dev");
+            img.setAttribute("src", "/uploads/users/photos/img_avatar.png" );
+        }else{
+            img.setAttribute("src", "/public/uploads/users/photos/img_avatar.png" );
+        }
     }
 
     img.setAttribute("alt" , "Avatar-Massage");

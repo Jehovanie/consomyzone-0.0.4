@@ -9,6 +9,9 @@
 {% block javascripts %}
 	<script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script>
 	<script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
+    <script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
+
 {% endblock %}
 
 
@@ -77,4 +80,8 @@
             </div>
         </div>
     </div>
+{{ include('shard/restaurant/list_avis.html.twig') }}
+{{ include('shard/restaurant/modal_avis_resto.html.twig') }}
+{{ include('shard/restaurant/modal_modif_avis.html.twig') }}
+
 {% endblock %}

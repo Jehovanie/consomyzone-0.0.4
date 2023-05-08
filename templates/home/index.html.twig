@@ -10,8 +10,12 @@
 {% block javascripts %}
     {# <script src="{{asset('assets/js/home/data_home_poo.js')}}" defer></script> #}
     {# <script src="{{asset('assets/js/tous/addToMap.js')}}" defer></script> #}
+    <script type="text/javascript" src="{{asset('assets/js/home/data_home.js')}}" defer></script>
+	
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterHome.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/home/marckerClusterHome.js') }}" defer></script>
+
     <script src="{{asset('assets/js/home/home.js')}}" defer></script>
-    <script src="{{asset('assets/js/home/data_home.js')}}" defer></script>
 {% endblock %}
 
 

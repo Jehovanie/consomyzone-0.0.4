@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-    const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id")
+    const idRestaurant = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
     let currentUserId = 0
     if(document.querySelector(".FtBjOlVf"))
         currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)

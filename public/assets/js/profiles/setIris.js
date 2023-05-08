@@ -85,8 +85,11 @@ if( document.querySelector("#inscription_nom_commune")){
 
         ///when commmune setting
         content_options_communes.addEventListener("change", (e) => {
-            deleteOption("inscription_faux_quartier");
+            ///update the default value
+            input_commune.value= e.target.value;
 
+            deleteOption("inscription_faux_quartier");
+            
             //// active input quartier
             const commune_valid = commune.find(({ commune }) => commune === e.target.value)
             if( commune_valid){ ///return single value 
@@ -104,6 +107,10 @@ if( document.querySelector("#inscription_nom_commune")){
                     input_quartier.value = content_options_quartier?.querySelector(".default_value_on_select_jheo_js").value
                 }
             }
+        })
+
+        content_options_quartier.addEventListener("change", (e) => {
+            input_quartier.value= e.target.value;
         })
 
     })

@@ -1,6 +1,9 @@
 <script>
 
+var map;
+
 let tbl_pub = "{{ table_pub }}";
+
 
 let invitationsContainer = document.querySelector("#invitations");
 
@@ -17,6 +20,10 @@ let showPub = document.querySelector(".showPubBlock");
 let table_com = tbl_pub.replace(/_publication$/, "_commentaire");
 
 let table_resto = tbl_pub.replace(/_publication$/, "_restaurant");
+
+const  table_restaurant_com=tbl_pub.replace(/_publication$/, "_restaurant_commentaire");
+
+
 
 document.querySelector("#btnShowModalAddPub").addEventListener("click", () => {
     document.querySelector("#publication_legend").value = "";
@@ -86,7 +93,7 @@ document.querySelector("#btnShowModalAddPub").addEventListener("click", () => {
 
 function sendInvitation(table){
     data = {"table": table}
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
     fetch("/user/tribu/send/invitation", {
             method: "POST",
             headers:{
@@ -97,7 +104,7 @@ function sendInvitation(table){
 
         } ).then(response => response.json())
         .then(text => {
-            console.log(text);
+            //console.log(text);
             document.querySelector("#successMessageBlock").style.display = "block";
             document.querySelector("#successMessage").innerHTML = text;
             setTimeout(()=>{
@@ -121,21 +128,21 @@ function showInvitations(){
             'Content-Type': 'application/json'
         }
     })).then(rqt => rqt.json()).then(data => {
-            console.log(data);
-            let li = `<div id="successMessageBlock" style="margin-left:10%;display:none;margin-bottom:5px;">
-					<svg color="green" class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/>
-					</svg>
-					<span id="successMessage">Invitation envoyée à tous les membres</span>
-				</div><div class="row mb-3" style="margin-left:3px"> <button style="margin-left:3px" class="btn btn-sm btn-outline-primary col-3" onclick='sendInvitation("{{table_tribu}}")'>
-												Inviter votre tribu G
-											</button>
-											<a style="margin-left:3px" href="{{ path("add_member_tribut", {"tribu_name" : table_tribu }) }}" class="btn btn-sm btn-outline-primary col-3">
-												Inviter une personne
-											</a>
-											<button style="margin-left:3px" type="button" class="btn btn-outline-danger col-3 invitation_email_home_js" data-bs-toggle="modal" data-bs-target="#modal_sendEmail" data-bs-whatever="@mdo">
-												Inviter par e-mail
-											</button> </div>`;
-            let status = "";
+            //console.log(data);
+        let li = `<div id="successMessageBlock" style="margin-left:10%;display:none;margin-bottom:5px;">
+                <svg color="green" class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/>
+                </svg>
+                <span id="successMessage">Invitation envoyée à tous les membres</span>
+            </div><div class="row mb-3" style="margin-left:3px"> <button style="margin-left:3px" class="btn btn-sm btn-outline-primary col-3" onclick='sendInvitation("{{table_tribu}}")'>
+                                            Inviter votre tribu G
+                                        </button>
+                                        <a style="margin-left:3px" href="{{ path("add_member_tribut", {"tribu_name" : table_tribu }) }}" class="btn btn-sm btn-outline-primary col-3">
+                                            Inviter une personne
+                                        </a>
+                                        <button style="margin-left:3px" type="button" class="btn btn-outline-danger col-3 invitation_email_home_js" data-bs-toggle="modal" data-bs-target="#modal_sendEmail" data-bs-whatever="@mdo">
+                                            Inviter par e-mail
+                                        </button> </div>`;
+        let status = "";
 	    document.querySelector("#modal_sendEmail").setAttribute("data-table", "{{table_tribu}}")
             if(data.length > 0){
                 for (let invitation of data) {
@@ -224,7 +231,7 @@ function showPhotos(table_pub){
             'Content-Type': 'application/json'
         }
     })).then(rqt => rqt.json()).then(data => {
-            console.log(data);
+            //console.log(data);
             if(data.length > 0){
                 for (let photo of data) {
                     let img = document.createElement('img');
@@ -285,9 +292,110 @@ function showPhotos(table_pub){
 
 }
 
+
+
+
+
+
+function showComment(id_restaurant){
+
+    if(document.querySelectorAll(`#RestoModalComment${id_restaurant} > div > div > div.modal-body>div.card-comment`).length >0){
+        const children=document.querySelectorAll(`#RestoModalComment${id_restaurant} > div > div > div.modal-body>div.card-comment`)
+        //const children=document.querySelector(`#RestoModalComment${id_restaurant} > div > div > div.modal-body`).children
+        for(let child of children){
+            console.log(child)
+            child.parentNode.removeChild(child)
+        }
+    }
+
+   
+    fetch(new Request("/user/comment/tribu/restos-pastilles/"+ table_resto+"/"+id_restaurant , {
+
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(restos => {
+       
+            
+        for (let resto of restos) {
+            // console.log(resto)
+            let id_user = resto.id_user
+            let pseudo = resto.pseudo
+            let commentaire = resto.commentaire
+            let note=resto.note
+             if(document.querySelector(`#RestoModalComment${id_restaurant} > div > div > div.modal-body`)){
+                document.querySelector(`#RestoModalComment${id_restaurant} > div > div > div.modal-body`).innerHTML += `
+                    <div class="card card-comment mb-3"> 
+                        <div class="card_head">
+                            <h4 class="pseudo"><i class="fa-solid fa-user"></i> ${pseudo}</h4> 
+                        </div>
+                        <hr>
+                        <div class="card_body">
+                            <div class="content row mt-3">
+                                <div class="commentaire col-8">
+                                    <p>${commentaire}</p>
+                                </div>
+                                <div class="note col-4" id="etoil-comment-${id_user}">
+                                    <i class="fa-solid fa-star" data-rank="1"></i>
+                                    <i class="fa-solid fa-star" data-rank="2"></i>
+                                    <i class="fa-solid fa-star" data-rank="3"></i>
+                                    <i class="fa-solid fa-star" data-rank="4"> </i>
+                                </div>
+                            </div>
+                        </div>
+                    <div>
+                `
+              
+            }
+            //TODO: color stars
+
+            let rankRange = [1, 2, 3, 4]
+            let etoils = document.querySelectorAll(`#etoil-comment-${id_user} > i`)
+            for( let etoil of etoils){
+                if (rankRange.includes(parseInt(etoil.dataset.rank, 10))) {
+                    if(parseInt(etoil.dataset.rank, 10) <= Math.trunc(note)){
+                        etoil.style.color = "#F5D165"
+                    }
+                }
+            }
+
+        }
+
+    })
+
+
+   
+
+
+}
+
+
+
 function showResto(){
 
-    restoContainer.innerHTML = ""
+    restoContainer.innerHTML = `<div id="form_past"></div><div class="g-3">
+                                    <label>Pastiller un restaurant</label>
+                                    
+                                    <div class="input-group">
+                                        <input type="text" id="resto-rech" class="form-control rounded" placeholder="Rechercher un restaurant" />
+                                        <button type="button" class="btn btn-outline-primary" onclick="FindResto(this)"><i class="fas fa-search"></i></button>
+                                    </div>
+                                    <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                    </div>
+                                </div>`
+
+    // restoContainer.innerHTML = ""
+
+    if(document.getElementById('list_resto_pastilled')){
+        let childreen=document.getElementById('list_resto_pastilled').children
+        for(let child of childreen)
+             document.getElementById('list_resto_pastilled').
+                removeChild(child)
+    }
+       
+
 
     fetch(new Request("/user/tribu/restos-pastilles/" + table_resto, {
         method: "GET",
@@ -306,14 +414,140 @@ function showResto(){
             }
 
             if(restos.length > 0){
-                let ul = document.createElement('ul');
+                let ul = null
+                if(!document.getElementById('list_resto_pastilled')){
+                    ul = document.createElement('ul');
+                    ul.id="list_resto_pastilled"
+                }else
+                    ul=document.getElementById('list_resto_pastilled')
+                
+                ul.classList = "list-group list-group-flush mt-2"
+                let title = document.createElement('h6');
+                title.innerText = "Liste des restaurants pastillés"
+                title.classList ="mt-2 text-info"
+                restoContainer.appendChild(title);
+              
                 let li = ""
-
+                let text=""
+                let text1=""
+                let id_c_u = document.querySelector("#settingProfilId > div").dataset.tribuUsRank;
+                console.log(id_c_u)
                 for (let resto of restos) {
-                    li += `<li style="list-style-type:none;"> <img style="height: 15px; width:15px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}"> ${resto.denomination_f}</li>`               
+                    //console.log(resto);
+
+                    //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
+
+                    let id = resto.id
+                    let id_resto = resto.id_resto
+                    let id_resto_comment = resto.All_id_r_com!=null ?  resto.All_id_r_com.split(",") :[]
+                    
+                    let id_user = resto.All_user!=null ? resto.All_user.split(",") :[]
+                    console.log(id_user)
+                    let denominationsF = resto.denomination_f
+                    let nbrAvis= resto.nbrAvis
+                    let key=0
+                    for(let [k,v] of id_user.entries() ){
+                        if(v === id_c_u)
+                            key=k
+                    }
+                    if(id_user.includes(id_c_u)){
+                        console.log("up "+denominationsF)
+                        text=`<button type="button" class="btn btn-primary mt-3" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
+
+                        text1="Modifiez votre avis"
+                    }else{
+                        console.log("crt "+denominationsF)
+                        text=`<button type="button" class="btn btn-primary mt-3" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,{{app.user.id}},${id},${id_resto_comment[key]})">Notez</button>`
+                        text1="Notez"
+                    }
+                    li +=`<li style="list-style-type:none; " data-toggle-id="${id_resto}">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="fw-bold">
+                                        <a target="_blank" href="/restaurant?id=${resto.id_unique}">
+                                            <img style="height: 30px; width:30px; border-radius:50%;margin-top: -10px; " src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}">
+                                            <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
+                                        </a>
+                                    </div>
+                                    <div id="etoile_${id_resto}">
+                                        <i class="fa-solid fa-star" data-rank="1"></i>
+                                        <i class="fa-solid fa-star" data-rank="2"></i>
+                                        <i class="fa-solid fa-star" data-rank="3"></i>
+                                        <i class="fa-solid fa-star" data-rank="4"> </i>
+                                        <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-outline-primary float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                </div>
+                            </div>
+
+                            <!-- Modal note-->
+                            <div class="modal fade" id="RestoModalNote${id_resto_comment[key]}" tabindex="-1" aria-labelledby="RestoModalNoteLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="RestoModalNoteLabel">Notez ${denominationsF}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                                <textarea class="form-control" id="text-note-tribu-t-${id_resto_comment[key]}"></textarea>
+                                                <label for="message-text" class="col-form-label">Commentaire:</label>
+                                                <textarea class="form-control" id="message-text-${id_resto_comment[key]}"></textarea>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">${text}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal comment -->
+                            <div class="modal fade modal-commet-tribut" id="RestoModalComment${resto.id}" tabindex="-1" aria-labelledby="RestoModalCommentLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="RestoModalCommentLabel">Avis</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body"></div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                        </li> `
+                    
+
                 }
                 ul.innerHTML = li;
                 restoContainer.appendChild(ul);
+                restos.forEach(resto=>{
+
+                    // let noteGlobales= 0.00
+                    // if(Array.isArray(resto.note)){
+                    //     let sum = 0.00;
+                    //     for (let i = 0; i < resto.note.length; i++) {
+                    //         sum += parseFloat(resto.note[i]);
+                    //     }
+                    //      noteGlobales = sum / resto.note.length
+                    // }else{
+                    //     noteGlobales=resto.note
+                    // }
+                    // let sum = 0.00;
+                    // for (let i = 0; i < note.length; i++) {
+                    //     sum += parseFloat(note[i]);
+                    // }
+                    // let noteGlobales = sum / note.length
+                    // console.log(noteGlobales)
+                    let id_resto = resto.id_resto
+                    let noteGlobales=resto.globalNote
+                    printNodeGlobale(document.querySelectorAll("#etoile_"+id_resto+">i"),noteGlobales)
+
+                }) 
+
 
             }else{
                 restoContainer.style.textAlign = "center"
@@ -353,7 +587,61 @@ function showResto(){
             }*/
 
     });
+
+    let rows = document.querySelectorAll("#restaurants > ul.list-group > li.list-group-item");
+
+    if(document.querySelector("#resto-rech")){
+        document.querySelector("#resto-rech").addEventListener("keyup", function (event) {
+            const q = event.target.value.toLowerCase();
+
+            if (event.keyCode === 13) {
+                FindResto(event.target)
+            }else{
+                document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
+                    if(elem.textContent.toLowerCase().includes(q)){
+                        elem.style = "display : flex!important;"
+                    }else{
+                        elem.style = "display : none !important;"
+                    }
+                })
+            }
+            
+        });
+    }
 }
+
+function printNodeGlobale(element,globalNote){
+
+    let rankRange = [1, 2, 3, 4]
+    for (let star of element) {
+        console.log(star)
+        if (rankRange.includes(parseInt(star.dataset.rank, 10))) {
+            if(parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
+                    star.style.color = "#F5D165"
+            if (globalNote % 1 != 0) {
+                //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
+                if (parseInt(star.dataset.rank, 10) == (Math.trunc(globalNote) + 1)) {
+                      //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
+                    let rateYello = (globalNote % 1) *100
+                    let rateBlack=100 -rateYello
+                    star.style = `
+                     background: linear-gradient(90deg, #F5D165 ${rateYello}%, #000 ${rateBlack}%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    `
+                    
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+    
+
 
 function getPub(pub_id, message, confid) {
     document.querySelector("#pub_id_modif").value = pub_id;
@@ -393,7 +681,7 @@ function setReaction(pub_id, reaction) {
         "table_reaction": table_reaction
     }
 
-    console.log(data)
+    //console.log(data)
 
     fetch(new Request("/user/tribu/new_reaction", {
         method: "POST",
@@ -432,9 +720,9 @@ forms.forEach((bouton) => {
         e.preventDefault();
         //let i = e.target.id.replace(/[^0-9]/g, "");
 
-        console.log("i : " + i);
+        //console.log("i : " + i);
 
-        console.log("table_com : " + table_com);
+        //console.log("table_com : " + table_com);
 
         let data = {
             "table_com": table_com,
@@ -519,8 +807,8 @@ forms.forEach((bouton) => {
         const commentsEvent = JSON.parse(event.data)[0].comments;
 
         let newCommentsToShow = commentsEvent.filter(comment => document.querySelector("#comment"+comment.id))
-        console.log("newCommentsToShow : ")
-        console.log(newCommentsToShow)
+        //console.log("newCommentsToShow : ")
+        //console.log(newCommentsToShow)
 
         for (let result of JSON.parse(event.data)[0].comments) {
             
@@ -563,7 +851,7 @@ forms.forEach((bouton) => {
 
     record.addEventListener('click', event => {
         if (navigator.mediaDevices) {
-        console.log("getUserMedia supported.");
+        //console.log("getUserMedia supported.");
 
         const constraints = { audio: true };
         let chunks = [];
@@ -576,7 +864,7 @@ forms.forEach((bouton) => {
             //visualize(stream);
 
             mediaRecorder.start();
-            console.log(mediaRecorder.state);
+            //console.log(mediaRecorder.state);
             console.log("recorder started");
             record.style.display = "none";
             stop.style.display = "block";
@@ -617,7 +905,7 @@ forms.forEach((bouton) => {
                 audio.controls = true;
                 const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
                 chunks = [];
-                console.log(blob)
+                //console.log(blob)
                 //const audioURL = URL.createObjectURL(blob);
                 //audio.src = audioURL;
                 //console.log("recorder stopped");
@@ -627,7 +915,7 @@ forms.forEach((bouton) => {
                 reader.onloadend = function () {
                 var base64String = reader.result;
                 audio.src = base64String
-                console.log('Base64 String - ', base64String);
+                //console.log('Base64 String - ', base64String);
                 }
 
                 deleteButton.onclick = (e) => {
@@ -652,7 +940,7 @@ forms.forEach((bouton) => {
 
     stop.addEventListener('click', event => {
         mediaRecorder.stop();
-        console.log(mediaRecorder.state);
+        //console.log(mediaRecorder.state);
         console.log("recorder stopped");
         record.style.display = "block";
         stop.style.display = "none";
@@ -776,7 +1064,7 @@ fileInputTribu.addEventListener("change", (e) => {
 
             avatarTribu = reader.result;
 
-            console.log(avatarTribu);
+            //console.log(avatarTribu);
 
             // Change profil
             profilTribu.src = avatarTribu
@@ -823,5 +1111,208 @@ document.querySelectorAll("#navBarTribu > li.listNavBarTribu > a").forEach(menu=
         
     })
 })
+
+function FindResto(elem){
+    let val = document.querySelector("#resto-rech").value;
+
+    document.querySelector("#result_resto_past").style.display ="block"
+
+    let loading =`<button class="btn btn-primary mt-4" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Chargement...
+                </button>`
+
+    document.querySelector("#result_resto_past").innerHTML = loading;
+    
+    fetch("/user/tribut/get_resto/"+tableTribu+"_restaurant/"+val)
+    .then(res => res.json())
+    .then(data =>{
+        //console.log(data)
+        let avatar = data.avatar
+        let list = data.list
+        if(list.length > 0){
+            //document.querySelector("#result_resto_past").style.display ="block"
+            let res =""
+            //console.log(data)
+            for(let resto of list){
+                let avtr = "{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}"
+                if(resto.isPelleted == 1){
+                    res += ""//"<li class='list-group-item list-group-item-action' style='list-style:none;'><img id='roundedImg' style='min-height: 40px; min-width:40px; max-width:40px; max-height: 40px;' class='rounded-circle border border-1' src="+avtr+"><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='true'> "+resto.denomination_f.trim()+"</a><small class='float-end text-danger'><i>Déjà pastillé</i></small></li>"
+                
+                }else{
+                    res+=`<li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold" data-isPelleted ='false'>${resto.denomination_f.trim()}</div>
+                            <i style="font-size:small;">${resto.adresse.trim().toLowerCase()}</i>
+                        </div>
+                        <input type="button" class="btn btn-primary h-100" value="Pastiller" id="pastille-btn" onclick="pastillerPast('${resto.id}','${resto.denomination_f.trim()}')">
+                        
+                    </li>`
+                    //res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='false'>"+resto.denomination_f.trim()+"</a><small class='float-end'><i>"+resto.adresse.trim().toLowerCase()+"</i></small></li>"
+                
+                }
+                //let adress = resto.numvoie.trim()+' '+resto.typevoie.trim()+' '+resto.nomvoie.trim()+' '+resto.codpost.trim()+', '+resto.compvoie.trim()+' '+resto.commune.trim()
+                //console.log(resto.denomination_f)
+            }
+            document.querySelector("#result_resto_past").innerHTML ="<ul class='list-group' style='overflow-y:scroll;height:120px;'>"+res+"</ul>"
+        
+        }else{
+            
+            document.querySelector("#result_resto_past").innerHTML ="<b class='text-danger'>Aucun resultat ne correspond votre recherche</b>"
+        }
+        
+    })
+}
+
+function saveRestaurantPast(id, nom){
+    let data ={
+        name : nom,
+        id_resto :id
+    }
+    //console.log(data);
+
+    fetch(new Request("/user/tribut/save_resto/"+tableTribu+"_restaurant", {
+        method: "POST",
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+        })).then(req => req.json()).then(message => {
+            console.log(message);
+    })
+
+    document.querySelector("#result_resto_past").style.display="none";
+}
+
+
+function pastillerPast(id,nom){
+    saveRestaurantPast(id, nom);
+
+    let xmlString = `<div class="alert alert-success mb-2 mt-2" role="alert">
+    ${nom} bien pastillé avec succès!
+    </div>`;
+
+    showResto();
+
+    document.querySelector("#form_past").innerHTML = xmlString;
+
+    setTimeout(()=>{
+        document.querySelector("#form_past").innerHTML = ""
+    }, 5000)
+    
+}
+
+function createRepas(id_pastille, nom, lat, long){
+
+    document.querySelector("#agenda-fetched").innerHTML= ""
+    document.querySelector("#agenda-fetched-past").innerHTML=`
+                    <div id="form_event" style="display: block;">
+						<div class="row g-2 mt-2">
+							<div class="col-md" style="display:none;">
+								<div class="form-floating">
+									<select class="form-select" id="agenda-type" onchange="eventAgendaType(this, '2023-05-18 00:00:01')">
+										<option id="repas" value="4" selected>Repas</option>
+																	
+									</select>
+									<label for="floatingSelectGrid">Type d'agenda</label>
+								</div>
+							</div>
+							<div class="col-md">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="agenda-title" placeholder="Ecire le titre">
+									<label for="floatingInputGrid">Titre</label>
+								</div>
+							</div>
+							
+						</div>
+
+						<div id="choixRepas" class="row g-2 mt-2" style="">
+							<div class="col-8">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="restaurant" placeholder="Rechercher" disabled>
+									<label for="restaurant">Restaurant</label>
+								</div>
+								
+							</div>
+
+							<div class="col-4">
+								<div class="form-floating">
+									<input type="number" class="form-control" id="participant" min="0" value="50">
+									<label for="participant">Participants</label>
+								</div>
+								
+							</div>
+							
+						</div>
+
+						<div class="row g-2 mt-2">
+							<div class="col-12">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="agenda-desc" value="">
+									<label for="floatingInputGrid">Déscription</label>
+								</div>
+								
+							</div>
+							
+						</div>
+						
+						<div class="row g-2 mt-2">
+							<div class="col-6">
+								<div class="form-floating">
+									<input type="datetime-local" class="form-control" id="agenda-from" value="2023-05-18 00:00:01">
+									<label for="floatingInputGrid">De</label>
+								</div>
+							</div>
+							<div class="col-6">
+								<div class="form-floating">
+									<input type="datetime-local" class="form-control" id="agenda-to" value="2023-05-18 23:59:59">
+									<label for="floatingInputGridd">Au</label>
+								</div>
+							</div>
+						</div>
+
+						<span onclick="openMapPast()" class="btn btn-light"><i class="bi bi-geo-alt-fill"></i> Afficher sur la carte</span>
+						<input type="hidden" id="agenda-lat">
+						<input type="hidden" id="agenda-lng">
+						<div class="row g-2 mt-2 mb-2" style="display:none;" id="div-map">
+							<div id="new_map" style="width:100%; height : 150px;"></div>
+						</div>
+
+						<div class="alert alert-success mt-2 mb-2" role="alert" style="display:none;" id="agenda-success"><i class="bi bi-check2-circle"> </i>
+							Agenda sauvegardé avec succès
+						</div>
+
+						<div class="row g-2 mt-2">
+							<input type="button" class="btn btn-outline-primary" onclick="saveAgenda()" id="" value="Enregistrer">
+						</div>
+
+					</div>`
+
+    document.querySelector("#restaurant").setAttribute("data-idresto",id_pastille)
+    document.querySelector("#restaurant").value = nom
+    document.querySelector("#agenda-lat").value = lat
+    document.querySelector("#agenda-lng").value = long
+
+}
+
+function openMapPast(){
+
+    document.querySelector("#div-map").style.display ="block"
+
+    let lat = document.querySelector("#agenda-lat").value
+    let long = document.querySelector("#agenda-lng").value
+
+    document.querySelector('#div-map').innerHTML = "<div id='new_map' style='width: 100%; height: 200px;'></div>";
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', osmAttribution = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' ,
+
+    osmLayer = new L.TileLayer(osmUrl, {maxZoom: 20, attribution: osmAttribution});
+
+    map = new L.Map('new_map');
+    map.setView(new L.LatLng(lat,long), 13 );
+    map.addLayer(osmLayer);
+    L.marker([lat, long]).addTo(map)
+
+}
 
 </script>

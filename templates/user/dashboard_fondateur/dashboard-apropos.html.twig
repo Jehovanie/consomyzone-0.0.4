@@ -24,7 +24,7 @@
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
 
-		<div class="row account">
+		<div class="row content_right_actualite">
 			<center>
 				<h1>
 					<i class="fa-solid fa-user"></i>
@@ -32,45 +32,48 @@
 				</h1>
 			</center>
 
-			<div class="container col content_global_super_admin ">
+			<div class="container content_global_super_admin ">
 				<div class="card-apropos-admin">
 					<div class="row">
-						<div class="col-md-3 me-4 card">
-							<div class="row">
-								<div class="col-md-3 mt-4">
-									<i class="fa-solid fa-solid-admin fa-user"></i>
-								</div>
-								<div class="col">
-									<h1>{{apropos.firstname}}</h1>
-									<p>{{apropos.lastname}}</p>
-								</div>
-							</div>
-							
-						</div>
-						<div class="col-md-4 me-4 card">
-							<div class="row mt-4">
-								<div class="col-md-3">
-									<i class="fa-solid fa-solid-admin fa-envelope"></i>
-								</div>
-								<div class="col mt-2">
-									<p>{{apropos.email}}</p>
+						<div class="col-md-4 my-2">
+							<div class="card p-3">
+								<div class="row">
+									<div class="col-md-3 mt-4">
+										<i class="fa-solid fa-solid-admin fa-user"></i>
+									</div>
+									<div class="col">
+										<h1>{{apropos.firstname}}</h1>
+										<p>{{apropos.lastname}}</p>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-4 me-4 card">
-							<div class="row mt-4">
-								<div class="col-md-2">
-									<i class="fa-solid fa-solid-admin fa-address-card"></i>
-								</div>
-								<div class="col mt-2">
-									<p>{{apropos.commune}}</p>
+						<div class="col-md-4 my-2">
+							<div class="card p-3">
+								<div class="row mt-4">
+									<div class="col-md-3">
+										<i class="fa-solid fa-solid-admin fa-envelope"></i>
+									</div>
+									<div class="col mt-2">
+										<p>{{apropos.email}}</p>
+									</div>
 								</div>
 							</div>
 						</div>
-
+						<div class="col-md-4 my-2">
+							<div class="card p-3">
+								<div class="row mt-4">
+									<div class="col-md-2">
+										<i class="fa-solid fa-solid-admin fa-address-card"></i>
+									</div>
+									<div class="col ms-3 mt-2">
+										<p>{{apropos.commune}}</p>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-
-					<div class="card card-categoerie mt-3">
+					<div class="card card-categoerie p-3 mt-3">
 						<table class="table table-sm">
 							<thead>
 								<tr>
@@ -98,142 +101,144 @@
 								
 							</tbody>
 						</table>
-
 					</div>
 
 					<div class="card-apropos-admin-tribut">
 						<div class="row">
-							<div class="col me-2 card card-tribut ">
-								<h5 class="mt-4 mx-auto"> Tribu G</h5>
-								<h4>Nom de tribu:</h3>
-								<p>{{apropos.tributg}}</p>
-								<h4>Rôles :</h4>
-								<p>
+							<div class="col-md-6 col-sm-10 mx-auto my-2 ">
+								<div class="card p-3">
+									<h5 class="mt-4 mx-auto"> Tribu G</h5>
+									<h4>Nom de tribu:</h3>
+									<p>{{apropos.tributg}}</p>
+									<h4>Rôles :</h4>
+									<p>
 
-									{{apropos.roles|upper }} 
+										{{apropos.roles|upper }} 
+										
+										{% if apropos.roles is same as("fondateur") %}
+											<i class='fa-solid fa-triangle-exclamation 
+													text-danger 
+													icon_danger_validate_js_jheo
+													{{(apropos.isVerified is same as(true)) ? "d-none": "" }}'
+											></i>
+											<i class='fa-solid fa-thumbs-up 
+													text-success
+													icon_success_validate_js_jheo
+													{{(apropos.isVerified is same as(false)) ? "d-none": "" }}'
+											></i>
+										{% endif %}
+
+									</p>
 									
-									{% if apropos.roles is same as("fondateur") %}
-										<i class='fa-solid fa-triangle-exclamation 
-												text-danger 
-												icon_danger_validate_js_jheo
-												{{(apropos.isVerified is same as(true)) ? "d-none": "" }}'
-										></i>
-										<i class='fa-solid fa-thumbs-up 
-												text-success
-												icon_success_validate_js_jheo
-												{{(apropos.isVerified is same as(false)) ? "d-none": "" }}'
-										></i>
+									{% if apropos.roles is same as("fondateur") or apropos.roles is same as("moderateur")  %}
+										<div class="row d-none">
+											
+											
+												{% if apropos.isBanned == 1 %}
+													<div class="col">
+														<h4>Réintégrer cette personne? :</h4>
+													</div>
+													<div class="col-md-3">
+														<button type="button" class="btn btn-danger retablir" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.{{apropos.id}}H:bAUoBJQQ-EN6BAhzEAo">retablir
+															<i class="fa-solid fa-triangle-exclamation text-light"></i>
+														</button>
+
+													</div>
+												{% else %}
+													<div class="col">
+														<h4>Bannir cette personne ?:</h4>
+													</div>
+													<div class="col-md-3">
+														<button type="button" class="btn btn-danger banished" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo"> oui <i class="fa-solid fa-triangle-exclamation text-light"></i></button>
+													</div>
+												{% endif %}
+												
+											
+										</div>
+										<div class="row mt-4 d-none">
+											<div class="col">
+												<h4>
+													Envoyer une invitation pour devenir modérateur
+												</h4>
+											</div>
+											<div class="col-md-2 mt-3">
+												<i class="fa-solid fa-paper-plane fa-2xl send_requesting" id="send-request"></i>
+											</div>
+										</div>
+									{% else %}
+
+										<div class="row">
+											
+											
+												{% if apropos.isBanned == 1 %}
+													<div class="col">
+														<h4>Réintégrer cette personne? :</h4>
+													</div>
+													<div class="col-md-3">
+														<button type="button" class="btn btn-danger retablir" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.{{apropos.id}}H:bAUoBJQQ-EN6BAhzEAo">retablir
+															<i class="fa-solid fa-triangle-exclamation text-light"></i>
+														</button>
+
+													</div>
+												{% else %}
+													<div class="col">
+														<h4>Bannir cette personne ?:</h4>
+													</div>
+													<div class="col-md-3">
+														<button type="button" class="btn btn-danger banished" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo"> oui <i class="fa-solid fa-triangle-exclamation text-light"></i></button>
+													</div>
+												{% endif %}
+												
+
+										</div>
+										<div class="row mt-4">
+											<div class="col">
+												<h4>
+													Envoyer une invitation pour devenir modérateur
+												</h4>
+											</div>
+											<div class="col-md-2 mt-3">
+												<i class="fa-solid fa-paper-plane fa-2xl send_requesting" id="send-request"></i>
+											</div>
+										</div>
 									{% endif %}
 
-								</p>
+									<a href="{{path("app_fondateur_list_publication") ~ '?user_id=' ~ apropos.id}}" type="button" class="btn btn-outline-secondary mt-4 w-50 mx-auto">Voir toutes ses publications</a>
+								</div>
+							</div>
+
+							<div class="modal-tommyJS cache">
+								<button class="close-modal">&times;</button>
+								<table></table>
 								
-								{% if apropos.roles is same as("fondateur") or apropos.roles is same as("moderateur")  %}
-								<div class="row d-none">
-									
-									
-										{% if apropos.isBanned == 1 %}
-											<div class="col">
-												<h4>Réintégrer cette personne? :</h4>
-											</div>
-											<div class="col-md-3">
-												<button type="button" class="btn btn-danger retablir" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.{{apropos.id}}H:bAUoBJQQ-EN6BAhzEAo">retablir
-													<i class="fa-solid fa-triangle-exclamation text-light"></i>
-												</button>
-
-									    	</div>
-										{% else %}
-										    <div class="col">
-												<h4>Bannir cette personne ?:</h4>
-											</div>
-											<div class="col-md-3">
-												<button type="button" class="btn btn-danger banished" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo"> oui <i class="fa-solid fa-triangle-exclamation text-light"></i></button>
-											</div>
-										{% endif %}
-										   
-									
-								</div>
-									<div class="row mt-4 d-none">
-										<div class="col">
-											<h4>
-												Envoyer une invitation pour devenir modérateur
-											</h4>
-										</div>
-										<div class="col-md-2 mt-3">
-											<i class="fa-solid fa-paper-plane fa-2xl send_requesting" id="send-request"></i>
-										</div>
-									</div>
-								{% else %}
-								<div class="row">
-									
-									
-										{% if apropos.isBanned == 1 %}
-											<div class="col">
-												<h4>Réintégrer cette personne? :</h4>
-											</div>
-											<div class="col-md-3">
-												<button type="button" class="btn btn-danger retablir" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.{{apropos.id}}H:bAUoBJQQ-EN6BAhzEAo">retablir
-													<i class="fa-solid fa-triangle-exclamation text-light"></i>
-												</button>
-
-									    	</div>
-										{% else %}
-										    <div class="col">
-												<h4>Bannir cette personne ?:</h4>
-											</div>
-											<div class="col-md-3">
-												<button type="button" class="btn btn-danger banished" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo"> oui <i class="fa-solid fa-triangle-exclamation text-light"></i></button>
-											</div>
-										{% endif %}
-										   
-
-								</div>
-									<div class="row mt-4">
-										<div class="col">
-											<h4>
-												Envoyer une invitation pour devenir modérateur
-											</h4>
-										</div>
-										<div class="col-md-2 mt-3">
-											<i class="fa-solid fa-paper-plane fa-2xl send_requesting" id="send-request"></i>
-										</div>
-									</div>
-								{% endif %}
-								<a href="{{path("app_fondateur_list_publication") ~ '?user_id=' ~ apropos.id}}" type="button" class="btn btn-outline-secondary mt-4 w-50 mx-auto">Voir toutes ses publications</a>
+							</div>
+							<div class="overlay cache"></div>
 							
+							<div class="col-md-6 col-sm-10 mx-auto my-2">
+								<div class="card p-3">
+									<h5 class="mt-4 mx-auto"> Tribu T</h5>
+									<table class="table table-list-apropos table-striped">
+										<thead class="thead-dark">
+											<tr>
+												<th>Tribu T </th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>Rakoto</td>
+											</tr>
+											<tr>
+												<td>Rakoto</td>
+											</tr>
+											<tr>
+												<td>Rakoto</td>
+											</tr>
+											<tr>
+												<td>Rakoto</td>
+											</tr>
+										</tbody>
+									</table>
 								</div>
-								<div class="modal-tommyJS cache">
-									<button class="close-modal">&times;</button>
-									<table></table>
-									
-								</div>
-								<div class="overlay cache"></div>
-
-							
-							<div class="col card card-tribut">
-								<h5 class="mt-4 mx-auto"> Tribu T</h5>
-								<table class="table table-list-apropos table-striped">
-									<thead class="thead-dark">
-										<tr>
-											<th>Tribu T </th>
-											
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>Rakoto</td>
-										</tr>
-										<tr>
-											<td>Rakoto</td>
-										</tr>
-										<tr>
-											<td>Rakoto</td>
-										</tr>
-										<tr>
-											<td>Rakoto</td>
-										</tr>
-										
-									</tbody>
-								</table>
 							</div>
 						</div>
 					</div>

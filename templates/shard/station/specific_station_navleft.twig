@@ -67,7 +67,6 @@
         
     </nav>
     <div class="container-fluid list-depart">
-        <hr>
         <div class="head-left">
             <div class="row">
                 <div class="col-md-2">
@@ -92,7 +91,7 @@
                 </div>
                 <div class="col-md-10">
                     <p  class="titre" data-toggle-deparement="{{departName}}">
-                        Les Stations du département:
+                        Les stations du département:
                         <span class="fw-bolder">{{departName}}, </span>
                         <br>
                         <span class="content_nombre_result_js_jheo">{{number_station}}</span> résultats
@@ -113,7 +112,13 @@
                             <li class="card-list element">
                                 <div class="row container-depart pt-4 element" id="{{station.id}}">
                                     <div class="col-md-9">
-                                        <p> <span class="id_departement">{{station.nom |lower }} <br> </span> {{station.adresse  |lower}}</p>
+                                        <p> 
+                                            <span class="id_departement">
+                                                {{station.nom |lower }} <br> 
+                                            </span> 
+                                            <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
+                                            {{station.adresse  |lower}}
+                                        </p>
                                         <ul>
                                             <li> E 85: {{station.prixE85 ~ " €" }} </li>
                                             <li> Gplc: {{station.prixGplc ~ " €"  }} </li>

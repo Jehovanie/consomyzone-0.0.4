@@ -60,7 +60,8 @@ body {
 }
 
 .navleft .list-depart{
-    margin-top: 100px;
+    /* margin-top: 100px; */
+    margin-top: 160px;
     font-size: 10pt;
 }
 
@@ -80,14 +81,16 @@ body {
     background-color: #e7e7e7;
     width: 18vw;
     height: 10vh;
-    /* margin-left: -40px; */
     margin-left: -10px;
-    /* margin-left: -30px; */
     margin-bottom: 20px;
     margin-top: 15px;
     border-radius: 30px;
     box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
+}
+
+.navleft .list-depart-all ul li:hover {
+    transform: scale(1.009);
 }
 
 .navleft .list-depart-all ul li h5{
@@ -128,16 +131,22 @@ body {
 
 .navleft .list-depart-all-specific ul .card-list {
     list-style: none;
-    background-color: #e7e7e7;
+    background-color: #ffffff;
     width: 18vw;
-    height: 20vh;
+    height: auto;
+    padding: 15px;
     /* margin-left: -40px; */
     margin-left: -10px;
     margin-bottom: 20px;
     border-radius: 40px;
     box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
+    overflow: hidden;
 }
+.navleft .list-depart-all-specific ul .card-list:hover {
+    transform: scale(1.009);
+}
+
 .navleft .list-depart-all-specific-station ul .card-list {
     height: 40vh !important;
 }
@@ -173,7 +182,7 @@ body {
     width: 25vw;
     /* height: 100vh; */
     /* box-shadow: -5px -5px 15px #4d4d4d !important; */
-    transform: translate(28vw, 15vh);
+    transform: translate(73vw, 15vh);
     opacity: 1;
     transition: all 1.5s ease-out;
     border-radius: 15px;
@@ -357,8 +366,17 @@ body {
         width: 15vw;
 }
 
-.navbar-light-bar .icon-connexion svg{
+.navbar-light-bar .icon-connexion .svg-1{
     fill: #000;
+}
+
+.navbar-light-bar .icon-connexion .svg-2 {
+    fill: #09ff00;
+    
+}
+
+.navbar-light-bar .icon-connexion .svg-2 g .gadena{
+    fill: #1111FE;
 }
 
 .navbar-light-bar .icon-connexion svg:hover {
@@ -702,3 +720,118 @@ li a .station {
     color: #B40404;
 }
 
+.avatar-account-fondateur {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px rgb(206, 15, 253) solid;
+    box-shadow: 0px 0px 22px rgba(206, 15, 253, 0.8);
+}
+
+.avatar-account-fondateur img {
+    width: 40px;
+    border-radius: 50%;
+    margin-top: 1px;
+    margin-left: -8px;
+}
+
+
+.avatar-account {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px rgb(8, 238, 27) solid;
+    box-shadow: 0px 0px 22px rgba(4, 253, 20, 0.8);
+}
+
+.avatar-account img {
+    width: 40px;
+    border-radius: 50%;
+    margin-top: 1px;
+    margin-left: -8px;
+}
+
+.labelC-rond-account {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(35px, -6px);
+}
+
+.labelC-rond-account-nav {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(159px, -31px);
+}
+
+.avatar-account-square-labelC-fondateur {
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    /* border-radius: 50%; */
+    border: 3px rgb(206, 15, 253) solid;
+    box-shadow: 0px 0px 22px rgba(206, 15, 253, 0.8);
+}
+
+.avatar-account-square-labelC-fondateur img {
+    width: 40px;
+    /* border-radius: 50%; */
+    margin-top: 1px;
+    margin-left: -6px;
+}
+
+.avatar-account-square-labelC {
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    /* border-radius: 50%; */
+    border: 3px rgb(8, 238, 27) solid;
+    box-shadow: 0px 0px 22px rgba(4, 253, 20, 0.8);
+}
+
+
+
+.avatar-account-square-labelC img {
+    width: 40px;
+    /* border-radius: 50%; */
+    margin-top: 1px;
+    margin-left: -6px;
+}
+
+.labelC-rond-account{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(35px , -6px);
+}
+
+.labelC-rond-account-nav{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(159px, -31px);
+}
+
+.avatar-account-square {
+    width: 50px;
+    height: 50px;
+    /* border-radius: 50%; */
+    border: 3px rgb(136, 136, 136) solid;
+    box-shadow: 0px 0px 22px rgba(136, 136, 136, 0.8);
+}
+
+.avatar-account-square img {
+    width: 40px;
+    /* border-radius: 50%; */
+    margin-top: 1px;
+    margin-left: -8px;
+}

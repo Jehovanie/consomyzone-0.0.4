@@ -45,7 +45,7 @@
                     <div class="content_message" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
                         {# en tête messages  #}
                         <div class="content_entete content_entete_js_jheo" data-toggle-id-user-to={{userToProfil.id}} >
-                            {% dump(userToProfil.photo_profile) %}
+                            {# {% dump(userToProfil.photo_profile) %} #}
                             <div class="content_img">
                                 <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/') ~ userToProfil.photo_profile  : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
                             </div>

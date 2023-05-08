@@ -26,7 +26,9 @@
 <div class="left_content_home">
 	<div>
 		<div
-			class="description" id="details-coord" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+			class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+			
+{# {{ dump(restaurants) | raw }} #}
 
 
 			{# note avis   #}

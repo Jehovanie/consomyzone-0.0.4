@@ -11,10 +11,13 @@ class MarckerClusterStation {
     async onInit(){
         this.ALREADY_INIT = false;
         try{
-            const response= await fetch("/getLatitudeLongitudeStation/?max="+this.price_max + "&min="+ this.price_min+"&type="+ this.type+"&nom_dep="+ this.nom_dep +"&id_dep="+this.id_dep, {
-                method: 'get',
-            });
+            this.getGeos()
+            this.createMarkersCluster();
+            
+            const response= await fetch("/getLatitudeLongitudeStation/?max="+this.price_max + "&min="+ this.price_min+"&type="+ this.type+"&nom_dep="+ this.nom_dep +"&id_dep="+this.id_dep);
             this.default_data= await response.json();
+            this.map= await create_map_content(this.geos,this.id_dep, "station");
+
             this.data= this.default_data;
             this.bindAction()
         }catch(e){
@@ -58,9 +61,6 @@ class MarckerClusterStation {
     
 
     bindAction(){
-        this.getGeos()
-        this.map=create_map_content(this.geos,this.id_dep, "station");
-        this.createMarkersCluster();
         this.addMarker(this.data);
         this.addEventOnMap(this.map, this.markers);
         this.setNumberOfMarker();
@@ -201,24 +201,22 @@ class MarckerClusterStation {
             // });
             marker.on('click', () => {
                 if( screen.width < 991){
-                    getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
+                    getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }else{
-                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim(), item.id)
+                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
                 const icon_R= L.Icon.extend({
                     options: {
-                        iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
-                        // iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                        iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" :  url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
                     }
                 })
                 marker.setIcon(new icon_R);
                 if( this.marker_last_selected){
                     const icon_B= L.Icon.extend({
                         options: {
-                            iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
-                            // iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
+                            iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-B.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
                         }
                     })
                     this.marker_last_selected.setIcon(new icon_B)
@@ -254,7 +252,7 @@ class MarckerClusterStation {
             this.data.forEach(element => {
                 parent_elements.querySelector("ul").innerHTML += `
                     <li class="card-list element open_detail_jheo_js" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
-                        <div class="row container-depart pt-4 element card_list_element_jheo_js" id="${element.id}">
+                        <div class="row container-depart element card_list_element_jheo_js" id="${element.id}">
                             <div class="col-md-9">
                                 <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>
                                 <ul>
@@ -334,16 +332,14 @@ class MarckerClusterStation {
                         if(parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))){
                             const icon_R= L.Icon.extend({
                                 options: {
-                                    iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
-                                    // iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                                    iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
                                 }
                             })
                             layer.setIcon(new icon_R);
                             if( this.marker_last_selected){
                                 const icon_B= L.Icon.extend({
                                     options: {
-                                        iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
-                                        // iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
+                                        iconUrl: IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-B.png" :  url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
                                     }
                                 })
                                 this.marker_last_selected.setIcon(new icon_B)

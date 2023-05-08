@@ -8,12 +8,16 @@ class MarckerClusterFerme {
     async onInit(){
         this.ALREADY_INIT = false;
         try{
+            this.getGeos()
+            this.createMarkersCluster();
+
             const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
             const response= await fetch(link);
             this.default_data= await response.json();
+            this.map=await create_map_content(this.geos,this.id_dep, "ferme");
+            
             this.data= this.default_data;
             this.bindAction()
-            this.displayData()
         }catch(e){
             console.log(e)
         }
@@ -30,9 +34,6 @@ class MarckerClusterFerme {
     
 
     bindAction(){
-        this.getGeos()
-        this.map=create_map_content(this.geos,this.id_dep, "ferme");
-        this.createMarkersCluster();
         this.addMarker(this.data);
         this.addEventOnMap(this.map);
         this.setNumberOfMarker();

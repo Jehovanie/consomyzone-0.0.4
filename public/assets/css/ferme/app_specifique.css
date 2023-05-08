@@ -1,5 +1,6 @@
 .navleft .list-depart-all-specific ul .card-list {
-    height: 23vh;
+    /* height: 23vh; */
+    height: auto;
 }
 .pagination_alphabet ul{
     display: flex;

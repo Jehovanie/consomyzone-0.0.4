@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
             geos.push(f)
         }
 
-        var map= create_map_content(geos,null, "home")
+        var map= create_map_content_not_async(geos,null, "home")
         const { results } = response;
         
         all_data= results[0];
