@@ -14,7 +14,8 @@
 				<h4 id="lastNameProfil">{{ profil[0].getLastname }}</h4>
 			</div>
 			<label style="margin-left:10%;" for="fileInputProfil">
-				<i style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+				<i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+				{# <i style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i> #}
 			</label>
 			<input type="file" name="fileInputProfil" id="fileInputProfil" style="display:none;visibility:none;" accept="image/*">
 		</div>
@@ -110,8 +111,9 @@
 				class="nav-item tribu_js">
 				{# <a href="{{path("setting_user_account")}}" class="nav-link link-dark"> #}
 				<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
-					<img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'>
-					<span lng-tag="tribu_t">Tribu T</span>
+					{# <img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'> #}
+					<i class="fa-solid fa-users-rays fw-bold" style="color:black;"></i>
+					<span lng-tag="tribu_t">&nbsp;Tribu T</span>
 				</a>
 
 				<div class="collapse" id="tribut-collapse">

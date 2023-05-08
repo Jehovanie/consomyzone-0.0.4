@@ -1000,28 +1000,30 @@ function getPosition(){
             let lon = position.coords.longitude;
             //alert(lat + ' ' + long)
 
-            fetch('http://ip-api.com/json/?fields=61439')
-                .then((res) => res.json())
-            .then((res) => {
-                //ip.textContent = res.query;
-                //console.log(res)
-                document.querySelector("#pos-ip").textContent = "Adresse IP : " +res.query
-                document.querySelector("#pos-city").textContent = "Ville : " +res.city
-                document.querySelector("#pos-country").textContent = "Pays : " + res.country
-                document.querySelector("#pos-region").textContent = "Region : " + res.regionName
-                document.querySelector("#pos-lat").textContent = "Latitude : " + lat
-                document.querySelector("#pos-long").textContent = "Longitude : " + lon
+            fetch('https://ipapi.co/json/')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(res) {
+                    //console.log(data);
+                    document.querySelector("#pos-ip").textContent = "Adresse IP : " +res.ip
+                    document.querySelector("#pos-city").textContent = "Ville : " +res.city
+                    document.querySelector("#pos-country").textContent = "Pays : " + res.country_name
+                    //document.querySelector("#pos-region").textContent = "Region : " + res.regionName
+                    document.querySelector("#pos-lat").textContent = "Latitude : " + lat
+                    document.querySelector("#pos-long").textContent = "Longitude : " + lon
 
-                map_position = L.map("position_map").setView([lat, lon], 13);
+                    document.querySelector('#position_map').innerHTML = "<div id='new_map' style='width: 100%; height: 200px;'></div>";
+                    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', osmAttribution = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' ,
 
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 20,
-                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map_position);
-                
-                L.marker([lat, lon]).addTo(map_position);
-            })
-            //map_position = map_position.remove();
+                    osmLayer = new L.TileLayer(osmUrl, {maxZoom: 20, attribution: osmAttribution});
+
+                    map_position = new L.Map('new_map');
+                    map_position.setView(new L.LatLng(lat,lon), 13 );
+                    map_position.addLayer(osmLayer);
+                    L.marker([lat, lon]).addTo(map_position)
+
+                });
             
         })
     }
