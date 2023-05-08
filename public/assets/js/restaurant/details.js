@@ -1,88 +1,91 @@
 let remove = document.getElementById("remove-detail-spec-resto")
 function getDetail(event, nom_dep, id_dep, id_restaurant, nomResto) { 
-    var parent;
-    var visibleClusterMarkers = [];
+
+    markers.clearLayers();
+    map.removeLayer(markers);
+    // var parent;
+    // var visibleClusterMarkers = [];
     var bounds =  map.getBounds();
-   
-   const url = new URL(window.location.href);
+    const divLatLng = event.target.children[0]
+    const lat = divLatLng.dataset.toggleLatitude
+    const lng = divLatLng.dataset.toggleLongitude
+    const id=divLatLng.dataset.toggleId
+
+    console.log(lat, lng);
+    setView(lat,lng)
+    const url = new URL(window.location.href);
+    let idMarkerCible;
+    markers = L.markerClusterGroup({
+        chunkedLoading: true,
+     //   spiderfyOnEveryZoom:true,
+         spiderfyOnMaxZoom: true,
+         iconCreateFunction: function (cluster) {
+             let sepcMarkerIsExist = false
+             console.log(cluster._leaflet_id)
+             for (let g of cluster.getAllChildMarkers()) {
+                 if (idMarkerCible === g.options.id) {
+                     console.log("marker cible " + idMarkerCible + " equal ===> " + g.options.id)
+                     sepcMarkerIsExist = true;
+                     break;
+                 }
+                
+             }
+             
+             if (sepcMarkerIsExist) {
+                    
+                 return L.divIcon({
+                     html: `<div><span class="markers-spec">${cluster.getChildCount()}</span></div>`,
+                     className: "spec_cluster",
+                     iconSize: L.point(35, 35)
+                     
+                 });
+             } else {
+                 return L.divIcon({
+                      
+                     html: '<div><span class="markers_tommy_js">' + cluster.getChildCount() + '</span></div>',
+                     className: "mycluster",
+                     iconSize: L.point(35, 35)
+                 });
+             }
+         }
+    });
     for (let marker of tabMarker) {
         if (marker.options.cleNom === nomResto) {
-            // alert("mitovy")  
+            idMarkerCible=marker.options.id
+            console.log("marker cible "+idMarkerCible)
             const icon_R= L.Icon.extend({
                     options: {
+                        //iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-resto-new-Rr.png"
                         iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-Rr.png"
                     }
+                    
                 })
-                marker.setIcon(new icon_R);
-        } else {
-             const icon_R= L.Icon.extend({
+            marker.setIcon(new icon_R);
+            if( marker_last_selected){
+                const icon_B= L.Icon.extend({
                     options: {
                         iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-B.png"
                     }
                 })
-                marker.setIcon(new icon_R);
+                marker_last_selected.setIcon(new icon_B)
+            }
+            marker_last_selected = marker
+        } else {
+             const icon_R= L.Icon.extend({
+                    options: {
+                        //iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-resto-new-B.png"
+                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-B.png"
+                    }
+                })
+            marker.setIcon(new icon_R);
+            
         }
+        markers.addLayer(marker)
     }
+    map.addLayer(markers)
     
-    let cm=null
-    const divLatLng = event.target.children[0]
-    console.log(divLatLng)
-    const lat = parseFloat(divLatLng.dataset.toggleLatitude,10)
-    const lng = parseFloat(divLatLng.dataset.toggleLongitude, 10)
-    setView(lat,lng)
-    const cleCoord=lat+""+lng
-    markers.eachLayer(function (markerr) {
-       
-        const cleMrkerCoord=markerr._latlng.lat+""+markerr._latlng.lng
-        if (cleCoord == cleMrkerCoord) { 
-            cm=markerr
-            console.log(cleMrkerCoord+" "+cleCoord)
-            parent = markers.getVisibleParent(markerr);
-            if (parent && (typeof visibleClusterMarkers[parent._leaflet_id] == 'undefined')) {
-                visibleClusterMarkers[parent._leaflet_id] = parent;
-            }
-        }
-        
-    });
-    visibleClusterMarkers.forEach(function (clusterMarker) {
-        console.log(clusterMarker.getAllChildMarkers())
-        markers.options = {
-            showCoverageOnHover: false,
-            iconCreateFunction: function(cluster) {
-                let sepcMarmerIsExist = false
-                        
-                        for (let g of  cluster.getAllChildMarkers()){
-                           
-                            
-                            if (clusterMarker.getAllChildMarkers().includes(g)) { 
-                                console.log(g)
-                                sepcMarmerIsExist = true;
-                                break;
-                            }
-                        
-                        }
-                        if (sepcMarmerIsExist) {
-                            
-                            return L.divIcon({
-                                html: `<span class="markers-spec">${cluster.getChildCount()}</span>`,
-                                className: "spec_cluster",
-                                iconSize:L.point(35,35)
-                            });
-                        } else {
-                            return L.divIcon({
-                                html: '<span class="markers_tommy_js">' + cluster.getChildCount() + '</span>',
-                                className: "mycluster",
-                                iconSize:L.point(35,35)
-                            });
-                        }
-
-               
-            }
-        };
-        
-        markers.refreshClusters();
-        
-    });
+    
+    
     
     if (remove) {
         remove.removeAttribute("class", "hidden");
@@ -101,7 +104,9 @@ function getDetail(event, nom_dep, id_dep, id_restaurant, nomResto) {
                 remove.setAttribute("class", "hidden")
             })
              const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id")
-            const currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
+            let currentUserId
+            if (document.querySelector(".FtBjOlVf"))
+                currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
             if (document.querySelector(".FtBjOlVf") != null)
                 showModifArea(idRestaurant, currentUserId)
             if (document.querySelector("#see-tom-js")) {
@@ -120,5 +125,4 @@ function getDetail(event, nom_dep, id_dep, id_restaurant, nomResto) {
                 }
             }
         })
-    // document.querySelector("#see-tom-js")
 }

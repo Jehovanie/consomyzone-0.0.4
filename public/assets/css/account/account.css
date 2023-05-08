@@ -188,10 +188,12 @@ body{
     margin-left: 10px;
 }
 
-.fa-solid{
+/* .fa-solid{
     color: #0084ff;
+} */
+.fa-star {
+    color: #000 ;
 }
-
 .fa-solid-nav{
     color: #000;
     font-size: 12pt;
@@ -917,3 +919,21 @@ div.row-js>div.text-chat.up img{
     height:50px;
     border-radius: 50%;
 }
+
+.modal-commet-tribut{
+    height: 695px !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.card-comment{
+    background-color: #ffffff;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    padding-left: 15px;
+    border: none !important;
+}
+
+.card-comment h4{
+    color: #0A0AFE;
+}
+

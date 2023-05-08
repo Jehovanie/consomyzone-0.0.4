@@ -80,14 +80,16 @@ body {
     background-color: #e7e7e7;
     width: 18vw;
     height: 10vh;
-    /* margin-left: -40px; */
     margin-left: -10px;
-    /* margin-left: -30px; */
     margin-bottom: 20px;
     margin-top: 15px;
     border-radius: 30px;
     box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
+}
+
+.navleft .list-depart-all ul li:hover {
+    transform: scale(1.009);
 }
 
 .navleft .list-depart-all ul li h5{
@@ -128,16 +130,21 @@ body {
 
 .navleft .list-depart-all-specific ul .card-list {
     list-style: none;
-    background-color: #e7e7e7;
+    background-color: #ffffff;
     width: 18vw;
-    height: 20vh;
-    /* margin-left: -40px; */
+    /* height: 20vh; */
+    text-align: center;
     margin-left: -10px;
     margin-bottom: 20px;
     border-radius: 40px;
     box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
+    overflow: hidden;
 }
+.navleft .list-depart-all-specific ul .card-list:hover {
+    transform: scale(1.009);
+}
+
 .navleft .list-depart-all-specific-station ul .card-list {
     height: 40vh !important;
 }
@@ -173,7 +180,7 @@ body {
     width: 25vw;
     /* height: 100vh; */
     /* box-shadow: -5px -5px 15px #4d4d4d !important; */
-    transform: translate(28vw, 15vh);
+    transform: translate(73vw, 15vh);
     opacity: 1;
     transition: all 1.5s ease-out;
     border-radius: 15px;
@@ -357,8 +364,17 @@ body {
         width: 15vw;
 }
 
-.navbar-light-bar .icon-connexion svg{
+.navbar-light-bar .icon-connexion .svg-1{
     fill: #000;
+}
+
+.navbar-light-bar .icon-connexion .svg-2 {
+    fill: #09ff00;
+    
+}
+
+.navbar-light-bar .icon-connexion .svg-2 g .gadena{
+    fill: #1111FE;
 }
 
 .navbar-light-bar .icon-connexion svg:hover {

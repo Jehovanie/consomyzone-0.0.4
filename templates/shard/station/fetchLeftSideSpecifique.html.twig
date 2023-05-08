@@ -94,7 +94,12 @@
                 <li class="card-list element">
                     <div class="row container-depart pt-4 element" id="{{item.id}}">
                         <div class="col-md-9">
-                            <p> <span class="id_departement">{{item.nom |lower }} <br> </span> {{item.adresse  |lower}}</p>
+                                                <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
+                            <p> 
+                                <span class="id_departement">{{item.nom |lower }} <br> </span>
+                                <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
+                                 {{item.adresse  |lower}}
+                            </p>
                             <ul>
                                 <li> E 85: {{item.prixE85 ~ " €" }} </li>
                                 <li> Gplc: {{item.prixGplc ~ " €"  }} </li>

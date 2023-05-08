@@ -456,7 +456,10 @@ window.addEventListener('load', () => {
       map.doubleClickZoom.disable();
 
       markers = L.markerClusterGroup({
-        chunkedLoading: true
+        chunkedLoading: true,
+        
+        spiderfyOnMaxZoom: true,
+        spiderfyOnEveryZoom:true
       });
 
       chargeMapAndMarkers(response1, map, markers)
@@ -839,41 +842,8 @@ window.addEventListener('load', () => {
 
       markers = L.markerClusterGroup({
         chunkedLoading: true,
-        // iconCreateFunction: function (cluster) {
-        //   console.log(cluster._cLatLng.lat + "" + cluster._cLatLng.lng)
-        //                 console.log(cluster.getAllChildMarkers())
-        //                 // let tmp = cluster._cLatLng.lat + "" + cluster._cLatLng.lng
-        //                 // tmp = tmp.toString().replace(/[\-\.]/g, "")
-        //                 let sepcMarmerIsExist = false
-                        
-        //                 for (let g of  cluster.getAllChildMarkers()){
-                           
-        //                     let tmpCleCoord = g._latlng.lat + "" + g._latlng.lng
-        //                     tmpCleCoord = tmpCleCoord.toString().replace(/[\-\.]/g, "")
-        //                     if (cleCoord.replace(/[^0-9]/g, "") == tmpCleCoord) { 
-        //                         sepcMarmerIsExist = true;
-        //                         break;
-        //                     }
-                        
-        //                 }
-        //                 if (sepcMarmerIsExist) {
-                            
-        //                     return L.divIcon({
-        //                         html: '<span class="markers-spec" id="c' + name.replace(/[\s]/g, "_") + '">' + cluster.getChildCount() + '</span>',
-        //                         className: "spec_cluster",
-        //                          iconSize:L.point(35,35)
-        //                     });
-        //                 } else {
-        //                     return L.divIcon({
-        //                         html: '<span class="markers_tommy_js">' + cluster.getChildCount() + '</span>',
-        //                         className: "mycluster",
-        //                         iconSize:L.point(35,35)
-        //                     });
-        //                 }
-                            
-                       
-                  // },
-        //             spiderfyOnMaxZoom: true
+        spiderfyOnEveryZoom:true,
+        spiderfyOnMaxZoom: true
       });
 
       chargeMapAndMarkers(tabArray, map, markers)
@@ -1047,15 +1017,40 @@ function chargeMapAndMarkers(response1, map,markers) {
     var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
     let MarkerCustom = L.Marker.extend({
       options: {
-        cleNom: ""
+        cleNom: "",
+        id:0
       }  
       
     })
-    var marker = new MarkerCustom(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),cleNom:item.denominationF });
+    var marker = new MarkerCustom(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),cleNom:item.denominationF,id:item.id });
     //console.log(marker)
     tabMarker.push(marker)
     marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
     marker.on('click', (e) => {
+      
+      const url = new URL(window.location.href);
+      const icon_R= L.Icon.extend({
+          options: {
+              iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-Rr.png"
+          }
+      })
+      marker.setIcon(new icon_R);
+
+      if( marker_last_selected){
+          const icon_B= L.Icon.extend({
+              options: {
+                  iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-B.png"
+              }
+          })
+          marker_last_selected.setIcon(new icon_B)
+      }
+      marker_last_selected = marker
+
+      
+
+       
+      
+
       console.log(e)
       const coordAndZoom = {
         zoom: e.target.__parent._zoom+1,

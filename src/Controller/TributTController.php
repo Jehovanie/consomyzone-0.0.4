@@ -44,8 +44,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
+use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class TributTController extends AbstractController
 
@@ -136,6 +135,7 @@ class TributTController extends AbstractController
                     $tableTribu = "tribu_t_" . $userId . "_".$tableName;
                     if($resto == "on"){
                         $tribut->createExtensionDynamicTable($tableTribu, "restaurant");
+                        $tribut->createTableComment($tableTribu, "restaurant_commentaire");
                     }
                     
                     return $this->redirectToRoute('publication_tribu', [
@@ -1434,6 +1434,7 @@ class TributTController extends AbstractController
 
     {
 
+        $tableComment=$table_resto."_commentaire";
         $tribu_t = new Tribu_T_Service();
 
         $has_restaurant = $tribu_t->hasTableResto($table_resto);
@@ -1441,13 +1442,32 @@ class TributTController extends AbstractController
         $restos = array();
 
         if($has_restaurant == true){
-            $restos = $tribu_t->getRestoPastilles($table_resto);
+            $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
         }
-
+        dump($restos);
         return $this->json($restos);
 
     }
 
+    #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
+
+    public function getRestoPastillesCommentaire($table_resto,$id): Response
+
+    {
+
+        $tableComment = $table_resto . "_commentaire";
+        $tribu_t = new Tribu_T_Service();
+
+        $has_restaurant = $tribu_t->hasTableResto($table_resto);
+
+        $restos = array();
+
+        if ($has_restaurant == true) {
+            $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
+        }
+        // dump($restos);
+        return $this->json($restos);
+    }
 
 
     #[Route('/user/tribu/show/invitations/{table}', name: 'show_all_invitations')]
@@ -1694,6 +1714,52 @@ class TributTController extends AbstractController
         return $this->json([
             "result" => "success"
         ], 201 );
+    }
+
+    #[Route("/push/comment/resto/pastilled",name:"push_comment_pastilled_resto",methods:["POST"])]
+    public function push_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService ){
+        $json=json_decode($request->getContent(),true);
+        $tableName=$json["tableName"];
+        $idResto=$json["idResto"];
+        $idUser=$json["idUser"];
+        $note = $json["note"];
+        $commentaire = $json["commentaire"];
+
+        $result= $tribuTService->sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire);
+        if($result){
+            $response = new Response();
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response = new Response();
+            $response->setStatusCode(500);
+            return $response;
+        }
+       
+        
+
+
+    }
+    #[Route("/up/comment/resto/pastilled", name: "up_comment_pastilled_resto", methods: ["POST"])]
+    public function up_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService)
+    {
+        $json = json_decode($request->getContent(), true);
+        $tableName = $json["tableName"];
+        $idRestoComment = $json["idRestoComment"];
+        // $idUser = $json["idUser"];
+        $note = $json["note"];
+        $commentaire = $json["commentaire"];
+
+        $result = $tribuTService->upCommentRestoPastilled($tableName, $note, $commentaire,$idRestoComment);
+        if ($result) {
+            $response = new Response();
+            $response->setStatusCode(200);
+            return $response;
+        } else {
+            $response = new Response();
+            $response->setStatusCode(500);
+            return $response;
+        }
     }
 
 }
