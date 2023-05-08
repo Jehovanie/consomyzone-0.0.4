@@ -1226,6 +1226,53 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
+    public function createTableComment($tribu_t, $extension){
+        $sql = "CREATE TABLE  IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
+
+            id_resto_comment int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+            id_restaurant VARCHAR(250) NOT NULL,
+
+            id_user VARCHAR(250) NOT NULL,
+
+            note decimal(3,2),
+
+            commentaire TEXT,
+
+            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute();
+    }
+
+    public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
+        $values=array(":id_restaurant"=>$idResto,
+            ":id_user"=>$idUser,
+            ":note"=>$note,
+            ":commentaire"=>$commentaire
+        );
+        $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
+                  "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+        $stmt = $this->getPDO()->prepare($sql);
+
+        return $stmt->execute($values);
+            
+    }
+
+    public function upCommentRestoPastilled($tableName,  $note, $commentaire,$idRestoComment)
+    {
+        $values = array(
+            ":note" => $note,
+            ":commentaire" => $commentaire,
+            ":idRestoComment"=> $idRestoComment
+        );
+        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id_resto_comment=:idRestoComment";
+        $stmt = $this->getPDO()->prepare($sql);
+
+        return $stmt->execute($values);
+    }
+
     public function fetchAllPublications($tableList, $user_id){
 
         $rqt = "SELECT id, user_id, publication, confidentiality,photo, userfullname, datetime, ";
@@ -1276,26 +1323,39 @@ class Tribu_T_Service extends PDOConnexionService
         }
     }
 
-    public function getRestoPastilles($tableResto){
-
-        $sql = "SELECT * from (SELECT $tableResto.id as id_pastille, $tableResto.id_resto, $tableResto.denomination_f, bdd_resto.id as id_unique, bdd_resto.dep as id_dep, bdd_resto.poi_y as latitude, bdd_resto.poi_x as longitude,  concat(bdd_resto.numvoie,' ',bdd_resto.typevoie,' ',bdd_resto.nomvoie,' ',bdd_resto.codpost,' ',bdd_resto.commune) as adresse FROM `tribu_t_2_data_engineer_restaurant` inner JOIN bdd_resto on $tableResto.id_resto = bdd_resto.clenum ORDER BY $tableResto.datetime DESC) as resto_pastille INNER JOIN departement ON resto_pastille.id_dep=departement.id";
-
+    public function getRestoPastilles($tableResto, $tableComment){
+    
+        // $sql = "SELECT * from (SELECT $tableResto.id as id_pastille, $tableResto.id_resto, $tableResto.denomination_f, bdd_resto.id as id_unique, bdd_resto.dep as id_dep, bdd_resto.poi_y as latitude, bdd_resto.poi_x as longitude,  concat(bdd_resto.numvoie,' ',bdd_resto.typevoie,' ',bdd_resto.nomvoie,' ',bdd_resto.codpost,' ',bdd_resto.commune) as adresse FROM `tribu_t_2_data_engineer_restaurant` inner JOIN bdd_resto on $tableResto.id_resto = bdd_resto.clenum ORDER BY $tableResto.datetime DESC) as resto_pastille INNER JOIN departement ON resto_pastille.id_dep=departement.id";
         //$sql = "SELECT * FROM $tableResto ORDER BY datetime DESC";
 
+        //ORDER BY datetime DESC 
+        //$sql = "SELECT * FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id ";
+
+        $sql= "SELECT  * ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
+                FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+                GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com 
+                FROM $tableResto  
+                as t1 LEFT JOIN $tableComment  
+                as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";
 
         $stmt = $this->getPDO()->prepare($sql);
-
-
         $stmt->execute();
-
-
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
         return $result;
 
 
 
+    }
+
+    public function getAllAvisByRestName($tableResto,$id){
+        $data=[
+            ":id"=>$id
+        ];
+        $sql="SELECT * FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.id_user = t2.id where t1.id_restaurant = :id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute($data);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
     
 

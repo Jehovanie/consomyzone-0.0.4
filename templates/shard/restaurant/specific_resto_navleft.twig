@@ -152,11 +152,12 @@
                     <ul>
                         {% for restaurant in restaurants %}
                                 <li class="card-list"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{(restaurant.poiY) ? restaurant.poiY : '0' }}" data-toggle-longitude="{{(restaurant.poiX) ? restaurant.poiX : '0'}}">
+                                    <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
+
                                         <div class="col-md-9">
+                                            <p class="text-center fw-bold fs-6">{{restaurant.denominationF}} </p>
                                             <p>
-                                                {{restaurant.denominationF}}
-                                                <br>
+                                                <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                                 {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
                                             </p>
                                         </div>

@@ -186,9 +186,9 @@ body{
     margin-left: 10px;
 }
 
-.fa-solid{
+/* .fa-solid{
     color: #0084ff;
-}
+} */
 
 .fa-solid-nav{
     color: #000;
@@ -196,6 +196,8 @@ body{
     margin-right: 5px;
     /* margin-top: 11px; */
 }
+
+
 
 .icon-nav-left img{
     margin-left: -5px
@@ -915,3 +917,5 @@ ul#navBarTribu {
     background-color: #ccc;
     border: 1px solid #000;
 }
+
+

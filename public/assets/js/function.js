@@ -1,5 +1,6 @@
 let firstX =0
-let firstY=0
+let firstY = 0
+let marker_last_selected = null
 /*
 
 */
@@ -1797,10 +1798,31 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     
                     marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
                     marker.on('click', (e) => {
+                        
                         // marker.addEventListener('change', () => {
                         //     marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-R.png') });
                         // })
+                        const url = new URL(window.location.href);
+                        const icon_R= L.Icon.extend({
+                            options: {
+                                iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-Rr.png"
+                            }
+                        })
+                        marker.setIcon(new icon_R);
+
+                        if( marker_last_selected){
+                            const icon_B= L.Icon.extend({
+                                options: {
+                                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-B.png"
+                                }
+                            })
+                            marker_last_selected.setIcon(new icon_B)
+                        }
+                        marker_last_selected = marker
                         console.log(e)
+
+                        
+
                         const coordAndZoom = {
                             zoom: e.target.__parent._zoom+1,
                             coord:e.target.__parent._cLatLng

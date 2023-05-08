@@ -29,9 +29,10 @@
 {% block javascripts %}
 
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-	<script src="{{ asset('assets/js/tribuT/tribut_invitation.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" ></script>
+	<script  src="{{ asset('assets/js/tribuT/tribut_invitation.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/tribuT/avis_restaurant_tribuT.js') }}" defer></script>
 
 {% endblock %}
 
@@ -39,7 +40,7 @@
 {% block body %}
 
 	<div id="settingProfilId" class="row">
-		<div class="col">
+		<div class="col" data-tribu-us-rank="{{app.user.id}}">
 			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
 				<div class="left_menu">
 					{% include "shard/account_navleft.html.twig" %}
