@@ -176,7 +176,7 @@ class MarckerClusterStation {
 
             const icon_R= L.Icon.extend({
                 options: {
-                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                    iconUrl: IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
                 }
             })
             marker.setIcon(new icon_R);
@@ -215,7 +215,7 @@ class MarckerClusterStation {
 
             const icon_R= L.Icon.extend({
                 options: {
-                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-ferme-new-R.png"
+                    iconUrl: IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-ferme-new-R.png": url.origin+"/public/assets/icon/NewIcons/icon-ferme-new-R.png"
                 }
             })
             marker.setIcon(new icon_R);
@@ -277,7 +277,7 @@ class MarckerClusterStation {
 
             const icon_R= L.Icon.extend({
                 options: {
-                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-R.png"
+                    iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-resto-new-R.png" : url.origin+"/public/assets/icon/NewIcons/icon-resto-new-R.png"
                 }
             })
             marker.setIcon(new icon_R);
@@ -293,11 +293,11 @@ class MarckerClusterStation {
         if( this.marker_last_selected){
             let icon_marker="";
             if( this.marker_last_selected_type === "station"){
-                icon_marker= `${url.origin}/assets/icon/NewIcons/icon-station-new-B.png`;
+                icon_marker= IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-station-new-B.png` :  `${url.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
             }else if( this.marker_last_selected_type === "ferme"){
-                icon_marker= `${url.origin}/assets/icon/NewIcons/icon-ferme-new-B.png`;
+                icon_marker= IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` :  `${url.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
             }else if( this.marker_last_selected_type === "resto"){
-                icon_marker= `${url.origin}/assets/icon/NewIcons/icon-resto-new-B.png`;
+                icon_marker= IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
             }
 
             const icon_B= L.Icon.extend({

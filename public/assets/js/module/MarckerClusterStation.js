@@ -209,14 +209,14 @@ class MarckerClusterStation {
                 const url = new URL(window.location.href);
                 const icon_R= L.Icon.extend({
                     options: {
-                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                        iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" :  url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
                     }
                 })
                 marker.setIcon(new icon_R);
                 if( this.marker_last_selected){
                     const icon_B= L.Icon.extend({
                         options: {
-                            iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
+                            iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-B.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
                         }
                     })
                     this.marker_last_selected.setIcon(new icon_B)
@@ -332,14 +332,14 @@ class MarckerClusterStation {
                         if(parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))){
                             const icon_R= L.Icon.extend({
                                 options: {
-                                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-R.png"
+                                    iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
                                 }
                             })
                             layer.setIcon(new icon_R);
                             if( this.marker_last_selected){
                                 const icon_B= L.Icon.extend({
                                     options: {
-                                        iconUrl: url.origin+"/assets/icon/NewIcons/icon-station-new-B.png"
+                                        iconUrl: IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-B.png" :  url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
                                     }
                                 })
                                 this.marker_last_selected.setIcon(new icon_B)
