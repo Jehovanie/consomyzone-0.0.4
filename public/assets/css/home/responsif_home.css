@@ -15,8 +15,8 @@
     .content_filter {
         width: 180px;
         position: absolute;
-        top: 90px;
-        right: 15px;
+        top: 110px;
+        right: 25px;
         z-index: 1000;
         font-size: 0.8rem;
     }
