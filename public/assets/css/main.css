@@ -720,3 +720,118 @@ li a .station {
     color: #B40404;
 }
 
+.avatar-account-fondateur {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px rgb(206, 15, 253) solid;
+    box-shadow: 0px 0px 22px rgba(206, 15, 253, 0.8);
+}
+
+.avatar-account-fondateur img {
+    width: 40px;
+    border-radius: 50%;
+    margin-top: 1px;
+    margin-left: -8px;
+}
+
+
+.avatar-account {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px rgb(8, 238, 27) solid;
+    box-shadow: 0px 0px 22px rgba(4, 253, 20, 0.8);
+}
+
+.avatar-account img {
+    width: 40px;
+    border-radius: 50%;
+    margin-top: 1px;
+    margin-left: -8px;
+}
+
+.labelC-rond-account {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(35px, -6px);
+}
+
+.labelC-rond-account-nav {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(159px, -31px);
+}
+
+.avatar-account-square-labelC-fondateur {
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    /* border-radius: 50%; */
+    border: 3px rgb(206, 15, 253) solid;
+    box-shadow: 0px 0px 22px rgba(206, 15, 253, 0.8);
+}
+
+.avatar-account-square-labelC-fondateur img {
+    width: 40px;
+    /* border-radius: 50%; */
+    margin-top: 1px;
+    margin-left: -6px;
+}
+
+.avatar-account-square-labelC {
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    /* border-radius: 50%; */
+    border: 3px rgb(8, 238, 27) solid;
+    box-shadow: 0px 0px 22px rgba(4, 253, 20, 0.8);
+}
+
+
+
+.avatar-account-square-labelC img {
+    width: 40px;
+    /* border-radius: 50%; */
+    margin-top: 1px;
+    margin-left: -6px;
+}
+
+.labelC-rond-account{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(35px , -6px);
+}
+
+.labelC-rond-account-nav{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(8, 238, 27);
+    color: #fff;
+    transform: translate(159px, -31px);
+}
+
+.avatar-account-square {
+    width: 50px;
+    height: 50px;
+    /* border-radius: 50%; */
+    border: 3px rgb(136, 136, 136) solid;
+    box-shadow: 0px 0px 22px rgba(136, 136, 136, 0.8);
+}
+
+.avatar-account-square img {
+    width: 40px;
+    /* border-radius: 50%; */
+    margin-top: 1px;
+    margin-left: -8px;
+}
