@@ -252,7 +252,7 @@ class MarckerClusterStation {
             this.data.forEach(element => {
                 parent_elements.querySelector("ul").innerHTML += `
                     <li class="card-list element open_detail_jheo_js" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
-                        <div class="row container-depart pt-4 element card_list_element_jheo_js" id="${element.id}">
+                        <div class="row container-depart element card_list_element_jheo_js" id="${element.id}">
                             <div class="col-md-9">
                                 <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>
                                 <ul>
