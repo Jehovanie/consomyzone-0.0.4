@@ -318,27 +318,14 @@ class MarckerClusterStation {
                 coord:e.target._lastCenter
             }
             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-            // console.log(coordAndZoom)
         })
 
-        map.on("zoomend" , async (e) => {
+        map.on("zoomend dragend" , async (e) => {
 
             let bounds=map.getBounds();
             let minll=bounds.getSouthWest();
             let maxll=bounds.getNorthEast();
-            const data= { "last":{ min: this.last_minll , max: this.last_maxll },"new": { min: minll , max: maxll } };
-
-            if( (this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) ){
-                ///same action update
-
-                if(!this.is_online){
-                    this.is_online=true;
-                    await this.addPeripheriqueMarker(data);
-                }
-                
-                this.last_minll=minll;
-                this.last_maxll=maxll;
-            }
+            this.updateData(minll, maxll)
         })
 
 
@@ -349,6 +336,26 @@ class MarckerClusterStation {
             }
             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
         })
+    }
+
+    async updateData(new_min_ll, new_max_ll){
+        try{
+            const data= { "last":{ min: this.last_minll , max: this.last_maxll },"new": { min: new_min_ll , max: new_max_ll } };
+
+            if( (this.last_minll.lat > new_min_ll.lat) && (this.last_maxll.lng < new_max_ll.lng) ){
+                ///same action update
+
+                if(!this.is_online){
+                    this.is_online=true;
+                    await this.addPeripheriqueMarker(data);
+                }
+                
+                this.last_minll=new_min_ll;
+                this.last_maxll=new_max_ll;
+            }
+        }catch(e){
+            console.log(e.message)
+        }
     }
 
     async addPeripheriqueMarker(data){

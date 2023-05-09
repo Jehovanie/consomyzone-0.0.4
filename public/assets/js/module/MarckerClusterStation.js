@@ -1,88 +1,88 @@
 class MarckerClusterStation {
 
-    constructor(price_min,price_max,type=null,nom_dep=null,id_dep=null){
+    constructor(price_min, price_max, type = null, nom_dep = null, id_dep = null) {
         this.price_min = price_min;
         this.price_max = price_max;
-        this.type = type ? type: null;
+        this.type = type ? type : null;
         this.nom_dep = nom_dep ? nom_dep : null;
         this.id_dep = id_dep ? id_dep : null;
     }
 
-    async onInit(){
+    async onInit() {
         this.ALREADY_INIT = false;
-        try{
+        try {
             this.getGeos()
             this.createMarkersCluster();
-            
-            const response= await fetch("/getLatitudeLongitudeStation/?max="+this.price_max + "&min="+ this.price_min+"&type="+ this.type+"&nom_dep="+ this.nom_dep +"&id_dep="+this.id_dep);
-            this.default_data= await response.json();
-            this.map= await create_map_content(this.geos,this.id_dep, "station");
 
-            this.data= this.default_data;
+            const response = await fetch("/getLatitudeLongitudeStation/?max=" + this.price_max + "&min=" + this.price_min + "&type=" + this.type + "&nom_dep=" + this.nom_dep + "&id_dep=" + this.id_dep);
+            this.default_data = await response.json();
+            this.map = await create_map_content(this.geos, this.id_dep, "station");
+
+            this.data = this.default_data;
             this.bindAction()
-        }catch(e){
+        } catch (e) {
             console.log(e)
         }
     }
 
-    async filterByPrice(price_min, price_max,type){
-        try{
-            const response= await fetch("/getLatitudeLongitudeStation/?max="+price_max + "&min="+price_min+"&type="+type+"&nom_dep="+ this.nom_dep +"&id_dep="+this.id_dep, {
+    async filterByPrice(price_min, price_max, type) {
+        try {
+            const response = await fetch("/getLatitudeLongitudeStation/?max=" + price_max + "&min=" + price_min + "&type=" + type + "&nom_dep=" + this.nom_dep + "&id_dep=" + this.id_dep, {
                 method: 'get',
             });
-            this.default_data= await response.json();
-            this.data= this.default_data;
+            this.default_data = await response.json();
+            this.data = this.default_data;
 
             this.removeMarker();
             this.generateAllCard();
             this.setNumberOfMarker();
 
-            if( document.querySelector(".alphabet_active span")){
+            if (document.querySelector(".alphabet_active span")) {
                 this.filterByFirstLetterOnName(document.querySelector(".alphabet_active span").innerText)
                 handleFilterFirstChar(document.querySelector(".alphabet_active span").innerText)
-            }else{
+            } else {
                 this.addMarker(this.data);
             }
 
 
-        }catch(e){
+        } catch (e) {
             console.log(e)
         }
     }
 
-    getAlreadyInit(){
+    getAlreadyInit() {
         return this.ALREADY_INIT;
     }
 
-    setAlreadyInit(val){
+    setAlreadyInit(val) {
         this.ALREADY_INIT = val;
     }
 
-    
 
-    bindAction(){
+
+    bindAction() {
         this.addMarker(this.data);
         this.addEventOnMap(this.map, this.markers);
         this.setNumberOfMarker();
         this.generateAllCard();
     }
 
-    addEventOnMap(map, markers){
+    addEventOnMap(map, markers) {
         map.on("dragend", (e) => {
             const coordAndZoom = {
                 zoom: e.target.getZoom(),
-                coord:e.target.getCenter()
+                coord: e.target.getCenter()
             }
             setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
         })
 
-       
-        map.on('moveend zoomend', function(e) {
+
+        map.on('moveend zoomend', function (e) {
             var bounds = map.getBounds();
             var zoom = map.getZoom();
             var markersDisplayed = false;
-            
-            if (zoom >8) {
+
+            if (zoom > 8) {
                 markers.eachLayer(function (layer) {
                     if (bounds.contains(layer.getLatLng())) {
                         markersDisplayed = true;
@@ -90,7 +90,7 @@ class MarckerClusterStation {
                         layer.unbindTooltip()
                     }
                 });
-            }else if (markersDisplayed) {
+            } else if (markersDisplayed) {
                 markersDisplayed = false;
                 markers.eachLayer(function (layer) {
                     if (bounds.contains(layer.getLatLng())) {
@@ -103,21 +103,21 @@ class MarckerClusterStation {
         });
     }
 
-    getGeos(){
-        this.geos= [];
+    getGeos() {
+        this.geos = [];
         if (this.id_dep) {
             if (this.id_dep == 20) {
-                    for (let corse of ['2A', '2B'])
-                        this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
+                for (let corse of ['2A', '2B'])
+                    this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
             } else {
                 this.geos.push(franceGeo.features.find(element => element.properties.code == this.id_dep))
             }
-        }else{
+        } else {
             document.querySelectorAll("#list_departements .element").forEach(item => {
                 const dep = item.dataset.toggleDepartId
                 if (dep == 20) {
                     for (let corse of ['2A', '2B'])
-                         this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
+                        this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
                 } else {
                     this.geos.push(franceGeo.features.find(element => element.properties.code == dep))
                 }
@@ -125,14 +125,14 @@ class MarckerClusterStation {
         }
     }
 
-    setNumberOfMarker(){
+    setNumberOfMarker() {
         /// change the number of result in div
-        if( document.querySelector(".content_nombre_result_js_jheo")){
+        if (document.querySelector(".content_nombre_result_js_jheo")) {
             document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
         }
 
         /// change the number of result in div for the left translate
-        if( document.querySelector(".content_nombre_result_left_js_jheo")){
+        if (document.querySelector(".content_nombre_result_left_js_jheo")) {
             document.querySelector(".content_nombre_result_left_js_jheo").innerText = this.data.length;
         }
     }
@@ -143,11 +143,11 @@ class MarckerClusterStation {
         console.log(this.map)
     }
 
-    createMarkersCluster(){
-        const that= this;
-        this.markers = L.markerClusterGroup({ 
+    createMarkersCluster() {
+        const that = this;
+        this.markers = L.markerClusterGroup({
             chunkedLoading: true,
-            
+
             // iconCreateFunction: function (cluster) {
             //     if(that.marker_last_selected){
             //         let sepcMarmerIsExist = false;
@@ -157,7 +157,7 @@ class MarckerClusterStation {
             //         for (let g of  cluster.getAllChildMarkers()){
             //             let tmpCleCoord = g._latlng.lat + "" + g._latlng.lng
             //             tmpCleCoord = tmpCleCoord.toString().replace(/[\-\.]/g, "")
-                        
+
             //             if (cleCoord.replace(/[^0-9]/g, "") === tmpCleCoord) { 
             //                 sepcMarmerIsExist = true;
             //                 break;
@@ -186,46 +186,46 @@ class MarckerClusterStation {
             //     });
             // },
         });
-        
+
     }
 
-    addMarker(newData){
+    addMarker(newData) {
         newData.forEach(item => {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.id });
-            
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.id });
+
             // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
-            
+
             // marker.on('add', function () {
             //     marker.openPopup();
             // });
             marker.on('click', () => {
-                if( screen.width < 991){
+                if (screen.width < 991) {
                     getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
-                }else{
+                } else {
                     getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
-                const icon_R= L.Icon.extend({
+                const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" :  url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
+                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
                     }
                 })
                 marker.setIcon(new icon_R);
-                if( this.marker_last_selected){
-                    const icon_B= L.Icon.extend({
+                if (this.marker_last_selected) {
+                    const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-B.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
+                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png"
                         }
                     })
                     this.marker_last_selected.setIcon(new icon_B)
                 }
-                this.marker_last_selected=marker;
+                this.marker_last_selected = marker;
             })
 
             marker.on("mouseover", () => {
-                marker.bindTooltip(miniFicheOnHover, {direction: "auto", offset: L.point(0, -30) }).openTooltip()
+                marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
                 marker.closePopup();
             })
 
@@ -234,17 +234,17 @@ class MarckerClusterStation {
         this.map.addLayer(this.markers);
     }
 
-    removeMarker(){
+    removeMarker() {
         this.markers.clearLayers();
         this.map.removeLayer(this.markers);
     }
 
 
-    generateAllCard(){
-        if( this.nom_dep && this.id_dep ){
+    generateAllCard() {
+        if (this.nom_dep && this.id_dep) {
             /// mise a jour de liste
-            const parent_elements= document.querySelector(".list_result")
-            const elements= document.querySelectorAll(".element")
+            const parent_elements = document.querySelector(".list_result")
+            const elements = document.querySelectorAll(".element")
             elements.forEach(element => {
                 element.parentElement.removeChild(element);
             })
@@ -290,10 +290,10 @@ class MarckerClusterStation {
                 
                 `
             })
-            
+
             ///show when screen mobile
-            if(document.querySelector(".content_list_station_left")){ 
-                const parent_elements_mobile_on_left= document.querySelector(".content_list_station_left")
+            if (document.querySelector(".content_list_station_left")) {
+                const parent_elements_mobile_on_left = document.querySelector(".content_list_station_left")
                 this.data.forEach(element => {
                     parent_elements_mobile_on_left.innerHTML += `
                         <li class="card_list element open_detail_mobile_jheo_js" data-toggle-id='${element.id}'  data-bs-toggle="modal" data-bs-target="#detailModalMobil" onclick="getDetailStationForMobile('${this.id_dep}','${this.nom_dep}','${element.id}')">
@@ -321,47 +321,47 @@ class MarckerClusterStation {
             }
         }
 
-        const selector= screen.width < 991 ? "open_detail_mobile_jheo_js" : "open_detail_jheo_js";
-        if( document.querySelectorAll(`.${selector}`)){
-            const cta_details= document.querySelectorAll(`.${selector}`);
+        const selector = screen.width < 991 ? "open_detail_mobile_jheo_js" : "open_detail_jheo_js";
+        if (document.querySelectorAll(`.${selector}`)) {
+            const cta_details = document.querySelectorAll(`.${selector}`);
             cta_details.forEach(cta_detail => {
                 cta_detail.addEventListener("click", () => {
                     const url = new URL(window.location.href);
                     this.markers.eachLayer(layer => {
 
-                        if(parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))){
-                            const icon_R= L.Icon.extend({
+                        if (parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))) {
+                            const icon_R = L.Icon.extend({
                                 options: {
-                                    iconUrl:IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-R.png" : url.origin+"/public/assets/icon/NewIcons/icon-station-new-R.png"
+                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
                                 }
                             })
                             layer.setIcon(new icon_R);
-                            if( this.marker_last_selected){
-                                const icon_B= L.Icon.extend({
+                            if (this.marker_last_selected) {
+                                const icon_B = L.Icon.extend({
                                     options: {
-                                        iconUrl: IS_DEV_MODE ? url.origin+"/assets/icon/NewIcons/icon-station-new-B.png" :  url.origin+"/public/assets/icon/NewIcons/icon-station-new-B.png"
+                                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png"
                                     }
                                 })
                                 this.marker_last_selected.setIcon(new icon_B)
-                            } 
-                            this.marker_last_selected= layer;
+                            }
+                            this.marker_last_selected = layer;
                         }
-                        
+
                     })
 
                 })
             })
         }
-        
+
     }
 
 
-    filterByFirstLetterOnName(letter){
-        const new_data= [];
+    filterByFirstLetterOnName(letter) {
+        const new_data = [];
         this.removeMarker();
-        
+
         this.default_data.forEach(item => {
-            if(item.nom.toLowerCase().charAt(0) === letter.toLowerCase()){
+            if (item.nom.toLowerCase().charAt(0) === letter.toLowerCase()) {
                 new_data.push(item)
             }
         })
@@ -369,7 +369,7 @@ class MarckerClusterStation {
         this.addMarker(new_data)
     }
 
-    resetToDefaultMarkers(){
+    resetToDefaultMarkers() {
         this.removeMarker();
         this.addMarker(this.default_data)
     }
