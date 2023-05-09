@@ -65,10 +65,10 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             // json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
             // zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 8)) : (id_dep ? centers[parseInt(id_dep)].zoom : 8);
 
-            // latlng= L.latLng(48.856470515304515, 2.35882043838501);
-            latlng = L.latLng(latitude, longitude);
+            latlng= L.latLng(48.856470515304515, 2.35882043838501);
+            // latlng = L.latLng(latitude, longitude);
             json = latlng
-            zoom = 15;
+            zoom = 12;
         } else if (map_for_type === "ferme") {
 
             latlng = L.latLng(latitude, longitude);
@@ -86,6 +86,19 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             container._leaflet_id = null;
         }
 
+
+        const content_map= document.querySelector(".cart_map_js");
+        if( !document.querySelector("#map")){
+            const map= document.createElement("div");
+            map.setAttribute("id", "map");
+            map.setAttribute("class", "map");
+
+            content_map.appendChild(map);
+        }
+
+        if( document.querySelector("#toggle_chargement")){
+            content_map.removeChild(document.querySelector("#toggle_chargement"))
+        }
         var map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
 
         // layerControl = L.control.layers(null, overlayPane, {position: 'topleft'});
@@ -903,7 +916,7 @@ function setIcon(urlIcon) {
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
-        iconSize: [30, 45],
+        iconSize: [20, 35],
         iconAnchor: [30, 50],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
