@@ -11,6 +11,7 @@ class SuperAdminTribuG{
             const data= await response.json();
 
             this.settingDataformat(data.allTribuG);
+            console.log(data.allTribuG)
             this.dataTemp= this.defaultData;
             this.bindAction();
         }catch(e){
@@ -23,10 +24,10 @@ class SuperAdminTribuG{
         // {d:"01",dr:"010010000",c:1,i:"l abergement clemenciat",co:"l abergement clemenciat"}
         // {d:"01",dr:"012830302",c:0,i:"parc industriel nord",co:"oyonnax"}
         t.forEach(item => {
-            const table_tribug= "tribug_" + item.d + "_"+ item.i.split(" ").map(t=> t.toLowerCase()).join("_")+ "_" + item.co.split(" ").map(t=> t.toLowerCase()).join("_")
+            const tribug= "tribug_" + item.d + "_"+ item.i.split(" ").map(t=> t.toLowerCase()).join("_")+ "_" + item.co.split(" ").map(t=> t.toLowerCase()).join("_")
             const name_format= "tribug_" + item.d + "_" + item.i.replace(/( )/g , "_") + "_" + item.co.replace(" " , "_");
-            const table_exist= data.find(item => item.table_name === name_format)
-            
+            const table_exist= data.find(item => name_format.includes(item.table_name))
+            const table_tribug= tribug.length > 30 ? tribug.substr(0,30) : tribug
             this.defaultData.push({
                 code: item.d,
                 commune: item.co,
@@ -112,20 +113,17 @@ class SuperAdminTribuG{
         this.dataTemp= this._searchAction(this.dataTemp,query)
 
         this.createListAndAddPagination(this.dataTemp,this.lastIndexPag);
-        this.displayData();
+        // this.displayData();
     }
 
     _filterByContentPartisantAction(dataToFilter){
         const data_type= document.querySelector(".list_filter_js_jheo.active_js_jheo").getAttribute("data-type");
         let data_filtered= [];
-        console.log(dataToFilter);
 
         if( parseInt(data_type) === 1 ){
             data_filtered = dataToFilter.filter(item => parseInt(item.nbr_content) > 0)
-            console.log(data_filtered)
         }else if( parseInt(data_type) === 0 ){
             data_filtered = dataToFilter.filter(item => parseInt(item.nbr_content) === 0)
-            console.log(data_filtered)
         }else{
             return dataToFilter;
         }
@@ -149,7 +147,6 @@ class SuperAdminTribuG{
         this.resetListItem();
         this.dataTemp= this._searchAction(this.defaultData, query);
         this.dataTemp= this._filterByContentPartisantAction(this.dataTemp);
-        console.log(this.dataTemp);
         this.createListAndAddPagination(this.dataTemp,this.lastIndexPag);
     }
 
@@ -210,7 +207,7 @@ class SuperAdminTribuG{
 
 
     createListAndAddPagination(data,page){
-        this.displayData();
+        // this.displayData();
         this.createList(data, page);
         this.createPagination(data,page);
     }

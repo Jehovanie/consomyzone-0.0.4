@@ -706,8 +706,7 @@ class SecurityController extends AbstractController
             $departement = strlen($departement) === 1 ? "0". $departement : $departement;
             // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
             $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
-            
-            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG) : $name_tributG;
+            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG,0,30) : $name_tributG;
             $user_profil->setTributg($name_tributG);
 
 
