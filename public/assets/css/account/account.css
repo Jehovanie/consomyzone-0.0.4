@@ -450,9 +450,8 @@ div.row-js>div.text-chat.up img{
     overflow-x: hidden;
 }
 
-.table-list-tribut{
-    /* width: 25%; */
-    display: block;
+thead > tr{
+    border-bottom: 2px;
 }
 
 /* .table-list-membre{

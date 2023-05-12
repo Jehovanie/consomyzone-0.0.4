@@ -725,51 +725,39 @@ class UserController extends AbstractController
 
 
     #[Route('/user/dashboard', name: 'app_dashboard')]
-
     public function Dashboard(
-
         EntityManagerInterface $entityManager,
-
         TributGService $tributGService
-
     ): Response
-
     {
 
         $user = $this->getUser();
-
         $userType = $user->getType();
-
         $userId = $user->getId();
-
         $profil = "";
 
         if ($userType == "consumer") {
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
-
         return $this->render("user/dashboard_super_admin/dashboard.html.twig",[
-
             "profil" => $profil,
-
             "statusTribut" => $tributGService->getStatusAndIfValid(
-
                 $profil[0]->getTributg(),
-
                 $profil[0]->getIsVerifiedTributGAdmin(),
-
                 $userId
-
             )
-
         ]);
+    }
 
+    #[Route("/user/dashboard/tribug_json", name:"app_dashboard_tribug_json")]
+    public function app_dashboard_tribug_json(
+        TributGService $tributGService
+    ){
+        return $this->json(
+            ["allTribuG" => $tributGService->getAllTableTribuG()]
+        );
     }
 
 

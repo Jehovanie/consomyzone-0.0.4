@@ -1129,4 +1129,33 @@ class TributGService extends PDOConnexionService{
 
     }
 
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * 
+     * @return array associatif (ex: ["status" => "roles", "verified" => "isverified" ])
+     */
+     public function getAllTableTribuG(){
+        $results = array();
+        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%'];
+        $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribug_%'";
+        foreach($tab_not_like as $not_like ){
+            $query_sql .= " AND table_name NOT LIKE '$not_like' ";
+        }
+        $statement = $this->getPDO()->prepare($query_sql);
+        $statement->execute();
+        $all_tables = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($all_tables as $table ){
+            $tab= $table["table_name"];
+            $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
+            $statement->execute();
+            $temp = $statement->fetchAll(PDO::FETCH_ASSOC);
+            array_push($results, ["table_name" => $tab, "count" => $temp[0]['nbr']]);
+        }
+        
+        return $results;
+    }
+
 }
