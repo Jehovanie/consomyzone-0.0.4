@@ -1,4 +1,7 @@
 @media screen and (min-width:1000px) {
+    .avatar-account img {
+        transform: translate(-8px, 1px);
+    }
     .leaflet-control-container{
         display: none ;
     }
@@ -617,7 +620,7 @@
         }
 
         .content_left_menu_account_mobile{
-            width: 20vw !important;
+            width:17vw !important;
         }
 
         .notification_popup , .message_popup{

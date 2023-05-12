@@ -40,12 +40,15 @@ body{
 
 }
 
-.content_right_dashboard_sp{
+.content_right_dashboard_sp {
     display: block;
     width: 78%;
     float: right;
     /* overflow: scroll; */
     padding: 15px;
+    position: absolute;
+    right: 0;
+    top: 75px;
 }
 
 .content_right_profil{

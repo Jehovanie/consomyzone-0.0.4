@@ -7,6 +7,7 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/listTribuG_sp.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/listTribuG_sp_respons.css')}}">
 {% endblock %}
 
 {% block javascripts %}
@@ -20,14 +21,24 @@
 {% block body %}
 	<main>
 		<div class="content_left_menu_account fixed-top mt-5 col">
-			<div class="left_menu">
-				{% include ("shard/account_navleft.html.twig" )%}
-			</div>
+			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+                <div class="left_menu">
+                    {% include "shard/account_navleft.html.twig" %}
+                </div>
+            </div>
+            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+                <div class="left_menu">
+                    {% include "shard/account_navleft_mobile.html.twig" %}
+                </div>
+            </div>
 		</div>
-		<div class="fixed-top">
+		<div class="fixed-top col responsif-none">
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
 
+		<div class="fixed-top col responsif-none-mobile">
+			{{ include('shard/account_navbar_mobile.html.twig') }}
+		</div>
 		<div class="row content_right_actualite">
 			<div class="entete mb-2" >
 				<h5>
@@ -50,23 +61,24 @@
 				</div>
 			</div>
 			<div class="container content_global_super_admin">
-				
-				<table class="table table_content table-hover">
-					<thead class="thead-dark">
-						<tr>
-							<th>#</th>
-							<th>Code</th>
-							<th>Commune</th>
-							<th>Quartier</th>
-							<th>Nom tribu G</th>
-							<th>Efféctif</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody class="content_list_tributG_js_jheo">
-						{# THE CONTENT HERE IS GENERATE FROM JS FILE  #}
-					</tbody>
-				</table>
+				<div class="table-responsive">
+					<table class="table table_content table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th>#</th>
+								<th>Code</th>
+								<th>Commune</th>
+								<th>Quartier</th>
+								<th>Nom tribu G</th>
+								<th>Efféctif</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody class="content_list_tributG_js_jheo">
+							{# THE CONTENT HERE IS GENERATE FROM JS FILE  #}
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div class="content_pagination">
 				<div class="pagination"></div>

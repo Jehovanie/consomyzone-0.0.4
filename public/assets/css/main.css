@@ -196,6 +196,10 @@ body {
     background-color: #fff;
     border-radius: 15px;
 
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+
 }
 
 .hidden{
@@ -607,6 +611,13 @@ li a .station {
     display: none;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.list-depart-all-detail::-webkit-scrollbar {
+    display: none;
+}
+
+
+
 .content_checkbox_filter{
     display: flex;
     justify-content: center;
@@ -744,11 +755,18 @@ li a .station {
     box-shadow: 0px 0px 22px rgba(4, 253, 20, 0.8);
 }
 
-.avatar-account img {
+/* .avatar-account img {
     width: 40px;
     border-radius: 50%;
     margin-top: 1px;
     margin-left: -8px;
+} */
+
+.avatar-account img {
+    width: 45px !important;
+    border-radius: 50%;
+    /* margin-top: 1px !important;
+    margin-left: 2px; */
 }
 
 .labelC-rond-account {
@@ -834,4 +852,9 @@ li a .station {
     /* border-radius: 50%; */
     margin-top: 1px;
     margin-left: -8px;
+}
+
+
+.table-responsive{
+    width: 100%;
 }

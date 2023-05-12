@@ -1,10 +1,15 @@
-class MarckerClusterStation {
+class MarckerClusterHome {
 
     constructor(nom_dep = null, id_dep = null) {
         this.nom_dep = nom_dep ? nom_dep : null;
         this.id_dep = id_dep ? id_dep : null;
         this.is_online = false;
         this.time_on_setInterval = 300;
+
+
+        if( document.querySelector("#open-navleft")){
+            document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
+        }
     }
 
     async onInit() {
