@@ -76,6 +76,10 @@
         /* border: none !important; */
         /* transition: all 0.3s ease; */
     }
+    .content_box {
+        height: 12%;
+        width: 20%;
+    }
     #list-depart-mobile{
         position: absolute;
         transition: all 2s ease-in-out !important;
