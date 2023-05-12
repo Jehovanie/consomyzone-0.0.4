@@ -508,7 +508,9 @@ class SecurityController extends AbstractController
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-        return $this->redirect($signatureComponents->getSignedUrl());
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
         ///-------------------------------------------------------///
 
 
