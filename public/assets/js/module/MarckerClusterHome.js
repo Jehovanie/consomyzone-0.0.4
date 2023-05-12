@@ -393,10 +393,20 @@ class MarckerClusterStation {
     }
 
     generateFilterAndSelectDep() {
-        // <div class="content_filter">
-        const content_filter = document.createElement("div");
-        content_filter.className = "content_filter";
+        // const content_filter = document.createElement("div");
+        // content_filter.className = "content_filter content_filter_js_jheo";
 
+        // this.generate_checkout_option(content_filter)
+
+        const content_filter_dep = document.createElement("div");
+        content_filter_dep.className = "content_filter_dep";
+        document.querySelector("#map").appendChild(content_filter_dep);
+
+        this.generate_select_dep(content_filter_dep) /// and bind event
+        // this.eventManagement();
+    }
+
+    generate_checkout_option(content_filter){
         this.generate_filter(content_filter, "filterTous", "Tous")
         this.generate_filter(content_filter, "filterFerme", "Ferme")
         this.generate_filter(content_filter, "filterStation", "Station")
@@ -409,13 +419,6 @@ class MarckerClusterStation {
         } else {
             document.querySelector("#map").appendChild(content_filter);
         }
-
-        const content_filter_dep = document.createElement("div");
-        content_filter_dep.className = "content_filter_dep";
-        document.querySelector("#map").appendChild(content_filter_dep);
-
-        this.generate_select_dep(content_filter_dep) /// and bind event
-        // this.eventManagement();
     }
 
     /* generate filter right */
@@ -484,7 +487,7 @@ class MarckerClusterStation {
 
     eventManagement() {
 
-        if (document.querySelector(".content_filter")) {
+        if (document.querySelector(".content_filter_js_jheo")) {
             const alltype = document.querySelectorAll(".content_filter input");
             alltype.forEach(item => {
                 item.addEventListener("click", (e) => this.changeType(e))
@@ -532,12 +535,20 @@ class MarckerClusterStation {
     }
 
     checkeFilterType(data) {
-        const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
-        let result_temp = [];
         let results = null;
-        for (let item of lists) {
-            results = this.handleOnlyStateCheckbox(result_temp, item)
-            result_temp = results;
+        if(document.querySelector(".content_filter_js_jheo")){
+            const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
+            let result_temp = [];
+            for (let item of lists) {
+                results = this.handleOnlyStateCheckbox(result_temp, item)
+                result_temp = results;
+            }
+        }else{
+            results= [
+                { type:"filterFerme", state: 1},
+                { type:"filterStation", state: 1},
+                { type:"filterResto", state: 1},
+            ]
         }
 
         const code_dep = document.querySelector(".input_select_dep_js_jheo").value.length < 3 ? document.querySelector(".input_select_dep_js_jheo").value : null;
@@ -560,8 +571,6 @@ class MarckerClusterStation {
     }
 
     checkStateSelectedDep(e) {
-        localStorage.removeItem("coordTous")
-
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
             this.map.setView(L.latLng(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng))
