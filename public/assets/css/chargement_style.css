@@ -8,8 +8,8 @@
 
 
 .content_box {
-  height: 20%;
-  width: 10%;
+  height: 10%;
+  width: 5%;
 }
 
 .box {
@@ -18,7 +18,7 @@
   align-items: center;
   position: relative;
   width: 80%;
-  height: 80%;
+  height: 70%;
   border-radius: 50%;
   background: linear-gradient(45deg, transparent, transparent 40%, yellow),
     linear-gradient(#262626, #141414);
@@ -48,8 +48,8 @@
 
 .under_box {
   display: block;
-  height: 95%;
-  width: 95%;
+  height: 100%;
+  width: 80%;
   background-color: white;
   border-radius: 50%;
 }
