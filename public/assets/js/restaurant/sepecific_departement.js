@@ -104,9 +104,8 @@ window.addEventListener('load', () => {
             .then(response1 => {
                 tabArray = response1
                 // create_map_content()
-                // if (document.getElementById("content_nombre_result_js_jheo")) {
-                //   document.getElementById("content_nombre_result_js_jheo").innerText = response1.length;
-                // }
+                deleteChargement();
+                createMap();
 
                 var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
                     attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
@@ -474,10 +473,10 @@ window.addEventListener('load', () => {
             .then(response1 => {
                 // alert("Success")
                 tabArray = response1
+
                 // create_map_content()
-                // if (document.getElementById("content_nombre_result_js_jheo")) {
-                //   document.getElementById("content_nombre_result_js_jheo").innerText = response1.length;
-                // }
+                deleteChargement();
+                createMap();
 
                 var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
                     attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',

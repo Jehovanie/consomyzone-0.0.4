@@ -1457,6 +1457,10 @@ function addRestaurantToMap(nom_dep, code_dep) {
 
         fetch(url).then(response => {
             response.json().then(response1 => {
+
+                deleteChargement();
+                createMap();
+
                 var map = create_map_content_not_async(geos, code_dep, "resto");
                 addControlPlaceholders(map);
 
@@ -2046,5 +2050,36 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
         location.assign(`/restaurant/arrondissement/specific?nom_dep=${nom_dep}&id_dep=${id_dep}&codinsee=${codinsee}`)
     } else {
         location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`)
+    }
+}
+
+function createChargement(){
+    
+    document.querySelector("#cart_map_js_jheo").innerHTML += `
+        <div class="chargement_content chargment_content_js_jheo" id="toggle_chargement">
+            <div class="content_box">
+                <div class="box">
+                    <div class="under_box"></div>
+                </div>
+            </div>
+        </div>
+    `
+}
+
+function deleteChargement(){
+    if(document.querySelector(".chargement_content_js_jheo")){
+        document.querySelector(".chargement_content_js_jheo").remove();
+    }
+}
+
+function createMap(){
+    document.querySelector(".cart_map_js_jheo").innerHTML += `
+        <div id="map" class="map map_js_jheo"></div>
+    `
+}
+
+function deleteMap(){
+    if(document.querySelector(".map_js_jheo")){
+        document.querySelector(".map_js_jheo").remove();
     }
 }
