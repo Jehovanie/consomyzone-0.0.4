@@ -11,6 +11,9 @@ window.addEventListener('load', () => {
             geos.push(f)
         }
 
+        deleteChargement();
+        createMap();
+
         var map= create_map_content_not_async(geos,null, "home")
         const { results } = response;
         
@@ -18,6 +21,13 @@ window.addEventListener('load', () => {
         currentTabMarkers = []; ////desctructor old value.
 
         addMarker(map, all_data)
+
+        if( document.querySelector(".fetch_list_departement_jheo_js")){
+            document.querySelector(".fetch_list_departement_jheo_js").addEventListener("click",() => {
+                
+                document.querySelector(".content_left_side_mobile").style.animation="translateFull 0.5s linear forwards";
+            })
+        }
     })
     .catch(error => {
         console.log(error)

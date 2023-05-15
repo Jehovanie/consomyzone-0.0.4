@@ -945,7 +945,6 @@ function addRestaurantToMap(nom_dep, code_dep) {
     console.log("url : " + url_string)
     var url_param = new URL(url_string);
     var id_resto_url = url_param.searchParams.get("id");
-    //console.log("id : " + id)
 
     if (id_resto_url) {
         fetch(url).then(response => {
