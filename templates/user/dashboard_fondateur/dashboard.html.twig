@@ -5,23 +5,39 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/list_partisant.css')}}">
+
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 {% endblock %}
 
 {% block javascripts %}
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+    <script  src="{{ asset('assets/js/account/list_partisant_datatable.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
 	<main>
 		<div class="content_left_menu_account fixed-top mt-5 col">
-			<div class="left_menu">
-				{{ include("shard/account_navleft.html.twig") }}
+			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+				<div class="left_menu">
+					{% include "shard/account_navleft.html.twig" %}
+				</div>
+			</div>
+			<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+				<div class="left_menu">
+					{% include "shard/account_navleft_mobile.html.twig" %}
+				</div>
 			</div>
 		</div>
-		<div class="fixed-top">
+		
+		<div class="fixed-top col responsif-none">
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
 
+		<div class="fixed-top col responsif-none-mobile">
+			{{ include('shard/account_navbar_mobile.html.twig') }}
+		</div>
 		<div class="row content_right_actualite">
 			<center>
 				<div class="row">
@@ -31,62 +47,64 @@
 							Liste des partisans
 						</h1>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-3 hiden">
 						<a href="{{path("app_setting_fondateur_setting")}}" >
 							<i class="fa-solid fa-sliders fa-2xl mt-4 text-dark"></i>
 						</a>
 					</div>
 				</div>
-					
+				<hr>
 			</center>
 
 			<div class="container">
-				<table class="table table-list-membre table-striped">
-					<thead class="thead-dark">
-						<tr>
-							<th>Nom </th>
-							<th>Prénom</th>
-							<th>Email</th>
-							<th>Adresse</th>
-							<th>Rôles</th>
-							<th> </th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for result in results %}
+				<div class="table-responsive">
+					<table id="content_list_partisant_js_jheo" class="table table-list-membre table-striped">
+						<thead class="thead-dark">
 							<tr>
-								<td>{{result.firstname}}</td>
-								<td>{{result.lastname}}</td>
-								<td>{{result.email}}</td>
-								<td>{{result.commune}}</td>
-								<td>
-									{{(result.roles is same as("utilisateur")) ? "PARTISANS" : result.roles|upper }}
-
-									{{(result.roles is same as("fondateur") and result.isVerified is same as(false)) ? "<i class='fa-solid fa-triangle-exclamation text-danger'></i>" : "" }}
-									{{(result.roles is same as("fondateur") and result.isVerified is same as(true)) ? "<i class='fa-solid fa-thumbs-up text-success'></i>" : ""}}
-								
-								</td>
-								<td>
-
-									{% if app.user.id == result.id %}
-										<a href="{{ path("user_profil", {"user_id":app.user.id })}}" class="btn btn-success">
-											Profil
-										</a>
-									{% else %}
-										<a href="{{path('app_message') ~ '?user_id=' ~ result.id }}" class="btn btn-success">
-											Message
-										</a>
-									{% endif %}
-
-									<a href="{{path('app_dashboardapropos_fondateur') ~ '?user_id=' ~ result.id }}" class="btn btn-primary">
-										A propos
-									</a>
-								</td>
+								<th>Nom </th>
+								<th>Prénom</th>
+								<th>Email</th>
+								<th>Adresse</th>
+								<th>Rôles</th>
+								<th> </th>
 							</tr>
-						{% endfor %}
-						
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{% for result in results %}
+								<tr>
+									<td>{{result.firstname}}</td>
+									<td>{{result.lastname}}</td>
+									<td>{{result.email}}</td>
+									<td>{{result.commune}}</td>
+									<td>
+										{{(result.roles is same as("utilisateur")) ? "PARTISANS" : result.roles|upper }}
+
+										{{(result.roles is same as("fondateur") and result.isVerified is same as(false)) ? "<i class='fa-solid fa-triangle-exclamation text-danger'></i>" : "" }}
+										{{(result.roles is same as("fondateur") and result.isVerified is same as(true)) ? "<i class='fa-solid fa-thumbs-up text-success'></i>" : ""}}
+									
+									</td>
+									<td class="cta">
+
+										{% if app.user.id == result.id %}
+											<a href="{{ path("user_profil", {"user_id":app.user.id })}}" class="btn btn-success">
+												Profil
+											</a>
+										{% else %}
+											<a href="{{path('app_message') ~ '?user_id=' ~ result.id }}" class="btn btn-success">
+												Message
+											</a>
+										{% endif %}
+
+										<a href="{{path('app_dashboardapropos_fondateur') ~ '?user_id=' ~ result.id }}" class="btn btn-primary">
+											A propos
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+							
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</main>
