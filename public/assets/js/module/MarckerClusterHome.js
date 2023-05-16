@@ -563,11 +563,11 @@ class MarckerClusterHome {
             const { type, state } = item;
             if (state === 1) {
                 if (type === "filterFerme") {
-                    data_ferme = code_dep ? data.ferme.filter(({ departement }) => parseInt(departement) === parseInt(code_dep)) : data.ferme;
+                    data_ferme = code_dep ? data.ferme.filter(({ departement }) =>{  if( parseInt(code_dep) === 20){ return departement.trim() === "2A" || departement.trim() === "2B" || parseInt(departement) === 20 }else{ return parseInt(departement) === parseInt(code_dep)}}) : data.ferme;
                 } else if (type === "filterStation") {
-                    data_station = code_dep ? data.station.filter(({ departementCode }) => parseInt(departementCode) === parseInt(code_dep)) : data.station;
+                    data_station = code_dep ? data.station.filter(({ departementCode }) => { if( parseInt(code_dep) === 20){ return departementCode.trim() === "2A" || departementCode.trim() === "2B" || parseInt(departementCode) === 20 }else{ return parseInt(departementCode) === parseInt(code_dep) }} ) : data.station;
                 } else if (type === "filterResto") {
-                    data_resto = code_dep ? data.resto.filter(({ dep }) => parseInt(dep) === parseInt(code_dep)) : data.resto;
+                    data_resto = code_dep ? data.resto.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.trim() === "2A" || dep.trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.resto;
                 }
             }
         })
