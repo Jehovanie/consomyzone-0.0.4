@@ -19,18 +19,38 @@ window.addEventListener('load', () => {
         .then(result => {
             const { allTribuG } = result;
             const dataSet= dataFormat(allTribuG);
-            document.querySelector(".chargment_content_js_jheo").remove();
+            // document.querySelector(".chargment_content_js_jheo").remove();
+
+            // $('.search_column_js_jheo').each(function () {
+            //     var title = $(this).text();
+            //     $(this).html('<input class="input_column input_column_js_jheo" type="text" placeholder="Search" />');
+            // });
+
             $('#myTable').DataTable({
                 data: dataSet,
-                columns: [
-                    { title: '#' },
-                    { title: 'Code' },
-                    { title: 'Commune' },
-                    { title: 'Quartier' },
-                    { title: 'Nom tribu G' },
-                    { title: 'Efféctif' },
-                    { title: '' },
-                ],
+                // columns: [
+                //     { title: '#' },
+                //     { title: 'Code' },
+                //     { title: 'Commune' },
+                //     { title: 'Quartier' },
+                //     { title: 'Nom tribu G' },
+                //     { title: 'Efféctif' },
+                //     { title: '' },
+                // ],
+                initComplete: function () {
+                    // Apply the search
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+                            console.log(this)
+                            $('.input_column_js_jheo', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                }
             });
             const label= document.querySelector("#myTable_filter label")
             const input_search= document.querySelector("#myTable_filter label input");
