@@ -46,8 +46,8 @@ class PublicationType extends AbstractType
                 ],
                 'label' => false,
             ])
-        /*->add('user_id', HiddenType::class)
-        ->add('tributg_id', HiddenType::class)*/
+        /*->add('user_id', HiddenType::class)*/
+        ->add('tribu_t_name', HiddenType::class)
         ;
     }
 

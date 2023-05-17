@@ -112,12 +112,6 @@
 													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
 												</small>
 											</div>
-											{# <div class="container col-2">
-																							<h4 style="margin-left:20px;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
-																							<small style="margin-left:20px;">
-																								<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
-																							</small>
-																						</div> #}
 											<nav class="col-12 responsif-none-mobile" style="margin-top: 55px;border: 1px gray solid;border-radius: 3px;padding: 3px 3px;">
 												<ul id="navBarTribu">
 													<li class="listNavBarTribu">
@@ -144,44 +138,6 @@
 											</nav>
 
 
-											{# <nav class="col-12 responsif-none">
-																							<ul id="navBarTribu">
-																								<li class="listNavBarTribu">
-																									<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
-																								</li>
-																								{% if has_restaurant == true %}
-																								
-																								<li class="listNavBarTribu restoNotHide">
-																									<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
-																								</li>
-											
-																								{% endif %}
-																								<li class="listNavBarTribu">
-																									<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
-																								</li>
-																								<li class="listNavBarTribu">
-																									<a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
-																								</li>
-																								<li class="listNavBarTribu">
-																									<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
-																								</li>
-																								<li style="float:right">
-																									<a href="" class="active dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-																										Filtre
-																									</a>
-																									<ul id="dropdownNavBarTribu" class="dropdown-menu">
-											
-																										<li>
-																											<a class="dropdown-item souri-non-utilise" href="#">Nom de la publication</a>
-																										</li>
-																										<li>
-																											<a class="dropdown-item souri-non-utilise" href="#">Date</a>
-																										</li>
-											
-																									</ul>
-																								</li>
-																							</ul>
-																						</nav> #}
 
 											{% if has_restaurant == true %}
 
@@ -245,7 +201,7 @@
 													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
 												</div>
 												<div class="col-11">
-													<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+													<input id="btnShowModalAddPub_" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
 												</div>
 												<div class="row mt-3">
 													<div class="col-3 text-center" style="cursor:pointer;">
@@ -274,7 +230,7 @@
 													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
 												</div>
 												<div class="col-11">
-													<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous..." style="margin-left:30px">
+													<input id="btnShowModalAddPub_" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous..." style="margin-left:30px">
 												</div>
 												<div class="row mt-3">
 													<div class="col-3 text-center" style="cursor:pointer;">

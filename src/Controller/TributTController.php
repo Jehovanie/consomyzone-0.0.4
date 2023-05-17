@@ -15,7 +15,8 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 
 use App\Entity\PublicationG;
-
+use App\Entity\User;
+use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
@@ -29,7 +30,7 @@ use App\Service\Tribu_T_Service;
 use App\Service\RequestingService;
 
 use App\Service\NotificationService;
-
+use App\Services\FilesUtils;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -44,13 +45,26 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use function PHPUnit\Framework\assertFalse;
 
 class TributTController extends AbstractController
 
 {
 
 
+
+    private $form;
 
     private $entityManager;
 
@@ -80,101 +94,23 @@ class TributTController extends AbstractController
 
     }
 
-
-
-    #[Route('/user/tribu/create', name: 'create_tribu')]
-
-    public function createTable(Request $request,  TributGService $tributGService): Response
-
-    {
-
-        $user = $this->getUser();
-
-        $userId = $user->getId();
-
-
-
-        $userType = $user->getType();
-
-        $profil = "";
-
-        $flushMessage = null;
-
-        $isSuccess = false;
-
-
-
-        if ($request->isMethod("POST")) {
-
-
-
-            if ($request->request->get('create_tribu') == "create_tribu_t") {
-                $resto = $request->request->get('restaurant');
-                $nom = $request->request->get('name');
-                $nom = str_replace("'", "$", $nom);
-                $nom_normalized = $request->request->get('name_normalize');
-                $description = $request->request->get('description');
-                $description = str_replace("'", "$", $description);
-
-                $tableName = strtolower($nom_normalized);
-                $tableName = str_replace(" ", "_", $tableName);
-
-                setlocale(LC_CTYPE, 'cs_CZ');
-
-                $tableName = iconv('UTF-8','ASCII//TRANSLIT',$tableName);
-
-                $tableName = preg_replace( '/[^a-z0-9_]/i', '', $tableName);
-
-                $tribut = new Tribu_T_Service();
-                $output = $tribut->createTribuTable($tableName, $userId, $nom, $description);
-                $nom = str_replace("$", "'", $nom);
-                if ($output != 0) {
-                    $tribut->setTribuT($output, $userId);
-                    $isSuccess = true;
-                    $flushMessage = "Félicitation ! Vous avez réussi à créer la tribu " . $request->request->get('name');
-                    $tableTribu = "tribu_t_" . $userId . "_".$tableName;
-                    if($resto == "on"){
-                        $tribut->createExtensionDynamicTable($tableTribu, "restaurant");
-                        $tribut->createTableComment($tableTribu, "restaurant_commentaire");
-                    }
-                    
-                    return $this->redirectToRoute('publication_tribu', [
-                    "message" => $flushMessage,
-                    "table" => $tableTribu."_publication"]);
-                } else {
-                    $isSuccess = false;
-                    $flushMessage = "Vous avez déjà créé la tribu " . $request->request->get('name') . " !";
-                }
-
-            }
-
-        }
-
-
-
-        if ($userType == "consumer") {
-
-            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
-        } else {
-
-            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
-        }
-
-
-
-        return $this->render('tribu_t/index.html.twig', [
-
-            "message" => $flushMessage, "isSuccess" => $isSuccess, "profil" => $profil, "tzone" => date_default_timezone_get(),
-
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
-
-        ]);
-
+    #[Route('/createFile', name: 'create_file')]
+    public function createFile(Request $request ){
+       
+        //$r=$request->request->all();
+        $this->form->handleRequest($request);
+        dd($this->form->getData());
+        // $targetPath=  $this->getParameter('kernel.project_dir') . "/public/uploads/photos/";
+        // $r=new FilesUtils($targetPath, $r["uploadBtn"], "uploadBtn");
+        // $r->upload();
     }
 
-
+    #[Route('/geto', name: 'create_tribuo')]
+    public function getListTribuT(Tribu_T_Service $tributGService){
+        $tributGService->setTribuT("akondro","ovy",null,null, 1);
+        return $this->render('tribu_t/test.html.twig');
+    }
+    //#[Route('/user/tribu/create', name: 'create_tribu')]
 
     #[Route('/user/tribu/add-member', name: 'add_member_tribut')]
 
@@ -550,7 +486,7 @@ class TributTController extends AbstractController
 
     }
 
-
+    
 
     #[Route('/user/tribu/fetch-all-users/{table}/{query}', name: 'fetch_all_users')]
 
@@ -590,9 +526,17 @@ class TributTController extends AbstractController
 
     }
 
+    #[Route('user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
+    public function showTribu_T_specifique($name_tribu_t,
+    Tribu_T_Service $tribu_t_serv,
+    SerializerInterface $serializer){
 
+       $data=$tribu_t_serv->getTribuTInfo($name_tribu_t);
+        $jsonUsers = $serializer->serialize($data, 'json');
+        return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
+    }
 
-    #[Route('user/tribu/publication/{table}', name: 'publication_tribu')]
+    #[Route('/user/tribu/publication/{table}', name: 'publication_tribu')]
 
     public function index($table, Request $request, TributGService $tributGService): Response
 
@@ -776,7 +720,8 @@ class TributTController extends AbstractController
 
             "roles" => $avatar["roles"],
 
-            "table_pub" => $table, "newPub" => $formPub->createView(),
+            "table_pub" => $table, 
+            "newPub" => $formPub->createView(),
 
             "publication" => $publications,
             "has_restaurant" => $has_restaurant,
@@ -1760,6 +1705,243 @@ class TributTController extends AbstractController
             $response->setStatusCode(500);
             return $response;
         }
+    }
+
+    #[Route("/user/tribu/my-tribu-t", name: "app_my_tribu_t")]
+    public function MyTribuT(Request $request,  
+    TributGService $tributGService,
+    SluggerInterface $slugger,
+    Filesystem $filesyst) : Response
+    {
+        
+
+        $defaultData = ['message' => 'Type your message here'];
+        $form = $this->createFormBuilder($defaultData)
+            ->add('upload', FileType::class, [
+                'label' => false,
+                'required' => false 
+            ])
+            ->add('tribuTName', TextType::class, [
+                'label' => false 
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => false ,
+                'required' => false
+            ])
+            ->add('adresse', TextType::class, [
+                'label' => false ,
+                'required' => false
+            ])
+            ->add('extension', CheckboxType::class, [
+                'label' => 'Restaurant',
+                'required' => false
+            ])
+            ->getForm();
+        //$form = $this->createFormB(FileUplaodType::class);
+
+        $form->handleRequest($request);
+
+        $body=null;
+        if ($form->isSubmitted() && $form->isValid()) {
+           
+            $data = $form->getData();
+            //dd($data);
+            $path = '/public/uploads/tribu_t/photo/'. $data["tribuTName"]."/";
+            if( !($filesyst->exists($this->getParameter('kernel.project_dir').$path)))
+                    $filesyst->mkdir($this->getParameter('kernel.project_dir').$path,0777);
+
+            $fileUtils= new FilesUtils($data['upload'], $this->getParameter('kernel.project_dir').$path);
+            $filename =$fileUtils->upload($slugger);
+            if(is_null($filename))
+                $path=null;
+            else
+                $path= $path . $filename;
+            
+            //TODO create tribu-t
+            $body=array(
+                "path" => str_replace('/public',"",$path),
+                "tribu_t_name"=>$data["tribuTName"],
+                "description"=>$data["description"],
+                "adresse"=>$data["adresse"], 
+                "extension"=>$data["extension"]);
+          
+            $this->createTribu_T($body);
+            return $this->redirectToRoute("app_my_tribu_t");
+      
+        }
+
+       
+
+        $user = $this->getUser();
+       
+        $userId = $user->getId();
+
+        $profil = "";
+
+
+        $userType = $user->getType();
+
+        if ($userType == "consumer") {
+
+            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+        
+        $tibu_T_data=json_decode($user->getTribuT(),true);
+         
+        if($_ENV['APP_ENV'] == 'dev') 
+            dump($tibu_T_data["tribu_t"]);
+
+        $tmp=!is_null($tibu_T_data) ?  $tibu_T_data : null;
+        
+
+
+
+       
+
+        
+        return $this->render('tribu_t/tribuT.html.twig',[
+            "profil" => $profil,
+            "kernels_dir" => $this->getParameter('kernel.project_dir'), 
+            "tibu_T_owned" => $tmp,
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "form" => $form->createView(),
+        ]);
+ 
+        //end publication seding 
+    }
+    #[Route("/user/create-one/publication", name:"user_create_publication")]
+    public function createOnePublication(Request $request, 
+    Tribu_T_Service $tribuTService,
+    Filesystem $filesyst){
+        $user=$this->getUser();
+        $userId= $user->getId();
+        $jsonParsed=json_decode($request->getContent(),true);
+        $tribu_t_name =  $jsonParsed["tribu_t_name"];
+        $publication= $jsonParsed["contenu"];
+        $confid=$jsonParsed["confidentialite"];
+        $image= $jsonParsed["base64"];
+        dump($image);
+        $imageName= $jsonParsed["photoName"];
+        $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
+        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        $fileUtils=new FilesUtils();
+        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
+        $result=$tribuTService->createOnePub($tribu_t_name."_publication", $userId, $publication, $confid, $path. $imageName);
+
+        $response = new Response();
+        if($result){
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response->setStatusCode(500);
+            return $response;
+        }
+        
+
+    }
+
+    #[Route("/user/publicalition/vals", name:"get_publicalition_tribu_t",methods:["GET"])]
+    public function getPublicationList(Request $request,
+    Tribu_T_Service $srv,
+    SerializerInterface $serializer){
+
+        
+        $tableTribuTPublication=$request->query->get('tblpublication');
+        $idMin=$request->query->get('idmin');
+        $limits=$request->query->get('limits');
+       
+        $result=$srv->getPartisantPublication($tableTribuTPublication, $idMin, $limits);
+        $json=$serializer->serialize($result,'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    //,  TributGService $tributGService
+    public function createTribu_T($body)
+
+    {
+
+        // //dd($body);
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+
+
+        // $userType = $user->getType();
+
+        // $profil = "";
+
+        // $flushMessage = null;
+
+        // $isSuccess = false;
+        if (!is_null($body)) {
+           
+                $resto = $body['extension'];
+                $path  =   $body['path'];
+                $nom = $body["tribu_t_name"];
+                $nom = str_replace("'", "$", $nom);
+                $description = str_replace("'", "$", $body["description"]);
+
+
+                $nameNormalized =Normalizer::normalize($nom, Normalizer::NFD);
+                $nameNormalized2 = preg_replace('/[[:^print:]]/', '', $nameNormalized);
+                $tableName = strtolower($nameNormalized2);
+                $tableName = str_replace(" ", "_", $tableName);
+
+                setlocale(LC_CTYPE, 'cs_CZ');
+
+                $tableName = iconv('UTF-8', 'ASCII//TRANSLIT', $tableName);
+
+                $tableName = preg_replace('/[^a-z0-9_]/i', '', $tableName);
+
+                $tribut = new Tribu_T_Service();
+                $output = $tribut->createTribuTable($tableName, $userId, $nom, $description);
+                $nom = str_replace("$", "'", $nom);
+                if ($output != 0) {
+                    $restoExtension = ($resto == "on") ? "restaurant" : null;
+                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId);
+                    $isSuccess = true;
+                    $flushMessage = "Félicitation ! Vous avez réussi à créer la tribu " .$nom;
+                    $tableTribu = "tribu_t_" . $userId . "_" . $tableName;
+                    if ($resto == "on") {
+                        $tribut->createExtensionDynamicTable($tableTribu, "restaurant");
+                        $tribut->createTableComment($tableTribu, "restaurant_commentaire");
+                    }
+
+                    return $this->redirectToRoute('publication_tribu', [
+                        "message" => $flushMessage,
+                        "table" => $tableTribu . "_publication"
+                    ]);
+                } else {
+                    $isSuccess = false;
+                    $flushMessage = "Vous avez déjà créé la tribu " .$nom;
+                }
+            
+        }
+
+
+
+        // if ($userType == "consumer") {
+
+        //     $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        // } else {
+
+        //     $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        // }
+
+
+
+        // return $this->render('tribu_t/index.html.twig', [
+
+        //     "message" => $flushMessage, "isSuccess" => $isSuccess, "profil" => $profil, "tzone" => date_default_timezone_get(),
+
+        //     "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
+
+        // ]);
     }
 
 }
