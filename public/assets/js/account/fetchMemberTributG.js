@@ -3,6 +3,16 @@ if( document.querySelector("#fetch_member_tribug_js_jheo")){
     
     btn_member.addEventListener("click",(e) => {
         e.preventDefault();
+
+        document.querySelector("#showCreatePub").style.display="none";
+
+        document.querySelector(".content_bloc_js_jheo div").innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+        
+
         if(!btn_member.classList.contains("active")){
             btn_member.classList.add("active")
             btn_member.classList.add("text-white")

@@ -45,6 +45,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
+use Symfony\Component\Filesystem\Filesystem;
 
 class TributTController extends AbstractController
 
@@ -60,13 +61,17 @@ class TributTController extends AbstractController
  
     private $requesting;
 
+    private $filesyst;
+
     function __construct(MailService $mailService, 
 
     EntityManagerInterface $entityManager, 
 
     KernelInterface $appKernel, 
 
-    RequestingService $requesting)
+    RequestingService $requesting,
+
+    Filesystem $filesyst)
 
     {
 
@@ -77,6 +82,8 @@ class TributTController extends AbstractController
         $this->mailService = $mailService;
 
         $this->requesting = $requesting;
+
+        $this->filesyst = $filesyst;
 
     }
 
@@ -551,6 +558,50 @@ class TributTController extends AbstractController
     }
 
 
+    #[Route('/user/tribu/fetch-member/{table}', name: 'fetch_member_tribut')]
+
+    public function fetchMember($table)
+
+    {
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $tribut = new Tribu_T_Service();
+
+        $users = $tribut->showMember($table);
+
+        $tableau = array();
+
+        $admin = false;
+
+        foreach ($users as $key) {
+
+            $type = $tribut->getTypeUser($key["user_id"]);
+
+            $name = $tribut->getName($type, $key["user_id"]);
+
+            $email = $tribut->getUserEmail($key["user_id"]);
+
+            $role = $tribut->getRole($table, $key["user_id"]);
+
+            if ($tribut->getRole($table, $userId) != "Membre")
+
+                $admin = true;
+
+            array_push($tableau, ['user_id' => $key["user_id"], 'user_full_name' => $name, 'email' => $email, 'role' => $role, 'admin' => $admin]);
+
+        }
+
+        return $this->render('tribu_t/member_tribuT.html.twig', [
+
+            "membre" => $tableau
+        ]);
+
+    }
+
+
 
     #[Route('/user/tribu/fetch-all-users/{table}/{query}', name: 'fetch_all_users')]
 
@@ -680,53 +731,9 @@ class TributTController extends AbstractController
 
         $formPub->handleRequest($request);
 
-
-
-        if ($formPub->isSubmitted() && $formPub->isValid()) {
-
-            $publication = $formPub['legend']->getData();
-
-            $confid = $formPub['confidentiality']->getData();
-
-            $photo = $formPub['photo']->getData();
-
-            $newFilename = "";
-
-
-
-            if ($photo) {
-
-                $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
-
-                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-
-                $newFilename = md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
-
-                $photo->move(
-
-                    $destination,
-
-                    $newFilename
-
-                );
-
-            }
-
-
-
-            $tribu_t->createOnePub($table, $user_id, $publication, $confid, $newFilename);
-
-        }
-
-
-
         $table_reaction = preg_replace($regex, "_reaction", $table);
 
-
-
         $publications = array();
-
-
 
         $pubs = $tribu_t->fetchAllPub($table);
 
@@ -761,6 +768,56 @@ class TributTController extends AbstractController
                 "reaction_number" => $tribu_t->getReactionNumber($table_reaction, $key["id"])
 
             ]);
+
+        }
+
+        if ($formPub->isSubmitted() && $formPub->isValid()) {
+
+            $publication = $formPub['legend']->getData();
+
+            $confid = $formPub['confidentiality']->getData();
+
+            $photo = $formPub['photo']->getData();
+
+            $newFilename = "";
+
+
+
+            if ($photo) {
+
+                $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table_tribu.'/';
+
+                $dir_exist = $this->filesyst->exists($destination);
+
+                if($dir_exist==false){
+        
+                    $this->filesyst->mkdir($destination, 0777);
+        
+                }
+
+                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $newFilename = md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+
+                $photo->move(
+
+                    $destination,
+
+                    $newFilename
+
+                );
+
+            }
+
+
+
+            $tribu_t->createOnePub($table, $user_id, $publication, $confid, $newFilename);
+
+            return $this->redirectToRoute('publication_tribu', [
+
+                "table" => $table
+            ]);
+            
 
         }
 
@@ -820,11 +877,23 @@ class TributTController extends AbstractController
 
         $newFilename = null;
 
+        $regex = "/\_publication+$/";
+
+        $table_tribu = preg_replace($regex, "", $tableName);
+
 
 
         if (isset($photo)) {
 
-            $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table_tribu.'/';
+
+            $dir_exist = $this->filesyst->exists($destination);
+
+            if($dir_exist==false){
+    
+                $this->filesyst->mkdir($destination, 0777);
+    
+            }
 
             $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -898,7 +967,19 @@ class TributTController extends AbstractController
 
         $audioname = "";
 
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/audios/';
+        $regex = "/\_commentaire+$/";
+
+        $tribuTable = preg_replace($regex, "", $table_com);
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/audios/'.$tribuTable.'/';
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
 
         if ($audio != "") {
 
@@ -911,9 +992,6 @@ class TributTController extends AbstractController
             file_put_contents($path . $audioname, file_get_contents($audio));
         }
 
-        $regex = "/\_commentaire+$/";
-
-        $tribuTable = preg_replace($regex, "", $table_com);
 
         $tribut = new Tribu_T_Service();
 
@@ -1449,6 +1527,7 @@ class TributTController extends AbstractController
 
     }
 
+
     #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
 
     public function getRestoPastillesCommentaire($table_resto,$id): Response
@@ -1526,9 +1605,16 @@ class TributTController extends AbstractController
 
 
 
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribus/photos/';
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table.'/';
 
 
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
 
         $tribu_t = new Tribu_T_Service();
 
@@ -1600,7 +1686,15 @@ class TributTController extends AbstractController
 
 
 
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_'.$userId."/";
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
 
 
 
@@ -1614,7 +1708,8 @@ class TributTController extends AbstractController
 
                 $extension = explode("/", $temp[0])[1];
 
-                $imagename = md5($userId). '-' . uniqid() . "." . $extension;
+                //$imagename = md5($userId). '-' . uniqid() . "." . $extension;
+                $imagename = time() . "." . $extension;
 
 
 
@@ -1760,6 +1855,142 @@ class TributTController extends AbstractController
             $response->setStatusCode(500);
             return $response;
         }
+    }
+
+    
+    #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]
+
+    public function AddPhotoTribu($table, Request $request): Response
+
+    {
+
+        $user = $this->getUser();
+
+
+        $userId = $user->getId();
+
+
+        $data = json_decode($request->getContent(), true);
+
+
+
+        extract($data);
+
+        $regex = "/\_publication+$/";
+
+        $table_tribu = preg_replace($regex, "", $table);
+
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table_tribu.'/';
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
+
+
+        $tribu_t = new Tribu_T_Service();
+
+
+
+        if($image != "" ){
+
+
+
+                // Function to write image into file
+
+                $temp = explode(";", $image );
+
+                $extension = explode("/", $temp[0])[1];
+
+                $imagename = md5($table). '-' . uniqid() . "." . $extension;
+
+
+
+                ///save image in public/uploader folder
+
+                file_put_contents($path . $imagename, file_get_contents($image));
+
+                /// add database image
+
+                $tribu_t->createOnePub($table, $userId, "", 1, $imagename);
+
+
+        }
+
+        return $this->json("Photo ajouté avec succès");
+
+    }
+
+    #[Route('/tribu_t/publications/{table_pub}', name: 'publications_block')]
+
+    public function showPubBloc($table_pub, Request $request, TributGService $tributGService): Response
+
+    {
+
+        $user = $this->getUser();
+
+        $user_id = $user->getId();
+
+        $tribu_t = new Tribu_T_Service();
+
+        $regex = "/\_publication+$/";
+
+        $table_tribu = preg_replace($regex, "", $table_pub);
+
+        $rows = $tribu_t->fetchAllPub($table_pub);
+
+        $tribus = $tribu_t->showRightTributName($table_tribu);
+
+        $table_reaction = preg_replace($regex, "_reaction", $table_pub);
+
+        $publications = array();
+
+        $pubs = $tribu_t->fetchAllPub($table_pub);
+
+        foreach ($pubs as $key) {
+
+            array_push($publications, [
+
+                "id" => $key["id"],
+
+                "user_id" => $key["user_id"],
+
+                "table_pub" => $table_pub,
+
+                "publication" => $key["publication"],
+
+                "confidentiality" => $key["confidentiality"],
+
+                "photo" => $key["photo"],
+
+                "userfullname" => $key["userfullname"],
+
+                "datetime" => $key["datetime"],
+                "commentaire_number" => $tribu_t->getCommentaireNumber($table_tribu."_commentaire", $key["id"]),
+                "reaction" => $tribu_t->getReaction($table_reaction, $user_id, $key["id"]),
+
+                "reaction_number" => $tribu_t->getReactionNumber($table_reaction, $key["id"])
+
+            ]);
+
+        }
+
+        return $this->render('tribu_t/publications.twig', [
+
+            "tribu" => $tribus,
+			
+			"table_tribu" => $table_tribu,
+
+            "table_pub" => $table_pub,
+
+            "publication" => $publications,
+
+        ]);
+
     }
 
 }

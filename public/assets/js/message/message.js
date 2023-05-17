@@ -298,13 +298,14 @@ function handleMessageResponse(date, message,image_list=null,image,status){
     // <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
     const img = document.createElement("img");
     const image_profil = document.querySelector(".content_message").getAttribute("data-toggle-current-profil")
+    let my_id = document.querySelector(".content_message").getAttribute("data-myid")
 
     if( image_profil ){
         if( IS_DEV_MODE){
             console.log("on dev");
-            img.setAttribute("src","/uploads/users/photos/" +  image_profil );
+            img.setAttribute("src","/uploads/users/photos/photo_user_" +my_id+"/"+  image_profil );
         }else{
-            img.setAttribute("src","/public/uploads/users/photos/" +  image_profil );
+            img.setAttribute("src","/public/uploads/users/photos/photo_user_" +my_id+"/"+  image_profil );
         }
 
     }else{

@@ -52,6 +52,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
+use Symfony\Component\Filesystem\Filesystem;
+
 
 
 class UserController extends AbstractController
@@ -62,11 +66,16 @@ class UserController extends AbstractController
 
     private $entityManager;
 
+    private $appKernel;
+
+    private $filesyst;
 
 
-    public function __construct(EntityManagerInterface $entityManager){
+    public function __construct(EntityManagerInterface $entityManager,KernelInterface $appKernel, Filesystem $filesyst){
 
         $this->entityManager = $entityManager;
+        $this->appKernel = $appKernel;
+        $this->filesyst = $filesyst;
 
     }
 
@@ -136,7 +145,15 @@ class UserController extends AbstractController
 
             $newFilename = "";
 
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$profil[0]->getTributg().'/';
 
+            $dir_exist = $this->filesyst->exists($destination);
+
+            if($dir_exist==false){
+
+                $this->filesyst->mkdir($destination, 0777);
+
+            }
 
             if( $publication && $confid ){
 
@@ -144,7 +161,7 @@ class UserController extends AbstractController
 
                 if ($photo) {
 
-                    $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
+                    // $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
 
                     $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -177,6 +194,8 @@ class UserController extends AbstractController
         return $this->render("tribu_g/account.html.twig", [
 
             "profil" => $profil,
+
+            "table_tribu" => $profil[0]->getTributg(),
 
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
 
@@ -686,6 +705,21 @@ class UserController extends AbstractController
 
         }
 
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_'.$user_id."/";
+        // $path = '/public/uploads/users/photos/photo_user_'.$user_id."/";
+
+        //$dir_name = "path/to/image/folder/";
+        $images = glob($path."*.*");
+
+        $images_trie = [];
+
+        for ($i=count($images) - 1; $i >=0; $i--) { 
+            # code...
+            array_push($images_trie,$images[$i]);
+        }
+
+        //dd($images_trie);
+
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
 
 
@@ -696,6 +730,8 @@ class UserController extends AbstractController
             "autre_profil" => $profil, 
 
             "type" => $type,
+
+            "images"=>$images_trie,
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
@@ -2241,5 +2277,64 @@ class UserController extends AbstractController
             "publication" => $pubsFinale,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $user_id)
         ]);
+    }
+
+    #[Route('/user/profil/add/photo', name: 'user_profil_add_photo')]
+
+    public function userProfilAddPhoto(Request $request): Response
+
+    {
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $userType = $user->getType();
+
+        $profil = null;
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_'.$userId."/";
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
+
+        if($image != "" ){
+
+                // Function to write image into file
+
+                $temp = explode(";", $image );
+
+                $extension = explode("/", $temp[0])[1];
+
+                // $imagename = md5($userId). '-' . uniqid() . "." . $extension;
+                $imagename = time() . "." . $extension;
+
+                if ($userType == "consumer") {
+
+                    $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+
+                } elseif ($userType == "supplier") {
+
+                    $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+
+                }
+
+                ///save image in public/uploader folder
+
+                file_put_contents($path . $imagename, file_get_contents($image));
+
+        }
+
+        return $this->json("Photo ajouté avec succès !");
+
     }
 }

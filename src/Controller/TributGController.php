@@ -35,12 +35,14 @@ class TributGController extends AbstractController
 {
 
     private $appKernel;
+    private $filesyst;
 
-    function __construct(KernelInterface $appKernel)
+    function __construct(KernelInterface $appKernel,Filesystem $filesyst)
 
     {
 
         $this->appKernel = $appKernel;
+        $this->filesyst = $filesyst;
 
     }
 
@@ -299,9 +301,13 @@ class TributGController extends AbstractController
 
         );
 
+        //dd($tributGService->getAllPublications($table_tributG_name));
+
 
 
         return $this->render("tribu_g/publications.html.twig" , [
+
+            "table_tribu" => $table_tributG_name,
 
             "tributG" => [
 
@@ -340,9 +346,9 @@ class TributGController extends AbstractController
 
         );
 
-
-
         return $this->render("tribu_g/photos.html.twig" , [
+
+            "table_tribu" => $table_tributG_name,
 
             "photos" => $tributGService->getAllPhotos($table_tributG_name),
 
@@ -486,6 +492,67 @@ class TributGController extends AbstractController
         return $this->json([
             "result" => $result,
         ], 204);
+    }
+
+    #[Route('/tribu_g/add_photo', name: 'add_photo_tribu_g')]
+
+    public function AddPhotoTribuG(Request $request, TributGService $tributGService): Response
+
+    {
+
+        $user = $this->getUser();
+
+
+        $userId = $user->getId();
+
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        $table_tribuG = $tributGService->getTableNameTributG($userId);
+
+       
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$table_tribuG.'/';
+
+        //dd($path);
+
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
+
+
+        if($image != "" ){
+
+                // Function to write image into file
+
+                $temp = explode(";", $image );
+
+                $extension = explode("/", $temp[0])[1];
+
+                $imagename = md5($table_tribuG). '-' . uniqid() . "." . $extension;
+
+
+                ///save image in public/uploader folder
+
+                file_put_contents($path . $imagename, file_get_contents($image));
+
+                /// add database image
+
+                // $tribu_t->createOnePub($table_tribuG, $userId, "", 1, $imagename);
+
+                $tributGService->createOnePub($table_tribuG . "_publication", $userId, "", 1, $imagename);
+
+
+        }
+
+        return $this->json("Photo ajouté avec succès");
+
     }
 }
 

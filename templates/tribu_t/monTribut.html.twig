@@ -8,6 +8,8 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/css/lightbox.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
 
 	<style>
 		a {
@@ -21,6 +23,8 @@
 			background: #0d6efd;
 			border: 2px solid red;
 		}
+		.lightbox-gallery{background-image: linear-gradient(#4A148C, #E53935);background-repeat: no-repeat;color: #000;overflow-x: hidden}.lightbox-gallery p{color:#fff}.lightbox-gallery h2{font-weight:bold;margin-bottom:20px;padding-top:20px;color:#fff}@media (max-width:1000){.lightbox-gallery h2{margin-bottom:10px;padding-top:10px;font-size:24px}}.lightbox-gallery .intro{font-size:16px;margin:0 auto 40px; width:100%}.lightbox-gallery .intro p{margin-bottom:0}.lightbox-gallery .photos{padding-bottom:20px}.lightbox-gallery .item{padding-bottom:30px}
+		
 	</style>
 
 
@@ -92,7 +96,9 @@
 									<div class="card card-pub p-3 bgPersonnalisee mb-5">
 										<div class="row">
 											<div class="col-12 w-25 profilTribu">
-												<img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %} ">
+											<span data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+												<img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribu_t/photos/") ~ table_tribu ~ "/" ~ avatar}} {% else %} {{ asset("uploads/tribu_t/photos/avatar_tribu.jpg") }} {% endif %} "></span>
+												{# <img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribu_t/photos/") ~ table_tribu ~ "/" ~ avatar}} {% else %} {{ asset("uploads/tribu_t/photos/avatar_tribu.jpg") }} {% endif %} "> #}
 												{% if roles == "Fondateur" %}
 
 													<label style="margin-left:40%;" for="fileInputTribu">
@@ -112,12 +118,7 @@
 													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
 												</small>
 											</div>
-											{# <div class="container col-2">
-																							<h4 style="margin-left:20px;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
-																							<small style="margin-left:20px;">
-																								<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
-																							</small>
-																						</div> #}
+
 											<nav class="col-12 responsif-none-mobile" style="margin-top: 55px;border: 1px gray solid;border-radius: 3px;padding: 3px 3px;">
 												<ul id="navBarTribu">
 													<li class="listNavBarTribu">
@@ -135,7 +136,8 @@
 														<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
 													</li>
 													<li class="listNavBarTribu">
-														<a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
+															<a style="cursor:pointer;" onclick='showPartisant("{{table_tribu}}")'>Partisant</a>
+														{# <a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a> #}
 													</li>
 													<li class="listNavBarTribu">
 														<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
@@ -143,53 +145,13 @@
 												</ul>
 											</nav>
 
-
-											{# <nav class="col-12 responsif-none">
-																							<ul id="navBarTribu">
-																								<li class="listNavBarTribu">
-																									<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
-																								</li>
-																								{% if has_restaurant == true %}
-																								
-																								<li class="listNavBarTribu restoNotHide">
-																									<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
-																								</li>
-											
-																								{% endif %}
-																								<li class="listNavBarTribu">
-																									<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
-																								</li>
-																								<li class="listNavBarTribu">
-																									<a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
-																								</li>
-																								<li class="listNavBarTribu">
-																									<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
-																								</li>
-																								<li style="float:right">
-																									<a href="" class="active dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-																										Filtre
-																									</a>
-																									<ul id="dropdownNavBarTribu" class="dropdown-menu">
-											
-																										<li>
-																											<a class="dropdown-item souri-non-utilise" href="#">Nom de la publication</a>
-																										</li>
-																										<li>
-																											<a class="dropdown-item souri-non-utilise" href="#">Date</a>
-																										</li>
-											
-																									</ul>
-																								</li>
-																							</ul>
-																						</nav> #}
-
 											{% if has_restaurant == true %}
 
 												<div class="col-xl-4 col-lg-1 col-md-1 col-sm-0 "></div>
 												<nav class="col-xl-8 col-lg-11 col-md-11 col-sm-12 responsif-none">
 													<ul id="navBarTribu">
 														<li class="listNavBarTribu">
-															<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+															<a id="ulActualites" class="text-primary active text-white" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
 														</li>
 
 
@@ -201,7 +163,8 @@
 															<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
 														</li>
 														<li class="listNavBarTribu">
-															<a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
+															{# <a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a> #}
+															<a style="cursor:pointer;" onclick='showPartisant("{{table_tribu}}")'>Partisant</a>
 														</li>
 														<li class="listNavBarTribu">
 															<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
@@ -214,14 +177,15 @@
 												<nav class="col-xl-7 col-lg-10 col-md-10 col-sm-12 responsif-none">
 													<ul id="navBarTribu">
 														<li class="listNavBarTribu">
-															<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+															<a id="ulActualites" class="text-primary active text-white" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
 														</li>
 
 														<li class="listNavBarTribu">
 															<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
 														</li>
 														<li class="listNavBarTribu">
-															<a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a>
+															{# <a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a> #}
+															<a style="cursor:pointer;" onclick='showPartisant("{{table_tribu}}")'>Partisant</a>
 														</li>
 														<li class="listNavBarTribu">
 															<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
@@ -233,16 +197,18 @@
 
 
 										</div>
-										<div class="mt-5 p-3" id="photos" style="display:none;"></div>
+										{# <div class="mt-5 p-3 row photos lightbox-gallery" id="photos" style="display:none;background-color:"></div> #}
+										<div class="mt-5 p-3 row" id="photos" style="display:none;background-color:"></div>
 										<div class="mt-5 p-3" id="invitations" style="display:none;"></div>
 										<div class="mt-5 p-3" id="restaurants" style="display:none;"></div>
+										<div class="mt-5 p-3" id="membres" style="display:none;"></div>
 										{# <div class="row p-3 mt-4"></div> #}
 
 
 										<div id="showCreatePub" class="card mb-2 responsif-none">
 											<div class="row p-3">
 												<div class="col-1 rounded-circle">
-													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
+													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/photo_user_")  ~ app.user.id ~ "/" ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
 												</div>
 												<div class="col-11">
 													<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
@@ -271,7 +237,7 @@
 										<div id="showCreatePub_mobile" class="card mb-2 mt-2 responsif-none-mobile">
 											<div class="row p-3">
 												<div class="col-1 rounded-circle">
-													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/") ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
+													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/photo_user_") ~ app.user.id ~ '/' ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
 												</div>
 												<div class="col-11">
 													<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous..." style="margin-left:30px">
@@ -298,155 +264,9 @@
 											</div>
 										</div>
 
-										{% if publication is defined %}
-											<div class="showPubBlock">
-												{% for pub in publication %}
-
-													<div id="pub_number_{{pub.id}}_remove">
-														<div class="card mb-2">
-
-															<div class="card-header">
-
-																<a href="{{ path("user_profil", {"user_id":pub.user_id }) }}">
-																	<i>{{pub.userfullname}}</i>
-																</a>
-																<i class="bi bi-play-fill"></i>
-																<a href="#">
-																	<i class="bi bi-collection"></i>
-																	{{ tribu["name"] }}
-																</a>
-
-																{# <a class="float-end souri-non-utilise">
-																																Modifier
-																															</a> #}
-
-																{% if pub.user_id == app.user.id  %}
-
-																	<span class="float-end dropstart">
-																		<span id="modifPub{{pub.id}}" class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-																			<i class="bi bi-three-dots" style="cursor:pointer"></i>
-																		</span>
-																		<ul class="dropdown-menu">
-																			<li>
-																				<button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
-																					<i class="fas fa-edit"></i>
-																					Modifier</button>
-																			</li>
-																			<li>
-
-																				<button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
-																					<i class="bi bi-trash3" aria-hidden="true"></i>
-																					Supprimer
-																				</button>
-																			</li>
-																		</ul>
-																	</span>
-
-																{% endif %}
-
-															</div>
-
-															<div class="card-body" id="pub_number_{{pub.id}}">
-
-																<p class="card-text">{{pub.publication}}</p>
-
-																{% if pub.photo != null %}
-
-																	<div style="max-heigth:100%; max-width: 100%;">
-																		<img width="50%;" heigth="100px;" src="{{asset('assets/publications/photos/') ~ pub.photo}}" class="" alt="">
-																	</div>
-
-																{% endif %}
-																<p class="card-text">
-																	<i>
-																		<small class="text-muted">Publié le
-																			{{pub.datetime|date("d/m/Y h:m:s")}}
-
-																		</small>
-
-																	</i>
-																	<span class="badge text-bg-primary" style="background-color:#0d6efd;">
-																		<i class="bi bi-eye-fill"></i>
-
-																		{% if pub.confidentiality == 1 %}
-																			Publique
-																		{% elseif pub.confidentiality == 2 %}
-																			Ami(e)s
-																		{% else %}
-																			Moi uniquement
-																		{% endif %}
-																	</span>
-																</p>
-															</div>
-
-															<div class="card-footer foot">
-																<div class="row text-center">
-																	<div class="col-4 ">
-																		<span>
-																			<span id="nombreReaction{{pub.id}}">
-																				{% if pub.reaction_number > 0 %}
-																					{{pub.reaction_number}}
-																				{% endif %}
-																			</span>
-																			<i class="{% if pub.reaction == 1 %}bi-heart-fill{% else %}bi-heart{% endif %}" onclick="IsLike({{pub.id}}, this)" style="cursor:pointer;"></i>
-																		</span>
-																	</div>
-																	<div class="col-4">
-																		<a data-bs-toggle="collapse" href="#commentaire{{pub.id}}" id="nbComment{{pub.id}}">
-																			{% if pub.commentaire_number > 0 %}
-																				{{pub.commentaire_number}}
-																			{% endif %}
-																			<i class="bi bi-chat-square"></i>
-																		</a>
-																	</div>
-																	<div class="col-4">
-																		<a data-bs-toggle="collapse" href="#collapseExample3" role="button">
-																			1
-																			<i class="bi bi-share souri-non-utilise"></i>
-																		</a>
-																	</div>
-																</div>
-
-															</div>
-
-															<div class="collapse m-2" id="commentaire{{pub.id}}">
-																<div class="card card-body" id="comment{{pub.id}}">
-																	<label id="commentNotnul_{{pub.id}}" style="display:none;">Commentaires</label>
-
-																	<div></div>
-
-																	<form id="form_{{pub.id}}">
-																		<input type="hidden" value="{{pub.id}}" id="pub_id_{{pub.id}}">
-																		<input type="hidden" value="{{pub.user_id}}" id="user_id_{{pub.id}}">
-																		<div class="mb-3 row">
-																			<div class="row" id="soundClips"></div>
-
-																			<div class="col-2 text-center">
-																				<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
-																				<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
-																			</div>
-																			<div class="col-10 mt-1">
-																				<textarea class="form-control" name="commentaire" id="newComment_{{pub.id}}" placeholder="Votre commentaire..."></textarea>
-																				<span id="comment_vide_{{pub.id}}" class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
-																			</div>
-																			<div class="row" id="audiosPlayer"></div>
-																		</div>
-																		<div class="row">
-																			<div class="col-8"></div>
-																			<div class="col-4 ">
-																				<input id="submitComment_{{pub.id}}" type="submit" value="Envoyer" class="btn btn-primary float-end">
-																			</div>
-																		</div>
-																	</form>
-
-																</div>
-															</div>
-														</div>
-													</div>
-
-												{% endfor %}
-											</div>
-										{% endif %}
+										<div class="showPubBlock">
+											{% include "tribu_t/publications.twig" %}
+										</div>
 
 									</div>
 								</div>

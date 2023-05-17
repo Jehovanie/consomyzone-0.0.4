@@ -835,6 +835,19 @@
         .detail_agenda_mobile{
             margin-right: 0px !important;
         }
+        .avatar-account img {
+            width: 40px !important;
+            border-radius: 50%;
+            margin-top: 2px !important;
+            margin-left: 2px;
+        }
+        .row>.item-photo {
+
+            width: 30% !important;
+        }
+        #gallery{
+            margin-left: 0px !important;
+        }
 
 }
 

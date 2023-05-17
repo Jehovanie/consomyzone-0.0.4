@@ -42,20 +42,22 @@
             <div class="row">
                 <div class="col mx-auto content_message_js_jheo">
 
-                    <div class="content_message" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
+                    <div class="content_message" data-myid = "{{app.user.id}}" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
                         {# en tête messages  #}
                         <div class="content_entete content_entete_js_jheo" data-toggle-id-user-to={{userToProfil.id}} >
                             {# {% dump(userToProfil.photo_profile) %} #}
-                            <div class="content_img">
-                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/') ~ userToProfil.photo_profile  : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
-                            </div>
+                            <a href="{{ path("user_profil", {"user_id":userToProfil.id })}}" style="text-decoration:none;">
+                                <div class="content_img">
+                                    <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/photo_user_') ~ userToProfil.id ~ '/' ~ userToProfil.photo_profile  : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
+                                </div>
 
-                            <div class="profil">
-                                <h3>{{ userToProfil.firstname  ~ " " ~  userToProfil.lastname }}</h3>
-                                <h4> {{userToProfil.email }} </h4>
-                            </div>
+                                <div class="profil">
+                                    <h5>{{ userToProfil.lastname  ~ " " ~  userToProfil.firstname }}</h5>
+                                    {# <h4> {{userToProfil.email }} </h4> #}
+                                </div>
+                            </a>
 
-                            <a href="{{ path("user_profil", {"user_id":userToProfil.id })}}" lng-tag="voir_profil">Voir son profil.</a>
+                            {# <a href="{{ path("user_profil", {"user_id":userToProfil.id })}}" lng-tag="voir_profil">Voir son profil.</a> #}
 
                         </div>
                         
@@ -66,7 +68,8 @@
                                 {% for msg in userToProfil.message %}
 
                                     {# ////user connnected #}
-                                    {% if msg.isForMe is same as("0") %}
+                                    {# {% if msg.isForMe is same as("0") %} #}
+                                    {% if msg.isForMe == "0" %}
                                         <div class="message" id={{"message_" ~ msg.id}}>
                                             <div class="avatar_message right_place">
                                                 <div>
@@ -87,7 +90,7 @@
                                                     </div>
                                                         
                                                 </div>  
-                                                <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+                                                <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/photo_user_') ~ profil[0].getId ~ '/' ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
                                             </div>
                                         </div>
 
@@ -98,7 +101,7 @@
                                             <div class="avatar_message left_place">
 
                                                 {#---------  photo de profil ---------- #}
-                                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/'~ userToProfil.photo_profile)   : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
+                                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/photo_user_') ~ userToProfil.id ~ '/' ~ userToProfil.photo_profile   : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
                                                 <div>
                                                     <span>{{msg.datetime}}</span>
 
@@ -175,7 +178,7 @@
                                        tooltip={{amis.email}} 
                                        class="list_amis_to_chat">
 
-                                        <img src="{{ ( amis.photo != null) ? asset('uploads/users/photos/') ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
+                                        <img src="{{ ( amis.photo != null) ? asset('uploads/users/photos/photo_user_') ~ amis.id ~ '/' ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
                                         <h6>{{amis.firstname ~ " " ~ amis.lastname }} </h6>
                                     </a>
                                    

@@ -6,7 +6,7 @@
 			<div class="col m-auto"> #}
 			<div class="col-4 m-auto">
 				{# <img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src="{% if profil[0].getPhotoProfil != null %} /uploads/profils/photos/{{profil[0].getPhotoProfil}} {% else %} /assets/image/cheerful-curly-business-girl-wearing-glasses.jpg {% endif %}" alt="{{ profil[0].getFirstname }}"> #}
-				<img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+				<img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/photo_user_') ~ app.user.id ~ "/" ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
 				
 			</div>
 			<div class="col-8 m-auto">
@@ -105,7 +105,9 @@
 					<i class="fa-solid fa-solid-nav fa-user  fa-lg"></i>
 					<span lng-tag="profil">Profil</span>
 				</a>
+				
 			</li>
+
 
 			<li
 				class="nav-item tribu_js">
@@ -192,9 +194,11 @@
 
 <script>
 
-let fileInputProfil = document.querySelector("#fileInputProfil");
+let fileInputProfils = document.querySelectorAll("#fileInputProfil");
 
-fileInputProfil.addEventListener("change", (e) => {
+fileInputProfils.forEach(fileInputProfil=>{
+	
+	fileInputProfil.addEventListener("change", (e) => {
 
     ///read file
     const fileReader = new FileReader();
@@ -207,9 +211,13 @@ fileInputProfil.addEventListener("change", (e) => {
         //console.log(avatarPartisant);
 
         // Change profil
-		let profilPartisant = document.querySelector("#profilPartisant");
+		let profilPartisants = document.querySelectorAll("#profilPartisant");
 
-        profilPartisant.src = avatarPartisant
+		profilPartisants.forEach(profilPartisant=>{
+			profilPartisant.src = avatarPartisant
+		})
+
+        //profilPartisant.src = avatarPartisant
 
         if(document.querySelector("#roundedImg") != null){
             document.querySelector("#roundedImg").src = avatarPartisant
@@ -234,6 +242,9 @@ fileInputProfil.addEventListener("change", (e) => {
     fileReader.readAsDataURL(e.target.files[0]);
 
 })
+})
+
+
 /*
 let firstNameProfil = document.querySelector("#firstNameProfil")
 let lastNameProfil = document.querySelector("#lastNameProfil")

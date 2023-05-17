@@ -758,7 +758,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
 
             ////----- on dev ------------------------------------------------
             // console.log("on dev")
-            img.setAttribute("src", "/uploads/users/photos/" + profil);
+            img.setAttribute("src", "/uploads/users/photos/photo_user_"+id+"/" + profil);
 
             ////----- on prod ------------------------------------------------
             // img.setAttribute("src", "/public/uploads/users/photos/" + profil);
@@ -766,7 +766,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
         }else{
             ////----- on dev ------------------------------------------------
             console.log("on dev")
-            img.setAttribute("src", "/assets/image/message1.jpg");
+            img.setAttribute("src", "/uploads/users/photos/img_avatar.png");
 
             ////----- on prod ------------------------------------------------
             // img.setAttribute("src", "/public/assets/image/message1.jpg");

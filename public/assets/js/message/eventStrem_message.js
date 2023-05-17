@@ -131,12 +131,14 @@ function createDivMessage(id,isForMe,date, message,images){
     if(isForMe == "0"){/// I sent this message to her
 
         const photo = document.querySelector(".content_message").getAttribute("data-toggle-current-profil")
+        let my_id = document.querySelector(".content_message").getAttribute("data-myid")
+
         if(photo){
             if( IS_DEV_MODE ){
                 console.log("on dev")
-                img.setAttribute("src", "/uploads/users/photos/" + photo  );
+                img.setAttribute("src", "/uploads/users/photos/photo_user_"+my_id+"/" + photo  );
             }else{
-                img.setAttribute("src", "/public/uploads/users/photos/" + photo  );
+                img.setAttribute("src", "/uploads/users/photos/photo_user_"+my_id+"/"  + photo  );
             }
         }else{
 
@@ -155,13 +157,16 @@ function createDivMessage(id,isForMe,date, message,images){
     }else{ /// His send this message for me
 
         const photo = document.querySelector(".content_message").getAttribute("data-toggle-other-profil")
+        // const other_id = new URLSearchParams(location.href).get("user_id");
+        const other_id = document.querySelector(".content_entete.content_entete_js_jheo").getAttribute("data-toggle-id-user-to")
+
         if(photo){
             if(IS_DEV_MODE){
                 console.log("on dev")
-                img.setAttribute("src", "/uploads/users/photos/" + photo  );
+                img.setAttribute("src", "/uploads/users/photos/photo_user_"+other_id+"/" + photo  );
             }else{
                 // on prod --------------------------------
-                img.setAttribute("src", "/public/uploads/users/photos/" + photo  );
+                img.setAttribute("src", "/public/uploads/users/photos/photo_user_"+other_id+"/" + photo  );
             }
         }else{
             if(IS_DEV_MODE){

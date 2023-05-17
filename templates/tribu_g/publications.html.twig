@@ -35,7 +35,7 @@
                                     </li>
                                     <li>
                                         <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item"  onclick="confirm({{pub.id}})">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                            <i class="fas fa-trash" aria-hidden="true"></i>
                                             Supprimer
                                         </button>
                                     </li>
@@ -49,8 +49,10 @@
                         <p class="card-text">{{pub.publication}}</p>
 
                         {% if pub.photo  %}
-                            <div style="max-heigth:100%; max-width: 100%;">
-                                <img width="50%;" heigth="100px;" src={{ asset("assets/publications/photos/") ~ pub.photo }}  class="" alt="image publication">
+                            <div style="max-heigth:100%; max-width: 100%;" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+                                {# <img width="50%;" heigth="100px;" src={{ asset("assets/publications/photos/") ~ pub.photo }}  class="" alt="image publication"> #}
+								<img width="50%;" heigth="100px;" src="{{asset('uploads/tribu_g/photos/') ~ table_tribu ~ "/" ~ pub.photo}}" class="" alt="" style="cursor:pointer;">
+
                             </div>
                         {% endif %}
 

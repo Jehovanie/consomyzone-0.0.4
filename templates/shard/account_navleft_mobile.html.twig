@@ -4,7 +4,7 @@
 		
 			<div class="m-auto">
 				{# <img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src="{% if profil[0].getPhotoProfil != null %} /uploads/profils/photos/{{profil[0].getPhotoProfil}} {% else %} /assets/image/cheerful-curly-business-girl-wearing-glasses.jpg {% endif %}" alt="{{ profil[0].getFirstname }}"> #}
-				<img id="profilPartisant_mobile" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+				<img id="profilPartisant_mobile" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/photo_user_') ~ app.user.id ~ "/" ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
 				
 			</div>
 			<label style="margin-left:15px;" for="fileInputProfil_mobile">
