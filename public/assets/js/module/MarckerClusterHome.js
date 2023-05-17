@@ -75,9 +75,9 @@ class MarckerClusterHome {
     createMarkersCluster() {
         this.markers = L.markerClusterGroup({
             chunkedLoading: true,
+            chunkInterval: 1000,
+            chunkDelay: 250,
             removeOutsideVisibleBounds: true,
-            chunkInterval: 100,
-            chunkDelay: 30,
         });
     }
 
@@ -106,56 +106,61 @@ class MarckerClusterHome {
 
     addStation(dataStation) {
 
-        // dataStation.forEach(item => {
-        //     this.settingSingleMarkerStation(item)
-        // })
+        dataStation.forEach(item => {
+            this.settingSingleMarkerStation(item)
+        })
 
-        const tab_data_station = splitArrayToMultipleArray(dataStation);
+        // const tab_data_station = splitArrayToMultipleArray(dataStation);
 
-        let i = 0;
-        const add_station_interval = setInterval(() => {
-            tab_data_station[i].forEach(item => {
-                this.settingSingleMarkerStation(item)
-            })
-            i++;
-            if (i === tab_data_station.length) {
-                clearInterval(add_station_interval)
-            }
-        }, this.time_on_setInterval)
+        // let i = 0;
+        // const add_station_interval = setInterval(() => {
+        //     tab_data_station[i].forEach(item => {
+        //         this.settingSingleMarkerStation(item)
+        //     })
+        //     i++;
+        //     if (i === tab_data_station.length) {
+        //         clearInterval(add_station_interval)
+        //     }
+        // }, this.time_on_setInterval)
     }
 
     addFerme(dataFerme) {
 
-        // dataFerme.forEach(item => {
-        //     this.settingSingleMarkerFerme(item)
-        // })
-        const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
+        dataFerme.forEach(item => {
+            this.settingSingleMarkerFerme(item)
+        })
+        // const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
 
-        let i = 0;
-        const add_ferme_interval = setInterval(() => {
-            tab_data_ferme[i].forEach(item => {
-                this.settingSingleMarkerFerme(item)
-            })
-            i++;
-            if (i === tab_data_ferme.length) {
-                clearInterval(add_ferme_interval)
-            }
-        }, this.time_on_setInterval);
+        // let i = 0;
+        // const add_ferme_interval = setInterval(() => {
+        //     tab_data_ferme[i].forEach(item => {
+        //         this.settingSingleMarkerFerme(item)
+        //     })
+        //     i++;
+        //     if (i === tab_data_ferme.length) {
+        //         clearInterval(add_ferme_interval)
+        //     }
+        // }, this.time_on_setInterval);
     }
 
     addResto(dataResto) {
-        const tab_data_resto = splitArrayToMultipleArray(dataResto);
 
-        let i = 0;
-        const add_resto_Interval = setInterval(() => {
-            tab_data_resto[i].forEach(item => {
-                this.settingSingleMarkerResto(item);
-            })
-            i++;
-            if (i === tab_data_resto.length) {
-                clearInterval(add_resto_Interval)
-            }
-        }, this.time_on_setInterval);
+        dataResto.forEach(item => {
+            this.settingSingleMarkerResto(item);
+        })
+
+        // const tab_data_resto = splitArrayToMultipleArray(dataResto);
+
+        // let i = 0;
+        // const add_resto_Interval = setInterval(() => {
+        //     tab_data_resto[i].forEach(item => {
+        //         this.settingSingleMarkerResto(item);
+        //     })
+        //     i++;
+        //     if (i === tab_data_resto.length) {
+        //         clearInterval(add_resto_Interval)
+        //     }
+        // }, this.time_on_setInterval);
     }
 
 
@@ -353,10 +358,10 @@ class MarckerClusterHome {
                 if (!this.is_online) {
                     this.is_online = true;
                     await this.addPeripheriqueMarker(data);
+                    this.last_minll = new_min_ll;
+                    this.last_maxll = new_max_ll;
                 }
 
-                this.last_minll = new_min_ll;
-                this.last_maxll = new_max_ll;
             }
         } catch (e) {
             console.log(e.message)
@@ -379,7 +384,6 @@ class MarckerClusterHome {
             new_data.ferme = new_data.ferme.filter(item => !this.default_data.ferme.some(j => j.id === item.id))
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
-
 
             this.addMarker(this.checkeFilterType(new_data));
             this.is_online = false;
@@ -604,10 +608,20 @@ class MarckerClusterHome {
 
     filterDataByDep() {
         const data_filtered = this.checkeFilterType(this.default_data);
-
-        this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
+        console.log(data_filtered)
         this.removeMarker();
-        this.addMarker(this.data)
+        if( data_filtered.ferme.length > 0 && data_filtered.resto > 0 && data_filtered.station.length > 0 ){
+            this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
+            this.addMarker(this.data)
+            console.log("not fetch")
+        }else{
+            let bounds = this.map.getBounds();
+            let minll = bounds.getSouthWest();
+            let maxll = bounds.getNorthEast();
+            const data = { "last": { min: minll, max:maxll}, "new": {} };
+            this.addPeripheriqueMarker(data)
+        }
+
     }
 
     removeMarker() {

@@ -31,8 +31,8 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
 
         var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
             attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
-            minZoom: 1,
-            maxZoom: 20
+            minZoom: 6,
+            maxZoom: 18
         })
 
         // var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -65,7 +65,7 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             // json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
             // zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 8)) : (id_dep ? centers[parseInt(id_dep)].zoom : 8);
 
-            latlng= L.latLng(48.856470515304515, 2.35882043838501);
+            latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
             // latlng = L.latLng(latitude, longitude);
             json = latlng
             zoom = 12;
@@ -1742,8 +1742,22 @@ function fetchDetails(selector, departName, departCode, id) {
         .then(response => {
             return response.text()
         }).then(r => {
-            document.querySelector(selector).innerHTML = null
-            document.querySelector(selector).innerHTML = r
+            document.querySelector(selector).innerHTML = null;
+
+            const parser = new DOMParser();
+            const htmlDocument = parser.parseFromString(r, "text/html");
+            if( htmlDocument.querySelector(".content_body")){
+                document.querySelector(selector).innerHTML = r
+            }else{
+                document.querySelector(selector).innerHTML = `
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div>
+                            Nous avons rencontre une probleme de connexion.
+                        </div>
+                    </div>`
+            }
+
         })
 
 }
