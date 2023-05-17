@@ -4,7 +4,7 @@ class MarckerClusterHome {
         this.nom_dep = nom_dep ? nom_dep : null;
         this.id_dep = id_dep ? id_dep : null;
         this.is_online = false;
-        this.time_on_setInterval = 300;
+        this.time_on_setInterval = 1000;
 
 
         if( document.querySelector("#open-navleft")){
@@ -73,10 +73,11 @@ class MarckerClusterHome {
     }
 
     createMarkersCluster() {
+        const temp= 200;
         this.markers = L.markerClusterGroup({
             chunkedLoading: true,
-            chunkInterval: 1000,
-            chunkDelay: 250,
+            chunkInterval: temp * 5,
+            chunkDelay: temp,
             removeOutsideVisibleBounds: true,
         });
     }
@@ -129,6 +130,7 @@ class MarckerClusterHome {
         dataFerme.forEach(item => {
             this.settingSingleMarkerFerme(item)
         })
+
         // const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
 
         // let i = 0;
@@ -583,7 +585,7 @@ class MarckerClusterHome {
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
             this.map.setView(L.latLng(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng))
-            this.map.setZoom(centers[parseInt(code_dep)].zoom)
+            this.map.setZoom(centers[parseInt(code_dep)].zoom +2 )
         }
         this.filterDataByDep();
     }
@@ -610,7 +612,7 @@ class MarckerClusterHome {
         const data_filtered = this.checkeFilterType(this.default_data);
         console.log(data_filtered)
         this.removeMarker();
-        if( data_filtered.ferme.length > 0 && data_filtered.resto > 0 && data_filtered.station.length > 0 ){
+        if( data_filtered.ferme.length > 0  && data_filtered.station.length > 0 ){
             this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
             this.addMarker(this.data)
             console.log("not fetch")

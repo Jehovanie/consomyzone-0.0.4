@@ -40,7 +40,7 @@
 
         <div class="content_block_message responsif-none">
             <div class="row">
-                <div class="col mx-auto content_message_js_jheo">
+                <div class="col-sm-8 col-md-8 mx-auto content_message_js_jheo">
 
                     <div class="content_message" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }}  data-toggle-other-profil={{(userToProfil.photo_profile  is same as (null)) ? "null" :  userToProfil.photo_profile }}>
                         {# en tête messages  #}
@@ -162,7 +162,7 @@
                 </div>
 
                 {# list des amis dans le tribu G  #}
-                <div class="col-sm-2 col-md-3 col-lg-3 mx-auto">
+                <div class="col-sm-4 col-md-4 col-lg-3 mx-auto">
                     <div class="content_amis">
                         <ul>
                        
@@ -170,14 +170,16 @@
                                 {# don't show current user connected #}
                                 {% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
                                 
-                                    <a href="{{path('app_message') ~ '?user_id=' ~ amis.id }}"
-                                       data-toggle-user-id = {{amis.id}}
-                                       tooltip={{amis.email}} 
-                                       class="list_amis_to_chat">
+                                    <li>
+                                        <a href="{{path('app_message') ~ '?user_id=' ~ amis.id }}"
+                                            data-toggle-user-id = {{amis.id}}
+                                            tooltip={{amis.email}} 
+                                            class="list_amis_to_chat">
 
-                                        <img src="{{ ( amis.photo != null) ? asset('uploads/users/photos/') ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
-                                        <h6>{{amis.firstname ~ " " ~ amis.lastname }} </h6>
-                                    </a>
+                                            <img src="{{ ( amis.photo != null) ? asset('uploads/users/photos/') ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
+                                            <h6>{{amis.firstname ~ " " ~ amis.lastname }} </h6>
+                                        </a>
+                                    </li>
                                    
                                 {% endif %}
 

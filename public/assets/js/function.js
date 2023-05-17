@@ -31,8 +31,8 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
 
         var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
             attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
-            minZoom: 6,
-            maxZoom: 18
+            minZoom: 1,
+            maxZoom: 20
         })
 
         // var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +

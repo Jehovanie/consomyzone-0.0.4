@@ -13,6 +13,7 @@
 	<script src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
 	<script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/restaurant/sepecific_departement_arrondissement.js')}}" defer></script> #}
+    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
 
 {% endblock %}
 
@@ -83,5 +84,9 @@
 			</div>
 		</div>
 	</div>
+
+    {{ include('shard/restaurant/list_avis.html.twig') }}
+    {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
+    {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
 {% endblock %}
 
