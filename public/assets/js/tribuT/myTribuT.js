@@ -4,6 +4,7 @@
 var tribu_t_name_0 = ""; 
 let image_list = [];
 var worker = new Worker('/assets/js/tribuT/worker.js');
+var workerRestoPastilled=new Worker('/assets/js/tribuT/worker_pastilled.js')
 
 /**
  * create tribu_t section
@@ -418,6 +419,11 @@ async function showdData(tribu_t_name) {
 }
 
 
+/**
+ * this function show all resto pastilled
+ * @param {*} table_rst_pastilled 
+ * @param {*} id_c_u 
+ */
 function showResto(table_rst_pastilled,id_c_u){
     let restoContainer = document.querySelector("#tribu_t_conteuneur")
     restoContainer.innerHTML = `
@@ -454,15 +460,11 @@ function showResto(table_rst_pastilled,id_c_u){
                 removeChild(child)
     }
        
-    const request=new Request("/user/tribu/restos-pastilles/" + table_rst_pastilled, {
-        method: "GET",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
+    
+    workerRestoPastilled.postMessage([table_rst_pastilled])
 
-    fetch(request).then(rqt => rqt.json()).then(restos => {
+    workerRestoPastilled.onmessage=(e => {
+            let restos=e.data
             console.log(restos);
             let imgSrc = "";
             let avatar ="" //"{{avatar}}"
@@ -634,11 +636,11 @@ function showResto(table_rst_pastilled,id_c_u){
     let rows = document.querySelectorAll("#restaurants > ul.list-group > li.list-group-item");
 
     if(document.querySelector("#resto-rech")){
-        document.querySelector("#resto-rech").addEventListener("keyup", function (event) {
+        document.querySelector("#resto-rech").addEventListener("keyup",  (event) =>{
             const q = event.target.value.toLowerCase();
 
             if (event.keyCode === 13) {
-                findResto()
+                findResto(q)
             }else{
                 document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
                     if(elem.textContent.toLowerCase().includes(q)){
@@ -730,56 +732,11 @@ function updateNote(event, _idRestoComment) {
        }
     } )
 }
-function findResto(){
-    let val = document.querySelector("#resto-rech").value;
 
-    document.querySelector("#result_resto_past").style.display ="block"
-
-    let loading =`<button class="btn btn-primary mt-4" type="button" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Chargement...
-                </button>`
-
-    document.querySelector("#result_resto_past").innerHTML = loading;
+function findResto(val){
     
-    fetch("/user/tribut/get_resto/"+tribu_t_name_0+"_restaurant/"+val)
-    .then(res => res.json())
-    .then(data =>{
-        console.log(data)
-        let avatar = data.avatar
-        let list = data.list
-        if(list.length > 0){
-            //document.querySelector("#result_resto_past").style.display ="block"
-            let res =""
-            //console.log(data)
-            for(let resto of list){
-                //let avtr = "{% if avatar != null %} {{ asset(\"uploads/tribus/photos/\") ~ avatar}} {% else %} {{ asset(\"uploads/tribus/photos/avatar_tribu.jpg\") }} {% endif %}"
-                if(resto.isPelleted == 1){
-                    res += ""//"<li class='list-group-item list-group-item-action' style='list-style:none;'><img id='roundedImg' style='min-height: 40px; min-width:40px; max-width:40px; max-height: 40px;' class='rounded-circle border border-1' src="+avtr+"><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='true'> "+resto.denomination_f.trim()+"</a><small class='float-end text-danger'><i>Déjà pastillé</i></small></li>"
-                
-                }else{
-                    res+=`<li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold" data-isPelleted ='false'>${resto.denomination_f.trim()}</div>
-                            <i style="font-size:small;">${resto.adresse.trim().toLowerCase()}</i>
-                        </div>
-                        <input type="button" class="btn btn-primary h-100" value="Pastiller" id="pastille-btn" onclick="pastillerPast('${resto.id}','${resto.denomination_f.trim()}')">
-                        
-                    </li>`
-                    //res += "<li class='list-group-item list-group-item-action' style='list-style:none;'><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='false'>"+resto.denomination_f.trim()+"</a><small class='float-end'><i>"+resto.adresse.trim().toLowerCase()+"</i></small></li>"
-                
-                }
-                //let adress = resto.numvoie.trim()+' '+resto.typevoie.trim()+' '+resto.nomvoie.trim()+' '+resto.codpost.trim()+', '+resto.compvoie.trim()+' '+resto.commune.trim()
-                //console.log(resto.denomination_f)
-            }
-            document.querySelector("#result_resto_past").innerHTML ="<ul class='list-group' style='overflow-y:scroll;height:120px;'>"+res+"</ul>"
-        
-        }else{
-            
-            document.querySelector("#result_resto_past").innerHTML ="<b class='text-danger'>Aucun resultat ne correspond votre recherche</b>"
-        }
-        
-    })
+    alert(val)
+    
 }
 function pastillerPast(id,nom){
     saveRestaurantPast(id, nom);

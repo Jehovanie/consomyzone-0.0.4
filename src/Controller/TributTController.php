@@ -22,7 +22,7 @@ use App\Service\MailService;
 use App\Service\UserService;
 
 use App\Form\PublicationType;
-
+use App\Repository\BddRestoRepository;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -1859,6 +1859,14 @@ class TributTController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
+    #[Route("/user/getRestoByName/{name}", name:"get_resto_b_name", methods:["GET"])]
+    public function getRestoByName($name,
+    BddRestoRepository $bddResto,SerializerInterface $serializer){
+      
+        $result=$bddResto->findRestoByName($name);
+        $json=$serializer->serialize($result,'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
     //,  TributGService $tributGService
     public function createTribu_T($body)
 
