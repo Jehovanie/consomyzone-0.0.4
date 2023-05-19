@@ -82,7 +82,7 @@
                             {% elseif type is same as("ferme") %}
                                 {% set link = "/ferme/departement/" ~ item.depName|trans|trim ~ "/" ~ item.dep|trim ~ "/details/" ~ item.id %}
                             {% elseif type is same as("resto") %}
-                                {% set link = "/resto/departement/" ~ item.depName|trans|trim ~ "/" ~ item.dep|trim ~ "/details/" ~ item.id %}
+                                {% set link = "/restaurant-mobile/departement/" ~ item.depName|trans|trim ~ "/" ~ item.dep|trim ~ "/details/" ~ item.id %}
                             {% endif %}
                             
                             <a class="plus" onclick="getDetailSearchForMobile('{{link}}')">

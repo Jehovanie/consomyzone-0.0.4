@@ -26,6 +26,8 @@
     right: 5px;
     top: 5px;
     border-radius: 50%;
+
+    display: none;
 }
 
 .content_show_list_mobile{

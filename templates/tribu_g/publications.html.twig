@@ -1,156 +1,149 @@
- <div class="content_publication_js_jheo mb-2 mt-4">
-    {% if tributG.publications is defined %}
-        {% for pub in tributG.publications %}
-            <div class="publication_js_jheo"
-                id={{"pubication_js_" ~ pub.id ~ "_jheo" }}
-                data-toggle-pub-id={{pub.id}}
-                data-toggle-pub-user-id={{pub.user_id}}
-            >
-                <div class="card mb-2">
+<div class="content_publication_js_jheo mb-2 mt-4">
+	{% if tributG.publications is defined %}
+		{% for pub in tributG.publications %}
+			<div class="publication_js_jheo" id={{"pubication_js_" ~ pub.id ~ "_jheo" }} data-toggle-pub-id={{pub.id}} data-toggle-pub-user-id={{pub.user_id}}>
+				<div class="card mb-2">
 
-                    <div class="card-header header_mobile">
+					<div class="card-header header_mobile">
 
-                        <a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
-                            <i>{{pub.userfullname}}</i>
-                        </a>
+						<a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
+							<i>{{pub.userfullname}}</i>
+						</a>
 
-                        <i class="bi bi-play-fill"></i>
-                        
-                        <a href="#" style="text-decoration:none;">
-                            <i class="bi bi-collection"></i>
-                            {{tributG.profil.name}}
-                        </a>
+						<i class="bi bi-play-fill"></i>
 
-                        {% if pub.user_id == app.user.id %}
-                            <span class="float-end dropstart">
-                                <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                </span>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")' >
-                                            <i class="fas fa-edit"></i>
-                                            Modifier
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item"  onclick="confirm({{pub.id}})">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                            Supprimer
-                                        </button>
-                                    </li>
-                                </ul>
-                            </span>
-                        {% endif %}
-                    </div>
+						<a href="#" style="text-decoration:none;">
+							<i class="bi bi-collection"></i>
+							{{tributG.profil.name}}
+						</a>
 
-                    <div class="card-body">
+						{% if pub.user_id == app.user.id %}
+							<span class="float-end dropstart">
+								<span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+									<i class="bi bi-three-dots" style="cursor:pointer"></i>
+								</span>
+								<ul class="dropdown-menu">
+									<li>
+										<button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
+											<i class="fas fa-edit"></i>
+											Modifier
+										</button>
+									</li>
+									<li>
+										<button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
+											<i class="fa fa-trash" aria-hidden="true"></i>
+											Supprimer
+										</button>
+									</li>
+								</ul>
+							</span>
+						{% endif %}
+					</div>
 
-                        <p class="card-text">{{pub.publication}}</p>
+					<div class="card-body">
 
-                        {% if pub.photo  %}
-                            <div style="max-heigth:100%; max-width: 100%;">
-                                <img width="50%;" heigth="100px;" src={{ asset("assets/publications/photos/") ~ pub.photo }}  class="" alt="image publication">
-                            </div>
-                        {% endif %}
+						<p class="card-text">{{pub.publication}}</p>
 
-                        <p class="card-text">
-                            <i>
-                                <small class="text-muted">Publié le
-                                    {{pub.datetime}}
-                                </small>
+						{% if pub.photo  %}
+							<div style="max-heigth:100%; max-width: 100%;">
+								<img width="50%;" heigth="100px;" src='{{ pub.photo }}' class="" alt="image publication">
+							</div>
+						{% endif %}
 
-                            </i>
+						<p class="card-text">
+							<i>
+								<small class="text-muted">Publié le
+									{{pub.datetime}}
+								</small>
 
-                            <span class="badge text-bg-primary" style="background-color:#0d6efd;">
-                                <i class="bi bi-eye-fill"></i>
-                                
-                                {% if pub.confidentiality == 1 %}
-                                    Publique
-                                {% elseif pub.confidentiality == 2 %}
-                                    Ami(e)s
-                                {% else %}
-                                    Moi uniquement
-                                {% endif %}
-                            </span>
-                        </p>
-                    </div>
+							</i>
+
+							<span class="badge text-bg-primary" style="background-color:#0d6efd;">
+								<i class="bi bi-eye-fill"></i>
+
+								{% if pub.confidentiality == 1 %}
+									Publique
+								{% elseif pub.confidentiality == 2 %}
+									Ami(e)s
+								{% else %}
+									Moi uniquement
+								{% endif %}
+							</span>
+						</p>
+					</div>
 
 
-                    <div class="card-footer foot">
-                        <div class="row text-center">
-                            <div class="col-4 ">
-                                <span>
-                                    <span id={{"nbr_reaction_pub_" ~ pub.id }}> 
-                                        {{(pub.reactions|length ) > 0 ? pub.reactions|length : "" }}
-                                    </span>
+					<div class="card-footer foot">
+						<div class="row text-center">
+							<div class="col-4 ">
+								<span>
+									<span id={{"nbr_reaction_pub_" ~ pub.id }}>
+										{{(pub.reactions|length ) > 0 ? pub.reactions|length : "" }}
+									</span>
 
-                                    {# {% dump( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) %} #}
-                                    <i class='{{ "reaction_js_" ~ pub.id ~ "_jheo"}} {{( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) ?  "bi-heart-fill" : "bi-heart" }}'
-                                        onclick="isLike({{pub.id}}, {{pub.user_id}})" style="cursor:pointer;">
-                                    </i>
-                                    
-                                </span>
-                            </div>
-                            <div class="col-4">
-                                <span id={{"nbr_comment_pub_" ~ pub.id }}>
-                                    {{(pub.comments|length ) > 0 ? pub.reactions|length : "" }}
-                                </span>
-                                <a data-bs-toggle="collapse" href={{"#collapse_comment_" ~  pub.id }} onclick="fetchNotification({{pub.id}})">
-                                    <i class="bi bi-chat-square"></i>
-                                </a>
-                            </div>
-                            <div class="col-4 souri-non-utilise">
-                                <a data-bs-toggle="collapse" href="#" role="button" class="souri-non-utilise">
-                                    1
-                                    <i class="bi bi-share souri-non-utilise"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+									{# {% dump( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) %} #}
+									<i class='{{ "reaction_js_" ~ pub.id ~ "_jheo"}} {{( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) ? "bi-heart-fill" : "bi-heart" }}' onclick="isLike({{pub.id}}, {{pub.user_id}})" style="cursor:pointer;"></i>
 
-                    <div class="collapse m-2" id={{"collapse_comment_" ~ pub.id }}>
-                        <div class="card card-body">
-                            <label style="display:none;">Commentaires</label>
+								</span>
+							</div>
+							<div class="col-4">
+								<span id={{"nbr_comment_pub_" ~ pub.id }}>
+									{{(pub.comments|length ) > 0 ? pub.reactions|length : "" }}
+								</span>
+								<a data-bs-toggle="collapse" href={{"#collapse_comment_" ~ pub.id }} onclick="fetchNotification({{pub.id}})">
+									<i class="bi bi-chat-square"></i>
+								</a>
+							</div>
+							<div class="col-4 souri-non-utilise">
+								<a data-bs-toggle="collapse" href="#" role="button" class="souri-non-utilise">
+									1
+									<i class="bi bi-share souri-non-utilise"></i>
+								</a>
+							</div>
+						</div>
+					</div>
 
-                            <div class="content_notification_tributg mb-3">
+					<div class="collapse m-2" id={{"collapse_comment_" ~ pub.id }}>
+						<div class="card card-body">
+							<label style="display:none;">Commentaires</label>
 
-                                {# <div class="card my-2">
-                                    <div class="card-body">
-                                        <h5 >Fulle Name</h5>
-                                        <span class="blockquote-footer">date time</span>
-                                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                    </div>
-                                </div> #}
+							<div
+								class="content_notification_tributg mb-3">{# <div class="card my-2">
+									                                    <div class="card-body">
+									                                        <h5 >Fulle Name</h5>
+									                                        <span class="blockquote-footer">date time</span>
+									                                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+									                                    </div>
+									                                </div> #}
 
-                            </div>
+							</div>
 
-                            <form class={{ "form_comment_" ~ pub.id }} >
-                                <div class="mb-3 row">
-                                    <div class="row" id="soundClips"></div>
-	
-                                    <div class="col-1 text-center">
-                                        <i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
-                                        <i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
-                                    </div>
-                                    <div class="col-11 mt-1">
-                                        <textarea class="form-control" name="commentaire" placeholder = "Votre commentaire..." required></textarea>
-                                        <span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
-                                    </div>
-                                    <div class="row" id="audiosPlayer"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-8"></div>
-                                    <div class="col-4 ">
-                                        <input type="button" value="Envoyer" class="btn btn-primary float-end">
-                                    </div>
-                                </div>
-                            </form>
+							<form class={{ "form_comment_" ~ pub.id }}>
+								<div class="mb-3 row">
+									<div class="row" id="soundClips"></div>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    {% endif %}
-</div> 
+									<div class="col-1 text-center">
+										<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+										<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+									</div>
+									<div class="col-11 mt-1">
+										<textarea class="form-control" name="commentaire" placeholder="Votre commentaire..." required></textarea>
+										<span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+									</div>
+									<div class="row" id="audiosPlayer"></div>
+								</div>
+								<div class="row">
+									<div class="col-8"></div>
+									<div class="col-4 ">
+										<input type="button" value="Envoyer" class="btn btn-primary float-end">
+									</div>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+</div>

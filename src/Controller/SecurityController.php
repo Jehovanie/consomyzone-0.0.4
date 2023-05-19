@@ -508,7 +508,9 @@ class SecurityController extends AbstractController
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-        // return $this->redirect($signatureComponents->getSignedUrl());
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
         ///-------------------------------------------------------///
 
 
@@ -704,8 +706,7 @@ class SecurityController extends AbstractController
             $departement = strlen($departement) === 1 ? "0". $departement : $departement;
             // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
             $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
-            
-            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG) : $name_tributG;
+            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG,0,30) : $name_tributG;
             $user_profil->setTributg($name_tributG);
 
 

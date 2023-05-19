@@ -32,7 +32,7 @@ class RestaurantController extends AbstractController
         $dataRequest = $departementRepository->getDep();
         // $id_dep = $dataRequest["id"];
         // $datas = $code->getAllCodinsee($id_dep);
-        dump($dataRequest);
+        // dump($dataRequest);
         //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
         return $this->render("restaurant/index.html.twig", [
             "departements" => $departementRepository->getDep(),
@@ -163,7 +163,7 @@ class RestaurantController extends AbstractController
         $codeDep = $dataRequest["id_dep"];
         $datas = $code->getAllCodinsee($codeDep);
         $resultCount = count($bddResto->getCoordinateAndRestoIdForSpecific($codeDep));
-        dump($resultCount);
+        // dump($resultCount);
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("restaurant/restaurant_arrondisment.html.twig", [

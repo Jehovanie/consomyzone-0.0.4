@@ -133,10 +133,10 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.latitude',
                      'p.longitude',
                      'p.services')
-            ->where('p.departementCode = :q')
+            // ->where('p.departementCode = :q')
             // ->andWhere('p.departementName LIKE :k')
             ->andWhere('p.id = :t')
-            ->setParameter('q', $code )
+            // ->setParameter('q', $code )
             // ->setParameter('k', '%'. $new_nom_dep. '%' )
             ->setParameter('t',$id_station);
 

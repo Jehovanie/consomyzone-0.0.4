@@ -1,79 +1,115 @@
-let firstX =0
+let firstX = 0
 let firstY = 0
 let marker_last_selected = null
 /*
 
 */
 
-function splitArrayToMultipleArray(tabToSplit){
-    const taille= 1000;
-    let tab_results= [];
+function splitArrayToMultipleArray(tabToSplit) {
+    const taille = 1000;
+    let tab_results = [];
     let start_index = 0;
     let end_index = taille;
-    const nbrTabResults = Math.ceil(tabToSplit.length/1000);
-    for(let i=0; i<nbrTabResults; i++){
+    const nbrTabResults = Math.ceil(tabToSplit.length / 1000);
+    for (let i = 0; i < nbrTabResults; i++) {
         tab_results.push(tabToSplit.slice(start_index, end_index));
-        start_index=end_index+1;
-        end_index += taille +1;
-        end_index= end_index > tabToSplit.length ? tabToSplit.length : end_index;
+        start_index = end_index + 1;
+        end_index += taille + 1;
+        end_index = end_index > tabToSplit.length ? tabToSplit.length : end_index;
     }
     return tab_results;
 }
 
 
-async function create_map_content(geos, id_dep=null, map_for_type="home"){
+async function create_map_content(geos, id_dep = null, map_for_type = "home") {
     // {# <div id="map"  style="width: 100%;"></div> #}
-   try{
+    try {
 
-        const response= await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client")
-        const results= await response.json();
-        const { latitude, longitude}= results;
+        const response = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client")
+        const results = await response.json();
+        const { latitude, longitude } = results;
 
-        var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 20,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+        var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+            attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+            minZoom: 1,
+            maxZoom: 20
         })
-        // var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
-        let latlng=null, json= null, zoom=null, centered=null;
-        
-        if( map_for_type === "station"){
 
-            latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
-            json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
-            zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : ( id_dep ? centers[parseInt(id_dep)].zoom : 6 );
-        }else if( map_for_type === "home"){
+        // var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        // '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        // 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        // mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicmlwc3R5eCIsImEiOiJja2RvbDJncGQwMGV0MnFtc2ZnaTZpZzdxIn0.-hP88dgkMtKClw2X77nD0Q';
+        // var tiles = L.tileLayer('https://a.tile.openstreetmap.fr/osmfr/${z}/${x}/${y}.png', {
+        //     maxZoom: 20,
+        //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+        // })
+
+        //var tilesSatelite= L.tileLayer(mbUrl, {id: 'mapbox/satellite-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr})
+        // var baseLayers = {
+        //     'tiles':tiles,
+        //     'tilesSatelite':tilesSatelite
+        // }
+
+
+        // var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
+        let latlng = null, json = null, zoom = null, centered = null;
+
+        if (map_for_type === "station") {
+
+            latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
+            json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null
+            zoom = json ? (json.zoom ? json.zoom : (id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
+        } else if (map_for_type === "home") {
 
             // latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             // json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
             // zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 8)) : (id_dep ? centers[parseInt(id_dep)].zoom : 8);
-            
-            // latlng= L.latLng(48.856470515304515, 2.35882043838501);
-            latlng = L.latLng(latitude, longitude);
-            json= latlng
-            zoom =15;
-        }else if( map_for_type === "ferme"){
+
+            latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
+            // latlng = L.latLng(latitude, longitude);
+            json = latlng
+            zoom = 12;
+        } else if (map_for_type === "ferme") {
 
             latlng = L.latLng(latitude, longitude);
-            json=getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) :latlng
-            zoom = json.zoom ? json.zoom: 5;
-        }else if( map_for_type === "resto"){
+            json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : latlng
+            zoom = json.zoom ? json.zoom : 5;
+        } else if (map_for_type === "resto") {
             latlng = L.latLng(latitude, longitude);
-            json=getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) :latlng
-            zoom = json.zoom ? json.zoom: 5;
+            json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : latlng
+            zoom = json.zoom ? json.zoom : 5;
         }
         centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
-        
+
         var container = L.DomUtil.get('map');
-        if(container != null){
+        if (container != null) {
             container._leaflet_id = null;
         }
-        
+
+
+        const content_map= document.querySelector(".cart_map_js");
+        if( !document.querySelector("#map")){
+            const map= document.createElement("div");
+            map.setAttribute("id", "map");
+            map.setAttribute("class", "map");
+
+            content_map.appendChild(map);
+        }
+
+        if( document.querySelector("#toggle_chargement")){
+            content_map.removeChild(document.querySelector("#toggle_chargement"))
+        }
         var map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
-        L.geoJson(geos,{
-            style:{
+
+        // layerControl = L.control.layers(null, overlayPane, {position: 'topleft'});
+        // layerControl.addTo(map);
+        //L.control.layers(null,baseLayers,{position: 'bottomright'}).addTo(map);
+
+        L.geoJson(geos, {
+            style: {
                 weight: 2,
                 opacity: 1,
-                color: (id_dep ) ? "red" : "#63A3F6",
+                color: (id_dep) ? "red" : "#63A3F6",
                 dashArray: '3',
                 fillOpacity: 0
             },
@@ -83,13 +119,13 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
         }).addTo(map);
 
         map.doubleClickZoom.disable();
-        
+
         console.log("map create")
 
         addControlPlaceholders(map);
-        
+
         L.Control.DockPannel = L.Control.extend({
-            onAdd: function(map) {
+            onAdd: function (map) {
                 var el = L.DomUtil.create('button', 'leaflet-bar my-control');
                 el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
@@ -101,20 +137,20 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
                                         90 0 43 -47 90 -90 90 -22 0 -41 -9 -61 -29z"/>
                                     </g>
                                 </svg>`;
-                el.setAttribute("draggable","true")
+                el.setAttribute("draggable", "true")
                 return el;
             },
-            onRemove: function(map) {
-        
+            onRemove: function (map) {
+
             },
-            onClick: ()=>{
+            onClick: () => {
             },
-            onDragend: ()=>{
-                
+            onDragend: () => {
+
             }
         });
 
-        L.control.myControl = function(opts) {
+        L.control.myControl = function (opts) {
             return new L.Control.DockPannel(opts);
         }
 
@@ -124,14 +160,14 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
 
         var draggable = new L.Draggable(L.DomUtil.get(document.querySelector(".my-control")));
         draggable.enable();
-        
-        L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', ()=>{
+
+        L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', () => {
             document.querySelector("#card").classList.toggle("hide")
             L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
         })
 
         L.Control.DockPannel2 = L.Control.extend({
-            onAdd: function(map) {
+            onAdd: function (map) {
                 var el = L.DomUtil.create('div', 'leaflet-bar my-controller');
                 el.innerHTML = `
                     <div class="card-options-home hide" id="card">
@@ -327,12 +363,12 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
                             </div>
                     </div>
                     </div>`;
-            
+
                 return el;
             },
-            onRemove: function(map) {},
-            onClick: ()=>{ },
-            onDragend: ()=>{}
+            onRemove: function (map) { },
+            onClick: () => { },
+            onDragend: () => { }
         });
 
         L.control.myControl2 = function (opt2) {
@@ -343,13 +379,13 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
             position: 'horizontalmiddle'//center
         }).addTo(map);
 
-        L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', ()=>{
+        L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', () => {
             document.querySelector("#card").classList.toggle("hide")
             L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
         })
 
         L.Control.DockPannel3 = L.Control.extend({
-            onAdd: function(map) {
+            onAdd: function (map) {
                 var el = L.DomUtil.create('div', 'leaflet-bar my-list');
                 el.innerHTML = ` 
                     <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -368,17 +404,17 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
                     </svg>
                 
                 `     ;
-            
+
                 return el;
             },
-            onRemove: function(map) {
-        
+            onRemove: function (map) {
+
             },
-            onClick: ()=>{
+            onClick: () => {
                 alert("toto")
             },
-            onDragend: ()=>{
-                
+            onDragend: () => {
+
             }
         });
 
@@ -394,56 +430,58 @@ async function create_map_content(geos, id_dep=null, map_for_type="home"){
         addEventLocation()
 
         return map;
-        
-   }catch(e){
-        console.log("Error creating")
-   }
+
+    } catch (e) {
+        console.log(e)
+    }
 }
 
-function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
+function create_map_content_not_async(geos, id_dep = null, map_for_type = "home") {
     // {# <div id="map"  style="width: 100%;"></div> #}
-    
-    var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 20,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-	})
-	// var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
-    let latlng=null, json= null, zoom=null, centered=null;
-    
-    if( map_for_type === "station"){
 
-        latlng = id_dep ?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
-        json=getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) :null
-        zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : ( id_dep ? centers[parseInt(id_dep)].zoom : 6 );
-    }else if( map_for_type === "home"){
+    var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+        attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+        minZoom: 1,
+        maxZoom: 20
+    })
 
-        latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
-        json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
-        zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
-    }else if( map_for_type === "ferme"){
+    // var latlng = L.latLng(45.729191061299936, 2.4161955097725722);
+    let latlng = null, json = null, zoom = null, centered = null;
+
+    if (map_for_type === "station") {
+
+        latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
+        json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null
+        zoom = json ? (json.zoom ? json.zoom : (id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
+    } else if (map_for_type === "home") {
+
+        latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(46.227638, 2.213749);
+        json = getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) : latlng
+        zoom = json ? (json.zoom ? json.zoom : (id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
+    } else if (map_for_type === "ferme") {
 
         latlng = L.latLng(45.55401555223028, 3.9946391799233365);
-        json=getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) :latlng
-        zoom = json.zoom ? json.zoom: 5;
-    }else if( map_for_type === "resto"){
+        json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : latlng
+        zoom = json.zoom ? json.zoom : 5;
+    } else if (map_for_type === "resto") {
         latlng = L.latLng(45.55401555223028, 3.9946391799233365);
-        json=getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) :latlng
-        zoom = json.zoom ? json.zoom: 5;
+        json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : latlng
+        zoom = json.zoom ? json.zoom : 5;
     }
-    
+
     centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
-    
+
     var container = L.DomUtil.get('map');
-    if(container != null){
+    if (container != null) {
         container._leaflet_id = null;
     }
-    
+
     var map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
-    L.geoJson(geos,{
-        style:{
+    L.geoJson(geos, {
+        style: {
             weight: 2,
             opacity: 1,
-            color: (id_dep ) ? "red" : "#63A3F6",
+            color: (id_dep) ? "red" : "#63A3F6",
             dashArray: '3',
             fillOpacity: 0
         },
@@ -453,13 +491,13 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
     }).addTo(map);
 
     map.doubleClickZoom.disable();
-    
+
     console.log("map create")
 
     addControlPlaceholders(map);
-    
+
     L.Control.DockPannel = L.Control.extend({
-        onAdd: function(map) {
+        onAdd: function (map) {
             var el = L.DomUtil.create('button', 'leaflet-bar my-control');
             el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                             width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
@@ -471,20 +509,20 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
                                     90 0 43 -47 90 -90 90 -22 0 -41 -9 -61 -29z"/>
                                 </g>
                             </svg>`;
-            el.setAttribute("draggable","true")
+            el.setAttribute("draggable", "true")
             return el;
         },
-        onRemove: function(map) {
-    
+        onRemove: function (map) {
+
         },
-        onClick: ()=>{
+        onClick: () => {
         },
-        onDragend: ()=>{
-            
+        onDragend: () => {
+
         }
     });
 
-    L.control.myControl = function(opts) {
+    L.control.myControl = function (opts) {
         return new L.Control.DockPannel(opts);
     }
 
@@ -494,14 +532,14 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
 
     var draggable = new L.Draggable(L.DomUtil.get(document.querySelector(".my-control")));
     draggable.enable();
-    
-    L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', ()=>{
+
+    L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', () => {
         document.querySelector("#card").classList.toggle("hide")
         L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
     })
 
     L.Control.DockPannel2 = L.Control.extend({
-        onAdd: function(map) {
+        onAdd: function (map) {
             var el = L.DomUtil.create('div', 'leaflet-bar my-controller');
             el.innerHTML = `
                 <div class="card-options-home hide" id="card">
@@ -697,12 +735,12 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
                         </div>
                    </div>
                 </div>`;
-           
+
             return el;
         },
-        onRemove: function(map) {},
-        onClick: ()=>{ },
-        onDragend: ()=>{}
+        onRemove: function (map) { },
+        onClick: () => { },
+        onDragend: () => { }
     });
 
     L.control.myControl2 = function (opt2) {
@@ -713,13 +751,13 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
         position: 'horizontalmiddle'//center
     }).addTo(map);
 
-    L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', ()=>{
+    L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', () => {
         document.querySelector("#card").classList.toggle("hide")
         L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
     })
 
     L.Control.DockPannel3 = L.Control.extend({
-        onAdd: function(map) {
+        onAdd: function (map) {
             var el = L.DomUtil.create('div', 'leaflet-bar my-list');
             el.innerHTML = ` 
                 <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -738,17 +776,17 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
                 </svg>
                
             `     ;
-           
+
             return el;
         },
-        onRemove: function(map) {
-    
+        onRemove: function (map) {
+
         },
-        onClick: ()=>{
+        onClick: () => {
             alert("toto")
         },
-        onDragend: ()=>{
-            
+        onDragend: () => {
+
         }
     });
 
@@ -766,21 +804,21 @@ function create_map_content_not_async(geos, id_dep=null, map_for_type="home"){
     return map;
 }
 
-function addEventLocation(){
+function addEventLocation() {
     document.getElementById("mobile_station_js_jheo").addEventListener("click", () => {
         location.assign("/station");
     });
-    document.getElementById("home-mobile").addEventListener('click', () => { 
+    document.getElementById("home-mobile").addEventListener('click', () => {
         location.assign('/')
     });
-    document.getElementById("mobil-ferme").addEventListener('click', () => { 
+    document.getElementById("mobil-ferme").addEventListener('click', () => {
         location.assign('/ferme')
     });
-    document.getElementById("mobil-resto").addEventListener('click', () => { 
+    document.getElementById("mobil-resto").addEventListener('click', () => {
         location.assign('/restaurant')
     });//home-mobile
 
-    document.getElementById("home-mobile-connexion").addEventListener('click', () => { 
+    document.getElementById("home-mobile-connexion").addEventListener('click', () => {
         location.assign('/connexion')
     });
 
@@ -850,7 +888,7 @@ function addListFermeMobile() {
             </div>
         `
         document.querySelector("#close").addEventListener('click', () => {
-            document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)" 
+            document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)"
         })
     })
 }
@@ -869,7 +907,7 @@ function addControlPlaceholders(map) {
     createCorner('verticalcenterl', 'left swipe-me-reverse');
     createCorner('verticalcenter', 'right');
     createCorner('horizontalmiddle', 'center');
-  
+
 }
 
 ///jheo: dynamique icon for map leaflet. ---------
@@ -877,8 +915,8 @@ function setIcon(urlIcon) {
     const url = new URL(window.location.href);
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
-        iconUrl: IS_DEV_MODE ?  url.origin+"/"+urlIcon :  url.origin+"/public/"+urlIcon  , ///on dev
-        iconSize: [30, 45],
+        iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
+        iconSize: [20, 35],
         iconAnchor: [30, 50],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
@@ -893,52 +931,52 @@ function setIcon(urlIcon) {
  * @param {*} nom_dep 
  * @param {*} id_dep 
  */
-function addRestaurantToMap(nom_dep, code_dep) { 
-    const geos=[]
+function addRestaurantToMap(nom_dep, code_dep) {
+    const geos = []
     document.querySelectorAll("#list_departements > ul > li > a >  div").forEach(item => {
-        const dep=item.dataset.toggleDepartId
+        const dep = item.dataset.toggleDepartId
         geos.push(franceGeo.features.find(element => element.properties.code == dep))
-     })
-    
-    
+    })
+
+
     let url = "/Coord/All/Restaurant";
 
-    var url_string = window.location.href; 
+    var url_string = window.location.href;
     console.log("url : " + url_string)
     var url_param = new URL(url_string);
     var id_resto_url = url_param.searchParams.get("id");
-    //console.log("id : " + id)
 
-    if(id_resto_url){
+    if (id_resto_url) {
         fetch(url).then(response => {
             response.json().then(response1 => {
                 // if( document.getElementById("content_nombre_result_js_jheo")){
                 //         document.getElementById("content_nombre_result_js_jheo").innerText = response1.length;
                 // }
-    
-                var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+
+                var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                    attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                    minZoom: 1,
+                    maxZoom: 20
                 })
                 // var latlng = L.latLng(-37.89, 175.46);
-    
+
                 var latlng = L.latLng(46.227638, 2.213749);
 
                 //console.log(getDataInLocalStorage("coord"))
-                const json=getDataInLocalStorage("coord") ? JSON.parse(getDataInLocalStorage("coord")) :latlng
-                const zoom = json.zoom ? json.zoom: 5;
-                const center =json.coord ?  L.latLng(json.coord.lat,json.coord.lng) : latlng ;
+                const json = getDataInLocalStorage("coord") ? JSON.parse(getDataInLocalStorage("coord")) : latlng
+                const zoom = json.zoom ? json.zoom : 5;
+                const center = json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
                 //console.log("center "+ " "+ center+" zoom "+ zoom)
                 let map = L.map('map', { center: center, zoom: zoom, layers: [tiles] });
 
                 //map.setView(latlng, 13);
 
                 //L.marker(latlng).addTo(map)
-                
+
                 addControlPlaceholders(map);
-        
+
                 L.Control.DockPannel = L.Control.extend({
-                    onAdd: function(map) {
+                    onAdd: function (map) {
                         var el = L.DomUtil.create('button', 'leaflet-bar my-control');
                         el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                         width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
@@ -950,39 +988,39 @@ function addRestaurantToMap(nom_dep, code_dep) {
                                                 90 0 43 -47 90 -90 90 -22 0 -41 -9 -61 -29z"/>
                                             </g>
                                         </svg>`;
-                        el.setAttribute("draggable","true")
+                        el.setAttribute("draggable", "true")
                         return el;
                     },
-                    onRemove: function(map) {
-                
+                    onRemove: function (map) {
+
                     },
-                    onClick: ()=>{
+                    onClick: () => {
                         alert("toto")
                     },
-                    onDragend: ()=>{
-                        
+                    onDragend: () => {
+
                     }
                 });
-    
-                L.control.myControl = function(opts) {
+
+                L.control.myControl = function (opts) {
                     return new L.Control.DockPannel(opts);
                 }
-    
+
                 L.control.myControl({
                     position: 'verticalcenter'//right
                 }).addTo(map);
-    
+
                 console.log(L.DomUtil.get(document.querySelector(".my-control")))
-                
+
                 var draggable = new L.Draggable(L.DomUtil.get(document.querySelector(".my-control")));
                 draggable.enable();
-                L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', ()=>{
+                L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', () => {
                     document.querySelector("#card").classList.toggle("hide")
                     L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
                 })
-    
+
                 L.Control.DockPannel2 = L.Control.extend({
-                    onAdd: function(map) {
+                    onAdd: function (map) {
                         var el = L.DomUtil.create('div', 'leaflet-bar my-controller');
                         el.innerHTML = `
                             <div class="card-options-home hide" id="card">
@@ -1185,37 +1223,37 @@ function addRestaurantToMap(nom_dep, code_dep) {
                                     </div>
                             </div>
                             </div>`;
-                    
+
                         return el;
                     },
-                    onRemove: function(map) {
-                
+                    onRemove: function (map) {
+
                     },
-                    onClick: ()=>{
+                    onClick: () => {
                         alert("toto")
                     },
-                    onDragend: ()=>{
-                        
+                    onDragend: () => {
+
                     }
                 });
-    
-    
-    
+
+
+
                 L.control.myControl2 = function (opt2) {
                     return new L.Control.DockPannel2(opt2);
                 }
-    
+
                 L.control.myControl2({
                     position: 'horizontalmiddle'//center
                 }).addTo(map);
-                
-                L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', ()=>{
+
+                L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', () => {
                     document.querySelector("#card").classList.toggle("hide")
                     L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
                 })
-    
+
                 L.Control.DockPannel3 = L.Control.extend({
-                    onAdd: function(map) {
+                    onAdd: function (map) {
                         var el = L.DomUtil.create('div', 'leaflet-bar my-list');
                         el.innerHTML = ` 
                             <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -1234,229 +1272,236 @@ function addRestaurantToMap(nom_dep, code_dep) {
                             </svg>
                         
                         `     ;
-                    
+
                         return el;
                     },
-                    onRemove: function(map) {
-                
+                    onRemove: function (map) {
+
                     },
-                    onClick: ()=>{
+                    onClick: () => {
                         alert("toto")
                     },
-                    onDragend: ()=>{
-                        
+                    onDragend: () => {
+
                     }
                 });
-    
+
                 L.control.myControl3 = function (opt3) {
                     return new L.Control.DockPannel3(opt3);
                 }
-    
+
                 L.control.myControl3({
                     position: 'verticalcenterl'//left
                 }).addTo(map);
-    
-    
-                document.querySelector("#home-mobile").addEventListener('click', () => { 
+
+
+                document.querySelector("#home-mobile").addEventListener('click', () => {
                     location.assign('/')
                 })
                 // addListFermeMobile()
-                document.querySelector("#mobil-ferme").addEventListener('click', () => { 
+                document.querySelector("#mobil-ferme").addEventListener('click', () => {
                     location.assign('/ferme')
                 })
-    
-                document.querySelector("#mobil-resto").addEventListener('click', () => { 
+
+                document.querySelector("#mobil-resto").addEventListener('click', () => {
                     location.assign('/restaurant')
                 })
-    
-                L.geoJson(geos,{style:{weight:1.32, dashArray: '3',fillOpacity: 0},onEachFeature: function (feature, layer) {
-                    layer.bindTooltip(feature.properties.nom);
-                }}).addTo(map);
-    
+
+                L.geoJson(geos, {
+                    style: { weight: 1.32, dashArray: '3', fillOpacity: 0 }, onEachFeature: function (feature, layer) {
+                        layer.bindTooltip(feature.properties.nom);
+                    }
+                }).addTo(map);
+
                 map.doubleClickZoom.disable();
-                var markers = L.markerClusterGroup({ 
+                var markers = L.markerClusterGroup({
                     chunkedLoading: true
                 });
-                    ///// 0 -> 4717
-                    let lat_selected, lng_selected;
-                    response1.forEach(item => {
-                        //console.log("item" , item)
-                        // const nom_dep = item.departement.split(",")[1]?.toString().trim() ? item.departement.split(",")[1]?.toString().trim() : "unknow";
-                        // const departementName = item.departementName ? item.departementName : "unknow";
-                        const departementName = item.depName
-                        
-                        // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
-                        // var pathDetails ="/restaurant/departement/"+ departementName + "/" + item.dep +"/details/" + item.id;
-                        
-                        
-                        const adresseRestaurant=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
-                        const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
-                        // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-                        
-                        var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName +"." + adress;
-                        
-                        var marker;
+                ///// 0 -> 4717
+                let lat_selected, lng_selected;
+                response1.forEach(item => {
+                    //console.log("item" , item)
+                    // const nom_dep = item.departement.split(",")[1]?.toString().trim() ? item.departement.split(",")[1]?.toString().trim() : "unknow";
+                    // const departementName = item.departementName ? item.departementName : "unknow";
+                    const departementName = item.depName
 
-                        if(item.id != id_resto_url){
-                            marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/icon-resto-bleu.png') });
-                            
-                        }else{
-                            marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/icon-restoR.png') });
-                            lat_selected = parseFloat(item.poiY)
-                            lng_selected = parseFloat(item.poiX )
+                    // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
+                    // var pathDetails ="/restaurant/departement/"+ departementName + "/" + item.dep +"/details/" + item.id;
+
+
+                    const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+                    const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
+                    // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
+
+                    var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
+
+                    var marker;
+
+                    if (item.id != id_resto_url) {
+                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-resto-bleu.png') });
+
+                    } else {
+                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-restoR.png') });
+                        lat_selected = parseFloat(item.poiY)
+                        lng_selected = parseFloat(item.poiX)
+                    }
+                    marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+                    marker.on('click', (e) => {
+                        console.log(e)
+                        const coordAndZoom = {
+                            zoom: e.target.__parent._zoom + 1,
+                            coord: e.target.__parent._cLatLng
                         }
-                        marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
-                        marker.on('click', (e) => {
-                            console.log(e)
-                            const coordAndZoom = {
-                                zoom: e.target.__parent._zoom+1,
-                                coord:e.target.__parent._cLatLng
-                            }
-                            setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
-                            
-                            let screemMax = window.matchMedia("(max-width: 1000px)")
-                            let screemMin = window.matchMedia("(min-width: 1000px)")
-                            let remove = document.getElementById("remove-detail")
-                            
-                            if (screemMax.matches) {
-                                var pathDetails =`/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                                location.assign(pathDetails)
-                            } else if (screemMin.matches) {
-                                
-                                remove.removeAttribute("class", "hidden");
-                                remove.setAttribute("class", "navleft-detail fixed-top")
-                                var myHeaders = new Headers();
-                                myHeaders.append('Content-Type','text/plain; charset=UTF-8');
-                                fetch(`/restaurant/departement/${departementName}/${item.dep}/details/${item.id}`, myHeaders)
-                                    .then(response => {
-                                        return response.text()
-                                    }).then(r => {
+                        setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
+
+                        let screemMax = window.matchMedia("(max-width: 1000px)")
+                        let screemMin = window.matchMedia("(min-width: 1000px)")
+                        let remove = document.getElementById("remove-detail")
+
+                        if (screemMax.matches) {
+                            var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                            location.assign(pathDetails)
+                        } else if (screemMin.matches) {
+
+                            remove.removeAttribute("class", "hidden");
+                            remove.setAttribute("class", "navleft-detail fixed-top")
+                            var myHeaders = new Headers();
+                            myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
+                            fetch(`/restaurant/departement/${departementName}/${item.dep}/details/${item.id}`, myHeaders)
+                                .then(response => {
+                                    return response.text()
+                                }).then(r => {
                                     document.querySelector("#content-details").innerHTML = null
                                     document.querySelector("#content-details").innerHTML = r
-                                    
-                                    document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
+
+                                    document.querySelector("#close-detail-tous-resto").addEventListener("click", () => {
                                         document.querySelector("#content-details").style.display = "none"
                                     })
                                     document.querySelector("#content-details").removeAttribute("style")
-                                    
+
                                 })
-                                
-                            }
-    
-                        })
-                        
-                        markers.addLayer(marker);
+
+                        }
+
                     })
+
+                    markers.addLayer(marker);
+                })
 
                 map.addLayer(markers);
 
-                map.setView([lat_selected, lng_selected],18);
-                
-                if( nom_dep && code_dep ){
+                map.setView([lat_selected, lng_selected], 18);
+
+                if (nom_dep && code_dep) {
                     /// mise a jour de liste
-                    const parent_elements= document.querySelector(".list_result")
-                    const elements= document.querySelectorAll(".element")
+                    const parent_elements = document.querySelector(".list_result")
+                    const elements = document.querySelectorAll(".element")
                     elements.forEach(element => {
                         element.parentElement.removeChild(element);
                     })
-    
-                    if(document.querySelector(".plus_result")){
+
+                    if (document.querySelector(".plus_result")) {
                         parent_elements.removeChild(document.querySelector(".plus_result"))
                     }
-    
+
                     parsedResult.forEach(new_element => {
-    
+
                         // <div class="element" id="{{station.id}}">
                         const div_new_element = document.createElement("div");
                         div_new_element.setAttribute("class", "element")
                         div_new_element.setAttribute("id", new_element.id);
-    
+
                         // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
                         const s_p = document.createElement("p");
-                        s_p.innerHTML = "<span class='id_departement'>"+ new_element.nomFerme+" </span>" +  new_element.adresseFerme
-    
+                        s_p.innerHTML = "<span class='id_departement'>" + new_element.nomFerme + " </span>" + new_element.adresseFerme
+
                         // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-                        const a= document.createElement("a");
+                        const a = document.createElement("a");
                         a.setAttribute("class", "plus")
-                        a.setAttribute("href", "/ferme/departement/"+ nom_dep +"/"+ id_dep +"/details/" + new_element.id )
+                        a.setAttribute("href", "/ferme/departement/" + nom_dep + "/" + id_dep + "/details/" + new_element.id)
                         a.innerText = "Voir details";
-    
+
                         /// integre dom under the element
                         div_new_element.appendChild(s_p);
                         div_new_element.appendChild(a);
-                        
+
                         ///integre new element in each element.
                         parent_elements.appendChild(div_new_element);
                     })
-    
+
                 }
+
                 map.on("resize zoom", (e) => {
                     console.log(e)
                     const coordAndZoom = {
                         zoom: e.target._zoom,
-                        coord:e.target._lastCenter
+                        coord: e.target._lastCenter
                     }
                     setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
                 })
-    
+
                 map.on("dragend", (e) => {
                     console.log(e.target.getCenter(), e.target.getZoom())
                     const coordAndZoom = {
                         zoom: e.target.getZoom(),
-                        coord:e.target.getCenter()
+                        coord: e.target.getCenter()
                     }
                     setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
                 })
-            })  
-    
-            
+            })
+
+
         })
-    }else{
+    } else {
 
-    fetch(url).then(response => {
-        response.json().then(response1 => {
-            var map=create_map_content_not_async(geos,code_dep, "resto");
-            addControlPlaceholders(map);
+        fetch(url).then(response => {
+            response.json().then(response1 => {
 
-            // map.doubleClickZoom.disable();
-            var markers = L.markerClusterGroup({ 
-                chunkedLoading: true
-            });
-				///// 0 -> 4717
-				response1.forEach(item => {
+                deleteChargement();
+                createMap();
+
+                var map = create_map_content_not_async(geos, code_dep, "resto");
+                addControlPlaceholders(map);
+
+                // map.doubleClickZoom.disable();
+                var markers = L.markerClusterGroup({
+                    chunkedLoading: true
+                });
+                ///// 0 -> 4717
+                response1.forEach(item => {
 
                     const departementName = item.depName
-					
+
                     // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
-					// var pathDetails ="/restaurant/departement/"+ departementName + "/" + item.dep +"/details/" + item.id;
-                    
-                    
-                    const adresseRestaurant=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+                    // var pathDetails ="/restaurant/departement/"+ departementName + "/" + item.dep +"/details/" + item.id;
+
+
+                    const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
                     const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
                     // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-                    
-                    var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName +"." + adress;
-                    
-					var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
-                    
-                    marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+
+                    var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
+
+                    var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
+
+                    marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
                     marker.on('click', (e) => {
-                        
+
                         // marker.addEventListener('change', () => {
                         //     marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX )), {icon: setIcon('assets/icon/NewIcons/icon-resto-new-R.png') });
                         // })
                         const url = new URL(window.location.href);
-                        const icon_R= L.Icon.extend({
+                        const icon_R = L.Icon.extend({
                             options: {
-                                iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-Rr.png"
+                                iconUrl: url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png"
                             }
                         })
                         marker.setIcon(new icon_R);
 
-                        if( marker_last_selected){
-                            const icon_B= L.Icon.extend({
+                        if (marker_last_selected) {
+                            const icon_B = L.Icon.extend({
                                 options: {
-                                    iconUrl: url.origin+"/assets/icon/NewIcons/icon-resto-new-B.png"
+                                    iconUrl: url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png"
                                 }
                             })
                             marker_last_selected.setIcon(new icon_B)
@@ -1464,108 +1509,108 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         marker_last_selected = marker
                         console.log(e)
 
-                        
+
 
                         const coordAndZoom = {
-                            zoom: e.target.__parent._zoom+1,
-                            coord:e.target.__parent._cLatLng
+                            zoom: e.target.__parent._zoom + 1,
+                            coord: e.target.__parent._cLatLng
                         }
                         setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
-                        
+
                         let screemMax = window.matchMedia("(max-width: 1000px)")
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         let remove = document.getElementById("remove-detail")
-                        
+
                         if (screemMax.matches) {
-                            var pathDetails =`/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                            var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
                             location.assign(pathDetails)
                         } else if (screemMin.matches) {
-                            
+
                             remove.removeAttribute("class", "hidden");
                             remove.setAttribute("class", "navleft-detail fixed-top")
                             var myHeaders = new Headers();
-                            myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+                            myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
                             fetch(`/restaurant/departement/${departementName}/${item.dep}/details/${item.id}`, myHeaders)
                                 .then(response => {
                                     return response.text()
                                 }).then(r => {
-                                document.querySelector("#content-details").innerHTML = null
-                                document.querySelector("#content-details").innerHTML = r
-                                
-                                document.querySelector("#close-detail-tous-resto").addEventListener("click", () => { 
-                                    document.querySelector("#content-details").style.display = "none"
+                                    document.querySelector("#content-details").innerHTML = null
+                                    document.querySelector("#content-details").innerHTML = r
+
+                                    document.querySelector("#close-detail-tous-resto").addEventListener("click", () => {
+                                        document.querySelector("#content-details").style.display = "none"
+                                    })
+                                    document.querySelector("#content-details").removeAttribute("style")
+
                                 })
-                                document.querySelector("#content-details").removeAttribute("style")
-                                
-                            })
-                            
+
                         }
 
                     })
-                    
-					markers.addLayer(marker);
-				} )
 
-            map.addLayer(markers);
-            
-            if( nom_dep && code_dep ){
-                /// mise a jour de liste
-                const parent_elements= document.querySelector(".list_result")
-                const elements= document.querySelectorAll(".element")
-                elements.forEach(element => {
-                    element.parentElement.removeChild(element);
+                    markers.addLayer(marker);
                 })
 
-                if(document.querySelector(".plus_result")){
-                    parent_elements.removeChild(document.querySelector(".plus_result"))
+                map.addLayer(markers);
+
+                if (nom_dep && code_dep) {
+                    /// mise a jour de liste
+                    const parent_elements = document.querySelector(".list_result")
+                    const elements = document.querySelectorAll(".element")
+                    elements.forEach(element => {
+                        element.parentElement.removeChild(element);
+                    })
+
+                    if (document.querySelector(".plus_result")) {
+                        parent_elements.removeChild(document.querySelector(".plus_result"))
+                    }
+
+                    parsedResult.forEach(new_element => {
+
+                        // <div class="element" id="{{station.id}}">
+                        const div_new_element = document.createElement("div");
+                        div_new_element.setAttribute("class", "element")
+                        div_new_element.setAttribute("id", new_element.id);
+
+                        // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
+                        const s_p = document.createElement("p");
+                        s_p.innerHTML = "<span class='id_departement'>" + new_element.nomFerme + " </span>" + new_element.adresseFerme
+
+                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
+                        const a = document.createElement("a");
+                        a.setAttribute("class", "plus")
+                        a.setAttribute("href", "/ferme/departement/" + nom_dep + "/" + id_dep + "/details/" + new_element.id)
+                        a.innerText = "Voir details";
+
+                        /// integre dom under the element
+                        div_new_element.appendChild(s_p);
+                        div_new_element.appendChild(a);
+
+                        ///integre new element in each element.
+                        parent_elements.appendChild(div_new_element);
+                    })
+
                 }
-
-                parsedResult.forEach(new_element => {
-
-                    // <div class="element" id="{{station.id}}">
-                    const div_new_element = document.createElement("div");
-                    div_new_element.setAttribute("class", "element")
-                    div_new_element.setAttribute("id", new_element.id);
-
-                    // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-                    const s_p = document.createElement("p");
-                    s_p.innerHTML = "<span class='id_departement'>"+ new_element.nomFerme+" </span>" +  new_element.adresseFerme
-
-                    // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-                    const a= document.createElement("a");
-                    a.setAttribute("class", "plus")
-                    a.setAttribute("href", "/ferme/departement/"+ nom_dep +"/"+ id_dep +"/details/" + new_element.id )
-                    a.innerText = "Voir details";
-
-                    /// integre dom under the element
-                    div_new_element.appendChild(s_p);
-                    div_new_element.appendChild(a);
-                    
-                    ///integre new element in each element.
-                    parent_elements.appendChild(div_new_element);
+                map.on("resize zoom", (e) => {
+                    console.log(e)
+                    const coordAndZoom = {
+                        zoom: e.target._zoom,
+                        coord: e.target._lastCenter
+                    }
+                    setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
                 })
 
-            }
-            map.on("resize zoom", (e) => {
-                console.log(e)
-                const coordAndZoom = {
-                    zoom: e.target._zoom,
-                    coord:e.target._lastCenter
-                }
-                setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
+                map.on("dragend", (e) => {
+                    console.log(e.target.getCenter(), e.target.getZoom())
+                    const coordAndZoom = {
+                        zoom: e.target.getZoom(),
+                        coord: e.target.getCenter()
+                    }
+                    setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
+                })
             })
-
-            map.on("dragend", (e) => {
-                console.log(e.target.getCenter(), e.target.getZoom())
-                const coordAndZoom = {
-                    zoom: e.target.getZoom(),
-                    coord:e.target.getCenter()
-                }
-                setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
-            })
-        }) 
-    })
-    //end else
+        })
+        //end else
     }
     addListDepartRest()
 }
@@ -1603,132 +1648,146 @@ function addControlPlaceholdersresto(map) {
 }
 
 
-function showModalSearch(){
+function showModalSearch() {
     // alert("Please Show Modal Search...");
     document.querySelector(".show_modal_search_for_mobile_js_jheo")?.click();
 }
 
 /// THIS FUNCTION USE ONLY TO SET THE MINIFICHE FOR STATION ON HOVER ///
-function setMiniFicheForStation(nom, adresse,prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
-    const station = "<span class='fw-bolder'>STATION: </span> <br>" + nom+ ".";
+function setMiniFicheForStation(nom, adresse, prixE85, prixGplc, prixSp95, prixSp95E10, prixGasoil, prixSp98) {
+    const station = "<span class='fw-bolder'>STATION: </span> <br>" + nom + ".";
     const ad = "<br><span class='fw-bolder'>ADRESSE:</span> <br>" + adresse + ".";
     const carburants = "<br><span class='fw-bolder'>CARBURANTS:</span>"
-                        + "<ul>"
-                            + "<li><span class='fw-bold'>SP 95:</span> "+ prixSp95+"€ </li>"
-                            + "<li><span class='fw-bold'>SP 95 E 10:</span> "+ prixSp95E10+"€ </li>"
-                            + "<li><span class='fw-bold'>SP 98:</span> "+ prixSp98+ "€ </li>"
-                            + "<li><span class='fw-bold'>Gasoil:</span> "+ prixGasoil+ "€ </li>"
-                            + "<li><span class='fw-bold'>E 85:</span> " + prixE85+ "€ </li>" 
-                            + "<li><span class='fw-bold'>GPLC:</span> "+ prixGplc+"€ </li>"
-                        + "</ul>";
+        + "<ul>"
+        + "<li><span class='fw-bold'>SP 95:</span> " + prixSp95 + "€ </li>"
+        + "<li><span class='fw-bold'>SP 95 E 10:</span> " + prixSp95E10 + "€ </li>"
+        + "<li><span class='fw-bold'>SP 98:</span> " + prixSp98 + "€ </li>"
+        + "<li><span class='fw-bold'>Gasoil:</span> " + prixGasoil + "€ </li>"
+        + "<li><span class='fw-bold'>E 85:</span> " + prixE85 + "€ </li>"
+        + "<li><span class='fw-bold'>GPLC:</span> " + prixGplc + "€ </li>"
+        + "</ul>";
     return station + ad + carburants;
 }
 
-function setDefaultMiniFicherForStation(prixE85,prixGplc,prixSp95,prixSp95E10,prixGasoil,prixSp98 ){
-    const gazole= parseFloat(prixGasoil) !==0 ? `Gazole:${prixGasoil}€,`: ``;
-    const e_85= parseFloat(prixE85) !==0 ? `E85:${prixGasoil}€,`: ``;
-    const sp_95= parseFloat(prixSp95) !==0 ? `Sp95:${prixSp95}€,`: ``;
-    const sp_95_10= parseFloat(prixSp95E10) !==0 ? `Sp9510:${prixSp95E10}€,`: ``;
-    const sp_98= parseFloat(prixSp98) !==0 ? `Sp98${prixSp98}€,`: ``;
-    const gplc= parseFloat(prixGplc) !==0 ? `GPLC:${prixGplc}€,`: ``;
+function setDefaultMiniFicherForStation(prixE85, prixGplc, prixSp95, prixSp95E10, prixGasoil, prixSp98) {
+    const gazole = parseFloat(prixGasoil) !== 0 ? `Gazole:${prixGasoil}€,` : ``;
+    const e_85 = parseFloat(prixE85) !== 0 ? `E85:${prixGasoil}€,` : ``;
+    const sp_95 = parseFloat(prixSp95) !== 0 ? `Sp95:${prixSp95}€,` : ``;
+    const sp_95_10 = parseFloat(prixSp95E10) !== 0 ? `Sp9510:${prixSp95E10}€,` : ``;
+    const sp_98 = parseFloat(prixSp98) !== 0 ? `Sp98${prixSp98}€,` : ``;
+    const gplc = parseFloat(prixGplc) !== 0 ? `GPLC:${prixGplc}€,` : ``;
 
-    const default_mini_fiche= `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}${sp_95_10}${sp_98}${gplc}</div>`
+    const default_mini_fiche = `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}${sp_95_10}${sp_98}${gplc}</div>`
 
-    return default_mini_fiche.length> 45 ? `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}<br/>${sp_95_10}${sp_98}${gplc}</div>` : default_mini_fiche
+    return default_mini_fiche.length > 45 ? `<div class="default_mini_ficher">${gazole}${e_85}${sp_95}<br/>${sp_95_10}${sp_98}${gplc}</div>` : default_mini_fiche
 }
 
 
 function getDetailHomeForMobile(link) {
 
-    if(document.querySelector(".show_detail_for_mobile_js_jheo")){
+    if (document.querySelector(".show_detail_for_mobile_js_jheo")) {
         document.querySelector(".show_detail_for_mobile_js_jheo").click();
     }
 
-    fetchDetailsVialink(".content_detail_home_js_jheo",link)
+    fetchDetailsVialink(".content_detail_home_js_jheo", link)
 }
 
-function fetchDetailsVialink(selector, link){
+function fetchDetailsVialink(selector, link) {
 
     const myHeaders = new Headers();
-    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+    myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
 
     fetch(link)
         .then(response => {
             return response.text()
-        }).then(r => { 
-           document.querySelector(selector).innerHTML = null
-           document.querySelector(selector).innerHTML = r
+        }).then(r => {
+            document.querySelector(selector).innerHTML = null
+            document.querySelector(selector).innerHTML = r
         })
-    
+
 }
 
-function getDetailStation(depart_name, depart_code, id, inHome=false) { 
+function getDetailStation(depart_name, depart_code, id, inHome = false) {
     // console.log(depart_name, depart_code, id)
 
-    let remove = !inHome ? document.getElementById("remove-detail-station"): document.getElementById("remove-detail-home")
+    let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
 
-    const id_selector= !inHome ? "#content-details-station": "#content-details-home";
-    fetchDetails(id_selector, depart_name,depart_code,id)
+    const id_selector = !inHome ? "#content-details-station" : "#content-details-home";
+    fetchDetails(id_selector, depart_name, depart_code, id)
 }
 
 function getDetailStationForMobile(depart_name, depart_code, id) {
     // console.log(depart_name, depart_code, id)
-    if(document.querySelector(".btn_retours_specifique_jheo_js")){
+    if (document.querySelector(".btn_retours_specifique_jheo_js")) {
         document.querySelector(".btn_retours_specifique_jheo_js").click();
     }
 
-    if(document.querySelector(".get_action_detail_on_map_js_jheo")){
+    if (document.querySelector(".get_action_detail_on_map_js_jheo")) {
         document.querySelector(".get_action_detail_on_map_js_jheo").click();
     }
 
-    fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
+    fetchDetails(".content_detail_js_jheo", depart_name, depart_code, id)
 }
 
-function fetchDetails(selector, departName, departCode,id){
+function fetchDetails(selector, departName, departCode, id) {
 
     const myHeaders = new Headers();
-    myHeaders.append('Content-Type','text/plain; charset=UTF-8');
+    myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
 
-    console.log(departName,departCode,id);
+    console.log(departName, departCode, id);
 
     fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
         .then(response => {
             return response.text()
-        }).then(r => { 
-           document.querySelector(selector).innerHTML = null
-           document.querySelector(selector).innerHTML = r
+        }).then(r => {
+            document.querySelector(selector).innerHTML = null;
+
+            const parser = new DOMParser();
+            const htmlDocument = parser.parseFromString(r, "text/html");
+            if( htmlDocument.querySelector(".content_body")){
+                document.querySelector(selector).innerHTML = r
+            }else{
+                document.querySelector(selector).innerHTML = `
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div>
+                            Nous avons rencontre une probleme de connexion.
+                        </div>
+                    </div>`
+            }
+
         })
-    
+
 }
 
-function getDetailsFerme(pathDetails, inHome=false){
-    let remove = !inHome ? document.getElementById("remove-detail-ferme"): document.getElementById("remove-detail-home")
+function getDetailsFerme(pathDetails, inHome = false) {
+    let remove = !inHome ? document.getElementById("remove-detail-ferme") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
-    
-    const id_selector= !inHome ? "#content-details-ferme": "#content-details-home";
+
+    const id_selector = !inHome ? "#content-details-ferme" : "#content-details-home";
     fetchDetailFerme(id_selector, pathDetails);
 }
 
-function getDetailsFermeForMobile(pathDetails){
+function getDetailsFermeForMobile(pathDetails) {
     // location.assign(pathDetails)
 
     // console.log(depart_name, depart_code, id)
-    if(document.querySelector(".btn_retours_specifique_jheo_js")){
+    if (document.querySelector(".btn_retours_specifique_jheo_js")) {
         document.querySelector(".btn_retours_specifique_jheo_js").click();
     }
 
-    if(document.querySelector(".get_action_detail_on_map_js_jheo")){
+    if (document.querySelector(".get_action_detail_on_map_js_jheo")) {
         document.querySelector(".get_action_detail_on_map_js_jheo").click();
     }
 
     // fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
-    fetchDetailFerme(".content_detail_js_jheo",pathDetails)
+    fetchDetailFerme(".content_detail_js_jheo", pathDetails)
 }
 
-function fetchDetailFerme(selector,link){
+function fetchDetailFerme(selector, link) {
 
     let myHeaders = new Headers();
     myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
@@ -1739,49 +1798,49 @@ function fetchDetailFerme(selector,link){
             document.querySelector(selector).innerHTML = null
             document.querySelector(selector).innerHTML = r
         })
-    
+
 }
 
 
-function addListFermeMobile() { 
-    
+function addListFermeMobile() {
+
     document.querySelector("#open-navleft-mobile").addEventListener('click', () => {
         document.querySelector("#open-navleft-mobile").style.opacity = 0
         document.querySelector("#open-navleft-mobile").style.transition = "opacity 0.5s ease-in-out"
         if (document.querySelector("#list-depart-mobile")) {
-             document.querySelector("#list-depart-mobile").removeAttribute("style")
+            document.querySelector("#list-depart-mobile").removeAttribute("style")
         }
-            fetch(`/ferme-mobile`)
+        fetch(`/ferme-mobile`)
             .then(response => {
                 return response.text()
-            }).then(r => { 
+            }).then(r => {
                 document.querySelector("#list-depart-mobile").innerHTML = null
                 document.querySelector("#list-depart-mobile").innerHTML = r
                 // firstX= document.querySelector("#list-depart-mobile").getBoundingClientRect().x+document.querySelector("#list-depart-mobile").getBoundingClientRect().width
                 // firstY=document.querySelector("#list-depart-mobile").getBoundingClientRect().y
-               
+
                 document.querySelector("#close-ferme").addEventListener('click', () => {
-                    document.querySelector("#list-depart-mobile").style.transform = "translateX(-100vw)" 
+                    document.querySelector("#list-depart-mobile").style.transform = "translateX(-100vw)"
                     document.querySelector("#open-navleft-mobile").style.opacity = 1
                 })
 
-                
-                if(document.querySelector(".content_input_search_dep_jheo_js")){
-                    document.querySelector(".content_input_search_dep_jheo_js").addEventListener("submit", (e) =>{
+
+                if (document.querySelector(".content_input_search_dep_jheo_js")) {
+                    document.querySelector(".content_input_search_dep_jheo_js").addEventListener("submit", (e) => {
                         e.preventDefault();
-                        if(document.querySelector(".input_search_dep_mobile_jheo_js").value){
+                        if (document.querySelector(".input_search_dep_mobile_jheo_js").value) {
                             redirectToSerchFerme(document.querySelector(".input_search_dep_mobile_jheo_js").value)
                         }
                     })
                 }
-            })  
-        
-        
+            })
+
+
     })
 }
 
 
-function redirectToSerchFerme(value){
+function redirectToSerchFerme(value) {
     const valueToSearch = value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
     if (/^0[0-9]+$/.test(valueToSearch)) {
         lookupByDepCodeFerme(valueToSearch)
@@ -1790,15 +1849,15 @@ function redirectToSerchFerme(value){
         lookupByDepCodeFerme(tmp)
     } else if (/^[0-9]+.[a-zA-Z]+$/.test(valueToSearch)) {
         const tmp = valueToSearch.replace(/[^0-9]/g, "")
-        if (tmp.split("").length === 1) { 
+        if (tmp.split("").length === 1) {
             const p = `0${tmp}`
             lookupByDepCodeFerme(p)
         } else {
             lookupByDepCodeFerme(tmp)
         }
     } else if (/[^0-9]/.test(valueToSearch)) {
-            lookupByDepNameFerme(valueToSearch)
-    }else {
+        lookupByDepNameFerme(valueToSearch)
+    } else {
         if (valueToSearch.split("").length === 1) {
             const tmp = `0${valueToSearch}`
             lookupByDepCodeFerme(tmp)
@@ -1809,31 +1868,31 @@ function redirectToSerchFerme(value){
 }
 
 function lookupByDepNameFerme(g) {
-    DEP.depName.some((i,index) => {
-        if ((i.toLowerCase()) === g ) {
-             let code = DEP.depCode[index]
+    DEP.depName.some((i, index) => {
+        if ((i.toLowerCase()) === g) {
+            let code = DEP.depCode[index]
             if (index >= 0 && index <= 8) {
                 // code = DEP.depCode[index].replace("0", "")
                 // window.location=`/ferme/departement/${code}/${i}`
-                window.location=`/ferme/departement/${i}/${code}`
+                window.location = `/ferme/departement/${i}/${code}`
             } else {
                 // window.location=`/ferme/departement/${code}/${i}`
-                window.location=`/ferme/departement/${i}/${code}`
+                window.location = `/ferme/departement/${i}/${code}`
             }
         }
     })
 }
 
 function lookupByDepCodeFerme(g) {
-    DEP.depCode.some((i,index) => {
+    DEP.depCode.some((i, index) => {
         if (i == g) {
             let name = DEP.depName[index]
             if (index >= 0 && index <= 8) {
                 // window.location=`/ferme/departement/${i.replace("0","")}/${name}`
-                window.location=`/ferme/departement/${name}/${i}`
+                window.location = `/ferme/departement/${name}/${i}`
             } else {
                 // window.location=`/ferme/departement/${i}/${name}`
-               window.location=`/ferme/departement/${name}/${i}`
+                window.location = `/ferme/departement/${name}/${i}`
             }
         }
     })
@@ -1842,7 +1901,7 @@ function lookupByDepCodeFerme(g) {
 // const nom_dep = 
 
 function addListDepartMobile(nom_dep, id_dep) {
-    location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)   
+    location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
 }
 
 function addSpecificFermeMobile(nom_dep, id_dep) {
@@ -1852,18 +1911,18 @@ function addSpecificFermeMobile(nom_dep, id_dep) {
         document.querySelector("#list-specific-depart").removeAttribute("style")
     }
     fetch(`/ferme-mobile/departement/${nom_dep}/${id_dep}`)
-    .then(response => {
-        return response.text()
-    }).then(r => { 
-        // document.querySelector("#list-specific-depart")
-        document.querySelector("#list-specific-depart").innerHTML = null
-        document.querySelector("#list-specific-depart").innerHTML = r
-        document.querySelector("#close-ferme-specific").addEventListener('click', () => {
-            document.querySelector("#list-specific-depart").style.transform = "translateX(-115vw)" 
-            document.querySelector("#open-navleft-mobile-specific").style.transition = "opacity 0.5s ease-in-out"
-            document.querySelector("#open-navleft-mobile-specific").style.opacity = 1
+        .then(response => {
+            return response.text()
+        }).then(r => {
+            // document.querySelector("#list-specific-depart")
+            document.querySelector("#list-specific-depart").innerHTML = null
+            document.querySelector("#list-specific-depart").innerHTML = r
+            document.querySelector("#close-ferme-specific").addEventListener('click', () => {
+                document.querySelector("#list-specific-depart").style.transform = "translateX(-115vw)"
+                document.querySelector("#open-navleft-mobile-specific").style.transition = "opacity 0.5s ease-in-out"
+                document.querySelector("#open-navleft-mobile-specific").style.opacity = 1
+            })
         })
-    }) 
 }
 
 function addDetailFermeMobile(nom_dep, id_dep, id_ferme) {
@@ -1878,54 +1937,54 @@ function closeFermeDetail(nom_dep, id_dep) {
 
 
 
-let i=0
-if( document.querySelector("#list-depart-mobile")){
+let i = 0
+if (document.querySelector("#list-depart-mobile")) {
     document.querySelector("#list-depart-mobile").ontouchstart = (e) => {
         //e.preventDefault()
-        firstX =e.touches[0].clientX;
-        firstY=e.touches[0].clientY;
+        firstX = e.touches[0].clientX;
+        firstY = e.touches[0].clientY;
         //console.log(e.touches)
-       /* document.querySelector("#open-navleft-mobile-specific").style.transition = "translateX(-100vw) ease-in-out"*/
+        /* document.querySelector("#open-navleft-mobile-specific").style.transition = "translateX(-100vw) ease-in-out"*/
     }
     document.querySelector("#list-depart-mobile").ontouchend = (e) => {
         let x = e.changedTouches[0].clientX
         let y = e.changedTouches[0].clientY
-       // e.target.getBoundingClientRect().x = firstX - i;
+        // e.target.getBoundingClientRect().x = firstX - i;
         //if()
         console.log(x)
         console.log(y)
         let deltx = x - firstX
         let delty = y - firstY
-        if (Math.abs(deltx)>Math.abs(delty)) {
-            
+        if (Math.abs(deltx) > Math.abs(delty)) {
+
             if (deltx < 0) { //gauche
                 //document.querySelector("body").style.transition = `all 3s ease-in-out !important`
                 document.querySelector("#list-depart-mobile").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
                 document.querySelector("#open-navleft-mobile").style.opacity = 1
                 // document.querySelector("#open-navleft-mobile").style.transition = "opacity 0.5s ease-in-out"
-            } 
-        } 
+            }
+        }
     }
-}else{
+} else {
     console.log("#list-depart-mobile not found")
 }
-    
+
 function addListDepartRest() {
     document.querySelector("#open-navleft-resto-mobile").addEventListener('click', () => {
         document.querySelector("#open-navleft-resto-mobile").style.opacity = 0
         document.querySelector("#open-navleft-resto-mobile").style.transition = "opacity 0.5s ease-in-out"
         if (document.querySelector("#list-depart-resto-mobile")) {
-             document.querySelector("#list-depart-resto-mobile").removeAttribute("style")
+            document.querySelector("#list-depart-resto-mobile").removeAttribute("style")
         }
         fetch(`/restaurant-mobile`)
             .then(response => {
                 return response.text()
-            }).then(r => { 
+            }).then(r => {
                 document.querySelector("#list-depart-resto-mobile").innerHTML = null
                 document.querySelector("#list-depart-resto-mobile").innerHTML = r
-                
+
                 document.querySelector("#close-resto").addEventListener('click', () => {
-                    document.querySelector("#list-depart-resto-mobile").style.transform = "translateX(-100vw)" 
+                    document.querySelector("#list-depart-resto-mobile").style.transform = "translateX(-100vw)"
                     document.querySelector("#open-navleft-resto-mobile").style.opacity = 1
                 })
             })
@@ -1937,26 +1996,26 @@ function getSpecifictArrond(nom_dep, id_dep) {
 }
 
 
-function addListSpecResto(nom_dep, id_dep)  {
-        document.querySelector("#open-navleft-resto-mobile-arrand").style.opacity = 0
-        document.querySelector("#open-navleft-resto-mobile-arrand").style.transition = "opacity 0.5s ease-in-out"
-        if (document.querySelector("#list-arrand-resto")) {
-            console.log(document.querySelector("#list-arrand-resto"))
-             document.querySelector("#list-arrand-resto").removeAttribute("style")
-        }
-        fetch(`/restaurant-mobile/arrondissement?nom_dep=${nom_dep}&id_dep=${id_dep}`)
-            .then(response => {
-                return response.text()
-            }).then(r => { 
-                // console.log(r)
-                document.querySelector("#list-arrand-resto").innerHTML = null
-                document.querySelector("#list-arrand-resto").innerHTML = r
-                
-                document.querySelector("#close-resto-arrand").addEventListener('click', () => {
-                    document.querySelector("#list-arrand-resto").style.transform = "translateX(-100vw)" 
-                    document.querySelector("#open-navleft-resto-mobile-arrand").style.opacity = 1
-                })
+function addListSpecResto(nom_dep, id_dep) {
+    document.querySelector("#open-navleft-resto-mobile-arrand").style.opacity = 0
+    document.querySelector("#open-navleft-resto-mobile-arrand").style.transition = "opacity 0.5s ease-in-out"
+    if (document.querySelector("#list-arrand-resto")) {
+        console.log(document.querySelector("#list-arrand-resto"))
+        document.querySelector("#list-arrand-resto").removeAttribute("style")
+    }
+    fetch(`/restaurant-mobile/arrondissement?nom_dep=${nom_dep}&id_dep=${id_dep}`)
+        .then(response => {
+            return response.text()
+        }).then(r => {
+            // console.log(r)
+            document.querySelector("#list-arrand-resto").innerHTML = null
+            document.querySelector("#list-arrand-resto").innerHTML = r
+
+            document.querySelector("#close-resto-arrand").addEventListener('click', () => {
+                document.querySelector("#list-arrand-resto").style.transform = "translateX(-100vw)"
+                document.querySelector("#open-navleft-resto-mobile-arrand").style.opacity = 1
             })
+        })
 }
 
 
@@ -1969,29 +2028,29 @@ function getSpectResto(nom_dep, id_dep) {
 }
 
 function addListSpecRestoMobile(nom_dep, id_dep, codinsee) {
-        document.querySelector("#open-navleft-resto-spec-mobile").style.opacity = 0
-        document.querySelector("#open-navleft-resto-spec-mobile").style.transition = "opacity 0.5s ease-in-out"
-        if (document.querySelector("#list-spesific-resto")) {
-            console.log(document.querySelector("#list-spesific-resto"))
-             document.querySelector("#list-spesific-resto").removeAttribute("style")
+    document.querySelector("#open-navleft-resto-spec-mobile").style.opacity = 0
+    document.querySelector("#open-navleft-resto-spec-mobile").style.transition = "opacity 0.5s ease-in-out"
+    if (document.querySelector("#list-spesific-resto")) {
+        console.log(document.querySelector("#list-spesific-resto"))
+        document.querySelector("#list-spesific-resto").removeAttribute("style")
     }
     // alert(codinsee)
-        fetch(`/restaurant-mobile/specific?nom_dep=${nom_dep}&id_dep=${id_dep}&codinsee=${codinsee}`)
-            .then(response => {
-                return response.text()
-            }).then(r => { 
-                // console.log(r)
-                document.querySelector("#list-spesific-resto").innerHTML = null
-                document.querySelector("#list-spesific-resto").innerHTML = r
-                
-                document.querySelector("#close-resto-specific").addEventListener('click', () => {
-                    document.querySelector("#list-spesific-resto").style.transform = "translateX(-100vw)" 
-                    document.querySelector("#open-navleft-resto-spec-mobile").style.opacity = 1
-                })
+    fetch(`/restaurant-mobile/specific?nom_dep=${nom_dep}&id_dep=${id_dep}&codinsee=${codinsee}`)
+        .then(response => {
+            return response.text()
+        }).then(r => {
+            // console.log(r)
+            document.querySelector("#list-spesific-resto").innerHTML = null
+            document.querySelector("#list-spesific-resto").innerHTML = r
+
+            document.querySelector("#close-resto-specific").addEventListener('click', () => {
+                document.querySelector("#list-spesific-resto").style.transform = "translateX(-100vw)"
+                document.querySelector("#open-navleft-resto-spec-mobile").style.opacity = 1
             })
+        })
 }
 
-function getDetailRetoMobile(nom_dep, id_dep, id_restaurant, codinsee=null) {
+function getDetailRetoMobile(nom_dep, id_dep, id_restaurant, codinsee = null) {
     if (id_dep == "75" && codinsee != null) {
         location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}?codinsee=${codinsee}`)
     } else {
@@ -2005,4 +2064,88 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
     } else {
         location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`)
     }
-} 
+}
+
+function createChargement(){
+    
+    document.querySelector("#cart_map_js_jheo").innerHTML += `
+        <div class="chargement_content chargment_content_js_jheo" id="toggle_chargement">
+            <div class="content_box">
+                <div class="box">
+                    <div class="under_box"></div>
+                </div>
+            </div>
+        </div>
+    `
+}
+
+function deleteChargement(){
+    if(document.querySelector(".chargement_content_js_jheo")){
+        document.querySelector(".chargement_content_js_jheo").remove();
+    }
+}
+
+function createMap(){
+    document.querySelector(".cart_map_js_jheo").innerHTML += `
+        <div id="map" class="map map_js_jheo"></div>
+    `
+}
+
+function deleteMap(){
+    if(document.querySelector(".map_js_jheo")){
+        document.querySelector(".map_js_jheo").remove();
+    }
+}
+/**
+ * Set a viewing photos as a gallery
+ * @param {NodeList} imgs : list of images elements for making gallery
+ */
+
+function setGallerie(imgs){
+    imgs.forEach(img => {
+            
+        //console.log(img);
+        h = img.naturalHeight;
+        w = img.naturalWidth;
+
+        //console.log("img.naturalHeight : " + img.naturalHeight)
+        //console.log("img.naturalWidth : " + img.naturalWidth)
+        ratio = w/h;
+        closestRatioValue = Math.abs(1-ratio);
+        closestRatio = 1;
+        var a = Math.abs(16/9-ratio);
+        var b = Math.abs(9/16-ratio);
+
+        if(a < closestRatioValue){
+            closestRatioValue = a;
+            closestRatio = 16/9;
+        }
+        if(b < closestRatioValue){
+            closestRatioValue = b;
+            closestRatio = 9/16;
+        }
+
+        if(closestRatio == 16/9){
+            console.log("16/9");
+            img.style.gridColumn = "span 2";
+        } else if(closestRatio == 9/16){
+            console.log("9/16");
+            img.style.gridRow = "span 2";
+        }
+    });
+}
+
+/**
+ * 
+ * @param {Node} btn_photo : Parameter button clickable before shwoing image
+ */
+
+function setPhotoTribu(btn_photo){
+
+    if(btn_photo.tagName != "IMG"){
+        document.querySelector("#img_modal").src = btn_photo.querySelector("img").src
+    }else{
+        document.querySelector("#img_modal").src = btn_photo.src
+    }
+    
+}

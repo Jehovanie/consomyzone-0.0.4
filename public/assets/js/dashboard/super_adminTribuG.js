@@ -1,101 +1,56 @@
-createList(t);
-// createPagination(t);
+window.addEventListener('load', () => {
+    const super_admin_tribuG= new SuperAdminTribuG();
+    super_admin_tribuG.onInit()
 
-if( document.querySelector(".input_search_tribug_js").value !== "" ){
-    search(document.querySelector(".input_search_tribug_js").value);
-}
-
-document.querySelector(".input_search_tribug_js").addEventListener("input" , (e) => {
-    search(e.target.value.toLowerCase());
-})
-
-document.querySelector(".btn_search_js").addEventListener("click", () => {
-    if( document.querySelector(".input_search_tribug_js").value !== "" ){
-        search(document.querySelector(".input_search_tribug_js").value);
+    if( document.querySelectorAll(".list_filter_js_jheo")){
+        document.querySelectorAll(".list_filter_js_jheo").forEach(item_filter => {
+            item_filter.addEventListener("click", (e) =>{
+                document.querySelector(".list_filter_js_jheo.active_js_jheo").classList.remove("active_js_jheo")
+                document.querySelector(".list_filter_js_jheo.active").classList.remove("active")
+    
+                if( !e.target.classList.contains("active")){
+                    e.target.classList.add("active")
+                }
+    
+                document.querySelector(".list_filter_js_jheo.active").classList.add("active_js_jheo")
+    
+                super_admin_tribuG.filterByContentPartisant()
+            })
+        })
     }
+
+    document.querySelector(".input_search_tribug_js").addEventListener("input" , (e) => {
+        super_admin_tribuG.search(e.target.value.toLowerCase());
+    })
+
+
+    document.querySelector(".btn_search_js").addEventListener("click", () => {
+        if( document.querySelector(".input_search_tribug_js").value !== "" ){
+            super_admin_tribuG.search(document.querySelector(".input_search_tribug_js").value);
+        }
+    })
 })
 
-
-function search(query){
-    const results= t.filter( item => {
-        if(query.length === 2 ){
-            return item.d.includes(query)
-        }else{
-           const quartier = item.co + " " + item.i;
-           const inv_quartier = item.i + " " + item.co;
-           return item.dr.includes(query) || item.co.includes(query) || item.i.includes(query) || quartier.includes(query) || inv_quartier.includes(query)
-        }
-    })
-
-    deleteTr();
-    // deletePagination()
-    createList(results);
-    // createPagination(results)
-}
-
-
-function createList(data){
-    
-    data.forEach((item, index) => {
-        // {d:"01",dr:"010010000",c:1,i:"l abergement clemenciat",co:"l abergement clemenciat"}
-        // {d:"01",dr:"012830302",c:0,i:"parc industriel nord",co:"oyonnax"}
-        if( index < 100 ){
-            createItemAndAddTableTributG(
-                document.querySelector(".content_list_tributG_js_jheo"), ///parent
-                item.d,
-                item.co,
-                item.co + " " + item.i,
-                "tribug_" + item.d + "_" + item.i.replace(/( )/g , "_") + "_" + item.co.replace(" " , "_"),
-                // "/user/dashboard-membre?table=tribug_" + item.d + "_"+ item.co.split(" ").map(t=> t.toLowerCase()).join("_")+ "_" + item.i.split(" ").map(t=> t.toLowerCase()).join("_")
-                "/user/dashboard-membre?table=tribug_" + item.d + "_"+ item.i.split(" ").map(t=> t.toLowerCase()).join("_")+ "_" + item.co.split(" ").map(t=> t.toLowerCase()).join("_")
-            );
-        }
-    })
-    
-}
-
-
-
-
-function createItemAndAddTableTributG(parent,code,commune,quartier, name, link) {
-
-    const tr = document.createElement("tr");
-    tr.className = "list_js"
-
-    tr.appendChild(createTd(code));
-    tr.appendChild(createTd(commune));
-    tr.appendChild(createTd(quartier));
-
-    const td_name = document.createElement("td");
-    td_name.innerText = name;
-
-    const td_content_link = document.createElement("td");
-
-    const a = document.createElement("a");
-    a.setAttribute("href", link);
-    a.className = "btn btn-primary";
-    a.innerText = "Voir Membre";
-
-    td_content_link.appendChild(a);
-
-    tr.appendChild(td_name);
-    tr.appendChild(td_content_link);
-
-    parent.appendChild(tr);
-
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max)*10;
 }
 
 
 function createTd(value)
 {   
     const td = document.createElement("td")
-    td.innerText = value.replace(/""/g, "'");
+    if( typeof(value) === 'number'){
+        td.classList.add("content_count_js_jheo"); 
+        td.innerText = value;
+    }else{
+        td.innerText = value.replace(/""/g, "'");
+    }
     return td;
 }
 
 
 function deleteTr(){
-    document.querySelectorAll(".list_js").forEach(item => {
+    document.querySelectorAll(".list_js_jheo").forEach(item => {
         item.remove()
     })
 }
@@ -122,17 +77,24 @@ function deletePagination(){
 }
 
 
-function createliP(value)
+function createliP(value, is_active=false )
 {   
     const li = document.createElement("li");
-    li.className= "page-item";
+    li.className= "page-item page_item_js_jheo";
+    if( is_active ){
+        li.classList.add("active");
+    }
     const a = document.createElement("a");
     a.className = "page-link";
     a.innerText = value;
 
     li.appendChild(a);
 
-    // li.addEventListener("click", (e) => { console.log()})
+    // li.addEventListener("click", (e) => { 
+    //     if( value !== "..."){
+    //         super_admin_tribuG.checkoutPage(value)
+    //     }
+    // })
 
     return li
 }

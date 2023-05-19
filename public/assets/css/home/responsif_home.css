@@ -9,6 +9,9 @@
 
 /* large  */
 @media screen and (min-width:992px) {
+    .cta_filter_mobile{
+        display: none;
+    }
     .filter_other_mobile{
         display: none;
     }

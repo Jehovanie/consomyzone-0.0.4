@@ -2,6 +2,9 @@ body {
     background-color: white !important;
     overflow-x: hidden;
 }
+.navleft .list-depart {
+    margin-top: 150px !important;
+}
 
 .content_main{
     display: block;

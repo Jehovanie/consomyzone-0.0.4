@@ -1,6 +1,43 @@
 <!-- Modal new publication-->
 <div class="modal fade" id="modal_publication" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    {{form_start(newPub, {'method': 'POST'})}}
+    
+    <form action="" id="form-publication-tribu-t">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle publication</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    <textarea id="publication_legend" name="contenu" class="form-control"></textarea>
+                </div>
+				<div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                    <select id="publication_confidentiality" name="confidentialite" class="form-select">
+                        <option value="1">Publique</option>
+                        <option value="2">Ami(e)s</option>
+                        <option value="3">Moi uniquement</option>
+                    </select>
+                </div>
+                <img src="" alt="" width="100" id="image-publication-tribu-t">
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Photo</label>
+                    <input type="file" id="publication_photo" name="photo" class="form-control">
+                </div>
+                    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
+                <input type="submit" class="btn btn-primary" value="Envoyer" id="submit-publication-tribu-t">
+            </div>
+        </div>
+    </div>
+    </form>
+    {# {{form_start(newPub, {'method': 'POST'})}}
+    
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -21,7 +58,7 @@
                     <label for="formFileMultiple" class="form-label">Photo</label>
                     {{form_row(newPub.photo)}}
                 </div>
-
+                    {{form_row(newPub.tribu_t_name)}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
@@ -29,7 +66,7 @@
             </div>
         </div>
     </div>
-    {{form_end(newPub)}}
+    {{form_end(newPub)}} #}
 </div>
 <!-- End Modal-->
 
@@ -149,9 +186,9 @@
 						<li><a class="dropdown-item" href="#"><i class="bi bi-calendar-event"></i>  Événement</a></li>
 						<li><a class="dropdown-item" href="#"><i class="bi bi-list-task"></i>  Tâche</a></li>
 						<li><a class="dropdown-item" href="#"><i class="bi bi-alarm-fill"></i>  Rappel</a></li>
-                        {% if has_restaurant == true %}
+                        {# {% if has_restaurant == true %}
                             <li><a class="dropdown-item" href="#"><i class="bi bi-cup-hot"></i>  Repas</a></li>
-                        {% endif %}
+                        {% endif %} #}
 					</ul>
 				</div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -287,9 +324,23 @@
 	</div>
 </div>
 
+<!-- Modal show photo-->
+<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+				<img id="img_modal" style="width:100%">
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
 
 <!-- end modal repas -->
-
+{# 
 <script>
 
 	function addPublication(){
@@ -333,4 +384,4 @@
 		
 	}
 </script>
-
+ #}
