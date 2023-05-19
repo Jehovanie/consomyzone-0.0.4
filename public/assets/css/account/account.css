@@ -22,15 +22,15 @@ body{
 .content_left_menu_account {
     display: block;
     width: 22%;
-    height: 100vh;
-    overflow: scroll;
+    /* height: 100vh; */
+    /* overflow: scroll; */
 }
 
 .content_right_actualite{
     display: block;
     width: 78%;
-    height: 87vh;
-    overflow-y: scroll;
+    /* height: 100vh; */
+    /* overflow-y: scroll; */
     overflow-x: hidden;
     
     position: absolute;
@@ -98,7 +98,7 @@ body{
 
 .card-pub{
     display: block;
-    /* width: 800px; */
+    /* width: 73vw; */
     /* margin-left: 160px; */
 }
 
@@ -945,3 +945,283 @@ thead > tr{
     color: #0A0AFE;
 }
 
+.back-tribu-t{
+    background-color: #fff;
+    height: 100vh;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.back-tribu-t .avatar-tribu{
+    width: 35px;
+    border-radius: 15px;
+}
+
+.back-tribu-t ul li{
+    list-style: none;
+}
+
+.back-tribu-t .card-my-tribu-t a{
+    color: #000;
+    text-decoration: none;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t{
+    width: 76vw;
+    height: 28vh;
+    margin-top: -215px;
+    background-color: #fff;
+    border-radius: 15px ;
+    position: fixed;
+    z-index: 5;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .hr-pub{
+    width: 50vw;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .content-couverture{
+    width: 76vw;
+    height: 20vh;
+    margin-top: 0;
+    background-color: #8888;
+    border-radius: 15px 15px 0 0;
+}
+
+.content_right_actualite .exprime-pub {
+    margin-top: 235px;
+    
+}
+
+.content_right_actualite .champ-pub {
+    background-color: #fff; 
+    width: 75vw;
+    border-radius: 15px;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .content-couverture .avatar-tribu-pub{
+    margin: 30px;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .content-couverture img{
+    height: 100px;
+    border-radius: 10px;
+    margin-left: 15px;
+    margin-top: 15px;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .content-couverture nav{
+    width: 35vw;
+    border-radius: 3px;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .nome-fontateur-tribu-t{
+    background-color: #1aba12;
+    margin-top: 12px;
+}
+
+.content_right_actualite .card-couverture-pub-tribu-t .nome-fontateur-tribu-t p{
+    color: #fff;
+    margin-left: 20px;
+}
+
+.content_right_actualite .pub-tribu-t{
+    background-color: #fff;
+    border-radius: 15px;
+    width: 720px;
+}
+
+.content_right_actualite .pub-tribu-t .name-pub .mini-pdp{
+    width: 40px;
+    margin-left: 15px;
+    margin-top: 15px;
+    border-radius: 50%;
+}
+
+.content_right_actualite .pub-tribu-t .name-pub a {
+    text-decoration: none;
+    color: #000; 
+    font-weight: 600;
+}
+
+.content_right_actualite .pub-tribu-t .name-pub .pub-content p{
+    margin-left: 25px;
+    margin-top: 15px;
+    width: 50vw;
+}
+
+.content_right_actualite .pub-tribu-t .name-pub .pub-photo img{
+    margin-left: 25px;
+    margin-top: 15px;
+    width: 45vw;
+}
+
+.content_right_actualite .pub-tribu-t .name-pub .content-comant-reaction p{
+    text-align: right;
+    margin-right: 15px;
+}
+
+.content_right_actualite .pub-tribu-t .name-pub  hr {
+    width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content_right_actualite .apropos-tribu-t {
+    background-color: #fff;
+    border-radius: 15px;
+    width: 24vw;
+}
+
+.content_right_actualite .apropos-tribu-t p{
+    width: 22vw;
+    /* text-align: justify; */
+}
+
+.input[type="file"] {
+    opacity: 0;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.label{
+    position: absolute;
+    top: -70px;
+    left: 25px;
+    display: block;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: #494949 5px solid;
+    box-shadow: inset 0px 0px 3px rgba(0, 0, 0, 0.4);
+    background: url('../../icon/NewIcons/avatar.svg');
+    background-repeat: no-repeat;
+    text-align: center;
+}
+.input[type="file"] {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    display: block;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: #494949 5px solid;
+    box-shadow: inset 0px 0px 3px rgba(0, 0, 0, 0.4);
+    background: url('../../icon/NewIcons/avatar.svg');
+    background-repeat: no-repeat;
+    text-align: center;
+}
+
+.label {
+    position: relative;
+}
+
+.label-uplaod-tribu-t {
+    position: absolute;
+    top: 50px;
+    left: 25px;
+    width: 100px;
+    font-size: 12pt;
+    color: #494949;
+    line-height: 1.5;
+    /* z-index: -1; */
+}
+
+.ModalCreationTribuT .modal-body .mini-couvertur-tribu-t img{
+    width: 468px;
+    height: 200px;
+}
+
+.form-tribu-t{
+    position: relative;
+}
+
+.nom-tribu-t{
+    position: absolute;
+    top: 225px;
+    left: 180px;
+    width: 300px;
+    border: none;
+    background-color: transparent;
+    font-size: 14pt;
+    font-weight: 700;
+}
+
+.description-tribu-t{
+    position: absolute;
+    top: 300px;
+    left: 15px;
+    width: 470px;
+    height: 50px;
+    border: none;
+    resize: none;
+    background-color: transparent;
+    font-size: 12pt;
+    /* text-align: center; */
+}
+
+.adress-tripu-t{
+    width: 470px;
+    height: 50px;
+    border: none;
+    background-color: transparent;
+}
+
+.btn-creer{
+    width: 150px;
+    height: 40px;
+    background-color: #0A0AFE;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    margin-left: 25px;
+}
+
+/* .adress-tripu-t,.description-tribu-t,.nom-tribu-t:focus{
+    outline: none;
+} */
+
+#uploadImage img{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+
+.text-choisir{
+    position: absolute;
+    top: 420px;
+    left: 28px;
+    font-size: 8pt;
+}
+
+.pastille-resto{
+    width: 76vw;
+    height: 80px;
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+
+.pastille-resto label {
+    margin-left: 50px;
+}
+
+.pastille-resto .input-group {
+    width: 75vw;
+}
+
+.rounded {
+    border: none;
+    height: 60px;
+    border-radius: 0px 0px 0px 0px;
+}
+
+.pastil-resto{
+    background-color: #fff;
+    height: 150px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}

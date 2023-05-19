@@ -16,10 +16,16 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BddRestoRepository extends ServiceEntityRepository
 {
+
+
+
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BddResto::class);
     }
+
+
 
     public function save(BddResto $entity, bool $flush = false): void
     {
@@ -30,6 +36,25 @@ class BddRestoRepository extends ServiceEntityRepository
         }
     }
 
+    public function findRestoByName($restoName){
+        return $this->createQueryBuilder("r")
+        ->select("r")
+        ->where("r.denominationF LIKE :name")
+        ->setParameter("name","%".$restoName."%")
+        ->getQuery()
+        ->getResult();
+    }
+
+    // public function findRestoByNameV2($restoName1,$restoName2){
+    //     return $this->createQueryBuilder("r")
+    //     ->select("r")
+    //     ->where("r.denominationF LIKE :name1")
+    //     ->orWhere("r.denominationF LIKE :name2")
+    //     ->setParameter("name1",'%'.$restoName1.'%')
+    //     ->setParameter("name2",'%'.$restoName2.'%')
+    //     ->getQuery()
+    //     ->getResult();
+    // }
     public function remove(BddResto $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

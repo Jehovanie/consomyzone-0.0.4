@@ -22,7 +22,8 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background-color: white;
+        background-color: #fff;
+        border-radius: 3px;
       }
       .bgPersonnalisee{
         background-image: linear-gradient(#888888 285px, #ffffff 0%);
