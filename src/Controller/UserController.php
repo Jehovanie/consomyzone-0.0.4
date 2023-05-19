@@ -51,8 +51,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
+use Symfony\Component\Filesystem\Filesystem;
 
 class UserController extends AbstractController
 
@@ -64,15 +63,15 @@ class UserController extends AbstractController
 
 
 
-    public function __construct(EntityManagerInterface $entityManager){
+    public function __construct(EntityManagerInterface $entityManager)
+    {
 
         $this->entityManager = $entityManager;
-
     }
 
 
 
-    #[Route("/user/account", name:"app_account")]
+    #[Route("/user/account", name: "app_account")]
 
     public function Account(
 
@@ -82,11 +81,9 @@ class UserController extends AbstractController
 
         TributGService $tributGService
 
-    ): Response
+    ): Response {
 
-    {
-
-        $user= $this->getUser();
+        $user = $this->getUser();
 
         $userType = $user->getType();
 
@@ -100,14 +97,12 @@ class UserController extends AbstractController
 
 
 
-        if($userType == "consumer") {
+        if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
-        }else{
+        } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
@@ -126,7 +121,7 @@ class UserController extends AbstractController
 
         if ($new_publication->isSubmitted() && $new_publication->isValid()) {
 
-            
+
 
             $publication = $new_publication['legend']->getData();
 
@@ -138,9 +133,9 @@ class UserController extends AbstractController
 
 
 
-            if( $publication && $confid ){
+            if ($publication && $confid) {
 
-                
+
 
                 if ($photo) {
 
@@ -157,19 +152,16 @@ class UserController extends AbstractController
                         $newFilename
 
                     );
-
                 }
 
-    
+
 
                 $tributGService->createOnePub($profil[0]->getTributG() . "_publication", $userId, $publication, $confid, $newFilename);
-
             }
 
-            
+
 
             return $this->redirect($request->getUri());
-
         }
 
 
@@ -178,11 +170,11 @@ class UserController extends AbstractController
 
             "profil" => $profil,
 
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
 
             "tributG" => [
                 "table" => $profil[0]->getTributg(),
-                
+
                 "profil" => $tributGService->getProfilTributG(
 
                     $profil[0]->getTributg(),
@@ -198,20 +190,17 @@ class UserController extends AbstractController
             "new_publication" => $new_publication->createView()
 
         ]);
-
     }
 
 
 
-    #[Route("/users/account/publications", name:"app_publications_sse")]
+    #[Route("/users/account/publications", name: "app_publications_sse")]
 
-    public function publicationsSSE( 
+    public function publicationsSSE(
 
         TributGService $tributGService
 
-    )
-
-    {
+    ) {
 
         $publications =  $tributGService->getAllPublications(
 
@@ -236,10 +225,9 @@ class UserController extends AbstractController
             ob_end_flush();
 
             flush();
-
         });
 
-        
+
 
         /// setting the header
 
@@ -256,14 +244,13 @@ class UserController extends AbstractController
 
 
         return $response;
-
     }
 
 
 
 
 
-    #[Route("/send/notifications/etbasCreate",name:"send_notifications_etbasCreate")]
+    #[Route("/send/notifications/etbasCreate", name: "send_notifications_etbasCreate")]
 
     public function sendNotifications(
 
@@ -283,61 +270,56 @@ class UserController extends AbstractController
 
         FermeGeomRepository $ferm
 
-    ): Response{
+    ): Response {
 
-        $req=json_decode($request->getContent(),true);
+        $req = json_decode($request->getContent(), true);
 
         $user = $this->getUser();
 
-        $userId= $user->getId();
+        $userId = $user->getId();
 
         $userType = $user->getType();
 
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
-        $tableTribuGName=$profil[0]->getTributG();
+        $tableTribuGName = $profil[0]->getTributG();
 
-        $allUsers=$tributGService->getAllTributG($tableTribuGName);
+        $allUsers = $tributGService->getAllTributG($tableTribuGName);
 
         ///ferme/departement/Ain/01/details/4726
 
-        $content="";
+        $content = "";
 
-        if($req["ask"] =="update"){
+        if ($req["ask"] == "update") {
 
             $constent = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
 
                 "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de modifier des informations sur son établissement</a>";
-
-        }else if($req["ask"] =="create"){
+        } else if ($req["ask"] == "create") {
 
             $constent = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
 
                 "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de créer une nouvelle établissement</a>";
-
         }
 
-       
 
-        $notificationService->sendNotificationForMany($userId,$allUsers,"nouvelle etablissement",$constent);
 
-        return $this->json("succes",200);
+        $notificationService->sendNotificationForMany($userId, $allUsers, "nouvelle etablissement", $constent);
 
+        return $this->json("succes", 200);
     }
 
 
 
 
 
-    #[Route("/send/request/moderate",name:"app_send_request_moderate")]
+    #[Route("/send/request/moderate", name: "app_send_request_moderate")]
 
     public function sendRequestModerate(
 
@@ -351,21 +333,22 @@ class UserController extends AbstractController
 
         TributGService $tributGService,
 
-        SupplierRepository $supplierRepository,){
+        SupplierRepository $supplierRepository,
+    ) {
 
 
 
-            //TODO send request
+        //TODO send request
 
     }
 
 
 
-    #[Route("/send/notification/ask" , name:"app_ask_notification_send")]
+    #[Route("/send/notification/ask", name: "app_ask_notification_send")]
 
     public function sendNotificationForAsk(
 
-        Request $request, 
+        Request $request,
 
         TributGService $tributGService,
 
@@ -377,15 +360,15 @@ class UserController extends AbstractController
 
         RequestingService $requesting
 
-    ){
+    ) {
 
-        $req =$request->request->all();
+        $req = $request->request->all();
 
         $id_receiver = $req["id"];
 
         //$val = $req["value"];
 
-       
+
 
         $user_receiver = $userRepository->find($id_receiver);
 
@@ -393,31 +376,31 @@ class UserController extends AbstractController
 
 
 
-        $tableRequestingReceiver=$user_receiver->getTableRequesting();
+        $tableRequestingReceiver = $user_receiver->getTableRequesting();
 
-        
+
 
         ///all have the same table tribuG name.
 
         $tableTribuGName = $tributGService->getTableNameTributG($id_receiver);
 
-        
 
-        $userPoster=$this->getUser();
 
-        $userPosterId= $userPoster->getId();
+        $userPoster = $this->getUser();
+
+        $userPosterId = $userPoster->getId();
 
         $tableRequestingPoster = $userPoster->getTableRequesting();
 
         $profilPoster = $status->statusFondateur($userPoster)["profil"];
 
-        
+
 
         // $content = $profilPoster[0]->getFirstName() . " " . $profilPoster[0]->getLastName() . "<a href=\"{{path('app_invitation')}}\">vient de vous envoyer une invitation pour devenir moderateur</a>";
 
         $content = $profilPoster[0]->getFirstName() . " " . $profilPoster[0]->getLastName() . "<a href='/user/invitation'>vient de vous envoyer une invitation pour devenir modérateur</a>";
 
-       
+
 
         $notificationService->sendNotificationForOne(
 
@@ -431,9 +414,9 @@ class UserController extends AbstractController
 
         );
 
-        
 
-        $balise = str_replace(" " ,"", $tableTribuGName.$id_receiver.$userPosterId);
+
+        $balise = str_replace(" ", "", $tableTribuGName . $id_receiver . $userPosterId);
 
 
 
@@ -475,17 +458,16 @@ class UserController extends AbstractController
 
         );
 
- 
 
-        return $this->json(["succe"=>"ok"]);
 
+        return $this->json(["succe" => "ok"]);
     }
 
 
 
 
 
-    #[Route("/set/isDev",name:"app_set_is_dev")]
+    #[Route("/set/isDev", name: "app_set_is_dev")]
 
     public function setIsDev(
 
@@ -499,20 +481,20 @@ class UserController extends AbstractController
 
         TributGService $tributGService,
 
-        SupplierRepository $supplierRepository,){
+        SupplierRepository $supplierRepository,
+    ) {
 
-        $req=json_decode($request->getContent(),true);
+        $req = json_decode($request->getContent(), true);
 
-        $id=$req["id"];
+        $id = $req["id"];
 
-        $val=$req["value"];
+        $val = $req["value"];
 
         $tableTribuGName = $tributGService->getTableNameTributG($id);
 
-        $isucces=$tributGService->setIsDev($tableTribuGName,$id,$val);
+        $isucces = $tributGService->setIsDev($tableTribuGName, $id, $val);
 
-        return $this->json(["succes"=>$isucces]);
-
+        return $this->json(["succes" => $isucces]);
     }
 
 
@@ -546,14 +528,13 @@ class UserController extends AbstractController
         $isucces = $tributGService->setIsModerateur($tableTribuGName, $id, $val);
 
         return $this->json(["succes" => $isucces]);
-
     }
 
 
 
 
 
-    #[Route("/user/setting", name:"setting_user_account")]
+    #[Route("/user/setting", name: "setting_user_account")]
 
     public function settingAccount(
 
@@ -563,49 +544,40 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ): Response
+    ): Response {
 
-    {
+        if ($this->getUser()) {
 
-        if( $this->getUser()){
+            if ($this->getUser()->getType() === "consumer") {
 
-            if( $this->getUser()->getType() === "consumer"){
-
-                $profil = $consumerRepository->findOneBy(["user" => $this->getUser()->getId() ]);
-
-            }else{
+                $profil = $consumerRepository->findOneBy(["user" => $this->getUser()->getId()]);
+            } else {
 
                 $profil = $supplierRepository->findOneBy(["user" => $this->getUser()->getId()]);
-
             }
-
-            
-
-        }else{
+        } else {
 
             return $this->redirectToRoute("app_connexion");
-
         }
 
-        
+
 
         $form = $this->createForm(UserSettingType::class);
 
         $flash = [];
 
-        
+
 
         $form->handleRequest($request);
 
-        if( $form->isSubmitted() && $form->isValid() ){
+        if ($form->isSubmitted() && $form->isValid()) {
 
-            dd( $form->getData());
-
+            dd($form->getData());
         }
 
 
 
-        return $this->render("user/settingAccount.html.twig",[
+        return $this->render("user/settingAccount.html.twig", [
 
             "form_setting" => $form->createView(),
 
@@ -616,7 +588,6 @@ class UserController extends AbstractController
             "lastname" => $profil->getLastname()
 
         ]);
-
     }
 
 
@@ -625,7 +596,7 @@ class UserController extends AbstractController
 
     #[Route('/user/profil/{user_id}', name: 'user_profil')]
 
-    public function index($user_id, EntityManagerInterface $entityManager, TributGService $tributGService ): Response
+    public function index($user_id, EntityManagerInterface $entityManager, TributGService $tributGService): Response
 
     {
 
@@ -644,11 +615,9 @@ class UserController extends AbstractController
         if ($myuserType == "consumer") {
 
             $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } elseif ($myuserType == "supplier") {
 
             $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
@@ -677,13 +646,22 @@ class UserController extends AbstractController
             $type = "Consommateur";
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
-
         } elseif ($userType == "supplier") {
 
             $type = "Fournisseur";
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
+        }
 
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
+
+        $images = glob($path . "*.*");
+
+        $images_trie = [];
+
+        for ($i = count($images) - 1; $i >= 0; $i--) {
+            # code...
+            array_push($images_trie, $images[$i]);
         }
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
@@ -691,11 +669,13 @@ class UserController extends AbstractController
 
         return $this->render('user/profil.html.twig', [
 
-            "profil" => $myProfil, 
+            "profil" => $myProfil,
 
-            "autre_profil" => $profil, 
+            "autre_profil" => $profil,
 
             "type" => $type,
+
+            "images" => $images_trie,
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
@@ -706,20 +686,19 @@ class UserController extends AbstractController
                 $user_id
 
             ),
-            
+
             "tributG" => [
                 "table" => $profil[0]->getTributg(),
-                
+
                 "profil" => $tributGService->getProfilTributG(
                     $profil[0]->getTributg(),
                     $user_id
                 ),
             ],
-            
+
             "nombre_partisant" => $nombre_partisant
 
         ]);
-
     }
 
 
@@ -732,9 +711,7 @@ class UserController extends AbstractController
 
         TributGService $tributGService
 
-    ): Response
-
-    {
+    ): Response {
 
         $user = $this->getUser();
 
@@ -747,14 +724,12 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
-        return $this->render("user/dashboard_super_admin/dashboard.html.twig",[
+        return $this->render("user/dashboard_super_admin/dashboard.html.twig", [
 
             "profil" => $profil,
 
@@ -769,7 +744,6 @@ class UserController extends AbstractController
             )
 
         ]);
-
     }
 
 
@@ -792,9 +766,7 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ): Response
-
-    {
+    ): Response {
 
 
 
@@ -819,39 +791,34 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
         $results = [];
 
-        $under_tributG = $tributGService->getAllUserWithRoles( $table_name );
+        $under_tributG = $tributGService->getAllUserWithRoles($table_name);
 
-        if( $under_tributG === 0 ){
+        if ($under_tributG === 0) {
 
             goto quit;
-
         }
 
-        
 
-        foreach($under_tributG as $tributG ){
+
+        foreach ($under_tributG as $tributG) {
 
 
 
             $user = $userRepository->find(intval($tributG["user_id"]));
 
-            if( $user->getType() === "consumer"){
+            if ($user->getType() === "consumer") {
 
                 $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
-
-            }else{
+            } else {
 
                 $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
-
             }
 
 
@@ -874,39 +841,37 @@ class UserController extends AbstractController
 
             ];
 
-           
+
 
             array_push($results, $result);
-
         }
 
 
 
         quit:
 
-        return $this->render("user/dashboard_super_admin/dashboard-membre.html.twig",[
+        return $this->render("user/dashboard_super_admin/dashboard-membre.html.twig", [
 
             "profil" => $profil,
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
-                    $profil[0]->getTributg(),
+                $profil[0]->getTributg(),
 
-                    $profil[0]->getIsVerifiedTributGAdmin(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
 
-                    $userId
+                $userId
 
             ),
 
             "results" => $results
 
         ]);
-
     }
 
 
 
-    #[Route("/user/dashboard-membre-apropos", name:"app_dashboardapropos")]
+    #[Route("/user/dashboard-membre-apropos", name: "app_dashboardapropos")]
 
     public function DashboardMembreApropos(
 
@@ -922,9 +887,7 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ): Response
-
-    {
+    ): Response {
 
         ///get param from the url
 
@@ -947,11 +910,9 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
@@ -960,23 +921,21 @@ class UserController extends AbstractController
 
 
 
-        if( $user_to_control->getType() === "consumer"){
+        if ($user_to_control->getType() === "consumer") {
 
-            $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control ]);
+            $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
+        } else {
 
-        }else{
-
-            $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control ]);
-
+            $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
         }
 
 
 
         $table_tribut = $user_to_control_profil->getTributG();
 
-        $tribut = $tributGService->getStatus($table_tribut, $user_id_to_control );
+        $tribut = $tributGService->getStatus($table_tribut, $user_id_to_control);
 
-       
+
 
         $apropos = [
 
@@ -1016,7 +975,7 @@ class UserController extends AbstractController
 
 
 
-        
+
 
         return $this->render("user/dashboard_super_admin/dashboard-apropos.html.twig", [
 
@@ -1035,12 +994,11 @@ class UserController extends AbstractController
             "apropos" => $apropos
 
         ]);
-
     }
 
 
 
-    #[Route("/admin/validate_tributG" , name:"app_validate_by_super_admin")]
+    #[Route("/admin/validate_tributG", name: "app_validate_by_super_admin")]
 
     public function validateBySuperAdmin(
 
@@ -1056,9 +1014,7 @@ class UserController extends AbstractController
 
         UserRepository $userRepository
 
-    )
-
-    {
+    ) {
 
         ///pour plus de resultat dans le view.
 
@@ -1070,35 +1026,31 @@ class UserController extends AbstractController
 
 
 
-        if( $categories === "consumer"){
+        if ($categories === "consumer") {
 
             $profil = $consumerRepository->findOneBy(["userId" => intVal($user_id)]);
-
-        }else{
+        } else {
 
             $profil = $supplierRepository->findOneBy(["userId" => intVal($user_id)]);
-
         }
 
 
 
-        if( intval($value) === 0 ){
+        if (intval($value) === 0) {
 
             $profil->setIsVerifiedTributGAdmin(false);
 
-            $message_notification= "Dommage, l'administrateur de cette plateforme ne pas accepter que vous êtes l'administrateur de cette Tribu G.";
-
-        }else{
+            $message_notification = "Dommage, l'administrateur de cette plateforme ne pas accepter que vous êtes l'administrateur de cette Tribu G.";
+        } else {
 
             $profil->setIsVerifiedTributGAdmin(true);
 
-            $message_notification= "Nous vous informons que l'administrateur de cette plateforme a valider que votre rôle en tant qu'administrateur dans notre tribu G." .
+            $message_notification = "Nous vous informons que l'administrateur de cette plateforme a valider que votre rôle en tant qu'administrateur dans notre tribu G." .
 
-            "<br/> <a class='d-block w-50 mx-auto mt-3 btn btn-primary text-center' href='/user/dashboard-fondateur' alt='Administration tributG'>Voir</a>" ;
-
+                "<br/> <a class='d-block w-50 mx-auto mt-3 btn btn-primary text-center' href='/user/dashboard-fondateur' alt='Administration tributG'>Voir</a>";
         }
 
-        
+
 
         $entityManagerInterface->persist($profil);
 
@@ -1110,7 +1062,7 @@ class UserController extends AbstractController
 
         $admin = $userRepository->findByRolesUserSuperAdmin();
 
-        $type="Validation d'administrer le tribu G";
+        $type = "Validation d'administrer le tribu G";
 
 
 
@@ -1141,14 +1093,13 @@ class UserController extends AbstractController
 
 
         return $this->json($value);
-
     }
 
 
 
 
 
-    #[Route("/user/dashboard-fondateur", name:"app_dashboard_fondateur")]
+    #[Route("/user/dashboard-fondateur", name: "app_dashboard_fondateur")]
 
     public function DashboardFondateur(
 
@@ -1160,9 +1111,7 @@ class UserController extends AbstractController
 
         UserService $userService
 
-    ): Response
-
-    {
+    ): Response {
 
         $user = $this->getUser();
 
@@ -1175,11 +1124,9 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
@@ -1196,17 +1143,17 @@ class UserController extends AbstractController
 
 
 
-        foreach( $all_member  as $member ){
+        foreach ($all_member  as $member) {
 
 
 
             $user_temp = $userRepository->find(intval($member["user_id"]));
 
-            $profil_temp=  $userService->getUserProfileFromId(intval($member["user_id"]));
+            $profil_temp =  $userService->getUserProfileFromId(intval($member["user_id"]));
 
 
 
-            if($user_temp &&  $profil_temp ){
+            if ($user_temp &&  $profil_temp) {
 
 
 
@@ -1228,14 +1175,10 @@ class UserController extends AbstractController
 
                 ];
 
-                
+
 
                 array_push($results, $result);
-
             }
-
-
-
         }
 
 
@@ -1250,33 +1193,30 @@ class UserController extends AbstractController
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
-                                    $profil[0]->getTributg(),
+                $profil[0]->getTributg(),
 
-                                    $profil[0]->getIsVerifiedTributGAdmin(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
 
-                                    $userId
+                $userId
 
-                                )
+            )
 
         ]);
-
     }
 
 
 
 
 
-    #[Route("/user/dashboard-membre-fondateur", name:"app_dashboardmembre_fondateur")]
+    #[Route("/user/dashboard-membre-fondateur", name: "app_dashboardmembre_fondateur")]
 
     public function DashboardMembreFondateur(
 
         EntityManagerInterface $entityManager,
 
-        TributGService $tributGService 
+        TributGService $tributGService
 
-    ): Response
-
-    {
+    ): Response {
 
         $user = $this->getUser();
 
@@ -1289,28 +1229,25 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
         return $this->render("user/dashboard_Fondateur/dashboard-membre.html.twig", [
 
             "profil" => $profil,
 
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId)
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
 
         ]);
-
     }
 
 
 
 
 
-    #[Route("/set/banished", name:"app_set_part_banished",methods:["POST"])]
+    #[Route("/set/banished", name: "app_set_part_banished", methods: ["POST"])]
 
     public function SetBanished(
 
@@ -1326,11 +1263,9 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ): Response
+    ): Response {
 
-    {
-
-        $user_id_to_control=$request->request->get("id");
+        $user_id_to_control = $request->request->get("id");
 
         //dump($user_id_to_control);
 
@@ -1339,26 +1274,23 @@ class UserController extends AbstractController
         if ($user_to_control->getType() === "consumer") {
 
             $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
-
         } else {
 
             $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
-
         }
 
         $table_tribut = $user_to_control_profil->getTributG();
 
-        $r=$tributGService->setBanishePartisant($table_tribut, $user_id_to_control);
+        $r = $tributGService->setBanishePartisant($table_tribut, $user_id_to_control);
 
-        return $this->json(["success"=>$r],200);
-
+        return $this->json(["success" => $r], 200);
     }
 
 
 
 
 
-    #[Route("/undo/banished",name: "app_undo_part_banished")]
+    #[Route("/undo/banished", name: "app_undo_part_banished")]
 
     public function UndoBanished(
 
@@ -1374,9 +1306,9 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ): Response{
+    ): Response {
 
-        $user_id_to_control=$request->request->get("id");
+        $user_id_to_control = $request->request->get("id");
 
         //dump($user_id_to_control);
 
@@ -1385,11 +1317,9 @@ class UserController extends AbstractController
         if ($user_to_control->getType() === "consumer") {
 
             $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
-
         } else {
 
             $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
-
         }
 
         $table_tribut = $user_to_control_profil->getTributG();
@@ -1397,14 +1327,11 @@ class UserController extends AbstractController
         $r = $tributGService->undoBanishePartisant($table_tribut, $user_id_to_control);
 
         return $this->json(["success" => $r], 200);
-
-        
-
     }
 
 
 
-    #[Route("/user/dashboard-membre-apropos-fondateur", name:"app_dashboardapropos_fondateur")]
+    #[Route("/user/dashboard-membre-apropos-fondateur", name: "app_dashboardapropos_fondateur")]
 
     public function DashboardMembreAproposFondateur(
 
@@ -1420,9 +1347,7 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository,
 
-    ): Response
-
-    {
+    ): Response {
 
         $user_id_to_control = intval($request->query->get("user_id"));
 
@@ -1439,11 +1364,9 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
@@ -1452,25 +1375,23 @@ class UserController extends AbstractController
 
         $user_to_control = $userRepository->find($user_id_to_control);
 
-        if( $user_to_control->getType() === "consumer"){
+        if ($user_to_control->getType() === "consumer") {
 
-            $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control ]);
+            $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
+        } else {
 
-        }else{
-
-            $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control ]);
-
+            $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
         }
 
 
 
-        
+
 
         $table_tribut = $user_to_control_profil->getTributG();
 
-        $isBanished=$tributGService->getBanishedStatus($table_tribut, $user_id_to_control);
+        $isBanished = $tributGService->getBanishedStatus($table_tribut, $user_id_to_control);
 
-        $tribut = $tributGService->getStatus($table_tribut, $user_id_to_control );
+        $tribut = $tributGService->getStatus($table_tribut, $user_id_to_control);
 
         $apropos = [
 
@@ -1504,27 +1425,26 @@ class UserController extends AbstractController
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
-                                $profil[0]->getTributg(),
+                $profil[0]->getTributg(),
 
-                                $profil[0]->getIsVerifiedTributGAdmin(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
 
-                                $userId
+                $userId
 
-                            ),
+            ),
 
-            "apropos" => $apropos 
+            "apropos" => $apropos
 
 
 
         ]);
-
     }
 
 
 
 
 
-    #[Route("/user/notification/show", name:"app_set_notification_to_show" , methods:"POST")]
+    #[Route("/user/notification/show", name: "app_set_notification_to_show", methods: "POST")]
 
     public function setNotificationToShow(
 
@@ -1532,9 +1452,7 @@ class UserController extends AbstractController
 
         NotificationService $notificationService
 
-    )
-
-    {
+    ) {
 
         /// [ { "notif_id": "1"}, { "user_id":2 } , ... ]
 
@@ -1544,23 +1462,22 @@ class UserController extends AbstractController
 
         ///get the name the table notification from the user.
 
-        $table= $this->getUser()->getTablenotification();
+        $table = $this->getUser()->getTablenotification();
 
-        
+
 
         ////set notif to already show
 
         $notificationService->setShowNotif($table, $data);
 
-        
+
 
         return $this->json(true);
-
     }
 
 
 
-    #[Route("/user/notification/read", name:"app_read_notification")]
+    #[Route("/user/notification/read", name: "app_read_notification")]
 
     public function readNotification(
 
@@ -1570,27 +1487,24 @@ class UserController extends AbstractController
 
         UserRepository $userRepository
 
-        )
-
-    {
+    ) {
 
         $notification_id = $request->query->get("notif_id");
 
-        $table= $this->getUser()->getTablenotification();
+        $table = $this->getUser()->getTablenotification();
 
-        $singleNotification = $notificationService->updateNotificationIsread($notification_id ,$this->getUser()->getId() );
+        $singleNotification = $notificationService->updateNotificationIsread($notification_id, $this->getUser()->getId());
 
         return $this->json([
             "result" => "success"
         ]);
-
     }
 
 
 
 
 
-    #[Route("/user/administration/fournisseur" , name:"app_administre_fournisseur" )]
+    #[Route("/user/administration/fournisseur", name: "app_administre_fournisseur")]
 
     public function adminFournisseur(
 
@@ -1604,9 +1518,7 @@ class UserController extends AbstractController
 
 
 
-    ):Response
-
-    {
+    ): Response {
 
         $user = $this->getUser();
 
@@ -1619,26 +1531,22 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
 
-        $all_user_supplier= $userRepository->findBy(["type" => "supplier"]);
+        $all_user_supplier = $userRepository->findBy(["type" => "supplier"]);
 
 
 
-        $results = [ ];
+        $results = [];
 
 
 
-        foreach( $all_user_supplier as $user_supplier )
-
-        {
+        foreach ($all_user_supplier as $user_supplier) {
 
             $supplier = $supplierRepository->findOneBy(["userId" => $user_supplier->getId()]);
 
@@ -1664,8 +1572,7 @@ class UserController extends AbstractController
 
 
 
-            array_push($results , $result);
-
+            array_push($results, $result);
         }
 
 
@@ -1676,18 +1583,17 @@ class UserController extends AbstractController
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
-                    $profil[0]->getTributg(),
+                $profil[0]->getTributg(),
 
-                    $profil[0]->getIsVerifiedTributGAdmin(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
 
-                    $userId
+                $userId
 
             ),
 
             "results" => $results
 
         ]);
-
     }
 
 
@@ -1699,7 +1605,6 @@ class UserController extends AbstractController
     {
 
         return $this->render("user/dashboard_fondateur/SettingAdminFondateur.html.twig");
-
     }
 
 
@@ -1735,42 +1640,41 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
 
 
-        
+
 
         return $this->render(
 
-        "user/dashboard_fondateur/listDePublication.html.twig", [
+            "user/dashboard_fondateur/listDePublication.html.twig",
+            [
 
-            "profil" => $profil,
+                "profil" => $profil,
 
-            "statusTribut" => $tributGService->getStatusAndIfValid(
+                "statusTribut" => $tributGService->getStatusAndIfValid(
 
-                $profil[0]->getTributg(),
+                    $profil[0]->getTributg(),
 
-                $profil[0]->getIsVerifiedTributGAdmin(),
+                    $profil[0]->getIsVerifiedTributGAdmin(),
 
-                $userId
+                    $userId
 
-            ),
+                ),
 
                 'userIdP' =>  $userIdP
 
-        ]);
-
+            ]
+        );
     }
 
 
 
-    #[Route("/user/administration/fournisseur/{id}" , name:"app_administre_fournisseur_apropos" )]
+    #[Route("/user/administration/fournisseur/{id}", name: "app_administre_fournisseur_apropos")]
 
     public function administre_fournisseur_appropos(
 
@@ -1784,9 +1688,7 @@ class UserController extends AbstractController
 
         TributGService $tributGService
 
-    ):Response
-
-    {
+    ): Response {
 
         $user_connected = $this->getUser();
 
@@ -1799,16 +1701,14 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
         $user = $userRepository->find(intval($id));
 
-        $supplier = $supplierRepository->findOneBy(["userId" => $id ]);
+        $supplier = $supplierRepository->findOneBy(["userId" => $id]);
 
 
 
@@ -1818,11 +1718,11 @@ class UserController extends AbstractController
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
 
-                    $profil[0]->getTributg(),
+                $profil[0]->getTributg(),
 
-                    $profil[0]->getIsVerifiedTributGAdmin(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
 
-                    $userId
+                $userId
 
             ),
 
@@ -1831,14 +1731,13 @@ class UserController extends AbstractController
             "supplier" => $supplier
 
         ]);
-
     }
 
 
 
 
 
-    #[Route("/user/validate/fournisseur" , name:"app_administre_fournisseur_validate" )]
+    #[Route("/user/validate/fournisseur", name: "app_administre_fournisseur_validate")]
 
     public function validate_fournisseur(
 
@@ -1848,9 +1747,7 @@ class UserController extends AbstractController
 
         EntityManagerInterface $entityManagerInterface,
 
-    )
-
-    {
+    ) {
 
         $id = intval($request->query->get("id"));
 
@@ -1869,7 +1766,6 @@ class UserController extends AbstractController
 
 
         return $this->json(true);
-
     }
 
 
@@ -1899,62 +1795,59 @@ class UserController extends AbstractController
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-
         } else {
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-
         }
 
         return $this->render("user/listeDeMesEtablissement.html.twig", [
 
-            
+
 
             "id_dep" => $fermeGeomRepository->findOneBy(["addBy" => $user->getId()])->getDepartement(),
 
             "nom_dep" => $fermeGeomRepository->findOneBy(["addBy" => $user->getId()])->getDepartementName(),
 
-            "fermes" => $fermeGeomRepository->findBy(["addBy"=>$user->getId()]),
+            "fermes" => $fermeGeomRepository->findBy(["addBy" => $user->getId()]),
 
             "profil" => $profil,
 
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
 
-        ]);    
-
+        ]);
     }
 
 
 
 
 
-    #[Route("/getMax", name:"max_id")]
+    #[Route("/getMax", name: "max_id")]
 
-    public function getMax(FermeGeomRepository $f): Response {
+    public function getMax(FermeGeomRepository $f): Response
+    {
 
-        $idMax=$f->getLastId();
+        $idMax = $f->getLastId();
 
-        return $this->json(["id"=>$idMax], 200);
-
+        return $this->json(["id" => $idMax], 200);
     }
 
 
 
 
 
-    
 
-    #[Route("/user/invitation/update",name:"app_update_list_invitations")]
+
+    #[Route("/user/invitation/update", name: "app_update_list_invitations")]
 
     public function invitationUpdate(Status $status, RequestingService $requesting): Response
 
     {
 
-        $tableRequestingName = $this->getUser()->getTablerequesting ();
+        $tableRequestingName = $this->getUser()->getTablerequesting();
 
         $invitations = $requesting->getAllRequest($tableRequestingName);
 
-       //dd($invitations);
+        //dd($invitations);
 
         $response = new StreamedResponse();
 
@@ -1971,7 +1864,6 @@ class UserController extends AbstractController
             ob_end_flush();
 
             flush();
-
         });
 
 
@@ -1987,10 +1879,9 @@ class UserController extends AbstractController
         $response->headers->set('Content-Type', 'text/event-stream');
 
         return $response;
-
     }
 
-	/* Edited By Nantenaina */
+    /* Edited By Nantenaina */
 
     #[Route("/user/invitations/confirm/{id}/{idR}/{balise}/{is_tribu}", name: "app_invitation_confirm")]
     public function invitationConfirm(
@@ -2006,11 +1897,11 @@ class UserController extends AbstractController
     ): Response {
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
-        $tableRequestingNameOtherUser = $userRepository->find($idR)->getTablerequesting();        
+        $tableRequestingNameOtherUser = $userRepository->find($idR)->getTablerequesting();
         $userPoster = $this->getUser();
         $userPosterId = $userPoster->getId();
         $pseudo = $userPoster->getPseudo();
-        
+
         if ($is_tribu == 1) { /* Add By Nantenaina */
             $tribut = new Tribu_T_Service();
             $tributName  = $tribut->showRightTributName($balise);
@@ -2025,21 +1916,22 @@ class UserController extends AbstractController
 
             $type = "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tributName["name"]);
 
-			$requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
+            $requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
 
             $requesting->setIsAccepted($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
 
             $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
 
 
-       /* End Nantenaina */ } else {
+            /* End Nantenaina */
+        } else {
             $content = "$pseudo a accepté votre invitation pour devenir moderateur";
             $notificationService->sendNotificationForOne($userPosterId, intval($idR), "invitation", $content);
             $tableTribuGName = $tr->getTableNameTributG($userPosterId);
-         
+
             $tr->changeRole($tableTribuGName, $userPosterId);
-            
-			$requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
+
+            $requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
             $requesting->setIsAccepted($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
         }
 
@@ -2047,7 +1939,7 @@ class UserController extends AbstractController
     }
 
 
-	/* Edited By Nantenaina */
+    /* Edited By Nantenaina */
     #[Route("/user/invitations/reject/{id}/{idR}/{balise}/{is_tribu}", name: "app_invitation_reject")]
     public function invitationReject(
         Status $status,
@@ -2082,8 +1974,9 @@ class UserController extends AbstractController
             $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . str_replace("$", "'", $tributName["name"]);
 
             $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
-        
-        /* End Nantenaina */}else{
+
+            /* End Nantenaina */
+        } else {
             $content = "$pseudo a rejété votre invitation pour devenir moderateur";
             $notificationService->sendNotificationForOne($userPosterId, intval($idR), "invitation", $content);
             $requesting->setIsRejected($tableRequestingName,  $balise, intval($idR), $userPosterId);
@@ -2094,7 +1987,7 @@ class UserController extends AbstractController
     }
 
 
-	/* Edited By Nantenaina */
+    /* Edited By Nantenaina */
     #[Route("/user/invitations/annule/{idTableRequest}/{idR}/{balise}/{is_tribu}", name: "app_invitation_annule")]
     public function invitationCancel(
         Status $status,
@@ -2122,7 +2015,8 @@ class UserController extends AbstractController
             $requesting->setIsCancel($tableRequestingName, $balise, $userPosterId, intval($idR));
             $requesting->setIsCancel($tableRequestingNameOtherUser, $balise, $userPosterId, intval($idR));
 
-        /* End Nantenaina */}else{
+            /* End Nantenaina */
+        } else {
 
             $content = "$pseudo a annulé votre invitation pour devenir moderateur";
             $notificationService->sendNotificationForOne($userPosterId, intval($idR), "demande", $content);
@@ -2136,17 +2030,18 @@ class UserController extends AbstractController
 
     #[Route("/user/invitation", name: "app_invitation")]
 
-    public function invitation(Status $status,RequestingService $requesting): Response {
+    public function invitation(Status $status, RequestingService $requesting): Response
+    {
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
-        $tableRequestingName=$this->getUser()->getTablerequesting();
+        $tableRequestingName = $this->getUser()->getTablerequesting();
 
-        $invitations=$requesting->getAllRequest($tableRequestingName);
+        $invitations = $requesting->getAllRequest($tableRequestingName);
 
 
 
-        return $this->render("user/invitation/invitation.html.twig",[
+        return $this->render("user/invitation/invitation.html.twig", [
 
             "profil" => $statusProfile["profil"],
 
@@ -2154,17 +2049,17 @@ class UserController extends AbstractController
 
             "invitations" => $invitations,
 
-            
+
 
         ]);
-
     }
 
 
 
     #[Route("/user/invitation/all", name: "app_invitation_all")]
 
-    public function showInvitation(Status $status): Response {
+    public function showInvitation(Status $status): Response
+    {
 
         $user = $this->getUser();
 
@@ -2175,14 +2070,14 @@ class UserController extends AbstractController
         $requesting = new RequestingService();
 
         return $this->json($requesting->showInvitation($tableName));
-
     }
 
 
 
     #[Route("/user/demande/all", name: "app_demande_all")]
 
-    public function showDemande(Status $status): Response {
+    public function showDemande(Status $status): Response
+    {
 
         $user = $this->getUser();
 
@@ -2193,7 +2088,6 @@ class UserController extends AbstractController
         $requesting = new RequestingService();
 
         return $this->json($requesting->showDemande($tableName));
-
     }
 
     #[Route('user/publication', name: 'publication_list')]
@@ -2201,7 +2095,7 @@ class UserController extends AbstractController
     public function publication(Request $request, TributGService $tributGService): Response
 
     {
-		$user = $this->getUser();
+        $user = $this->getUser();
 
         $user_id = $user->getId();
 
@@ -2215,14 +2109,19 @@ class UserController extends AbstractController
 
         $pubsFinale = array();
 
-        if(count($publications) > 0)
-        foreach ($publications as $pub) {
-            array_push($pub, $tribu_t->showRightTributName($pub["tribu"])["name"], 
-            ["reaction" => $tribu_t->getReaction($pub["tribu"]."_reaction", $user_id, $pub["id"]),
-            "reaction_number" => $tribu_t->getReactionNumber($pub["tribu"]."_reaction", $pub["id"]),
-            "commentaire_number" => $tribu_t->getCommentaireNumber($pub["tribu"]."_commentaire", $pub["id"])]);
-            array_push($pubsFinale,$pub);
-        }
+        if (count($publications) > 0)
+            foreach ($publications as $pub) {
+                array_push(
+                    $pub,
+                    $tribu_t->showRightTributName($pub["tribu"])["name"],
+                    [
+                        "reaction" => $tribu_t->getReaction($pub["tribu"] . "_reaction", $user_id, $pub["id"]),
+                        "reaction_number" => $tribu_t->getReactionNumber($pub["tribu"] . "_reaction", $pub["id"]),
+                        "commentaire_number" => $tribu_t->getCommentaireNumber($pub["tribu"] . "_commentaire", $pub["id"])
+                    ]
+                );
+                array_push($pubsFinale, $pub);
+            }
 
         //dd($pubsFinale);
 
@@ -2241,5 +2140,146 @@ class UserController extends AbstractController
             "publication" => $pubsFinale,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $user_id)
         ]);
+    }
+
+    #[Route('/user/profil/add/photo', name: 'user_profil_add_photo')]
+
+    public function userProfilAddPhoto(Request $request, Filesystem $filesyst): Response
+
+    {
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $userType = $user->getType();
+
+        $profil = null;
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userId . "/";
+
+        $dir_exist = $filesyst->exists($path);
+
+        if ($dir_exist == false) {
+
+            $filesyst->mkdir($path, 0777);
+        }
+
+        if ($image != "") {
+
+            // Function to write image into file
+
+            $temp = explode(";", $image);
+
+            $extension = explode("/", $temp[0])[1];
+
+            // $imagename = md5($userId). '-' . uniqid() . "." . $extension;
+            $imagename = time() . "." . $extension;
+
+            if ($userType == "consumer") {
+
+                $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+            } elseif ($userType == "supplier") {
+
+                $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            }
+
+            ///save image in public/uploader folder
+
+            file_put_contents($path . $imagename, file_get_contents($image));
+        }
+
+        return $this->json("Photo ajouté avec succès !");
+    }
+
+    #[Route('/user/profil/update/avatar', name: 'update_avatar_user')]
+
+    public function updateUserAvatar(Request $request, Filesystem $filesyst): Response
+
+    {
+
+
+
+        $user = $this->getUser();
+
+
+
+        $userId = $user->getId();
+
+
+
+        $userType = $user->getType();
+
+
+
+        $profil = null;
+
+
+
+        $data = json_decode($request->getContent(), true);
+
+
+
+        extract($data);
+
+
+
+        // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userId . "/";
+
+        $dir_exist = $filesyst->exists($path);
+
+        if ($dir_exist == false) {
+
+            $filesyst->mkdir($path, 0777);
+        }
+
+
+
+        if ($image != "") {
+
+
+
+            // Function to write image into file
+
+            $temp = explode(";", $image);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $imagename = md5($userId) . '-' . uniqid() . "." . $extension;
+
+
+
+            if ($userType == "consumer") {
+
+                $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+            } elseif ($userType == "supplier") {
+
+                $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            }
+
+
+
+            $profil[0]->setPhotoProfil('/public/uploads/users/photos/photo_user_' . $userId . "/" . $imagename);
+
+
+
+            $this->entityManager->flush();
+
+
+
+            ///save image in public/uploader folder
+
+            file_put_contents($path . $imagename, file_get_contents($image));
+        }
+
+
+
+        return $this->json("Photo de profil bien à jour");
     }
 }

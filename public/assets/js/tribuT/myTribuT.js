@@ -63,6 +63,15 @@ for (let array of arrays) {
             showResto(tribu_t_name+"_restaurant",id_c_u)
         })
         /**end */
+
+        /**render photo gallery*/
+        document.querySelector("#seer-gallery").onclick = (e => { 
+            e.preventDefault();
+            document.querySelector("#tribu_t_conteuneur").innerHTML=""
+            showPhotos()
+
+        })
+        /**end */
     })
 }
 
@@ -183,7 +192,7 @@ function showdDataContent(data, type, tribu_t_name) {
                             <a style="cursor:pointer;" href="/user/tribu/show-member/tribu_t_32_efa_leo_anana">Partisant</a>
                         </li>
                         <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" onclick="showPhotos(&quot;tribu_t_32_efa_leo_anana_publication&quot;)">Photos</a>
+                            <a style="cursor:pointer;" id="seer-gallery">Photos</a>
                         </li>
 
                     </ul>
@@ -775,3 +784,114 @@ function saveRestaurantPast(id, nom){
 
     document.querySelector("#result_resto_past").style.display="none";
 }
+
+/**
+ * show gallery 
+ */
+function showPhotos(){
+
+    // invitationsContainer.innerHTML = "";               
+    // invitationsContainer.style.display = "none"
+    // restoContainer.style.display = "none"
+    // restoContainer.innerHTML += "";
+    let  photosContainer = document.querySelector("#tribu_t_conteuneur")
+    // showCreatePub.style.display = "none"
+    // showCreatePub_mobile.style.display = "none"
+    // showPub.style.display = "none"
+
+    photosContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+
+    const requete=new Request("/user/tribu/photos/" + tribu_t_name_0+"_publication", {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    fetch(requete).then(rqt => rqt.json()).then(data => {
+            //console.log(data);
+            photosContainer.innerHTML = `<div class="intro">
+                    <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
+                        Photo télechargé avec succès!
+                    </div>
+                    <div><span class="h2">Liste des photos</span> <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> <i class="bi bi-camera-fill"></i> Importer
+                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                    </label></div>
+                    
+                </div>`;
+
+            if(data.length > 0){
+                let li_img =''
+
+                for (let photo of data) {
+                    let img_src =photo.photo.replaceAll("/public","");
+                    li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                }
+                setGallerie(document.querySelectorAll(".img_gal"))
+                photosContainer.innerHTML+=`<div class="gallery-container"><div id="gallery">${li_img}</div></div>`
+
+                setGallerie(document.querySelectorAll("#gallery img"))
+                
+            }else{
+                photosContainer.style.textAlign = "center"
+                photosContainer.innerHTML += "Aucune photo pour le moment";
+                // invitationsContainer.innerHTML = "";               
+                // invitationsContainer.style.display = "none"
+                // restoContainer.style.display = "none"
+                // restoContainer.innerHTML += "";
+            }
+
+        });
+
+}
+
+
+function loadFile(event) {
+    let new_photo = document.createElement("img")
+    new_photo.setAttribute("data-bs-toggle","modal")
+    new_photo.setAttribute("data-bs-target","#modal_show_photo")
+    new_photo.setAttribute("onclick","setPhotoTribu(this)")
+    new_photo.src = URL.createObjectURL(event.target.files[0]);
+    var div_photo = document.querySelector('#gallery');
+
+    let first_photo = document.querySelector("#gallery > img:nth-child(1)")
+
+    div_photo.insertBefore(new_photo, first_photo);
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+        const srcData = fileReader.result;
+
+        ///public/uploads/tribu_t/photo/tribu_t_1_banane_publication/photo.jpg
+        let data = {
+                publication : "",
+                image : srcData,
+                confidentiality : 1
+            }
+
+        fetch(new Request("/user/tribu/add_photo/"+tribu_t_name_0+"_publication", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })).then(x => x.json()).then(response => {
+            document.querySelector("#success_upload").style ="display:block;"
+            setTimeout(function(){
+                 document.querySelector("#success_upload").style ="display:none;"
+            }, 5000);
+            console.log(response)
+            }
+        ).catch(error=>{
+            console.log(error)
+        });
+    };
+    fileReader.readAsDataURL(event.target.files[0]);
+}
+/*-----------end------------------*/

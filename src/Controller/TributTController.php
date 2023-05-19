@@ -1952,5 +1952,68 @@ class TributTController extends AbstractController
         // ]);
     }
 
+    #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]
+
+    public function AddPhotoTribu($table, Request $request,Filesystem $filesyst): Response
+
+    {
+
+        $user = $this->getUser();
+
+
+        $userId = $user->getId();
+
+
+        $data = json_decode($request->getContent(), true);
+
+
+
+        extract($data);
+
+        $regex = "/\_publication+$/";
+
+        $table_tribu = preg_replace($regex, "", $table);
+
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/' . $table_tribu . '/';
+
+        $dir_exist = $filesyst->exists($path);
+
+        if ($dir_exist == false) {
+
+            $filesyst->mkdir($path, 0777);
+        }
+
+
+        $tribu_t = new Tribu_T_Service();
+
+
+
+        if ($image != "") {
+
+
+
+            // Function to write image into file
+
+            $temp = explode(";", $image);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $imagename = md5($table) . '-' . uniqid() . "." . $extension;
+
+
+
+            ///save image in public/uploader folder
+
+            file_put_contents($path . $imagename, file_get_contents($image));
+
+            /// add database image
+
+            $tribu_t->createOnePub($table, $userId, "", 1, '/public/uploads/tribu_t/photos/' . $table_tribu . '/'.$imagename);
+        }
+
+        return $this->json("Photo ajouté avec succès");
+    }
+
 }
 

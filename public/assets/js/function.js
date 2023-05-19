@@ -2048,3 +2048,57 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
         location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`)
     }
 }
+
+/**
+ * Set a viewing photos as a gallery
+ * @param {NodeList} imgs : list of images elements for making gallery
+ */
+
+function setGallerie(imgs){
+    imgs.forEach(img => {
+            
+        //console.log(img);
+        h = img.naturalHeight;
+        w = img.naturalWidth;
+
+        //console.log("img.naturalHeight : " + img.naturalHeight)
+        //console.log("img.naturalWidth : " + img.naturalWidth)
+        ratio = w/h;
+        closestRatioValue = Math.abs(1-ratio);
+        closestRatio = 1;
+        var a = Math.abs(16/9-ratio);
+        var b = Math.abs(9/16-ratio);
+
+        if(a < closestRatioValue){
+            closestRatioValue = a;
+            closestRatio = 16/9;
+        }
+        if(b < closestRatioValue){
+            closestRatioValue = b;
+            closestRatio = 9/16;
+        }
+
+        if(closestRatio == 16/9){
+            console.log("16/9");
+            img.style.gridColumn = "span 2";
+        } else if(closestRatio == 9/16){
+            console.log("9/16");
+            img.style.gridRow = "span 2";
+        }
+    });
+}
+
+/**
+ * 
+ * @param {Node} btn_photo : Parameter button clickable before shwoing image
+ */
+
+function setPhotoTribu(btn_photo){
+
+    if(btn_photo.tagName != "IMG"){
+        document.querySelector("#img_modal").src = btn_photo.querySelector("img").src
+    }else{
+        document.querySelector("#img_modal").src = btn_photo.src
+    }
+    
+}

@@ -976,10 +976,61 @@ function createBadgeNotifContent(){
 
 }
 
-let langue = localStorage.getItem("langue")
+let fileInputProfils = document.querySelectorAll("#fileInputProfil");
+
+fileInputProfils.forEach(fileInputProfil=>{
+	
+	fileInputProfil.addEventListener("change", (e) => {
+
+    ///read file
+    const fileReader = new FileReader();
+
+    ////on load file
+    fileReader.addEventListener("load", () => {
+
+        let avatarPartisant = fileReader.result;
+
+        //console.log(avatarPartisant);
+
+        // Change profil
+		let profilPartisants = document.querySelectorAll("#profilPartisant");
+
+		profilPartisants.forEach(profilPartisant=>{
+			profilPartisant.src = avatarPartisant
+		})
+
+        //profilPartisant.src = avatarPartisant
+
+        if(document.querySelector("#roundedImg") != null){
+            document.querySelector("#roundedImg").src = avatarPartisant
+        }
+
+        let data = {
+        image : avatarPartisant
+        }
+
+        fetch(new Request("/user/profil/update/avatar", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })).then(x => x.json()).then(response => console.log(response));
+
+    });
+
+    ///run event load in file reader.
+    fileReader.readAsDataURL(e.target.files[0]);
+
+})
+})
+
+
+/*let langue = localStorage.getItem("langue")
 
 if(langue){
     console.log("langue exist")
 }else{
     console.log("langue n'existe pas")
-}
+}*/

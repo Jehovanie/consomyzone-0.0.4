@@ -41,10 +41,9 @@ class TributGController extends AbstractController
     {
 
         $this->appKernel = $appKernel;
-
     }
 
-    #[Route("/tributG/publications/reaction", name:"app_tribut_reaction")]
+    #[Route("/tributG/publications/reaction", name: "app_tribut_reaction")]
 
     public function handlePublicationReaction(
 
@@ -54,9 +53,7 @@ class TributGController extends AbstractController
 
         NotificationService $notificationService,
 
-    )
-
-    {
+    ) {
 
         $data = json_decode($request->getContent(), true);
 
@@ -74,19 +71,18 @@ class TributGController extends AbstractController
 
         );
 
-        
 
-        if( intval($author_id) != $this->getUser()->getId() ){
+
+        if (intval($author_id) != $this->getUser()->getId()) {
 
             $full_name = $tributGService->getFullName($this->getUser()->getId());
 
-            if( intval($is_like) === 1 ){
+            if (intval($is_like) === 1) {
 
-                $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_".$pub_id."_jheo'>Voir la publication</a>";
-            }else{
+                $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
+            } else {
 
-                $message_notification = $full_name . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_".$pub_id."_jheo'>Voir la publication</a>";
-
+                $message_notification = $full_name . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
             }
 
             $notificationService->sendNotificationForOne(
@@ -100,10 +96,9 @@ class TributGController extends AbstractController
                 $message_notification
 
             );
-
         }
 
-       
+
 
         return $this->json([
 
@@ -112,12 +107,11 @@ class TributGController extends AbstractController
             "reaction" => $reaction
 
         ]);
-
     }
 
 
 
-    #[Route("/tributG/publications/comments/fetchall" , name:"app_comment")]
+    #[Route("/tributG/publications/comments/fetchall", name: "app_comment")]
 
     public function fetchAllComments(
 
@@ -125,7 +119,7 @@ class TributGController extends AbstractController
 
         TributGService $tributGService
 
-    ){
+    ) {
 
         $data = json_decode($request->getContent(), true);
 
@@ -137,7 +131,8 @@ class TributGController extends AbstractController
 
             $this->getUser()->getId(),
 
-            $publication_id);
+            $publication_id
+        );
 
 
 
@@ -148,11 +143,10 @@ class TributGController extends AbstractController
             "comments" => $comments
 
         ]);
-
     }
 
 
-    #[Route("/tributG/publications/comment", name:"app_tribut_comment")]
+    #[Route("/tributG/publications/comment", name: "app_tribut_comment")]
 
     public function handlePublicationComment(
 
@@ -162,7 +156,7 @@ class TributGController extends AbstractController
 
         NotificationService $notificationService
 
-    ){
+    ) {
 
 
 
@@ -170,7 +164,7 @@ class TributGController extends AbstractController
 
         extract($data); /// $author_id, $publication_id , $comment
 
-        if( $comment === null ){
+        if ($comment === null) {
             return $this->json([]);
         }
 
@@ -180,7 +174,7 @@ class TributGController extends AbstractController
 
         if ($audio != "") {
 
-            $temp = explode(";", $audio );
+            $temp = explode(";", $audio);
 
             $extension = explode("/", $temp[0])[1];
 
@@ -198,27 +192,25 @@ class TributGController extends AbstractController
 
         $full_name = $tributGService->getFullName($this->getUser()->getId());
 
-        if(intval($this->getUser()->getId()) != intval($author_id)){
+        if (intval($this->getUser()->getId()) != intval($author_id)) {
 
             $notificationService->sendNotificationForOne(
                 $this->getUser()->getId(),
                 $author_id,
                 "Comment publication.",
-                $full_name . " a commenté votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_".$publication_id."_jheo'>Voir la publication</a>"
+                $full_name . " a commenté votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $publication_id . "_jheo'>Voir la publication</a>"
             );
-
         }
 
-        
-        return $this->json(["result" =>  $reaction] , 201);
 
+        return $this->json(["result" =>  $reaction], 201);
     }
 
 
 
 
 
-    #[Route("/tributG/member/list" , name:"app_member_tributG")]
+    #[Route("/tributG/member/list", name: "app_member_tributG")]
     public function fetchListMemberTributG(
 
         Request $request,
@@ -229,7 +221,7 @@ class TributGController extends AbstractController
 
         UserService $userService
 
-    ){
+    ) {
 
         $user_connected = $this->getUser();
 
@@ -251,7 +243,7 @@ class TributGController extends AbstractController
 
 
 
-        foreach($all_user_id_tribug as $user_id ){
+        foreach ($all_user_id_tribug as $user_id) {
 
             $user = $userRepository->find(intval($user_id["user_id"]));
 
@@ -269,29 +261,26 @@ class TributGController extends AbstractController
 
             ];
 
-            array_push($memberTributG,$single_user);
-
+            array_push($memberTributG, $single_user);
         }
 
-        
+
 
         return $this->render("tribu_g/member_tributG.html.twig", [
 
-            "membersTributG" => $memberTributG  
+            "membersTributG" => $memberTributG
 
         ]);
-
     }
 
 
 
-    #[Route("/tributG/actualite", name:"app_actualite_tributG")]
+    #[Route("/tributG/actualite", name: "app_actualite_tributG")]
     public function fetchAllActualiteTributG(
 
         TributGService $tributGService,
 
-    )
-    {
+    ) {
 
         $table_tributG_name = $tributGService->getTableNameTributG(
 
@@ -301,7 +290,7 @@ class TributGController extends AbstractController
 
 
 
-        return $this->render("tribu_g/publications.html.twig" , [
+        return $this->render("tribu_g/publications.html.twig", [
 
             "tributG" => [
 
@@ -318,21 +307,19 @@ class TributGController extends AbstractController
             ],
 
         ]);
-
     }
 
 
 
 
 
-    #[Route("/tributG/photos", name:"app_photos_tributG")]
+    #[Route("/tributG/photos", name: "app_photos_tributG")]
 
     public function fetchAllPhotosTributG(
 
         TributGService $tributGService,
 
-    )
-    {
+    ) {
 
         $table_tributG_name = $tributGService->getTableNameTributG(
 
@@ -342,33 +329,31 @@ class TributGController extends AbstractController
 
 
 
-        return $this->render("tribu_g/photos.html.twig" , [
+        return $this->render("tribu_g/photos.html.twig", [
 
             "photos" => $tributGService->getAllPhotos($table_tributG_name),
 
         ]);
-
     }
 
 
 
-    #[Route("/users/acount/tribuG/changeprofile", name:"app_change_profile_tribuG")]
+    #[Route("/users/acount/tribuG/changeprofile", name: "app_change_profile_tribuG")]
     public function changeProfileActionTribuG(
 
         Request $request,
 
         TributGService $tributGService
 
-    ){
+    ) {
 
-        if( !$this->getUser()){
+        if (!$this->getUser()) {
 
             return $this->json([
 
                 "error" => "Invalid credentials",
 
-            ], 401 );
-
+            ], 401);
         }
 
 
@@ -377,7 +362,7 @@ class TributGController extends AbstractController
 
 
 
-        if( $requestContent["image"]){
+        if ($requestContent["image"]) {
 
             $image = $requestContent["image"];
 
@@ -393,21 +378,21 @@ class TributGController extends AbstractController
 
             ///download image
 
-            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribus/photos/'; 
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribus/photos/';
 
 
 
-            $temp = explode(";", $image );
+            $temp = explode(";", $image);
 
             $extension = explode("/", $temp[0])[1];
 
-            $image_name = "profile_". $table_name . "." . $extension;
+            $image_name = "profile_" . $table_name . "." . $extension;
 
 
 
             ///save image in public/uploader folder
 
-            file_put_contents($path ."/". $image_name, file_get_contents($image));
+            file_put_contents($path . "/" . $image_name, file_get_contents($image));
 
 
 
@@ -420,7 +405,6 @@ class TributGController extends AbstractController
                 $image_name
 
             );
-
         }
 
 
@@ -430,62 +414,118 @@ class TributGController extends AbstractController
             "result" => "success"
 
         ], 201);
-
     }
 
-    #[Route("/user/acount/tributG/publication/delete" , name:"app_delete_pub_tributG" , methods : "DELETE" )]
+    #[Route("/user/acount/tributG/publication/delete", name: "app_delete_pub_tributG", methods: "DELETE")]
     public function deletePublicationAction(
         Request $request,
         TributGService $tributGService,
         UserService $userService,
-    ){
-        if(!$this->getUser()){
-            return $this->json(["result" => "Unauthorized"],401, );
+    ) {
+        if (!$this->getUser()) {
+            return $this->json(["result" => "Unauthorized"], 401,);
         }
         $data = json_decode($request->getContent(), true);
         extract($data); /// $id_publication
 
         $user = $this->getUser();
 
-        $result  = $tributGService->deletePublication($user->getId(), $id_publication );
+        $result  = $tributGService->deletePublication($user->getId(), $id_publication);
 
-        if(!$result){
+        if (!$result) {
             return $this->json(["result" => "Service Not Found"], 503);
         }
 
         ///remove the old image in the directory : uploads
         $filesystem = new Filesystem();
-        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/assets/publications/photos/'. $result );
-        
+        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/assets/publications/photos/' . $result);
+
         return $this->json([
             "result" => "sucess",
             "data" => $data
         ], 204);
     }
 
-    #[Route("/user/acount/tributG/publication/update" , name:"app_update_pub_tributG", methods:"PUT")]
+    #[Route("/user/acount/tributG/publication/update", name: "app_update_pub_tributG", methods: "PUT")]
     public function updatePublicationAction(
         Request $request,
         TributGService $tributGService
-        
-    ){
-        if( !$this->getUser()){
-            return $this->json(["result" => "unauthorized"] ,401);
+
+    ) {
+        if (!$this->getUser()) {
+            return $this->json(["result" => "unauthorized"], 401);
         }
         $data = json_decode($request->getContent(), true);
         extract($data); /// $pub_id, $confidentiality, $message
 
         $user = $this->getUser();
 
-        $result = $tributGService->updatePublication($user->getId(), $pub_id , $message, $confidentiality);
-      
-        if( !$result ){
-            return $this->json(["result" => "Service Not Found"] , 503 );
-        } 
+        $result = $tributGService->updatePublication($user->getId(), $pub_id, $message, $confidentiality);
+
+        if (!$result) {
+            return $this->json(["result" => "Service Not Found"], 503);
+        }
 
         return $this->json([
             "result" => $result,
         ], 204);
     }
-}
 
+
+    #[Route('/tribu_g/add_photo', name: 'add_photo_tribu_g')]
+
+    public function AddPhotoTribuG(Request $request, TributGService $tributGService, Filesystem $filesyst): Response
+
+    {
+
+        $user = $this->getUser();
+
+
+        $userId = $user->getId();
+
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        $table_tribuG = $tributGService->getTableNameTributG($userId);
+
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $table_tribuG . '/';
+
+        //dd($path);
+
+
+        $dir_exist = $filesyst->exists($path);
+
+        if ($dir_exist == false) {
+
+            $filesyst->mkdir($path, 0777);
+        }
+
+
+        if ($image != "") {
+
+            // Function to write image into file
+
+            $temp = explode(";", $image);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $imagename = md5($table_tribuG) . '-' . uniqid() . "." . $extension;
+
+
+            ///save image in public/uploader folder
+
+            file_put_contents($path . $imagename, file_get_contents($image));
+
+            /// add database image
+
+            // $tribu_t->createOnePub($table_tribuG, $userId, "", 1, $imagename);
+
+            $tributGService->createOnePub($table_tribuG . "_publication", $userId, "", 1, '/public/uploads/tribu_g/photos/' . $table_tribuG . '/'.$imagename);
+        }
+
+        return $this->json("Photo ajouté avec succès");
+    }
+}
