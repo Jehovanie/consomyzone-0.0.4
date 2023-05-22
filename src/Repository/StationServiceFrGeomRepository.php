@@ -421,7 +421,8 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     'p.services');
 
         if( $mot_cles0 !== "" && $mot_cles1 === ""){
-            $qb = $qb->where("p.adresse LIKE :cles0")
+            // MATCH (denomination_f) AGAINST('FLEUR ONDES BAR HUITR');
+            $qb = $qb->where("MATCH(p.adresse) AGAINST( :cles0)")
                 ->orWhere("p.departementName LIKE :cles0")
                 ->orWhere("p.nom LIKE :cles0")
                 ->orWhere("p.services LIKE :cles0")

@@ -200,7 +200,7 @@ function showdDataContent(data, type, tribu_t_name) {
                 <center>
                     <div class="row p-3 champ-pub">
                         <div class="col-1 rounded-circle">
-                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/uploads/users/photos/img_avatar.png">
+                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/public/uploads/users/photos/img_avatar.png">
                         </div>
                         <div class="col-11">
                             <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">

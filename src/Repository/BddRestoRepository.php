@@ -156,7 +156,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.poiY as lat,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
         if( $mot_cles0 !== "" && $mot_cles1 === "" ){
-            $qb = $qb->where("p.depName LIKE :cles0")
+            $qb = $qb->where("MATCH(p.adresse) AGAINST( :cles0)")
                 ->orWhere("p.nomvoie LIKE :cles0")
                 ->orWhere("p.typevoie LIKE :cles0")
                 ->orWhere("p.villenorm LIKE :cles0")

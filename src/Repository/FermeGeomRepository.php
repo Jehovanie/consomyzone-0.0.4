@@ -418,7 +418,7 @@ class FermeGeomRepository extends ServiceEntityRepository
             );
 
         if( $mot_cles0 !=="" && $mot_cles1 === "" ){
-            $qb =  $qb->where("p.adresseFerme LIKE :cles0")
+            $qb =  $qb->where("MATCH(p.adresse) AGAINST( :cles0)")
                     ->orWhere("p.departement LIKE :cles0")
                     ->orWhere("p.departementName LIKE :cles0")
                     ->orWhere("p.nomFerme LIKE :cles0")

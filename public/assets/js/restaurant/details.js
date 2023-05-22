@@ -74,7 +74,7 @@ function getDetail(event, nom_dep, id_dep, id_restaurant, nomResto) {
             const icon_R = L.Icon.extend({
                 options: {
                     //iconUrl: url.origin+"/public/assets/icon/NewIcons/icon-resto-new-B.png"
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" : url.origin + "/publicS/assets/icon/NewIcons/icon-resto-new-B.png"
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png"
                 }
             })
             marker.setIcon(new icon_R);

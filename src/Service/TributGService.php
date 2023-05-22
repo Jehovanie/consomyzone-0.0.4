@@ -1119,7 +1119,7 @@ class TributGService extends PDOConnexionService{
 
     public function showRightTributName($table)
     {
-        $statement = $this->getPDO()->prepare("SELECT name, description FROM $table LIMIT 1");
+        $statement = $this->getPDO()->prepare("c");
 
         $statement->execute();
 

@@ -117,7 +117,7 @@
 									<div id="gallery" style="margin-left:10%">
 										{% for img in images %}
 											{% set imgç_path = img|split('public/', 2)[1] %}
-											<img src="{{'/' ~ imgç_path}}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+											<img src="{{asset(imgç_path)}}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
 											
 										{% endfor %}
 									</div>
