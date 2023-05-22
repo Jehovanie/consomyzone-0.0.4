@@ -156,13 +156,13 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.poiY as lat,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
         if( $mot_cles0 !== "" && $mot_cles1 === "" ){
-            $qb = $qb->where("MATCH(p.adresse) AGAINST( :cles0)")
-                ->orWhere("p.nomvoie LIKE :cles0")
-                ->orWhere("p.typevoie LIKE :cles0")
-                ->orWhere("p.villenorm LIKE :cles0")
-                ->orWhere("p.commune LIKE :cles0")
+            $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
+                ->orWhere("MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0")
+                ->orWhere("MATCH_AGAINST(p.typevoie) AGAINST( :cles0 boolean) > 0")
+                ->orWhere("MATCH_AGAINST(p.villenorm) AGAINST( :cles0 boolean) > 0")
+                ->orWhere("MATCH_AGAINST(p.commune) AGAINST( :cles0 boolean) > 0")
                 ->orWhere("p.codpost LIKE :cles0")
-                ->orWhere("p.denominationF LIKE :cles0")
+                // ->orWhere("p.denominationF LIKE :cles0")
                 ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
                 
@@ -174,14 +174,14 @@ class BddRestoRepository extends ServiceEntityRepository
             }else{
 
                 $qb = $qb->where("p.dep LIKE :cles1")
-                    ->orWhere("p.nomvoie LIKE :cles1")
+                    ->orWhere("MATCH_AGAINST(p.nomvoie) AGAINST( :cles1 boolean) > 0")
                     ->orWhere("p.depName LIKE :cles1")
                     ->orWhere("p.typevoie LIKE :cles1")
-                    ->orWhere("p.villenorm LIKE :cles1")
-                    ->orWhere("p.commune LIKE :cles1")
+                    ->orWhere("MATCH_AGAINST(p.villenorm) AGAINST( :cles1 boolean) > 0")
+                    ->orWhere("MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0")
                     ->orWhere("p.codpost LIKE :cles1")
                     ->orWhere("p.numvoie LIKE :cles1")
-                    ->orWhere("p.denominationF LIKE :cles1")
+                    ->orWhere("MATCH_AGAINST(p.denominationF) AGAINST( :cles1 boolean) > 0")
                     ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
                     ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
                     ->setParameter('cles1', '%'. $mot_cles1. '%' );
@@ -190,15 +190,15 @@ class BddRestoRepository extends ServiceEntityRepository
         }else {
 
             $qb = $qb->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( p.nomvoie LIKE :cles1)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(p.depName LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(p.nomvoie LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.nomvoie LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.villenorm LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.dep LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.commune LIKE :cles1)")
+                ->orWhere("(p.dep LIKE :cles0) AND ( MATCH_AGAINST(p.nomvoie) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(p.dep LIKE :cles0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(p.depName LIKE :cles0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0) AND ( p.depName LIKE :cles1)")
+                ->orWhere("(MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.villenorm) AGAINST( :cles1 boolean) > 0 )")
+                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( p.depName LIKE :cles1)")
+                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( p.dep LIKE :cles1)")
+                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
                 ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.depName LIKE :cles1)")
                 ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.commune LIKE :cles1)")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
@@ -216,59 +216,7 @@ class BddRestoRepository extends ServiceEntityRepository
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();
-
-        $count = $this->createQueryBuilder("p")
-                ->select("COUNT(p.id) as total");
-
-        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
-            $count = $count->where("p.depName LIKE :cles0")
-                ->orWhere("p.nomvoie LIKE :cles0")
-                ->orWhere("p.typevoie LIKE :cles0")
-                ->orWhere("p.villenorm LIKE :cles0")
-                ->orWhere("p.commune LIKE :cles0")
-                ->orWhere("p.codpost LIKE :cles0")
-                ->orWhere("p.denominationF LIKE :cles0")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' );
-        }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            if( strlen($mot_cles1) === 2 ){
-                $count = $count->where("p.dep LIKE :cles1")
-                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
-            }else{
-                $count = $count->where("p.dep LIKE :cles1")
-                    ->orWhere("p.nomvoie LIKE :cles1")
-                    ->orWhere("p.depName LIKE :cles1")
-                    ->orWhere("p.typevoie LIKE :cles1")
-                    ->orWhere("p.villenorm LIKE :cles1")
-                    ->orWhere("p.commune LIKE :cles1")
-                    ->orWhere("p.codpost LIKE :cles1")
-                    ->orWhere("p.numvoie LIKE :cles1")
-                    ->orWhere("p.numvoie LIKE :cles1")
-                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
-                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
-            }
-        }else {
-            $count = $count->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( p.nomvoie LIKE :cles1)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(p.depName LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(p.nomvoie LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.nomvoie LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.villenorm LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.dep LIKE :cles1)")
-                ->orWhere("(p.denominationF LIKE :cles0) AND ( p.commune LIKE :cles1)")
-                ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.commune LIKE :cles1)")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
-        }
-        $count = $count->getQuery()
-                       ->getResult();
-        
-        
-        return [ $results , $count[0]["total"] , "resto"];
+        return [ $results , count($results) , "resto"];
     }
 
     public function getRestoByCodinsee($codinsee, $dep)

@@ -186,13 +186,11 @@ class HomeController extends AbstractController
         // $size = $type !== "ferme" && $type !== "restaurant" && $type !== "station" && $type !== "station service" ? 6:20;
         $size = $type ? 20:6;
         // $size = 20;
-        
         $all = [
             "station" => $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
             "ferme" => $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
             "resto" => $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size),
         ];
-
 
         // dd($all["station"]);
 
