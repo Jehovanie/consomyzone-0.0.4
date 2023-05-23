@@ -325,8 +325,6 @@ if( document.querySelector(".notification_jheo_js")){
 
     const notif_icon = document.querySelector(".notification_jheo_js");
 
-
-
     notif_icon.addEventListener("click", () => {
 
         if( document.querySelectorAll(".card_js_jheo")){
