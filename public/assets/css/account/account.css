@@ -17,6 +17,13 @@ body{
     margin-left: 90px;
 }
 
+.content_chargement{
+    display: block;
+    width: 50%;
+    height: 50px;
+    text-align: center;
+}
+
 
 
 .content_left_menu_account {
