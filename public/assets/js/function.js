@@ -464,9 +464,10 @@ function create_map_content_not_async(geos, id_dep = null, map_for_type = "home"
         json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : latlng
         zoom = json.zoom ? json.zoom : 5;
     } else if (map_for_type === "resto") {
-        latlng = L.latLng(45.55401555223028, 3.9946391799233365);
+
+        latlng = L.latLng(48.856614, 2.3522219);
         json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : latlng
-        zoom = json.zoom ? json.zoom : 5;
+        zoom = json.zoom ? json.zoom :7;
     }
 
     centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
@@ -1467,7 +1468,7 @@ function addRestaurantToMap(nom_dep, code_dep) {
                 var markers = L.markerClusterGroup({
                     chunkedLoading: true
                 });
-                ///// 0 -> 4717
+
                 response1.forEach(item => {
 
                     const departementName = item.depName
