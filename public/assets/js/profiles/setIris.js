@@ -64,6 +64,7 @@ if( document.querySelector("#inscription_nom_commune")){
                 ///set default select option on quartier
                 //// active input quartier
                 const commune_valid = commune.find(({ commune }) => commune === content_options_communes?.querySelector(".default_value_on_select_jheo_js").value)
+                
                 if( commune_valid){ ///return single value 
                     ////get list quartie related with the commune
                     const list_options_quartier = t.filter(item => item.dr.substring(0,5) === commune_valid.codeInsee)
@@ -72,7 +73,7 @@ if( document.querySelector("#inscription_nom_commune")){
                     if( list_options_quartier.length > 0 ){
                         let is_default_value=true
                         list_options_quartier.forEach(item => {
-                            createAndAddOption(item.co + " " + item.i, content_options_quartier,is_default_value )
+                            createAndAddOption(item.i + " " + item.co, content_options_quartier,is_default_value )
                             is_default_value=false;
                         })
                         input_quartier.value = content_options_quartier?.querySelector(".default_value_on_select_jheo_js").value
@@ -101,7 +102,7 @@ if( document.querySelector("#inscription_nom_commune")){
                 if( list_options_quartier.length > 0 ){
                     let is_default_value=true
                     list_options_quartier.forEach(item => {
-                        createAndAddOption(item.co + " " + item.i, content_options_quartier,is_default_value )
+                        createAndAddOption(item.i + " " + item.co, content_options_quartier,is_default_value )
                         is_default_value=false;
                     })
                     input_quartier.value = content_options_quartier?.querySelector(".default_value_on_select_jheo_js").value
