@@ -466,8 +466,8 @@ function create_map_content_not_async(geos, id_dep = null, map_for_type = "home"
     } else if (map_for_type === "resto") {
 
         latlng = L.latLng(48.856614, 2.3522219);
-        json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : latlng
-        zoom = json.zoom ? json.zoom :7;
+        json = getDataInLocalStorage("coord") ? JSON.parse(getDataInLocalStorage("coord")) : latlng
+        zoom = json.zoom ? json.zoom :10;
     }
 
     centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
