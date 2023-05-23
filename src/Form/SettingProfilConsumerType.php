@@ -30,7 +30,7 @@ class SettingProfilConsumerType extends AbstractType
         ->add('commune', TextType::class, ['label' => 'Commune'])
         ->add('submit', SubmitType::class, [
             'label' => 'Modifier',
-            'attr' => ['class' => 'btn-block btn-primary btn-sm']
+            'attr' => ['class' => 'btn-block btn-primary btn-sm', 'lng-tag'=>"modifier"]
         ])
         ;
     }

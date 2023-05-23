@@ -102,9 +102,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="tribu_t", type="string", length=200, nullable=true)
+     * @ORM\Column(name="tribu_t_owned", type="string", length=200, nullable=true)
      */
     private $tribuT;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tribu_t_joined", type="string", length=200, nullable=true)
+     */
+    private $tribuTJoined;
 
 
     public function getId(): ?int
@@ -350,5 +357,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isIsLabled(): ?bool
     {
         return $this->isLabled;
+    }
+
+    /**
+     * Get the value of tribuTJoined
+     *
+     * @return  string
+     */ 
+    public function getTribuTJoined()
+    {
+        return $this->tribuTJoined;
+    }
+
+    /**
+     * Set the value of tribuTJoined
+     *
+     * @param  string  $tribuTJoined
+     *
+     * @return  self
+     */ 
+    public function setTribuTJoined(string $tribuTJoined)
+    {
+        $this->tribuTJoined = $tribuTJoined;
+
+        return $this;
     }
 }

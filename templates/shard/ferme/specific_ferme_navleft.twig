@@ -68,7 +68,6 @@
         
     </nav>
     <div class="container-fluid list-depart">
-    <hr>
         <div class="head-left">
             <div class="row">
                 <div class="col-md-2">
@@ -108,24 +107,33 @@
                     <p  class="titre" data-toggle-deparement="{{nom_dep}}">
                         Les fermes du département:
                         <span class="fw-bolder">{{nom_dep}}, </span>
-                        <span>{{nomber_ferme}}</span> résultats
+                        <br>
+                        <span class="content_nombre_result_js_jheo">{{nomber_ferme}}</span> résultats
                     </p>
                 </div>
+                <div class="content_filter_trie content_filter_trie_jheo_js">
+                    <div class="pagination_alphabet pagination_alphabet_jheo_js">
+                        <ul>
+                            {# CONTENT LIST ALPHABET generate by js #}
+                        </ul>
+                    </div>
+				</div>
             </div>
             <div class="container list-depart-all-specific" id="Scrollbar">
-                <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
+                <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}" data-toggle-dep-name="{{nom_dep}}">
                     {% for  ferme in fermes %}
-                            <ul>
-                                <li class="card-list">
+                            <ul class="content_list_ferme_spec_js_jheo">
+                                <li class="card-list name_ferme_js_jheo" onclick="getDetailFerme('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
                                     <div class="row container-depart pt-4 element" data-toggle-id="{{ferme.id}}" data-toggle-latitude ="{{(ferme.latitude) ? ferme.latitude : '0' }}" data-toggle-longitude="{{(ferme.longitude) ? ferme.longitude : '0'}}">
                                         <div class="col-md-9">
+                                            <p class="text-center fw-bold fs-6">{{ferme.nomFerme}} </p>
                                             <p>
-                                                {{ferme.nomFerme}} <br>
+                                                <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                                 {{ferme.adresseFerme }}
                                             </p>
                                         </div>
                                         <div class="col-md-2">
-                                            <a id="open-detail-ferme" onclick="getDetailFerme('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
+                                            <a id="open-detail-ferme" >
                                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
                                                     <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 

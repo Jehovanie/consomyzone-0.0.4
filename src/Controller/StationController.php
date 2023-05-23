@@ -44,28 +44,6 @@ class StationController extends AbstractController
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
-
-
-        ///pour plus de resultat dans le view.
-
-        // if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1)
-
-        // {
-
-        //     return $this->json(
-
-        //         $departementRepository->getDep(
-
-        //             intval($request->request->get("page"))
-
-        //         )
-
-        //     );
-
-        // }
-
-
-
         return $this->render('station/index.html.twig', [
 
             "departements" => $departementRepository->getDep(),
@@ -80,9 +58,16 @@ class StationController extends AbstractController
         ]);
     }
 
-
-
-
+    /**
+     * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
+     */
+     public function getDepartement(DepartementRepository $departementRepository): Response
+    {
+         return $this->render('shard/station/fetchLeftSide.html.twig', [
+             "departements" => $departementRepository->getDep(),
+         ]);
+    }
+ 
 
     /**
 
@@ -119,6 +104,17 @@ class StationController extends AbstractController
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
+
+    /**
+    * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
+    */
+    public function getStationInSpecifiqueDepart(DepartementRepository $departementRepository): Response
+    {
+        return $this->render('shard/station/fetchLeftSideSpecifique.html.twig', [
+            "departements" => $departementRepository->getDep(),
+        ]);
+    }
+
 
 
 
@@ -158,7 +154,6 @@ class StationController extends AbstractController
      */
 
     public function getFermeRepoSuite(StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request)
-
     {
 
         if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {
@@ -214,35 +209,23 @@ class StationController extends AbstractController
 
 
     /**
-
      * DON'T CHANGE THIS ROUTE: This use in js file.
-
      * 
-
      * @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-
      */
-
     public function detailsStation(CodeapeRepository $codeApeRep, Status $status, StationServiceFrGeomRepository $stationServiceFrGeomRepository, $depart_code, $depart_name, $id)
-
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
         // dump($depart_code, $depart_name, $id);
         // dd($stationServiceFrGeomRepository->getDetailsStation($depart_code, $depart_name, $id));
-        return $this->render("shard/station/details.js.twig", [
-
+        return $this->render("station/detail_station.html.twig", [
             "departCode" => $depart_code,
-
             "departName" => $depart_name,
-
             "station" => $stationServiceFrGeomRepository->getDetailsStation($depart_code, $depart_name, $id)[0],
-
             "profil" => $statusProfile["profil"],
-
             "statusTribut" => $statusProfile["statusTribut"],
-
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
@@ -282,7 +265,6 @@ class StationController extends AbstractController
 
 
             if ($nom_dep != "null" && $id_dep != "null") {
-
                 return $this->json(
 
                     $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type, $nom_dep, $id_dep)

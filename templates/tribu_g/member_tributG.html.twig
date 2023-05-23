@@ -1,10 +1,10 @@
-<div class="content_member_js_jheo">
+<div class="">
     <div class="card mb-2">
         <div class="card-header">
             <h4>Partisants dans la tribu G</h4>
         </div>
-        <div class="card-body">
-            <table class="table">
+        <div class="card-body" style="overflow-x:auto;">
+            <table class="table table-responsive">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -17,7 +17,7 @@
                     
                     {% for item in membersTributG %}
                         <tr>
-                            <th scope="row">{{ loop.index }}</th>
+                            <td scope="row">{{ loop.index }}</td>
                             <td>{{item.firstname}}</td>
                             <td>{{item.lastname}}</td>
                             <td>{{item.email}}</td>

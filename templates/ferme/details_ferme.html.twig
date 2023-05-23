@@ -1,40 +1,231 @@
-{% extends 'base.html.twig' %}
+<div class="description" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomFerme}}">
+    <div>
+        {# /// nom et propriété #}
+        <div class="titre col titre-ferme">
+            <h4 class="text-center">
+                {{details.nomFerme | raw}}
+                <br>
+                {{details.nomProprietaire  | raw}} <br>
+                <a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
+            </h4>
+        </div>
+    </div>
 
-{% block title %}Ferme ConsoMyZone
-{% endblock %}
 
-{% block stylesheets %}
-	<link rel="stylesheet" href="{{asset('asset/css/ferme/app.css')}}">
-{% endblock %}
+    {# note avis   #}
+    {# <hr> #}
+    <div class="content_note text-center">
+        <div class="start">
+            <i class="fa-solid fa-star" data-rank="1"></i>
+            <i class="fa-solid fa-star" data-rank="2"></i>
+            <i class="fa-solid fa-star" data-rank="3"></i>
+            <i class="fa-solid fa-star" data-rank="4"></i>
+
+        </div>
+
+        {# <div class="nombre_avis">
+            <a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
+        </div> #}
+    </div>
+
+    <hr>
+    {# ///activiter #}
+    {% if details.activite %}
+        <div class="content_activite">
+            <p class="activite">
+                <span class="fw-bold">Activite:</span>
+                {{details.activite | raw}}
+            </p>
+        </div>
+    {% endif %}
+    {# ///content cta #}
+    <div class="content_tow_cta row mx-auto">
+        <div class="site_web non_active col-6">
+            <a class="btn btn-success" href="{{'https://'}}{{details.lienSiteWeb | raw}}" target="_blank">Lien :  site Web</a>
+        </div>
+
+        <div class="iteneraire non_active col-4">
+            <button class="btn btn-success">
+                Itinéraire
+            </button>
+        </div>
+    </div>
+
+    <hr>
+    {% if details.agricultureBio %}
+        <div class="row">
+            <div class="col-2">
+                <img src="{{asset('assets/icon/icon-agri.png') | raw}}" alt="icon" width="50">
+            </div>
+            <div class="col">
+                <p class="agribio mt-3 fw-bold">
+                    Agri biologie
+                </p>
+            </div>
+            <div class="col mt-3">
+                <i class="fa-solid fa-check" aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <hr>
+    {% endif %}
 
 
-{% block javascripts %}
-	<script src="{{asset('assets/js/ferme/data_ferme.js')}}" defer></script>
-    <script src="{{asset('assets/js/ferme/details.js')}}" defer></script>
-{% endblock %}
+    {# ///codePostal #}
+    {% if details.codePostal %}
+        <div class="content_activite">
+            <p class="activite">
+                <span class="fw-bold">Code Postal:</span>
+                {{details.codePostal  | raw}}
+            </p>
+        </div>
+        <hr>
+    {% endif %}
 
-{% block body %}
-	<div class="responsif-navbar-none">
-		{% include 'shard/navbar.twig' %}
-	</div>
-	<div class="row">
-		<div class="col" id="tous">
-			{% include 'shard/ferme/specific_ferme_navleft.twig' %}
-		</div>
-		<div class="col">
-			<div class="content_cart_map">
-				<div class="cart_map">
-					<div class="chargement_content" id="toggle_chargement">
-						<div class="content_box">
-							<div class="box">
-								<div class="under_box"></div>
-							</div>
-						</div>
-					</div>
-					<div id="map" class="map"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-{% endblock %}
+    {% if details.ville %}
+        <div class="content_activite">
+            <p class="activite">
+                <span class="fw-bold">Ville:</span>
+                {{details.ville  | raw}}
+            </p>
+        </div>
+        <hr>
+    {% endif %}
 
+
+    {# genre  #}
+    <div class="content_genre">
+        <p class="genre">
+            <span class="fw-bold">Genre:</span>
+            {{details.genre | raw}}
+        </p>
+    </div>
+
+    <hr>
+    <div class="produit">
+        <h5>
+            <span class="fw-bold">Produit:</span>
+        </h5>
+        <ul>
+            {% if details.produit1 %}
+                <li>{{details.produit1 | raw}}</li>
+            {% endif %}
+            {% if details.produit2 %}
+                <li>{{details.produit2 | raw}}</li>
+            {% endif %}
+            {% if details.produit3 %}
+                <li>{{details.produit3 | raw}}</li>
+            {% endif %}
+            {% if details.produit4 %}
+                <li>{{details.produit4 | raw}}</li>
+            {% endif %}
+            {% if details.produit5 %}
+                <li>{{details.produit5 | raw}}</li>
+            {% endif %}
+            {% if details.produit6 %}
+                <li>{{details.produit6 | raw}}</li>
+            {% endif %}
+            {% if details.produit7 %}
+                <li>{{details.produit7 | raw}}</li>
+            {% endif %}
+            {% if details.produit8 %}
+                <li>{{details.produit8 | raw}}</li>
+            {% endif %}
+        </ul>
+
+        <p>{{details.produitFerme | raw}}</p>
+    </div>
+
+    <hr>
+
+    <div class="particularite">
+        <h5>
+            Particularité:
+        </h5>
+        <ul>
+            {% if details.carteBancaire %}
+                <li>Carte Bancaire possible.</li>
+            {% endif %}
+            {% if details.chequeVacance %}
+                <li>Accepter les chèques de Vacance.</li>
+            {% endif %}
+            {% if details.degustation %}
+                <li>Dégustation possible.</li>
+            {% endif %}
+            {% if details.animauxAutoriser %}
+                <li>Autorise de porte des animaux.</li>
+            {% endif %}
+            {% if details.venteEnLigne %}
+                <li>Vente en ligne possible.</li>
+            {% endif %}
+
+        </ul>
+    </div>
+
+    <hr>
+
+    <div class="content_tel">
+        <h5>
+            Contact rapide:
+        </h5>
+        <ul>
+            {% if details.telephoneDomicile %}
+                <li>
+                    <span class="fw-bold">Tel Domicile:</span>
+                    {{details.telephoneDomicile | raw}}</li>
+            {% endif %}
+            {% if details.telephoneMobile %}
+                <li>
+                    <span class="fw-bold">Tel Mobile:</span>
+                    {{details.telephoneMobile | raw}}</li>
+            {% endif %}
+            {% if details.telephoneTravail %}
+                <li>
+                    <span class="fw-bold">Tel Travail:</span>
+                    {{details.telephoneTravail | raw}}</li>
+            {% endif %}
+        </ul>
+        <hr>
+
+    </div>
+
+    <hr>
+    {% if details.horairesVenteAuMarche or details.horairesVenteMagasinProd or details.horairesVenteAFerme  %}
+        <div>
+            <h3>
+                Horaires:
+            </h3>
+            <ul class="horaires">
+                {% if details.horairesVenteAuMarche %}
+                    <li>
+                        <h5>Horaires vente au marché</h5>
+                        <span>{{details.horairesVenteAuMarche | raw}}
+                        </span>
+                    </li>
+                {% endif %}
+                {% if details.horairesVenteMagasinProd %}
+                    <li>
+                        <h5>Horaires vente du magasin prod</h5>
+                        <span>{{details.horairesVenteMagasinProd | raw}}
+                        </span>
+                    </li>
+                {% endif %}
+                {% if details.horairesVenteAFerme %}
+                    <li>
+                        <h5>Horaires vente à la ferme</h5>
+                        <span>{{details.horairesVenteAFerme | raw}}
+                        </span>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if (app.user) %}
+        <div class="content_one_cta">
+            <button id="givs-avis-ferme-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
+        </div>
+    {% endif %}
+
+</div>

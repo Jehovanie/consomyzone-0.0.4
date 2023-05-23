@@ -61,7 +61,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.prixSp98',
                      'p.prixGasoil',
                      'p.adresse')
-            ->setMaxResults(10)
+            //->setMaxResults(10)
             ->where('p.departementCode LIKE :q')
             // ->andWhere('p.departementName LIKE :k')
             ->orderBy("p.nom", 'ASC')
@@ -104,7 +104,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             // ->andWhere('p.departementName LIKE :k')
             // ->setParameter('k', '%'. $new_nom_dep. '%' );
 
-        $query = $qb->getQuery();
+        $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
         return $query->execute();
     }
 
@@ -133,10 +133,10 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.latitude',
                      'p.longitude',
                      'p.services')
-            ->where('p.departementCode = :q')
+            // ->where('p.departementCode = :q')
             // ->andWhere('p.departementName LIKE :k')
             ->andWhere('p.id = :t')
-            ->setParameter('q', $code )
+            // ->setParameter('q', $code )
             // ->setParameter('k', '%'. $new_nom_dep. '%' )
             ->setParameter('t',$id_station);
 
@@ -155,11 +155,6 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             ////for one departement
             if( $nom_dep && $id_dep ){
 
-                ///correction des carractères speciaux;
-                $car_speciaux = array("é", "è");
-                $car_correction   = array("e", "e");
-                $new_nom_dep = str_replace($car_speciaux, $car_correction, $nom_dep);
-
                 ////filter for all type
                 if( $type === "tous" ){
                     // dd("ss ato");
@@ -176,25 +171,32 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.prixSp95E10',
                                 'p.prixSp98',
                                 'p.prixGasoil',
-                                'p.nom')
-                        ->where('(p.departementCode = :code ) AND (p.prixE85 BETWEEN :min AND :max)')
-                        ->orWhere('(p.departementCode = :code ) AND (p.prixGplc BETWEEN :min AND :max)')
-                        ->orWhere('(p.departementCode = :code ) AND (p.prixSp95 BETWEEN :min AND :max)')
-                        ->orWhere('(p.departementCode = :code ) AND (p.prixSp95E10 BETWEEN :min AND :max)')
-                        ->orWhere('(p.departementCode = :code ) AND (p.prixSp98 BETWEEN :min AND :max)' )
-                        ->orWhere('(p.departementCode = :code ) AND (p.prixGasoil BETWEEN :min AND :max)' )
-                        ->orderBy("p.nom", 'ASC')
-                        ->setParameter('code', $id_dep)
-                        // ->setParameter('nom', '%'.$new_nom_dep.'%' )
-                        ->setParameter('min', $min )
-                        ->setParameter('max', $max );
-                    // dd($qb->expr());
+                                'p.nom');
 
+                    if( $id_dep === "20"){
+                        $qb= $qb->where('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixE85 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixGplc BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixSp95 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixSp95E10 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixSp98 BETWEEN :min AND :max)' )
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixGasoil BETWEEN :min AND :max)' )
+                            ->setParameter('a',  "2A" )
+                            ->setParameter('b',  "2B");
+
+                    }else{
+                        $qb= $qb->where('(p.departementCode = :code ) AND (p.prixE85 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixGplc BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixSp95 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixSp95E10 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixSp98 BETWEEN :min AND :max)' )
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixGasoil BETWEEN :min AND :max)' )
+                            ->setParameter('code', $id_dep);
+                    }
+                        
                 //// filter some type not all
                 }else{
                     
                     $var_type = explode("@", $type);
-                    
                     
                     $qb = $this->createQueryBuilder('p')
                         ->select('p.id',
@@ -211,15 +213,33 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.latitude',
                                 'p.longitude');
 
+                    
                     //// iterate for different type
-                    $qb->where("(p.departementCode = :code) AND (p." . $var_type[0] . " BETWEEN :min AND :max)");
-                    for ( $i = 1; $i< count($var_type); $i++){
-                        $qb->orWhere("(p.departementCode = :code) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)");
+                    if( $id_dep === "20"){
+                        $qb= $qb->where("(p.departementCode = :a OR p.departementCode = :b ) AND (p." . $var_type[0] . " BETWEEN :min AND :max)")
+                            ->setParameter('a',  "2A")
+                            ->setParameter('b',  "2B");
+                    }else{
+                        $qb= $qb->where("(p.departementCode = :code) AND (p." . $var_type[0] . " BETWEEN :min AND :max)");
                     }
-                    $qb->setParameter('min', $min )
-                        ->setParameter('max', $max )
-                        ->setParameter('code', $id_dep );
+
+                    for ( $i = 1; $i< count($var_type); $i++){
+                        if( $id_dep === "20"){
+                            $qb= $qb->orWhere("(p.departementCode = :a OR p.departementCode = :b ) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)")
+                                    ->setParameter('a',  "2A" )
+                                    ->setParameter('b',  "2B");
+                        }else{
+                            $qb= $qb->orWhere("(p.departementCode = :code) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)");
+                        }
+                    }
                 }
+
+                if( $id_dep !== "20"){
+                    $qb->setParameter('code', $id_dep );
+                }
+
+                $qb->setParameter('min', $min )
+                   ->setParameter('max', $max );
 
             /// for all departement
             }else{
@@ -276,7 +296,6 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     ->setParameter('max', $max );
                 }
             }
-        
         //// filter first without min and max
         }else{
             $qb = $this->createQueryBuilder('p')
@@ -294,7 +313,50 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'p.latitude',
                         'p.longitude');
         }
+        $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
+        return $query->execute();
+    }
 
+    public function getAllFilterByLatLong($data){
+
+        extract($data); //// $last [ min [ lat , lng ], max [ lat, lng ] ], $new [ min [ lat, lng ], max [ lat, lng ] ]
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                'p.adresse',
+                'p.departementCode',
+                'p.departementName',
+                'p.prixE85',
+                'p.prixGplc',
+                'p.prixSp95',
+                'p.prixSp95E10',
+                'p.prixSp98',
+                'p.prixGasoil',
+                'p.nom',
+                'p.latitude',
+                'p.longitude')
+            ->orderBy("p.nom", 'ASC')
+            ->where('p.latitude BETWEEN :lat_min AND :lat_max')
+            ->andWhere('p.longitude BETWEEN :lng_min AND :lng_max');
+
+        // $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
+        // $lat_max= $last["max"];
+
+        // $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
+        // $lng_max= count($new) > 0 ?  $new["max"] : $last["min"] ;
+
+        $lat_min=$last["min"];
+        $lat_max= count($new) > 0 ? $new["max"] : $last["max"];
+
+        $lng_min= count($new) > 0 ? $new["min"] : $last["min"];
+        $lng_max= $last["max"];
+
+        ///(this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) 
+        $qb= $qb->setParameter('lat_min', $lat_min["lat"])
+                ->setParameter('lat_max', $lat_max["lat"])
+                ->setParameter('lng_min', $lng_min["lng"])
+                ->setParameter('lng_max', $lng_max["lng"]);
+        
         $query = $qb->getQuery();
         return $query->execute();
     }
@@ -338,7 +400,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
     ///jheo : get by cles
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1 , int $page = 1, $size = 20 )
     {
-        $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // $page_current =$page > 1 ? $page * 10 +1  : 0;
         // const { adresse:add, departementName: depName, departementCode: dep, nom } = item;
         // // showResultSearchNavBar("station", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder('p')
@@ -359,19 +421,33 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     'p.services');
 
         if( $mot_cles0 !== "" && $mot_cles1 === ""){
-            $qb = $qb->where("p.adresse LIKE :cles0")
+            // MATCH (denomination_f) AGAINST('FLEUR ONDES BAR HUITR');
+            $qb = $qb->where("MATCH(p.adresse) AGAINST( :cles0)")
                 ->orWhere("p.departementName LIKE :cles0")
                 ->orWhere("p.nom LIKE :cles0")
                 ->orWhere("p.services LIKE :cles0")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
 
         }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
-            $qb = $qb->where("p.adresse LIKE :cles1")
+            if( strlen($mot_cles1) === 2 ){
+                if($mot_cles1 === "20" ){
+                    $qb = $qb->where("p.departementCode LIKE :a")
+                            ->orWhere("p.departementCode LIKE :b")
+                            ->setParameter('a',  "%2A%" )
+                            ->setParameter('b',  "%2B%");
+                }else{
+                    $qb = $qb->where("p.departementCode LIKE :cles1")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+                $qb = $qb->where("p.adresse LIKE :cles1")
                     ->orWhere("p.departementCode LIKE :cles1")
                     ->orWhere("p.departementName LIKE :cles1")
                     ->orWhere("p.nom LIKE :cles1")
                     ->orWhere("p.services LIKE :cles1")
+                    ->orWhere("CONCAT(p.departementCode,'',p.departementName) LIKE :cles1")
                     ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
         }else{
             $qb = $qb->where("(p.adresse LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
                 ->orWhere("(p.adresse LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
@@ -383,10 +459,14 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
         }
 
-        $qb = $qb->setFirstResult($page_current)
-            ->setMaxResults($size)
-            ->orderBy('p.nom', 'ASC')
-            ->getQuery();
+        // $qb = $qb->setFirstResult($page_current)
+        //     ->setMaxResults($size)
+        //     ->orderBy('p.nom', 'ASC')
+        //     ->getQuery();
+
+        $qb = $qb->orderBy('p.nom', 'ASC')
+                 ->getQuery();
+            
 
         $results =$qb->execute();
 
@@ -401,12 +481,24 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
 
         }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
-            $count = $count->where("p.adresse LIKE :cles1")
+            if( strlen($mot_cles1)===2){
+                if($mot_cles1 === "20" ){
+                    $count = $count->where("(p.departementCode LIKE :a OR p.departementCode LIKE :b )")
+                                ->setParameter('a',  "%2A%" )
+                                ->setParameter('b',  "%2B%");
+                }else{
+                    $count = $count->where("p.departementCode LIKE :cles1")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+                $count = $count->where("p.adresse LIKE :cles1")
                     ->orWhere("p.departementCode LIKE :cles1")
                     ->orWhere("p.departementName LIKE :cles1")
                     ->orWhere("p.nom LIKE :cles1")
                     ->orWhere("p.services LIKE :cles1")
+                    ->orWhere("CONCAT(p.departementCode,'',p.departementName) LIKE :cles1")
                     ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
         }else{
             $count = $count->where("(p.adresse LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
                 ->orWhere("(p.adresse LIKE :cles0) AND ( p.departementName LIKE :cles1 )")

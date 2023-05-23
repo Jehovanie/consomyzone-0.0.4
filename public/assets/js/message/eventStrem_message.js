@@ -105,14 +105,12 @@ function createDivMessage(id,isForMe,date, message,images){
             // <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
             const image_msg = document.createElement("img");
 
-            // on dev -------------------------------------------------
-            console.log("on dev")
-            image_msg.setAttribute("src", "/uploads/messages/" + image );
-            // ------------------------------------------------------
-
-            // on prod -------------------------------------------------
-            // img.setAttribute("src", "/public/uploads/messages/" + image );
-            // ------------------------------------------------------
+            if(IS_DEV_MODE){
+                console.log("on dev")
+                image_msg.setAttribute("src", "/uploads/messages/" + image );
+            }else{
+                img.setAttribute("src", "/public/uploads/messages/" + image );
+            }
             
             div_image_messages.appendChild(image_msg);
         })
@@ -134,23 +132,20 @@ function createDivMessage(id,isForMe,date, message,images){
 
         const photo = document.querySelector(".content_message").getAttribute("data-toggle-current-profil")
         if(photo){
-            // on dev -----------------------------------
-            console.log("on dev")
-            img.setAttribute("src", "/uploads/users/photos/" + photo  );
-            //-------------------------------------
-
-            // on prod -----------------------------------
-            // img.setAttribute("src", "/public/uploads/users/photos/" + photo  );
-            //-------------------------------------
+            if( IS_DEV_MODE ){
+                console.log("on dev")
+                img.setAttribute("src", "/uploads/users/photos/" + photo  );
+            }else{
+                img.setAttribute("src", "/public/uploads/users/photos/" + photo  );
+            }
         }else{
-            // on dev -----------------------------------
-            console.log("on dev")
-            img.setAttribute("src", "/assets/image/message2.jpg" );
-            //-------------------------------------
 
-            // on pro -----------------------------------
-            //  img.setAttribute("src", "/public/assets/image/message2.jpg" );
-            //-------------------------------------
+            if( IS_DEV_MODE ){
+                console.log("on dev")
+                img.setAttribute("src", "/assets/image/message2.jpg" );
+            }else{
+                img.setAttribute("src", "/public/assets/image/message2.jpg" );
+            }
         }
 
 
@@ -161,23 +156,20 @@ function createDivMessage(id,isForMe,date, message,images){
 
         const photo = document.querySelector(".content_message").getAttribute("data-toggle-other-profil")
         if(photo){
-            // on dev -----------------------------------
-            console.log("on dev")
-            img.setAttribute("src", "/uploads/users/photos/" + photo  );
-            //-------------------------------------
-
-            // on prod --------------------------------
-            // img.setAttribute("src", "/public/uploads/users/photos/" + photo  );
-            //-------------------------------------
+            if(IS_DEV_MODE){
+                console.log("on dev")
+                img.setAttribute("src", "/uploads/users/photos/" + photo  );
+            }else{
+                // on prod --------------------------------
+                img.setAttribute("src", "/public/uploads/users/photos/" + photo  );
+            }
         }else{
-            // on dev -----------------------------------
-            console.log("on dev")
-            img.setAttribute("src", "/assets/image/message1.jpg" );
-            //-------------------------------------
-
-            // on prod -----------------------------------
-            // img.setAttribute("src", "/public/assets/image/message1.jpg" );
-            //-------------------------------------
+            if(IS_DEV_MODE){
+                console.log("on dev")
+                img.setAttribute("src", "/assets/image/message1.jpg" );
+            }else{
+                img.setAttribute("src", "/public/assets/image/message1.jpg" );
+            }
         }
 
         div_avatar_message.appendChild(img);

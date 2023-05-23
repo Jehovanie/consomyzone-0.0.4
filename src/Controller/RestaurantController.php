@@ -24,11 +24,36 @@ class RestaurantController extends AbstractController
         Status $status,
         CodeapeRepository $codeApeRep,
         DepartementRepository $departementRepository,
+        BddRestoRepository $bddResto,
+        CodeinseeRepository $code
+
+    ) {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $dataRequest = $departementRepository->getDep();
+        // $id_dep = $dataRequest["id"];
+        // $datas = $code->getAllCodinsee($id_dep);
+        // dump($dataRequest);
+        //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
+        return $this->render("restaurant/index.html.twig", [
+            "departements" => $departementRepository->getDep(),
+            "number_of_departement" => count($bddResto->getAllOpenedRestos()),
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            // "codinsees" => $datas,
+            "codeApes" => $codeApeRep->getCode()
+        ]);
+    }
+
+    #[Route("/restaurant-mobile", name: "restaurant_all_dep_mobile", methods: ["GET"])]
+    public function getAllDepartementMobile(
+        Status $status,
+        CodeapeRepository $codeApeRep,
+        DepartementRepository $departementRepository,
         BddRestoRepository $bddResto
     ) {
         $statusProfile = $status->statusFondateur($this->getUser());
         //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
-        return $this->render("restaurant/index.html.twig", [
+        return $this->render("shard/restaurant/mobile-depart.js.twig", [
             "departements" => $departementRepository->getDep(),
             "number_of_departement" => count($bddResto->getAllOpenedRestos()),
             "profil" => $statusProfile["profil"],
@@ -96,8 +121,64 @@ class RestaurantController extends AbstractController
         ]);
     }
 
+    #[Route("/restaurant-mobile/specific", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
+    public function getSpecificRestaurantMobile(
+        BddRestoRepository $bddResto,
+        Status $status,
+        Request $request,
+        CodeapeRepository $codeApeRep,
+    ) {
+        $dataRequest = $request->query->all();
+        $nomDep = $dataRequest["nom_dep"];
+        $codeDep = $dataRequest["id_dep"];
+        $codinsee = $dataRequest["codinsee"];
+        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+        $resultCount = count($datas);
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        return $this->render("shard/restaurant/specific_mobile_departement.js.twig", [
+            "id_dep" => $codeDep,
+            "nom_dep" => $nomDep,
+            "restaurants" => $datas,
+            "nomber_resto" => $resultCount,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode(),
+            "codinsee" => $codinsee
+
+
+        ]);
+    }
+
     #[Route("/restaurant/arrondissement", name: "app_dep_restaurant_arrondisme", methods: ["GET"])]
     public function getRestaurantArrondisme(
+        BddRestoRepository $bddResto,
+        Status $status,
+        Request $request,
+        CodeapeRepository $codeApeRep,
+        CodeinseeRepository $code
+    ) {
+        $dataRequest = $request->query->all();
+        $nomDep = $dataRequest["nom_dep"];
+        $codeDep = $dataRequest["id_dep"];
+        $datas = $code->getAllCodinsee($codeDep);
+        $resultCount = count($bddResto->getCoordinateAndRestoIdForSpecific($codeDep));
+        // dump($resultCount);
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        return $this->render("restaurant/restaurant_arrondisment.html.twig", [
+            "id_dep" => $codeDep,
+            "nom_dep" => $nomDep,
+            "codinsees" => $datas,
+            "resto_nombre" => $resultCount,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+        ]);
+    }
+
+    #[Route("/restaurant-mobile/arrondissement", name: "app_dep_restaurant_arrondisme_mobile", methods: ["GET"])]
+    public function getRestaurantArrondismeMobile(
         BddRestoRepository $bddResto,
         Status $status,
         Request $request,
@@ -112,7 +193,7 @@ class RestaurantController extends AbstractController
         dump($resultCount);
         $statusProfile = $status->statusFondateur($this->getUser());
 
-        return $this->render("restaurant/restaurant_arrondisment.html.twig", [
+        return $this->render("shard/restaurant/arrondisment_resto_mobile_navleft.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
             "codinsees" => $datas,
@@ -148,13 +229,16 @@ class RestaurantController extends AbstractController
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
+            "codinsee" => $codinsee
         ]);
     }
+
+    
 
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
      * 
-     * @Route("restaurant/departement/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="detail_restaurant" , methods="GET" )
+     * @Route("/restaurant/departement/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="detail_restaurant" , methods="GET" )
      */
     public function detailsRestaurant(
         CodeapeRepository $codeApeRep,
@@ -180,6 +264,74 @@ class RestaurantController extends AbstractController
             "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+
+        ]);
+    }
+
+    /** 
+     * DON'T CHANGE THIS ROUTE: It's use in js file. 
+     * 
+     * @Route("/restaurant-left/departement/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="detail_left_restaurant" , methods="GET" )
+     */
+    public function detailsRestaurantLeft(
+        CodeapeRepository $codeApeRep,
+        BddRestoRepository $bddResto,
+        Status $status,
+        $nom_dep,
+        $id_dep,
+        $id_restaurant
+    ): Response {
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        // return $this->json([
+        //     "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+        //     "id_dep" => $id_dep,
+        //     "nom_dep" => $nom_dep,
+        //     "profil" => $statusProfile["profil"],
+        //     "statusTribut" => $statusProfile["statusTribut"],
+        //     "codeApes" => $codeApeRep->getCode()
+
+        // ], 200);
+
+        return $this->render("shard/restaurant/detail_resto_navleft.twig", [
+            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+
+        ]);
+    }
+
+    /** 
+     * DON'T CHANGE THIS ROUTE: It's use in js file. 
+     * 
+     * @Route("/restaurant-mobile/departement/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="detail_restaurant_mobile" , methods="GET" )
+     */
+    public function detailsRestaurantMobile(
+        CodeapeRepository $codeApeRep,
+        BddRestoRepository $bddResto,
+        Request $request,
+        Status $status,
+        $nom_dep,
+        $id_dep,
+        $id_restaurant,
+        CodeinseeRepository $code
+    ): Response {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $dataRequest = $request->query->all();
+    
+        $codinsee = array_key_exists('codinsee', $dataRequest)? $dataRequest["codinsee"]: null;
+        
+        return $this->render("shard/restaurant/details_mobile.js.twig", [
+            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "codinsee" => $codinsee,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode()

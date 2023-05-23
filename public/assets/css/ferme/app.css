@@ -1,0 +1,24 @@
+.navleft .list-depart {
+    margin-top: 110px !important;
+}
+.content_description {
+    height: 75vh !important;
+}
+
+.choix_list_cart{
+    text-align: center;
+}
+
+.input_search_dep{
+    background-color: #e7e7e7;
+    margin-bottom: 20px;
+    border-radius: 30px;
+    justify-content: space-between;
+    align-items: center;
+    width: 75%;
+    margin: auto;
+    font-size: 16px;
+    background: linear-gradient(to right, #45f58d, #3bfbe4)1;
+    border-radius: 100px;
+    padding: 0.5em 1em 0.5em 2.5em;
+}

@@ -1,0 +1,14 @@
+@media screen and (max-width:992px) {
+    .content_left_menu_account_mobile {
+        background-color: gray;
+    }
+    .content_right_dashboard_sp {
+        z-index: -10;
+    }
+    .content_right_dashboard_sp {
+        width: 100%;
+    }
+    .card-apropos-admin {
+        width: 100%;
+    }
+}

@@ -6,6 +6,7 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/list_membre_tribuG_sp_respons.css')}}">
 {% endblock %}
 
 {% block javascripts %}
@@ -15,15 +16,27 @@
 {% block body %}
 	<main>
 		<div class="content_left_menu_account fixed-top mt-5 col">
-			<div class="left_menu">
-				{% include ("shard/account_navleft.html.twig" )%}
-			</div>
+			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+                <div class="left_menu">
+                    {% include "shard/account_navleft.html.twig" %}
+                </div>
+            </div>
+            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+                <div class="left_menu">
+                    {% include "shard/account_navleft_mobile.html.twig" %}
+                </div>
+            </div>
 		</div>
-		<div class="fixed-top">
+
+		<div class="fixed-top col responsif-none">
 			{{ include('shard/account_navbar.html.twig') }}
 		</div>
 
-		<div class="row account">
+		<div class="fixed-top col responsif-none-mobile">
+			{{ include('shard/account_navbar_mobile.html.twig') }}
+		</div>
+
+		<div class="row content_right_actualite">
 			<center>
 				<h1>
 					<i class="fa-solid fa-users"></i>
@@ -31,7 +44,7 @@
 				</h1>
 			</center>
 
-			<div class="container col content_global_super_admin ">
+			<div class="container content_global_super_admin ">
 				{% if results|length is same as(0) %}
 					<div class="text-center">
 						<p class="mx-auto"> Pas encore de membre dans cette tribu G. </p>
@@ -41,40 +54,42 @@
 						</p>
 					</div>
 				{% else %}
-					<table class="table table-list-membre table-striped">
-						<thead class="thead-dark">
-							<tr>
-								<th>Nom </th>
-								<th>Prénom</th>
-								<th>Email</th>
-								<th>Adresse</th>
-								<th>Roles</th>
-								<th> </th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for result in results %}
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead class="thead-dark">
 								<tr>
-									<td>{{result.firstname}}</td>
-									<td>{{result.lastname}}</td>
-									<td>{{result.email}}</td>
-									<td>{{result.commune}}</td>
-									<td>
-										{{result.roles|upper }}
-
-										{{(result.roles is same as("fondateur") and result.isVerified is same as(false)) ? "<i class='fa-solid fa-triangle-exclamation text-danger'></i>" : "" }}
-										{{(result.roles is same as("fondateur") and result.isVerified is same as(true)) ? "<i class='fa-solid fa-thumbs-up text-success'></i>" : ""}}
-									
-									</td>
-									<td>
-										<a href="{{path('app_dashboardapropos') ~ '?user_id=' ~ result.id }}" class="btn btn-primary">
-											 {{(result.roles is same as("fondateur")) ? "Administré": "A propos" }}
-										</a>
-									</td>
+									<th>Nom </th>
+									<th>Prénom</th>
+									<th>Email</th>
+									<th>Adresse</th>
+									<th>Roles</th>
+									<th> </th>
 								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{% for result in results %}
+									<tr>
+										<td>{{result.firstname}}</td>
+										<td>{{result.lastname}}</td>
+										<td>{{result.email}}</td>
+										<td>{{result.commune}}</td>
+										<td>
+											{{result.roles|upper }}
+
+											{{(result.roles is same as("fondateur") and result.isVerified is same as(false)) ? "<i class='fa-solid fa-triangle-exclamation text-danger'></i>" : "" }}
+											{{(result.roles is same as("fondateur") and result.isVerified is same as(true)) ? "<i class='fa-solid fa-thumbs-up text-success'></i>" : ""}}
+										
+										</td>
+										<td>
+											<a href="{{path('app_dashboardapropos') ~ '?user_id=' ~ result.id }}" class="btn btn-primary">
+												{{(result.roles is same as("fondateur")) ? "Administré": "A propos" }}
+											</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
 				{% endif %}
 			</div>
 		</div>

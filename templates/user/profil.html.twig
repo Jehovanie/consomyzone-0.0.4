@@ -12,6 +12,8 @@
 {% block javascripts %}
     <script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	<script src="{{ asset('assets/js/profiles/profile.js') }}" defer></script>
+
 {% endblock %}
 
 {% block body %}
@@ -48,10 +50,15 @@
 								<div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
 									<div class="ms-4 mt-5 d-flex flex-column profil_mobile" style="width: 150px;">
 										{#---------  photo de profil ---------- #}
-										<img src={{ (autre_profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
-										
+										<img id="profilPartisant" src={{ (autre_profil[0].getPhotoProfil != null) ?  autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
 										{% if app.user.id == app.request.get('user_id') %}
-											<a href="{{ path("account_setting") }}" class="btn btn-outline-primary" data-mdb-ripple-color="dark" style="z-index: 1;"><i class="bi bi-pencil-square"></i> Modifier</a>
+
+										 <label class="input-file w-100 text-center btn btn-primary" for="fileInputProfil"  style="z-index: 1;"><i class="bi bi-camera-fill"></i> Modifier
+											<input id="fileInputProfil" type="file" name="photo" style="display:none;">
+											
+										</label>
+										
+											{# <a href="{{ path("account_setting") }}" class="btn btn-outline-primary" data-mdb-ripple-color="dark" style="z-index: 1;"><i class="bi bi-pencil-square"></i> <span lng-tag="modifier">Modifier</span></a> #}
 										{% else %}
 											<a href="{{ path("app_message" ) ~ "?user_id=" ~  app.request.get('user_id')}}" class="btn btn-primary" data-mdb-ripple-color="dark" style="z-index: 1;"><i class="bi bi-messenger"></i> Message</a>
 										{% endif %}
@@ -64,21 +71,65 @@
 									</div>
 								</div>
 								<div class="p-4 text-black" style="background-color: #f8f9fa;">
-									<div class="d-flex justify-content-end text-center py-1">
-										<div>
-											<p class="mb-1 h5">{{nombre_partisant}}</p>
-											<p class="small text-muted mb-0">{{(nombre_partisant > 1 ) ? "Partisants" : "Partisant" }}</p>
+								
+									<div class="d-flex justify-content-end text-center py-1" id="nav_menu_profil">
+
+										<div class="" id="about-item">
+											<a href="#apropos" style="text-decoration:none;" onclick="showAboutProfil()">
+												<p class="mb-1"><i class="bi bi-info-circle"></i> </p>
+												<p class="small text-muted mb-0">A propos</p>
+											</a>
 										</div>
-										{# <div class="px-3">
-											<p class="mb-1 h5">1026</p>
-											<p class="small text-muted mb-0">Tribus</p>
-										</div> #}
+										{% if app.user.id == app.request.get('user_id') %}
+											<div class="px-3" id="add-item">
+												<a href="#add_photos" style="text-decoration:none;" onclick="">
+												 <label class="input-file" for="fileInputProfil_add"  style="z-index: 1;cursor:pointer;">
+												 	<p class="mb-1"><i class="bi bi-camera-fill"></i> </p>
+													<p class="small text-muted mb-0">Ajouter</p>
+													<input id="fileInputProfil_add" type="file" name="photo" style="display:none;">
+													
+												</label>
+													
+												</a>
+											</div>
+										{% endif %}
+									
+										<div class="px-3" id="gallery-item">
+											<a href="#photos" style="text-decoration:none;" onclick="showGalleryProfil()">
+												<p class="mb-1">{{images|length}}</p>
+												<p class="small text-muted mb-0">Photos</p>
+											</a>
+										</div>
+
+										<div id="partisants-item">
+											<a href="#partisants" style="text-decoration:none;" onclick="">
+												<p class="mb-1">{{nombre_partisant}}</p>
+												<p class="small text-muted mb-0">{{(nombre_partisant > 1 ) ? "Partisants" : "Partisant" }}</p>
+											</a>
+											
+										</div>
+										
 									</div>
 								</div>
 
-								<div class="card-body p-4 text-black">
+								<div id="gallery_profil" style="display:none;width:100%;" class="gallery-container mx-auto">
+									{# <button class="float-end btn btn-primary"><i class="fas fa-camera"></i> Ajouter</button> #}
+									<div id="gallery" style="margin-left:10%">
+										{% for img in images %}
+											{% set imgç_path = img|split('public/', 2)[1] %}
+											<img src="{{asset(imgç_path)}}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+											
+										{% endfor %}
+									</div>
+								</div>
+
+								<div class="card-body p-4 text-black apropos_profil">
 									<div class="">
-										<p class="lead fw-bolder mb-1">A propos</p>
+										<p class="lead fw-bolder mb-1" lng-tag="apropos">A propos 
+										{% if app.user.id == app.request.get('user_id') %}
+											<a href="{{ path("account_setting") }}" class="float-end text-decoration-none fs-6 me-2"> <i class="bi bi-pencil-square"></i> Modifier l'information<a></p>
+
+										{% endif %}
 										<div class="row fw-light">
 											<div class="{% if type == "Fournisseur" %}col col-lg-6 col-md-6 col-sm-12 {% endif %} p-4" style="background-color: #f8f9fa;">
 												<p class="font-italic mb-1">
@@ -134,7 +185,7 @@
 									</div>
 								</div>
 
-								<div class="card-body p-4 text-black">
+								<div class="card-body p-4 text-black apropos_profil">
 									<div class="mb-5">
 										<p class="lead fw-bolder mb-1">Tribu</p>
 										<div class="row fw-light">
@@ -153,6 +204,8 @@
 										</div>
 									</div>
 								</div>
+								
+								
 							</div>
 						</div>
 					</div>
@@ -161,5 +214,24 @@
 		</div>
 
 	</div>
+	
+	
+<!-- Modal show photo-->
+<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+      <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+        <img id="img_modal" style="width:100%">
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+	<script>
+
+
+	</script>
 
 {% endblock %}

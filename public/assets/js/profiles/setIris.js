@@ -3,29 +3,18 @@ if( document.querySelector("#inscription_nom_commune")){
     //// user input
     const input_codePostal = document.querySelector("#inscription_code_postal");
 
+    ///set departement
+    const input_hidden_departement = document.querySelector("#inscription_departement");
+
     //// dedecter et selectionner 
     const input_commune = document.querySelector("#inscription_nom_commune");
-    const content_options_communes = document.querySelector("#inscription_faux_commune");
+    const content_options_communes = document.querySelector("#inscription_faux_commune"); ///select >> option
 
     //// dedecte et sélectionner
     const input_quartier = document.querySelector("#inscription_quartier");
-    const content_options_quartier = document.querySelector("#inscription_faux_quartier");
+    const content_options_quartier = document.querySelector("#inscription_faux_quartier"); ///select >> option
 
-    ///set departement
-    const input_hidden_departement = document.querySelector("#inscription_departement");
-    
-    // input_commune.addEventListener("input", () => {
-    //     const user_input = document.querySelector("#inscription_nom_commune").value;
-        
-    //     const all_iris = t.filter((item) => {
-    //         // {d:"01",dr:"010010000",c:1,i:"l abergement clemenciat",co:"l abergement clemenciat"}
-    //         //{d:"13",dr:"132010102",c:0,i:"thubaneau",co:"marseille 1er arrondissement"}
-    //         if( user_input.split(" ").join("").toLowerCase() === item.co.split(" ").join("").toLowerCase() && item.c === 0  ){
-    //         // if( item.co.split(" ").join("").toLowerCase().includes(user_input.split(" ").join("").toLowerCase()) && item.c === 0  ){
-    //             return item.i;
-    //         }
-    //     })
-
+    ///profile selection
     const input_hidden_profil = document.querySelector("#inscription_profil");
     const img_profil = document.querySelector(".image_profil_js_jheo");
     const fake_input_profil = document.querySelector("#fileInputProfil");
@@ -55,53 +44,73 @@ if( document.querySelector("#inscription_nom_commune")){
 
             ////get list commune related with the code postal
             const list_options_commune = commune.filter(item => e.target.value === item.codePostal);
-            
+
             /// if there is more 
             if( list_options_commune.length > 0 ){
-
                 ///set input commun active
                 input_commune.disabled = false;
-                
-                ///put all options input
-                list_options_commune.forEach(({ commune , dep  }) => {
+
+                ///to handle default value on select
+                let is_default_value=true;
+                list_options_commune.forEach(({ commune , dep  }) => { ///put all options input
                     /// create single option
-                    createAndAddOption(commune,content_options_communes) /// value, parents
+                    createAndAddOption(commune,content_options_communes, is_default_value) /// value, parents
                     input_hidden_departement.value = dep;
+                    is_default_value = false;
                 })
 
-                ///if the user set unvalid code postal
-            }else{
+                input_commune.value= content_options_communes?.querySelector(".default_value_on_select_jheo_js").value;
+
+                ///set default select option on quartier
+                //// active input quartier
+                const commune_valid = commune.find(({ commune }) => commune === content_options_communes?.querySelector(".default_value_on_select_jheo_js").value)
+                if( commune_valid){ ///return single value 
+                    ////get list quartie related with the commune
+                    const list_options_quartier = t.filter(item => item.dr.substring(0,5) === commune_valid.codeInsee)
+
+                    /// if there is more quartier
+                    if( list_options_quartier.length > 0 ){
+                        let is_default_value=true
+                        list_options_quartier.forEach(item => {
+                            createAndAddOption(item.co + " " + item.i, content_options_quartier,is_default_value )
+                            is_default_value=false;
+                        })
+                        input_quartier.value = content_options_quartier?.querySelector(".default_value_on_select_jheo_js").value
+                    }
+                }
+            }else{///if the user set unvalid code postal or unexisting value in the database
                 input_codePostal.style.border = "1px solid red";
             }
         })
 
         ///when commmune setting
         content_options_communes.addEventListener("change", (e) => {
+            ///update the default value
+            input_commune.value= e.target.value;
 
+            deleteOption("inscription_faux_quartier");
+            
             //// active input quartier
-            input_quartier.disabled = false;
-
-            ////get more information about this commune selected
-            const commune_valid = commune.find(({ commune }) => commune === e.target.value )
-
-            if( commune_valid){
+            const commune_valid = commune.find(({ commune }) => commune === e.target.value)
+            if( commune_valid){ ///return single value 
 
                 ////get list quartie related with the commune
                 const list_options_quartier = t.filter(item => item.dr.substring(0,5) === commune_valid.codeInsee)
 
-                //nput_quartier.value = content_options_communes.value
-
                 /// if there is more quartier
                 if( list_options_quartier.length > 0 ){
+                    let is_default_value=true
                     list_options_quartier.forEach(item => {
-                        console.log(item)
-                        
-                        createAndAddOption(item.co + " " + item.i, content_options_quartier )
-                        
+                        createAndAddOption(item.co + " " + item.i, content_options_quartier,is_default_value )
+                        is_default_value=false;
                     })
+                    input_quartier.value = content_options_quartier?.querySelector(".default_value_on_select_jheo_js").value
                 }
             }
-            
+        })
+
+        content_options_quartier.addEventListener("change", (e) => {
+            input_quartier.value= e.target.value;
         })
 
     })
@@ -126,14 +135,14 @@ if( document.querySelector("#inscription_nom_commune")){
         
     }) 
 
-
-    
 }
 
-function createAndAddOption(value , parent){
+function createAndAddOption(value , parent, is_default_value=false ){
     const option = document.createElement("option");
+    if( is_default_value){
+        option.setAttribute("class", "default_value_on_select_jheo_js");
+    }
     option.textContent = value;
-
     parent.appendChild(option);
 }
 
@@ -142,59 +151,10 @@ function deleteOption(content_options){
         i.value=null
         i.disabled=true
     });
+
     const parent = document.querySelector("#" + content_options);
     if(parent.querySelectorAll("option")){
-        parent.querySelectorAll("option")?.forEach( i => i.remove());
+        parent.querySelectorAll("option").forEach( i => i.remove());
     }
-    
-   
+
 }
-
-// function closeAutoCompletion() {
-//     document.querySelector(".content_autocompletion_js_jheo").removeChild(document.querySelector(".autocomplete_list"))
-// }
-
-
-// function autocompleteList(dom_parent, all_iris ){
-//     const div_content = document.createElement("div")
-//     div_content.classList.add("autocomplete_list")
-
-//     ///{d:"01",dr:"010040101",c:0,i:"les perouses triangle d activites",co:"amberieu en bugey"}
-//     all_iris.forEach(item => {
-//         const valueUnique ="tribug_" + item.d + "_" + item.i.split(" ").map(l => l.toLowerCase()).join("-") + "_" + item.co.split(" ").map(t => t.toLowerCase()).join("-") 
-        
-//         const div_content_option = document.createElement("div")
-//         div_content_option.classList.add(valueUnique)
-
-//         const span = document.createElement("span")
-//         span.innerText = item.i + " " + item.co;
-
-//         const input = document.createElement("input")
-//         input.setAttribute("id" , valueUnique+ "_input");
-//         input.setAttribute("class" , item.d);
-//         input.setAttribute("type" , "hidden");
-//         input.setAttribute("value" , item.i + " " + item.co );
-
-//         div_content_option.appendChild(span)
-//         div_content_option.appendChild(input)
-
-//         div_content.appendChild(div_content_option);
-//     })
-
-//     dom_parent.appendChild(div_content);
-// }
-
-// function processingAutoComplet(){
-//     const div = document.querySelectorAll(".autocomplete_list div")
-//     div.forEach(d => {
-//         d.addEventListener("click", () => {
-//             const className = d.getAttribute("class");
-//             // alert(d.querySelector("#" + className + "_input").value)
-
-//             document.querySelector("#inscription_nom_commune").value = document.querySelector("#" + className + "_input").value
-//             document.querySelector("#inscription_departement").value = document.querySelector("#" + className + "_input").getAttribute("class")
-
-//             closeAutoCompletion();
-//         })
-//     })
-// }

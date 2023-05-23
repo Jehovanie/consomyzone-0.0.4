@@ -9,22 +9,34 @@
 
 {% block javascripts %}
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	 <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
 
 	<main>
 
-		<div class="content_left_menu_account fixed-top mt-5 col">
+		<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
 			<div class="left_menu">
 				{% include "shard/account_navleft.html.twig" %}
 			</div>
 		</div>
-		<div class="fixed-top">
-			{{ include('shard/account_navbar.html.twig') }}
+		<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+			<div class="left_menu">
+				{% include "shard/account_navleft_mobile.html.twig" %}
+			</div>
+		</div>
+		<div class="navbar-mobile">
+			<div class="fixed-top col responsif-none">
+				{{ include('shard/account_navbar.html.twig') }}
+			</div>
+
+			<div class="fixed-top col responsif-none-mobile">
+				{{ include('shard/account_navbar_mobile.html.twig') }}
+			</div>
 		</div>
 
-		<div class="row account mt-3">
+		<div class="row account content_right_actualite membre-tribut"  id="container-mobile">
 
 			<center>
 				<h2>
@@ -33,7 +45,7 @@
 				</h2>
 			</center>
 
-			<div class="container col content_global_super_admin mt-3">
+			<div class="container col mt-3" style="overflow-x:auto;">
 
 				<table class="table table-list-membre table-striped">
 					<thead class="thead-dark">

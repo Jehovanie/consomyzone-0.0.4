@@ -8,7 +8,7 @@
 		<img src="{{asset('assets/image/logo.jpg')}}" alt="logo" width="200" class="logo">
 	</a>
 	<a class ="navbar-brand">
-		<div class="content_message_nav_bar dropdown-toggle icon_message" aria-current="page" data-bs-toggle="dropdown">
+		<div class="content_message_nav_bar icon_message content-mobile-notif" aria-current="page" data-bs-toggle="dropdown">
 			<div class="badge_message">
 				<span class="nbr_message_jheo_js_mobile">0</span>
 			</div>
@@ -26,8 +26,8 @@
 		</div>
 	</a>
 
-	<a class ="navbar-brand">
-		<div class="content_notification dropdown-toggle icon_notification" aria-current="page" data-bs-toggle="dropdown">
+	<a class ="navbar-brand notification_jheo_js">
+		<div class="content_notification icon_notification content-mobile-notif" aria-current="page" data-bs-toggle="dropdown">
 			<div class="badge_notification">
 				<span class="nbr_notification_jheo_js_mobile">0</span>
 			</div>
@@ -55,11 +55,11 @@
 				<a class="dropdown-item" href="#">Action</a>
 			</li>
 			<li>
-				<a class="dropdown-item" href="#">Another action</a>
+				<a class="dropdown-item" href="#" lng-tag="autre_action">Another action</a>
 			</li>
 			<li><hr class="dropdown-divider"></li>
 			<li>
-				<a class="dropdown-item" href="{{path('app_logout')}}">Déconnexion</a>
+				<a class="dropdown-item" href="{{path('app_logout')}}" lng-tag="deconnexion">Déconnexion</a>
 			</li>
 		</ul>
 	</a>
@@ -120,7 +120,7 @@
 
 		if(style.marginLeft == "70px"){
 			//leftInvitation.style = "margin-left :30px !important"
-			console.log("margin-left : 70px")
+			//console.log("margin-left : 70px")
 			if(document.querySelector(".demande")){
 				document.querySelector(".demande").style = "width:95vw !important"
 			}
@@ -163,6 +163,12 @@
 			}
 			if(document.querySelector(".container-invitation")){
 				document.querySelector(".container-invitation").style = "margin-left:25px !important;margin-right: 10px !important;width: 100% !important"
+			}
+			if(document.querySelector(".membre-tribut")){
+				document.querySelector(".membre-tribut").style = "margin-left:0px !important;width: 100% !important"
+			}
+			if(document.querySelector(".detail_agenda_mobile")){
+				document.querySelector(".detail_agenda_mobile").style = "margin-left:-10px !important;width: 100% !important"
 			}
 			if(document.querySelector(".card_mobile")){
 				document.querySelectorAll(".card_mobile").forEach(element => {
@@ -237,6 +243,13 @@
 			}
 			if(document.querySelector(".tribut_t_reponsive")){
 				document.querySelector(".tribut_t_reponsive").style = "margin-left:0px !important"
+			}
+
+			if(document.querySelector(".detail_agenda_mobile")){
+				document.querySelector(".detail_agenda_mobile").style = "margin-left:-10px !important;width: 100% !important"
+			}
+			if(document.querySelector(".detail_agenda_mobile_cont")){
+				document.querySelector(".detail_agenda_mobile_cont").style = "margin-left:-10px !important;width: 100% !important"
 			}
 			
 		}

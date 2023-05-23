@@ -2,7 +2,7 @@ let centers = []
 centers[1] = {
   lat: 46.05460370599362,
     lng: 5.160529134263769,
-  zoom:15
+  zoom:9
 }
 centers[02] = {
   lat: 49.60887263305718,
@@ -12,7 +12,7 @@ centers[02] = {
 centers[03] = {
   lat: 46.468387517694985, 
   lng: 3.220783763084761,
-  zoom:7
+  zoom:9
 }
 centers[4] = {
   lat: 44.11154011418312,
@@ -165,7 +165,7 @@ centers[30] = {
 centers[31] = {
     lat: 43.3839537271377,
     lng: 1.2173909864574706,
-  zoom:8
+  zoom:9
 }
 
 centers[32] = {
@@ -428,7 +428,7 @@ centers[74] = {
 centers[75] = {
   lat: 48.85702658813284,
   lng: 2.352869503418399,
-  zoom:8
+  zoom:16
 }
 
 centers[76] = {

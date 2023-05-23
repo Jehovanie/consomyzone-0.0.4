@@ -5,6 +5,7 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/apropos_sp_respons.css')}}">
 {% endblock %}
 
 {% block javascripts %}
@@ -14,13 +15,26 @@
 
 {% block body %}
 	<main>
+
 		<div class="content_left_menu_account fixed-top mt-5 col">
-			<div class="left_menu">
-				{% include ("shard/account_navleft.html.twig" )%}
-			</div>
+			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+                <div class="left_menu">
+                    {% include "shard/account_navleft.html.twig" %}
+                </div>
+            </div>
+            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+                <div class="left_menu">
+                    {% include "shard/account_navleft_mobile.html.twig" %}
+                </div>
+            </div>
 		</div>
-		<div class="fixed-top">
+
+		<div class="fixed-top col responsif-none">
 			{{ include('shard/account_navbar.html.twig') }}
+		</div>
+
+		<div class="fixed-top col responsif-none-mobile">
+			{{ include('shard/account_navbar_mobile.html.twig') }}
 		</div>
 
 		<div class="content_right_dashboard_sp">
@@ -30,12 +44,11 @@
 					A propos 
 				</h1>
 			</center>
-
 			<div class="content_global_super_admin">
 				<div class="card-apropos-admin">
 					<div class="row">
 
-						<div class="col-md-4 mx-auto">
+						<div class="col-md-4 mx-auto my-2">
 							<div class="card p-3" style="height: 100%">
 								<div class="row">
 									<div class="col-md-3 mt-4">
@@ -49,7 +62,7 @@
 							</div>
 						</div>
 
-						<div class="col-md-4 mx-auto">
+						<div class="col-md-4 mx-auto my-2">
 							<div class="card p-3" style="height: 100%">
 								<div class="row">
 									<div class="col-md-3 mt-4">
@@ -65,7 +78,7 @@
 							</div>
 						</div>
 
-						<div class="col-md-4 mx-auto">
+						<div class="col-md-4 mx-auto my-2">
 							<div class="card p-3" style="height: 100%">
 								<div class="row">
 									<div class="col-md-3 mt-4">
@@ -115,67 +128,67 @@
 					</div>
 
 					<div class="card-apropos-admin-tribut">
-
 						<div class="row">
-							<div class="col-md-6 col-sm-10 mx-auto card card-tribut">
-								<h5 class="mt-4 mx-auto"> Tribu G</h5>
-								<h4>Nom de tribu:</h3>
-								<p>{{apropos.tributg}}</p>
-								<h4>Rôles :</h4>
-								<p>
+							<div class="col-md-6 col-sm-10 mx-auto my-2">
+								<div class="card p-3">
+									<h5 class="mt-4 mx-auto"> Tribu G</h5>
+									<h4>Nom de tribu:</h3>
+									<p>{{apropos.tributg}}</p>
+									<h4>Rôles :</h4>
+									<p>
 
-									{{apropos.roles|upper }} 
+										{{apropos.roles|upper }} 
 
-									{% if apropos.roles is same as("fondateur") %}
+										{% if apropos.roles is same as("fondateur") %}
+										
+											<i class='fa-solid fa-triangle-exclamation 
+												text-danger 
+												icon_danger_validate_js_jheo
+												{{(apropos.isVerified is same as(true)) ? "d-none": "" }}'
+											></i>
+											<i class='fa-solid fa-thumbs-up 
+													text-success
+													icon_success_validate_js_jheo
+													{{(apropos.isVerified is same as(false)) ? "d-none": "" }}'
+											></i>
+
+										{% endif %}
+
+									</p>
 									
-										<i class='fa-solid fa-triangle-exclamation 
-											  text-danger 
-											  icon_danger_validate_js_jheo
-											  {{(apropos.isVerified is same as(true)) ? "d-none": "" }}'
-										></i>
-										<i class='fa-solid fa-thumbs-up 
-												text-success
-												icon_success_validate_js_jheo
-												{{(apropos.isVerified is same as(false)) ? "d-none": "" }}'
-										></i>
+									{% if apropos.roles is same as("fondateur") %}
+										<h4>Validé le rôle</h4>
+										<div class="row mx-auto">
+											<div class="col-2">
+												<button 
+													id="0"
+													class="btn btn-danger validating_super_admin_tributG_js_jheo"
+													data-toggle-id={{apropos.id}}
+													data-toggle-categories={{apropos.categories}}
 
+													{{apropos.isVerified is same as(false) ? "disabled": ""}}
+												>
+													Non
+												</button>
+											</div>
+											<div class="col-2 mx-3">
+												<button 
+													id="1"
+													class="btn btn-success validating_super_admin_tributG_js_jheo"
+													data-toggle-id={{apropos.id}}
+													data-toggle-categories={{apropos.categories}}
+
+													{{apropos.isVerified is same as(true) ? "disabled": ""}}
+												>
+													Oui
+												</button>
+											</div>
+										</div>
 									{% endif %}
 
-								</p>
-								
-								{% if apropos.roles is same as("fondateur") %}
-									<h4>Validé le rôle</h4>
-									<div class="row mx-auto">
-										<div class="col-md-5">
-											<button 
-												id="0"
-												class="btn btn-danger validating_super_admin_tributG_js_jheo"
-												data-toggle-id={{apropos.id}}
-												data-toggle-categories={{apropos.categories}}
-
-												{{apropos.isVerified is same as(false) ? "disabled": ""}}
-											>
-												Non
-											</button>
-										</div>
-										<div class="col-md-5">
-											<button 
-												id="1"
-												class="btn btn-success validating_super_admin_tributG_js_jheo"
-												data-toggle-id={{apropos.id}}
-												data-toggle-categories={{apropos.categories}}
-
-												{{apropos.isVerified is same as(true) ? "disabled": ""}}
-											>
-												Oui
-											</button>
-										</div>
-									</div>
-								{% endif %}
-
-
+								</div>
 							</div>
-							<div class="col-md-6 col-sm-10 mx-auto">
+							<div class="col-md-6 col-sm-10 mx-auto my-2">
 								<div class="card p-3">
 									<h5 class="mt-4 mx-auto"> Tribu T </h5>
 									<table class="table table-list-apropos table-striped">

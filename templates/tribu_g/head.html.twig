@@ -4,7 +4,8 @@
         <div class="responsif-none">
             {% if tributG.profil.roles is same as("fondateur") %}
                 <label style="margin-left:40%;" for="fileInputTribu">
-                    <i  class="change_photo_tribuG_js_jheo" style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                    <i class="bi bi-camera-fill change_photo_tribuG_js_jheo" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                    {# <i  class="change_photo_tribuG_js_jheo" style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i> #}
                 </label>
                 <input type="file" name="fileInputTribu" id="fileInputTribu" style="display:none;visibility:none;">
             {% else %}
@@ -14,7 +15,8 @@
         <div class="responsif-none-mobile">
             {% if tributG.profil.roles is same as("fondateur") %}
                 <label for="fileInputTribu">
-                    <i  class="change_photo_tribuG_js_jheo" style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                    <i class="bi bi-camera-fill change_photo_tribuG_js_jheo" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                    {# <i  class="change_photo_tribuG_js_jheo" style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i> #}
                 </label>
                 <input type="file" name="fileInputTribu" id="fileInputTribu" style="display:none;visibility:none;">
             {% else %}
@@ -29,18 +31,20 @@
             <i>{{tributG.profil.description}}</i>
         </small>
     </div>
-    <nav class="col-6 responsif-none">
+    <nav class="col-xl-5 col-md-7 col-lg-7 col-sm-12">
         <ul id="navBarTribu">
-            <li class="listNavBarTribu">
-                <a href="#" id="fetch_actialite_tribug_js_jheo">Actualité</a>
+            <li class="listNavBarTribu tribu_active">
+                <a href="#" id="fetch_actialite_tribug_js_jheo" class="active text-white" lng-tag="actualite">Actualité</a>
             </li>
             <li class="listNavBarTribu">
                 <a style="cursor:pointer;" href="#" id="fetch_member_tribug_js_jheo">Partisants</a>
             </li>
+            
             <li class="listNavBarTribu">
                 <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_js_jheo">Photos</a>
             </li>
-            <li style="float:right">
+            
+            {# <li style="float:right">
                 <a href="" class="active dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     Filtre
                 </a>
@@ -54,16 +58,20 @@
                     </li>
 
                 </ul>
-            </li>
+            </li> #}
         </ul>
     </nav>
-    <nav class="col-12 responsif-none-mobile">
+    {# <nav class="col-12 responsif-none-mobile">
         <ul id="navBarTribu">
             <li class="listNavBarTribu">
                 <a href="#" id="fetch_actialite_tribug_js_jheo">Actualité</a>
             </li>
             <li class="listNavBarTribu">
                 <a style="cursor:pointer;" href="#" id="fetch_member_tribug_js_jheo">Partisants</a>
+            </li>
+            
+            <li class="listNavBarTribu">
+                <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_js_jheo">Photos</a>
             </li>
             <li class="dropdown listNavBarTribu">
                 <i class="bi bi-three-dots dropdown-toggle ms-3" id="dropdownMenuButton" data-bs-toggle="dropdown"></i>
@@ -87,7 +95,7 @@
             </li>
             
         </ul>
-    </nav>
+    </nav> #}
 </div>
 <div class="mt-5 p-3" id="photos" style="display:none;"></div>
 <div class="mt-5 p-3" id="invitations" style="display:none;"></div>
@@ -97,7 +105,7 @@
     <div class="row p-3">
         <div class="rangee row">
             <div class="col-1 rounded-circle">
-                <img style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
+                <img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
             </div>
             <div class="col-11 user_button">
                 <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
@@ -105,19 +113,21 @@
         </div>
         <div class="row mt-3">
             <div class="col-3 text-center" style="cursor:pointer;">
-                <i class="bi bi-play-btn-fill souri-non-utilise" ></i>
+                <i class="bi bi-play-btn-fill souri-non-utilise" ></i> <span class="responsif-none"> Vidéos</span>
                 
         </div>
-        <div class="col-3 text-center" style="cursor:pointer;">
-            <i class="bi bi-geo-alt-fill souri-non-utilise"></i>
+        <div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
+        {# <div class="col-3 text-center" style="cursor:pointer;"> #}
+            <i class="bi bi-geo-alt-fill souri-non-utilise"></i><span class="responsif-none"> Localisation
         </div>
         <div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
-            <i class="bi bi-calendar2-event-fill"></i>
+            <i class="bi bi-calendar2-event-fill"></i><span class="responsif-none"> Agenda
 
         </div>
         <div class="col-3 text-center" style="cursor:pointer;">
-            <i class="bi bi-pencil-square souri-non-utilise"></i></i>
+            <i class="bi bi-pencil-square souri-non-utilise"></i><span class="responsif-none"> Article
     </div>
+
 </div>
 
 {# <hr class="mt-3">

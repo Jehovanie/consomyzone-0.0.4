@@ -1,0 +1,43 @@
+/* small  */
+@media screen and (min-width:576px) { 
+
+}
+/* medium */
+@media screen and (min-width:768px) {
+
+}
+
+/* large  */
+@media screen and (min-width:992px) {
+    .cta_filter_mobile{
+        display: none;
+    }
+    .filter_other_mobile{
+        display: none;
+    }
+    .content_filter {
+        width: 180px;
+        position: absolute;
+        top: 110px;
+        right: 25px;
+        z-index: 1000;
+        font-size: 0.8rem;
+    }
+    .content_filter_dep select {
+        font-size: 0.9rem;
+    }
+    .content_filter_dep {
+        top:auto;
+        bottom:15px;
+        left: 15px;
+        z-index: 1000;
+    }
+
+    .content_show_list_mobile{
+        display: none;
+    }
+    .list_item{
+        display: block;
+        width: 100% !important;
+    }
+}

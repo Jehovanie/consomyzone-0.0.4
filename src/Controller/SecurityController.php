@@ -135,7 +135,7 @@ class SecurityController extends AbstractController
     ): Response {
 
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_account');
         }
 
         $flash = [];
@@ -339,9 +339,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/deconnexion', name: 'app_logout')]
-
     public function logout(): void
-
     {
 
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
@@ -350,25 +348,15 @@ class SecurityController extends AbstractController
 
 
     #[Route(path: '/inscription', name: 'app_inscription', methods: "post")]
-
     public function inscription(
-
         Request $request,
-
         MailService $mailService,
-
         EntityManagerInterface $entityManager,
-
         UserPasswordHasherInterface $passwordHasher,
-
         UserRepository $userRepository,
-
         NotificationService $notificationService,
-
         MessageService $messageService,
-
         VerifyEmailHelperInterface $verifyEmailHelper,
-
         CodeapeRepository $codeApeRep
     ) {
 
@@ -395,7 +383,6 @@ class SecurityController extends AbstractController
 
 
         ///check the email if already exist
-
         if ($userRepository->findOneBy(['email' => $data['email']])) {
             $result = false;
             $type = "email-ae"; /// email already exist
@@ -406,7 +393,6 @@ class SecurityController extends AbstractController
 
 
         ////valid password
-
         if (strcmp($data['password'], $data['confirmpassword']) != 0) {
             $result = false;
             $type = "password-ne";///password not equal
@@ -414,7 +400,6 @@ class SecurityController extends AbstractController
             goto quit;
 
         } else if (strlen($data['password']) < 8) {
-
             $result = false;
             $type = "password-sh"; ///password to short
 
@@ -424,89 +409,64 @@ class SecurityController extends AbstractController
 
 
         /// new instance for user.
-
         $user = new User();
-
         $user->setPseudo(trim($data['pseudo']));
-
         $user->setEmail(trim($data['email']));
-
         $user->setPassword($data['password']);
-
         $user->setVerifiedMail(false);
 
 
 
         ////setting roles for user admin.
-
         if (count($userRepository->findAll()) === 0) {
-
             $user->setRoles(["ROLE_GODMODE"]);
         } else {
-
             $user->setRoles(["ROLE_USER"]);
         }
 
 
 
-        ///property temp
-
+        ///property temp with default value, wait this user have an ID
         $user->setType("Type");
-
         $user->setTablemessage("tablemessage");
-
         $user->setTablenotification("tablenotification");
-
         $user->setTablerequesting("tablerequesting");
 
         ///hash password
-
         $hashedPassword = $passwordHasher->hashPassword(
-
             $user,
-
             $user->getPassword()
-
         );
-
         $user->setPassword($hashedPassword);
 
 
 
-        ///stock the user
-
+        ///save the user
         $entityManager->persist($user);
-
         $entityManager->flush();
 
 
 
-        ///change the value temp
-
+        ///change the value temp: now this user have an ID, so change temp value
         $numero_table = $user->getId();
 
+        ///with true value
         $user->setTablemessage("tablemessage_" . $numero_table);
-
         $user->setTablenotification("tablenotification_" . $numero_table);
-
         $user->setTablerequesting("tablerequesting_" . $numero_table);
 
 
 
         ///create table dynamique
-
         $notificationService->createTable("tablenotification_" . $numero_table);
-
         $messageService->createTable("tablemessage_" . $numero_table);
-
         $this->requesting->createTable("tablerequesting_" . $numero_table);
 
 
 
 
-
+        ///keep the change in the user information
         $entityManager->persist($user);
-
         $entityManager->flush();
 
 
@@ -514,87 +474,58 @@ class SecurityController extends AbstractController
 
 
         /**
-
          * Persist user on confidentiality table
-
          * @author Nantenaina        
-
          */
-
         $confidentiality = new Confidentiality();
-
         $confidentiality->setNotifIsActive(1);
-
         $confidentiality->setProfil(1);
-
         $confidentiality->setEmail(1);
-
         $confidentiality->setAmie(1);
-
         $confidentiality->setInvitation(1);
-
         $confidentiality->setPublication(1);
-
         $confidentiality->setUserId($numero_table);
 
 
 
         $entityManager->persist($confidentiality);
-
         $entityManager->flush();
 
         /*
-
-             * @end Nantenaina     
-
-             */
+        * @end Nantenaina     
+        */
 
 
 
         //// prepare email which we wish send
-
         $signatureComponents = $verifyEmailHelper->generateSignature(
-
             "verification_email", /// lien de revenir
-
             $user->getId(), /// id for user
-
             $user->getEmail(), /// email destionation use for verifier
-
             ['id' => $user->getId()] /// param id
-
         );
 
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-
-        return $this->redirect($signatureComponents->getSignedUrl());
-
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
         ///-------------------------------------------------------///
 
 
 
         //// send the mail
-
         $mailService->sendEmail(
-
             "geoinfography@infostat.fr", /// mail where from
-
             "ConsoMyZone",  //// name the senders
-
             $user->getEmail(), /// mail destionation
-
             trim($user->getPseudo()), /// name destionation
-
             "EMAIL CONFIRMATION", //// title of email
-
             "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
-
         );
 
         ///don't change this, it used to handle error from user like : email exist, mdp don't match, ... 
-
         quit:
         return $this->redirectToRoute("app_login", ["inscription" => $result,"type" => $type, "token" => "IffNjJ8ZSjaDm91Hr8bzHtxuDJaXcDrHbuCXribS5Hw%3D" ]);
 
@@ -612,9 +543,7 @@ class SecurityController extends AbstractController
 
 
     #[Route(path: '/inscription/resend-email', name: 'app_inscription-resend-email', methods: "POST")]
-
     public function  resendEmail(Request $request, UserRepository $userRepository, VerifyEmailHelperInterface $verifyEmailHelper,)
-
     {
 
         //// send the mail
@@ -667,23 +596,14 @@ class SecurityController extends AbstractController
 
     #[Route(path: "/verification_email", name:"verification_email", methods: ["GET", "POST"])]
     public function verification_email(
-
         Request $request,
-
         UserRepository $userRepository,
-
         NotificationService $notificationService,
-
         TributGService $tributGService,
-
         EntityManagerInterface $entityManager,
-
         UserAuthenticatorInterface $authenticator,
-
         UserAuthenticator $loginAuth,
-
         VerifyEmailHelperInterface $verifyEmailHelper
-
     ) {
 
         if ($this->getUser()) {
@@ -708,9 +628,9 @@ class SecurityController extends AbstractController
         // } catch (VerifyEmailExceptionInterface $e) {
         //     return $this->redirectToRoute('app_login');
         // }
+
         ///change the to true the email verified
-        ///get the user from database by id
-        $userToVerifie->setVerifiedMail(true);
+        $userToVerifie->setVerifiedMail(true);  ///get the user from database by id
 
 
         ////CREATE NEW FORM TO COMPLETE USER PROFIL
@@ -721,7 +641,6 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
 
-            // dd($form->getData());
             ///get the data
             extract($form->getData());
 
@@ -764,7 +683,6 @@ class SecurityController extends AbstractController
 
             ////set profil
             if( $profil){
-
                 ///path file folder
                 $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
                 $temp = explode(";", $profil );
@@ -772,7 +690,8 @@ class SecurityController extends AbstractController
                 $image_name = "profil_". $nom . "." . $extension;
                 ///save image in public/uploader folder
                 file_put_contents($path ."/". $image_name, file_get_contents($profil));
-
+                
+                ///set use profile
                 $user_profil->setPhotoProfil($image_name);
             }
 
@@ -787,57 +706,38 @@ class SecurityController extends AbstractController
             $departement = strlen($departement) === 1 ? "0". $departement : $departement;
             // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
             $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
-            
-            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG) : $name_tributG;
+            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG,0,30) : $name_tributG;
             $user_profil->setTributg($name_tributG);
 
 
 
             ///attribution des tribut.
-
             $resultat = $tributGService->createTableTributG($name_tributG, $userToVerifie->getId());
 
-
+            ///save the user information
             $entityManager->persist($user_profil);
-
             $entityManager->flush();
 
 
 
             ////  NOTIFICATION
 
-
-
             ///switch type of the notification
-
             $notification = [
-
                 "admin" => "Nous vous informons qu'une nouvelle tribu G a été créee.",
-
                 "fondateur" => "Nous avons un grand plaisir de vous annoncer que le tribu G selon votre code postal a été créee et vous êtes l'administrateur provisoire.",
-
                 "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans le tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
-
                 "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau partisant."
-
             ];
 
 
 
             $type = "Tribu G";
-
             $all_user_sending_notification = $tributGService->getAllTributG($user_profil->getTributG()); /// [ ["user_id" => 1], ... ]
 
-
-
             foreach ($all_user_sending_notification as $user_to_send_notification) { ///["user_id" => 1]
-
-
-
+                
                 $user_id_post = intval($user_to_send_notification["user_id"]);
-
-
-
                 if ($user_id_post === $userToVerifie->getId()) { ///current user connecter
 
                     if ($resultat == 0) {
@@ -857,70 +757,41 @@ class SecurityController extends AbstractController
 
 
                 $notificationService->sendNotificationForOne(
-
                     $userToVerifie->getId(),
-
                     $user_id_post,
-
                     $type,
-
                     $message_notification
-
                 );
             }
 
             ////notification for super admin
-
             if ($userRepository->findByRolesUserSuperAdmin() && $resultat == 0) {
 
                 $super_admin = $userRepository->findByRolesUserSuperAdmin();
-
                 $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
 
-
-
                 $notificationService->sendNotificationForOne(
-
                     $userToVerifie->getId(),
-
                     $super_admin->getId(),
-
                     $type,
-
                     $message_notification,
-
                 );
             }
-
             ///// END NOTIFICATION ////
 
-
-
             return $authenticator->authenticateUser(
-
                 $userToVerifie,
-
                 $loginAuth,
-
                 $request
-
             );
         }
 
-
-
         // return $this->redirectToRoute("connection");
-
         return $this->render("user/settingAccount.html.twig", [
-
             "form_inscription" => $form->createView(),
-
             "last_email" => $userToVerifie->getEmail(),
-
             "flash" => $flash,
-
             "pseudo" => $userToVerifie->getPseudo()
-
         ]);
     }
 

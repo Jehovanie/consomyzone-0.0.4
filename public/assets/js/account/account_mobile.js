@@ -58,20 +58,22 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
     //// ADD EVENT CLICK TO SET SHOW ALL MESSAGE NOT SHOW 
 
-    document.querySelector(".content_message_nav_bar").parentElement.addEventListener("click",() => {
+    document.querySelectorAll(".content_message_nav_bar").forEach(elem=>{
+        elem.parentElement.addEventListener("click",() => {
 
-        fetch("/user/setshow/messages")
-
-            .then(response => response.json())
-
-            .then(data => {
-
-                console.log("Result for setshow message.")
-
-                console.log(data)
-
-            })
-
+            fetch("/user/setshow/messages")
+    
+                .then(response => response.json())
+    
+                .then(data => {
+    
+                    console.log("Result for setshow message.")
+    
+                    console.log(data)
+    
+                })
+    
+        })
     })
 
 
@@ -94,7 +96,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
         /// check if there is no message in the modal.
 
-        if(document.querySelectorAll(".show_single_message_popup").length === 0){
+        if(document.querySelectorAll(".show_single_message_popup_mobile").length === 0){
 
 
 
@@ -103,7 +105,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
             new_message.forEach(single_message => {
                 
                 ///card message
-                createAndAddCardMessage(
+                createAndAddCardMessageMobile(
 
                     single_message.message.id,
 
@@ -131,7 +133,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
             /// get all card message exit
 
-            const div_message_already_show = document.querySelectorAll(".show_single_message_popup");
+            const div_message_already_show = document.querySelectorAll(".show_single_message_popup_mobile");
 
 
 
@@ -160,7 +162,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                 /*console.log("show message 2")
                 console.log(single_message)*/
 
-                createAndAddCardMessage(
+                createAndAddCardMessageMobile(
 
                     single_message.message.id,
 
@@ -296,7 +298,10 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                                     .then(html => {
 
-                                        document.querySelector(".content_text_js_jheo").innerHTML = html
+                                        document.querySelectorAll(".content_text_js_jheo").forEach(content=>{
+                                            content.innerHTML = html
+                                        })
+                                        //document.querySelector(".content_text_js_jheo").innerHTML = html
 
                                     })
 
@@ -322,93 +327,95 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
 if( document.querySelector(".notification_jheo_js")){
 
-    const notif_icon = document.querySelector(".notification_jheo_js");
+    const notif_icons = document.querySelectorAll(".notification_jheo_js");
 
+    notif_icons.forEach(notif_icon => {
 
+        notif_icon.addEventListener("click", () => {
 
-    notif_icon.addEventListener("click", () => {
-
-        if( document.querySelectorAll(".card_js_jheo")){
-
-            const all_card_message= document.querySelectorAll(".card_js_jheo")
-
-            const data = []
-
-            all_card_message.forEach(card => {
-
-                const single_data = {
-
-                    notif_id: card.getAttribute("data-toggle-notif-id"),
-
-                }
-
-                data.push(single_data);
-
-            })
-
-
-
-            fetch("/user/notification/show" , {
-
-                method: "POST",
-
-                headers:{
-
-                    'Content-Type': 'application/json'
-
-                },
-
-                body: JSON.stringify(data)
-
-
-
-            } ).then(res => res.json())
-
-            .then(res => {
-
-               
-
-                if( res){
-
-                    
-
-                    // document.querySelector(".nbr_notification_jheo_js_mobile").innerText="0";
-
-                    document.querySelector(".nbr_notification_jheo_js_mobile").parentElement.style.opacity= "0"
-
-                    
-
-                    // const all_card=document.querySelectorAll(".card_js_jheo")
-
-                    // all_card.forEach(item => {
-
-                    //     if( item.classList.contains("back_gray")){
-
-                            
-
-                    //         setTimeout(() => {
-
-                    //             item.classList.remove("back_gray")
-
-                    //         }, 5000)
-
-                    //     }
-
-                    // })
-
-
-
-
-
-                }
-
-
-
-            })
-
-        }
-
-    })
+            if( document.querySelectorAll(".card_js_jheo")){
+    
+                const all_card_message= document.querySelectorAll(".card_js_jheo")
+    
+                const data = []
+    
+                all_card_message.forEach(card => {
+    
+                    const single_data = {
+    
+                        notif_id: card.getAttribute("data-toggle-notif-id"),
+    
+                    }
+    
+                    data.push(single_data);
+    
+                })
+    
+    
+    
+                fetch("/user/notification/show" , {
+    
+                    method: "POST",
+    
+                    headers:{
+    
+                        'Content-Type': 'application/json'
+    
+                    },
+    
+                    body: JSON.stringify(data)
+    
+    
+    
+                } ).then(res => res.json())
+    
+                .then(res => {
+    
+                   
+    
+                    if( res){
+    
+                        
+    
+                        // document.querySelector(".nbr_notification_jheo_js_mobile").innerText="0";
+    
+                        document.querySelector(".nbr_notification_jheo_js_mobile").parentElement.style.opacity= "0"
+    
+                        
+    
+                        // const all_card=document.querySelectorAll(".card_js_jheo")
+    
+                        // all_card.forEach(item => {
+    
+                        //     if( item.classList.contains("back_gray")){
+    
+                                
+    
+                        //         setTimeout(() => {
+    
+                        //             item.classList.remove("back_gray")
+    
+                        //         }, 5000)
+    
+                        //     }
+    
+                        // })
+    
+    
+    
+    
+    
+                    }
+    
+    
+    
+                })
+    
+            }
+    
+        })
+    });
+    
 
 }
 
@@ -420,27 +427,30 @@ if( document.querySelector(".notification_jheo_js")){
 
 if( document.querySelector(".tous_marquer_comme_lu_js_jheo")){
 
-    document.querySelector(".tous_marquer_comme_lu_js_jheo").addEventListener("click" , () => {
+    document.querySelectorAll(".tous_marquer_comme_lu_js_jheo").forEach(btn_lire_tous=>{
+        btn_lire_tous.addEventListener("click" , () => {
 
-        fetch("/user/notification/tous_marquer_lu",{
-
-            method: "POST",
-
-            headers: {
-
-                "content-type": "application/json; charset=utf",
-
-            }
-
-        }).then(response => response.json())
-
-        .then(response =>{
-
-            console.log(response)
-
+            fetch("/user/notification/tous_marquer_lu",{
+    
+                method: "POST",
+    
+                headers: {
+    
+                    "content-type": "application/json; charset=utf",
+    
+                }
+    
+            }).then(response => response.json())
+    
+            .then(response =>{
+    
+                console.log(response)
+    
+            })
+    
         })
-
     })
+    
 
 }
 
@@ -628,9 +638,9 @@ if (document.querySelector("#send-request")) {
 
 
 
-function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForMe, isRead, profil){
+function createAndAddCardMessageMobile(id,other_id, firstname, lastname,message,isForMe, isRead, profil){
 
-    // <div class="show_single_message_popup back_gray">
+    // <div class="show_single_message_popup_mobile back_gray">
 
     //     <img src="{{asset('assets/image/message1.jpg')}}" alt="Profil">
 
@@ -661,7 +671,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
 
 
     ////get all message popup
-    const popup_message = document.querySelectorAll(".show_single_message_popup");
+    const popup_message = document.querySelectorAll(".show_single_message_popup_mobile");
 
     let popup_message_already_exist= false,  popup_message_id = "" /// their last message id
     popup_message.forEach(item => {
@@ -687,9 +697,9 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
 
         ///select the popup message 
 
-        const card_message = document.querySelector(".modal_message_"+ popup_message_id);
+        const card_message = document.querySelector(".modal_message_mobile_"+ popup_message_id);
 
-        card_message.setAttribute("class", "show_single_message_popup modal_message_"+id);
+        card_message.setAttribute("class", "show_single_message_popup_mobile modal_message_mobile_"+id);
 
 
 
@@ -737,7 +747,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
         ///create card message and add in the message modal popup
         const card = document.createElement("div");
 
-        card.setAttribute("class", "show_single_message_popup modal_message_"+id);
+        card.setAttribute("class", "show_single_message_popup_mobile modal_message_mobile_"+id);
 
       
 
@@ -826,7 +836,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
     }
 
     //// add link to the
-    document.querySelector(".modal_message_" + id).addEventListener("click",() => {
+    document.querySelector(".modal_message_mobile_" + id).addEventListener("click",() => {
         window.location.replace("/user/message?user_id=" +  other_id)
     })
 }
@@ -851,6 +861,7 @@ function createAndAddCardNotification(notif_id,parent_card, card_title_content, 
 
     const h5 = document.createElement("h5");
     h5.classList.add("card-title");
+    h5.setAttribute("lng-tag","nouvelle_notification")
     h5.innerText = card_title_content;
 
     card_body.appendChild(h5);
@@ -976,6 +987,45 @@ function createBadgeNotifContent(){
 
 if(screen.width > 1000){
     //alert("ça marche")
-    document.querySelector("#showCreatePub").classList.add("mt-5");
-    document.querySelector(".tribuNameBlock").classList.add("w-75");
+    document.querySelector("#showCreatePub")?document.querySelector("#showCreatePub").classList.add("mt-5"):"";
+    document.querySelector(".tribuNameBlock")?document.querySelector(".tribuNameBlock").classList.add("w-75"):"";
+}
+
+function getPosition(){
+    let map_position = null;
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+            //alert(lat + ' ' + long)
+
+            fetch('https://ipapi.co/json/')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(res) {
+                    //console.log(data);
+                    document.querySelector("#pos-ip").textContent = "Adresse IP : " +res.ip
+                    document.querySelector("#pos-city").textContent = "Ville : " +res.city
+                    document.querySelector("#pos-country").textContent = "Pays : " + res.country_name
+                    //document.querySelector("#pos-region").textContent = "Region : " + res.regionName
+                    document.querySelector("#pos-lat").textContent = "Latitude : " + lat
+                    document.querySelector("#pos-long").textContent = "Longitude : " + lon
+
+                    document.querySelector('#position_map').innerHTML = "<div id='new_map' style='width: 100%; height: 200px;'></div>";
+                    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', osmAttribution = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' ,
+
+                    osmLayer = new L.TileLayer(osmUrl, {maxZoom: 20, attribution: osmAttribution});
+
+                    map_position = new L.Map('new_map');
+                    map_position.setView(new L.LatLng(lat,lon), 13 );
+                    map_position.addLayer(osmLayer);
+                    L.marker([lat, lon]).addTo(map_position)
+
+                });
+            
+        })
+    }
+    
 }

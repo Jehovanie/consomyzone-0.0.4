@@ -16,10 +16,16 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BddRestoRepository extends ServiceEntityRepository
 {
+
+
+
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BddResto::class);
     }
+
+
 
     public function save(BddResto $entity, bool $flush = false): void
     {
@@ -30,6 +36,25 @@ class BddRestoRepository extends ServiceEntityRepository
         }
     }
 
+    public function findRestoByName($restoName){
+        return $this->createQueryBuilder("r")
+        ->select("r")
+        ->where("r.denominationF LIKE :name")
+        ->setParameter("name","%".$restoName."%")
+        ->getQuery()
+        ->getResult();
+    }
+
+    // public function findRestoByNameV2($restoName1,$restoName2){
+    //     return $this->createQueryBuilder("r")
+    //     ->select("r")
+    //     ->where("r.denominationF LIKE :name1")
+    //     ->orWhere("r.denominationF LIKE :name2")
+    //     ->setParameter("name1",'%'.$restoName1.'%')
+    //     ->setParameter("name2",'%'.$restoName2.'%')
+    //     ->getQuery()
+    //     ->getResult();
+    // }
     public function remove(BddResto $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
@@ -131,7 +156,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.poiY as lat,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
         if( $mot_cles0 !== "" && $mot_cles1 === "" ){
-            $qb = $qb->where("p.depName LIKE :cles0")
+            $qb = $qb->where("MATCH(p.adresse) AGAINST( :cles0)")
                 ->orWhere("p.nomvoie LIKE :cles0")
                 ->orWhere("p.typevoie LIKE :cles0")
                 ->orWhere("p.villenorm LIKE :cles0")
@@ -142,18 +167,28 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
                 
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            $qb = $qb->where("p.dep LIKE :cles1")
-                ->orWhere("p.nomvoie LIKE :cles1")
-                ->orWhere("p.depName LIKE :cles1")
-                ->orWhere("p.typevoie LIKE :cles1")
-                ->orWhere("p.villenorm LIKE :cles1")
-                ->orWhere("p.commune LIKE :cles1")
-                ->orWhere("p.codpost LIKE :cles1")
-                ->orWhere("p.numvoie LIKE :cles1")
-                ->orWhere("p.denominationF LIKE :cles1")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if( strlen($mot_cles1) === 2 ){
+                
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("p.dep LIKE :cles1")
+                    ->orWhere("p.nomvoie LIKE :cles1")
+                    ->orWhere("p.depName LIKE :cles1")
+                    ->orWhere("p.typevoie LIKE :cles1")
+                    ->orWhere("p.villenorm LIKE :cles1")
+                    ->orWhere("p.commune LIKE :cles1")
+                    ->orWhere("p.codpost LIKE :cles1")
+                    ->orWhere("p.numvoie LIKE :cles1")
+                    ->orWhere("p.denominationF LIKE :cles1")
+                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
+                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
         }else {
+
             $qb = $qb->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
                 ->orWhere("(p.dep LIKE :cles0) AND ( p.nomvoie LIKE :cles1)")
                 ->orWhere("(p.dep LIKE :cles0) AND ( p.commune LIKE :cles1)")
@@ -168,11 +203,16 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.commune LIKE :cles1)")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
         }
-        $qb = $qb->setFirstResult($page_current)
-            ->setMaxResults($size)
-            ->orderBy('p.nomvoie', 'ASC')
-            ->getQuery();
+        // $qb = $qb->setFirstResult($page_current)
+        //     ->setMaxResults($size)
+        //     ->orderBy('p.nomvoie', 'ASC')
+        //     ->getQuery();
+
+        $qb = $qb->orderBy('p.nomvoie', 'ASC')
+                 ->getQuery();
+            
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();
@@ -191,17 +231,23 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            $count = $count->where("p.dep LIKE :cles1")
-                ->orWhere("p.nomvoie LIKE :cles1")
-                ->orWhere("p.depName LIKE :cles1")
-                ->orWhere("p.typevoie LIKE :cles1")
-                ->orWhere("p.villenorm LIKE :cles1")
-                ->orWhere("p.commune LIKE :cles1")
-                ->orWhere("p.codpost LIKE :cles1")
-                ->orWhere("p.numvoie LIKE :cles1")
-                ->orWhere("p.denominationF LIKE :cles1")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if( strlen($mot_cles1) === 2 ){
+                $count = $count->where("p.dep LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $count = $count->where("p.dep LIKE :cles1")
+                    ->orWhere("p.nomvoie LIKE :cles1")
+                    ->orWhere("p.depName LIKE :cles1")
+                    ->orWhere("p.typevoie LIKE :cles1")
+                    ->orWhere("p.villenorm LIKE :cles1")
+                    ->orWhere("p.commune LIKE :cles1")
+                    ->orWhere("p.codpost LIKE :cles1")
+                    ->orWhere("p.numvoie LIKE :cles1")
+                    ->orWhere("p.numvoie LIKE :cles1")
+                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
+                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
         }else {
             $count = $count->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
                 ->orWhere("(p.dep LIKE :cles0) AND ( p.nomvoie LIKE :cles1)")
@@ -333,6 +379,73 @@ class BddRestoRepository extends ServiceEntityRepository
             ->andHaving('count(r.poiY) =1')
             ->getQuery()
             ->getResult();
+    }
+
+    public function getAllFilterByLatLong($data){
+        extract($data); //// $last [ min [ lat , lng ], max [ lat, lng ] ], $new [ min [ lat, lng ], max [ lat, lng ] ]
+        // dump("-2.548957109000000 3.440684080123901 46.88474655000000 49.18113327026367 ");
+        // dd($data);
+
+        $qb= $this->createQueryBuilder("r")
+            ->select("r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiX,
+                    r.poiY")
+            ->groupBy("r.denominationF, r.poiX, r.poiY")
+            ->having('count(r.denominationF)=1')
+            ->andHaving('count(r.poiX)=1')
+            ->andHaving('count(r.poiY) =1')
+            ->where('r.poiY BETWEEN :lat_min AND :lat_max')
+            ->andWhere('r.poiX BETWEEN :lng_min AND :lng_max');
+
+        // $lat_min= count($new) > 0 ? $new["min"] : [ "lat" => -25.0];
+        // $lat_max= $last["max"];
+
+        // $lng_min= count($new) > 0 ? $last["min"] : [ "lng" => 0.0];
+        // $lng_max= count($new) > 0 ? $new["max"] : $last["min"];
+
+        $lat_min=$last["min"];
+        $lat_max= count($new) > 0 ? $new["max"] : $last["max"];
+
+        $lng_min= count($new) > 0 ? $new["min"] : $last["min"];
+        $lng_max= $last["max"];
+
+        ///(this.last_minll.lat > minll.lat) && (this.last_maxll.lng < maxll.lng) 
+        $qb= $qb->setParameter('lat_min', $lat_min["lat"])
+                ->setParameter('lat_max', $lat_max["lat"])
+                ->setParameter('lng_min', $lng_min["lng"])
+                ->setParameter('lng_max', $lng_max["lng"]);
+        
+        $query = $qb->getQuery();
+        return $query->execute();
     }
     //    /**
     //     * @return BddResto[] Returns an array of BddResto objects
