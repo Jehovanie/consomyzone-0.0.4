@@ -148,43 +148,35 @@ class MarckerClusterStation {
         this.markers = L.markerClusterGroup({
             chunkedLoading: true,
 
-            // iconCreateFunction: function (cluster) {
-            //     if(that.marker_last_selected){
-            //         let sepcMarmerIsExist = false;
-            //         const cleCoord= that.marker_last_selected._latlng.lat + "" + that.marker_last_selected._latlng.lng;
-            //         console.log("child Marker")
-            //         console.log(cluster)
-            //         for (let g of  cluster.getAllChildMarkers()){
-            //             let tmpCleCoord = g._latlng.lat + "" + g._latlng.lng
-            //             tmpCleCoord = tmpCleCoord.toString().replace(/[\-\.]/g, "")
-
-            //             if (cleCoord.replace(/[^0-9]/g, "") === tmpCleCoord) { 
-            //                 sepcMarmerIsExist = true;
-            //                 break;
-            //             }
-            //         }
-            //         if(sepcMarmerIsExist){
-            //             console.log("tokony")
-            //             return L.divIcon({
-            //                 html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-            //                 className: "spec_cluster",
-            //                 iconSize:L.point(35,35)
-            //             });
-            //         }else{
-            //             console.log("tss")
-            //             return L.divIcon({
-            //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-            //                 className: "mycluster",
-            //                 iconSize:L.point(35,35)
-            //             });
-            //         }
-            //     }
-            //     return L.divIcon({
-            //         html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-            //         className: "mycluster",
-            //         iconSize:L.point(35,35)
-            //     });
-            // },
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id_icon) === parseInt(g.options.id_icon)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }
+                return L.divIcon({
+                    html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                    className: "mycluster",
+                    iconSize:L.point(35,35)
+                });
+            },
         });
 
     }
@@ -200,6 +192,10 @@ class MarckerClusterStation {
             //     marker.openPopup();
             // });
             marker.on('click', () => {
+
+                const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
+                this.map.setView(latlng, 11);
+
                 if (screen.width < 991) {
                     getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 } else {
@@ -222,6 +218,8 @@ class MarckerClusterStation {
                     this.marker_last_selected.setIcon(new icon_B)
                 }
                 this.marker_last_selected = marker;
+
+                this.markers.refreshClusters();
             })
 
             marker.on("mouseover", () => {
