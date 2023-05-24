@@ -96,11 +96,11 @@
             <div class="container list-depart-all" id="Scrollbar">
                 <div id="list_departements">
                     {% for departement in departements %}
-                        {% if departement.id is same as('75')%}
-                            <ul>
+                        <ul>
+                            {% if departement.id is same as('75')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_dep_restaurant_arrondisme', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -129,12 +129,10 @@
                                         </div>
                                     </a>
                                 </li>
-                            </ul>
-                        {% elseif departement.id is same as('44')%}
-                            <ul>
+                            {% elseif departement.id is same as('44')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -164,13 +162,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('77')%}
-                            <ul>
+                            {% elseif departement.id is same as('77')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -199,13 +194,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('78')%}
-                            <ul>
+                            {% elseif departement.id is same as('78')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -234,13 +226,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('91')%}
-                            <ul>
+                            {% elseif departement.id is same as('91')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -269,13 +258,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('92')%}
-                            <ul>
+                            {% elseif departement.id is same as('92')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -304,13 +290,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('93')%}
-                            <ul>
+                            {% elseif departement.id is same as('93')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -339,13 +322,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('94')%}
-                            <ul>
+                            {% elseif departement.id is same as('94')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -374,13 +354,10 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                        {% elseif departement.id is same as('95')%}
-                            <ul>
+                            {% elseif departement.id is same as('95')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_specific_dep_restaurant', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
-                                        <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                        <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                             <div class="col-md-2">
                                                 <h5 class="id_departement">{{departement.id }}</h5>
                                             </div>
@@ -409,10 +386,8 @@
                                         </div>
                                     </a>
                                 </li>
-
-                            </ul>
-                            
-                        {% endif %}
+                            {% endif %}
+                        </ul>
                     {% endfor %} 
                 </div>
             </div>

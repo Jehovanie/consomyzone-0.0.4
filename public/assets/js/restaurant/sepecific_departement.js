@@ -1,8 +1,9 @@
-let tabArray = []
-let map = null
-let markers
-let tabMarker = []
-let centerss = []
+let tabArray = [];
+let map = null;
+let markers;
+let tabMarker = [];
+let centerss = [];
+
 centerss[44] = {
     lat: 47.218371,
     lng: -1.553621,
@@ -83,6 +84,7 @@ centerss[75] = {
 
 
 window.addEventListener('load', () => {
+
     const geos = []
     document.querySelectorAll("#all_ferme_in_dep > div > a").forEach(item => {
         item.onclick = () => {
@@ -97,7 +99,8 @@ window.addEventListener('load', () => {
         let url = "/Coord/All/Restaurant/specific/arrondissement/" + dep + "/" + codinsee;
         geos.push(arrdParis.features.find(element => element.properties.c_arinsee == codinsee))
 
-        fetch(url).then(response => response.json())
+        fetch(url)
+            .then(response => response.json())
             .then(response1 => {
                 tabArray = response1
                 // create_map_content()
@@ -116,7 +119,9 @@ window.addEventListener('load', () => {
                 var latlng = L.latLng(cntrJson["arrondissement"][codinsee].lat, cntrJson["arrondissement"][codinsee].lng);
                 const zoom = 14;
                 const centered = latlng;
+
                 map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
+                
                 L.geoJson(geos, {
                     style: {
                         //fillColor: getColor(feature.properties.density),
@@ -450,23 +455,58 @@ window.addEventListener('load', () => {
                     position: 'verticalcenterl'//left
                 }).addTo(map);
 
+                ///redirection for mobile
                 addEventLocation()
+
                 map.doubleClickZoom.disable();
                 markers = L.markerClusterGroup({
                     chunkedLoading: true,
                     spiderfyOnMaxZoom: true,
-                    spiderfyOnEveryZoom: true
+                    spiderfyOnEveryZoom: true,
+                    iconCreateFunction: function (cluster) {
+                        if(marker_last_selected){
+                            let sepcMarmerIsExist = false;
+                            for (let g of  cluster.getAllChildMarkers()){
+                                if (parseInt(marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                                    sepcMarmerIsExist = true;
+                                    break;
+                                }
+                            }
+
+                            if(sepcMarmerIsExist){
+                                return L.divIcon({
+                                    html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                                    className: "spec_cluster",
+                                    iconSize:L.point(35,35)
+                                });
+                            }else{
+                                return L.divIcon({
+                                    html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                                    className: "mycluster",
+                                    iconSize:L.point(35,35)
+                                });
+                            }
+                        }else{
+                            return L.divIcon({
+                                html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                                className: "mycluster",
+                                iconSize:L.point(35,35)
+                            });
+                        }
+                    }
                 });
 
                 chargeMapAndMarkers(response1, map, markers)
             });
+
     } else {
         const dep = new URLSearchParams(window.location.href).get("id_dep")
         const url = "/Coord/Spec/Restaurant/" + dep;
 
         geos.push(franceGeo.features.find(element => element.properties.code == dep))
         
-        fetch(url).then(response => response.json())
+        fetch(url)
+            .then(response => response.json())
             .then(response1 => {
                 // alert("Success")
                 tabArray = response1
@@ -480,6 +520,7 @@ window.addEventListener('load', () => {
                     minZoom: 1,
                     maxZoom: 20
                 })
+
                 const zoom = centerss[parseInt(dep)].zoom;
                 const centered = L.latLng(centerss[parseInt(dep)].lat, centerss[parseInt(dep)].lng);
 
@@ -824,7 +865,38 @@ window.addEventListener('load', () => {
                 markers = L.markerClusterGroup({
                     chunkedLoading: true,
                     spiderfyOnEveryZoom: true,
-                    spiderfyOnMaxZoom: true
+                    spiderfyOnMaxZoom: true,
+                    iconCreateFunction: function (cluster) {
+                        if(marker_last_selected){
+                            let sepcMarmerIsExist = false;
+                            for (let g of  cluster.getAllChildMarkers()){
+                                if (parseInt(marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                                    sepcMarmerIsExist = true;
+                                    break;
+                                }
+                            }
+
+                            if(sepcMarmerIsExist){
+                                return L.divIcon({
+                                    html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                                    className: "spec_cluster",
+                                    iconSize:L.point(35,35)
+                                });
+                            }else{
+                                return L.divIcon({
+                                    html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                                    className: "mycluster",
+                                    iconSize:L.point(35,35)
+                                });
+                            }
+                        }else{
+                            return L.divIcon({
+                                html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                                className: "mycluster",
+                                iconSize:L.point(35,35)
+                            });
+                        }
+                    },
                 });
 
                 chargeMapAndMarkers(tabArray, map, markers)
@@ -834,12 +906,10 @@ window.addEventListener('load', () => {
 
 
 // filter alphabet
-
 // selecting required element
 const element = document.querySelector(".pagination ul");
+const letters = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
-
-const letters = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 //const lettersL=letters.length
 let totalPages = letters.length - 1;
 let page = 1;
@@ -855,6 +925,7 @@ function createPagination(totalPages, page) {
     let active;
     let beforePage = page - 1;
     let afterPage = page + 1;
+
     if (page > 1) { //show the next button if the page value is greater than 1
         liTag += `<li class="btn prev" onclick="createPagination(totalPages, ${page - 1})"><span><i class="fas fa-angle-left"></i></span></li>`;
     }
@@ -879,13 +950,15 @@ function createPagination(totalPages, page) {
         afterPage = afterPage + 1;
     }
 
-    for (var plength = beforePage; plength <= afterPage; plength++) {
+    for (let plength = beforePage; plength <= afterPage; plength++) {
         if (plength > totalPages) { //if plength is greater than totalPage length then continue
             continue;
         }
+
         if (plength == 0) { //if plength is 0 than add +1 in plength value
             plength = plength + 1;
         }
+
         if (!isTheFerstTime) {
             if (page == plength) { //if page is equal to plength than assign active string in the active variable
                 active = "active";
@@ -895,13 +968,6 @@ function createPagination(totalPages, page) {
         }
 
         liTag += `<li class="numb ${active}" onclick="createPagination(totalPages, ${plength})"><span>${letters[plength]}</span></li>`;
-
-        // if (liTag) {
-        //   liTag += `<li class="numb ${active}" onclick="createPagination(totalPages, ${plength})"><span>${letters[plength]}</span></li>`;
-        // } else {
-        // liTag += `<li class="numb " onclick="createPagination(totalPages, ${plength})"><span>${letters[plength]}</span></li>`;
-
-        // }
     }
 
     if (page < totalPages - 1) { //if page value is less than totalPage value by -1 then show the last li or page
@@ -914,55 +980,46 @@ function createPagination(totalPages, page) {
     if (page < totalPages) { //show the next button if the page value is less than totalPage(20)
         liTag += `<li class="btn next" onclick="createPagination(totalPages, ${page + 1})"><span> <i class="fas fa-angle-right"></i></span></li> <li class="btn next ms-4" onclick='refreshData()'><i class="fa-solid fa-arrows-rotate refreshData"></i></li>`;
     }
+
     if (!isTheFerstTime) {
-        let xData = Array()
-
         element.innerHTML = liTag; //add li tag inside ul tag
-
-
+        
+        let xData = Array();
         let charAfilter = element.querySelector("li.active").textContent;
-
-        document.querySelectorAll("#all_ferme_in_dep > ul > li").forEach((ferme) => {
+        document.querySelectorAll("#all_ferme_in_dep > ul > li").forEach((resto) => {
 
             // document.querySelectorAll("#all_ferme_in_dep > ul > li").forEach((ferme) => {
-            let nomFerme = ferme.querySelector("p").textContent.trim();
+            let nomFerme = resto.querySelector("p").textContent.trim();
             if (!nomFerme.startsWith(charAfilter)) {
-                ferme.style.display = "none"
-                ferme.classList.remove("miseho")
+                resto.style.display = "none"
+                resto.classList.remove("miseho")
             } else {
-                ferme.style.display = "block"
-                ferme.classList.add("miseho")
+                resto.style.display = "block"
+                resto.classList.add("miseho")
 
-                xData.push(filterData(ferme.querySelector('.element').dataset.toggleId));
+                xData.push(filterData(resto.querySelector('.element').dataset.toggleId));
             }
-
         })
+
         if (tabMarker.length > 0) {
 
             // console.log(tabMarker.length)
             for (let j = 0; j < tabMarker.length; j++) {
                 markers.removeLayer(tabMarker[j]);
                 document.querySelector("p.nombre_de_resultat > span.nombre").textContent = document.querySelectorAll(".miseho").length
-
             }
+
             // console.log(map)
             map.removeLayer(markers);
             tabMarker = [];
-            if (xData.length > 0) {
-                // console.log(xData)
 
+            if (xData.length > 0) {
                 chargeMapAndMarkers(xData, map, markers)
             }
         }
     }
 
-
-
-
-    // document.querySelector("p.nombre_de_resultat > span").textContent = document.querySelectorAll(".miseho").length
-
-    // console.log(element.querySelector("li.active").textContent);
-
+    // document.querySelector("p.nombre_de_resultat > span").textContent = document.querySelectorAll(".miseho").length;
     isTheFerstTime = false
     return liTag; //reurn the li tag
 }
@@ -973,9 +1030,6 @@ function setView(lat, lng) {
 }
 
 function chargeMapAndMarkers(response1, map, markers) {
-
-    //const departName = document.querySelector(".titre").getAttribute("data-toggle-deparement")
-    ///// 0 -> 4717
 
     response1.forEach(item => {
         if (item.id) {
@@ -1011,6 +1065,8 @@ function chargeMapAndMarkers(response1, map, markers) {
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
         
         marker.on('click', (e) => {
+            const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
+            map.setView(latlng, 13);
 
             const url = new URL(window.location.href);
             const icon_R = L.Icon.extend({
@@ -1028,6 +1084,7 @@ function chargeMapAndMarkers(response1, map, markers) {
                 })
                 marker_last_selected.setIcon(new icon_B)
             }
+            
             marker_last_selected = marker
 
             const coordAndZoom = {
@@ -1063,26 +1120,17 @@ function chargeMapAndMarkers(response1, map, markers) {
                     })
 
             }
+
+            markers.refreshClusters();
         });
         markers.addLayer(marker);
     });
 
-
-
     map.addLayer(markers);
 
-    map.on("resize zoom", (e) => {
-        console.log(e)
+    map.on("resize zoomend dragend", (e) => {
         const coordAndZoom = {
             zoom: e.target._zoom,
-            coord: e.target._lastCenter
-        }
-        setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
-    })
-    map.on("dragend", (e) => {
-        console.log(e.target.getCenter(), e.target.getZoom())
-        const coordAndZoom = {
-            zoom: e.target.getZoom(),
             coord: e.target.getCenter()
         }
         setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
