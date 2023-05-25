@@ -58,28 +58,23 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
 
             latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null
-            zoom = json ? (json.zoom ? json.zoom : (id_dep ? centers[parseInt(id_dep)].zoom : 6)) : (id_dep ? centers[parseInt(id_dep)].zoom : 6);
+            zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
         } else if (map_for_type === "home") {
-
-            // latlng = id_dep?  L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
-            // json=getDataInLocalStorage("coordTous") ? JSON.parse(getDataInLocalStorage("coordTous")) :latlng
-            // zoom = json ? (json.zoom ? json.zoom :(id_dep ? centers[parseInt(id_dep)].zoom : 8)) : (id_dep ? centers[parseInt(id_dep)].zoom : 8);
 
             // latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
             latlng = L.latLng(latitude, longitude);
             json = latlng
             zoom = 12;
         } else if (map_for_type === "ferme") {
-
-            latlng = L.latLng(latitude, longitude);
+            latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : latlng
-            zoom = json.zoom ? json.zoom : 5;
+            zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         } else if (map_for_type === "resto") {
-            latlng = L.latLng(latitude, longitude);
+            latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : latlng
-            zoom = json.zoom ? json.zoom : 5;
+            zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         }
-        centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
+        centered = json ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
 
         var container = L.DomUtil.get('map');
         if (container != null) {

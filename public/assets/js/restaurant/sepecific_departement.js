@@ -37,7 +37,7 @@ centerss[92] = {
 centerss[93] = {
     lat: 48.90557712765307,
     lng: 2.4149322509765625,
-    zoom: 10
+    zoom: 12
 }
 
 centerss[94] = {
