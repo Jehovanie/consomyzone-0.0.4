@@ -236,7 +236,7 @@ function showdDataContent(data, type, tribu_t_name) {
                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
                         </li>
                         <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" href="/user/tribu/show-member/tribu_t_32_efa_leo_anana">Partisant</a>
+                            <a style="cursor:pointer;" href="/user/tribu/show-member/tribu_t_32_efa_leo_anana">Partisans</a>
                         </li>
                         <li class="listNavBarTribu">
                             <a style="cursor:pointer;" id="seer-gallery">Photos</a>
@@ -285,7 +285,7 @@ function showdDataContent(data, type, tribu_t_name) {
                     </div>
                     <div class="col-4">
                         <div class="apropos-tribu-t ps-2 mt-3 responsif-none">
-                            <p class="fw-bold">Apropos Tribu-t</p>
+                            <p class="fw-bold">A propos Tribu-t</p>
                             <p >
                             ${tribu_t[0].description}
                             </p>
