@@ -23,6 +23,7 @@ use App\Service\UserService;
 
 use App\Form\PublicationType;
 use App\Repository\BddRestoRepository;
+use App\Repository\UserRepository;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -164,6 +165,81 @@ class TributTController extends AbstractController
 
     }
 
+    #[Route('/user/get/comment/pub', name: "user_get_comment_pubss",methods:["GET"])]
+    public function getCommentPubTribuT(Request $request,Tribu_T_Service $serv,SerializerInterface $serializer){
+
+        $datas=$request->query->all();
+       
+        $tabl_cmnt_tribu_t=$datas["tbl_tribu_t_commentaire"];
+        $idPub=$datas["id_pub"];
+        $idMin=$datas["id_min"];
+        $limits=$datas["limits"];
+        $response=$serv->getCommentPubTribuT($tabl_cmnt_tribu_t, $idPub, $idMin,$limits);
+        $json=$serializer->serialize($response,'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/user/send/comment/pub', name:"user_send_comment_pub")]
+    public function putCommentOnPublication(Request $request,Tribu_T_Service $serv){
+        $datas=json_decode($request->getContent(),true);
+        $user=$this->getUser();
+        $userId=$user->getId();
+        $pubId=$datas["pubId"];
+        $commentaire=$datas["commentaire"];
+        $tableCommentaireTribu_T=$datas["tbl_cmnt_name"];
+       
+        $result=$serv->putCommentOnPublication($tableCommentaireTribu_T, 
+        $userId,$pubId,$commentaire, $user->getPseudo());
+
+        $response=new Response();
+        if($result){
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response->setStatusCode(500);
+            return $response;
+        }
+    }
+
+    #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
+    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep){
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $userTribu_T=json_decode($user->getTribuT(),true);
+        $jsonParsed = json_decode($request->getContent(), true);
+        $tribu_t_name =  $jsonParsed["tribu_t_name"];
+        $image = $jsonParsed["base64"];
+        $imageName = $jsonParsed["photoName"];
+        
+        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
+        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+            $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        
+        $fileUtils = new FilesUtils();
+        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+
+        
+        foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+            if (in_array($tribu_t_name, $v)) {
+                $v["logo_path"]=$path.$imageName;
+                $userTribu_T["tribu_t"][$k]= $v;
+            }
+        }
+
+        
+        $response = new Response();
+        try{
+            $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+            $response->setStatusCode(200);
+            return $response;
+        }catch(\Exception $e){
+            $response->setStatusCode(500);
+            return $response;
+        }
+     
+      
+       
+    }
 
 
     #[Route('/user/tribu/add_to/{tableName}/{user_id}/{notif_id}', name: 'add_personne')]
@@ -1738,7 +1814,7 @@ class TributTController extends AbstractController
             ])
             ->getForm();
         //$form = $this->createFormB(FileUplaodType::class);
-
+        $user=$this->getUser();
         $form->handleRequest($request);
 
         $body=null;
@@ -1746,7 +1822,8 @@ class TributTController extends AbstractController
            
             $data = $form->getData();
             //dd($data);
-            $path = '/public/uploads/tribu_t/photo/'. $data["tribuTName"]."/";
+            $tribuName= str_replace(" ","_", strtolower($data["tribuTName"]));
+            $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuName."/";
             if( !($filesyst->exists($this->getParameter('kernel.project_dir').$path)))
                     $filesyst->mkdir($this->getParameter('kernel.project_dir').$path,0777);
 

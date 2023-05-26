@@ -8,6 +8,9 @@
 /public/bundles/
 /public/uploads/users/photos/
 /public/assets/publications/photos/
+/public/uploads/tribu_t/photo/
+/public/uploads/tribu_t/photos/
+/public/uploads/tribus/photos/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###

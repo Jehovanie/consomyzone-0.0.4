@@ -44,7 +44,6 @@ class MatchAgainst extends FunctionNode
             $this->pathExp[] = $parser->StateFieldPathExpression();
         }
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
-
         // against
         if (strtolower($lexer->lookahead['value']) !== 'against') {
             $parser->syntaxError('against');
@@ -58,7 +57,6 @@ class MatchAgainst extends FunctionNode
             $parser->match(Lexer::T_IDENTIFIER);
             $this->booleanMode = true;
         }
-
         if (strtolower($lexer->lookahead['value']) === 'expand') {
             $parser->match(Lexer::T_IDENTIFIER);
             $this->queryExpansion = true;
