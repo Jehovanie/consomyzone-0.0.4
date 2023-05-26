@@ -37,12 +37,12 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
     public function findRestoByName($restoName){
-        return $this->createQueryBuilder("r")
-        ->select("r")
-        ->where("r.denominationF LIKE :name")
-        ->setParameter("name","%".$restoName."%")
-        ->getQuery()
-        ->getResult();
+        return $this->createQueryBuilder("m")
+            ->where('MATCH_AGAINST(m.denominationF) AGAINST(:name boolean)>0 ')
+            ->setParameter('name', $restoName)
+            ->getQuery()
+            ->getResult();
+
     }
 
     // public function findRestoByNameV2($restoName1,$restoName2){

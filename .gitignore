@@ -7,6 +7,9 @@
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /public/uploads/users/photos/
+/public/uploads/tribu_t/photo/
+/public/uploads/tribu_t/photos/
+/public/uploads/tribus/photos/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###

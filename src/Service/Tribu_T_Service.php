@@ -1243,7 +1243,11 @@ class Tribu_T_Service extends PDOConnexionService
 
             denomination_f VARCHAR(250) NOT NULL,
 
-            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB";
+            datetime timestamp NOT NULL DEFAULT current_timestamp(),
+
+            CONSTRAINT cst_id_resto UNIQUE (id_resto)
+            
+            )ENGINE=InnoDB";
         
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -1401,6 +1405,52 @@ class Tribu_T_Service extends PDOConnexionService
             return $result;
         }
        
+    }
+
+    public function putCommentOnPublication($tableCommentaireName, 
+    $user_id,
+    $pub_id,
+    $commentaire,
+    $userFullname,
+    ){
+        
+        $datetime = new \DateTime();
+        $datetime=$datetime->format('Y-m-d H:i:s');
+        $array=array(
+            ":user_id"=>$user_id,
+            ":pub_id"=> $pub_id,
+            ":commentaire"=> $commentaire,
+            ":userFullname"=>$userFullname,
+           ":datetime"=>$datetime
+            
+        );
+        $sql="INSERT INTO $tableCommentaireName (user_id,pub_id,commentaire,userFullname,datetime) 
+        values(:user_id,:pub_id,:commentaire,:userFullname,:datetime)";
+        $stmt = $this->getPDO()->prepare($sql);
+        return $stmt->execute($array);
+    }
+
+    public function getCommentPubTribuT($tableCommentaireTribu_t,$idPub,$idMin,$limits){
+        //SELECT * FROM `tribu_t_1_banane_commentaire` as t1  LEFT JOIN user  as t2 on t1.user_id = t2.id where t1.id < 10 ORDER BY t1.id DESC LIMIT 3;
+        if($idMin == 0){
+            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1 WHERE t1.pub_id=:pub_id ORDER BY t1.id DESC LIMIT :limits";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
+            $stmt->bindValue(':pub_id', $idPub, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }else{
+            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1  where t1.id < :idmin and WHERE t1.pub_id = :pub_id   ORDER BY t1.id DESC LIMIT :limits";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':idmin', $limits, PDO::PARAM_INT);
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
+            $stmt->bindValue(':pub_id', $idPub, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }
+        
     }
 
     
