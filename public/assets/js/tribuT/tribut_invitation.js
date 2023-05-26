@@ -1,12 +1,15 @@
 // btn_send_invitation_js_jheo-invitation_description_js_jheo-multiple_destination_js_jheo-single_destination_js_jheo
 if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
+
+    console.log("input_cc tsy tafiditra");
+
     const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
     const input_principal = form_parent.querySelector(".single_destination_js_jheo")
     const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
     const object = form_parent.querySelector(".object_js_jheo");
     const description = form_parent.querySelector(".invitation_description_js_jheo");
 
-
+    console.log(input_cc);
 
     document.querySelectorAll(".invitation_email_js_jheo").forEach((item) => {
         item.addEventListener("click", () => {
@@ -33,6 +36,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
 
     input_cc.addEventListener("keyup", (e) => {
+
+        console.log("Code : " + e.code);
 
         if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
             if (verifieEmailValid(input_cc.value.replace(",", ""))) {

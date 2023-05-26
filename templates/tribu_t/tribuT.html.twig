@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 	<style>
 		.content_right_actualite {
 			top: -50px;
@@ -16,7 +17,10 @@
 {% endblock %}
 
 {% block javascripts %}
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 {% endblock %}
 
 {% block body %}

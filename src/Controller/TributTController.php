@@ -198,6 +198,8 @@ class TributTController extends AbstractController
 
         $tribut->setTribuT($tableName, $user_id);
 
+        //$tribut->setTribuT($output, $description, $path,$restoExtension, $user_id);
+
 
 
         $tribut->updateMember($tableName, $user_id, 1);
@@ -1235,10 +1237,10 @@ class TributTController extends AbstractController
 
         $userFullname = $tribu_t->getFullName($userId);
 
-        $tribu_name = $tribu_t->showRightTributName($table);
+        //$tribu_name = $tribu_t->showRightTributName($table);
 
         // $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]) . "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
-        $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]);
+        $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
         
         $type = "invitation";
 
@@ -1247,7 +1249,7 @@ class TributTController extends AbstractController
         $isMembre = $tribu_t->testSiMembre($table, $id_receiver);
 
         if ($isMembre == "not_invited") {
-            $contentForSender = "Vous avez envoyé une invitation à " .$tribu_t->getFullName($id_receiver). " de rejoindre la tribu ". str_replace("$", "'", $tribu_name["name"]);
+            $contentForSender = "Vous avez envoyé une invitation à " .$tribu_t->getFullName($id_receiver). " de rejoindre la tribu ". $table;
             $tribu_t->addMember($table, $id_receiver);
             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
@@ -1789,12 +1791,14 @@ class TributTController extends AbstractController
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
         
-        $tibu_T_data=json_decode($user->getTribuT(),true);
+        $tibu_T_data_owned=json_decode($user->getTribuT(),true);
+        $tibu_T_data_joined=json_decode($user->getTribuTJoined(),true);
          
         if($_ENV['APP_ENV'] == 'dev') 
-            dump($tibu_T_data);
+            dump($tibu_T_data_owned);
 
-        $tmp=!is_null($tibu_T_data) ?  $tibu_T_data : null;
+        $tribu_t_owned=!is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
+        $tribu_t_joined=!is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
         
 
 
@@ -1805,7 +1809,8 @@ class TributTController extends AbstractController
         return $this->render('tribu_t/tribuT.html.twig',[
             "profil" => $profil,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "tibu_T_owned" => $tmp,
+            "tibu_T_owned" => $tribu_t_owned,
+            "tibu_T_joined" => $tribu_t_joined,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
             "form" => $form->createView(),
         ]);
@@ -1911,7 +1916,7 @@ class TributTController extends AbstractController
                 $nom = str_replace("$", "'", $nom);
                 if ($output != 0) {
                     $restoExtension = ($resto == "on") ? "restaurant" : null;
-                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId);
+                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned");
                     $isSuccess = true;
                     $flushMessage = "Félicitation ! Vous avez réussi à créer la tribu " .$nom;
                     $tableTribu = "tribu_t_" . $userId . "_" . $tableName;
@@ -2014,6 +2019,29 @@ class TributTController extends AbstractController
 
         return $this->json("Photo ajouté avec succès");
     }
+
+
+    #[Route('/user/all_tribu_g/members', name: 'all_tribu_g_members')]
+
+    public function fetchAllTribuGMember(TributGService $tribu_g, Tribu_T_Service $tribut): Response
+
+    {
+
+        $members = $tribu_g->fetchAllTribuGMember();
+
+        $users = array();
+
+        for ($i = 0; $i < count($members); $i++) {
+
+            array_push($users, ["id" => $members[$i]["id"], "fullName" => $members[$i]["firstname"] ." ". $members[$i]["lastname"], "email" => $members[$i]["email"], "tribug" => $members[$i]["tribug"], "isMember" => $tribut->testSiMembre($_GET["tribu_t"], $members[$i]["user_id"])]);
+
+        }
+
+        return $this->json($users);
+
+    }
+
+    
 
 }
 

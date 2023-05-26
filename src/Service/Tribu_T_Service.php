@@ -293,8 +293,6 @@ class Tribu_T_Service extends PDOConnexionService
 
         }
 
-
-
         return $response;
 
     }
@@ -475,13 +473,13 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function setTribuT($tribu_T_name, $description,$path,$extenstion,$userId)
+    function setTribuT($tribu_T_name, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join)
 
     {
 
 
 
-        $fetch = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user WHERE id  = $userId");
+        $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
 
         
 
@@ -493,12 +491,8 @@ class Tribu_T_Service extends PDOConnexionService
 
 
         $date = \getdate();
-        $list = $result["tribu_t_owned"];
-        
-        //dd($list);
-       
-
-
+        $list = $result[$tribu_t_owned_or_join];
+   
         if (!isset($list)) {
             $array=array("tribu_t"=>array("name"=> $tribu_T_name,"description"=> $description,"extension"=> $extenstion,"logo_path"=>$path,"date"=>  $date));
             $array1= json_encode($array);
@@ -507,7 +501,7 @@ class Tribu_T_Service extends PDOConnexionService
 
             //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='".$tableTribut."' WHERE id  = $userId");
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET tribu_t_owned ='". $array1 ."' WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array1 ."' WHERE id  = $userId");
 
         } else {
             $array1= json_decode($list, true);
@@ -531,7 +525,7 @@ class Tribu_T_Service extends PDOConnexionService
             $array2 = json_encode($array);
             //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='".$list.";".$tableTribut."' WHERE id  = $userId");
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET tribu_t_owned ='". $array2."' WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array2."' WHERE id  = $userId");
 
         }
 
@@ -578,13 +572,13 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function fetchJsonDataTribuT($userId)
+    function fetchJsonDataTribuT($userId,$tribu_t_owned_or_join)
 
     {
 
 
 
-        $statement = $this->getPDO()->prepare("SELECT json_extract(tribu_t, '$') as result FROM user WHERE id  = $userId");
+        $statement = $this->getPDO()->prepare("SELECT json_extract($tribu_t_owned_or_join, '$') as result FROM user WHERE id  = $userId");
 
 
 
