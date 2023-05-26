@@ -30,6 +30,9 @@ use App\Service\RequestingService;
 
 use Proxies\__CG__\App\Entity\User;
 
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 use App\Service\NotificationService;
 
 use App\Service\PDOConnexionService;
@@ -2316,5 +2319,17 @@ class UserController extends AbstractController
         $user->setPassword($hashedPassword);
         $this->entityManager->flush();
         return $this->json($user);
+    }*/
+
+    /*#[Route("/user/get/email", name : "check_email_on_dev")]
+    public function update_password_on_dev(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher, RouterInterface $router)
+    {
+        $user = $userRepository->findOneBy(["email" => "nantenainageomada@gmail.com"]);
+        $result = false;
+        $user ? $result = true : $result = false;
+        $url = $router->generate('app_login', ['email' => "nantenainageomada@gmail.com"], UrlGeneratorInterface::ABSOLUTE_URL);
+        //return $this->json($result);
+        //return $this->json(["url"=>$url]);
+        return $this->json($user->getId());
     }*/
 }

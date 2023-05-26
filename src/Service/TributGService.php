@@ -118,7 +118,7 @@ class TributGService extends PDOConnexionService{
             }catch(Error $error ){
 
                 throw $error;
-
+                
             }
 
 

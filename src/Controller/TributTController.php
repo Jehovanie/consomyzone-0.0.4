@@ -10,53 +10,54 @@ use DateTime;
 
 use Normalizer;
 
+use App\Entity\User;
+
 use App\Entity\Consumer;
 
 use App\Entity\Supplier;
-
 use App\Entity\PublicationG;
-use App\Entity\User;
 use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
 
+use App\Services\FilesUtils;
 use App\Form\PublicationType;
-use App\Repository\BddRestoRepository;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
 
-use App\Service\RequestingService;
+use App\Repository\UserRepository;
 
+use App\Service\RequestingService;
 use App\Service\NotificationService;
-use App\Services\FilesUtils;
+use App\Repository\BddRestoRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
+
+use function PHPUnit\Framework\assertFalse;
+
+use Symfony\Component\Filesystem\Filesystem;
 
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Routing\RouterInterface;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
-use function PHPUnit\Framework\assertFalse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TributTController extends AbstractController
 
@@ -1254,15 +1255,6 @@ class TributTController extends AbstractController
             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
             $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
-            /*$this->mailService->sendEmail(
-                "geoinfography@infostat.fr", /// mail where from
-                "ConsoMyZone",  //// name the senders
-                $tribu_t->getUserEmail($id_receiver), /// mail destionation
-                $tribu_t->getFullName($id_receiver), /// name destionation
-                "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]), //// title of email
-                // "Pour accepter l'invitation. Clickez-ici : " . $this->generateUrl("show_invitation", array("tribu_name" => $table, "notif_id" => $notification->getNotificationId("tablenotification_".$id_receiver, $table)), UrlGeneratorInterface::ABSOLUTE_URL)
-                "Pour accepter l'invitation. Clickez-ici : " . $this->generateUrl("app_invitation", array("tribu_name" => $table, "notif_id" => $notification->getNotificationId("tablenotification_".$id_receiver, $table)), UrlGeneratorInterface::ABSOLUTE_URL)
-            );*/
         }
 
         return $this->json("Invitation envoyee");
@@ -1605,55 +1597,131 @@ class TributTController extends AbstractController
     #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
     public function sendInvitationPerEmail(
         Request $request,
+        UserRepository $userRepository,
         MailService $mailService,
         UserService $userService,
         RouterInterface $router,
-        Tribu_T_Service $tribuTService
+        Tribu_T_Service $tribuTService,
+        NotificationService $notification
     )
     {
         if(!$this->getUser()){
             return $this->json(["result" => "error"] , 401);
         }
 
+        $userId = $this->getUser()->getId();
+
+        $userEmail = $this->getUser()->getEmail();
+
         $data = json_decode($request->getContent(), true);
+
         extract($data); ///$table, $principal, $cc ,$object, $description
-        $from_fullname = $userService->getUserFirstName($this->getUser()->getId()) . $userService->getUserLastName($this->getUser()->getId());
 
+        $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
 
-        //// prepare email which we wish send
-        $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+        $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
         
-        $tribuTService->addMemberTemp($table, $principal);
-        // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-        $mailService->sendEmail(
-            $this->getUser()->getEmail(),
-            $from_fullname,
-            $principal,
-            "Amis",
-            $object,
-            // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
-        );
+        $type = "invitation";
 
+        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+    
+        
+         
+        if($userRepository->findOneBy(["email" => $principal])){
+
+            /** URL FOR MEMBER
+             * EDITED By Nantenaina
+            */
+            $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $mailService->sendEmail(
+                $userEmail,
+                $from_fullname,
+                $principal,
+                "Amis",
+                $object,
+                // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+            );
+
+            $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
+
+            $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+
+            if ($isMembre == "not_invited") {
+                $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+                $tribuTService->addMember($table, $id_receiver);
+                $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+                $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+            }
+
+        }else{
+            //// prepare email which we wish send
+            $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+            $tribuTService->addMemberTemp($table, $principal);
+            // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
+            $mailService->sendEmail(
+                $userEmail,
+                $from_fullname,
+                $principal,
+                "Amis",
+                $object,
+                // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
+            );
+        }
 
         if( count($cc) > 0 ){
+
             foreach($cc as $c){
 
-                $tribuTService->addMemberTemp($table, $c);
+                if($userRepository->findOneBy(["email" => $c])){
 
-                //// prepare email which we wish send
-                $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
-                
-                // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-                $mailService->sendEmail(
-                    $this->getUser()->getEmail(),
-                    $from_fullname,
-                    $c,
-                    "Amis",
-                    $object,
-                    // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                    $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
-                );
+                    /** URL FOR MEMBER
+                     * EDITED By Nantenaina
+                    */
+                    $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
+        
+                    $mailService->sendEmail(
+                        $userEmail,
+                        $from_fullname,
+                        $c,
+                        "Amis",
+                        $object,
+                        // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                        $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+                    );
+        
+                    $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
+        
+                    $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+        
+                    if ($isMembre == "not_invited") {
+                        $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+                        $tribuTService->addMember($table, $id_receiver);
+                        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+                        $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                        $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+                    }
+        
+                }else{
+                    $tribuTService->addMemberTemp($table, $c);
+
+                    //// prepare email which we wish send
+                    $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+                    
+                    // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
+                    $mailService->sendEmail(
+                        $userEmail,
+                        $from_fullname,
+                        $c,
+                        "Amis",
+                        $object,
+                        // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                        $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+                    );
+                }
 
             }
         }
