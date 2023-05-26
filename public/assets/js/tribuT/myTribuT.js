@@ -357,7 +357,7 @@ function showdDataContent(data, type, tribu_t_name) {
                             <div class="btn-mention-partage">
                                 <div class="action-container">
                                     <i class="bi-heart like"></i>
-                                    <i onclick="showCommentaireTribu_T(event)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
+                                    <i onclick="showCommentaireTribu_T(event,0,true)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
                                 </div>
                             </div>
                         </div>
@@ -530,13 +530,21 @@ function calculateDurationOfComment(dateOfComment) {
 
 }
 
-function showCommentaireTribu_T(event, idmin=0 ) {
+function showCommentaireTribu_T(event, idmin=0,b ) {
     event.preventDefault();
     console.log(idmin)
     const table_cmmnt = tribu_t_name_0 + "_commentaire"
     const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
    
-    const limits=10
+    const limits = 5
+    if (b) {
+        if (document.getElementById("center-content-cmnt" + pub_id)) {
+            document.getElementById("center-content-cmnt" + pub_id).innerHTML = ""
+        }
+    }else
+        if (document.querySelector("a.voir-plus"))
+            document.getElementById("center-content-cmnt" + pub_id).removeChild(document.querySelector("a.voir-plus"))   
+    
     workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
 }
     
@@ -545,9 +553,9 @@ function showCommentss() {
     workerGetCommentaireTribuT.onmessage = (e) => {
         console.log(e.data)
                 const datas = e.data[0]
-                const indexx=6
-                /*show 6 per default */
-                for (let i = 0; i < indexx; i++) { 
+                const index=e.data[0].length
+              
+                for (let i = 0; i < index; i++) { 
                     console.log(i)
                     let lapstime=calculateDurationOfComment(datas[i].datetime)
                     let commentaire= `<div class="media-comment">
@@ -570,24 +578,18 @@ function showCommentss() {
                                                     </div>
                                                     <div class="media-comment-text" id="comment-container">
                                                         <p >
-                                                        ${datas[i].commentaire}
+                                                            ${datas[i].commentaire}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 
                                             </div>
                                         </div>`
-                    if (i == (indexx- 1))
-                        commentaire+= "<a class=\"voir-plus\" data-foo=\"kjjk_"+e.data[1] +"xdjyfvfAAS\" onclick=\" showCommentaireTribu_T(event,"+datas[i].id+")\">Voir plus de commentaire</a>"
+                    if (i == (index- 1))
+                        commentaire+= "<a class=\"voir-plus\" data-foo=\"kjjk_"+e.data[1] +"xdjyfvfAAS\" onclick=\" showCommentaireTribu_T(event,"+datas[i].id+",false)\">Voir plus de commentaire</a>"
                     
                     document.getElementById("center-content-cmnt"+datas[i].pub_id).innerHTML +=commentaire
                 }
-                /**end */
-                const commentGen = genDataPubOfAllPartisans(e.data, indexx)
-                /**after show 5 commentaire in each scroll */
-
-                /**end */
-            
     } 
 } 
     
@@ -611,7 +613,50 @@ function putComment(event) {
         },
         body:JSON.stringify(param)
     }) 
-    fetch(request)
+    fetch(request).then(response => {
+        if (response.status === 200 && response.ok) { 
+            response.json().then(json => {
+                console.log(json)
+                let div = document.createElement("div")
+                div.classList.add("media-comment")
+                let commentaire= `
+                                            <a class="avatar-content" href="javascript://">
+                                                <img class="avatar" src="https://randomuser.me/api/portraits/men/77.jpg" width="45" height="45"/>
+                                            </a>
+                                            <div class="media-content">
+                                                <div class="media-comment-body">
+                                                    <div  class="media-option"><a class="ripple-grow" id="dropdownMenuButton" href="javascript://" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <svg  class="ripple-icon" width="28" height="28" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 24 24">
+                                                            <g fill="currentColor">
+                                                            <circle cx="5" cy="12" r="2"></circle>
+                                                            <circle cx="12" cy="12" r="2"></circle>
+                                                            <circle cx="19" cy="12" r="2"></circle>
+                                                            </g>
+                                                        </svg></a>
+                                                    </div>
+                                                    <div class="media-comment-data-person">
+                                                        <a class="media-comment-name" href="javascript://">${json.pseudo}</a><span class="text-muted">maintenant</span>
+                                                    </div>
+                                                    <div class="media-comment-text" id="comment-container">
+                                                        <p >
+                                                            ${json.commentaire}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        `
+                    div.innerHTML=commentaire
+                
+                const firstComment = document.querySelector(`#center-content-cmnt${json.pubId} > div:nth-child(1)`)
+                if(firstComment) 
+                    document.getElementById("center-content-cmnt" + json.pubId).insertBefore(div, firstComment)
+                else
+                    document.getElementById("center-content-cmnt" + json.pubId).appendChild(div) 
+            })
+        }
+        
+    })
     console.log(pubId,commentaire)
 }
     

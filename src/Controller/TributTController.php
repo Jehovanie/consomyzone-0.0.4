@@ -191,13 +191,14 @@ class TributTController extends AbstractController
         $result=$serv->putCommentOnPublication($tableCommentaireTribu_T, 
         $userId,$pubId,$commentaire, $user->getPseudo());
 
-        $response=new Response();
+        
         if($result){
-            $response->setStatusCode(200);
-            return $response;
+        $json=json_encode(array("userid"=>$userId,"pubId"=>$pubId, "commentaire"=>$commentaire,"pseudo"=> $user->getPseudo()));
+           return new JsonResponse($json, Response::HTTP_OK, [], true);;
+           
         }else{
-            $response->setStatusCode(500);
-            return $response;
+            $response=new Response();
+            return $response->setStatusCode(500);
         }
     }
 
