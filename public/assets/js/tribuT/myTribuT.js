@@ -185,8 +185,8 @@ function sendPublication(formData) {
  * @param {*} type 
  * @param {*} tribu_t_name 
  */
-function showdDataContent(data, type, tribu_t_name) { 
-    let detailsTribuT=null
+function showdDataContent(data, type, tribu_t_name) {
+    let detailsTribuT = null
    
     if (type === "owned")
         detailsTribuT = data.tribu_t_owned
@@ -196,7 +196,7 @@ function showdDataContent(data, type, tribu_t_name) {
     console.log(JSON.parse(detailsTribuT).tribu_t)
 
     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
-    tribu_t_name_0 =tribu_t[0].name
+    tribu_t_name_0 = tribu_t[0].name
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture">
@@ -204,7 +204,7 @@ function showdDataContent(data, type, tribu_t_name) {
                         <div class="col-3">
                             <div class="row">
                                 <div class="col">
-                                    <img src="../../..${tribu_t[0].logo_path.replaceAll("/public","")}" alt="123">
+                                    <img src="../../..${tribu_t[0].logo_path.replaceAll("/public", "")}" alt="123">
                                 </div>
                                 <div class="col">
                                     <label style="margin-left:10%;" for="fileInputModifTribuT">
@@ -215,7 +215,7 @@ function showdDataContent(data, type, tribu_t_name) {
                             </div>
                         </div>
                         <div class="col-8 mt-4">
-                            <h1  id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_","")}</h1>
+                            <h1  id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_", "")}</h1>
                             <p class="responsif-none-mobile p-mobile">
                             ${tribu_t[0].description}
                             </p>
@@ -301,17 +301,19 @@ function showdDataContent(data, type, tribu_t_name) {
             </div>
             
     `
-    worker.postMessage([tribu_t_name_0, 0,20]);
+    worker.postMessage([tribu_t_name_0, 0, 20]);
     console.log('Message envoyé au worker');
     worker.onmessage = (event) => {
         console.log(event.data)
-        let data=event.data
+        let data = event.data
 
 
         /*---------show 5 pub par defaut-----------------*/
-        if(data.length > 0)
-        for (let i = 0; i < 5; i++){
-            const contentPublication=`<div class="pub-tribu-t mt-3">
+        if (data.length > 0)
+        
+            for (let i = 0; i < 5; i++) {
+             
+                const contentPublication = `<div class="pub-tribu-t mt-3">
                         <div class="name-pub">
                             <div class="row head-pub">
                                 <div class="col-1">
@@ -339,7 +341,7 @@ function showdDataContent(data, type, tribu_t_name) {
                                 </p>
                             </div>
                             <div class="pub-photo">
-                                <img src="${data[i].photo.replaceAll("/public","")}" alt="">
+                                <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
                             </div>
                             <!--<div class="content-comant-reaction">
                                 <div class="row">
@@ -384,16 +386,170 @@ function showdDataContent(data, type, tribu_t_name) {
                     </div>
                     `
                
-            document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
-            workerGetCommentaireTribuT.onmessage = (e) => {
-                console.log(e.data)
-                const datas = e.data
                 
+                if (document.querySelector("#list-publicatiotion-tribu-t")) {
+                    document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+                }
+
+                showCommentss();
+            
+        
+            
+                //---------after shwo in each scroll ---------------
+                const gen = genDataPubOfAllPartisans(data, 5)
+                const gen_length = (data.length - 5)
+                //const gen_length = (data.length)
+                console.log(gen_length)
+
+            
+                let lastId = 0;
+
+                let genCursorPos = 0
+                
+                if (gen_length > 0) {
+                    window.addEventListener("scroll", (e) => {
+                    
+                        const scrollable = document.documentElement.scrollHeight - window.innerHeight
+                        const scrolled = window.scrollY
+                        if (Math.ceil(scrolled) === scrollable) {
+                            if (data) {
+                                lastId = data.id
+                                console.log(genCursorPos)
+                                if (genCursorPos === gen_length) {
+                                    
+                                    worker.postMessage([tribu_t_name_0, lastId, 20]);
+                                    
+                                }
+                                    
+                                data = gen.next().value
+                                console.log(data)
+                                if (data) {
+                                    const contentPublication = `<div class="pub-tribu-t mt-3">
+                                        <div class="name-pub">
+                                            <div class="row head-pub">
+                                                <div class="col-1">
+                                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                </div>
+                                                <div class="col-10 mt-3">
+
+                                                    <a href=""> ${data.userfullname}</a>
+                                                    <p class="card-text">
+                                                        <i>
+                                                            <small class="text-muted">Publié le
+                                                                ${data.datetime}
+                                                            </small>
+                                                        </i>
+                                                    
+                                                    </p>
+                                                </div>
+                                                <div class="col-1 mt-3">
+                                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                </div>
+                                            </div>
+                                            <div class="pub-content">
+                                                <p>
+                                                    ${data.publication}
+                                                </p>
+                                            </div>
+                                            <div class="pub-photo">
+                                                <img src="${data.photo.replaceAll("/public", "")}" alt="">
+                                            </div>
+                                            <div class="content-comant-reaction">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
+                                                    </div>
+                                                    <div class="col">
+                                                        <p class="text-muted">10 commentaires</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="btn-mention-partage">
+                                                <div class="row text-center">
+                                                    <div class="col">
+                                                        <i class="bi-heart"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <i class="bi bi-chat-square"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `
+                                    document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+                                }
+                                genCursorPos++;
+                                
+                            }
+                        
+                        }
+                    })
+                }
+            }
+        
+    }
+    //showCommentss();
+}
+function calculateDurationOfComment(dateOfComment) {
+    var date;
+    date = new Date();
+    let month
+    let day
+    if (parseInt(date.getUTCMonth() + 1, 10) <= 9) {
+        month = `0${date.getUTCMonth() + 1}`;
+    } else {
+        month=date.getUTCMonth() + 1
+    }
+    if (parseInt(date.getUTCDate(), 10) <= 9) {
+        day = `0${date.getUTCDate()}`;
+    } else {
+        day=date.getUTCDate()
+    }
+    const dateStr= date.getUTCFullYear() + '-' +month+ '-' +day
+    const hour= (date.getHours())+ ':' + (date.getMinutes())+ ':' + (date.getSeconds());
+    console.log(dateOfComment,dateStr,hour)
+    if(dateOfComment.split(" ")[0] != dateStr) {
+        const dateDetails = parseInt(((dateOfComment.split(" ")[0]).split("-")[2]), 10)
+        if ((dateDetails-date.getUTCDate())== 1) {
+            console.log("hier le " + dateOfComment.split(" ")[1])
+            return "hier le "+dateOfComment.split(" ")[1]
+        } else {
+            const since =  date.getUTCDate() - dateDetails 
+            console.log(dateDetails, date.getUTCDate())
+            console.log("depuis " + since + " j");
+            return "depuis " + since + " j"
+        }
+            
+    } else {
+        const lapsTime= Math.abs(parseInt(((dateOfComment.split(" ")[1]).split(":")[0]), 10)- parseInt(((hour.split(":")[0])), 10))
+        console.log("aujourd'hui il y a " + lapsTime + " h")
+        return "aujourd'hui il y a " + lapsTime + " h"
+    }
+
+}
+
+function showCommentaireTribu_T(event, idmin=0 ) {
+    event.preventDefault();
+    console.log(idmin)
+    const table_cmmnt = tribu_t_name_0 + "_commentaire"
+    const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
+   
+    const limits=10
+    workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
+}
+    
+function showCommentss() {
+    
+    workerGetCommentaireTribuT.onmessage = (e) => {
+        console.log(e.data)
+                const datas = e.data[0]
                 const indexx=6
                 /*show 6 per default */
                 for (let i = 0; i < indexx; i++) { 
                     console.log(i)
-                    calculateDurationOfComment(datas[i].datetime)
+                    let lapstime=calculateDurationOfComment(datas[i].datetime)
                     let commentaire= `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
                                                 <img class="avatar" src="https://randomuser.me/api/portraits/men/77.jpg" width="45" height="45"/>
@@ -410,7 +566,7 @@ function showdDataContent(data, type, tribu_t_name) {
                                                         </svg></a>
                                                     </div>
                                                     <div class="media-comment-data-person">
-                                                        <a class="media-comment-name" href="javascript://">${datas[i].userfullname}</a><span class="text-muted">2 h</span>
+                                                        <a class="media-comment-name" href="javascript://">${datas[i].userfullname}</a><span class="text-muted">${lapstime}</span>
                                                     </div>
                                                     <div class="media-comment-text" id="comment-container">
                                                         <p >
@@ -422,7 +578,7 @@ function showdDataContent(data, type, tribu_t_name) {
                                             </div>
                                         </div>`
                     if (i == (indexx- 1))
-                        commentaire+= "<a class=\"voir-plus\">Voir plus de commentaire</a>"
+                        commentaire+= "<a class=\"voir-plus\" data-foo=\"kjjk_"+e.data[1] +"xdjyfvfAAS\" onclick=\" showCommentaireTribu_T(event,"+datas[i].id+")\">Voir plus de commentaire</a>"
                     
                     document.getElementById("center-content-cmnt"+datas[i].pub_id).innerHTML +=commentaire
                 }
@@ -432,142 +588,10 @@ function showdDataContent(data, type, tribu_t_name) {
 
                 /**end */
             
-            }
-
-            if(document.querySelector("#list-publicatiotion-tribu-t")){
-                document.querySelector("#list-publicatiotion-tribu-t").innerHTML+=contentPublication
-            }
-        }
-        
-           
-            
-        
-            
-        /*---------after shwo in each scroll ---------------*/
-        const gen = genDataPubOfAllPartisans(data, 5)
-        const gen_length = (data.length-5)
-        //const gen_length = (data.length)
-        console.log(gen_length)
-
-       
-        let lastId = 0;
-
-        let genCursorPos=0
-        
-        if(gen_length > 0){
-            window.addEventListener("scroll", (e) => {
-            
-                const scrollable = document.documentElement.scrollHeight - window.innerHeight
-                const scrolled = window.scrollY
-                if (Math.ceil(scrolled) === scrollable) {
-                    if (data) {
-                        lastId = data.id
-                        console.log(genCursorPos)
-                        if (genCursorPos === gen_length) {
-                            
-                            worker.postMessage([tribu_t_name_0, lastId, 20]);
-                            
-                        }
-                            
-                        data = gen.next().value
-                        console.log(data)
-                        if(data){
-                        const contentPublication=`<div class="pub-tribu-t mt-3">
-                                <div class="name-pub">
-                                    <div class="row head-pub">
-                                        <div class="col-1">
-                                            <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
-                                        </div>
-                                        <div class="col-10 mt-3">
-
-                                            <a href=""> ${data.userfullname}</a>
-                                            <p class="card-text">
-                                                <i>
-                                                    <small class="text-muted">Publié le
-                                                        ${data.datetime}
-                                                    </small>
-                                                </i>
-                                            
-                                            </p>
-                                        </div>
-                                        <div class="col-1 mt-3">
-                                            <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                        </div>
-                                    </div>
-                                    <div class="pub-content">
-                                        <p>
-                                            ${data.publication}
-                                        </p>
-                                    </div>
-                                    <div class="pub-photo">
-                                        <img src="${data.photo.replaceAll("/public","")}" alt="">
-                                    </div>
-                                    <div class="content-comant-reaction">
-                                        <div class="row">
-                                            <div class="col">
-                                                <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
-                                            </div>
-                                            <div class="col">
-                                                <p class="text-muted">10 commentaires</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="btn-mention-partage">
-                                        <div class="row text-center">
-                                            <div class="col">
-                                                <i class="bi-heart"></i>
-                                            </div>
-                                            <div class="col">
-                                                <i class="bi bi-chat-square"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            `
-                        document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
-                        }
-                        genCursorPos++;
-                        
-                    } 
-                
-                }
-            })
-        }
-    }
-}
-function calculateDurationOfComment(dateOfComment) {
-    var date;
-    date = new Date();
-    const dateStr= date.getUTCFullYear() + '-' +
-    ((date.getUTCMonth()+1)) + '-' +
-        (date.getUTCDate())
+    } 
+} 
     
-    const hour= (date.getHours())+ ':' + 
-    (date.getMinutes())+ ':' + 
-    (date.getSeconds());
-   
-    if (dateOfComment.split("")[0] != dateStr) {
-        const dateDetails = parseInt(((dateOfComment.split("")[0]).split("-")[2]), 10)
-        if ((dateDetails-date.getUTCDate())== 1) {
-             console.log("hier")
-        } else {
-            const since = dateDetails - date.getUTCDate()
-            console.log("depuis " + since + " j");
-        }
-            
-    }
 
-}
-
-function showCommentaireTribu_T(event) {
-    const table_cmmnt = tribu_t_name_0 + "_commentaire"
-    const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
-    const idmin = 0
-    const limits=10
-    workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
-}
 
 function putComment(event) { 
     const pubId = event.target.id.replace(/[^0-9]/g, "")

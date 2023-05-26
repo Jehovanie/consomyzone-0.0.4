@@ -1435,7 +1435,7 @@ class Tribu_T_Service extends PDOConnexionService
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         }else{
-            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1  where t1.id < :idmin and WHERE t1.pub_id = :pub_id   ORDER BY t1.id DESC LIMIT :limits";
+            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1 WHERE t1.id < :idmin and t1.pub_id =:pub_id ORDER BY t1.id DESC LIMIT :limits";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':idmin', $limits, PDO::PARAM_INT);
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
