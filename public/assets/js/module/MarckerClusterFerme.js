@@ -41,19 +41,10 @@ class MarckerClusterFerme {
     }
 
     addEventOnMap(map){
-        map.on("resize zoom", (e) => {
+        map.on("resize zoomend dragend", (e) => {
             const coordAndZoom = {
                 zoom: e.target._zoom,
                 coord:e.target._lastCenter
-            }
-            setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
-        })
-
-        map.on("dragend", (e) => {
-            console.log(e.target.getCenter(), e.target.getZoom())
-            const coordAndZoom = {
-                zoom: e.target.getZoom(),
-                coord:e.target.getCenter()
             }
             setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
         })
@@ -100,8 +91,40 @@ class MarckerClusterFerme {
     }
 
     createMarkersCluster(){
+        const that= this;
         this.markers = L.markerClusterGroup({ 
-            chunkedLoading: true
+            chunkedLoading: true,
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
+
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
+                }
+            },
         });
     }
 
@@ -111,16 +134,14 @@ class MarckerClusterFerme {
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
             
             let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+
             marker.on('click', (e) => {
-                const coordAndZoom = {
-                    zoom: e.target.__parent._zoom+1,
-                    coord:e.target.__parent._cLatLng
-                }
-                setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
-                
+                const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
+                this.map.setView(latlng, 13);
+
                 let screemMax = window.matchMedia("(max-width: 1000px)")
                 let screemMin = window.matchMedia("(min-width: 1000px)")
 
@@ -131,7 +152,27 @@ class MarckerClusterFerme {
                 } else if (screemMin.matches) {
                     getDetailsFerme(pathDetails)
                 }
-                
+
+                const url = new URL(window.location.href);
+                const icon_R = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png"
+                    }
+                })
+
+                marker.setIcon(new icon_R);
+
+                if (this.marker_last_selected) {
+                    const icon_B = L.Icon.extend({
+                        options: {
+                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png"
+                        }
+                    })
+                    this.marker_last_selected.setIcon(new icon_B)
+                }
+                this.marker_last_selected = marker;
+
+                this.markers.refreshClusters();
             })
 
             this.markers.addLayer(marker);

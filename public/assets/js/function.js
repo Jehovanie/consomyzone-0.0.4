@@ -57,7 +57,7 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
         if (map_for_type === "station") {
 
             latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
-            json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null
+            json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
         } else if (map_for_type === "home") {
 
@@ -66,12 +66,14 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             json = latlng
             zoom = 12;
         } else if (map_for_type === "ferme") {
+
             latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
-            json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : latlng
+            json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         } else if (map_for_type === "resto") {
+
             latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
-            json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : latlng
+            json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         }
         centered = json ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
@@ -460,12 +462,12 @@ function create_map_content_not_async(geos, id_dep = null, map_for_type = "home"
         zoom = json.zoom ? json.zoom : 5;
     } else if (map_for_type === "resto") {
 
-        latlng = L.latLng(48.856614, 2.3522219);
-        json = getDataInLocalStorage("coord") ? JSON.parse(getDataInLocalStorage("coord")) : latlng
-        zoom = json.zoom ? json.zoom :10;
+        latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
+        json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : null;
+        zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
     }
 
-    centered = json ? (json.coord ? L.latLng(json.coord.lat, json.coord.lng) : latlng) : latlng;
+    centered = json ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
 
     var container = L.DomUtil.get('map');
     if (container != null) {

@@ -152,7 +152,7 @@ class MarckerClusterStation {
                 if(that.marker_last_selected){
                     let sepcMarmerIsExist = false;
                     for (let g of  cluster.getAllChildMarkers()){
-                        if (parseInt(that.marker_last_selected.options.id_icon) === parseInt(g.options.id_icon)) { 
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
                             sepcMarmerIsExist = true;
                             break;
                         }
@@ -170,12 +170,13 @@ class MarckerClusterStation {
                             iconSize:L.point(35,35)
                         });
                     }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
                 }
-                return L.divIcon({
-                    html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                    className: "mycluster",
-                    iconSize:L.point(35,35)
-                });
             },
         });
 
@@ -184,7 +185,7 @@ class MarckerClusterStation {
     addMarker(newData) {
         newData.forEach(item => {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id_icon: item.id });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
 
             // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 

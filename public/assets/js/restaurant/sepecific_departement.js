@@ -521,6 +521,8 @@ window.addEventListener('load', () => {
                     maxZoom: 20
                 })
 
+                rmDataInLocalStorage("coordResto");
+
                 const zoom = centerss[parseInt(dep)].zoom;
                 const centered = L.latLng(centerss[parseInt(dep)].lat, centerss[parseInt(dep)].lng);
 
@@ -1066,7 +1068,7 @@ function chargeMapAndMarkers(response1, map, markers) {
         
         marker.on('click', (e) => {
             const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-            map.setView(latlng, 13);
+            map.setView(latlng, 15);
 
             const url = new URL(window.location.href);
             const icon_R = L.Icon.extend({
@@ -1133,7 +1135,7 @@ function chargeMapAndMarkers(response1, map, markers) {
             zoom: e.target._zoom,
             coord: e.target.getCenter()
         }
-        setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
+        setDataInLocalStorage("coordResto", JSON.stringify(coordAndZoom))
     })
 }
 
