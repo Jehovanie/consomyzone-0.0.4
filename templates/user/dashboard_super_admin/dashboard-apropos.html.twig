@@ -55,8 +55,21 @@
 										<i class="fa-solid fa-solid-admin fa-user"></i>
 									</div>
 									<div class="col-12 mt-3">
-										<h4>{{apropos.firstname}}</h4>
-										<p>{{apropos.lastname}}</p>
+										<h5><strong> Nom : </strong>{{apropos.firstname}}</h5>
+										<h5><strong> Prenom : </strong>{{apropos.lastname}}</h5>
+									</div>
+									<div class="col-12 mt-3">
+										
+										<a href="{{path('user_profil',{ user_id: apropos.id })}}">
+											<button type="button" class="btn btn-outline-primary">
+												Profil
+											</button>
+										</a>
+										<a href="{{path('app_message') ~'?user_id='~ apropos.id }}">
+											<button type="button" class="btn btn-outline-info">
+												Message
+											</button>
+										</a>
 									</div>
 								</div>
 							</div>
@@ -129,12 +142,12 @@
 
 					<div class="card-apropos-admin-tribut">
 						<div class="row">
-							<div class="col-md-6 col-sm-10 mx-auto my-2">
+							<div class="col-md-12 col-sm-12 mx-auto my-2">
 								<div class="card p-3">
-									<h5 class="mt-4 mx-auto"> Tribu G</h5>
-									<h4>Nom de tribu:</h3>
-									<p>{{apropos.tributg}}</p>
-									<h4>Rôles :</h4>
+									<h3 class="mt-4 mx-auto"> Tribu G</h3>
+									<h5>Nom de tribu:</h3>
+									<p class="display-6">{{apropos.tributg}}</p>
+									<h5>Rôles :</h5>
 									<p>
 
 										{{apropos.roles|upper }} 
@@ -188,34 +201,7 @@
 
 								</div>
 							</div>
-							<div class="col-md-6 col-sm-10 mx-auto my-2">
-								<div class="card p-3">
-									<h5 class="mt-4 mx-auto"> Tribu T </h5>
-									<table class="table table-list-apropos table-striped">
-										<thead class="thead-dark">
-											<tr>
-												<th>Tribu T </th>
-												
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>Rakoto</td>
-											</tr>
-											<tr>
-												<td>Rakoto</td>
-											</tr>
-											<tr>
-												<td>Rakoto</td>
-											</tr>
-											<tr>
-												<td>Rakoto</td>
-											</tr>
-											
-										</tbody>
-									</table>
-								</div>
-							</div>
+						
 						</div>
 					</div>
 				</div>
