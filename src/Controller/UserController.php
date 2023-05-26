@@ -32,15 +32,17 @@ use Proxies\__CG__\App\Entity\User;
 
 use App\Service\NotificationService;
 
+use App\Service\PDOConnexionService;
+
 use App\Repository\ConsumerRepository;
 
 use App\Repository\SupplierRepository;
 
 use App\Repository\FermeGeomRepository;
 
-use App\Service\PDOConnexionService;
-
 use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Component\Filesystem\Filesystem;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -49,9 +51,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\StreamedResponse;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 
@@ -1888,28 +1889,52 @@ class UserController extends AbstractController
         NotificationService $notificationService,
         UserRepository $userRepository,
         TributGService $tr,
-        $is_tribu
+        $is_tribu,
+        Tribu_T_Service $tribut
     ): Response {
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
+
         $tableRequestingNameOtherUser = $userRepository->find($idR)->getTablerequesting();
+
         $userPoster = $this->getUser();
+
+        $role = $tribut->getRole($balise, intval($idR));
+
+        $role == "Fondateur" ? $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR),"tribu_t_owned")) : 
+                                $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR),"tribu_t_joined"));
+
+        $listTribuT = $tribu_t_joined->tribu_t;
+
+        $tribu_t_joined_info = null;
+        
+        if(is_array($listTribuT)){
+            for ($i = 0; $i < count($listTribuT); $i++) {
+
+                if($listTribuT[$i]->name == $balise) $tribu_t_joined_info = $listTribuT[$i];
+                
+            }
+        }else{
+            $tribu_t_joined_info = $listTribuT;
+        }
+        
+
         $userPosterId = $userPoster->getId();
         $pseudo = $userPoster->getPseudo();
 
         if ($is_tribu == 1) { /* Add By Nantenaina */
-            $tribut = new Tribu_T_Service();
-            $tributName  = $tribut->showRightTributName($balise);
+            
+            $tributName  = $balise;
 
-            $tribut->setTribuT($balise, $userPosterId);
+            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined");
 
             $tribut->updateMember($balise, $userPosterId, 1);
 
             $userFullname = $tribut->getFullName($userPosterId);
 
-            $content = $userFullname . " a accepté l'invitation de rejoindre la tribu " . str_replace("$", "'", $tributName["name"]);
+            $content = $userFullname . " a accepté l'invitation de rejoindre la tribu " . $tributName;
 
-            $type = "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tributName["name"]);
+            $type = "Invitation pour rejoindre la tribu " . $tributName;
 
             $requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
 
@@ -1960,13 +1985,11 @@ class UserController extends AbstractController
             $requesting->setIsRejected($tableRequestingName, $balise, intval($idR), $userPosterId);
             $requesting->setIsRejected($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
 
-            $tributName  = $tribut->showRightTributName($balise);
-
-            $type = "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tributName["name"]);
+            $type = "Invitation pour rejoindre la tribu " . $balise;
 
             $userFullname = $tribut->getFullName($userPosterId);
 
-            $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . str_replace("$", "'", $tributName["name"]);
+            $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $balise;
 
             $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
 
@@ -2277,4 +2300,21 @@ class UserController extends AbstractController
 
         return $this->json("Photo de profil bien à jour");
     }
+
+    /** UPDATE PASSWORD */
+    /*
+    #[Route("/user/update/password", name : "update_password_on_dev")]
+
+    public function update_password_on_dev(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
+    {
+        $user = $userRepository->find(1);
+        $user->setPassword("1234@azer");
+        $hashedPassword = $passwordHasher->hashPassword(
+            $user,
+            $user->getPassword()
+        );
+        $user->setPassword($hashedPassword);
+        $this->entityManager->flush();
+        return $this->json($user);
+    }*/
 }

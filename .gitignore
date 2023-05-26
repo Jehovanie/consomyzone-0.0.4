@@ -6,11 +6,15 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
+/public/uploads/
 /public/uploads/users/photos/
 /public/assets/publications/photos/
 /public/uploads/tribu_t/photo/
 /public/uploads/tribu_t/photos/
 /public/uploads/tribus/photos/
+/public/uploads/messages/
+/public/users/audios/
+/public/users/photos/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###

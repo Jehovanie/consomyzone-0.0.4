@@ -123,6 +123,10 @@ class TributGService extends PDOConnexionService{
 
 
 
+            $this->getPDO()->exec("Insert into tribu_g_list (table_name) values ('$name_table_tribuG')");
+
+
+
             $data = "Insert into " . $name_table_tribuG . " (user_id, roles) values ($user_id,'fondateur')";
 
 
@@ -1156,6 +1160,42 @@ class TributGService extends PDOConnexionService{
         }
         
         return $results;
+    }
+
+    public function fetchAllTribuGMember(){
+
+        $rqt = "SELECT table_name FROM tribu_g_list";
+
+        $stmt = $this->getPDO()->prepare($rqt);
+
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if(count($result)>0){
+            $sql = "SELECT user_id, ";
+            for($i=0 ; $i < count($result); $i++){
+                if($i != count($result) -1){
+                    $sql .= "'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"] ." UNION SELECT user_id, ";
+                }else{
+                    $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
+                }
+            }
+            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id";
+            
+            //dd($sql);
+            $query = $this->getPDO()->prepare($sql);
+
+            $query->execute();
+
+            $result_final = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        }else{
+            $result_final = [];
+        }
+
+        return $result_final;
+
     }
 
 }

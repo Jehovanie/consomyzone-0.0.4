@@ -63,20 +63,44 @@
 		<hr>
 
 		<p class="fw-bold">Tribu-T dont vous êtes membre</p>
-		{# <ul>
-			<li>
-				<div class="row card-my-tribu-t">
-					<div class="col-2">
-						<img class="avatar-tribu" src="{{asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">
-					</div>
-					<div class="col-9">
-						<p>
-							<a href="" class="joined">Non tribu T </a>
-						</p>
-					</div>
-				</div>
-			</li>
-		</ul> #}
+		<ul>
+			
+			{% for  tribus in tibu_T_joined %}
+			  		{# {{dump(tribus,tribus|length)}}   #}
+					{% if tribus.logo_path  is defined %}
+							<li>
+								<div class="row card-my-tribu-t">
+									<div class="col-2">
+										 <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? asset(tribus.logo_path): asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> 
+									</div>
+									<div class="col-9">
+										<p>
+											 <a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}">{{tribus.name}}</a> 
+										</p>
+									</div>
+								</div>
+							</li>
+					{% else %}
+						{% for tribu in tribus %}
+							<li>
+								<div class="row card-my-tribu-t">
+									<div class="col-2">
+										<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? asset(tribu.logo_path): asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">
+									</div>
+									<div class="col-9">
+										<p>
+											<a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}">{{tribu.name}}</a>
+										</p>
+									</div>
+								</div>
+							</li>
+						{% endfor %}
+					{% endif %}
+					
+				{% endfor %}
+			
+			
+		</ul>
 
 	</div>
 </div>
