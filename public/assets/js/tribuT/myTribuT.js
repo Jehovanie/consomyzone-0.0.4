@@ -537,6 +537,7 @@ function showdDataContent(data, type, tribu_t_name) {
         }
     }
 }
+
 function calculateDurationOfComment(dateOfComment) {
     var date;
     date = new Date();

@@ -68,36 +68,34 @@ class MarckerClusterStation {
     }
 
     addEventOnMap(map, markers) {
-        map.on("dragend", (e) => {
+        map.on('moveend zoomend dragend', function (e) {
             const coordAndZoom = {
                 zoom: e.target.getZoom(),
                 coord: e.target.getCenter()
             }
             setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
-        })
 
 
-        map.on('moveend zoomend', function (e) {
-            var bounds = map.getBounds();
-            var zoom = map.getZoom();
-            var markersDisplayed = false;
+            // var bounds = map.getBounds();
+            // var zoom = map.getZoom();
+            // var markersDisplayed = false;
 
-            if (zoom > 8) {
-                markers.eachLayer(function (layer) {
-                    if (bounds.contains(layer.getLatLng())) {
-                        markersDisplayed = true;
-                        layer.openPopup();
-                        layer.unbindTooltip()
-                    }
-                });
-            } else if (markersDisplayed) {
-                markersDisplayed = false;
-                markers.eachLayer(function (layer) {
-                    if (bounds.contains(layer.getLatLng())) {
-                        layer.closePopup();
-                    }
-                });
-            }
+            // if (zoom > 8) {
+            //     markers.eachLayer(function (layer) {
+            //         if (bounds.contains(layer.getLatLng())) {
+            //             markersDisplayed = true;
+            //             layer.openPopup();
+            //             layer.unbindTooltip()
+            //         }
+            //     });
+            // } else if (markersDisplayed) {
+            //     markersDisplayed = false;
+            //     markers.eachLayer(function (layer) {
+            //         if (bounds.contains(layer.getLatLng())) {
+            //             layer.closePopup();
+            //         }
+            //     });
+            // }
 
             // this.markers.refreshClusters();
         });
@@ -200,7 +198,7 @@ class MarckerClusterStation {
                 if (screen.width < 991) {
                     getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 } else {
-                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
+                    getDetailsStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
@@ -209,7 +207,9 @@ class MarckerClusterStation {
                         iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
                     }
                 })
+
                 marker.setIcon(new icon_R);
+
                 if (this.marker_last_selected) {
                     const icon_B = L.Icon.extend({
                         options: {
@@ -223,10 +223,10 @@ class MarckerClusterStation {
                 this.markers.refreshClusters();
             })
 
-            marker.on("mouseover", () => {
-                marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
-                marker.closePopup();
-            })
+            // marker.on("mouseover", () => {
+            //     marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
+            //     marker.closePopup();
+            // })
 
             this.markers.addLayer(marker);
         })
@@ -371,5 +371,13 @@ class MarckerClusterStation {
     resetToDefaultMarkers() {
         this.removeMarker();
         this.addMarker(this.default_data)
+    }
+
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                marker.fireEvent('click');
+            }
+        });
     }
 }
