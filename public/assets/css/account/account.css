@@ -1705,12 +1705,12 @@ thead > tr{
     fill: var(--body-color);
 }
 
-a,
+/* a,
 a:link {
     color: var(--body-color);
     text-decoration: none;
     transition: 0.3s linear;
-}
+} */
 
 a:hover {
     color: var(--body-color-hover);

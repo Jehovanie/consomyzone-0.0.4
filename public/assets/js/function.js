@@ -59,6 +59,7 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
+            
         } else if (map_for_type === "home") {
 
             // latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
@@ -76,7 +77,8 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         }
-        centered = json ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
+
+        centered = id_dep ? latlng : ( json ? L.latLng(json.coord.lat, json.coord.lng) : latlng)
 
         var container = L.DomUtil.get('map');
         if (container != null) {

@@ -1214,7 +1214,7 @@ function showInvitations() {
                             <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
                         </li>
                     </ul>
-                    <div id="blockSendEmailInvitation" style="display:none;" class="w-50 mt-4 px-3">
+                    <div id="blockSendEmailInvitation" style="display:none;" class="w-50 mx-auto mt-4 px-3">
                         <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
