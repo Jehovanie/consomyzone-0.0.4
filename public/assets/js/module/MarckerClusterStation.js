@@ -198,7 +198,7 @@ class MarckerClusterStation {
                 if (screen.width < 991) {
                     getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 } else {
-                    getDetailsStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
+                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
