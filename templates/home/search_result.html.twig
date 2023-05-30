@@ -9,9 +9,12 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{asset('assets/js/home/data_search.js')}}" defer></script>
-    <script src="{{asset('assets/js/home/fetchLeftSide.js')}}" defer></script>
+    {# <script src="{{asset('assets/js/home/fetchLeftSide.js')}}" defer></script>  #}
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterSearch.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/home/marckerClusterSearch.js') }}" defer></script>
     <script src="{{asset('assets/js/home/search.js')}}" defer></script>
+     <script src="{{asset('assets/js/home/data_search.js')}}" defer></script>
 
 {% endblock %}
 
@@ -33,7 +36,7 @@
                     <div id="remove-detail" class="hidden responsif-none">
                         <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
                     </div>
-                    <div class="cart_map cart_map_js_jheo">
+                    <div class="cart_map cart_map_js">
                         <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
                             <div class="content_box">
                                 <div class="box">

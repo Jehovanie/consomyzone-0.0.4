@@ -61,10 +61,8 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
             
         } else if (map_for_type === "home") {
-
             // latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
             latlng = L.latLng(latitude, longitude);
-            json = latlng
             zoom = 12;
         } else if (map_for_type === "ferme") {
 

@@ -1,7 +1,6 @@
 .navleft-detail {
-    transform: translate(28vw, 15vh) !important;
+    transform: translate(70vw, 15vh) !important;
 }
-
 .content_show_list_mobile svg{
     fill: #fff;
     background-color: #2343ac;
