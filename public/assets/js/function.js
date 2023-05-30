@@ -915,7 +915,7 @@ function setIcon(urlIcon) {
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
         iconSize: [20, 35],
-        iconAnchor: [30, 50],
+        iconAnchor: [11, 30],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
         shadowSize: [68, 95],
