@@ -199,13 +199,19 @@ class MarckerClusterStation {
                 if (screen.width < 991) {
                     getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 } else {
-                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
+                    getDetailsStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
+                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                        iconSize: [20, 35],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        //shadowUrl: 'my-icon-shadow.png',
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
                     }
                 })
 
@@ -214,7 +220,13 @@ class MarckerClusterStation {
                 if (this.marker_last_selected) {
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png"
+                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
+                            iconSize: [20, 35],
+                            iconAnchor: [11, 30],
+                            popupAnchor: [0, -20],
+                            //shadowUrl: 'my-icon-shadow.png',
+                            shadowSize: [68, 95],
+                            shadowAnchor: [22, 94]
                         }
                     })
                     this.marker_last_selected.setIcon(new icon_B)
@@ -332,14 +344,26 @@ class MarckerClusterStation {
                         if (parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))) {
                             const icon_R = L.Icon.extend({
                                 options: {
-                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
+                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                                    iconSize: [20, 35],
+                                    iconAnchor: [11, 30],
+                                    popupAnchor: [0, -20],
+                                    //shadowUrl: 'my-icon-shadow.png',
+                                    shadowSize: [68, 95],
+                                    shadowAnchor: [22, 94]
                                 }
                             })
                             layer.setIcon(new icon_R);
                             if (this.marker_last_selected) {
                                 const icon_B = L.Icon.extend({
                                     options: {
-                                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png"
+                                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
+                                        iconSize: [20, 35],
+                                        iconAnchor: [11, 30],
+                                        popupAnchor: [0, -20],
+                                        //shadowUrl: 'my-icon-shadow.png',
+                                        shadowSize: [68, 95],
+                                        shadowAnchor: [22, 94]
                                     }
                                 })
                                 this.marker_last_selected.setIcon(new icon_B)

@@ -156,7 +156,13 @@ class MarckerClusterFerme {
                 const url = new URL(window.location.href);
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png"
+                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                        iconSize: [20, 35],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        //shadowUrl: 'my-icon-shadow.png',
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
                     }
                 })
 
@@ -165,7 +171,13 @@ class MarckerClusterFerme {
                 if (this.marker_last_selected) {
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png"
+                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
+                            iconSize: [20, 35],
+                            iconAnchor: [11, 30],
+                            popupAnchor: [0, -20],
+                            //shadowUrl: 'my-icon-shadow.png',
+                            shadowSize: [68, 95],
+                            shadowAnchor: [22, 94]
                         }
                     })
                     this.marker_last_selected.setIcon(new icon_B)

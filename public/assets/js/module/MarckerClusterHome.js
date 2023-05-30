@@ -188,7 +188,13 @@ class MarckerClusterHome {
 
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                    iconSize: [20, 35],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    //shadowUrl: 'my-icon-shadow.png',
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
             })
             marker.setIcon(new icon_R);
