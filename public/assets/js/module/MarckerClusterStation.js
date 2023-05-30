@@ -185,11 +185,12 @@ class MarckerClusterStation {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
             let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
 
-            // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
+            marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 
-            // marker.on('add', function () {
-            //     marker.openPopup();
-            // });
+            marker.on('add', function () {
+                marker.openPopup();
+            });
+            
             marker.on('click', () => {
 
                 const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
@@ -223,10 +224,10 @@ class MarckerClusterStation {
                 this.markers.refreshClusters();
             })
 
-            // marker.on("mouseover", () => {
-            //     marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
-            //     marker.closePopup();
-            // })
+            marker.on("mouseover", () => {
+                marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
+                marker.closePopup();
+            })
 
             this.markers.addLayer(marker);
         })
