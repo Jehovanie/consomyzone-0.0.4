@@ -10,6 +10,10 @@ use App\Entity\User;
 
 
 
+use App\Entity\Consumer;
+
+use App\Entity\Supplier;
+
 use App\Service\UserService;
 
 use App\Service\TributGService;
@@ -18,12 +22,11 @@ use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
 
+use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Component\Filesystem\Filesystem;
-
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -279,7 +282,7 @@ class TributGController extends AbstractController
     public function fetchAllActualiteTributG(
 
         TributGService $tributGService,
-
+        EntityManagerInterface $entityManager,
     ) {
 
         $table_tributG_name = $tributGService->getTableNameTributG(
@@ -288,9 +291,23 @@ class TributGController extends AbstractController
 
         );
 
+        
+        $profil = "";
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        if ($userType == "consumer") {
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+
 
 
         return $this->render("tribu_g/publications.html.twig", [
+
+            "profil" => $profil,
 
             "tributG" => [
 
