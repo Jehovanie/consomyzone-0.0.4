@@ -42,7 +42,7 @@ body{
     
     position: absolute;
     right: 0;
-    top :85px;
+    top: 40px;
     padding: 15px;
 
 }
@@ -1234,6 +1234,11 @@ thead > tr{
     margin-bottom: 15px;
 }
 
+.pastil-resto img{
+    height: 150px; 
+    border-radius: 15px;
+}
+
 .result_resto_chr .card-result-chr{
     background-color: #fff;
     width: 200px;
@@ -1346,7 +1351,7 @@ thead > tr{
 
 
 .container {
-    width: 100%;
+    width: 78vw;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
@@ -1758,4 +1763,47 @@ a:focus {
 
 #list-publicatiotion-tribu-t .voir-plus:hover { 
     border-bottom: 1px solid #000;
+}
+
+.card-partisons {
+    background-color: #fff;
+    box-shadow: 2px 3px 24px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    width: 750px;
+    height: 150px;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.partisons-pdp {
+    margin-left: -15px;
+}
+
+.partisons-pdp img {
+    height: 150px;
+    border-radius: 10px 0px 0px 10px;
+}
+
+.partisons-text h4 {
+    color: #39007C;
+}
+
+.partisons-text p {
+    color: #9b9a9a;
+    font-size: 10pt;
+}
+
+.partisons-text h4 span{
+    text-transform: uppercase;
+}
+
+.card-tribu-g{
+    width: 100%;
+    background-color: #C0C0C0;
+    border-radius: 15px;
+}
+
+.card-tribu-g .nav-tribu-g{
+    background-color: #fff;
+    border-radius: 0 0 15px 15px;
 }

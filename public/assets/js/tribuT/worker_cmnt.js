@@ -16,7 +16,7 @@ onmessage = (e) => {
         if ( response.ok && response.status == 200 )  {
             response.json().then(json => {
                 console.log(json)
-                postMessage(json)
+                postMessage([json,e.data[1]])
             })
         }
     })

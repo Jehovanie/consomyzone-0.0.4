@@ -2,12 +2,12 @@
  * global variable 
  */
 var tribu_t_name_0 = ""; 
-var id_c_u
+var id_c_u //id du user courant
 let image_list = [];
 var worker = new Worker('/assets/js/tribuT/worker.js');
 var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js')
 var workerGetCommentaireTribuT=new Worker('/assets/js/tribuT/worker_cmnt.js')
-
+var image_tribu_t 
 /**
  * create tribu_t section
  */
@@ -44,7 +44,7 @@ document.getElementById("form_upload").onchange = (e) => {
 };
 /*---------------------- end create tribu_t section-----------------------*/
 
-/**
+/**sendPublication
  * render tribu_t section
  */
 
@@ -57,14 +57,15 @@ function showBlockPub(){
             const type = e.target.classList[1];
             const tribu_t_name=e.target.textContent
             let data = await showdData(tribu_t_name)
-            showdDataContent(data,type,tribu_t_name)
+            showdDataContent(data,type,tribu_t_name,id_c_u)
             
             /**render pastiled resto */
-            document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => { 
-                e.preventDefault();
-                document.querySelector("#tribu_t_conteuneur").innerHTML=""
-                showResto(tribu_t_name+"_restaurant",id_c_u)
-            })
+            if(document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
+                document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => { 
+                    e.preventDefault();
+                    document.querySelector("#tribu_t_conteuneur").innerHTML=""
+                    showResto(tribu_t_name+"_restaurant",id_c_u)
+                })
             /**end */
 
             /**render photo gallery*/
@@ -84,8 +85,11 @@ function showBlockPub(){
             /**end */
             
 
-            /**send commentaire */
-      
+            /**render partisant*/
+            document.querySelector(".partisantT").onclick = (e) => {
+                document.querySelector("#tribu_t_conteuneur").innerHTML=""
+                showPartisan()  
+            }
             /**end */
         })
     }
@@ -110,6 +114,41 @@ btnSubmitPublication.onclick = (e) => {
 
 
 /*--------------function section---------------------*/ 
+function showPartisan() {
+    const param = "?tbl_tribu_T_name=" + encodeURIComponent(tribu_t_name_0)
+    const request = new Request("/user/partisan/tribu_T"+param, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+    })
+    fetch(request).then((response) => { 
+        if ( response.ok && response.status == 200) {
+            response.json().then(jsons => {
+                console.log(jsons)
+                jsons.forEach(json => {
+                    profilInfo = JSON.parse(json.infos_profil)
+                    let profil = profilInfo.photo_profil!=null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
+                    let lastName = profilInfo.lastName
+                    let firstName = profilInfo.firstName
+                    let tribuG = profilInfo.tribuG.replace("tribug_01_","")
+                    console.log(JSON.parse(json.infos_profil))
+                    document.querySelector("#tribu_t_conteuneur").innerHTML += `
+                        <div class="card-partisons row">
+                            <div class="partisons-pdp col-6">
+                                <img src="${profil.replace("/public","")}" alt="">
+                            </div>
+                            <div class="partisons-text col-6">
+                                <h4>${lastName} <span> ${firstName}</span></h4>
+                                <p>TribuG : ${tribuG.replaceAll("_", " ")}</p>
+                            </div>
+                        </div>
+                    `
+                })    
+            })
+        }
+    })
+}
 function convertFileToBlob(file) {
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -185,8 +224,8 @@ function sendPublication(formData) {
  * @param {*} type 
  * @param {*} tribu_t_name 
  */
-function showdDataContent(data, type, tribu_t_name) { 
-    let detailsTribuT=null
+function showdDataContent(data, type, tribu_t_name,id_c_u) {
+    let detailsTribuT = null
    
     if (type === "owned")
         detailsTribuT = data.tribu_t_owned
@@ -196,7 +235,18 @@ function showdDataContent(data, type, tribu_t_name) {
     console.log(JSON.parse(detailsTribuT).tribu_t)
 
     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
-    tribu_t_name_0 =tribu_t[0].name
+    tribu_t_name_0 = tribu_t[0].name
+    let restExtension = ""
+    if (tribu_t[0].extension) {
+        restExtension=` <li class="listNavBarTribu restoNotHide">
+                            <a style="cursor:pointer;">Restaurants</a>
+                        </li>`
+    }
+    if (tribu_t[0].logo_path) {
+        image_tribu_t = `<img src="../../..${tribu_t[0].logo_path.replaceAll("/public", "")}" alt="123">`
+    } else {
+        image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
+    }
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture">
@@ -204,7 +254,7 @@ function showdDataContent(data, type, tribu_t_name) {
                         <div class="col-3">
                             <div class="row">
                                 <div class="col">
-                                    <img src="../../..${tribu_t[0].logo_path.replaceAll("/public","")}" alt="123">
+                                    ${image_tribu_t}
                                 </div>
                                 <div class="col">
                                     <label style="margin-left:10%;" for="fileInputModifTribuT">
@@ -215,7 +265,7 @@ function showdDataContent(data, type, tribu_t_name) {
                             </div>
                         </div>
                         <div class="col-8 mt-4">
-                            <h1  id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_","")}</h1>
+                            <h1  id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_", "")}</h1>
                             <p class="responsif-none-mobile p-mobile">
                             ${tribu_t[0].description}
                             </p>
@@ -233,15 +283,13 @@ function showdDataContent(data, type, tribu_t_name) {
                         </li>
 
 
-                        <li class="listNavBarTribu restoNotHide">
-                            <a style="cursor:pointer;">Restaurants</a>
-                        </li>
+                        ${restExtension}
 
                         <li class="listNavBarTribu">
                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
                         </li>
-                        <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" href="#">Partisans</a>
+                        <li class="listNavBarTribu partisantT">
+                            <a style="cursor:pointer;">Partisans</a>
                         </li>
                         <li class="listNavBarTribu">
                             <a style="cursor:pointer;" id="seer-gallery">Photos</a>
@@ -301,17 +349,27 @@ function showdDataContent(data, type, tribu_t_name) {
             </div>
             
     `
-    worker.postMessage([tribu_t_name_0, 0,20]);
+    worker.postMessage([tribu_t_name_0, 0, 20]);
     console.log('Message envoyé au worker');
     worker.onmessage = (event) => {
         console.log(event.data)
-        let data=event.data
+        let data = event.data
 
 
         /*---------show 5 pub par defaut-----------------*/
-        if(data.length > 0)
-        for (let i = 0; i < 5; i++){
-            const contentPublication=`<div class="pub-tribu-t mt-3">
+        if (data.length > 0)
+        
+            for (let i = 0; i < 5; i++) {
+                let dataNbr
+                if (data[i].nbr === null) {
+                    dataNbr = 0 + " "
+                } else {
+                    dataNbr = data[i].nbr + " "
+                }
+                let confidentiality = data[i].confidentiality
+                let contentPublication=""
+                if (confidentiality ===1) {
+                    contentPublication = `<div class="pub-tribu-t mt-3">
                         <div class="name-pub">
                             <div class="row head-pub">
                                 <div class="col-1">
@@ -339,7 +397,7 @@ function showdDataContent(data, type, tribu_t_name) {
                                 </p>
                             </div>
                             <div class="pub-photo">
-                                <img src="${data[i].photo.replaceAll("/public","")}" alt="">
+                                <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
                             </div>
                             <!--<div class="content-comant-reaction">
                                 <div class="row">
@@ -355,7 +413,7 @@ function showdDataContent(data, type, tribu_t_name) {
                             <div class="btn-mention-partage">
                                 <div class="action-container">
                                     <i class="bi-heart like"></i>
-                                    <i onclick="showCommentaireTribu_T(event)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
+                                    ${dataNbr}<i onclick="showCommentaireTribu_T(event,0,true)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
                                 </div>
                             </div>
                         </div>
@@ -383,17 +441,268 @@ function showdDataContent(data, type, tribu_t_name) {
                         </div>
                     </div>
                     `
-               
-            document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
-            workerGetCommentaireTribuT.onmessage = (e) => {
-                console.log(e.data)
-                const datas = e.data
+                } else if(confidentiality ===2){
+                    //moi uniquement 
+                    console.log(id_c_u,data[i].user_id)
+                    if (parseInt(id_c_u,10)===data[i].user_id) {
+                        contentPublication = `<div class="pub-tribu-t mt-3">
+                                            <div class="name-pub">
+                                                <div class="row head-pub">
+                                                    <div class="col-1">
+                                                        <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                    </div>
+                                                    <div class="col-10 mt-3">
+
+                                                        <a href="">${data[i].userfullname}</a>
+                                                        <p class="card-text">
+                                                            <i>
+                                                                <small class="text-muted">Publié le
+                                                                    ${data[i].datetime}
+                                                                </small>
+                                                            </i>
+                                                        
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-1 mt-3">
+                                                        <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="pub-content">
+                                                    <p>
+                                                        ${data[i].publication}
+                                                    </p>
+                                                </div>
+                                                <div class="pub-photo">
+                                                    <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
+                                                </div>
+                                                <!--<div class="content-comant-reaction">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
+                                                        </div>
+                                                        <div class="col">
+                                                            <p class="text-muted">10 commentaires</p>
+                                                        </div>
+                                                    </div>
+                                                </div>--!>
+                                                <hr>
+                                                <div class="btn-mention-partage">
+                                                    <div class="action-container">
+                                                        <i class="bi-heart like"></i>
+                                                        ${dataNbr}<i onclick="showCommentaireTribu_T(event,0,true)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Modal commentair -->
+                                        <div class="modal fade" id="modalCommentairTribuT${data[i].id}" tabindex="-1" aria-labelledby="modalCommentairTribuTLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h3 class="count_comment">Publication de ...</h3>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="container">
+                                                    <div class="center-block" id="center-content-cmnt${data[i].id}">
+                                                        
+                                                    </div>
+                                                
+                                                    <div class="modal-footer">
+                                                        <input type="text" class="commentair-tribu-t" placeholder="votre commentaire">
+                                                        <i class="fa-solid fa-paper-plane" id="mlXXdZE${data[i].id}hjki" onclick="putComment(event)"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `
+                    } else{
+                         contentPublication=""
+                    }
+                }
                 
-                const indexx=6
-                /*show 6 per default */
-                for (let i = 0; i < indexx; i++) { 
+               
+                
+                if (document.querySelector("#list-publicatiotion-tribu-t")) {
+                    document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+                }
+
+                showCommentss();
+            
+        
+            
+                //---------after shwo in each scroll ---------------
+                const gen = genDataPubOfAllPartisans(data, 5)
+                const gen_length = (data.length - 5)
+                //const gen_length = (data.length)
+                console.log(gen_length)
+
+            
+                let lastId = 0;
+
+                let genCursorPos = 0
+                
+                if (gen_length > 0) {
+                    window.addEventListener("scroll", (e) => {
+                    
+                        const scrollable = document.documentElement.scrollHeight - window.innerHeight
+                        const scrolled = window.scrollY
+                        if (Math.ceil(scrolled) === scrollable) {
+                            if (data) {
+                                lastId = data.id
+                                console.log(genCursorPos)
+                                if (genCursorPos === gen_length) {
+                                    
+                                    worker.postMessage([tribu_t_name_0, lastId, 20]);
+                                    
+                                }
+                                    
+                                data = gen.next().value
+                                console.log(data)
+                                if (data) {
+                                    const contentPublication = `<div class="pub-tribu-t mt-3">
+                                        <div class="name-pub">
+                                            <div class="row head-pub">
+                                                <div class="col-1">
+                                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                </div>
+                                                <div class="col-10 mt-3">
+
+                                                    <a href=""> ${data.userfullname}</a>
+                                                    <p class="card-text">
+                                                        <i>
+                                                            <small class="text-muted">Publié le
+                                                                ${data.datetime}
+                                                            </small>
+                                                        </i>
+                                                    
+                                                    </p>
+                                                </div>
+                                                <div class="col-1 mt-3">
+                                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                </div>
+                                            </div>
+                                            <div class="pub-content">
+                                                <p>
+                                                    ${data.publication}
+                                                </p>
+                                            </div>
+                                            <div class="pub-photo">
+                                                <img src="${data.photo.replaceAll("/public", "")}" alt="">
+                                            </div>
+                                            <div class="content-comant-reaction">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
+                                                    </div>
+                                                    <div class="col">
+                                                        <p class="text-muted">10 commentaires</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="btn-mention-partage">
+                                                <div class="row text-center">
+                                                    <div class="col">
+                                                        <i class="bi-heart"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <i class="bi bi-chat-square"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `
+                                    document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+                                }
+                                genCursorPos++;
+                                
+                            }
+                        
+                        }
+                    })
+                }
+            }
+        
+    }
+    //showCommentss();
+}
+function calculateDurationOfComment(dateOfComment) {
+    var date;
+    date = new Date();
+    let month
+    let day
+    if (parseInt(date.getUTCMonth() + 1, 10) <= 9) {
+        month = `0${date.getUTCMonth() + 1}`;
+    } else {
+        month=date.getUTCMonth() + 1
+    }
+    if (parseInt(date.getUTCDate(), 10) <= 9) {
+        day = `0${date.getUTCDate()}`;
+    } else {
+        day=date.getUTCDate()
+    }
+    const dateStr= date.getUTCFullYear() + '-' +month+ '-' +day
+    const hour= (date.getHours())+ ':' + (date.getMinutes())+ ':' + (date.getSeconds());
+    console.log(dateOfComment,dateStr,hour)
+    if(dateOfComment.split(" ")[0] != dateStr) {
+        const dateDetails = parseInt(((dateOfComment.split(" ")[0]).split("-")[2]), 10)
+        if ((dateDetails-date.getUTCDate())== 1) {
+            console.log("hier le " + dateOfComment.split(" ")[1])
+            return "hier le "+dateOfComment.split(" ")[1]
+        } else {
+            const since = date.getUTCDate() - dateDetails 
+            
+            console.log(dateDetails, date.getUTCDate())
+            console.log("depuis " + since + " j");
+            return "depuis " + since + " j"
+        }
+            
+    } else {
+        let lapsTime = Math.abs(parseInt(((dateOfComment.split(" ")[1]).split(":")[0]), 10) - parseInt(((hour.split(":")[0])), 10))
+        if (lapsTime == 0) {
+            const minuteDetailsOfComment = parseInt(((dateOfComment.split(" ")[1]).split(":")[1]), 10)
+            const minuteDetails=parseInt(((hour.split(":")[1])), 10)
+            lapsTime = Math.abs(minuteDetailsOfComment - minuteDetails)
+            return "aujourd'hui il y a " + lapsTime + " mn"
+        }
+        console.log("aujourd'hui il y a " + lapsTime + " h")
+        return "aujourd'hui il y a " + lapsTime + " h"
+    }
+
+}
+
+function showCommentaireTribu_T(event, idmin=0,b ) {
+    event.preventDefault();
+    console.log(idmin)
+    const table_cmmnt = tribu_t_name_0 + "_commentaire"
+    const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
+   
+    const limits = 5
+    if (b) {
+        if (document.getElementById("center-content-cmnt" + pub_id)) {
+            document.getElementById("center-content-cmnt" + pub_id).innerHTML = ""
+        }
+    } else
+        //console.log(document.getElementById("center-content-cmnt" + pub_id))
+        if (document.querySelector("a.voir-plus"))
+           event.target.parentNode.removeChild(event.target)   
+    
+    workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
+}
+    
+function showCommentss() {
+    
+    workerGetCommentaireTribuT.onmessage = (e) => {
+        console.log(e.data)
+                const datas = e.data[0]
+                const index=e.data[0].length
+              
+                for (let i = 0; i < index; i++) { 
                     console.log(i)
-                    calculateDurationOfComment(datas[i].datetime)
+                    let lapstime=calculateDurationOfComment(datas[i].datetime)
                     let commentaire= `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
                                                 <img class="avatar" src="https://randomuser.me/api/portraits/men/77.jpg" width="45" height="45"/>
@@ -410,165 +719,26 @@ function showdDataContent(data, type, tribu_t_name) {
                                                         </svg></a>
                                                     </div>
                                                     <div class="media-comment-data-person">
-                                                        <a class="media-comment-name" href="javascript://">${datas[i].userfullname}</a><span class="text-muted">2 h</span>
+                                                        <a class="media-comment-name" href="javascript://">${datas[i].userfullname}</a><span class="text-muted">${lapstime}</span>
                                                     </div>
                                                     <div class="media-comment-text" id="comment-container">
                                                         <p >
-                                                        ${datas[i].commentaire}
+                                                            ${datas[i].commentaire}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 
                                             </div>
                                         </div>`
-                    if (i == (indexx- 1))
-                        commentaire+= "<a class=\"voir-plus\">Voir plus de commentaire</a>"
+                    if (i == (index- 1))
+                        commentaire+= "<a class=\"voir-plus\" data-foo=\"kjjk_"+e.data[1] +"xdjyfvfAAS\" onclick=\" showCommentaireTribu_T(event,"+datas[i].id+",false)\">Voir plus de commentaire</a>"
                     
                     document.getElementById("center-content-cmnt"+datas[i].pub_id).innerHTML +=commentaire
                 }
-                /**end */
-                const commentGen = genDataPubOfAllPartisans(e.data, indexx)
-                /**after show 5 commentaire in each scroll */
-
-                /**end */
-            
-            }
-
-            if(document.querySelector("#list-publicatiotion-tribu-t")){
-                document.querySelector("#list-publicatiotion-tribu-t").innerHTML+=contentPublication
-            }
-        }
-        
-           
-            
-        
-            
-        /*---------after shwo in each scroll ---------------*/
-        const gen = genDataPubOfAllPartisans(data, 5)
-        const gen_length = (data.length-5)
-        //const gen_length = (data.length)
-        console.log(gen_length)
-
-       
-        let lastId = 0;
-
-        let genCursorPos=0
-        
-        if(gen_length > 0){
-            window.addEventListener("scroll", (e) => {
-            
-                const scrollable = document.documentElement.scrollHeight - window.innerHeight
-                const scrolled = window.scrollY
-                if (Math.ceil(scrolled) === scrollable) {
-                    if (data) {
-                        lastId = data.id
-                        console.log(genCursorPos)
-                        if (genCursorPos === gen_length) {
-                            
-                            worker.postMessage([tribu_t_name_0, lastId, 20]);
-                            
-                        }
-                            
-                        data = gen.next().value
-                        console.log(data)
-                        if(data){
-                        const contentPublication=`<div class="pub-tribu-t mt-3">
-                                <div class="name-pub">
-                                    <div class="row head-pub">
-                                        <div class="col-1">
-                                            <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
-                                        </div>
-                                        <div class="col-10 mt-3">
-
-                                            <a href=""> ${data.userfullname}</a>
-                                            <p class="card-text">
-                                                <i>
-                                                    <small class="text-muted">Publié le
-                                                        ${data.datetime}
-                                                    </small>
-                                                </i>
-                                            
-                                            </p>
-                                        </div>
-                                        <div class="col-1 mt-3">
-                                            <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                        </div>
-                                    </div>
-                                    <div class="pub-content">
-                                        <p>
-                                            ${data.publication}
-                                        </p>
-                                    </div>
-                                    <div class="pub-photo">
-                                        <img src="${data.photo.replaceAll("/public","")}" alt="">
-                                    </div>
-                                    <div class="content-comant-reaction">
-                                        <div class="row">
-                                            <div class="col">
-                                                <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
-                                            </div>
-                                            <div class="col">
-                                                <p class="text-muted">10 commentaires</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="btn-mention-partage">
-                                        <div class="row text-center">
-                                            <div class="col">
-                                                <i class="bi-heart"></i>
-                                            </div>
-                                            <div class="col">
-                                                <i class="bi bi-chat-square"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            `
-                        document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
-                        }
-                        genCursorPos++;
-                        
-                    } 
-                
-                }
-            })
-        }
-    }
-}
-
-function calculateDurationOfComment(dateOfComment) {
-    var date;
-    date = new Date();
-    const dateStr= date.getUTCFullYear() + '-' +
-    ((date.getUTCMonth()+1)) + '-' +
-        (date.getUTCDate())
+    } 
+} 
     
-    const hour= (date.getHours())+ ':' + 
-    (date.getMinutes())+ ':' + 
-    (date.getSeconds());
-   
-    if (dateOfComment.split("")[0] != dateStr) {
-        const dateDetails = parseInt(((dateOfComment.split("")[0]).split("-")[2]), 10)
-        if ((dateDetails-date.getUTCDate())== 1) {
-             console.log("hier")
-        } else {
-            const since = dateDetails - date.getUTCDate()
-            console.log("depuis " + since + " j");
-        }
-            
-    }
 
-}
-
-function showCommentaireTribu_T(event) {
-    const table_cmmnt = tribu_t_name_0 + "_commentaire"
-    const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
-    const idmin = 0
-    const limits=10
-    workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
-}
 
 function putComment(event) { 
     const pubId = event.target.id.replace(/[^0-9]/g, "")
@@ -588,7 +758,46 @@ function putComment(event) {
         },
         body:JSON.stringify(param)
     }) 
-    fetch(request)
+    fetch(request).then(response => {
+        if (response.status === 200 && response.ok) { 
+            response.json().then(json => {
+                let div = document.createElement("div")
+                div.classList.add("media-comment")
+                let commentaire= `  <a class="avatar-content" href="javascript://">
+                                        <img class="avatar" src="https://randomuser.me/api/portraits/men/77.jpg" width="45" height="45"/>
+                                    </a>
+                                    <div class="media-content">
+                                        <div class="media-comment-body">
+                                            <div  class="media-option"><a class="ripple-grow" id="dropdownMenuButton" href="javascript://" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <svg  class="ripple-icon" width="28" height="28" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 24 24">
+                                                    <g fill="currentColor">
+                                                    <circle cx="5" cy="12" r="2"></circle>
+                                                    <circle cx="12" cy="12" r="2"></circle>
+                                                    <circle cx="19" cy="12" r="2"></circle>
+                                                    </g>
+                                                </svg></a>
+                                            </div>
+                                            <div class="media-comment-data-person">
+                                                <a class="media-comment-name" href="javascript://">${json.pseudo}</a><span class="text-muted">maintenant</span>
+                                            </div>
+                                            <div class="media-comment-text" id="comment-container">
+                                                <p >
+                                                    ${json.commentaire}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>`
+                    div.innerHTML=commentaire
+                
+                const firstComment = document.querySelector(`#center-content-cmnt${json.pubId} > div:nth-child(1)`)
+                if(firstComment) 
+                    document.getElementById("center-content-cmnt" + json.pubId).insertBefore(div, firstComment)
+                else
+                    document.getElementById("center-content-cmnt" + json.pubId).appendChild(div) 
+            })
+        }
+        
+    })
     console.log(pubId,commentaire)
 }
     
@@ -726,32 +935,38 @@ function showResto(table_rst_pastilled,id_c_u){
                         text=`<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
                         text1="Notez"
                     }
+
                     li +=`<li style="list-style-type:none; " data-toggle-id="${id_resto}">
                             <div class="row ms-1">
                                 <div class="col-8 pastil-resto">
-                                    <div class="fw-bold">
-                                        <a target="_blank" href="/restaurant?id=${resto.id_unique}" class="text-decoration-none">
-                                            <img style="height: 30px; width:30px; border-radius:50%;margin-top: -10px; " src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}">
-                                            <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
-                                        </a>
-                                    </div>
-                                    <div id="etoile_${id_resto}">
-                                        <i class="fa-solid fa-star" data-rank="1"></i>
-                                        <i class="fa-solid fa-star" data-rank="2"></i>
-                                        <i class="fa-solid fa-star" data-rank="3"></i>
-                                        <i class="fa-solid fa-star" data-rank="4"> </i>
-                                        <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
-                                    </div>
-                                    <div class="row mt-3 ">
+                                    <div class="row">
                                         <div class="col-4">
-                                            <button type="button" class="btn btn-outline-primary  float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                            ${image_tribu_t}
                                         </div>
-                                        <div class="col-4">
-                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                        <div class="col">
+                                            <div class="fw-bold">
+                                                <a target="_blank" href="/restaurant?id=${resto.id_unique}" class="text-decoration-none">
+                                                    <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
+                                                </a>
+                                            </div>
+                                            <div id="etoile_${id_resto}">
+                                                <i class="fa-solid fa-star" data-rank="1"></i>
+                                                <i class="fa-solid fa-star" data-rank="2"></i>
+                                                <i class="fa-solid fa-star" data-rank="3"></i>
+                                                <i class="fa-solid fa-star" data-rank="4"> </i>
+                                                <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
+                                            </div>
+                                            <div class="row mt-3 ">
+                                                <div class="col-4">
+                                                    <button type="button" class="btn btn-outline-primary  float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                                </div>
+                                                <div class="col-4">
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                
                             </div>
 
                             <!-- Modal note-->

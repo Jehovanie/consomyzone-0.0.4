@@ -165,6 +165,15 @@ class TributTController extends AbstractController
 
     }
 
+    #[Route("/user/partisan/tribu_T", name:'get_partisan_tribu_t')]
+    public function getPartisanOfTribuT(Request $request, 
+    Tribu_T_Service $serv,
+    SerializerInterface $serializer){
+        $tableTribuTName=$request->query->get("tbl_tribu_T_name");
+        $v=$serv->getPartisanOfTribuT($tableTribuTName);
+        $json = $serializer->serialize($v, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
     #[Route('/user/get/comment/pub', name: "user_get_comment_pubss",methods:["GET"])]
     public function getCommentPubTribuT(Request $request,Tribu_T_Service $serv,SerializerInterface $serializer){
 
@@ -176,6 +185,7 @@ class TributTController extends AbstractController
         $limits=$datas["limits"];
         $response=$serv->getCommentPubTribuT($tabl_cmnt_tribu_t, $idPub, $idMin,$limits);
         $json=$serializer->serialize($response,'json');
+        
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
@@ -191,13 +201,14 @@ class TributTController extends AbstractController
         $result=$serv->putCommentOnPublication($tableCommentaireTribu_T, 
         $userId,$pubId,$commentaire, $user->getPseudo());
 
-        $response=new Response();
+        
         if($result){
-            $response->setStatusCode(200);
-            return $response;
+        $json=json_encode(array("userid"=>$userId,"pubId"=>$pubId, "commentaire"=>$commentaire,"pseudo"=> $user->getPseudo()));
+           return new JsonResponse($json, Response::HTTP_OK, [], true);;
+           
         }else{
-            $response->setStatusCode(500);
-            return $response;
+            $response=new Response();
+            return $response->setStatusCode(500);
         }
     }
 
@@ -208,7 +219,8 @@ class TributTController extends AbstractController
         $userTribu_T=json_decode($user->getTribuT(),true);
         $jsonParsed = json_decode($request->getContent(), true);
         $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $image = $jsonParsed["base64"];
+        $image =  $jsonParsed["base64"] ;
+       
         $imageName = $jsonParsed["photoName"];
         
         $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
@@ -217,6 +229,8 @@ class TributTController extends AbstractController
         
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+        
+            
 
         
         foreach ($userTribu_T["tribu_t"] as $k =>$v) {
@@ -1987,8 +2001,13 @@ class TributTController extends AbstractController
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
                 $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
         $fileUtils=new FilesUtils();
-        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
-        $result=$tribuTService->createOnePub($tribu_t_name."_publication", $userId, $publication, $confid, $path. $imageName);
+        if (intval($jsonParsed["photoSize"], 10) > 0) {
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
+            $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid, $path . $imageName);
+        }else{
+            $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
+        }
+        
 
         $response = new Response();
         if($result){
@@ -2011,8 +2030,9 @@ class TributTController extends AbstractController
         $tableTribuTPublication=$request->query->get('tblpublication');
         $idMin=$request->query->get('idmin');
         $limits=$request->query->get('limits');
+        $tableCommentaireTribuT=$request->query->get('tblCommentaire');
        
-        $result=$srv->getPartisantPublication($tableTribuTPublication, $idMin, $limits);
+        $result=$srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT ,$idMin, $limits);
         $json=$serializer->serialize($result,'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }

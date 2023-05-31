@@ -1380,9 +1380,10 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
     
-    public function getPartisantPublication($table_publication_Tribu_T, $idMin,$limits){
+    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits){
         if($idMin == 0){
-            $sql = "SELECT * FROM $table_publication_Tribu_T ORDER BY id DESC LIMIT :limits";
+            $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+            . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
            
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
@@ -1390,7 +1391,8 @@ class Tribu_T_Service extends PDOConnexionService
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         }else{
-            $sql = "SELECT * FROM $table_publication_Tribu_T where id < :idmin ORDER BY id DESC LIMIT :limits";
+            $sql = "SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+            . "as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id < :idmin ORDER BY id DESC LIMIT :limits";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
@@ -1435,7 +1437,7 @@ class Tribu_T_Service extends PDOConnexionService
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         }else{
-            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1  where t1.id < :idmin and WHERE t1.pub_id = :pub_id   ORDER BY t1.id DESC LIMIT :limits";
+            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1 WHERE t1.id < :idmin and t1.pub_id =:pub_id ORDER BY t1.id DESC LIMIT :limits";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':idmin', $limits, PDO::PARAM_INT);
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
@@ -1445,6 +1447,19 @@ class Tribu_T_Service extends PDOConnexionService
             return $result;
         }
         
+    }
+
+    public function getPartisanOfTribuT($tableTribuT){
+        $sql= "SELECT * FROM $tableTribuT as t1 left join (".
+        "SELECT id,type, case type when 'consumer' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName',".
+        "lastname,'adresse_postale',adresse_postale,'photo_profil',photo_profil,'tribuG',tributg) as infos FROM consumer as c where c.user_id= u.id)".
+        "when 'supplier' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName', lastname,".
+        "'adresse_postale',adresse_postale,'photo_profil',photo_profil,'tribuG',tributg)as infos FROM supplier as c where c.user_id= u.id)".
+        "end infos_profil from user as u ) as t2 on t2.id=t1.user_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
 
     

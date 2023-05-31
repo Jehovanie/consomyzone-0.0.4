@@ -26,7 +26,7 @@
         border-radius: 3px;
       }
       .bgPersonnalisee{
-        background-image: linear-gradient(#888888 285px, #ffffff 0%);
+        /* background-image: linear-gradient(#888888 285px, #ffffff 0%); */
         border: none !important;
         /* height: 450px !important; */
     }
