@@ -107,7 +107,6 @@ class UserController extends AbstractController
         }
 
 
-
         $new_publication = $this->createForm(PublicationType::class);
 
 
@@ -140,11 +139,11 @@ class UserController extends AbstractController
 
                 if ($photo) {
 
-                    $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
+                    $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG();
 
                     $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
-                    $newFilename = md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+                    $newFilename = $profil[0]->getTributG() . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
 
                     $photo->move(
 

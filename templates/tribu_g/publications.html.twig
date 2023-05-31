@@ -70,7 +70,7 @@
 
 						{% if pub.photo  %}
 							<div style="max-heigth:100%; max-width: 100%;">
-								<img width="100%" src='{{ pub.photo }}' class="" alt="image publication">
+								<img width="100%" src={{asset('uploads/tribu_g/photos/') ~ pub.photo }} class="" alt="image publication">
 							</div>
 						{% endif %}
 
