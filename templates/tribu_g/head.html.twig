@@ -51,9 +51,9 @@
 </div>
 <div class="" id="photos" style="display:none;"></div>
 <div class="" id="invitations" style="display:none;"></div>
-<div class="row p-3 div_mobile"></div>
+{# <div class="row p-3 div_mobile"></div> #}
 
-<div id="showCreatePub" class="card ">
+<div id="showCreatePub" class="card publication-tribu-g mt-2">
     <div class="row p-3">
         <div class="rangee row">
             <div class="col-1 rounded-circle">
@@ -63,22 +63,23 @@
                 <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
             </div>
         </div>
+        <hr class=" hr-pub mt-3 mx-auto">
         <div class="row">
             <div class="col-3 text-center" style="cursor:pointer;">
                 <i class="bi bi-play-btn-fill souri-non-utilise" ></i> <span class="responsif-none"> Vidéos</span>
                 
-        </div>
-        <div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
-        {# <div class="col-3 text-center" style="cursor:pointer;"> #}
-            <i class="bi bi-geo-alt-fill souri-non-utilise"></i><span class="responsif-none"> Localisation
-        </div>
-        <div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
-            <i class="bi bi-calendar2-event-fill"></i><span class="responsif-none"> Agenda
+            </div>
+            <div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
+            {# <div class="col-3 text-center" style="cursor:pointer;"> #}
+                <i class="bi bi-geo-alt-fill souri-non-utilise"></i><span class="responsif-none"> Localisation
+            </div>
+            <div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
+                <i class="bi bi-calendar2-event-fill"></i><span class="responsif-none"> Agenda
 
+            </div>
+            <div class="col-3 text-center" style="cursor:pointer;">
+                <i class="bi bi-pencil-square souri-non-utilise"></i><span class="responsif-none"> Article
         </div>
-        <div class="col-3 text-center" style="cursor:pointer;">
-            <i class="bi bi-pencil-square souri-non-utilise"></i><span class="responsif-none"> Article
-    </div>
 
 </div>
 
