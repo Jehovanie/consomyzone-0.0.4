@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-    f();
+    addRestaurantToMap();
 
     ///hide navleft in the first visite
     if(document.querySelector("#close-navleft") ){

@@ -358,17 +358,18 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
-        
-            for (let i = 0; i < 5; i++) {
+            var limits = data.length > 5 ? 5 : data.length;
+
+            for (let i = 0; i < limits; i++) {
                 let dataNbr
                 if (data[i].nbr === null) {
                     dataNbr = 0 + " "
                 } else {
                     dataNbr = data[i].nbr + " "
                 }
-                let confidentiality = data[i].confidentiality
+                let confidentiality = parseInt(data[i].confidentiality);
                 let contentPublication=""
-                if (confidentiality ===1) {
+                if (confidentiality === 1) {
                     contentPublication = `<div class="pub-tribu-t mt-3">
                         <div class="name-pub">
                             <div class="row head-pub">
@@ -441,7 +442,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </div>
                     </div>
                     `
-                } else if(confidentiality ===2){
+                } else if(confidentiality === 2){
                     //moi uniquement 
                     console.log(id_c_u,data[i].user_id)
                     if (parseInt(id_c_u,10)===data[i].user_id) {
@@ -1429,7 +1430,7 @@ function showInvitations() {
                             <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
                         </li>
                     </ul>
-                    <div id="blockSendEmailInvitation" style="display:none;" class="w-50 mx-auto mt-4 px-3">
+                    <div id="blockSendEmailInvitation" style="display:none;" class="w-50 mt-4 px-3">
                         <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
