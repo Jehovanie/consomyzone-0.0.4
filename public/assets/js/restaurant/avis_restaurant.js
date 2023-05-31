@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
     //     showNoteGlobale(idRestaurant)
     // }
 
-    document.querySelector("#text-note").onkeyup = (e) => { 
+    document.querySelector("#text-note").onkeyup = (e) => {
         if (document.querySelector(".flash-msg-ERREUR")) {
             document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
         }
@@ -48,7 +48,8 @@ window.addEventListener('load', () => {
        
         let note = document.querySelector("#text-note").value
         note=note.replace(/,/g,".")
-        const avis = document.querySelector("#message-text").value
+        const avis = document.querySelector("#message-text").value;
+        idRestaurant
         try {
             mustBeInferior4(note, document.querySelector("#text-note"), true)  
             const requestParam = {
