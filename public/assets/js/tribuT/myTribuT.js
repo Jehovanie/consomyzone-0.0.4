@@ -243,7 +243,8 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </li>`
     }
     if (tribu_t[0].logo_path) {
-        image_tribu_t = `<img src="../../..${tribu_t[0].logo_path.replaceAll("/public", "")}" alt="123">`
+        // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+        image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
     } else {
         image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
@@ -398,7 +399,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 </p>
                             </div>
                             <div class="pub-photo">
-                                <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
+                                <img src="${data[i].photo}" alt="">
                             </div>
                             <!--<div class="content-comant-reaction">
                                 <div class="row">
@@ -474,7 +475,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     </p>
                                                 </div>
                                                 <div class="pub-photo">
-                                                    <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
+                                                    <img src="${data[i].photo}" alt="">
                                                 </div>
                                                 <!--<div class="content-comant-reaction">
                                                     <div class="row">
@@ -590,7 +591,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </p>
                                             </div>
                                             <div class="pub-photo">
-                                                <img src="${data.photo.replaceAll("/public", "")}" alt="">
+                                                <img src="${data.photo}" alt="">
                                             </div>
                                             <div class="content-comant-reaction">
                                                 <div class="row">
