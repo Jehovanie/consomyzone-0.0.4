@@ -42,7 +42,7 @@ body{
     
     position: absolute;
     right: 0;
-    top: 40px;
+    top: 78px;
     padding: 15px;
 
 }
@@ -1364,13 +1364,13 @@ thead > tr{
 
 
 
-.container {
+/* .container {
     width: 78vw;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
-}
+} */
 
 .center-block {
     max-width: 45rem;
