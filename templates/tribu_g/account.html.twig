@@ -65,7 +65,7 @@
 			</div>
 		</div>
 
-        <div class="content_right_actualite mobile-responsive" id="container-mobile">
+        <div class="content_right_actualite-g mobile-responsive" id="container-mobile">
             <div class="row">
                 <div class="col">
                     <div class="content_actualite">
@@ -76,9 +76,18 @@
                                     {% include "tribu_g/head.html.twig" %}
                                 </div>
                             </div>
-                            <div class="content_bloc_js_jheo">
-
-                                {% include "tribu_g/publications.html.twig" %}
+                            <div class="content_bloc_js_jheo row mt-3">
+                                <div class="col-8">
+                                    {% include "tribu_g/publications.html.twig" %}
+                                </div>
+                                <div class="col-4">
+                                    <div class="card-appropos-g">
+                                        <h4  class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name = {{tributG.profil.name}} >{{tributG.profil.name}}</h4>
+                                        <small>
+                                            <i>{{tributG.profil.description}}</i>
+                                        </small>
+                                    </div>
+                                </div>
                                 
                                 {# <div class="content_member_js_jheo">
                                     {% include "tribu_g/member_tributG.html.twig" %}
