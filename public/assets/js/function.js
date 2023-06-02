@@ -909,12 +909,12 @@ function addControlPlaceholders(map) {
 }
 
 ///jheo: dynamique icon for map leaflet. ---------
-function setIcon(urlIcon) {
+function setIconn(urlIcon) {
     const url = new URL(window.location.href);
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
-        iconSize: [20, 35],
+        iconSize: [32, 50],
         iconAnchor: [11, 30],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
@@ -976,9 +976,9 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     var marker;
 
                     if (item.id != id_resto_url) {
-                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-resto-bleu.png') });
+                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/icon-resto-bleu.png') });
                     } else {
-                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-restoR.png') });
+                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/icon-restoR.png') });
                         lat_selected = parseFloat(item.poiY)
                         lng_selected = parseFloat(item.poiX)
                     }
@@ -1138,9 +1138,11 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     let marker = L.marker(
                         L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)),
                         { 
-                            icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),
+                            icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
+                           
                             cleNom: item.denominationF,
                             id: item.id
+
                         }
                     );
 
@@ -1151,7 +1153,8 @@ function addRestaurantToMap(nom_dep, code_dep) {
 
                     marker.on('click', (e) => {
                         const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-                        map.setView(latlng, 13);
+                        let currentZoom=map.getZoom() //TODO change here!!!!
+                        map.setView(latlng, currentZoom);
 
                         const url = new URL(window.location.href);
                         const icon_R = L.Icon.extend({

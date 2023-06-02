@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+   Options +FollowSymLinks -MultiViews
+   RewriteBase /
+   RewriteEngine On
+   
+   
+   RewriteCond %{ENV:HTTPS} off [OR]
+   RewriteCond %{HTTP_HOST} ^(www\.mob\.consomyzone\.)?geomadagascar\.com$ [NC]
+   RewriteRule ^https://www.mob.consomyzone.geomadagascar.com [L,NE,R=301]
+   
+  
+   RewriteCond %{REQUEST_FILENAME} !-f 
+   #RewriteCond %{REQUEST_FILENAME} !-d
+   RewriteRule ^(.*)$ public/index.php [QSA,L]
+   
+   RewriteCond %{HTTP_HOST} ^mob\.consomyzone\.geomadagascar\.com$ [NC] 
+   RewriteRule ^(.*)$ https://www.mob.consomyzone.geomadagascar.com [L,R=301]
+   
+   #RewriteCond %{HTTP_HOST} ^(www\.dev\.)geomadagascar\.com/$
+   #RewriteRule ^http://www.geomadagascar.com [L,NE,R=301]
+   #RewriteCond %{REQUEST_URI} !^public/ [NC]
+   #RewriteCond %{REQUEST_FILENAME} !-f
+   #RewriteCond %{REQUEST_FILENAME} !-d
+   #RewriteRule ^(.*)$ public/$1 [L]
+  
+   
+  
+  
+</IfModule>

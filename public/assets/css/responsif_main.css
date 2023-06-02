@@ -849,3 +849,27 @@
 
 }
 
+@media screen and (min-width: 1900px){
+    .content_right_actualite .exprime-pub{
+        margin-top: 300px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t{
+        margin-top: -276px !important;
+    }
+
+    .content_right_actualite .champ-pub {
+        width: 76.4vw !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 140px !important;
+    }
+
+    .content_right_actualite {
+        top: -54px !important;
+    }
+    .container-invitation {
+        margin-left: 419px !important;
+    }
+}

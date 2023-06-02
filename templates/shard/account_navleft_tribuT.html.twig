@@ -27,7 +27,7 @@
 							<li>
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
-										 <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? asset(tribus.logo_path): asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> 
+										 <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> 
 									</div>
 									<div class="col-9">
 										<p>
@@ -41,7 +41,7 @@
 							<li>
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
-									<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? asset(tribu.logo_path | replace({'/public':''})): asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">
+									<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public'~ tribu.logo_path: asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">
 
 									</div>
 									<div class="col-9">
@@ -71,7 +71,7 @@
 							<li>
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
-										 <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? asset(tribus.logo_path): asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> 
+										 <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> 
 									</div>
 									<div class="col-9">
 										<p>
@@ -85,7 +85,7 @@
 							<li>
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
-										<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? asset(tribu.logo_path): asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">
+										<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public' ~ tribu.logo_path : asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">
 									</div>
 									<div class="col-9">
 										<p>

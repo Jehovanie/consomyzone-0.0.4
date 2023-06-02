@@ -462,7 +462,7 @@ window.addEventListener('load', () => {
                 markers = L.markerClusterGroup({
                     chunkedLoading: true,
                     spiderfyOnMaxZoom: true,
-                    spiderfyOnEveryZoom: true,
+                    // spiderfyOnEveryZoom: true,
                     iconCreateFunction: function (cluster) {
                         if(marker_last_selected){
                             let sepcMarmerIsExist = false;
@@ -866,7 +866,7 @@ window.addEventListener('load', () => {
 
                 markers = L.markerClusterGroup({
                     chunkedLoading: true,
-                    spiderfyOnEveryZoom: true,
+                    //spiderfyOnEveryZoom: true,
                     spiderfyOnMaxZoom: true,
                     iconCreateFunction: function (cluster) {
                         if(marker_last_selected){
@@ -1061,19 +1061,21 @@ function chargeMapAndMarkers(response1, map, markers) {
             }
 
         })
-        var marker = new MarkerCustom(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'), cleNom: item.denominationF, id: item.id });
+        var marker = new MarkerCustom(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'), cleNom: item.denominationF, id: item.id });
         //console.log(marker)
         tabMarker.push(marker)
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
         
         marker.on('click', (e) => {
             const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-            map.setView(latlng, 15);
+            let currentZoom=map.getZoom();
+            map.setView(latlng, currentZoom);
 
             const url = new URL(window.location.href);
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png"
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                    iconSize:[32,50]
                 }
             })
             marker.setIcon(new icon_R);
@@ -1081,7 +1083,8 @@ function chargeMapAndMarkers(response1, map, markers) {
             if (marker_last_selected) {
                 const icon_B = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png"
+                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
+                        iconSize:[32,50]
                     }
                 })
                 marker_last_selected.setIcon(new icon_B)
@@ -1123,7 +1126,7 @@ function chargeMapAndMarkers(response1, map, markers) {
 
             }
 
-            markers.refreshClusters();
+           markers.refreshClusters();
         });
         markers.addLayer(marker);
     });

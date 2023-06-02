@@ -4,10 +4,11 @@
 var tribu_t_name_0 = ""; 
 var id_c_u //id du user courant
 let image_list = [];
-var worker = new Worker('/assets/js/tribuT/worker.js');
-var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js')
-var workerGetCommentaireTribuT=new Worker('/assets/js/tribuT/worker_cmnt.js')
+var worker = new Worker('/public/assets/js/tribuT/worker.js');
+var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js')
+var workerGetCommentaireTribuT=new Worker('/public/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t 
+var descriptionTribuT=""
 /**
  * create tribu_t section
  */
@@ -136,7 +137,7 @@ function showPartisan() {
                     document.querySelector("#tribu_t_conteuneur").innerHTML += `
                         <div class="card-partisons row">
                             <div class="partisons-pdp col-6">
-                                <img src="${profil.replace("/public","")}" alt="">
+                                <img src="${profil}" alt="">
                             </div>
                             <div class="partisons-text col-6">
                                 <h4>${lastName} <span> ${firstName}</span></h4>
@@ -184,7 +185,11 @@ function updatePdpTribu_T(files) {
             },
             body: JSON.stringify(param)
         })
-        fetch(request)
+        fetch(request).then(responses=>{
+            if(responses.ok && responses.status === 200){
+                document.querySelector("#content-pub-js > div.card-couverture-pub-tribu-t > div > div.row > div.col-3 > div > div:nth-child(1) > img").src=evt.target.result
+            }
+        })
        
     })
     fR.readAsDataURL(files);
@@ -233,9 +238,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
         detailsTribuT = data.tribu_t_joined
 
     console.log(JSON.parse(detailsTribuT).tribu_t)
-
+    
     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
     tribu_t_name_0 = tribu_t[0].name
+    descriptionTribuT=tribu_t[0].description
     let restExtension = ""
     if (tribu_t[0].extension) {
         restExtension=` <li class="listNavBarTribu restoNotHide">
@@ -244,9 +250,9 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
     }
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
-        image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+        image_tribu_t = `<img src="/public${tribu_t[0].logo_path}" alt="123">` 
     } else {
-        image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
+        image_tribu_t = `<img src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
@@ -304,7 +310,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 <center id="createPubBloc">
                     <div class="row p-3 champ-pub">
                         <div class="col-1 rounded-circle">
-                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/uploads/users/photos/img_avatar.png">
+                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/public/uploads/users/photos/img_avatar.png">
                         </div>
                         <div class="col-11">
                             <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
@@ -368,14 +374,14 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 } else {
                     dataNbr = data[i].nbr + " "
                 }
-                let confidentiality = parseInt(data[i].confidentiality);
+                let confidentiality = parseInt(data[i].confidentiality,10);
                 let contentPublication=""
                 if (confidentiality === 1) {
                     contentPublication = `<div class="pub-tribu-t mt-3">
                         <div class="name-pub">
                             <div class="row head-pub">
                                 <div class="col-1">
-                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                 </div>
                                 <div class="col-10 mt-3">
 
@@ -446,12 +452,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 } else if(confidentiality === 2){
                     //moi uniquement 
                     console.log(id_c_u,data[i].user_id)
-                    if (parseInt(id_c_u,10)===data[i].user_id) {
+                    if (parseInt(id_c_u,10)===parseInt(data[i].user_id,10)) {
                         contentPublication = `<div class="pub-tribu-t mt-3">
                                             <div class="name-pub">
                                                 <div class="row head-pub">
                                                     <div class="col-1">
-                                                        <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                        <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                                     </div>
                                                     <div class="col-10 mt-3">
 
@@ -567,7 +573,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                         <div class="name-pub">
                                             <div class="row head-pub">
                                                 <div class="col-1">
-                                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                                 </div>
                                                 <div class="col-10 mt-3">
 
@@ -856,9 +862,9 @@ function showResto(table_rst_pastilled,id_c_u){
                                     </div>
                                     <div class="col-4">
                                         <div class="apropos-tribu-t ps-2 ">
-                                            <p class="fw-bold">Apropos Tribu-t</p>
+                                            <p class="fw-bold">A propos tribu-t</p>
                                             <p>
-                                                apropo de tribu t
+                                                ${descriptionTribuT}
                                             </p>
                                         </div>
                                     </div>
@@ -1333,7 +1339,7 @@ function showPhotos(){
                 let li_img =''
 
                 for (let photo of data) {
-                    let img_src =photo.photo.replaceAll("/public","");
+                    let img_src =photo.photo; //replaceAll("/public","");
                     li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
                 }
                 setGallerie(document.querySelectorAll(".img_gal"))
