@@ -914,7 +914,7 @@ function setIcon(urlIcon) {
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
-        iconSize: [20, 35],
+        iconSize: [32, 50],
         iconAnchor: [30, 50],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',

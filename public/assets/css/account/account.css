@@ -1049,7 +1049,7 @@ thead > tr{
 .content_right_actualite .pub-tribu-t{
     background-color: #fff;
     border-radius: 15px;
-    width: 720px;
+    /* width: 720px; */
 }
 
 .content_right_actualite .pub-tribu-t .name-pub .mini-pdp{
@@ -1851,4 +1851,8 @@ a:focus {
     width: 650px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.content_left_menu_account{
+    background-color: #fff;
 }

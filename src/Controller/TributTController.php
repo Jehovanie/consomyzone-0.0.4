@@ -229,14 +229,23 @@ class TributTController extends AbstractController
         
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
-        
-            
 
-        
-        foreach ($userTribu_T["tribu_t"] as $k =>$v) {
-            if (in_array($tribu_t_name, $v)) {
-                $v["logo_path"]=$path.$imageName;
-                $userTribu_T["tribu_t"][$k]= $v;
+
+
+
+        foreach ($userTribu_T["tribu_t"] as $k => $v) {
+            if (is_array($v)) {
+                if (in_array($tribu_t_name, $v)) {
+                    $v["logo_path"] = $path . $imageName;
+                    $userTribu_T["tribu_t"][$k] = $v;
+                }
+            } else {
+                //dump($k);
+                if ($k == "logo_path") {
+                    $v = $path . $imageName;
+                    $userTribu_T["tribu_t"][$k] = $v;
+                }
+                //dump($v); 
             }
         }
 
@@ -1916,10 +1925,10 @@ class TributTController extends AbstractController
         $userId= $user->getId();
         $jsonParsed=json_decode($request->getContent(),true);
         $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $publication= $jsonParsed["contenu"];
-        $confid=$jsonParsed["confidentialite"];
-        $image= $jsonParsed["base64"];
-        dump($image);
+        $tribuName = strreplace(" ", "", strtolower($data["tribuTName"]));
+        $tmp = Normalizer::normalize($tribuName, Normalizer::NFD);
+        $tribuTNameFinal = preg_replace('/[[:^print:]]/', '', $tmp);
+        $path = '/public/uploads/tribu_t/photo/tribut' . $user->getId() . "_" . $tribuTNameFinal . "/"; 
         $imageName= $jsonParsed["photoName"];
         $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
