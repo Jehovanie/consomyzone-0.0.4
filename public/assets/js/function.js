@@ -1151,9 +1151,13 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         offset: L.point(0, -30) 
                     }).openTooltip();
 
+                    var currentZoom=18;
+                    map.on('resize zoom',e=>{
+                        currentZoom=map.getZoom()
+                    })
                     marker.on('click', (e) => {
                         const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-                        let currentZoom=map.getZoom() //TODO change here!!!!
+                        
                         map.setView(latlng, currentZoom);
 
                         const url = new URL(window.location.href);
