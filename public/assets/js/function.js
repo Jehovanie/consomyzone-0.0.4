@@ -1163,7 +1163,8 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         const url = new URL(window.location.href);
                         const icon_R = L.Icon.extend({
                             options: {
-                                iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png"
+                                iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                                iconSize:[32,52]
                             }
                         })
                         marker.setIcon(new icon_R);
@@ -1171,7 +1172,8 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         if (marker_last_selected) {
                             const icon_B = L.Icon.extend({
                                 options: {
-                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png"
+                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
+                                    iconSize:[32,52]
                                 }
                             })
                             marker_last_selected.setIcon(new icon_B)
