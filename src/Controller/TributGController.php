@@ -8,10 +8,6 @@ use App\Entity\Consumer;
 
 use App\Entity\Supplier;
 
-use App\Entity\Consumer;
-
-use App\Entity\Supplier;
-
 use App\Service\UserService;
 
 use App\Service\TributGService;
