@@ -4,11 +4,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Consumer;
 
-
-use App\Entity\User;
-
-
+use App\Entity\Supplier;
 
 use App\Entity\Consumer;
 

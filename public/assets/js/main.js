@@ -1,4 +1,4 @@
-const IS_DEV_MODE= true;
+const IS_DEV_MODE= false;
 
 if(document.querySelector("#close-navleft")){
     document.querySelector("#close-navleft").addEventListener('click', () => {

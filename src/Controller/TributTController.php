@@ -31,7 +31,7 @@ use App\Service\Tribu_T_Service;
 use App\Service\RequestingService;
 
 use App\Service\NotificationService;
-use App\Services\FilesUtils;
+use App\Service\FilesUtils;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -100,7 +100,6 @@ class TributTController extends AbstractController
        
         //$r=$request->request->all();
         $this->form->handleRequest($request);
-        dd($this->form->getData());
         // $targetPath=  $this->getParameter('kernel.project_dir') . "/public/uploads/photos/";
         // $r=new FilesUtils($targetPath, $r["uploadBtn"], "uploadBtn");
         // $r->upload();
@@ -217,6 +216,7 @@ class TributTController extends AbstractController
         $user = $this->getUser();
         $userId = $user->getId();
         $userTribu_T=json_decode($user->getTribuT(),true);
+        
         $jsonParsed = json_decode($request->getContent(), true);
         $tribu_t_name =  $jsonParsed["tribu_t_name"];
         $image =  $jsonParsed["base64"] ;
@@ -234,12 +234,19 @@ class TributTController extends AbstractController
 
         
         foreach ($userTribu_T["tribu_t"] as $k =>$v) {
-            if (in_array($tribu_t_name, $v)) {
-                $v["logo_path"]=$path.$imageName;
-                $userTribu_T["tribu_t"][$k]= $v;
+            if(is_array($v)){
+                if (in_array($tribu_t_name, $v)) {
+                    $v["logo_path"]=str_replace("/public","",$path.$imageName);
+                    $userTribu_T["tribu_t"][$k]= $v;
+                }
+            }else{
+                if($k== "logo_path"){
+                    $v=str_replace("/public","",$path.$imageName);
+                    $userTribu_T["tribu_t"][$k]= $v;
+                }
             }
+            
         }
-
         
         $response = new Response();
         try{
@@ -308,7 +315,6 @@ class TributTController extends AbstractController
 
 
 
-        //dd("Id posteur : " . $userPost["user_post"] . " Invitation : " . $userPost["invitation"]);
 
 
 
@@ -390,7 +396,6 @@ class TributTController extends AbstractController
 
 
 
-        //dd("Id posteur : " . $userPost["user_post"] . " Invitation : " . $userPost["invitation"]);
 
 
 
@@ -513,12 +518,6 @@ class TributTController extends AbstractController
 
 
         $users = $tribut->showMember($table);
-
-
-
-        //dd($users);
-
-
 
         $tableau = array();
 
@@ -663,11 +662,6 @@ class TributTController extends AbstractController
         $tribus = $tribu_t->showRightTributName($table_tribu);
 
 
-
-        //dd($tribus);
-
-
-
         $rows = $tribu_t->fetchAllPub($table);
 
 
@@ -769,8 +763,6 @@ class TributTController extends AbstractController
         $table_resto = $table_tribu.'_restaurant';
 
         $has_restaurant = $tribu_t->hasTableResto($table_resto);
-        //dd($has_restaurant);
-        //dd($tribu_t->getRestoPastilles($table_resto));
 
         foreach ($pubs as $key) {
 
@@ -977,7 +969,6 @@ class TributTController extends AbstractController
 
         
 
-        // dd($tribuTable);
 
 
 
@@ -1387,7 +1378,6 @@ class TributTController extends AbstractController
 
 
 
-        // dd(intval($notif_id));
 
 
 
@@ -1481,7 +1471,6 @@ class TributTController extends AbstractController
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
         }
-        dump($restos);
         return $this->json($restos);
 
     }
@@ -1502,7 +1491,6 @@ class TributTController extends AbstractController
         if ($has_restaurant == true) {
             $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
         }
-        // dump($restos);
         return $this->json($restos);
     }
 
@@ -1913,9 +1901,10 @@ class TributTController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
            
             $data = $form->getData();
-            //dd($data);
             $tribuName= str_replace(" ","_", strtolower($data["tribuTName"]));
-            $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuName."/";
+            $tmp=Normalizer::normalize($tribuName,Normalizer::NFD);
+            $tribuTNameFinal=preg_replace('/[[:^print:]]/', '', $tmp);
+            $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuTNameFinal."/";
             if( !($filesyst->exists($this->getParameter('kernel.project_dir').$path)))
                     $filesyst->mkdir($this->getParameter('kernel.project_dir').$path,0777);
 
@@ -1927,9 +1916,11 @@ class TributTController extends AbstractController
                 $path= $path . $filename;
             
             //TODO create tribu-t
+            
+            
             $body=array(
-                "path" => str_replace('/public',"",$path),
-                "tribu_t_name"=>$data["tribuTName"],
+                "path" => str_replace("/public","",$path),
+                "tribu_t_name"=>$tribuTNameFinal,
                 "description"=>$data["description"],
                 "adresse"=>$data["adresse"], 
                 "extension"=>$data["extension"]);
@@ -1985,9 +1976,11 @@ class TributTController extends AbstractController
         //end publication seding 
     }
     #[Route("/user/create-one/publication", name:"user_create_publication")]
-    public function createOnePublication(Request $request, 
-    Tribu_T_Service $tribuTService,
-    Filesystem $filesyst){
+    public function createOnePublication(
+        Request $request, 
+        Tribu_T_Service $tribuTService,
+        Filesystem $filesyst
+    ){
         $user=$this->getUser();
         $userId= $user->getId();
         $jsonParsed=json_decode($request->getContent(),true);
@@ -1995,7 +1988,6 @@ class TributTController extends AbstractController
         $publication= $jsonParsed["contenu"];
         $confid=$jsonParsed["confidentialite"];
         $image= $jsonParsed["base64"];
-        dump($image);
         $imageName= $jsonParsed["photoName"];
         $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
@@ -2050,7 +2042,6 @@ class TributTController extends AbstractController
 
     {
 
-        // //dd($body);
         $user = $this->getUser();
 
         $userId = $user->getId();
