@@ -42,7 +42,7 @@ body{
     
     position: absolute;
     right: 0;
-    top: 40px;
+    top: 78px;
     padding: 15px;
 
 }
@@ -990,7 +990,7 @@ thead > tr{
 .content_right_actualite .card-couverture-pub-tribu-t{
     width: 76vw;
     height: 28vh;
-    margin-top: -215px;
+    margin-top: -225px;
     background-color: #fff;
     border-radius: 15px ;
     position: fixed;
@@ -1010,7 +1010,7 @@ thead > tr{
 }
 
 .content_right_actualite .exprime-pub {
-    margin-top: 235px;
+    margin-top: 245px;
     
 }
 
@@ -1025,7 +1025,7 @@ thead > tr{
 }
 
 .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img{
-    height: 100px;
+    height: 105px;
     border-radius: 10px;
     margin-left: 15px;
     margin-top: 15px;
@@ -1049,7 +1049,6 @@ thead > tr{
 .content_right_actualite .pub-tribu-t{
     background-color: #fff;
     border-radius: 15px;
-    /* width: 720px; */
 }
 
 .content_right_actualite .pub-tribu-t .name-pub .mini-pdp{
@@ -1364,13 +1363,13 @@ thead > tr{
 
 
 
-.container {
+/* .container {
     width: 78vw;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
-}
+} */
 
 .center-block {
     max-width: 45rem;
@@ -1724,12 +1723,12 @@ thead > tr{
     fill: var(--body-color);
 }
 
-a,
+/* a,
 a:link {
     color: var(--body-color);
     text-decoration: none;
     transition: 0.3s linear;
-}
+} */
 
 a:hover {
     color: var(--body-color-hover);
@@ -1852,7 +1851,6 @@ a:focus {
     margin-left: auto;
     margin-right: auto;
 }
-
 .content_left_menu_account{
     background-color: #fff;
 }

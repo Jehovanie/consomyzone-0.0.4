@@ -911,13 +911,14 @@
     }
 }
 
-@media screen and (min-width: 1900px) {
-    .content_right_actualite .exprime-pub {
-        margin-top: 300px !important;
+
+@media screen and (min-width: 1900px){
+    .content_right_actualite .exprime-pub{
+        margin-top: 340px !important;
     }
 
-    .content_right_actualite .card-couverture-pub-tribu-t {
-        margin-top: -276px !important;
+    .content_right_actualite .card-couverture-pub-tribu-t{
+        margin-top: -315px !important;
     }
 
     .content_right_actualite .champ-pub {
@@ -925,14 +926,39 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-        height: 140px !important;
+        height: 165px !important;
     }
 
     .content_right_actualite {
         top: -54px !important;
     }
-
     .container-invitation {
         margin-left: 419px !important;
+    }
+
+    .content_list {
+        margin-top: 140px !important;
+    }
+
+    .content_right_actualite {
+        margin-top: 150px;
+    }
+}
+
+@media screen and (min-width: 1445px) and (max-width: 1899px){
+    .container-invitation {
+        margin-left: 430px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t {
+        margin-top: -315px !important;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 334px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 165px !important;
     }
 }

@@ -8,7 +8,7 @@
                 {% block title %}Welcome!{% endblock %}
         </title>
 
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <link rel="icon" href="{{asset('assets/icon/icon_cmz.jpg')}}">
         
         <link rel="stylesheet" href="{{asset('assets/css/main.css')}}">
         <link rel="stylesheet" href="{{asset('assets/css/chargement_style.css')}}">
@@ -37,8 +37,7 @@
         <script src="{{ asset('assets/js/centers_tous.js') }}" defer></script>
         <script src="{{ asset('assets/js/franceGeoJson.js') }}" defer></script>
         <script src="{{asset("assets/js/app.js")}}" defer></script>
-        <script src="{{asset('assets/js/main.js')}}" defer></script>
-        <script src="{{asset("assets/js/function.js")}}" defer></script>
+       <script src="{{asset("assets/js/function.js")}}" defer></script>
 
         <script src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js" integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=" crossorigin=""></script>
         <script src="{{asset("assets/js/account/linkActive.js")}}" defer></script>

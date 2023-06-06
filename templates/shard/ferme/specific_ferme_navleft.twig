@@ -1,9 +1,10 @@
-<div class="navleft fixed-top">
+<div class="navleft fixed-top result_container_ferme_spec">
+
     <nav class="navbar navbar-light navbar-light-left fixed-top">
         <div class="container-fluid">
             
-                <div class="row">
-                    <div class="col-md-2 mt-4">
+                <div class="row mt-3">
+                    <div class="col-8 mt-5">
                         <a href="{{path('all_departement') }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                             width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
@@ -19,7 +20,7 @@
                             </svg>
                         </a>
                     </div>
-                    <div class="col-md-7">
+                    {# <div class="col-md-7">
                        
                         <a class="logo" href="#">
                             <img src="{{asset('assets/image/logo.png')}}" alt="" >
@@ -61,6 +62,9 @@
                                 4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
                             </g>
                         </svg>
+                    </div> #}
+                    <div class="col-2 mt-5">
+                        <i class="fa-solid fa-x" id="close-list-depart-ferme-spec" style="margin-left: 165px;"></i>
                     </div>
                 </div>
             <hr>
@@ -68,7 +72,7 @@
         
     </nav>
     <div class="container-fluid list-depart">
-        <div class="head-left">
+        <div class="head-left spec-dep">
             <div class="row">
                 <div class="col-md-2">
                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">

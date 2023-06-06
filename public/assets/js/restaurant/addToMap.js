@@ -6,5 +6,9 @@ window.addEventListener('load', () => {
         document.querySelector("#close-navleft").click();
     }
 
+    ///we use this variable to keep track for user search
+    if( localStorage.getItem("type")){
+        rmDataInLocalStorage("type")
+    }
     setDataInLocalStorage("type", "restaurant");
 })

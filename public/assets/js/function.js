@@ -59,11 +59,10 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
             json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
+            
         } else if (map_for_type === "home") {
-
             // latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
             latlng = L.latLng(latitude, longitude);
-            json = latlng
             zoom = 12;
         } else if (map_for_type === "ferme") {
 
@@ -76,7 +75,8 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         }
-        centered = json ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
+
+        centered = id_dep ? latlng : ( json ? L.latLng(json.coord.lat, json.coord.lng) : latlng)
 
         var container = L.DomUtil.get('map');
         if (container != null) {
@@ -909,13 +909,13 @@ function addControlPlaceholders(map) {
 }
 
 ///jheo: dynamique icon for map leaflet. ---------
-function setIcon(urlIcon) {
+function setIconn(urlIcon) {
     const url = new URL(window.location.href);
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
         iconSize: [32, 50],
-        iconAnchor: [30, 50],
+        iconAnchor: [11, 30],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
         shadowSize: [68, 95],
@@ -976,9 +976,9 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     var marker;
 
                     if (item.id != id_resto_url) {
-                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-resto-bleu.png') });
+                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/icon-resto-bleu.png') });
                     } else {
-                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/icon-restoR.png') });
+                        marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/icon-restoR.png') });
                         lat_selected = parseFloat(item.poiY)
                         lng_selected = parseFloat(item.poiX)
                     }
@@ -1138,9 +1138,11 @@ function addRestaurantToMap(nom_dep, code_dep) {
                     let marker = L.marker(
                         L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)),
                         { 
-                            icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),
+                            icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
+                           
                             cleNom: item.denominationF,
                             id: item.id
+
                         }
                     );
 
@@ -1149,14 +1151,20 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         offset: L.point(0, -30) 
                     }).openTooltip();
 
+                    var currentZoom=18;
+                    map.on('resize zoom',e=>{
+                        currentZoom=map.getZoom()
+                    })
                     marker.on('click', (e) => {
                         const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-                        map.setView(latlng, 13);
+                        
+                        map.setView(latlng, currentZoom);
 
                         const url = new URL(window.location.href);
                         const icon_R = L.Icon.extend({
                             options: {
-                                iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png"
+                                iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                                iconSize:[32,52]
                             }
                         })
                         marker.setIcon(new icon_R);
@@ -1164,7 +1172,8 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         if (marker_last_selected) {
                             const icon_B = L.Icon.extend({
                                 options: {
-                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png"
+                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
+                                    iconSize:[32,52]
                                 }
                             })
                             marker_last_selected.setIcon(new icon_B)

@@ -1,5 +1,5 @@
-<div class="navleft fixed-top">
-	<nav class="navbar navbar-light navbar-light-left fixed-top">
+<div class="navleft fixed-top result_container_station">
+	{# <nav class="navbar navbar-light navbar-light-left fixed-top">
 		<div class="container-fluid">
 
 			<div class="row">
@@ -47,7 +47,7 @@
 			<hr>
 		</div>
 
-	</nav>
+	</nav> #}
 	<div class="container-fluid list-depart">
 		<div class="head-left">
 			<div class="row">
@@ -68,17 +68,19 @@
 						</g>
 					</svg>
 				</div>
-				<div class="col-md-10">
+				<div class="col-md-8">
 					<p>
 						Station-service dans tous les départements. <br>
 						<span class="content_nombre_result_js_jheo">{{total_number_station}}</span>
 						résultats
 					</p>
 				</div>
-
-				<div class="choix_list_cart mx-auto">
-                    <input class="input-grey-rounded recherche-input-station-tom-js" type="text" placeholder="Recherche par departement ">
+				<div class="col-md-2">
+                    <i class="fa-solid fa-x" id="close-list-depart-station"></i>
                 </div>
+				{# <div class="choix_list_cart mx-auto">
+                    <input class="input-grey-rounded recherche-input-station-tom-js" type="text" placeholder="Recherche par departement ">
+                </div> #}
 			</div>
 			<div class="container list-depart-all" id="Scrollbar">
 				<div id="list_departements">

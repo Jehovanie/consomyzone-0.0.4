@@ -20,7 +20,7 @@
 			class="" id="gallery" style="width:100%"> {# <div class="col-lg-4 col-md-12 mb-4 mb-lg-0" id="gallery"> #}
 			{% for single_photo in photos %}
 				{% if single_photo.photo %}
-					<img src="{{single_photo.photo}}" {# src={{asset("uploads/tribu_t/photos/" ~ single_photo.photo)}} #} class="" alt="Boat on Calm Water"/>
+					<img src={{ asset('uploads/tribu_g/photos/') ~ single_photo.photo }} {# src={{asset("uploads/tribu_t/photos/" ~ single_photo.photo)}} #} class="" alt="Boat on Calm Water"/>
 				{% endif %}
 			{% endfor %}
 		</div>

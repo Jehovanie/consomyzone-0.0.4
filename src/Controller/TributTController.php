@@ -31,7 +31,7 @@ use App\Service\Tribu_T_Service;
 use App\Service\RequestingService;
 
 use App\Service\NotificationService;
-use App\Services\FilesUtils;
+use App\Service\FilesUtils;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -100,7 +100,6 @@ class TributTController extends AbstractController
        
         //$r=$request->request->all();
         $this->form->handleRequest($request);
-        dd($this->form->getData());
         // $targetPath=  $this->getParameter('kernel.project_dir') . "/public/uploads/photos/";
         // $r=new FilesUtils($targetPath, $r["uploadBtn"], "uploadBtn");
         // $r->upload();
@@ -217,6 +216,7 @@ class TributTController extends AbstractController
         $user = $this->getUser();
         $userId = $user->getId();
         $userTribu_T=json_decode($user->getTribuT(),true);
+        
         $jsonParsed = json_decode($request->getContent(), true);
         $tribu_t_name =  $jsonParsed["tribu_t_name"];
         $image =  $jsonParsed["base64"] ;
@@ -230,25 +230,21 @@ class TributTController extends AbstractController
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
 
-
-
-
-        foreach ($userTribu_T["tribu_t"] as $k => $v) {
-            if (is_array($v)) {
+        
+        foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+            if(is_array($v)){
                 if (in_array($tribu_t_name, $v)) {
-                    $v["logo_path"] = $path . $imageName;
-                    $userTribu_T["tribu_t"][$k] = $v;
+                    $v["logo_path"]=str_replace("/public","",$path.$imageName);
+                    $userTribu_T["tribu_t"][$k]= $v;
                 }
-            } else {
-                //dump($k);
-                if ($k == "logo_path") {
-                    $v = $path . $imageName;
-                    $userTribu_T["tribu_t"][$k] = $v;
+            }else{
+                if($k== "logo_path"){
+                    $v=str_replace("/public","",$path.$imageName);
+                    $userTribu_T["tribu_t"][$k]= $v;
                 }
-                //dump($v); 
             }
+            
         }
-
         
         $response = new Response();
         try{
@@ -317,7 +313,6 @@ class TributTController extends AbstractController
 
 
 
-        //dd("Id posteur : " . $userPost["user_post"] . " Invitation : " . $userPost["invitation"]);
 
 
 
@@ -399,7 +394,6 @@ class TributTController extends AbstractController
 
 
 
-        //dd("Id posteur : " . $userPost["user_post"] . " Invitation : " . $userPost["invitation"]);
 
 
 
@@ -522,12 +516,6 @@ class TributTController extends AbstractController
 
 
         $users = $tribut->showMember($table);
-
-
-
-        //dd($users);
-
-
 
         $tableau = array();
 
@@ -672,11 +660,6 @@ class TributTController extends AbstractController
         $tribus = $tribu_t->showRightTributName($table_tribu);
 
 
-
-        //dd($tribus);
-
-
-
         $rows = $tribu_t->fetchAllPub($table);
 
 
@@ -778,8 +761,6 @@ class TributTController extends AbstractController
         $table_resto = $table_tribu.'_restaurant';
 
         $has_restaurant = $tribu_t->hasTableResto($table_resto);
-        //dd($has_restaurant);
-        //dd($tribu_t->getRestoPastilles($table_resto));
 
         foreach ($pubs as $key) {
 
@@ -986,7 +967,6 @@ class TributTController extends AbstractController
 
         
 
-        // dd($tribuTable);
 
 
 
@@ -1396,7 +1376,6 @@ class TributTController extends AbstractController
 
 
 
-        // dd(intval($notif_id));
 
 
 
@@ -1490,7 +1469,6 @@ class TributTController extends AbstractController
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
         }
-        dump($restos);
         return $this->json($restos);
 
     }
@@ -1511,7 +1489,6 @@ class TributTController extends AbstractController
         if ($has_restaurant == true) {
             $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
         }
-        // dump($restos);
         return $this->json($restos);
     }
 
@@ -1704,55 +1681,131 @@ class TributTController extends AbstractController
     #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
     public function sendInvitationPerEmail(
         Request $request,
+        UserRepository $userRepository,
         MailService $mailService,
         UserService $userService,
         RouterInterface $router,
-        Tribu_T_Service $tribuTService
+        Tribu_T_Service $tribuTService,
+        NotificationService $notification
     )
     {
         if(!$this->getUser()){
             return $this->json(["result" => "error"] , 401);
         }
 
+        $userId = $this->getUser()->getId();
+
+        $userEmail = $this->getUser()->getEmail();
+
         $data = json_decode($request->getContent(), true);
+
         extract($data); ///$table, $principal, $cc ,$object, $description
-        $from_fullname = $userService->getUserFirstName($this->getUser()->getId()) . $userService->getUserLastName($this->getUser()->getId());
 
+        $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
 
-        //// prepare email which we wish send
-        $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+        $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
         
-        $tribuTService->addMemberTemp($table, $principal);
-        // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-        $mailService->sendEmail(
-            $this->getUser()->getEmail(),
-            $from_fullname,
-            $principal,
-            "Amis",
-            $object,
-            // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
-        );
+        $type = "invitation";
 
+        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+    
+        
+         
+        if($userRepository->findOneBy(["email" => $principal])){
+
+            /** URL FOR MEMBER
+             * EDITED By Nantenaina
+            */
+            $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $mailService->sendEmail(
+                $userEmail,
+                $from_fullname,
+                $principal,
+                "Amis",
+                $object,
+                // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+            );
+
+            $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
+
+            $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+
+            if ($isMembre == "not_invited") {
+                $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+                $tribuTService->addMember($table, $id_receiver);
+                $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+                $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+            }
+
+        }else{
+            //// prepare email which we wish send
+            $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+            $tribuTService->addMemberTemp($table, $principal);
+            // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
+            $mailService->sendEmail(
+                $userEmail,
+                $from_fullname,
+                $principal,
+                "Amis",
+                $object,
+                // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
+            );
+        }
 
         if( count($cc) > 0 ){
+
             foreach($cc as $c){
 
-                $tribuTService->addMemberTemp($table, $c);
+                if($userRepository->findOneBy(["email" => $c])){
 
-                //// prepare email which we wish send
-                $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
-                
-                // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-                $mailService->sendEmail(
-                    $this->getUser()->getEmail(),
-                    $from_fullname,
-                    $c,
-                    "Amis",
-                    $object,
-                    // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                    $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
-                );
+                    /** URL FOR MEMBER
+                     * EDITED By Nantenaina
+                    */
+                    $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
+        
+                    $mailService->sendEmail(
+                        $userEmail,
+                        $from_fullname,
+                        $c,
+                        "Amis",
+                        $object,
+                        // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                        $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+                    );
+        
+                    $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
+        
+                    $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+        
+                    if ($isMembre == "not_invited") {
+                        $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+                        $tribuTService->addMember($table, $id_receiver);
+                        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+                        $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                        $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+                    }
+        
+                }else{
+                    $tribuTService->addMemberTemp($table, $c);
+
+                    //// prepare email which we wish send
+                    $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+                    
+                    // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
+                    $mailService->sendEmail(
+                        $userEmail,
+                        $from_fullname,
+                        $c,
+                        "Amis",
+                        $object,
+                        // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                        $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+                    );
+                }
 
             }
         }
@@ -1846,9 +1899,10 @@ class TributTController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
            
             $data = $form->getData();
-            //dd($data);
             $tribuName= str_replace(" ","_", strtolower($data["tribuTName"]));
-            $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuName."/";
+            $tmp=Normalizer::normalize($tribuName,Normalizer::NFD);
+            $tribuTNameFinal=preg_replace('/[[:^print:]]/', '', $tmp);
+            $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuTNameFinal."/";
             if( !($filesyst->exists($this->getParameter('kernel.project_dir').$path)))
                     $filesyst->mkdir($this->getParameter('kernel.project_dir').$path,0777);
 
@@ -1860,9 +1914,11 @@ class TributTController extends AbstractController
                 $path= $path . $filename;
             
             //TODO create tribu-t
+            
+            
             $body=array(
-                "path" => str_replace('/public',"",$path),
-                "tribu_t_name"=>$data["tribuTName"],
+                "path" => str_replace("/public","",$path),
+                "tribu_t_name"=>$tribuTNameFinal,
                 "description"=>$data["description"],
                 "adresse"=>$data["adresse"], 
                 "extension"=>$data["extension"]);
@@ -1918,17 +1974,18 @@ class TributTController extends AbstractController
         //end publication seding 
     }
     #[Route("/user/create-one/publication", name:"user_create_publication")]
-    public function createOnePublication(Request $request, 
-    Tribu_T_Service $tribuTService,
-    Filesystem $filesyst){
+    public function createOnePublication(
+        Request $request, 
+        Tribu_T_Service $tribuTService,
+        Filesystem $filesyst
+    ){
         $user=$this->getUser();
         $userId= $user->getId();
         $jsonParsed=json_decode($request->getContent(),true);
         $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $tribuName = strreplace(" ", "", strtolower($data["tribuTName"]));
-        $tmp = Normalizer::normalize($tribuName, Normalizer::NFD);
-        $tribuTNameFinal = preg_replace('/[[:^print:]]/', '', $tmp);
-        $path = '/public/uploads/tribu_t/photo/tribut' . $user->getId() . "_" . $tribuTNameFinal . "/"; 
+        $publication= $jsonParsed["contenu"];
+        $confid=$jsonParsed["confidentialite"];
+        $image= $jsonParsed["base64"];
         $imageName= $jsonParsed["photoName"];
         $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
@@ -1983,7 +2040,6 @@ class TributTController extends AbstractController
 
     {
 
-        // //dd($body);
         $user = $this->getUser();
 
         $userId = $user->getId();

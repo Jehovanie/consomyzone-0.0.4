@@ -68,36 +68,34 @@ class MarckerClusterStation {
     }
 
     addEventOnMap(map, markers) {
-        map.on("dragend", (e) => {
+        map.on('moveend zoomend dragend', function (e) {
             const coordAndZoom = {
                 zoom: e.target.getZoom(),
                 coord: e.target.getCenter()
             }
             setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
-        })
 
 
-        map.on('moveend zoomend', function (e) {
-            var bounds = map.getBounds();
-            var zoom = map.getZoom();
-            var markersDisplayed = false;
+            // var bounds = map.getBounds();
+            // var zoom = map.getZoom();
+            // var markersDisplayed = false;
 
-            if (zoom > 8) {
-                markers.eachLayer(function (layer) {
-                    if (bounds.contains(layer.getLatLng())) {
-                        markersDisplayed = true;
-                        layer.openPopup();
-                        layer.unbindTooltip()
-                    }
-                });
-            } else if (markersDisplayed) {
-                markersDisplayed = false;
-                markers.eachLayer(function (layer) {
-                    if (bounds.contains(layer.getLatLng())) {
-                        layer.closePopup();
-                    }
-                });
-            }
+            // if (zoom > 8) {
+            //     markers.eachLayer(function (layer) {
+            //         if (bounds.contains(layer.getLatLng())) {
+            //             markersDisplayed = true;
+            //             layer.openPopup();
+            //             layer.unbindTooltip()
+            //         }
+            //     });
+            // } else if (markersDisplayed) {
+            //     markersDisplayed = false;
+            //     markers.eachLayer(function (layer) {
+            //         if (bounds.contains(layer.getLatLng())) {
+            //             layer.closePopup();
+            //         }
+            //     });
+            // }
 
             // this.markers.refreshClusters();
         });
@@ -185,13 +183,14 @@ class MarckerClusterStation {
     addMarker(newData) {
         newData.forEach(item => {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
 
-            // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
+            marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 
-            // marker.on('add', function () {
-            //     marker.openPopup();
-            // });
+            marker.on('add', function () {
+                marker.openPopup();
+            });
+            
             marker.on('click', () => {
 
                 const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
@@ -200,20 +199,34 @@ class MarckerClusterStation {
                 if (screen.width < 991) {
                     getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 } else {
-                    getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
+                    getDetailsStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
                 }
 
                 const url = new URL(window.location.href);
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
+                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                        iconSize: [32,50],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        //shadowUrl: 'my-icon-shadow.png',
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
                     }
                 })
+
                 marker.setIcon(new icon_R);
+
                 if (this.marker_last_selected) {
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png"
+                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
+                            iconSize: [32,50],
+                            iconAnchor: [11, 30],
+                            popupAnchor: [0, -20],
+                            //shadowUrl: 'my-icon-shadow.png',
+                            shadowSize: [68, 95],
+                            shadowAnchor: [22, 94]
                         }
                     })
                     this.marker_last_selected.setIcon(new icon_B)
@@ -331,14 +344,26 @@ class MarckerClusterStation {
                         if (parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))) {
                             const icon_R = L.Icon.extend({
                                 options: {
-                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
+                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                                    iconSize: [32,50],
+                                    iconAnchor: [11, 30],
+                                    popupAnchor: [0, -20],
+                                    //shadowUrl: 'my-icon-shadow.png',
+                                    shadowSize: [68, 95],
+                                    shadowAnchor: [22, 94]
                                 }
                             })
                             layer.setIcon(new icon_R);
                             if (this.marker_last_selected) {
                                 const icon_B = L.Icon.extend({
                                     options: {
-                                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png"
+                                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
+                                        iconSize: [32,50],
+                                        iconAnchor: [11, 30],
+                                        popupAnchor: [0, -20],
+                                        //shadowUrl: 'my-icon-shadow.png',
+                                        shadowSize: [68, 95],
+                                        shadowAnchor: [22, 94]
                                     }
                                 })
                                 this.marker_last_selected.setIcon(new icon_B)
@@ -371,5 +396,13 @@ class MarckerClusterStation {
     resetToDefaultMarkers() {
         this.removeMarker();
         this.addMarker(this.default_data)
+    }
+
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                marker.fireEvent('click');
+            }
+        });
     }
 }

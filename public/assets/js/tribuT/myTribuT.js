@@ -8,6 +8,7 @@ var worker = new Worker('/assets/js/tribuT/worker.js');
 var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js')
 var workerGetCommentaireTribuT=new Worker('/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t 
+var descriptionTribuT=""
 /**
  * create tribu_t section
  */
@@ -184,7 +185,11 @@ function updatePdpTribu_T(files) {
             },
             body: JSON.stringify(param)
         })
-        fetch(request)
+        fetch(request).then(responses=>{
+            if(responses.ok && responses.status === 200){
+                document.querySelector("#content-pub-js > div.card-couverture-pub-tribu-t > div > div.row > div.col-3 > div > div:nth-child(1) > img").src=evt.target.result
+            }
+        })
        
     })
     fR.readAsDataURL(files);
@@ -233,9 +238,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
         detailsTribuT = data.tribu_t_joined
 
     console.log(JSON.parse(detailsTribuT).tribu_t)
-
+    
     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
     tribu_t_name_0 = tribu_t[0].name
+    descriptionTribuT=tribu_t[0].description
     let restExtension = ""
     if (tribu_t[0].extension) {
         restExtension=` <li class="listNavBarTribu restoNotHide">
@@ -243,7 +249,8 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </li>`
     }
     if (tribu_t[0].logo_path) {
-        image_tribu_t = `<img src="../../..${tribu_t[0].logo_path.replaceAll("/public", "")}" alt="123">`
+        // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+        image_tribu_t = `<img src="/public${tribu_t[0].logo_path}" alt="123">` 
     } else {
         image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
@@ -358,17 +365,18 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
-        
-            for (let i = 0; i < 5; i++) {
+            var limits = data.length > 5 ? 5 : data.length;
+
+            for (let i = 0; i < limits; i++) {
                 let dataNbr
                 if (data[i].nbr === null) {
                     dataNbr = 0 + " "
                 } else {
                     dataNbr = data[i].nbr + " "
                 }
-                let confidentiality = data[i].confidentiality
+                let confidentiality = parseInt(data[i].confidentiality,10);
                 let contentPublication=""
-                if (confidentiality ===1) {
+                if (confidentiality === 1) {
                     contentPublication = `<div class="pub-tribu-t mt-3">
                         <div class="name-pub">
                             <div class="row head-pub">
@@ -397,7 +405,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 </p>
                             </div>
                             <div class="pub-photo">
-                                <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
+                                <img src="${data[i].photo}" alt="">
                             </div>
                             <!--<div class="content-comant-reaction">
                                 <div class="row">
@@ -441,10 +449,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </div>
                     </div>
                     `
-                } else if(confidentiality ===2){
+                } else if(confidentiality === 2){
                     //moi uniquement 
                     console.log(id_c_u,data[i].user_id)
-                    if (parseInt(id_c_u,10)===data[i].user_id) {
+                    if (parseInt(id_c_u,10)===parseInt(data[i].user_id,10)) {
                         contentPublication = `<div class="pub-tribu-t mt-3">
                                             <div class="name-pub">
                                                 <div class="row head-pub">
@@ -473,7 +481,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     </p>
                                                 </div>
                                                 <div class="pub-photo">
-                                                    <img src="${data[i].photo.replaceAll("/public", "")}" alt="">
+                                                    <img src="${data[i].photo}" alt="">
                                                 </div>
                                                 <!--<div class="content-comant-reaction">
                                                     <div class="row">
@@ -589,7 +597,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </p>
                                             </div>
                                             <div class="pub-photo">
-                                                <img src="${data.photo.replaceAll("/public", "")}" alt="">
+                                                <img src="${data.photo}" alt="">
                                             </div>
                                             <div class="content-comant-reaction">
                                                 <div class="row">
@@ -854,9 +862,9 @@ function showResto(table_rst_pastilled,id_c_u){
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="apropos-tribu-t ps-2 ">
-                                            <p class="fw-bold">Apropos Tribu-t</p>
+                                            <p class="fw-bold">A propos tribu-t</p>
                                             <p>
-                                                apropo de tribu t
+                                                ${descriptionTribuT}
                                             </p>
                                         </div>
                                     </div>
@@ -1331,7 +1339,7 @@ function showPhotos(){
                 let li_img =''
 
                 for (let photo of data) {
-                    let img_src =photo.photo.replaceAll("/public","");
+                    let img_src =photo.photo; //replaceAll("/public","");
                     li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
                 }
                 setGallerie(document.querySelectorAll(".img_gal"))

@@ -1,4 +1,5 @@
-const current_url =  window.location.href;
+const IS_DEV_MODE= true;
+const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
 const url_test = new URL(current_url);
@@ -90,7 +91,7 @@ function showResultSearchNavBar(type,nom, adresse, dep, nomDep , id ){
 //     }
 
 // })
-
+// cloneResultDepResto()
 if( document.querySelector(".form_content_search_navbar_js")){
     const search_form = document.querySelector(".form_content_search_navbar_js");
     if( getDataInLocalStorage("type")){
@@ -1049,4 +1050,58 @@ function addControlPlaceholdersferme(map) {
     createCorner('verticalcenter', 'right');
     createCorner('horizontalmiddle', 'center');
   
+}
+// function cloneResultDepResto() {
+//     const restDep = document.querySelector(".result_container")
+//     if (restDep) {
+//         const clone = restDep.cloneNode(true)
+//         restDep.parentNode.removeChild(restDep)
+//         console.log(clone)
+       
+//         document.body.appendChild(clone)
+//         clone.style.display="block"
+//     }
+// }
+
+if (document.querySelector("#close-list-depart-resto")) {
+    document.querySelector("#close-list-depart-resto").addEventListener("click", () => {
+        document.querySelector(".result_container_resto").style.display="none"
+    })
+}
+
+if (document.querySelector("#close-list-depart-resto-spec")) {
+    document.querySelector("#close-list-depart-resto-spec").addEventListener("click", () => {
+        document.querySelector(".result_container_resto_spec").style.display="none"
+    })
+}
+
+if (document.querySelector("#close-list-depart-resto-spec-arrond")) {
+    document.querySelector("#close-list-depart-resto-spec-arrond").addEventListener("click", () => {
+        document.querySelector(".result_container_resto_spec_arrond").style.display="none"
+    })
+}
+
+
+if (document.querySelector("#close-list-depart-ferme")) {
+    document.querySelector("#close-list-depart-ferme").addEventListener("click", () => {
+        document.querySelector(".result_container_ferme").style.display="none"
+    })
+}
+
+if (document.querySelector("#close-list-depart-ferme-spec")) {
+    document.querySelector("#close-list-depart-ferme-spec").addEventListener("click", () => {
+        document.querySelector(".result_container_ferme_spec").style.display="none"
+    })
+}
+
+if (document.querySelector("#close-list-depart-station")) {
+    document.querySelector("#close-list-depart-station").addEventListener("click", () => {
+        document.querySelector(".result_container_station").style.display="none"
+    })
+}
+
+if (document.querySelector("#close-list-depart-station-spec")) {
+    document.querySelector("#close-list-depart-station-spec").addEventListener("click", () => {
+        document.querySelector(".result_container_station_spec").style.display="none"
+    })
 }

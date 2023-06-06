@@ -1,11 +1,8 @@
-class MarckerClusterHome {
+class MarckerClusterSearch {
 
     constructor(nom_dep = null, id_dep = null) {
         this.nom_dep = nom_dep ? nom_dep : null;
         this.id_dep = id_dep ? id_dep : null;
-        this.is_online = false;
-        this.time_on_setInterval = 1000;
-
 
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
@@ -13,40 +10,27 @@ class MarckerClusterHome {
     }
 
     async onInit() {
-        const url = `/getLatitudeLongitudeForAll`;
+        const url = new Request(url_test.href.replace("search", 'api/search'));
         try {
             this.getGeos()
             this.createMarkersCluster();
-
             this.map = await create_map_content(this.geos, this.id_dep, "home");
-            const bounds = this.map.getBounds();
-            this.last_minll = bounds.getSouthWest();
-            this.last_maxll = bounds.getNorthEast();
 
-            const data = { "last": { min: this.last_minll, max: this.last_maxll }, "new": {} };
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
+            const response = await fetch(url);
             this.default_data = await response.json();
             this.data = this.default_data;
-            // console.log(this.data)
+
             this.bindAction();
+
         } catch (e) {
             console.log(e)
         }
     }
 
     bindAction() {
-        this.addMarker(this.data);
-        this.addEventOnMap(this.map, this.markers);
-        this.generateFilterAndSelectDep()
+        const { results } = this.data;
+        this.addMarker(results[0]);
+        // this.addEventOnMap(this.map, this.markers);
     }
 
     getGeos() {
@@ -73,96 +57,88 @@ class MarckerClusterHome {
     }
 
     createMarkersCluster() {
-        const temp= 200;
+        const that= this;
+
         this.markers = L.markerClusterGroup({
             chunkedLoading: true,
-            chunkInterval: temp * 5,
-            chunkDelay: temp,
-            removeOutsideVisibleBounds: true,
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
+                }
+            },
         });
     }
 
     addMarker(newData) {
-        const { station, ferme, resto } = newData;
-        if (station || ferme || resto) {
+        newData.forEach(item => {
+            if( item.ferme !== undefined ){
+                // address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.add;
+                // miniFiche_HTML = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nom + ".</br><span class='fw-bolder'> Departement:</span>  <br>" + item.dep +"." + address_HTML;
+                // image_icon= "icon-ferme-new-B.png";
 
-            if (station.length > 0) {
-                this.addStation(station);
-            }
+                this.settingSingleMarkerFerme(item)
 
-            ///all fermes
-            if (ferme.length > 0) {
-                this.addFerme(ferme)
-            }
+            }else if( item.station !== undefined ){
+                // miniFiche_HTML =setMiniFicheForStation(item.nom, item.add,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
+                // image_icon= "icon-station-new-B.png";
 
-            ///all resto
-            if (resto.length > 0) {
-                this.addResto(resto);
+                this.settingSingleMarkerStation(item)
+
+            }else if( item.resto !== undefined ){
+                // const fullAdresse=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+                // address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + fullAdresse;
+                // miniFiche_HTML = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + item.depName +"." + address_HTML;
+                // image_icon= "icon-resto-new-B.png";
+
+                this.settingSingleMarkerResto(item);
             }
-            this.map.addLayer(this.markers);
-        } else {
-            console.log("ERREUR : L'erreur se produit par votre réseaux.")
-        }
+        })
+
+        ////affiche les resultats.
+        this.map.addLayer(this.markers);
     }
 
     addStation(dataStation) {
-
         dataStation.forEach(item => {
             this.settingSingleMarkerStation(item)
         })
-
-        // const tab_data_station = splitArrayToMultipleArray(dataStation);
-
-        // let i = 0;
-        // const add_station_interval = setInterval(() => {
-        //     tab_data_station[i].forEach(item => {
-        //         this.settingSingleMarkerStation(item)
-        //     })
-        //     i++;
-        //     if (i === tab_data_station.length) {
-        //         clearInterval(add_station_interval)
-        //     }
-        // }, this.time_on_setInterval)
     }
 
     addFerme(dataFerme) {
-
         dataFerme.forEach(item => {
             this.settingSingleMarkerFerme(item)
         })
-
-        // const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
-
-        // let i = 0;
-        // const add_ferme_interval = setInterval(() => {
-        //     tab_data_ferme[i].forEach(item => {
-        //         this.settingSingleMarkerFerme(item)
-        //     })
-        //     i++;
-        //     if (i === tab_data_ferme.length) {
-        //         clearInterval(add_ferme_interval)
-        //     }
-        // }, this.time_on_setInterval);
     }
 
     addResto(dataResto) {
-
         dataResto.forEach(item => {
             this.settingSingleMarkerResto(item);
         })
-
-        // const tab_data_resto = splitArrayToMultipleArray(dataResto);
-
-        // let i = 0;
-        // const add_resto_Interval = setInterval(() => {
-        //     tab_data_resto[i].forEach(item => {
-        //         this.settingSingleMarkerResto(item);
-        //     })
-        //     i++;
-        //     if (i === tab_data_resto.length) {
-        //         clearInterval(add_resto_Interval)
-        //     }
-        // }, this.time_on_setInterval);
     }
 
 
@@ -170,20 +146,24 @@ class MarckerClusterHome {
 
         const url = new URL(window.location.href);
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {
+
+            const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
+            this.map.setView(latlng, 13);
+
             const coordAndZoom = {
                 zoom: e.target.__parent._zoom + 1,
                 coord: e.target.__parent._cLatLng
             }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
+            setDataInLocalStorage("coordSearch", JSON.stringify(coordAndZoom))
 
             // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
             if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim().replace("?", "") + "/details/" + item.id)
+                getDetailHomeForMobile("/station/departement/" + item.dep.toString().trim() + "/" + item.depName.trim().replace("?", "") + "/details/" + item.id)
             } else {
-                getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id, true)
+                getDetailStation(item.dep.toString().trim(), item.depName.trim().replace("?", ""), item.id, true)
             }
 
             const icon_R = L.Icon.extend({
@@ -199,7 +179,9 @@ class MarckerClusterHome {
             })
             marker.setIcon(new icon_R);
 
-            this.updateLastMarkerSelected(marker, "station")
+            this.updateLastMarkerSelected(marker, "station");
+
+            this.markers.refreshClusters();
         })
 
         this.markers.addLayer(marker);
@@ -212,19 +194,23 @@ class MarckerClusterHome {
 
         var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement + "." + adress;
 
-        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
 
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
 
         marker.on('click', (e) => {
+
+            const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
+            this.map.setView(latlng, 13);
+
             const coordAndZoom = {
                 zoom: e.target.__parent._zoom + 1,
                 coord: e.target.__parent._cLatLng
             }
             setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
 
-            let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+            let pathDetails = `/ferme/departement/${item.depName}/${item.dep}/details/${item.id}`
             if (screen.width < 991) {
                 getDetailHomeForMobile(pathDetails)
             } else {
@@ -233,17 +219,27 @@ class MarckerClusterHome {
 
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png"
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                    iconSize: [20, 35],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    //shadowUrl: 'my-icon-shadow.png',
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
             })
             marker.setIcon(new icon_R);
 
             this.updateLastMarkerSelected(marker, "ferme")
+
+
+            this.markers.refreshClusters();
         })
         this.markers.addLayer(marker);
     }
 
     settingSingleMarkerResto(item) {
+
         const url = new URL(window.location.href);
         const departementName = item.depName
         const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
@@ -252,15 +248,22 @@ class MarckerClusterHome {
         // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
         var pathDetails = "/restaurant/departement/" + departementName + "/" + item.dep + "/details/" + item.id;
         var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-        var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
+        
+        const poiY= item.lat;
+        const poiX= item.long;
+        var marker = L.marker(L.latLng(parseFloat(poiY), parseFloat(poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {
+
+            const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
+            this.map.setView(latlng, 13);
+
             const coordAndZoom = {
                 zoom: e.target.__parent._zoom + 1,
                 coord: e.target.__parent._cLatLng
             }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
+            setDataInLocalStorage("coordSearch", JSON.stringify(coordAndZoom))
             // window.location = pathDetails;
 
             let screemMax = window.matchMedia("(max-width: 1000px)")
@@ -295,12 +298,20 @@ class MarckerClusterHome {
 
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png"
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
+                    iconSize: [20, 35],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    //shadowUrl: 'my-icon-shadow.png',
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
             })
             marker.setIcon(new icon_R);
 
             this.updateLastMarkerSelected(marker, "resto")
+            
+            this.markers.refreshClusters();
         })
 
         this.markers.addLayer(marker);
@@ -320,7 +331,13 @@ class MarckerClusterHome {
 
             const icon_B = L.Icon.extend({
                 options: {
-                    iconUrl: icon_marker
+                    iconUrl: icon_marker,
+                    iconSize: [20, 35],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    //shadowUrl: 'my-icon-shadow.png',
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
             })
             this.marker_last_selected.setIcon(new icon_B)
@@ -330,29 +347,12 @@ class MarckerClusterHome {
     }
 
     addEventOnMap(map, markers) {
-        map.on("resize zoom", (e) => {
+        map.on("resize zoom dragend", (e) => {
             const coordAndZoom = {
                 zoom: e.target._zoom,
                 coord: e.target._lastCenter
             }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-        })
-
-        map.on("zoomend dragend", async (e) => {
-
-            let bounds = map.getBounds();
-            let minll = bounds.getSouthWest();
-            let maxll = bounds.getNorthEast();
-            this.updateData(minll, maxll)
-        })
-
-
-        map.on("dragend", (e) => {
-            const coordAndZoom = {
-                zoom: e.target.getZoom(),
-                coord: e.target.getCenter()
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
+            setDataInLocalStorage("coordSearch", JSON.stringify(coordAndZoom))
         })
     }
 
@@ -407,20 +407,6 @@ class MarckerClusterHome {
         } catch (e) {
             console.log(e)
         }
-    }
-
-    generateFilterAndSelectDep() {
-        // const content_filter = document.createElement("div");
-        // content_filter.className = "content_filter content_filter_js_jheo";
-
-        // this.generate_checkout_option(content_filter)
-
-        const content_filter_dep = document.createElement("div");
-        content_filter_dep.className = "content_filter_dep";
-        document.querySelector("#map").appendChild(content_filter_dep);
-
-        this.generate_select_dep(content_filter_dep) /// and bind event
-        // this.eventManagement();
     }
 
     generate_checkout_option(content_filter){
@@ -635,5 +621,13 @@ class MarckerClusterHome {
     removeMarker() {
         this.markers.clearLayers();
         this.map.removeLayer(this.markers);
+    }
+
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                marker.fireEvent('click');
+            }
+        });
     }
 }

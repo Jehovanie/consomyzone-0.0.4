@@ -146,3 +146,8 @@ table.dataTable thead th, table.dataTable tfoot th {
     padding-left: 12px;
     width:100%;
 }
+
+.content_list{
+    background-color: white;
+    padding-top: 15px;
+}
