@@ -14,20 +14,26 @@
 // }
 
 window.addEventListener('load', () => {
+
+    document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
+        <div class="content_chargement content_chargement_js_jheo">
+            <div class="spinner-border spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `
     fetch("/user/dashboard/tribug_json")
         .then(response => response.json())
         .then(result => {
             const { allTribuG } = result;
             const dataSet= dataFormat(allTribuG);
-            // document.querySelector(".chargment_content_js_jheo").remove();
-
-            // $('.search_column_js_jheo').each(function () {
-            //     var title = $(this).text();
-            //     $(this).html('<input class="input_column input_column_js_jheo" type="text" placeholder="Search" />');
-            // });
+            
+            deleteChargement();
+            bindContentTable();
 
             $('#myTable').DataTable({
                 data: dataSet,
+                order: [[5, 'asc']],
                 // columns: [
                 //     { title: '#' },
                 //     { title: 'Code' },
@@ -38,6 +44,11 @@ window.addEventListener('load', () => {
                 //     { title: '' },
                 // ],
                 initComplete: function () {
+
+                    document.querySelectorAll('.span_th_js_jheo').forEach( item => {
+                        item.parentElement.innerHTML += `<input class="input_column input_column_js_jheo" type="text" placeholder="Search"/>`
+                    })
+
                     // Apply the search
                     this.api()
                         .columns()
@@ -50,6 +61,9 @@ window.addEventListener('load', () => {
                                 }
                             });
                         });
+                },
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
             const label= document.querySelector("#myTable_filter label")
@@ -95,4 +109,46 @@ function dataFormat(dataToFormat){
         // })
     })
     return data;
+}
+
+function addChargement(){
+
+}
+
+function deleteChargement(){
+    document.querySelector(".content_chargement_js_jheo").remove();
+}
+
+function bindContentTable(){
+
+    document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
+    <div class="table-responsive">
+        <table class="table table_content table-hover" id="myTable">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>
+                        <span class="span_th_js_jheo">Code</span>
+                    </th>
+                    <th>
+                        <span class="span_th_js_jheo">Commune</span>
+                    </th>
+                    <th>
+                        <span class="span_th_js_jheo">Quartier</span>
+                    </th>
+                    <th>
+                        <span class="span_th_js_jheo">Tribu G</span>
+                    </th>
+                    <th>
+                        <span class="span_th_js_jheo">Efféctif</span>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="content_list_tributG_js_jheo">
+            </tbody>
+        </table>
+        
+    </div>
+    `
 }

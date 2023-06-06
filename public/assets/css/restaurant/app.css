@@ -11,35 +11,8 @@
     pointer-events: none;
 }
 
-.spec_cluster {
-
-    width: 45px;
-    height: 45px;
-    background-color: rgb(253, 0, 13);
-    border-radius: 50%;
-    text-align: center;
-    font-size: 24px;
-}
-
-.markers-spec {
-    font-size: 11px;
-}
-.mycluster {
-
-    width: 45px;
-    height: 45px;
-    background-color: greenyellow;
-    border-radius: 50%;
-    text-align: center;
-    font-size: 24px;
-}
-
-.markers_tommy_js {
-    font-size: 11px;
-}
-
 .navleft .list-depart {
-    margin-top: 150px !important;
+    margin-top: 83px !important;
 }
 
 .choix_list_cart {

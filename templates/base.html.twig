@@ -8,7 +8,7 @@
                 {% block title %}Welcome!{% endblock %}
         </title>
 
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <link rel="icon" href="{{asset('assets/icon/icon_cmz.jpg')}}">
         
         <link rel="stylesheet" href="{{asset('assets/css/main.css')}}">
         <link rel="stylesheet" href="{{asset('assets/css/chargement_style.css')}}">
@@ -25,7 +25,8 @@
         <link href="{{asset('assets/fontawesome/css/solid.min.css')}}" rel="stylesheet">
         <link href="{{asset('assets/fontawesome/css/v5-font-face.css')}}" rel="stylesheet">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin=""/>
-
+        <link rel="stylesheet" href="{{asset('assets/css/owlcarousel/owl.carousel.min.css')}}">
+        <link rel="stylesheet" href="{{asset('assets/css/owlcarousel/owl.theme.default.min.css')}}">
 
 
         {# --------------------- marker MarkerCluster --------------------------- #}
@@ -36,14 +37,12 @@
         <script src="{{ asset('assets/js/centers_tous.js') }}" defer></script>
         <script src="{{ asset('assets/js/franceGeoJson.js') }}" defer></script>
         <script src="{{asset("assets/js/app.js")}}" defer></script>
-        <script src="{{asset('assets/js/main.js')}}" defer></script>
-        <script src="{{asset("assets/js/function.js")}}" defer></script>
+       <script src="{{asset("assets/js/function.js")}}" defer></script>
 
         <script src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js" integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=" crossorigin=""></script>
         <script src="{{asset("assets/js/account/linkActive.js")}}" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster-src.min.js" integrity="sha512-tWZsle/wNvFCP/7BHWNf3yG/6Ic1YVPT+1Soyag9zzZcga1St3oAa+IgvrT3ZxBLY/njmSEr0EcQoPUrH+UfNg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
         {# // <script src="{{asset('assets/js/function_respons.js')}}" defer></script> #}
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}{% endblock %}
@@ -55,6 +54,6 @@
         <script src="{{asset('assets/js/bootstrap/bootstrap.min.js')}}"></script>
         <script src="{{asset('assets/js/const.js')}}"></script>
         <script src="{{ asset('assets/js/Langue/translate.js') }}" defer></script>
-
+        <script src="{{ asset('assets/js/owlcarousel/owl.carousel.min.js')}}"></script>
     </body>
 </html>

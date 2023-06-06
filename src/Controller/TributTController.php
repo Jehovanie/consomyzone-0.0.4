@@ -100,7 +100,6 @@ class TributTController extends AbstractController
        
         //$r=$request->request->all();
         $this->form->handleRequest($request);
-        dd($this->form->getData());
         // $targetPath=  $this->getParameter('kernel.project_dir') . "/public/uploads/photos/";
         // $r=new FilesUtils($targetPath, $r["uploadBtn"], "uploadBtn");
         // $r->upload();
@@ -108,7 +107,7 @@ class TributTController extends AbstractController
 
     #[Route('/geto', name: 'create_tribuo')]
     public function getListTribuT(Tribu_T_Service $tributGService){
-        $tributGService->setTribuT("akondro","ovy",null,null, 1);
+        $tributGService->setTribuT("akondro","ovy",null,null, 1, null);
         return $this->render('tribu_t/test.html.twig');
     }
     //#[Route('/user/tribu/create', name: 'create_tribu')]
@@ -165,6 +164,101 @@ class TributTController extends AbstractController
 
     }
 
+    #[Route("/user/partisan/tribu_T", name:'get_partisan_tribu_t')]
+    public function getPartisanOfTribuT(Request $request, 
+    Tribu_T_Service $serv,
+    SerializerInterface $serializer){
+        $tableTribuTName=$request->query->get("tbl_tribu_T_name");
+        $v=$serv->getPartisanOfTribuT($tableTribuTName);
+        $json = $serializer->serialize($v, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+    #[Route('/user/get/comment/pub', name: "user_get_comment_pubss",methods:["GET"])]
+    public function getCommentPubTribuT(Request $request,Tribu_T_Service $serv,SerializerInterface $serializer){
+
+        $datas=$request->query->all();
+       
+        $tabl_cmnt_tribu_t=$datas["tbl_tribu_t_commentaire"];
+        $idPub=$datas["id_pub"];
+        $idMin=$datas["id_min"];
+        $limits=$datas["limits"];
+        $response=$serv->getCommentPubTribuT($tabl_cmnt_tribu_t, $idPub, $idMin,$limits);
+        $json=$serializer->serialize($response,'json');
+        
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/user/send/comment/pub', name:"user_send_comment_pub")]
+    public function putCommentOnPublication(Request $request,Tribu_T_Service $serv){
+        $datas=json_decode($request->getContent(),true);
+        $user=$this->getUser();
+        $userId=$user->getId();
+        $pubId=$datas["pubId"];
+        $commentaire=$datas["commentaire"];
+        $tableCommentaireTribu_T=$datas["tbl_cmnt_name"];
+       
+        $result=$serv->putCommentOnPublication($tableCommentaireTribu_T, 
+        $userId,$pubId,$commentaire, $user->getPseudo());
+
+        
+        if($result){
+        $json=json_encode(array("userid"=>$userId,"pubId"=>$pubId, "commentaire"=>$commentaire,"pseudo"=> $user->getPseudo()));
+           return new JsonResponse($json, Response::HTTP_OK, [], true);;
+           
+        }else{
+            $response=new Response();
+            return $response->setStatusCode(500);
+        }
+    }
+
+    #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
+    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep){
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $userTribu_T=json_decode($user->getTribuT(),true);
+        
+        $jsonParsed = json_decode($request->getContent(), true);
+        $tribu_t_name =  $jsonParsed["tribu_t_name"];
+        $image =  $jsonParsed["base64"] ;
+       
+        $imageName = $jsonParsed["photoName"];
+        
+        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
+        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+            $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        
+        $fileUtils = new FilesUtils();
+        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+
+        
+        foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+            if(is_array($v)){
+                if (in_array($tribu_t_name, $v)) {
+                    $v["logo_path"]=str_replace("/public","",$path.$imageName);
+                    $userTribu_T["tribu_t"][$k]= $v;
+                }
+            }else{
+                if($k== "logo_path"){
+                    $v=str_replace("/public","",$path.$imageName);
+                    $userTribu_T["tribu_t"][$k]= $v;
+                }
+            }
+            
+        }
+        
+        $response = new Response();
+        try{
+            $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+            $response->setStatusCode(200);
+            return $response;
+        }catch(\Exception $e){
+            $response->setStatusCode(500);
+            return $response;
+        }
+     
+      
+       
+    }
 
 
     #[Route('/user/tribu/add_to/{tableName}/{user_id}/{notif_id}', name: 'add_personne')]
@@ -219,7 +313,6 @@ class TributTController extends AbstractController
 
 
 
-        //dd("Id posteur : " . $userPost["user_post"] . " Invitation : " . $userPost["invitation"]);
 
 
 
@@ -301,7 +394,6 @@ class TributTController extends AbstractController
 
 
 
-        //dd("Id posteur : " . $userPost["user_post"] . " Invitation : " . $userPost["invitation"]);
 
 
 
@@ -424,12 +516,6 @@ class TributTController extends AbstractController
 
 
         $users = $tribut->showMember($table);
-
-
-
-        //dd($users);
-
-
 
         $tableau = array();
 
@@ -574,11 +660,6 @@ class TributTController extends AbstractController
         $tribus = $tribu_t->showRightTributName($table_tribu);
 
 
-
-        //dd($tribus);
-
-
-
         $rows = $tribu_t->fetchAllPub($table);
 
 
@@ -680,8 +761,6 @@ class TributTController extends AbstractController
         $table_resto = $table_tribu.'_restaurant';
 
         $has_restaurant = $tribu_t->hasTableResto($table_resto);
-        //dd($has_restaurant);
-        //dd($tribu_t->getRestoPastilles($table_resto));
 
         foreach ($pubs as $key) {
 
@@ -888,7 +967,6 @@ class TributTController extends AbstractController
 
         
 
-        // dd($tribuTable);
 
 
 
@@ -1289,7 +1367,6 @@ class TributTController extends AbstractController
 
 
 
-        // dd(intval($notif_id));
 
 
 
@@ -1383,7 +1460,6 @@ class TributTController extends AbstractController
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
         }
-        dump($restos);
         return $this->json($restos);
 
     }
@@ -1404,7 +1480,6 @@ class TributTController extends AbstractController
         if ($has_restaurant == true) {
             $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
         }
-        // dump($restos);
         return $this->json($restos);
     }
 
@@ -1808,15 +1883,17 @@ class TributTController extends AbstractController
             ])
             ->getForm();
         //$form = $this->createFormB(FileUplaodType::class);
-
+        $user=$this->getUser();
         $form->handleRequest($request);
 
         $body=null;
         if ($form->isSubmitted() && $form->isValid()) {
            
             $data = $form->getData();
-            //dd($data);
-            $path = '/public/uploads/tribu_t/photo/'. $data["tribuTName"]."/";
+            $tribuName= str_replace(" ","_", strtolower($data["tribuTName"]));
+            $tmp=Normalizer::normalize($tribuName,Normalizer::NFD);
+            $tribuTNameFinal=preg_replace('/[[:^print:]]/', '', $tmp);
+            $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuTNameFinal."/";
             if( !($filesyst->exists($this->getParameter('kernel.project_dir').$path)))
                     $filesyst->mkdir($this->getParameter('kernel.project_dir').$path,0777);
 
@@ -1828,9 +1905,11 @@ class TributTController extends AbstractController
                 $path= $path . $filename;
             
             //TODO create tribu-t
+            
+            
             $body=array(
-                "path" => str_replace('/public',"",$path),
-                "tribu_t_name"=>$data["tribuTName"],
+                "path" => str_replace("/public","",$path),
+                "tribu_t_name"=>$tribuTNameFinal,
                 "description"=>$data["description"],
                 "adresse"=>$data["adresse"], 
                 "extension"=>$data["extension"]);
@@ -1886,9 +1965,11 @@ class TributTController extends AbstractController
         //end publication seding 
     }
     #[Route("/user/create-one/publication", name:"user_create_publication")]
-    public function createOnePublication(Request $request, 
-    Tribu_T_Service $tribuTService,
-    Filesystem $filesyst){
+    public function createOnePublication(
+        Request $request, 
+        Tribu_T_Service $tribuTService,
+        Filesystem $filesyst
+    ){
         $user=$this->getUser();
         $userId= $user->getId();
         $jsonParsed=json_decode($request->getContent(),true);
@@ -1896,14 +1977,18 @@ class TributTController extends AbstractController
         $publication= $jsonParsed["contenu"];
         $confid=$jsonParsed["confidentialite"];
         $image= $jsonParsed["base64"];
-        dump($image);
         $imageName= $jsonParsed["photoName"];
         $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
                 $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
         $fileUtils=new FilesUtils();
-        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
-        $result=$tribuTService->createOnePub($tribu_t_name."_publication", $userId, $publication, $confid, $path. $imageName);
+        if (intval($jsonParsed["photoSize"], 10) > 0) {
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
+            $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid, $path . $imageName);
+        }else{
+            $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
+        }
+        
 
         $response = new Response();
         if($result){
@@ -1926,8 +2011,9 @@ class TributTController extends AbstractController
         $tableTribuTPublication=$request->query->get('tblpublication');
         $idMin=$request->query->get('idmin');
         $limits=$request->query->get('limits');
+        $tableCommentaireTribuT=$request->query->get('tblCommentaire');
        
-        $result=$srv->getPartisantPublication($tableTribuTPublication, $idMin, $limits);
+        $result=$srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT ,$idMin, $limits);
         $json=$serializer->serialize($result,'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -1945,7 +2031,6 @@ class TributTController extends AbstractController
 
     {
 
-        // //dd($body);
         $user = $this->getUser();
 
         $userId = $user->getId();

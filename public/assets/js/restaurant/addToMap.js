@@ -1,9 +1,14 @@
 window.addEventListener('load', () => {
-    addRestaurantToMap()
-    document.querySelectorAll("#list_departements > div > a").forEach(item => {
-        item.onclick = (e) => {
-            localStorage.removeItem("coord")
-        }
-    }) 
+    addRestaurantToMap();
+
+    ///hide navleft in the first visite
+    if(document.querySelector("#close-navleft") ){
+        document.querySelector("#close-navleft").click();
+    }
+
+    ///we use this variable to keep track for user search
+    if( localStorage.getItem("type")){
+        rmDataInLocalStorage("type")
+    }
     setDataInLocalStorage("type", "restaurant");
 })

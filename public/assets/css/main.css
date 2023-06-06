@@ -34,20 +34,21 @@ body {
 /* **********navLeft************* */
 
 .navleft {
-    background-color: #fff !important;
-    width: 25vw;
+    background-color: #fff;
+    width: 28vw;
+    /* margin-left: 60px; */
     height: 100vh;
-    box-shadow: -5px -5px 15px #4d4d4d !important;
+    box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
 }
 
 .navbar-light-left {
-    background-color: #fff !important;
+    /* background-color: #fff !important; */
     width: 25vw;
 }
 
 
 .navbar-light-left .logo img{
-    width: 15vw;
+    width: 8vw;
     /* margin-top: -600px; */
 }
 
@@ -71,7 +72,7 @@ body {
 }
 
 .navleft .list-depart-all{
-    height: 70vh;
+    height: 82vh;
     overflow-y: scroll;
 }
 
@@ -256,10 +257,10 @@ body {
 
 
 .navbar-light-bar{
-    background-color: #fff !important;
+    /* background-color: #fff !important; */
     width: 100vw;
     height: 10vh;
-    box-shadow: -5px -5px 25px #4d4d4d !important;
+    /* box-shadow: -5px -5px 25px #4d4d4d !important; */
 }
 
 .navbar-light-bar .open-navleft{
@@ -268,6 +269,11 @@ body {
 
 .navbar-light-bar .open-navleft:hover {
     fill: #1111FE;
+}
+
+.navbar-light-bar .navbar-nav{
+    height: 40px;
+    margin-top: -10px;
 }
 
 .navbar-light-bar .navbar-nav .icon-tous a svg {
@@ -291,30 +297,47 @@ body {
     /* transform: scale(1.3); */
 }
 
+.navbar-light-bar .navbar-nav .icon-ferme {
+    background-color: #f7f8f8;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
 .navbar-light-bar .navbar-nav .icon-ferme a svg{
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #1111FE !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     fill: #1111FE;
+    margin-top: -15px;
 }
 
 .navbar-light-bar .navbar-nav .icon-ferme a svg:hover {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #1111FE !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     background-color: #1111FE;
     fill: #fff !important;
     /* transform: scale(1.3); */
 }
 
+.navbar-light-bar .navbar-nav .icon-resto{
+    background-color: #f7f8f8;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+
+
 .navbar-light-bar .navbar-nav .icon-resto a svg {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #000 !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     fill: #000;
+    margin-top: -15px;
 }
 
 .navbar-light-bar .navbar-nav .icon-resto a:active {
@@ -322,52 +345,56 @@ body {
 }
 
 .navbar-light-bar .navbar-nav .icon-resto a svg:hover {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #000 !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     background-color: #000;
     fill: #fff;
     /* transform: scale(1.3); */
 }
 
+.navbar-light-bar .navbar-nav .icon-station {
+    background-color: #f7f8f8;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
 .navbar-light-bar .navbar-nav .icon-station a svg {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #28BE21 !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     fill: #28BE21;
+    margin-top: -15px;
 }
 .navbar-light-bar .navbar-nav .icon-station a svg:hover {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #28BE21 !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     background-color: #28BE21;
     fill: #fff;
     /* transform: scale(1.3); */
 }
 
 .navbar-light-bar .navbar-nav .icon-recherche a svg {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #B40404 !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     fill: #B40404;
+    margin-top: -15px;
 }
 
 .navbar-light-bar .navbar-nav .icon-recherche a svg:hover {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     border: 2px solid #B40404 !important;
-    border-radius: 15PX;
+    border-radius: 8px;
     background-color: #B40404;
     fill: #fff;
     /* transform: scale(1.3); */
-}
-
-.navbar-light-bar .navbar-brand img{
-        width: 15vw;
 }
 
 .navbar-light-bar .icon-connexion .svg-1{
@@ -480,8 +507,8 @@ li.nav-item.avatar-account-pdp > a > img{
 }
 
 .navbar {
-    box-shadow: 5px 5px 5px rgb(107 107 107 / 5%);
-    background-color: white;
+    /* box-shadow: 5px 5px 5px rgb(107 107 107 / 5%);
+    background-color: white; */
     padding-top : 0 !important;
     z-index: 10;
 }
@@ -707,28 +734,43 @@ li a .station {
     font-size: 1.2rem;
 }
 .nav-tous {
-    margin: 50px auto -15px -42px;
+    /* margin: 50px auto -15px -42px; */
+    margin-top: 15px;
+    margin-left: 5px;
     color: #DF01D7;
+    margin-top: 0;
 }
 
 .nav-ferme{
-    margin:50px auto -15px -47px;
+    /* margin:50px auto -15px -47px; */
+    margin-top: 15px;
+    margin-left: 5px;
     color: #1111FE;
+    margin-top: 0;
 }
 
 .nav-resto {
-    margin: 50px 5px -15px -60px;
+    /* margin: 50px 5px -15px -60px; */
+    margin-top: 15px;
+    margin-left: 5px;
     color: #000;
+    margin-top: 0;
 }
 
 .nav-station {
-    margin: 50px 5px -15px -75px;
+    /* margin: 50px 5px -15px -75px; */
+    margin-top: 15px;
+    margin-left: 5px;
     color: #19911D;
+    margin-top: 0;
 }
 
 .nav-recherche {
-    margin: 50px auto -15px -60px;
+    /* margin: 50px auto -15px -60px; */
+    margin-top: 15px;
+    margin-left: 5px;
     color: #B40404;
+    margin-top: 0;
 }
 
 .avatar-account-fondateur {
@@ -881,4 +923,33 @@ li a .station {
     width: 100%;
     object-fit: cover;
     box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+
+.left_menu{
+    background-color: white;
+    padding-left: 20px;
+}
+
+.content-logo-shearch{
+    background-color: #f7f8f8;
+    width: 400px;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-light-bar .navbar-brand img {
+    width: 8vw;
+    margin-top: 10px;
+    margin-left: -15px;
+}
+
+.btn-recher-nav{
+    border: none;
+    background: none;
+    margin-right: -40px;
+}
+
+.spec-dep{
+    margin-top: 100px;
 }

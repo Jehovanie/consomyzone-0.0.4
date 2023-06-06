@@ -20,14 +20,15 @@
 {% endblock %}
 
 {% block body %}
-	<div class="responsif-none">
-        {% include 'shard/navbar.twig' %}
-    </div>
+	
 	<div class="">
 		<div class=" responsif-none" id="tous">
 			{% include 'shard/ferme/specific_ferme_navleft.twig' %}
 		</div>
-        {% include 'shard/modalSearch.twig' %}
+        {# {% include 'shard/modalSearch.twig' %} #}
+        <div class="responsif-none">
+            {% include 'shard/navbar.twig' %}
+        </div>
         
 		<div class="ferme-mobile">
 			<div class="open-navleft-mobile responsif-none-pc" id="open-navleft-mobile-specific" onclick="addSpecificFermeMobile('{{nom_dep}}','{{id_dep}}')">

@@ -8,21 +8,22 @@
 
 {% block javascripts %}
 	<script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script>
-	<script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script>
-    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
+	{# // <script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script> #}
+    {# <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script> #}
     {# <script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script> #}
 
 {% endblock %}
 
 
 {% block body %}
-    <div class="responsif-none">
-        {% include 'shard/navbar.twig' %}
-    </div>
-    {% include 'shard/modalSearch.twig' %}
+    
+    {# {% include 'shard/modalSearch.twig' %} #}
     <div class="">
         <div class=" responsif-none" id="tous">
             {% include 'shard/restaurant/resto_navleft.twig' %}
+        </div>
+        <div class="responsif-none">
+            {% include 'shard/navbar.twig' %}
         </div>
         
         <div class="">

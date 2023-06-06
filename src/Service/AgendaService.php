@@ -453,11 +453,12 @@ class AgendaService extends PDOConnexionService
 
     public function saveRestaurant($table_resto_pastille, $name,$resto_id){
 
-        $sql = "INSERT INTO $table_resto_pastille (denomination_f, id_resto) VALUES (?, ?)";
+        $sql = "INSERT INTO $table_resto_pastille (denomination_f, id_resto) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
 
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->bindParam(1, $name);
         $stmt->bindParam(2, $resto_id);
+        $stmt->bindParam(3, $name);
         $stmt->execute();
 
     }

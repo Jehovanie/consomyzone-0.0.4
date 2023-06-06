@@ -1,5 +1,12 @@
 window.addEventListener('load', () => {
 	addListFermeMobile()
+
+	///we use this variable to keep track for user search
+	if( localStorage.getItem("type")){
+        rmDataInLocalStorage("type")
+    }
+    setDataInLocalStorage("type", "ferme");
+
 	// addMapFerme()
     // setDataInLocalStorage("type", "ferme");
 

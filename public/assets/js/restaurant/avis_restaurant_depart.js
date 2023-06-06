@@ -249,10 +249,9 @@ function showAvis(currentUserId,idRestaurant) {
 }
 
 function showModifArea(idRestaurant,currentUserId) {
-    fetch(`/avis/restaurant/${idRestaurant}`, {
-        methode:"GET"
-    }).then(r => {
-        r.json().then(jsons => {
+    fetch(`/avis/restaurant/${idRestaurant}`)
+        .then(r => r.json())
+        .then(jsons => {
             if (jsons) {
                 console.log(jsons)
                 for (let json of jsons) { 
@@ -273,7 +272,6 @@ function showModifArea(idRestaurant,currentUserId) {
                 
             }
         })
-    })
 }
 
 

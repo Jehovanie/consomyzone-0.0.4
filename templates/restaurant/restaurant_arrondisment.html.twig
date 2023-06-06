@@ -9,9 +9,9 @@
 
 {% block javascripts %}
 	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
-	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
 	<script src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
 	<script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
+	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/restaurant/sepecific_departement_arrondissement.js')}}" defer></script> #}
     <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
 
@@ -19,15 +19,15 @@
 
 
 {% block body %}
-<div class="responsive-navbar responsif-none">
-
-		{% include 'shard/navbar.twig' %}
-	</div>
-    {% include 'shard/modalSearch.twig' %}
+    
+    {# {% include 'shard/modalSearch.twig' %} #}
 	<div class="">
 		<div class="responsif-none" id="tous">
 			{% include 'shard/restaurant/arrondisment_resto_navleft.twig' %}
 		</div>
+        <div class="responsive-navbar responsif-none">
+            {% include 'shard/navbar.twig' %}
+        </div>
 		<div class="">
 			<div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-mobile-arrand"  onclick="addListSpecResto('{{nom_dep}}', '{{id_dep}}')">
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"

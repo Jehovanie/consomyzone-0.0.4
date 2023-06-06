@@ -71,19 +71,21 @@ class ToutsController extends AbstractController
 
     {
 
-        $statusProfile = $status->statusFondateur($this->getUser());
+        return $this->redirectToRoute("restaurant_all_dep");
+        
+        // $statusProfile = $status->statusFondateur($this->getUser());
 
-        return $this->render("home/index.html.twig", [
+        // return $this->render("home/index.html.twig", [
 
-            "toutsdepartements" => $departementRepository->getDep(),
+        //     "toutsdepartements" => $departementRepository->getDep(),
 
-            "number_of_departement" => $departementRepository->getCountDepartement()[0]["1"],
+        //     "number_of_departement" => $departementRepository->getCountDepartement()[0]["1"],
 
-            "profil" => $statusProfile["profil"],
+        //     "profil" => $statusProfile["profil"],
 
-            "statusTribut" => $statusProfile["statusTribut"],
-            "codeApes" => $codeApeRep->getCode()
-        ]);
+        //     "statusTribut" => $statusProfile["statusTribut"],
+        //     "codeApes" => $codeApeRep->getCode()
+        // ]);
 
     }
 

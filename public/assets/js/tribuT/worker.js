@@ -4,9 +4,11 @@ onmessage = (e) => {
     let tblPublication = "tblpublication=" + encodeURIComponent(e.data[0]+"_publication")
     let idmin = "idmin=" + encodeURIComponent(e.data[1])
     let limits = "limits=" + encodeURIComponent(e.data[2])
+    let tblCommentaire="tblCommentaire="+encodeURIComponent(e.data[0]+"_commentaire")
     params.push(tblPublication)
     params.push(idmin)
     params.push(limits)
+    params.push(tblCommentaire)
     params = params.join("&")
     console.log("/user/publicalition/vals?"+params)
     const request = new Request("/user/publicalition/vals?"+params, {
