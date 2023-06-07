@@ -1,0 +1,123 @@
+<div class="publication_js_jheo" id={{"pubication_js_" ~ pub.id ~ "_jheo" }} data-toggle-pub-id={{pub.id}} data-toggle-pub-user-id={{pub.user_id}}>
+	<div class="card-pub-g mb-2 row">
+		<div class="col-1">
+			<img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
+		</div>
+		<div class="header_mobile col-8">
+			<a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
+				<i>{{pub.userfullname}}</i>
+			</a>
+			<p class="card-text">
+				<i>
+					<small class="text-muted">Publié le
+						{{pub.datetime}}
+					</small>
+
+				</i>
+
+				<span class="badge text-bg-primary" style="background-color:#0d6efd;">
+					<i class="bi bi-eye-fill"></i>
+
+					{% if pub.confidentiality == 1 %}
+						Publique
+					{% elseif pub.confidentiality == 2 %}
+						Ami(e)s
+					{% else %}
+						Moi uniquement
+					{% endif %}
+				</span>
+			</p>
+			
+		</div>
+		<div class="col-2">
+			{% if pub.user_id == app.user.id %}
+				<span class="float-end dropstart">
+					<span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+						<i class="bi bi-three-dots" style="cursor:pointer"></i>
+					</span>
+					<ul class="dropdown-menu">
+						<li>
+							<button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
+								<i class="fas fa-edit"></i>
+								Modifier
+							</button>
+						</li>
+						<li>
+							<button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
+								<i class="fas fa-trash" aria-hidden="true"></i>
+								Supprimer
+							</button>
+						</li>
+					</ul>
+				</span>
+			{% endif %}
+		</div>
+
+		<div class="card-body">
+
+			<p class="card-text">{{pub.publication}}</p>
+
+			{% if pub.photo  %}
+				<div style="max-heigth:100%; max-width: 100%;">
+					<img width="100%" src={{asset('uploads/tribu_g/photos/') ~ pub.photo }} class="" alt="image publication">
+				</div>
+			{% endif %}
+
+			
+		</div>
+
+		<hr class="hr-g">
+		<div class="card-footer foot">
+			<div class="row text-center">
+				<div class="col-6 ">
+					<span>
+						<span id={{"nbr_reaction_pub_" ~ pub.id }}>
+							{{(pub.reactions|length ) > 0 ? pub.reactions|length : "" }}
+						</span>
+
+						{# {% dump( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) %} #}
+						<i class='{{ "reaction_js_" ~ pub.id ~ "_jheo"}} {{( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) ? "bi-heart-fill" : "bi-heart" }}' onclick="isLike({{pub.id}}, {{pub.user_id}})" style="cursor:pointer;"></i>
+					</span>
+				</div>
+				<div class="col-6">
+					<span id={{"nbr_comment_pub_" ~ pub.id }}>
+						{{(pub.nbr_c is same as(0) )? "" : pub.nbr_c }}
+					</span>
+					<a data-bs-toggle="collapse" href={{"#collapse_comment_" ~ pub.id }} onclick="fetchNotification({{pub.id}})">
+						<i class="bi bi-chat-square"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="collapse m-2" id={{"collapse_comment_" ~ pub.id }}>
+			<div class="card card-body">
+				<label style="display:none;">Commentaires</label>
+
+				<div class="content_notification_tributg mb-3"></div>
+
+				<form class={{ "form_comment_" ~ pub.id }}>
+					<div class="mb-3 row">
+						<div class="row" id="soundClips"></div>
+
+						{# <div class="col-1 text-center">
+							<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+							<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+						</div> #}
+						<div class="col-11">
+							<textarea class="form-control" name="commentaire" placeholder="Votre commentaire..." required></textarea>
+							<span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+						</div>
+						<div class="row" id="audiosPlayer"></div>
+					</div>
+					<div class="row">
+						<div class="col-8"></div>
+						<div class="col-4">
+							<input  type="button"  value="Envoyer"  class='{{"btn btn-primary float-end btn_submit_commentaire_" ~ pub.id ~ "_js_jheo"}}' onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})" >
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

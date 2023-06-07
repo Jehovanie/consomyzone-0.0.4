@@ -1854,3 +1854,58 @@ a:focus {
 .content_left_menu_account{
     background-color: #fff;
 }
+
+.position_sticky{
+    display: block;
+    position: sticky;
+    top:50px;
+}
+
+.content_chargement_publication{
+    text-align: center;
+}
+
+.card_entete{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.btn_actualise{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 25px;
+}
+
+.hidden_actualise{
+    opacity:0;
+}
+
+.btn_actulise_annimation{
+    animation-duration: 0.7s;
+    animation-name: slideOut;
+}
+
+.spinner_custom{
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
+.text_mini{
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+@keyframes slideOut {
+    0% {
+        top: 0%;
+    }
+    100% {
+        top: 20%;
+    }
+}

@@ -771,11 +771,7 @@ class TributGService extends PDOConnexionService{
 
     public function getAllPublications($table_name){
 
-
-
-
-
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC;");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 5;");
 
         $statement->execute();
 
@@ -1143,6 +1139,7 @@ class TributGService extends PDOConnexionService{
      public function getAllTableTribuG(){
         $results = array();
         $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%'];
+        
         $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribug_%'";
         foreach($tab_not_like as $not_like ){
             $query_sql .= " AND table_name NOT LIKE '$not_like' ";
@@ -1196,6 +1193,58 @@ class TributGService extends PDOConnexionService{
 
         return $result_final;
 
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $table: table publication tribut G
+     * @param int $pub_id: id publication
+     */
+    public function getOnePublication($table, $pub_id){
+        ///get one publication
+        $table_pub= $table . "_publication";
+        $table_reaction= $table . "_reaction";
+        $table_commentaire= $table . "_commentaire";
+
+        // $sql= "SELECT * FROM $table_pub as t1 LEFT JOIN $table_reaction as b ON a.id = b.pub_id  WHERE id=$pub_id";
+        $sql="SELECT * FROM $table_pub as t1 
+                LEFT JOIN(
+                    SELECT pub_id,count(*) as nbr_c FROM $table_commentaire group by pub_id
+                ) as t2 
+                ON t1.id= t2.pub_id 
+                -- LEFT JOIN(
+                --     SELECT pub_id,count(*) as nbr_r FROM $table_reaction group by pub_id
+                -- ) as t3
+                -- ON t1.id= t3.pub_id
+            WHERE id=$pub_id";
+
+        // $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+        // . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
+        
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $pub = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_reaction WHERE pub_id = $pub_id AND reaction= '1'");
+        $statement->execute();
+        $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $pub[0]["reactions"] = $reactions; /// [ ...reactions ]
+        return $pub;
+    }
+
+
+    public function deleteOneCommentaire($table, $pub_id, $comment_id ){
+        ///get one publication
+        $table_pub= $table . "_publication";
+        $table_reaction= $table . "_reaction";
+        $table_commentaire= $table . "_commentaire";
+
+        $sql= "DELETE FROM $table_commentaire WHERE id = $comment_id AND pub_id= $pub_id";
+
+        $statement = $this->getPDO()->prepare($sql);
+        return $statement->execute();
     }
 
 }

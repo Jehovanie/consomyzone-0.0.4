@@ -165,7 +165,6 @@ class UserController extends AbstractController
         }
 
 
-
         return $this->render("tribu_g/account.html.twig", [
 
             "profil" => $profil,

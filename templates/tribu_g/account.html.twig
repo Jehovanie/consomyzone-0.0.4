@@ -37,10 +37,7 @@
 
 {% block body %}
     
-    <main class="main_user_id" 
-          id='{{app.user.id}}'
-          data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'
-    >
+    <main class="main_user_id" id='{{app.user.id}}' data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
         <div class="col-2">
             <div class="content_left_menu_account fixed-top mt-5 col responsif-none">
                 <div class="left_menu">
@@ -53,6 +50,8 @@
                 </div>
             </div>
         </div>
+
+
 
         
         <div class="navbar-mobile">
@@ -76,26 +75,38 @@
                                     {% include "tribu_g/head.html.twig" %}
                                 </div>
                             </div>
-                            <div class="content_bloc_js_jheo row mt-3">
+
+                            <a class="btn btn-primary btn_actualise btn_actualise_js_jheo hidden_actualise" href={{ path("app_account")}}>
+                                <div class="spinner-border text-light spinner_custom" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text_mini">
+                                    Nouvelle publication
+                                </div>
+                            </a>
+
+                            <div class="row mt-3">
                                 <div class="col-8">
-                                    {% include "tribu_g/publications.html.twig" %}
+                                    <div class="content_bloc_js_jheo row">
+                                        {% include "tribu_g/publications.html.twig" %}
+                                    </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="card-appropos-g">
+                                    <div class="card-appropos-g position_sticky">
                                         <h4  class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name = {{tributG.profil.name}} >{{tributG.profil.name}}</h4>
                                         <small>
                                             <i>{{tributG.profil.description}}</i>
                                         </small>
                                     </div>
                                 </div>
-                                
-                                {# <div class="content_member_js_jheo">
-                                    {% include "tribu_g/member_tributG.html.twig" %}
-                                </div> #}
-                                {# <div class="content_member_js_jheo">
-                                    {% include "tribu_g/photos.html.twig" %}
-                                </div> #}
                             </div>
+                                
+                            {# <div class="content_member_js_jheo">
+                                {% include "tribu_g/member_tributG.html.twig" %}
+                            </div> #}
+                            {# <div class="content_member_js_jheo">
+                                {% include "tribu_g/photos.html.twig" %}
+                            </div> #}
                         </div>
                     </div>
                 </div>
@@ -107,4 +118,3 @@
     {# {% include "tribu_g/script_agenda_tribug.html.twig" %} #}
 
 {% endblock %}
-

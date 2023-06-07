@@ -12,6 +12,7 @@ if( document.querySelector(".content_publication_js_jheo")){
 
         //// get data
         const all_publication = JSON.parse(event.data);
+
         ///mise a jour des nbrs des reactions de nbrs de comments 
         all_publication.forEach(publication => {
 
@@ -29,23 +30,64 @@ if( document.querySelector(".content_publication_js_jheo")){
         })
 
         ///filter publications not show.
-        const last_pub_id_show= document.querySelector(".publication_js_jheo").getAttribute("data-toggle-pub-id")
-        const new_publication = all_publication.filter(pub => parseInt(pub.id) > parseInt(last_pub_id_show))
+        const new_publication = all_publication.filter(pub => !document.querySelector("#pubication_js_"+ pub.id + "_jheo"))
 
-        if( new_publication.length > 0 ){
-            if(document.querySelector(".btn_actualise_js_jheo").classList.contains("hidden_actualise")){
-                document.querySelector(".btn_actualise_js_jheo").classList.remove("hidden_actualise");
-            }
-
-            if(!document.querySelector(".btn_actualise_js_jheo").classList.contains("btn_actulise_annimation")){
-                document.querySelector(".btn_actualise_js_jheo").classList.add("btn_actulise_annimation");
-            }
-
-            setTimeout(() => {
-                document.querySelector(".btn_actualise_js_jheo").classList.add("hidden_actualise");
-                document.querySelector(".btn_actualise_js_jheo").classList.remove("btn_actulise_annimation");
-            }, 5000)
+        if( new_publication ){
+            alert("new publication");
         }
+    }
+
+    if(document.querySelectorAll(".publication_js_jheo")){
+
+        const publications = document.querySelectorAll(".publication_js_jheo");
+
+        publications.forEach(publication => {
+
+            const publication_id = publication.getAttribute("data-toggle-pub-id");
+            const publication_user_id = publication.getAttribute("data-toggle-pub-user-id");
+
+            addAudio(publication,publication_id)
+
+            if( document.querySelector(".form_comment_"+ publication_id)){
+
+                const form_content = document.querySelector(".form_comment_"+ publication_id);
+                const input_content = form_content.querySelector("input");
+
+                input_content.addEventListener("click", (e) => {
+                    e.preventDefault();
+
+                    const datetime =new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11,19);
+
+                    console.log(form_content.querySelector("textarea").length );
+
+                    if((form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 0 ) || publication.querySelector("#audio_"+publication_id)){
+
+                        createCardComment(
+                            publication_id,
+                            fullname,
+                            datetime,
+                            form_content.querySelector("textarea").value ,
+                            publication.querySelector("#audio_"+publication_id) ? publication.querySelector("#audio_"+publication_id).src:""
+                        );
+
+                        handleCommentPublished(
+
+                            publication_user_id,
+
+                            publication_id,
+
+                            form_content.querySelector("textarea").value,
+
+                            publication
+
+                        );
+                    }
+
+                    ///delete content on form.
+                    form_content.querySelector("textarea").value = null;
+                })
+            }
+        })
     }
 }
 
@@ -241,119 +283,133 @@ function handleCommentPublished(author_id, publication_id , comment, bouton=null
 
 function fetchNotification(publication_id){
 
-    const header = {
-        'Content-Type': 'application/json',
-        'Accept'  : 'application/json'
-    };
-
-    const options_request= {
-        headers: header,
-        method: "POST",
-        body: JSON.stringify({
-            "publication_id": publication_id,
-        })
-    }
     
 
-    fetch("/tributG/publications/comments/fetchall", options_request )
-        .then(response => response.json())
-        .then(results => {
-            const content_comment = document.querySelector("#collapse_comment_" + publication_id ).querySelector(".content_notification_tributg")
-            
-            ////delete old comments
-            if (content_comment && content_comment.querySelectorAll(".card_comment_js")){
-                content_comment.querySelectorAll(".card_comment_js").forEach(comment => {
-                    comment.parentElement.removeChild(comment);
-                })
-            }
+    fetch("/tributG/publications/comments/fetchall" , {
 
-            if (results.success ){
-                if( results.comments.length > 0){
+        headers: {
 
-                    results.comments.forEach(comment => {
+            'Content-Type': 'application/json',
 
-                        console.log("comment");
-                        console.log(comment);
+            'Accept'  : 'application/json'
 
-                        let audio;
+        },
 
-                        if(comment.audioname){
-                            audio = `/uploads/users/audios/${comment.audioname}`;
-                        }
+        method: "POST",
 
-                        createCardComment(
-                            comment.user_id,
-                            comment.pub_id,
-                            comment.userfullname,
-                            comment.datetime,
-                            comment.id,
-                            comment.commentaire,
-                            audio,
-                            comment.id,
-                        );
+        body: JSON.stringify({
 
-                    })
-
-                }
-
-            }
+            "publication_id": publication_id,
 
         })
+
+    }).then(response => response.json())
+
+    .then(results => {
+
+
+
+        const content_comment = document.querySelector("#collapse_comment_" + publication_id ).querySelector(".content_notification_tributg")
+
+        
+
+        if (content_comment && content_comment.querySelectorAll(".card_comment_js")){
+
+            content_comment.querySelectorAll(".card_comment_js").forEach(comment => {
+
+                comment.parentElement.removeChild(comment);
+
+            })
+
+        }
+
+
+        if (results.success ){
+
+            if( results.comments.length > 0){
+
+                results.comments.forEach(comment => {
+                    let audio
+                    if(comment.audioname){
+                        audio = `/uploads/users/audios/${comment.audioname}`;
+                    }
+
+                    createCardComment(
+
+                        comment.pub_id,
+
+                        comment.userfullname,
+
+                        comment.datetime,
+
+                        comment.commentaire,
+
+                        audio
+
+                    );
+
+                })
+
+            }
+
+        }
+
+    })
 
 }
 
-function createCardComment(publication_user_id, publication_id, user_fullname, datetime, comment_id=null, comment=null, audio=null){
+function createCardComment(publication_id, user_fullname,datetime,comment=null, audio=null ){
 
-    comment_id = comment_id ? comment_id : 0;
+
 
     const card_comment = document.createElement("div");
-    card_comment.className = "card_comment_js card my-2";
-    card_comment.classList.add(`card_comment_${comment_id}_js_jheo`);
+
+    card_comment.classList.add("card_comment_js");
+
+    card_comment.classList.add("card");
+
+    card_comment.classList.add("my-2");
+
+
 
     const card_body = document.createElement("div");
+
     card_body.classList.add("card-body");
 
-    const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
 
-    let comment_admin = "";
-    if( parseInt(publication_user_id) === parseInt(user_id)){
-        comment_admin= `
-            <div class="float-end dropstart">
-                <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                </span>
-                <ul class="dropdown-menu">
-                    <li>
-                        <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item">
-                            <i class="fas fa-edit"></i>
-                            Modifier
-                        </button>
-                    </li>
-                    <li>
-                        <button data-bs-toggle="modal" data-bs-target="#deleteCommentConfirm" class="dropdown-item" onclick="show_modal_remove_com('${publication_id}', ${comment_id})">
-                            <i class="fas fa-trash" aria-hidden="true"></i>
-                            Supprimer
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        `
+
+    const h5_comment = document.createElement("h5")
+
+    h5_comment.innerText = user_fullname;
+
+    
+
+    card_body.appendChild(h5_comment);
+
+
+
+    const span_comment = document.createElement("span")
+
+    span_comment.classList.add("blockquote-footer");
+
+
+
+    span_comment.innerText = datetime;
+
+
+
+    card_body.appendChild(span_comment);
+
+    
+    if(comment){
+        const p_comment = document.createElement("p")
+
+        p_comment.classList.add("card-text")
+
+        p_comment.innerText = comment;
+
+        card_body.appendChild(p_comment);
     }
-
-    const card_body_html= `
-        <div class="card">
-            <div class="card-body">
-                <div class="card_entete">
-                    <h6 class="card-title"> ${user_fullname}</h6>
-                    ${comment_admin}
-                </div>
-                <span class="blockquote-footer">${datetime}</span>
-                <p>${comment}</p>
-            </div>
-        </div>
-    `
-
-
     
     if(audio){
 
@@ -369,68 +425,74 @@ function createCardComment(publication_user_id, publication_id, user_fullname, d
 
     }
     
-    // card_comment.appendChild(card_body);
-    card_comment.innerHTML = card_body_html;
+    card_comment.appendChild(card_body);
+
+    
 
     const content_comment = document.querySelector("#collapse_comment_" + publication_id ).querySelector(".content_notification_tributg")
 
-    ///if there is already content comment, insert a new comment on the top
+
+
     if (content_comment && content_comment.querySelectorAll(".card_comment_js").length > 0){
 
         content_comment.insertBefore(
+
             card_comment,
+
             content_comment.querySelector(".card_comment_js")
+
         )
 
     }else{
-        ///first comment
+
         content_comment.appendChild(card_comment);
+
     }
 
-}
-
-function show_modal_remove_com(pub_id, comm_id){
-    document.querySelector(".cta_confirme_del_com_js_jheo").setAttribute("onclick", `removeComment('${pub_id}', '${comm_id}')`);
-}
-
-function removeComment(pub_id,comment_id){
-    if( parseInt(pub_id)){
-        fetch(`/tribuG/publication/${pub_id}/comment/${comment_id}/delete`)
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-                document.querySelector(`.card_comment_${comment_id}_js_jheo`).remove();
-            })
-    }
 }
 
 function handleAndSentNotification(publication_id, publication_user_id){
 
     if( document.querySelector(".form_comment_"+ publication_id)){
+
         const form_content = document.querySelector(".form_comment_"+ publication_id);
 
-        const datetime =new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11,19);
+        const input_content = form_content.querySelector("input");
 
-        if(form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 1 ){
-            const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
-            createCardComment(
-                user_id,
-                publication_id,
-                document.querySelector(".main_user_id").getAttribute("data-toggle-full-name"),
-                datetime,
-                0,
-                form_content.querySelector("textarea").value 
-            );
 
-            handleCommentPublished(
-                publication_user_id,
-                publication_id,
-                form_content.querySelector("textarea").value
-            );
-            ///delete content on form.
-            form_content.querySelector("textarea").value = null
-        }
+        input_content.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const datetime =new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11,19);
+
+            // console.log(form_content.querySelector("textarea").value);
+            if(form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 1 )
+            {
+                createCardComment(
+                    publication_id,
+                    document.querySelector(".main_user_id").getAttribute("data-toggle-full-name"),
+                    datetime,
+                    form_content.querySelector("textarea").value 
+                );
+    
+                handleCommentPublished(
+    
+                    publication_user_id,
+    
+                    publication_id,
+    
+                    form_content.querySelector("textarea").value
+    
+                );
+                ///delete content on form.
+                form_content.querySelector("textarea").value = null
+            }
+
+
+        })
+
     }
+
 }
 
 function getPub(pub_id, message, confid) {

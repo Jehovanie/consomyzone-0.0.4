@@ -204,8 +204,37 @@ class TributGController extends AbstractController
     }
 
 
+    #[Route("/tribuG/publications/{publication_id}", name:"app_tribuG_publication_by_id" , methods: "GET")]
+    public function getPublicationById( 
+        $publication_id,
+        TributGService $tributGService,
+        EntityManagerInterface $entityManager
+    ){
+        $profil = "";
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
 
+        if ($userType == "consumer") {
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
 
+        $table_tributG_name = $tributGService->getTableNameTributG(
+            $this->getUser()->getId()
+        );
+
+        $last_pub= $tributGService->getOnePublication($table_tributG_name, intval($publication_id) );
+        if( count($last_pub) > 0 ){
+            return $this->render("tribu_g/single_publication.html.twig", [
+                "pub" => $last_pub[0],
+                "profil" => $profil
+            ]);
+        }
+
+        return $this->json(["result" => [], 404 ]);
+    }
 
     #[Route("/tributG/member/list", name: "app_member_tributG")]
     public function fetchListMemberTributG(
@@ -538,5 +567,25 @@ class TributGController extends AbstractController
         }
 
         return $this->json("Photo ajouté avec succès");
+    }
+
+
+    #[Route("/tribuG/publication/{pub_id}/comment/{comment_id}/delete", name: "app_tribug_delete_commentaire")]
+    public  function deleteCommentOnPublication(
+        $pub_id, 
+        $comment_id,
+        TributGService $tributGService,
+    ){
+        $table_tributG_name = $tributGService->getTableNameTributG(
+            $this->getUser()->getId()
+        );
+
+        $last_pub= $tributGService->getOnePublication($table_tributG_name, intval($pub_id) );
+
+        if( $last_pub ){
+            $tributGService->deleteOneCommentaire($table_tributG_name, intval($pub_id), intval($comment_id) );
+        }
+
+        return $this->json(["status" => "ok"], 200);
     }
 }
