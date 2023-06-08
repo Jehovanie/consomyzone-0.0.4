@@ -50,9 +50,24 @@ if( document.querySelector(".content_publication_js_jheo")){
 }
 
 if( document.querySelector(".content_chargement_publication_js_jheo")){
+
+
     window.addEventListener('scroll', function(e) {
         const scroll_Y = window.scrollY;
         const scrollable = document.documentElement.scrollHeight - window.innerHeight
+
+        const content_description = document.querySelector(".need_position_fixed_js_jheo")
+        const scroll_goal= content_description.getBoundingClientRect().bottom +  content_description.getBoundingClientRect().height;
+        
+        if( parseInt(scroll_goal) - parseInt(scroll_Y) < 0 ){
+            if(!document.querySelector(".need_position_fixed_js_jheo").classList.contains("position_sticky")){
+                document.querySelector(".need_position_fixed_js_jheo").classList.add("position_sticky")
+            }
+        }else{
+            if(document.querySelector(".need_position_fixed_js_jheo").classList.contains("position_sticky")){
+                document.querySelector(".need_position_fixed_js_jheo").classList.remove("position_sticky")
+            }
+        }
 
         if( parseInt(scroll_Y) === parseInt(scrollable)){
 
@@ -82,9 +97,7 @@ if( document.querySelector(".content_chargement_publication_js_jheo")){
                         `
                     }else{
 
-                        if( document.querySelector(".content_chargement_publication_js_jheo")){
-                            document.querySelector(".content_chargement_publication_js_jheo").remove();
-                        }
+                        removeChargement()
 
                         if( !document.querySelector(".reload_publication_js_jheo")){
                             content_pub.innerHTML  += `
@@ -128,6 +141,13 @@ if( document.querySelector(".send_new_pub_js_jheo")){
 
 
 
+}
+
+
+function removeChargement(){
+    if( document.querySelector(".content_chargement_publication_js_jheo")){
+        document.querySelector(".content_chargement_publication_js_jheo").remove();
+    }
 }
 
 function isLike(pub_id, author_id) {

@@ -11,19 +11,19 @@
                         <th scope="col">Nom</th>
                         <th scope="col">Prénom</th>
                         <th scope="col">Email</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    
                     {% for item in membersTributG %}
                         <tr>
                             <td scope="row">{{ loop.index }}</td>
                             <td>{{item.firstname}}</td>
                             <td>{{item.lastname}}</td>
                             <td>{{item.email}}</td>
+                            <td> <a class="btn btn-primary" href={{path("user_profil", { user_id : item.id })}}> Voir profil</a> </td>
                         </tr>
                     {% endfor %}
-                    
                 </tbody>
             </table>
         </div>

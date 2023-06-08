@@ -73,40 +73,42 @@
                                 <br>
                                 <div class="card-pub p-3 bgPersonnalisee">
                                     {% include "tribu_g/head.html.twig" %}
-                                </div>
-                            </div>
-
-                            <a class="btn btn-primary btn_actualise btn_actualise_js_jheo hidden_actualise" href={{ path("app_account")}}>
-                                <div class="spinner-border text-light spinner_custom" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <div class="text_mini">
-                                    Nouvelle publication
-                                </div>
-                            </a>
-
-                            <div class="row mt-3">
-                                <div class="col-8">
-                                    <div class="content_bloc_js_jheo row">
-                                        {% include "tribu_g/publications.html.twig" %}
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="card-appropos-g position_sticky">
-                                        <h4  class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name = {{tributG.profil.name}} >{{tributG.profil.name}}</h4>
-                                        <small>
-                                            <i>{{tributG.profil.description}}</i>
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
                                 
-                            {# <div class="content_member_js_jheo">
-                                {% include "tribu_g/member_tributG.html.twig" %}
-                            </div> #}
-                            {# <div class="content_member_js_jheo">
-                                {% include "tribu_g/photos.html.twig" %}
-                            </div> #}
+
+                                    <a class="btn btn-primary btn_actualise btn_actualise_js_jheo hidden_actualise" href={{ path("app_account")}}>
+                                        <div class="spinner-border text-light spinner_custom" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <div class="text_mini">
+                                            Nouvelle publication
+                                        </div>
+                                    </a>
+
+                                    <div class="row mt-3">
+                                        <div class="col-8">
+                                            <div class="content_bloc_js_jheo row">
+                                                {% include "tribu_g/publications.html.twig" %}
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="card-appropos-g need_position_fixed_js_jheo">
+                                                <h4  class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name = {{tributG.profil.name}} >{{tributG.profil.name}}</h4>
+                                                <small>
+                                                    <i>{{tributG.profil.description}}</i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    {# <div class="content_member_js_jheo">
+                                        {% include "tribu_g/member_tributG.html.twig" %}
+                                    </div> #}
+                                    {# <div class="content_member_js_jheo">
+                                        {% include "tribu_g/photos.html.twig" %}
+                                    </div> #}
+                                    
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

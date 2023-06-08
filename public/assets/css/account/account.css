@@ -1819,7 +1819,8 @@ a:focus {
 
 .card-tribu-g .nav-tribu-g{
     background-color: #fff;
-    border-radius: 0 0 15px 15px;
+    border-radius: 0 0 7px 7px;
+    padding: 0;
 }
 
 .publication-tribu-g{
@@ -1856,9 +1857,9 @@ a:focus {
 }
 
 .position_sticky{
-    display: block;
-    position: sticky;
-    top:50px;
+    position: fixed;
+    top: 100px;
+    width: 333px;
 }
 
 .content_chargement_publication{
@@ -1899,6 +1900,10 @@ a:focus {
 .text_mini{
     font-size: 0.8rem;
     font-weight: bold;
+}
+
+.content_title_tribuG{
+    transform: translate(10px, 70%);
 }
 
 @keyframes slideOut {

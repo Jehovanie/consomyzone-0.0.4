@@ -1,6 +1,6 @@
 <div class="content_publication_js_jheo mb-2">
 	{% if tributG.publications is defined %}
-		{% set last_pub_id= 2 %}
+		{% set last_pub_id= 0 %}
 
 		{% for pub in tributG.publications %}
 
@@ -137,11 +137,13 @@
 			{% set last_pub_id= pub.id %}
 		{% endfor %}
 
-		<div class="content_chargement_publication content_chargement_publication_js_jheo mt-3" data-toggle-pub-id={{last_pub_id}} >
-			<div class="spinner-border text-primary" role="status">
-				<span class="visually-hidden">Loading...</span>
+		{% if last_pub_id != 0 and  last_pub_id != 1  %}
+			<div class="content_chargement_publication content_chargement_publication_js_jheo mt-3" data-toggle-pub-id={{last_pub_id}} >
+				<div class="spinner-border text-primary" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
 			</div>
-		</div>
+		{% endif %}
 
 	{% endif %}
 </div>
