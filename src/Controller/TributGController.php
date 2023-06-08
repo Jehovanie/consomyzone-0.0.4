@@ -204,6 +204,28 @@ class TributGController extends AbstractController
     }
 
 
+    #[Route("/tributG/publications/{pub_id}/comment/{com_id}/change" , name:"app_tribut_change_comment", methods: "POST")]
+    public function handleChangeComment(
+        $pub_id,
+        $com_id,
+        Request $request,
+        TributGService $tributGService,
+        NotificationService $notificationService
+    ){
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $publication_id, $comment_id, $comment_text
+
+        $reaction = $tributGService->changeComment(
+            $publication_id,
+            $comment_id,
+            $comment_text,
+            $this->getUser()->getId()
+        );
+
+        return $this->json(["result" =>  $reaction], 201);
+    }
+
+
     #[Route("/tribuG/publications/{publication_id}", name:"app_tribuG_publication_by_id" , methods: "GET")]
     public function getPublicationById( 
         $publication_id,

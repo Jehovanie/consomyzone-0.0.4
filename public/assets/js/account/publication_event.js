@@ -344,7 +344,7 @@ function createCardComment(publication_user_id, publication_id, user_fullname, d
                 </span>
                 <ul class="dropdown-menu">
                     <li>
-                        <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item">
+                        <button class="dropdown-item" onclick="changeComment('${comment_id}' , '${publication_id}')">
                             <i class="fas fa-edit"></i>
                             Modifier
                         </button>
@@ -368,7 +368,7 @@ function createCardComment(publication_user_id, publication_id, user_fullname, d
                     ${comment_admin}
                 </div>
                 <span class="blockquote-footer">${datetime}</span>
-                <p>${comment}</p>
+                <p class="text_js_jheo">${comment}</p>
             </div>
         </div>
     `
@@ -407,6 +407,16 @@ function createCardComment(publication_user_id, publication_id, user_fullname, d
         content_comment.appendChild(card_comment);
     }
 
+}
+
+
+function changeComment(comment_id, publication_id){
+    const card_comment= document.querySelector(`.card_comment_${comment_id}_js_jheo`);
+    document.querySelector(`.text_input_${publication_id}_js_jheo`).value=card_comment.querySelector(".text_js_jheo").innerText;
+
+    document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).setAttribute("onclick", `handleChangeComment("${publication_id}", "${comment_id}")`);
+
+    document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).innerText = "Modifier";
 }
 
 function show_modal_remove_com(pub_id, comm_id){
@@ -451,6 +461,50 @@ function handleAndSentNotification(publication_id, publication_user_id){
             form_content.querySelector("textarea").value = null
         }
     }
+}
+
+
+function handleChangeComment(publication_id, comment_id){
+    
+
+    const form_content = document.querySelector(".form_comment_"+ publication_id);
+    if(form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 1 ){
+
+        const card_comment= document.querySelector(`.card_comment_${comment_id}_js_jheo`);
+        card_comment.querySelector(".text_js_jheo").innerText= form_content.querySelector("textarea").value
+        document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).innerHTML = "Envoyer";
+
+        document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).setAttribute("onclick", `alert("handleAndSentNotification")`);
+
+        handleEditComment(
+            publication_id,
+            comment_id,
+            form_content.querySelector("textarea").value
+        );
+
+        ///delete content on form.
+        form_content.querySelector("textarea").value = null
+    }
+}
+
+function handleEditComment(publication_id, comment_id, text_comment){
+
+    const request_headers = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept'  : 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({
+            "publication_id": publication_id,
+            "comment_id": comment_id,
+            "comment_text": text_comment
+        })
+    }
+
+    fetch(`/tributG/publications/${publication_id}/comment/${comment_id}/change`, request_headers)
+        .then(response => response.json())
+        .then(response => console.log(response));
 }
 
 function getPub(pub_id, message, confid) {

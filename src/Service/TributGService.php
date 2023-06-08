@@ -986,6 +986,22 @@ class TributGService extends PDOConnexionService{
     }
 
 
+    public function changeComment(
+        $publication_id,
+        $comment_id,
+        $comment_text,
+        $user_id
+    ){
+        $table_comment = $this->getTableNameTributG($user_id) . "_commentaire";
+
+        $sql = "UPDATE  $table_comment  set commentaire = '$comment_text' where pub_id = '$publication_id' and id= '$comment_id'";
+
+        $statement = $this->getPDO()->prepare($sql);
+
+        return $statement->execute();
+    }
+
+
 
 
 

@@ -118,13 +118,13 @@
 										<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
 									</div> #}
 									<div class="col-12 ">
-										<textarea class="form-control" name="commentaire" placeholder="Votre commentaire..." required></textarea>
+										<textarea class='{{ "form-control text_input_" ~ pub.id ~ "_js_jheo" }}' name="commentaire" placeholder="Votre commentaire..." required></textarea>
 										<span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
 									</div>
 									<div class="row" id="audiosPlayer"></div>
 								</div>
 
-								<Button type="button"  value="" class="btn btn-primary float-end" onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})">
+								<Button type="button"  value="" class='{{"btn btn-primary float-end cta_send_notification_" ~ pub.id ~ "_js_jheo" }}' onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})">
 									Envoyer
 								</Button>
 							</form>
