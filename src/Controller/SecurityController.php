@@ -543,7 +543,7 @@ class SecurityController extends AbstractController
 
 
     #[Route(path: '/inscription/resend-email', name: 'app_inscription-resend-email', methods: "POST")]
-    public function  resendEmail(Request $request, UserRepository $userRepository, VerifyEmailHelperInterface $verifyEmailHelper,)
+    public function  resendEmail(Request $request, UserRepository $userRepository, VerifyEmailHelperInterface $verifyEmailHelper, MailService $mailService)
     {
 
         //// send the mail
