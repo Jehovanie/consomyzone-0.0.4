@@ -1854,3 +1854,19 @@ a:focus {
 .content_left_menu_account{
     background-color: #fff;
 }
+
+.header-modal-agenda{
+    border-bottom: none !important;
+    width: 60vw;
+    margin-top: 70px;
+}
+
+.footer-modal-agenda{
+    border-top: none !important;
+}
+
+.agenda-modal-content{
+    background: none !important;
+    border: none !important;
+}
+

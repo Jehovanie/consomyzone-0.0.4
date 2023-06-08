@@ -72,6 +72,7 @@ class UserController extends AbstractController
 
 
 
+ 
     #[Route("/user/account", name: "app_account")]
 
     public function Account(
@@ -91,12 +92,6 @@ class UserController extends AbstractController
         $userId = $user->getId();
 
         $profil = "";
-
-
-
-
-
-
 
         if ($userType == "consumer") {
 
@@ -2300,6 +2295,7 @@ class UserController extends AbstractController
         return $this->json("Photo de profil bien à jour");
     }
 
+  
     /** UPDATE PASSWORD */
     /*
     #[Route("/user/update/password", name : "update_password_on_dev")]

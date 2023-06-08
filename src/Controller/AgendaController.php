@@ -11,21 +11,23 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 
 use App\Service\AgendaService;
-
+use App\Service\FilesUtils;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
 
 use App\Service\NotificationService;
-
+use App\Service\Status;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class AgendaController extends AbstractController
 
@@ -630,4 +632,163 @@ class AgendaController extends AbstractController
         return $this->json("Restaurant bien sauvegardé");
 
     }
+
+    #[Route("/user/tribu/agenda", name: "app_agenda")]
+    public function agenda(Status $status, Request $request)
+    {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        return $this->render("agenda/agenda.html.twig",[
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+        ]);
+    }
+    #[Route("/user/create-event/agenda", name: "app_create_agenda")]
+    public function createEvent(Request $request,AgendaService $agendaService, Filesystem $fs){
+        $agendaTableName=$this->getUser()->getNomTableAgenda();
+        $req=json_decode($request->getContent(),true);
+        dump($req);
+        if( str_contains($req["fileType"],"image"))
+            $path="/public/uploads/users/agenda/files/img/";
+        else if(str_contains($req["fileType"], "application"))
+            $path = "/public/uploads/users/agenda/files/document/";
+        if(!($fs->exists($this->getParameter('kernel.project_dir') . $path)))
+            $fs->mkdir($this->getParameter('kernel.project_dir') . $path,0777);
+        
+        $param=array(
+            ":message"=>$req["agendaMessage"],
+            ":type"=>$req["eventType"],
+            ":confidentialite"=>$req["confidentiality"],
+            ":file_path"=>str_replace("/public","",($path.$req["fileName"])),
+            ":date"=>$req["dateEvent"],
+            ":heure_debut"=>$req["heureD"],
+            ":heure_fin"=>$req["heureF"],
+            ":file_type"=>$req["fileType"],
+            ":status"=>1,
+        );
+        $fileUtils = new FilesUtils();
+        $response = new Response();
+        try{
+            if($req["fileSize"]>0)
+                $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $req["fileBTOA"], $req["fileName"]);
+            else
+                $fs->touch($this->getParameter('kernel.project_dir') . $path. $req["fileName"]);
+        }catch(\Exception $e){
+            $response->setStatusCode(500);
+            return $response;
+        }
+        $requestResponse=$agendaService->createEvent($agendaTableName,$param);
+       
+        if($requestResponse){
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response->setStatusCode(500);
+            return $response;
+        }
+
+
+    }
+    #[Route("/user/agenda", name: "app_get_agenda")]
+    public function getAgenda(AgendaService $agendaService, SerializerInterface $ser){
+        $agendaTableName = $this->getUser()->getNomTableAgenda();
+        $r=$agendaService->getAgenda($agendaTableName);
+        $date= array_column($r, 'date');
+        array_multisort($date, SORT_ASC, $r);
+       
+        $referenceDate=$r[0]["date"];
+        $final=[];
+        $tmp=[];
+        $j=0;
+        for($i=0;$i<count($r);$i++){
+            if($referenceDate ===$r[$i]["date"]){
+                $referenceDate = $r[$i]["date"];
+            }else{
+                $tmp=[];
+                $j++;
+                $referenceDate = $r[$i]["date"];
+            }
+            array_push($tmp,$r[$i]);
+            $final[$j]=$tmp;
+        }
+
+       for($i=0;$i<count($final);$i++){
+            $date = array_column($final[$i], 'heure_debut');
+            array_multisort($date, SORT_ASC, $final[$i]);
+       }
+        //dump($final);
+        $json=$ser->serialize($final,"json");
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route("/user/agenda/up", name: "agenda_update")]
+    public function updateAgendaTom(
+    Request $request, 
+    AgendaService $agendaService,
+    Filesystem $fs){
+        $agendaTableName = $this->getUser()->getNomTableAgenda();
+        $req = json_decode($request->getContent(), true);
+        if (str_contains($req["fileType"], "image"))
+            $path = "/public/uploads/users/agenda/files/img/";
+        else if (str_contains($req["fileType"], "application"))
+            $path = "/public/uploads/users/agenda/files/document/";
+        if (!($fs->exists($this->getParameter('kernel.project_dir') . $path)))
+            $fs->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        
+        $param=array(
+            ":message" => $req["agendaMessage"],
+            ":type" => $req["eventType"],
+            ":confidentialite" => $req["confidentiality"],
+            ":file_path" => str_replace("/public", "", ($path . $req["fileName"])),
+            ":heure_debut" => $req["heureD"],
+            ":heure_fin" => $req["heureF"],
+            ":file_type" => $req["fileType"],
+            ":id" => $req["id"],
+            
+        );
+
+        $fileUtils = new FilesUtils();
+        $response = new Response();
+        try {
+            if ($req["fileSize"] > 0)
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $req["fileBTOA"], $req["fileName"]);
+            else
+                $fs->touch($this->getParameter('kernel.project_dir') . $path . $req["fileName"]);
+        } catch (\Exception $e) {
+            $response->setStatusCode(500);
+            return $response;
+        }
+        $requestResponse = $agendaService->updateEvent($agendaTableName, $param);
+
+        if ($requestResponse) {
+            $response->setStatusCode(200);
+            return $response;
+        } else {
+            $response->setStatusCode(500);
+            return $response;
+        }
+        
+
+    }
+
+    #[Route("/user/agenda/up/status", name: "agenda_update_status")]
+    public function updateAgendaStatusTom(Request $request,AgendaService $agendaService){
+        $agendaTableName = $this->getUser()->getNomTableAgenda();
+        $req = json_decode($request->getContent(), true);
+        $param=array(
+            ":status"=>0,
+            ":id"=>$req["id"]
+        );
+        $requestResponse= $agendaService->updateEventStatus($agendaTableName,$param);
+        $response = new Response();
+        if ($requestResponse) {
+            $response->setStatusCode(200);
+            return $response;
+        } else {
+            $response->setStatusCode(500);
+            return $response;
+        }
+        
+    }
+
+
 }

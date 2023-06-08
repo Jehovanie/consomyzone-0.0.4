@@ -463,5 +463,88 @@ class AgendaService extends PDOConnexionService
 
     }
 
+    /**
+     * @author Tommy
+     */
+
+    public function createEvent($nom_table_agenda,$a) {
+
+        $sql="INSERT INTO $nom_table_agenda(message,type,confidentialite,file_path,date,heure_debut,heure_fin,file_type,status) VALUES(
+            :message,:type,:confidentialite,:file_path,:date,:heure_debut,:heure_fin,:file_type,:status)";
+        $stmt = $this->getPDO()->prepare($sql);
+        return  $stmt->execute($a);
+       
+
+    }
+
+    /**
+     * @author Tommy
+     */
+
+    public function updateEvent($nom_table_agenda, $a)
+    {
+
+        $sql = "UPDATE $nom_table_agenda SET 
+                    message= :message,
+                    type= :type ,
+                    confidentialite= :confidentialite,
+                    file_path= :file_path,
+                    heure_debut= :heure_debut,
+                    heure_fin= :heure_fin,
+                    file_type= :file_type
+                WHERE id= :id";
+
+        $stmt = $this->getPDO()->prepare($sql);
+        return  $stmt->execute($a);
+    }
+
+    /**
+     * @author Tommy
+     */
+
+    public function updateEventStatus($nom_table_agenda, $a)
+    {
+
+        $sql = "UPDATE $nom_table_agenda SET 
+                    status= :status
+                WHERE id= :id";
+
+        $stmt = $this->getPDO()->prepare($sql);
+        return  $stmt->execute($a);
+    }
+
+
+    /**
+     * @author Tommy
+     */
+    public function getAgenda($nom_table_agenda){
+        $sql="SELECT * FROM $nom_table_agenda  ORDER BY id ASC";
+        $stmt = $this->getPDO()->prepare($sql);
+       $stmt->execute();
+       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    /**
+     * @author Tommy
+     */
+    public function createTableAgenda($table_agenda_name){
+        $sql= "CREATE TABLE $table_agenda_name (".
+            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+            "`message` text DEFAULT NULL,".
+            "`type` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`type`)),".
+            "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT".
+            "NULL CHECK (json_valid(`confidentialite`)),".
+            "`file_path` varchar(500) DEFAULT NULL,".
+            "`date` date NOT NULL,".
+            "`heure_debut` time NOT NULL,".
+            "`heure_fin` time NOT NULL,".
+            "`file_type` varchar(40) NOT NULL,".
+           " `status` tinyint(1) DEFAULT 0".
+           " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+    }
+
 
 }

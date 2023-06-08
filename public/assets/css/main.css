@@ -589,6 +589,10 @@ li a .station {
     cursor: not-allowed !important;
 }
 
+.cursor_active {
+    cursor: pointer !important;
+}
+
 .vertical-line {
     border-left: 1px solid #ccc;
     display: inline-block;
@@ -952,4 +956,12 @@ li a .station {
 
 .spec-dep{
     margin-top: 100px;
+}
+
+.bg-blanc{
+    z-index: 1;
+    background-color: #fff;
+    width: 100vw ;
+    height: 90px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
