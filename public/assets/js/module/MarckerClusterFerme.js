@@ -14,6 +14,7 @@ class MarckerClusterFerme {
             const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
             const response= await fetch(link);
             this.default_data= await response.json();
+            
             this.map=await create_map_content(this.geos,this.id_dep, "ferme");
             
             this.data= this.default_data;

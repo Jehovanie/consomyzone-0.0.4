@@ -23,6 +23,7 @@ function splitArrayToMultipleArray(tabToSplit) {
 
 async function create_map_content(geos, id_dep = null, map_for_type = "home") {
     // {# <div id="map"  style="width: 100%;"></div> #}
+   
     try {
 
         const response = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client")
@@ -56,22 +57,23 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
 
         if (map_for_type === "station") {
 
-            latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
+            latlng = id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);;
             json = getDataInLocalStorage("coordStation") ? JSON.parse(getDataInLocalStorage("coordStation")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
             
         } else if (map_for_type === "home") {
-            // latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
-            latlng = L.latLng(latitude, longitude);
+            latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
+            // latlng = L.latLng(latitude, longitude);
             zoom = 12;
         } else if (map_for_type === "ferme") {
 
-            latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
+            latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
             json = getDataInLocalStorage("coordFerme") ? JSON.parse(getDataInLocalStorage("coordFerme")) : null;
-            zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
+            zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
+            
         } else if (map_for_type === "resto") {
 
-            latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(latitude, longitude);
+            latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);;
             json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : null;
             zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json.zoom ? json.zoom : 6);
         }

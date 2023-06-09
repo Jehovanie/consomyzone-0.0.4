@@ -432,6 +432,7 @@ class SecurityController extends AbstractController
         $user->setTablemessage("tablemessage");
         $user->setTablenotification("tablenotification");
         $user->setTablerequesting("tablerequesting");
+        $user->setNomTableAgenda("agenda");
 
         ///hash password
         $hashedPassword = $passwordHasher->hashPassword(
@@ -455,6 +456,7 @@ class SecurityController extends AbstractController
         $user->setTablemessage("tablemessage_" . $numero_table);
         $user->setTablenotification("tablenotification_" . $numero_table);
         $user->setTablerequesting("tablerequesting_" . $numero_table);
+        $user->setNomTableAgenda("agenda_" . $numero_table);
 
 
 

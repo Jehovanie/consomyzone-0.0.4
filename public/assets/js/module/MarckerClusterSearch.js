@@ -146,7 +146,7 @@ class MarckerClusterSearch {
 
         const url = new URL(window.location.href);
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {
 
@@ -194,7 +194,7 @@ class MarckerClusterSearch {
 
         var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement + "." + adress;
 
-        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
 
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
@@ -251,7 +251,7 @@ class MarckerClusterSearch {
         
         const poiY= item.lat;
         const poiX= item.long;
-        var marker = L.marker(L.latLng(parseFloat(poiY), parseFloat(poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id });
+        var marker = L.marker(L.latLng(parseFloat(poiY), parseFloat(poiX)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {

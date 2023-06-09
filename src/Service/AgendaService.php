@@ -533,8 +533,7 @@ class AgendaService extends PDOConnexionService
             "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
             "`message` text DEFAULT NULL,".
             "`type` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`type`)),".
-            "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT".
-            "NULL CHECK (json_valid(`confidentialite`)),".
+            "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
             "`file_path` varchar(500) DEFAULT NULL,".
             "`date` date NOT NULL,".
             "`heure_debut` time NOT NULL,".
