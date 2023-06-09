@@ -113,6 +113,34 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getCoordinateAndRestoIdForSpecificParis($dep)
+    {
+        return $this->createQueryBuilder("r")
+            ->select("r.id,r.denominationF,
+                r.numvoie,r.typevoie,
+                r.nomvoie,r.compvoie,
+                r.codpost,r.villenorm,
+                r.commune,r.restaurant,
+                r.brasserie,r.creperie,
+                r.fastFood,r.pizzeria,
+                r.boulangerie,r.bar,
+                r.cuisineMonde,r.cafe,
+                r.salonThe,r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,r.horaires1,
+                r.prestation1,r.regimeSpeciaux1,
+                r.repas1,r.typeCuisine1,
+                r.dep,r.depName,r.tel,
+                r.poiX,r.poiY"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep",$dep)
+            ->orderBy("r.denominationF", 'ASC')
+            ->getQuery()
+            //->setMaxResults(10)
+            ->getResult();
+    }
+
 
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){

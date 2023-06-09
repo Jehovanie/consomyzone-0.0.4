@@ -462,9 +462,9 @@ function create_map_content_not_async(geos, id_dep = null, map_for_type = "home"
         zoom = json.zoom ? json.zoom : 5;
     } else if (map_for_type === "resto") {
 
-        latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
+        latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(/*45.729191061299936, 2.4161955097725722*/48.86214210975093, 2.341021299362183);
         json = getDataInLocalStorage("coordResto") ? JSON.parse(getDataInLocalStorage("coordResto")) : null;
-        zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 6);
+        zoom = id_dep ? centers[parseInt(id_dep)].zoom : ( json ? json.zoom : 17);
     }
 
     centered = json ? L.latLng(json.coord.lat, json.coord.lng) : latlng;
@@ -930,7 +930,7 @@ function setIconn(urlIcon) {
  * @param {*} id_dep 
  */
 function addRestaurantToMap(nom_dep, code_dep) {
-
+    
     ///border departments
     const geos = [];
     document.querySelectorAll(".element_js_jheo").forEach(item => {
@@ -1084,6 +1084,7 @@ function addRestaurantToMap(nom_dep, code_dep) {
             .then(response1 => {
 
                 deleteChargement();
+
                 createMap();
 
                 var map = create_map_content_not_async(geos, code_dep, "resto");
@@ -1726,7 +1727,7 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
 
 function createChargement(){
     
-    document.querySelector("#cart_map_js_jheo").innerHTML += `
+    document.querySelector(".cart_map_js_jheo").innerHTML = `
         <div class="chargement_content chargment_content_js_jheo" id="toggle_chargement">
             <div class="content_box">
                 <div class="box">
@@ -1740,11 +1741,12 @@ function createChargement(){
 function deleteChargement(){
     if(document.querySelector(".chargement_content_js_jheo")){
         document.querySelector(".chargement_content_js_jheo").remove();
+        //document.querySelector(".chargement_content_js_jheo").style.display = "none";
     }
 }
 
 function createMap(){
-    document.querySelector(".cart_map_js_jheo").innerHTML += `
+    document.querySelector(".cart_map_js_jheo").innerHTML = `
         <div id="map" class="map map_js_jheo"></div>
     `
 }

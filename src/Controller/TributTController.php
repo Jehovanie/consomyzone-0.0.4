@@ -10,54 +10,54 @@ use DateTime;
 
 use Normalizer;
 
+use App\Entity\User;
+
 use App\Entity\Consumer;
 
 use App\Entity\Supplier;
-
 use App\Entity\PublicationG;
-use App\Entity\User;
 use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
 
+use App\Services\FilesUtils;
 use App\Form\PublicationType;
-use App\Repository\BddRestoRepository;
-use App\Repository\UserRepository;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
 
-use App\Service\RequestingService;
+use App\Repository\UserRepository;
 
+use App\Service\RequestingService;
 use App\Service\NotificationService;
-use App\Service\FilesUtils;
+use App\Repository\BddRestoRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
+
+use function PHPUnit\Framework\assertFalse;
+
+use Symfony\Component\Filesystem\Filesystem;
 
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Routing\RouterInterface;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
-use function PHPUnit\Framework\assertFalse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TributTController extends AbstractController
 
@@ -107,7 +107,7 @@ class TributTController extends AbstractController
 
     #[Route('/geto', name: 'create_tribuo')]
     public function getListTribuT(Tribu_T_Service $tributGService){
-        $tributGService->setTribuT("akondro","ovy",null,null, 1);
+        $tributGService->setTribuT("akondro","ovy",null,null, 1, null);
         return $this->render('tribu_t/test.html.twig');
     }
     //#[Route('/user/tribu/create', name: 'create_tribu')]
@@ -1333,15 +1333,6 @@ class TributTController extends AbstractController
             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
             $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
-            /*$this->mailService->sendEmail(
-                "geoinfography@infostat.fr", /// mail where from
-                "ConsoMyZone",  //// name the senders
-                $tribu_t->getUserEmail($id_receiver), /// mail destionation
-                $tribu_t->getFullName($id_receiver), /// name destionation
-                "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]), //// title of email
-                // "Pour accepter l'invitation. Clickez-ici : " . $this->generateUrl("show_invitation", array("tribu_name" => $table, "notif_id" => $notification->getNotificationId("tablenotification_".$id_receiver, $table)), UrlGeneratorInterface::ABSOLUTE_URL)
-                "Pour accepter l'invitation. Clickez-ici : " . $this->generateUrl("app_invitation", array("tribu_name" => $table, "notif_id" => $notification->getNotificationId("tablenotification_".$id_receiver, $table)), UrlGeneratorInterface::ABSOLUTE_URL)
-            );*/
         }
 
         return $this->json("Invitation envoyee");
