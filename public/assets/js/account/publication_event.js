@@ -474,7 +474,10 @@ function handleChangeComment(publication_id, comment_id){
         card_comment.querySelector(".text_js_jheo").innerText= form_content.querySelector("textarea").value
         document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).innerHTML = "Envoyer";
 
-        document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).setAttribute("onclick", `alert("handleAndSentNotification")`);
+        const post_publication= document.querySelector(`#pubication_js_${publication_id}_jheo`);
+        const pub_user_id= parseInt(post_publication.getAttribute("data-toggle-pub-user-id"));
+
+        document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).setAttribute("onclick", `handleAndSentNotification('${publication_id}', '${pub_user_id}')`);
 
         handleEditComment(
             publication_id,
