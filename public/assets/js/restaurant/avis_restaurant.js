@@ -84,17 +84,17 @@ window.addEventListener('load', () => {
         
         
     }
-    // if(document.querySelector("#see-tom-js")){
-    //     document.querySelector("#see-tom-js").onclick = () => {
-    //         const d=document.querySelectorAll(".fIQYlf")
-    //         if(d.length > 0){
-    //             d.forEach(i=>{
-    //                 i.parentNode.removeChild(i)
-    //             })
-    //         }
-    //         showAvis(currentUserId,idRestaurant) 
-    //     }
-    // }
+    if(document.querySelector("#see-tom-js")){
+        document.querySelector("#see-tom-js").onclick = () => {
+            const d=document.querySelectorAll(".fIQYlf")
+            if(d.length > 0){
+                d.forEach(i=>{
+                    i.parentNode.removeChild(i)
+                })
+            }
+            showAvis(currentUserId,idRestaurant) 
+        }
+    }
 
     if (document.querySelector("#UpDate-Avis-tom-js")) {
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 

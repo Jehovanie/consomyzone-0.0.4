@@ -515,7 +515,7 @@ window.addEventListener('load', () => {
             .then(response1 => {
                 // alert("Success")
                 tabArray = response1
-                document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(response1.length/10)
+                // document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(response1.length/10)
                 //console.log(tabArray);
 
                 // create_map_content()
@@ -1246,70 +1246,74 @@ function updateListe(restaurant, display){
 `;
 }*/
 
-document.querySelector('#selectRestoArrondismentParis').addEventListener('change', (event) => {
-    console.log(`You are in ${event.target.value}`);
-    document.querySelector("#all_ferme_in_dep > ul").innerHTML = `
-        
-            <span class="spinner-border spinner-border-sm mt-3" style="margin-left: 82px;" role="status" aria-hidden="true"></span>
-            Chargement...
-        
-        `;
-    let xData = Array();
-    let coord = parseInt(event.target.value.replace('750', '751'));
-    let centre;
-    if (event.target.value != "tous") {
-        xData = filterDataByArrondissement(event.target.value);
-        centre = [centerss[75].arrondissement[coord].lat, centerss[75].arrondissement[coord].lng]
-    } else {
-        let li = ""
-        let iter_ = 0;
-        for (const resto of tabArray) {
-            // li += updateListe(resto, "");
-
-            if(iter_<10){
-                li += updateListe(resto, "");
-            }else{
-                li += updateListe(resto, "none");
+if( document.querySelector('#selectRestoArrondismentParis')){
+    
+    document.querySelector('#selectRestoArrondismentParis').addEventListener('change', (event) => {
+        console.log(`You are in ${event.target.value}`);
+        document.querySelector("#all_ferme_in_dep > ul").innerHTML = `
+            
+                <span class="spinner-border spinner-border-sm mt-3" style="margin-left: 82px;" role="status" aria-hidden="true"></span>
+                Chargement...
+            
+            `;
+        let xData = Array();
+        let coord = parseInt(event.target.value.replace('750', '751'));
+        let centre;
+        if (event.target.value != "tous") {
+            xData = filterDataByArrondissement(event.target.value);
+            centre = [centerss[75].arrondissement[coord].lat, centerss[75].arrondissement[coord].lng]
+        } else {
+            let li = ""
+            let iter_ = 0;
+            for (const resto of tabArray) {
+                // li += updateListe(resto, "");
+    
+                if(iter_<10){
+                    li += updateListe(resto, "");
+                }else{
+                    li += updateListe(resto, "none");
+                }
+                iter_++;
             }
-            iter_++;
+        
+            document.querySelector("#all_ferme_in_dep > ul").innerHTML = li
+    
+            xData = tabArray;
+            centre = [centerss[75].arrondissement[75101].lat, centerss[75].arrondissement[75101].lng]
         }
     
-        document.querySelector("#all_ferme_in_dep > ul").innerHTML = li
-
-        xData = tabArray;
-        centre = [centerss[75].arrondissement[75101].lat, centerss[75].arrondissement[75101].lng]
-    }
-
-    document.querySelector("#resultTot").innerHTML = xData.length
-
-    document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(xData.length/10)
-
-    //console.log(xData);
-
-
-    if (tabMarker.length > 0) {
-
-        // console.log(tabMarker.length)
-        for (let j = 0; j < tabMarker.length; j++) {
-            markers.removeLayer(tabMarker[j]);
+        document.querySelector("#resultTot").innerHTML = xData.length
+    
+        document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(xData.length/10)
+    
+        //console.log(xData);
+    
+    
+        if (tabMarker.length > 0) {
+    
+            // console.log(tabMarker.length)
+            for (let j = 0; j < tabMarker.length; j++) {
+                markers.removeLayer(tabMarker[j]);
+            }
+    
+            map.removeLayer(markers);
+    
+            /*createChargement()
+    
+            map = null;
+    
+            createMap()*/
+    
+            tabMarker = [];
+    
+            if (xData.length > 0) {
+                chargeMapAndMarkers(xData, map, markers)
+                map.setView(centre, centerss[75].zoom);
+            }
         }
+    });
 
-        map.removeLayer(markers);
-
-        /*createChargement()
-
-        map = null;
-
-        createMap()*/
-
-        tabMarker = [];
-
-        if (xData.length > 0) {
-            chargeMapAndMarkers(xData, map, markers)
-            map.setView(centre, centerss[75].zoom);
-        }
-    }
- });
+}
 
 function sortList() {
     var list, i, switching, b, shouldSwitch;
