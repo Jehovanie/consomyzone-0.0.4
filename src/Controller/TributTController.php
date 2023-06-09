@@ -229,8 +229,6 @@ class TributTController extends AbstractController
         
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
-        
-            
 
         
         foreach ($userTribu_T["tribu_t"] as $k =>$v) {

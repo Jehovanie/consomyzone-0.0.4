@@ -136,10 +136,10 @@ function showPartisan() {
                     console.log(JSON.parse(json.infos_profil))
                     document.querySelector("#tribu_t_conteuneur").innerHTML += `
                         <div class="card-partisons row">
-                            <div class="partisons-pdp col-6">
-                                <img src="${profil}" alt="">
+                            <div class="partisons-pdp col-lg-6">
+                                <img src="${profil.replace("/public","")}" alt="">
                             </div>
-                            <div class="partisons-text col-6">
+                            <div class="partisons-text col-lg-6">
                                 <h4>${lastName} <span> ${firstName}</span></h4>
                                 <p>TribuG : ${tribuG.replaceAll("_", " ")}</p>
                             </div>
@@ -252,18 +252,18 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
         image_tribu_t = `<img src="/public${tribu_t[0].logo_path}" alt="123">` 
     } else {
-        image_tribu_t = `<img src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
+        image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture">
-                    <div class="row">
-                        <div class="col-3">
+                    <div class="row content-tribu-t">
+                        <div class="col-lg-3 col-4">
                             <div class="row">
-                                <div class="col">
+                                <div class="col-lg-6 col-6">
                                     ${image_tribu_t}
                                 </div>
-                                <div class="col">
+                                <div class="col-lg-6 col-6">
                                     <label style="margin-left:10%;" for="fileInputModifTribuT">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
@@ -271,7 +271,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-8 mt-4">
+                        <div class="col-lg-8 col-8 content-tribu-t-name">
                             <h1  id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_", "")}</h1>
                             <p class="responsif-none-mobile p-mobile">
                             ${tribu_t[0].description}
@@ -309,27 +309,27 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <center id="createPubBloc">
                     <div class="row p-3 champ-pub">
-                        <div class="col-1 rounded-circle">
-                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/public/uploads/users/photos/img_avatar.png">
+                        <div class=" col-1 rounded-circle">
+                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/uploads/users/photos/img_avatar.png">
                         </div>
                         <div class="col-11">
                             <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
                         </div>
                         <hr class=" hr-pub mt-3 mx-auto" >
                         <div class="row mt-3">
-                            <div class="col-3 text-center" style="cursor:pointer;">
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" style="cursor:pointer;">
                                 <i class="bi bi-play-btn-fill"></i>
                                 Vidéo
                             </div>
-                            <div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
                                 <i class="bi bi-geo-alt-fill"></i>Localisation
                             </div>
-                            <div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
                                 <i class="bi bi-calendar2-event-fill"></i>
                                 Agenda
 
                             </div>
-                            <div class="col-3 text-center" style="cursor:pointer;">
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" style="cursor:pointer;">
                                 <i class="bi bi-pencil-square"></i>
                                 Article
                             </div>
@@ -337,14 +337,14 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     </div>
                 </center>
                 <div class="row">
-                    <div class="col-8">
+                    <div class="col-lg-8">
                         <div id="list-publicatiotion-tribu-t">
                             
                         </div>
                         <div class="pub-tribu-t" id="showResto"></div>
                         <div class="invitation-tribu-t" id="blockInvitation"></div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-lg-4">
                         <div class="apropos-tribu-t ps-2 mt-3 responsif-none">
                             <p class="fw-bold">A propos Tribu-t</p>
                             <p >
@@ -380,10 +380,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     contentPublication = `<div class="pub-tribu-t mt-3">
                         <div class="name-pub">
                             <div class="row head-pub">
-                                <div class="col-1">
-                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                <div class="col-lg-1 col-2">
+                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                 </div>
-                                <div class="col-10 mt-3">
+                                <div class="col-lg-10 col-8 mt-3">
 
                                     <a href="">${data[i].userfullname}</a>
                                     <p class="card-text">
@@ -395,7 +395,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                       
                                     </p>
                                 </div>
-                                <div class="col-1 mt-3">
+                                <div class="col-lg-1 col-2 mt-3">
                                     <i class="bi bi-three-dots" style="cursor:pointer"></i>
                                 </div>
                             </div>
@@ -409,10 +409,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                             </div>
                             <!--<div class="content-comant-reaction">
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-lg-2">
                                         <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-lg-2">
                                         <p class="text-muted">10 commentaires</p>
                                     </div>
                                 </div>
@@ -456,10 +456,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         contentPublication = `<div class="pub-tribu-t mt-3">
                                             <div class="name-pub">
                                                 <div class="row head-pub">
-                                                    <div class="col-1">
-                                                        <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                    <div class="col-lg-1 col-2">
+                                                        <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                                     </div>
-                                                    <div class="col-10 mt-3">
+                                                    <div class="col-lg-10 col-8 mt-3">
 
                                                         <a href="">${data[i].userfullname}</a>
                                                         <p class="card-text">
@@ -471,7 +471,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                         
                                                         </p>
                                                     </div>
-                                                    <div class="col-1 mt-3">
+                                                    <div class="col-lg-1 col-2 mt-3">
                                                         <i class="bi bi-three-dots" style="cursor:pointer"></i>
                                                     </div>
                                                 </div>
@@ -572,10 +572,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                     const contentPublication = `<div class="pub-tribu-t mt-3">
                                         <div class="name-pub">
                                             <div class="row head-pub">
-                                                <div class="col-1">
-                                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                <div class="col-lg-1">
+                                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                                 </div>
-                                                <div class="col-10 mt-3">
+                                                <div class="col-lg-10 mt-3">
 
                                                     <a href=""> ${data.userfullname}</a>
                                                     <p class="card-text">
@@ -587,7 +587,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     
                                                     </p>
                                                 </div>
-                                                <div class="col-1 mt-3">
+                                                <div class="col-lg-1 mt-3">
                                                     <i class="bi bi-three-dots" style="cursor:pointer"></i>
                                                 </div>
                                             </div>
@@ -849,7 +849,7 @@ function showResto(table_rst_pastilled,id_c_u){
     let restoContainer = document.querySelector("#tribu_t_conteuneur")
     restoContainer.innerHTML = `
                                 <div class="row mt-3">
-                                    <div class="col-8">
+                                    <div class="col-lg-8">
                                         <div id="form_past"></div>
                                         <div class="g-3">
                                             <div class="input-group mb-3">
@@ -860,7 +860,7 @@ function showResto(table_rst_pastilled,id_c_u){
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-lg-4">
                                         <div class="apropos-tribu-t ps-2 ">
                                             <p class="fw-bold">A propos tribu-t</p>
                                             <p>
@@ -946,9 +946,9 @@ function showResto(table_rst_pastilled,id_c_u){
 
                     li +=`<li style="list-style-type:none; " data-toggle-id="${id_resto}">
                             <div class="row ms-1">
-                                <div class="col-8 pastil-resto">
+                                <div class="col-lg-8 pastil-resto">
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-lg-4">
                                             ${image_tribu_t}
                                         </div>
                                         <div class="col">
@@ -965,10 +965,10 @@ function showResto(table_rst_pastilled,id_c_u){
                                                 <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
                                             </div>
                                             <div class="row mt-3 ">
-                                                <div class="col-4">
+                                                <div class="col-lg-4">
                                                     <button type="button" class="btn btn-outline-primary  float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                                                 </div>
-                                                <div class="col-4">
+                                                <div class="col-lg-4">
                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
                                                 </div>
                                             </div>
@@ -987,9 +987,9 @@ function showResto(table_rst_pastilled,id_c_u){
                                         </div>
                                         <div class="modal-body">
                                             <form>
-                                                <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                                <label for="text-note" class="col-lg-form-label">Donner une note sur 4:</label>
                                                 <textarea class="form-control" id="text-note-tribu-t-${id_resto_comment[key]}"></textarea>
-                                                <label for="message-text" class="col-form-label">Commentaire:</label>
+                                                <label for="message-text" class="col-lg-form-label">Commentaire:</label>
                                                 <textarea class="form-control" id="message-text-${id_resto_comment[key]}"></textarea>
                                             </form>
                                         </div>
@@ -1201,15 +1201,15 @@ function findResto(val){
                        
                         <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
                          <div class="type-resto-ico row">
-                            <div class="col-5">${boulangerie}</div>
-                            <div class="col-5">${bar}</div>
-                            <div class="col-5">${brasserie}</div>
-                            <div class="col-5">${cafe}</div>
-                            <div class="col-5">${cuisineMonde}</div>
-                            <div class="col-5">${fastFood}</div>
-                            <div class="col-5">${creperie}</div>
-                            <div class="col-5">${salonThe}</div>
-                            <div class="col-5">${pizzeria}</div>
+                            <div class="col-lg-5">${boulangerie}</div>
+                            <div class="col-lg-5">${bar}</div>
+                            <div class="col-lg-5">${brasserie}</div>
+                            <div class="col-lg-5">${cafe}</div>
+                            <div class="col-lg-5">${cuisineMonde}</div>
+                            <div class="col-lg-5">${fastFood}</div>
+                            <div class="col-lg-5">${creperie}</div>
+                            <div class="col-lg-5">${salonThe}</div>
+                            <div class="col-lg-5">${pizzeria}</div>
                         </div>
                         <div>
                             <h5>Adresse: </h5>
@@ -1413,7 +1413,7 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites(){
-    document.querySelector("#page-top > div > ul:nth-child(6) > li:nth-child(1) > div > div.col-9 > p > a").click();
+    document.querySelector("#page-top > div > ul:nth-child(6) > li:nth-child(1) > div > div.col-lg-9 > p > a").click();
 }
 
 

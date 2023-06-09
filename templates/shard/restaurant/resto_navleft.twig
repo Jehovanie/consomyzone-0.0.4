@@ -1,5 +1,5 @@
-<div class="navleft fixed-top">
-    <nav class="navbar navbar-light navbar-light-left fixed-top">
+<div class="navleft fixed-top result_container_resto" >
+    {# <nav class="navbar navbar-light navbar-light-left fixed-top">
         <div class="container-fluid">
             
                 <div class="row">
@@ -49,7 +49,7 @@
             <hr>
         </div>
         
-    </nav>
+    </nav> #}
     <div class="container-fluid list-depart">
         <div class="head-left">
             <div class="row">
@@ -82,16 +82,20 @@
                         </g>
                     </svg>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-8">
                     <p>
                         Restaurant pour les arrondissements.
                         <span>{{number_of_departement}}</span> résultats
                     </p>
+
+                </div>
+                <div class="col-md-2">
+                    <i class="fa-solid fa-x" id="close-list-depart-resto"></i>
                 </div>
 
-                <div class="choix_list_cart mx-auto">
+                {# <div class="choix_list_cart mx-auto">
                     <input class="input-grey-rounded" id="recherche-input-restaurant-tom-js" type="text" placeholder="Recherche par departement ">
-                </div>
+                </div> #}
             </div>
             <div class="container list-depart-all" id="Scrollbar">
                 <div id="list_departements">

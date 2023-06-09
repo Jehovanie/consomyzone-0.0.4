@@ -24,20 +24,21 @@
 {% endblock %}
 
 {% block body %}
-	<div class="responsif-none">
-        {% include 'shard/navbar.twig' %}
-    </div>
-	{% include 'shard/modalSearch.twig' %}
+	
+	{# {% include 'shard/modalSearch.twig' %} #}
 	<div class="content_main">
 		<div class="row">
 			<div class="responsif-none">
 				{% include 'shard/station/specific_station_navleft.twig' %}
 			</div>
+			<div class="responsif-none">
+				{% include 'shard/navbar.twig' %}
+			</div>
 			<div class="content_info_js" data-dep-code="{{departCode}}" data-dep-name="{{departName}}" >
 				{# modal filter it's show when the screen is like mobile #}
-				<button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
+				{# <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
 					<i class="fa-solid fa-filter"></i>
-				</button>
+				</button> #}
 
 				{# collapse filter it's show when the screen other than mobile #}
 				<button class="btn btn-primary filter_other_mobile cta_filter_other_mobile" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">

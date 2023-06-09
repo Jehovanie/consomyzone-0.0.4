@@ -35,7 +35,7 @@ use App\Service\NotificationService;
 use App\Repository\CodeapeRepository;
 
 use App\Repository\CommuneRepository;
-
+use App\Service\AgendaService;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -357,6 +357,7 @@ class SecurityController extends AbstractController
         NotificationService $notificationService,
         MessageService $messageService,
         VerifyEmailHelperInterface $verifyEmailHelper,
+        AgendaService $agendaService,
         CodeapeRepository $codeApeRep
     ) {
 
@@ -461,9 +462,9 @@ class SecurityController extends AbstractController
         $notificationService->createTable("tablenotification_" . $numero_table);
         $messageService->createTable("tablemessage_" . $numero_table);
         $this->requesting->createTable("tablerequesting_" . $numero_table);
+        $agendaService->createTableAgenda("agenda_" . $numero_table);
 
-
-
+        
 
         ///keep the change in the user information
         $entityManager->persist($user);

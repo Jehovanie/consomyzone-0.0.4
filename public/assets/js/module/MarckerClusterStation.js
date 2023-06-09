@@ -183,7 +183,7 @@ class MarckerClusterStation {
     addMarker(newData) {
         newData.forEach(item => {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
 
             marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 
@@ -206,7 +206,7 @@ class MarckerClusterStation {
                 const icon_R = L.Icon.extend({
                     options: {
                         iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                        iconSize: [20, 35],
+                        iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
                         //shadowUrl: 'my-icon-shadow.png',
@@ -221,7 +221,7 @@ class MarckerClusterStation {
                     const icon_B = L.Icon.extend({
                         options: {
                             iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
-                            iconSize: [20, 35],
+                            iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],
                             //shadowUrl: 'my-icon-shadow.png',
@@ -345,7 +345,7 @@ class MarckerClusterStation {
                             const icon_R = L.Icon.extend({
                                 options: {
                                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                                    iconSize: [20, 35],
+                                    iconSize: [32,50],
                                     iconAnchor: [11, 30],
                                     popupAnchor: [0, -20],
                                     //shadowUrl: 'my-icon-shadow.png',
@@ -358,7 +358,7 @@ class MarckerClusterStation {
                                 const icon_B = L.Icon.extend({
                                     options: {
                                         iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
-                                        iconSize: [20, 35],
+                                        iconSize: [32,50],
                                         iconAnchor: [11, 30],
                                         popupAnchor: [0, -20],
                                         //shadowUrl: 'my-icon-shadow.png',

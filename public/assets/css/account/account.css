@@ -990,7 +990,7 @@ thead > tr{
 .content_right_actualite .card-couverture-pub-tribu-t{
     width: 76vw;
     height: 28vh;
-    margin-top: -215px;
+    margin-top: -225px;
     background-color: #fff;
     border-radius: 15px ;
     position: fixed;
@@ -1010,7 +1010,7 @@ thead > tr{
 }
 
 .content_right_actualite .exprime-pub {
-    margin-top: 235px;
+    margin-top: 245px;
     
 }
 
@@ -1025,7 +1025,7 @@ thead > tr{
 }
 
 .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img{
-    height: 100px;
+    height: 105px;
     border-radius: 10px;
     margin-left: 15px;
     margin-top: 15px;
@@ -1914,3 +1914,18 @@ a:focus {
         top: 20%;
     }
 }
+.header-modal-agenda{
+    border-bottom: none !important;
+    width: 60vw;
+    margin-top: 70px;
+}
+
+.footer-modal-agenda{
+    border-top: none !important;
+}
+
+.agenda-modal-content{
+    background: none !important;
+    border: none !important;
+}
+

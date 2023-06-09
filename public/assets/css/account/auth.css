@@ -379,8 +379,14 @@ input {
     color: #fff;
 }
 
+.bg-blanc-auth {
+    background-color: #f7f8f8;
+    width: 100vw;
+    height: 70px;
+}
+
 .content_global{
-    margin-top: 50px;
+    margin-top: 0;
 }
 
 @media screen and (max-width: 375px) {

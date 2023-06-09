@@ -7,7 +7,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+    {# <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}"> #}
     {# <link rel="stylesheet" href="{{asset('assets/css/account/agenda_tribuG.css')}}"> #}
 
     <style>
@@ -55,7 +55,7 @@
 
         
         <div class="navbar-mobile">
-			<div class="fixed-top col responsif-none">
+			<div class="fixed-top col responsif-none bg-blanc">
 				{{ include('shard/account_navbar.html.twig') }}
 			</div>
 
@@ -118,5 +118,18 @@
 
     {% include "tribu_g/modal_publication.html.twig" %}
     {# {% include "tribu_g/script_agenda_tribug.html.twig" %} #}
+<!-- Modal -->
+<div class="modal fade" id="agendaModalTribuG" tabindex="-1" aria-labelledby="agendaModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content agenda-modal-content">
+            <div class="modal-header header-modal-agenda">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include "agenda/calendrier.html.twig" %}
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

@@ -113,6 +113,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $tribuTJoined;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nom_table_agenda", type="string", length=200, nullable=true)
+     */
+    private $nomTableAgenda;
+
+    
+
 
     public function getId(): ?int
     {
@@ -379,6 +388,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTribuTJoined(string $tribuTJoined)
     {
         $this->tribuTJoined = $tribuTJoined;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nomTableAgenda
+     *
+     * @return  string
+     */ 
+    public function getNomTableAgenda()
+    {
+        return $this->nomTableAgenda;
+    }
+
+    /**
+     * Set the value of nomTableAgenda
+     *
+     * @param  string  $nomTableAgenda
+     *
+     * @return  self
+     */ 
+    public function setNomTableAgenda(string $nomTableAgenda)
+    {
+        $this->nomTableAgenda = $nomTableAgenda;
 
         return $this;
     }

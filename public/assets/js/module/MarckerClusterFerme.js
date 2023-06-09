@@ -134,7 +134,7 @@ class MarckerClusterFerme {
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
             
             let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
@@ -157,7 +157,7 @@ class MarckerClusterFerme {
                 const icon_R = L.Icon.extend({
                     options: {
                         iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-                        iconSize: [20, 35],
+                        iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
                         //shadowUrl: 'my-icon-shadow.png',
@@ -172,7 +172,7 @@ class MarckerClusterFerme {
                     const icon_B = L.Icon.extend({
                         options: {
                             iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
-                            iconSize: [20, 35],
+                            iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],
                             //shadowUrl: 'my-icon-shadow.png',
