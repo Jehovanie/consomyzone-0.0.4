@@ -236,6 +236,7 @@ function showTimeLine(parentElement, datas) {
       let ev1 = eventTypeCode === 1 ? "selected" :""
       let ev2 = eventTypeCode === 2 ? "selected" : ""
       let haveFile= (data.file_path === "/uploads/users/agenda/files/document/" || data.file_path === "/uploads/users/agenda/files/img/") ? false: true
+      let isEnd = (data.status === 0) ? "<span class='bg-danger'> événement términé</span>" : "";
       let paperclip = ""
       if (haveFile) {
         paperclip=`<a href="${data.file_path}" download><i class="fa-solid fa-paperclip"></i></a>`
@@ -295,8 +296,8 @@ function showTimeLine(parentElement, datas) {
                       <input type="time" name="timeFin" id="timeFin" class="form__input form__input_time" value="${data.heure_fin}">
                   </div>
                   <div class="d-flex-modif">
-                      <button type="submit" id="modif_agenda" class="btn-modif-agenda" data-rank="${data.id}" data-pos="${k}">Modifier</button>
-                      <button type="submit" id="fin_agenda" class="btn-fin-agenda" data-rank="${data.id}" data-pos="${k}">Mettre fin à l'événement</button>
+                      <button type="submit" id="modif_agenda-${k}" class="btn-modif-agenda" data-rank="${data.id}" data-pos="${k}">Modifier</button>
+                      <button type="submit" id="fin_agenda-${k}}" class="btn-fin-agenda" data-rank="${data.id}" data-pos="${k}">Mettre fin à l'événement</button>
                   </div>
               </form>
           </dialog>
@@ -311,8 +312,9 @@ function showTimeLine(parentElement, datas) {
                         <h4 class="title">
                             ${paperclip}
                             <i class="fa-solid fa-plus modal-modif-agenda" data-rank="${k}"></i>
+                            ${isEnd}
+                          
                         </h4>
-                        
                     </div>
                     <div class="content">
                       ${data.message}
@@ -368,6 +370,16 @@ function showTimeLine(parentElement, datas) {
         }; 
 
     })
+  let finAgendas = document.querySelectorAll(".btn-fin-agenda")
+  if (finAgendas.length > 0)
+    finAgendas.forEach(item => {
+      item.addEventListener("click", e => {
+          e.preventDefault();
+          let k = item.dataset.pos
+          let id = item.dataset.rank
+          endOfEvent(id)
+      });
+    });
   let modifBtns = document.querySelectorAll(".btn-modif-agenda")
   if(modifBtns.length > 0) {
       modifBtns.forEach(item => { 
@@ -447,7 +459,20 @@ function updateEvent(formData,confidentiality,eventType,id) {
   
 }
 
-
+function endOfEvent(id) {
+  const param = {
+      id:id
+  }
+  const request = new Request("/user/agenda/up/status", {
+              method: "POST",
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'  
+              },
+              body: JSON.stringify(param)
+  })
+  fetch(request)
+}
 
 function closeModifAgenda(k) { 
   const cookieDialog = document.getElementById("modif-dialog-" + k);

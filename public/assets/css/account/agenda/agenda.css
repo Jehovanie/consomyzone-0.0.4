@@ -807,3 +807,11 @@ select::-ms-expand {
   padding-top: 50px;
   padding-left: 50px;
 }
+
+.bg-danger-content{
+  display: inline;
+}
+
+.bg-danger{
+ color: #ff0000;
+}
