@@ -812,3 +812,11 @@ select::-ms-expand {
 .avatar-account-fondateur img {
   margin-left: 0 !important;
 }
+
+.bg-danger-content{
+  display: inline;
+}
+
+.bg-danger{
+ color: #ff0000;
+}
