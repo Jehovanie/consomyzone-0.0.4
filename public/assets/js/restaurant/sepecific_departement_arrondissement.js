@@ -6,6 +6,8 @@ window.addEventListener('load', () => {
 
     fetch(url).then(response => {
         response.json().then(response => {
+            console.log("response")
+            console.log(response)
         
             var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,

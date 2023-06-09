@@ -53,11 +53,12 @@ centerss[95] = {
 }
 
 centerss[75] = {
-    lat: 48.86460183609278,
-    lng: 2.318801879882813,
-    zoom: 13,
+    lat: 48.86214210975093,
+    lng: 2.341021299362183,
+    zoom: 17,
     arrondissement: {
-        75101: { lat: 48.861924, lng: 2.330883 },
+
+        75101: { lat: 48.86214210975093, lng: 2.341021299362183 },
         75102: { lat: 48.867556, lng: 2.343892 },
         75103: { lat: 48.8627014160156, lng: 2.3652000427246 },
         75104: { lat: 48.8544006347656, lng: 2.36240005493164 },
@@ -78,7 +79,6 @@ centerss[75] = {
         75119: { lat: 48.8825988769531, lng: 2.39109992980957 },
         75120: { lat: 48.8646011352539, lng: 2.40639996528625 }
 
-
     }
 }
 
@@ -96,12 +96,17 @@ window.addEventListener('load', () => {
         const dep = new URLSearchParams(window.location.href).get("id_dep")
         const codinsee = new URLSearchParams(window.location.href).get("codinsee")
 
+        console.log(dep);
+        console.log(codinsee);
+
         let url = "/Coord/All/Restaurant/specific/arrondissement/" + dep + "/" + codinsee;
         geos.push(arrdParis.features.find(element => element.properties.c_arinsee == codinsee))
 
         fetch(url)
             .then(response => response.json())
             .then(response1 => {
+                console.log("response1");
+                console.log(response1);
                 tabArray = response1
                 // create_map_content()
                 deleteChargement();
@@ -117,7 +122,7 @@ window.addEventListener('load', () => {
                 //lat: 48.85151944993856, lng: 2.3303965687751753
                 const cntrJson = JSON.parse(JSON.stringify(centerss[75]))
                 var latlng = L.latLng(cntrJson["arrondissement"][codinsee].lat, cntrJson["arrondissement"][codinsee].lng);
-                const zoom = 14;
+                const zoom = 17;
                 const centered = latlng;
 
                 map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
@@ -500,7 +505,7 @@ window.addEventListener('load', () => {
             });
 
     } else {
-        const dep = new URLSearchParams(window.location.href).get("id_dep")
+        const dep = new URLSearchParams(window.location.href).get("id_dep").replaceAll(/[^0-9]/g,"")
         const url = "/Coord/Spec/Restaurant/" + dep;
 
         geos.push(franceGeo.features.find(element => element.properties.code == dep))
@@ -510,9 +515,12 @@ window.addEventListener('load', () => {
             .then(response1 => {
                 // alert("Success")
                 tabArray = response1
+                document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(response1.length/10)
+                //console.log(tabArray);
 
                 // create_map_content()
-                deleteChargement();
+                //deleteChargement();
+                
                 createMap();
 
                 var tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
@@ -903,6 +911,10 @@ window.addEventListener('load', () => {
 
                 chargeMapAndMarkers(tabArray, map, markers)
             });
+
+            /*setTimeout(e=>{
+                loadMap();
+            }, 5000)*/
     }
 });
 
@@ -1155,6 +1167,150 @@ function filterData(id) {
 
 }
 
+function filterDataByArrondissement(codpost, li = "") {
+    
+    let tabData = Array();
+
+    let iter__ = 0;
+    for (const resto of tabArray) {
+        if(parseInt(resto.codpost) == parseInt(codpost)){
+            tabData.push(resto)
+            // li += updateListe(resto,"");
+
+            if(iter__<10){
+                li += updateListe(resto,"");
+            }else{
+                li += updateListe(resto,"none");
+            }
+            iter__++;
+        }
+    }
+
+    document.querySelector("#all_ferme_in_dep > ul").innerHTML = li
+
+    /*let filteredData = tabArray.filter(resto =>
+        parseInt(resto.codpost) == parseInt(codpost)
+    )*/
+
+    // console.log(tabData);
+
+    return tabData
+
+    //return filteredData
+
+}
+
+function updateListe(restaurant, display){
+    let li = `<li class="card-list" style="display:${display};" onclick="getDetail(event,'Paris','75', '${restaurant.id}', '${restaurant.denominationF}')">
+        <div class="row container-depart pt-4 element" data-toggle-id="${restaurant.id}" data-toggle-latitude="${parseFloat(restaurant.poiY)} data-toggle-longitude="${parseFloat(restaurant.poiX)}">
+
+            <div class="col-md-9">
+                <p class="text-center fw-bold fs-6">${restaurant.denominationF} </p>
+                <p>
+                    <img src="/assets/icon/NewIcons/icon-adres.png" alt="adres" width="20">
+                    ${restaurant.numvoie + " " + restaurant.typevoie + " " + restaurant.nomvoie + " " + restaurant.codpost + " " + restaurant.villenorm }
+                </p>
+            </div>
+            <div class="col-md-2">
+                <a id="open-detail">
+                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
+
+                        <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
+                        stroke="none">
+                            <path d="M2375 4954 c-231 -24 -462 -78 -641 -149 -782 -310 -1321 -993 -1440
+                            -1824 -21 -141 -23 -445 -5 -581 23 -170 77 -398 116 -485 8 -16 26 -59 40
+                            -95 175 -426 486 -804 870 -1056 1052 -689 2449 -398 3148 658 313 473 437
+                            1008 360 1568 -135 995 -920 1789 -1923 1945 -101 15 -440 28 -525 19z m285
+                            -395 c108 -17 187 -60 254 -137 32 -37 72 -96 90 -132 l31 -65 3 -519 3 -519
+                            332 6 c183 3 418 3 523 -1 188 -7 192 -8 256 -40 172 -85 278 -295 249 -496
+                            -23 -164 -114 -297 -249 -363 l-76 -38 -518 -3 -517 -3 -3 -517 -3 -517 -28
+                            -59 c-79 -170 -238 -266 -437 -266 -199 0 -358 96 -437 266 l-28 59 -3 517 -3
+                            517 -517 3 -518 3 -76 38 c-176 87 -280 295 -249 497 21 138 112 279 221 343
+                            98 57 120 59 652 59 l487 -1 3 517 3 517 29 62 c16 35 35 68 42 74 8 6 14 20
+                            14 29 0 47 174 151 280 169 77 12 115 12 190 0z"/>
+                        </g>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </li>`
+    return li;
+}
+
+/*function loadList(){
+    document.querySelector("#all_ferme_in_dep > ul").innerHTML = `
+        
+    <span class="spinner-border spinner-border-sm mt-3" style="margin-left: 82px;" role="status" aria-hidden="true"></span>
+    Chargement...
+
+`;
+}*/
+
+document.querySelector('#selectRestoArrondismentParis').addEventListener('change', (event) => {
+    console.log(`You are in ${event.target.value}`);
+    document.querySelector("#all_ferme_in_dep > ul").innerHTML = `
+        
+            <span class="spinner-border spinner-border-sm mt-3" style="margin-left: 82px;" role="status" aria-hidden="true"></span>
+            Chargement...
+        
+        `;
+    let xData = Array();
+    let coord = parseInt(event.target.value.replace('750', '751'));
+    let centre;
+    if (event.target.value != "tous") {
+        xData = filterDataByArrondissement(event.target.value);
+        centre = [centerss[75].arrondissement[coord].lat, centerss[75].arrondissement[coord].lng]
+    } else {
+        let li = ""
+        let iter_ = 0;
+        for (const resto of tabArray) {
+            // li += updateListe(resto, "");
+
+            if(iter_<10){
+                li += updateListe(resto, "");
+            }else{
+                li += updateListe(resto, "none");
+            }
+            iter_++;
+        }
+    
+        document.querySelector("#all_ferme_in_dep > ul").innerHTML = li
+
+        xData = tabArray;
+        centre = [centerss[75].arrondissement[75101].lat, centerss[75].arrondissement[75101].lng]
+    }
+
+    document.querySelector("#resultTot").innerHTML = xData.length
+
+    document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(xData.length/10)
+
+    //console.log(xData);
+
+
+    if (tabMarker.length > 0) {
+
+        // console.log(tabMarker.length)
+        for (let j = 0; j < tabMarker.length; j++) {
+            markers.removeLayer(tabMarker[j]);
+        }
+
+        map.removeLayer(markers);
+
+        /*createChargement()
+
+        map = null;
+
+        createMap()*/
+
+        tabMarker = [];
+
+        if (xData.length > 0) {
+            chargeMapAndMarkers(xData, map, markers)
+            map.setView(centre, centerss[75].zoom);
+        }
+    }
+ });
+
 function sortList() {
     var list, i, switching, b, shouldSwitch;
     list = document.querySelector("#all_ferme_in_dep")
@@ -1228,5 +1384,76 @@ function refreshData() {
     }
 
     chargeMapAndMarkers(tabArray, map, markers)
+
+}
+
+function previousData(params) {
+
+    let current_page = parseInt(document.querySelector("#current-page").textContent.split("/")[0])
+
+    let maxPage = parseInt(document.querySelector("#current-page").textContent.split("/")[1])
+
+    if(current_page > 1){
+
+        let page = (current_page)*10;
+
+        let index = (current_page - 2)*10 + 1
+
+        console.log("page : " + page + " index : " + index);
+
+        console.log("---------------------------------");
+
+        for(let i=page; i>=index+10; i--){
+            console.log("i : " + i);
+            console.log("display-none : " + i);
+            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")"))
+            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")").style.display = "none"
+            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(index+Math.abs(page - i)) +")"))
+            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(index+Math.abs(page - i)) +")").style.display = ""
+            console.log("display-block : " + parseInt(index+Math.abs(page - i)));
+        }
+        console.log("---------------------------------");
+
+        document.querySelector("#current-page").innerHTML = current_page - 1 + "/" + maxPage
+
+        document.querySelector(".next_btn").parentElement.classList.remove("disabled");
+
+    }if(current_page <= 2){
+        params.parentElement.classList.add("disabled");
+    }
+}
+
+function nextData(params) {
+
+    let current_page = parseInt(document.querySelector("#current-page").textContent.split("/")[0])
+
+    let maxPage = parseInt(document.querySelector("#current-page").textContent.split("/")[1])
+
+    if(current_page < maxPage){
+        let page = current_page * 10;
+
+        let index = (current_page - 1)*10 + 1
+
+        console.log("page : " + page + " index : " + index);
+
+        console.log("---------------------------------");
+
+        for(let i=index; i<=page; i++){
+            console.log("i : " + i);
+            console.log("display-none : " + i);
+            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")"))
+            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")").style.display = "none"
+            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(page+Math.abs(index - i) + 1) +")"))
+            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(page+Math.abs(index - i) + 1) +")").style.display = ""
+            console.log("display-block : " + parseInt(page+Math.abs(index - i) + 1));
+        }
+        console.log("---------------------------------");
+
+        document.querySelector("#current-page").innerHTML = current_page+1 + "/" + maxPage
+
+        document.querySelector(".prec_btn").parentElement.classList.remove("disabled");       
+    }if(current_page == maxPage - 1){
+        params.parentElement.classList.add("disabled");
+    }
 
 }
