@@ -515,7 +515,7 @@ window.addEventListener('load', () => {
             .then(response1 => {
                 // alert("Success")
                 tabArray = response1
-                // document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(response1.length/10)
+                //document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(response1.length/10)
                 //console.log(tabArray);
 
                 // create_map_content()
@@ -1232,7 +1232,7 @@ function updateListe(restaurant, display){
             <div class="col-md-9">
                 <p class="text-center fw-bold fs-6">${restaurant.denominationF} </p>
                 <p>
-                    <img src="/assets/icon/NewIcons/icon-adres.png" alt="adres" width="20">
+                    <img src="/public/assets/icon/NewIcons/icon-adres.png" alt="adres" width="20">
                     ${restaurant.numvoie + " " + restaurant.typevoie + " " + restaurant.nomvoie + " " + restaurant.codpost + " " + restaurant.villenorm }
                 </p>
             </div>
@@ -1416,7 +1416,7 @@ function refreshData() {
 
 }
 
-function previousData(params) {
+function previousData(element) {
 
     let current_page = parseInt(document.querySelector("#current-page").textContent.split("/")[0])
 
@@ -1445,14 +1445,14 @@ function previousData(params) {
 
         document.querySelector("#current-page").innerHTML = current_page - 1 + "/" + maxPage
 
-        document.querySelector(".next_btn").parentElement.classList.remove("disabled");
+        document.querySelector(".next_btn").classList.remove("disabled");
 
     }if(current_page <= 2){
-        params.parentElement.classList.add("disabled");
+        element.classList.add("disabled");
     }
 }
 
-function nextData(params) {
+function nextData(element) {
 
     let current_page = parseInt(document.querySelector("#current-page").textContent.split("/")[0])
 
@@ -1480,9 +1480,9 @@ function nextData(params) {
 
         document.querySelector("#current-page").innerHTML = current_page+1 + "/" + maxPage
 
-        document.querySelector(".prec_btn").parentElement.classList.remove("disabled");       
+        document.querySelector(".prec_btn").classList.remove("disabled");       
     }if(current_page == maxPage - 1){
-        params.parentElement.classList.add("disabled");
+        element.classList.add("disabled");
     }
 
 }
