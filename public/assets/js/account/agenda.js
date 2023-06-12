@@ -129,7 +129,13 @@ function sendAgenda(formData,confidentiality,eventType){
             },
             body: JSON.stringify(param)
         })
-        fetch(request)
+        fetch(request).then(r=>{
+            if(r.status === 200 && r.ok){
+              const cookieDialog = document.getElementById("cookie-dialog");
+              cookieDialog.close()
+              document.querySelector(".btn-view-event").click()
+            }
+        })
   })
   fr.readAsDataURL(formData.get("fileEvent"))
 }
@@ -236,10 +242,11 @@ function showTimeLine(parentElement, datas) {
       let ev1 = eventTypeCode === 1 ? "selected" :""
       let ev2 = eventTypeCode === 2 ? "selected" : ""
       let haveFile= (data.file_path === "/uploads/users/agenda/files/document/" || data.file_path === "/uploads/users/agenda/files/img/") ? false: true
-      let isEnd = (data.status === 0) ? "<span class='bg-danger'> événement términé</span>" : "";
+      console.log(data.status)
+      let isEnd = (data.status == 0) ? "<span class='bg-danger'> événement términé</span>" : "";
       let paperclip = ""
       if (haveFile) {
-        paperclip=`<a href="${data.file_path}" download><i class="fa-solid fa-paperclip"></i></a>`
+        paperclip=`<a href="/public${data.file_path}" download><i class="fa-solid fa-paperclip"></i></a>`
       }
       let autre = eventTypeCode === 2 ? eventType : ""
       let dialogModif = `
@@ -297,7 +304,7 @@ function showTimeLine(parentElement, datas) {
                   </div>
                   <div class="d-flex-modif">
                       <button type="submit" id="modif_agenda-${k}" class="btn-modif-agenda" data-rank="${data.id}" data-pos="${k}">Modifier</button>
-                      <button type="submit" id="fin_agenda-${k}}" class="btn-fin-agenda" data-rank="${data.id}" data-pos="${k}">Mettre fin à l'événement</button>
+                      <button type="submit" id="fin_agenda-${k}" class="btn-fin-agenda" data-rank="${data.id}" data-pos="${k}">Mettre fin à l'événement</button>
                   </div>
               </form>
           </dialog>
@@ -350,6 +357,7 @@ function showTimeLine(parentElement, datas) {
                document.querySelector("#autreEvent"+k).style.display = "block"
           }
           if (document.querySelector("#autreEvent"+k)) {
+            contenu=document.querySelector("#autreEvent"+k).value
             document.querySelector("#autreEvent"+k).onchange = (e) => { 
                 contenu=e.target.value
             }
@@ -377,7 +385,7 @@ function showTimeLine(parentElement, datas) {
           e.preventDefault();
           let k = item.dataset.pos
           let id = item.dataset.rank
-          endOfEvent(id)
+          endOfEvent(id,k)
       });
     });
   let modifBtns = document.querySelectorAll(".btn-modif-agenda")
@@ -415,8 +423,8 @@ function showTimeLine(parentElement, datas) {
                     code: 2
                   })
                 }
-            }
-            updateEvent(formData,confidentiality,eventType,id)
+              } 
+              updateEvent(formData,confidentiality,eventType,id,k)
             
             
           }
@@ -426,7 +434,7 @@ function showTimeLine(parentElement, datas) {
        
 }
 
-function updateEvent(formData,confidentiality,eventType,id) {
+function updateEvent(formData,confidentiality,eventType,id,k) {
     const fr = new FileReader()
     fr.addEventListener("load", (e) => { 
 
@@ -452,14 +460,19 @@ function updateEvent(formData,confidentiality,eventType,id) {
               },
               body: JSON.stringify(param)
           })
-          fetch(request)
+          fetch(request).then(r=>{
+            if(r.status === 200 && r.ok){
+              closeModifAgenda(k)
+              document.querySelector(".btn-view-event").click()
+            }
+        })
     })
   console.log(formData.get("fileEvent"))
     fr.readAsDataURL(formData.get("fileEvent"))
   
 }
 
-function endOfEvent(id) {
+function endOfEvent(id,k) {
   const param = {
       id:id
   }
@@ -471,7 +484,12 @@ function endOfEvent(id) {
               },
               body: JSON.stringify(param)
   })
-  fetch(request)
+  fetch(request).then(r=>{
+    if(r.status === 200 && r.ok){
+      closeModifAgenda(k)
+      document.querySelector(".btn-view-event").click()
+    }
+  })
 }
 
 function closeModifAgenda(k) { 

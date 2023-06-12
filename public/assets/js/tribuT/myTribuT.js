@@ -310,26 +310,26 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 <center id="createPubBloc">
                     <div class="row p-3 champ-pub">
                         <div class=" col-1 rounded-circle">
-                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/uploads/users/photos/img_avatar.png">
+                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/public/uploads/users/photos/img_avatar.png">
                         </div>
                         <div class="col-11">
                             <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
                         </div>
                         <hr class=" hr-pub mt-3 mx-auto" >
                         <div class="row mt-3">
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" style="cursor:pointer;">
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed" >
                                 <i class="bi bi-play-btn-fill"></i>
                                 Vidéo
                             </div>
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed"  onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
                                 <i class="bi bi-geo-alt-fill"></i>Localisation
                             </div>
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
+                            <!--<div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" >
                                 <i class="bi bi-calendar2-event-fill"></i>
                                 Agenda
 
-                            </div>
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center" style="cursor:pointer;">
+                            </div>--!>
+                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed" >
                                 <i class="bi bi-pencil-square"></i>
                                 Article
                             </div>
@@ -381,7 +381,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         <div class="name-pub">
                             <div class="row head-pub">
                                 <div class="col-lg-1 col-2">
-                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                 </div>
                                 <div class="col-lg-10 col-8 mt-3">
 
@@ -457,7 +457,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             <div class="name-pub">
                                                 <div class="row head-pub">
                                                     <div class="col-lg-1 col-2">
-                                                        <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                        <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                                     </div>
                                                     <div class="col-lg-10 col-8 mt-3">
 
@@ -573,7 +573,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                         <div class="name-pub">
                                             <div class="row head-pub">
                                                 <div class="col-lg-1">
-                                                    <img class="mini-pdp" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
                                                 </div>
                                                 <div class="col-lg-10 mt-3">
 

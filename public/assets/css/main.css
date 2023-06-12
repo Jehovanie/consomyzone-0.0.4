@@ -965,3 +965,11 @@ li a .station {
     height: 90px;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
+
+.cursor-not-allowed{
+    cursor: not-allowed;
+}
+
+.cursor-pointer{
+    cursor: pointer;
+}

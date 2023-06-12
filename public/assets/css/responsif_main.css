@@ -943,6 +943,46 @@
     .content_right_actualite {
         margin-top: 150px;
     }
+	
+   .flow-content i {
+        margin-left: 22vw !important;
+    }
+
+    .content-logo-shearch {
+        width: 28vw !important;
+    }
+
+    .navbar-light-bar .navbar-brand img {
+        margin-top: 3px !important;
+    }
+
+    .head-left{
+        padding-top: 35px !important;
+    }
+    
+    .result_container_resto_spec .navbar-light-left{
+	margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec .head-left{
+	 padding-top: 70px !important;
+    }
+
+    .result_container_ferme_spec .navbar-light-left{
+	margin-top: 35px !important;
+    }
+
+    .result_container_ferme_spec .head-left{
+	 padding-top: 70px !important;
+    }
+
+.result_container_station_spec .navbar-light-left{
+	margin-top: 35px !important;
+    }
+
+    .result_container_station_spec .head-left{
+	 padding-top: 70px !important;
+    }
 }
 
 @media screen and (min-width: 1445px) and (max-width: 1899px){
@@ -960,5 +1000,43 @@
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
         height: 165px !important;
+    }
+    .flow-content i {
+        margin-left: 25vw !important;
+    }
+
+    .content-logo-shearch {
+        width: 28vw !important;
+    }
+    .head-left{
+        padding-top: 35px !important;
+    }
+
+.result_container_resto_spec .navbar-light-left{
+	margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec .head-left{
+	 padding-top: 70px !important;
+    }
+    .result_container_ferme_spec .navbar-light-left{
+	margin-top: 35px !important;
+    }
+
+    .result_container_ferme_spec .head-left{
+	 padding-top: 70px !important;
+    }
+
+    .result_container_station_spec .navbar-light-left{
+	margin-top: 35px !important;
+    }
+
+    .result_container_station_spec .head-left{
+	 padding-top: 70px !important;
+    }
+}
+@media screen and (min-height: 800px)  and (max-height : 1056px){
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
+        height: 216px !important;
     }
 }
