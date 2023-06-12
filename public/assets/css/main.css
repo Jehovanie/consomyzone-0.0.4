@@ -973,3 +973,7 @@ li a .station {
 .cursor-pointer{
     cursor: pointer;
 }
+
+.border_red{
+    border-color: red !important;
+}

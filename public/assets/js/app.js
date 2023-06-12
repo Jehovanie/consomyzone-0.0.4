@@ -3,57 +3,6 @@ const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
 const url_test = new URL(current_url);
-
-
-function testIsMatched(value, tester){
-    return value?.split(" ").join("").toLowerCase().includes(tester);
-}
-
-function showResultSearchNavBar(type,nom, adresse, dep, nomDep , id ){
-
-    const div_content = document.createElement('div');
-    div_content.className = "card mt-2";
-
-    const card_body = document.createElement('div');
-    card_body.className = "card-body";
-
-    const h5 = document.createElement('h5');
-    h5.className = "card-title";
-    h5.innerText = nom;
-
-    const p = document.createElement('p');
-    p.className = "card-text";
-    p.innerText = `Adresse : ${adresse}, departement : ${dep}, nom de departement : ${nomDep}`;
-
-    const a = document.createElement("a");
-
-    switch(type){
-        case "ferme":
-            a.setAttribute("href", `/ferme/departement/${nomDep}/${dep}/details/${id}`);
-            break;
-        case "resto":
-            // /restaurant/departement/Loire-Atlantique/44/details/1
-            a.setAttribute("href", `/restaurant/departement/${nomDep}/${dep}/details/${id}`);
-            break;
-        case "station":
-            // /station/departement/50/Manche/details/4827
-            a.setAttribute("href", `/station/departement/${dep}/${nomDep}/details/${id}`);
-            break;
-        default: 
-            break
-    }
-    
-    a.className = "btn btn-primary";
-    a.innerText = "Voir details"
-
-    div_content.appendChild(card_body);
-    card_body.appendChild(h5);
-    card_body.appendChild(p);
-    card_body.appendChild(a);
-
-    document.querySelector(".content_list_result_js_jheo").appendChild(div_content)
-}
-
 // cloneResultDepResto()
 if( document.querySelector(".form_content_search_navbar_js")){
     const search_form = document.querySelector(".form_content_search_navbar_js");
@@ -61,6 +10,35 @@ if( document.querySelector(".form_content_search_navbar_js")){
         const baseOne = getDataInLocalStorage("type");
         search_form.setAttribute("action", `${search_form.getAttribute("action")}/${baseOne}`);
     }
+
+    search_form.addEventListener("submit", (e) => {
+        const cles0 = document.querySelector(".input_search_type_js").value;
+        const cles1= document.querySelector(".input_mots_cle_js").value;
+        if( cles0=== "" && cles1 === "" ){
+            alert("Veuillez entre mots cles pour la recherche.")
+            e.preventDefault();
+
+            if( cles0=== "" ){
+                document.querySelector(".input_search_type_js").classList.add("border_red")
+            }
+
+            if( cles1=== "" ){
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+            }
+        }
+    })
+
+    const inputs=  [document.querySelector(".input_search_type_js"), document.querySelector(".input_mots_cle_js")];
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            inputs.forEach(item => {
+                if( item.classList.contains("border_red")){
+                    item.classList.remove("border_red")
+                }
+            })
+        })
+    })
+
 }
 
 
@@ -316,6 +294,57 @@ if(document.getElementById("open_menu")){
 
 }
 /// --------------- end of this rtesponsive for mobile ---------
+
+
+function testIsMatched(value, tester){
+    return value?.split(" ").join("").toLowerCase().includes(tester);
+}
+
+function showResultSearchNavBar(type,nom, adresse, dep, nomDep , id ){
+
+    const div_content = document.createElement('div');
+    div_content.className = "card mt-2";
+
+    const card_body = document.createElement('div');
+    card_body.className = "card-body";
+
+    const h5 = document.createElement('h5');
+    h5.className = "card-title";
+    h5.innerText = nom;
+
+    const p = document.createElement('p');
+    p.className = "card-text";
+    p.innerText = `Adresse : ${adresse}, departement : ${dep}, nom de departement : ${nomDep}`;
+
+    const a = document.createElement("a");
+
+    switch(type){
+        case "ferme":
+            a.setAttribute("href", `/ferme/departement/${nomDep}/${dep}/details/${id}`);
+            break;
+        case "resto":
+            // /restaurant/departement/Loire-Atlantique/44/details/1
+            a.setAttribute("href", `/restaurant/departement/${nomDep}/${dep}/details/${id}`);
+            break;
+        case "station":
+            // /station/departement/50/Manche/details/4827
+            a.setAttribute("href", `/station/departement/${dep}/${nomDep}/details/${id}`);
+            break;
+        default: 
+            break
+    }
+    
+    a.className = "btn btn-primary";
+    a.innerText = "Voir details"
+
+    div_content.appendChild(card_body);
+    card_body.appendChild(h5);
+    card_body.appendChild(p);
+    card_body.appendChild(a);
+
+    document.querySelector(".content_list_result_js_jheo").appendChild(div_content)
+}
+
 
 ///jheo: cart for map station and ferme
 function addMapFermeStation(nom_dep=null, id_dep=null){

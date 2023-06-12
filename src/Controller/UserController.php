@@ -162,7 +162,7 @@ class UserController extends AbstractController
             return $this->redirect($request->getUri());
         }
 
-
+        
         return $this->render("tribu_g/account.html.twig", [
 
             "profil" => $profil,
@@ -2248,7 +2248,7 @@ class UserController extends AbstractController
 
         $dir_exist = $filesyst->exists($path);
 
-        if ($dir_exist == false) {
+        if ($dir_exist === false) {
 
             $filesyst->mkdir($path, 0777);
         }

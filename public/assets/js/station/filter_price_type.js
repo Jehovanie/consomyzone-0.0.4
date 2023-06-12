@@ -1,4 +1,4 @@
-console.log(OBJECT_MARKERS_STATION)
+// console.log(OBJECT_MARKERS_STATION)
 
 /// script to manager the user select  in filter checkbox.
 if( document.querySelectorAll(".checkbox_filter .checkbox")){

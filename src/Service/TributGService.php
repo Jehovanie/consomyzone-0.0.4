@@ -784,8 +784,15 @@ class TributGService extends PDOConnexionService{
         foreach( $publications as $publication ){
 
             $publication_id = $publication["id"];
+            $publication_user_id= $publication["user_id"];
 
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
 
+            $statement_photos->execute();
+
+            $photo_profil = $statement_photos->fetchAll(PDO::FETCH_ASSOC); /// [...photo_profil ]
+
+            $publication["photo_profil"] = $photo_profil[0]["photo_profil"];
 
             $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
 
@@ -1233,6 +1240,7 @@ class TributGService extends PDOConnexionService{
                 --     SELECT pub_id,count(*) as nbr_r FROM $table_reaction group by pub_id
                 -- ) as t3
                 -- ON t1.id= t3.pub_id
+                
             WHERE id=$pub_id";
 
         // $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
@@ -1241,6 +1249,14 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $pub = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
+
+        $publication_user_id= $pub[0]["user_id"];
+        $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+        $statement_photos->execute();
+
+        $photo_profil = $statement_photos->fetchAll(PDO::FETCH_ASSOC); /// [...photo_profil ]
+
+        $pub[0]["photo_profil"] = $photo_profil[0]["photo_profil"];
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_reaction WHERE pub_id = $pub_id AND reaction= '1'");
         $statement->execute();
