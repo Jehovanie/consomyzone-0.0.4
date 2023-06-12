@@ -1133,9 +1133,34 @@ function chargeMapAndMarkers(response1, map, markers) {
                         document.querySelector("#content-details").innerHTML = r
 
                         document.querySelector("#close-detail-tous-resto").addEventListener("click", () => {
-                            document.querySelector("#content-details").style.display = "none"
+                            remove.setAttribute("class", "hidden")
                         })
-                        document.querySelector("#content-details").removeAttribute("style")
+
+                        const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id")
+                        let currentUserId
+
+                        if (document.querySelector(".FtBjOlVf"))
+                            currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
+                        
+                        if (document.querySelector(".FtBjOlVf") != null)
+                            showModifArea(idRestaurant, currentUserId)
+                        
+                        if (document.querySelector("#see-tom-js")) {
+                            showNemberOfAvis(idRestaurant, document.querySelector("#see-tom-js"))
+                            showNoteGlobale(idRestaurant)
+                        }
+
+                        if (document.querySelector("#see-tom-js")) {
+                            document.querySelector("#see-tom-js").onclick = () => {
+                                const d = document.querySelectorAll(".fIQYlf")
+                                if (d.length > 0) {
+                                    d.forEach(i => {
+                                        i.parentNode.removeChild(i)
+                                    })
+                                }
+                                showAvis(currentUserId, idRestaurant)
+                            }
+                        }
 
                     })
 
