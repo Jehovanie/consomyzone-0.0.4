@@ -118,18 +118,18 @@
 
     {% include "tribu_g/modal_publication.html.twig" %}
     {# {% include "tribu_g/script_agenda_tribug.html.twig" %} #}
-<!-- Modal -->
-<div class="modal fade" id="agendaModalTribuG" tabindex="-1" aria-labelledby="agendaModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content agenda-modal-content">
-            <div class="modal-header header-modal-agenda">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                {% include "agenda/calendrier.html.twig" %}
+    <!-- Modal -->
+    <div class="modal fade" id="agendaModalTribuG" tabindex="-1" aria-labelledby="agendaModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content agenda-modal-content">
+                <div class="modal-header header-modal-agenda">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% include "agenda/calendrier.html.twig" %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}

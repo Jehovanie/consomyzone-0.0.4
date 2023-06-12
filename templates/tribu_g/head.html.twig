@@ -52,36 +52,36 @@
             </li>
         </ul>
     </nav>
-    
-</div>
 
-<div class="" id="photos" style="display:none;"></div>
-<div class="" id="invitations" style="display:none;"></div>
-{# <div class="row p-3 div_mobile"></div> #}
 
-<div id="showCreatePub" class="card publication-tribu-g mt-2">
-    <div class="row p-3">
-        <div class="rangee row">
-            <div class="col-1 rounded-circle">
-                <img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
+    <div class="" id="photos" style="display:none;"></div>
+    <div class="" id="invitations" style="display:none;"></div>
+    {# <div class="row p-3 div_mobile"></div> #}
+
+    <div id="showCreatePub" class="card publication-tribu-g mt-2">
+        <div class="row p-3">
+            <div class="rangee row">
+                <div class="col-1 rounded-circle">
+                    <img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
+                </div>
+                <div class="col-11 user_button">
+                    <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+                </div>
             </div>
-            <div class="col-11 user_button">
-                <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
-            </div>
-        </div>
-        <hr class=" hr-pub mt-3 mx-auto">
-        <div class="row">
-            <div class="col-3 text-center souri-non-utilise">
-                <i class="bi bi-play-btn-fill souri-non-utilise" ></i> <span class="responsif-none"> Vidéos</span>
-            </div>
-            {# <div class="col-3 text-center souri-non-utilise" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation"> #}
-            <div class="col-3 text-center souri-non-utilise">
-                <i class="bi bi-geo-alt-fill souri-non-utilise"></i><span class="responsif-none"> Localisation
-            </div>
-            {# <div class="col-3 text-center souri-non-utilise" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo"> #}
-            
-            <div class="col-3 text-center souri-non-utilise">
-                <i class="bi bi-pencil-square souri-non-utilise"></i><span class="responsif-none"> Article
+            <hr class=" hr-pub mt-3 mx-auto">
+            <div class="row">
+                <div class="col-3 text-center souri-non-utilise">
+                    <i class="bi bi-play-btn-fill souri-non-utilise" ></i> <span class="responsif-none"> Vidéos</span>
+                </div>
+                {# <div class="col-3 text-center souri-non-utilise" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation"> #}
+                <div class="col-3 text-center souri-non-utilise">
+                    <i class="bi bi-geo-alt-fill souri-non-utilise"></i><span class="responsif-none"> Localisation
+                </div>
+                {# <div class="col-3 text-center souri-non-utilise" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo"> #}
+                
+                <div class="col-3 text-center souri-non-utilise">
+                    <i class="bi bi-pencil-square souri-non-utilise"></i><span class="responsif-none"> Article
+                </div>
             </div>
         </div>
     </div>
