@@ -22,3 +22,7 @@
     border-radius: 100px;
     padding: 0.5em 1em 0.5em 2.5em;
 }
+
+.content_description{
+    padding: 0 !important;
+}

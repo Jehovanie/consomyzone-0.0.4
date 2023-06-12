@@ -53,3 +53,101 @@
   background-color: white;
   border-radius: 50%;
 }
+
+
+
+
+
+.containt{
+  display: flex;
+  align-items: center;
+  justify-content:flex-start;
+}
+
+.word{
+  display: inline-block;
+  padding: 5px;
+  color:white;
+  /* position: relative;
+  left:50vw;
+  top:50vh; */
+  font-size: 30px;
+}
+
+.word-1{
+  background: #4B4BFC; 
+  animation: bounce 2.25s linear infinite;
+ 
+}
+
+.word-2{
+  mix-blend-mode: darken;
+  background: #282828; 
+  animation: spin 2.25s linear infinite;
+   
+}
+
+.word-3{
+  background: #58CB53;
+  animation: bounce 2.25s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(90deg);
+  }
+  35% {
+    transform: rotate(90deg);
+  }
+  45% {
+    transform: rotate(180deg);
+  }
+  60% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  85% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: scaleX(1);
+  }
+  10% {
+    transform: scaleX(1);
+  }
+  20% {
+    transform: scaleX(0.78);
+  }
+  35% {
+    transform: scaleX(0.78);
+  }
+  45% {
+    transform: scaleX(1);
+  }
+  60% {
+    transform: scaleX(1);
+  }
+  75% {
+    transform: scaleX(0.78);
+  }
+  85% {
+    transform: scaleX(0.78);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}

@@ -6,147 +6,148 @@
                 <div>
                     <div class="description" data-toggle-latitude="{{(station.latitude)|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{(station.longitude)|format_number({fraction_digit: 6})}}" data-toggle-departement="{{(station.departementCode) ? station.departementCode : 0 }}" data-toggle-namestation="{{station.nom}}" data-toggle-adresse="{{station.adresse}}">
                         
-                        <div class="row back-detail">
-                            <div class="content_title col-lg-11">
-                                {% if station.nom %}
-                                    <h3>
-                                        {{station.nom |lower }}
-                                    </h3>
-                                    {% else %}
-                                    <h3>
-                                        La station de Inconnu
-                                    </h3>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="content_title">
-                            {% if station.adresse %}
-                                <span class="important">Adress :</span>
-                                {{station.adresse}}
-                            {% else %}
-                                <span class="important">Adress :</span>
-                                Nom connue.
+                        <div class="content_titre_details p-2">
+                            {% if station.nom %}
+                                <h4>
+                                    {{station.nom |lower }}
+                                </h4>
+                                {% else %}
+                                <h4>
+                                    La station de Inconnu
+                                </h4>
                             {% endif %}
                         </div>
 
-                        <div class="content_tow_cta d-flex justify-content-evenly my-2">
-                            <div class="site_web non_active">
-                                <button class="btn btn-primary rounded" style="cursor: not-allowed;">
-                                    Lien :  site Web
-                                </button>
+                        <div class="p-4">
+                            <div class="content_title">
+                                {% if station.adresse %}
+                                    <span class="important">Adress :</span>
+                                    {{station.adresse}}
+                                {% else %}
+                                    <span class="important">Adress :</span>
+                                    Nom connue.
+                                {% endif %}
                             </div>
 
-                            <div class="iteneraire non_active">
-                                <button class="btn btn-primary rounded" style="cursor: not-allowed;">
-                                    Itinéraire
-                                </button>
-                            </div>
-                        </div>
-                        <hr>
+                            <div class="content_tow_cta d-flex justify-content-evenly my-2">
+                                <div class="site_web non_active">
+                                    <button class="btn btn-primary rounded" style="cursor: not-allowed;">
+                                        Lien :  site Web
+                                    </button>
+                                </div>
 
-                        <div class="content_essense">
-                            <h5 class="important">
-                                List des Carburants:
-                            </h5>
-                            <ul>
+                                <div class="iteneraire non_active">
+                                    <button class="btn btn-primary rounded" style="cursor: not-allowed;">
+                                        Itinéraire
+                                    </button>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="content_essense">
+                                <h5 class="important">
+                                    List des Carburants:
+                                </h5>
+                                <ul>
+                                    <li>
+                                        <span class="important">
+                                            E 85:
+                                        </span>
+                                        {{station.prixE85 ~ " €" }}
+                                    </li>
+                                    <li>
+                                        <span class="important">
+                                            Gplc:
+                                        </span>
+                                        {{station.prixGplc ~ " €"  }}
+                                    </li>
+                                    <li>
+                                        <span class="important">
+                                            Sp 95:</span>
+                                        {{station.prixSp95 ~ " €"  }}
+                                    </li>
+                                    <li>
+                                        <span class="important">
+                                            Sp 95 E 10:
+                                        </span>
+                                        {{station.prixSp95E10 ~ " €" }}
+                                    </li>
+                                    <li>
+                                        <span class="important">
+                                            Sp 98:</span>
+                                        {{station.prixSp98 ~ " €"   }}
+                                    </li>
+                                    <li>
+                                        <span class="important">
+                                            Gasoil:</span>
+                                        {{station.prixGasoil ~ " €"  }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <hr>
+
+                            <ul class="details_station">
                                 <li>
-                                    <span class="important">
-                                        E 85:
-                                    </span>
-                                    {{station.prixE85 ~ " €" }}
+                                    {% if station.services %}
+                                        <span class="important">Services :</span>
+                                        <br>
+                                        {{station.services}}
+                                    {% else %}
+                                        <span class="important">Services :</span>
+                                        <br>
+                                        Non disponible.
+                                    {% endif %}
+                                    <hr>
                                 </li>
                                 <li>
-                                    <span class="important">
-                                        Gplc:
-                                    </span>
-                                    {{station.prixGplc ~ " €"  }}
+                                    {% if station.horaies %}
+                                        <span class="important">Horaires :</span>
+                                        <br>
+                                        {{station.horaies }}
+                                    {% else %}
+                                        <span class="important">Horaires :</span>
+                                        <br>
+                                        Non disponible.
+                                    {% endif %}
+                                    <hr>
                                 </li>
                                 <li>
-                                    <span class="important">
-                                        Sp 95:</span>
-                                    {{station.prixSp95 ~ " €"  }}
+                                    {% if station.automate2424 %}
+                                        <span class="important">Automate</span>
+                                        :
+                                        <br>
+                                        24/24
+                                    {% else %}
+                                        <span class="important">Automate</span>
+                                        Non disponible.
+                                    {% endif %}
+                                    <hr>
                                 </li>
                                 <li>
-                                    <span class="important">
-                                        Sp 95 E 10:
-                                    </span>
-                                    {{station.prixSp95E10 ~ " €" }}
+                                    {% if station.departementCode %}
+                                        <span class="important">Code de departement :</span>
+                                        {{station.departementCode}}
+                                    {% else %}
+                                        <span class="important">Code de departement :</span>
+                                        Non reconue.
+                                    {% endif %}
+                                    <hr>
+
                                 </li>
                                 <li>
-                                    <span class="important">
-                                        Sp 98:</span>
-                                    {{station.prixSp98 ~ " €"   }}
-                                </li>
-                                <li>
-                                    <span class="important">
-                                        Gasoil:</span>
-                                    {{station.prixGasoil ~ " €"  }}
+                                    {% if station.departementName %}
+                                        <span class="important">Code de departement :</span>
+                                        {{station.departementName}}
+                                    {% else %}
+                                        <span class="important">Code de departement :</span>
+                                        Non reconue.
+                                    {% endif %}
                                 </li>
                             </ul>
+                            <hr>
+                    
+                    
                         </div>
-                        <hr>
-
-                        <ul class="details_station">
-                            <li>
-                                {% if station.services %}
-                                    <span class="important">Services :</span>
-                                    <br>
-                                    {{station.services}}
-                                {% else %}
-                                    <span class="important">Services :</span>
-                                    <br>
-                                    Non disponible.
-                                {% endif %}
-                                <hr>
-                            </li>
-                            <li>
-                                {% if station.horaies %}
-                                    <span class="important">Horaires :</span>
-                                    <br>
-                                    {{station.horaies }}
-                                {% else %}
-                                    <span class="important">Horaires :</span>
-                                    <br>
-                                    Non disponible.
-                                {% endif %}
-                                <hr>
-                            </li>
-                            <li>
-                                {% if station.automate2424 %}
-                                    <span class="important">Automate</span>
-                                    :
-                                    <br>
-                                    24/24
-                                {% else %}
-                                    <span class="important">Automate</span>
-                                    Non disponible.
-                                {% endif %}
-                                <hr>
-                            </li>
-                            <li>
-                                {% if station.departementCode %}
-                                    <span class="important">Code de departement :</span>
-                                    {{station.departementCode}}
-                                {% else %}
-                                    <span class="important">Code de departement :</span>
-                                    Non reconue.
-                                {% endif %}
-                                <hr>
-
-                            </li>
-                            <li>
-                                {% if station.departementName %}
-                                    <span class="important">Code de departement :</span>
-                                    {{station.departementName}}
-                                {% else %}
-                                    <span class="important">Code de departement :</span>
-                                    Non reconue.
-                                {% endif %}
-                            </li>
-                        </ul>
-                        <hr>
-
                     </div>
                 </div>
             </div>

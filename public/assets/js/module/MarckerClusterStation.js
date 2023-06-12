@@ -217,7 +217,7 @@ class MarckerClusterStation {
 
                 marker.setIcon(new icon_R);
 
-                if (this.marker_last_selected) {
+                if (this.marker_last_selected && this.marker_last_selected != marker ) {
                     const icon_B = L.Icon.extend({
                         options: {
                             iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",

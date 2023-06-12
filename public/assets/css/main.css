@@ -183,7 +183,7 @@ body {
     width: 25vw;
     /* height: 100vh; */
     /* box-shadow: -5px -5px 15px #4d4d4d !important; */
-    transform: translate(73vw, 15vh);
+    transform: translate(72vw, 15vh);
     opacity: 1;
     transition: all 1.5s ease-out;
     border-radius: 15px;
@@ -221,10 +221,11 @@ body {
 
 
 #close-detail-tous-resto {
-    position: absolute;
-    left: 40vh;
-    top: 10px;
+    position: fixed;
+    right: 0px;
+    top: 3px;
     fill: #1111FE;
+    z-index: 10;
 }
 
 #close-detail-tous-resto:hover {
@@ -233,9 +234,10 @@ body {
 
 #close-detail-ferme {
     position: absolute;
-    left: 40vh;
+    right: 20px;
     top: 10px;
     fill: #1111FE;
+    z-index: 10;
 }
 
 #close-detail-ferme:hover {
@@ -246,7 +248,8 @@ body {
     position: absolute;
     top: 15px;
     fill: #1111FE;
-    right: 5px;
+    right: 25px;
+    z-index: 10;
 }
 
 #close-detail-home:hover ,#close-detail-station:hover {
@@ -976,4 +979,18 @@ li a .station {
 
 .border_red{
     border-color: red !important;
+}
+
+.content_titre_details{
+    position: sticky;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: white;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    padding-bottom: 5px;
+}
+
+hr{
+    opacity: 1 !important;
 }

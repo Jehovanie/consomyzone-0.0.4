@@ -1172,7 +1172,7 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         })
                         marker.setIcon(new icon_R);
 
-                        if (marker_last_selected) {
+                        if (marker_last_selected && marker_last_selected != marker) {
                             const icon_B = L.Icon.extend({
                                 options: {
                                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
@@ -1731,10 +1731,10 @@ function createChargement(){
     
     document.querySelector(".cart_map_js_jheo").innerHTML = `
         <div class="chargement_content chargment_content_js_jheo" id="toggle_chargement">
-            <div class="content_box">
-                <div class="box">
-                    <div class="under_box"></div>
-                </div>
+            <div class="containt">
+                <div class="word word-1">C</div>
+                <div class="word word-2">M</div>
+                <div class="word word-3">Z</div>
             </div>
         </div>
     `
