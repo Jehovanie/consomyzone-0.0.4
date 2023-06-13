@@ -682,22 +682,62 @@ function addControlPlaceholdersferme(map) {
 //         clone.style.display="block"
 //     }
 // }
-
+function iconsChange() {
+    document.querySelector(".open-navleft-resto > i").classList.toggle("fa-bars")
+    document.querySelector(".open-navleft-resto > i").classList.toggle("fa-minuss")
+}
 if (document.querySelector("#close-list-depart-resto")) {
     document.querySelector("#close-list-depart-resto").addEventListener("click", () => {
-        document.querySelector(".result_container_resto").style.display="none"
+        document.querySelector(".result_container_resto").style.display = "none"
+        iconsChange()
     })
 }
+
+// if (document.querySelector(".btn-recher-nav")) {
+//     document.querySelector(".btn-recher-nav").onclick = () => {
+//         document.querySelector(".result_container_resto").style.display = "none"
+//         document.querySelector(".btn-recher-nav").classList.toggle("open-navleft-resto")
+//         document.querySelector(".btn-recher-nav").classList.toggle("close-navleft-resto")
+//         document.querySelector(".open-navleft-resto").addEventListener("click", () => {
+//             document.querySelector(".result_container_resto").style.display = "block"
+//         })
+//         iconsChange()
+//     }
+// }
+
+if (document.querySelector(".open-navleft-resto")) {
+    document.querySelector(".open-navleft-resto").addEventListener("click", () => {
+        document.querySelector(".result_container_resto").style.display = "block"
+        iconsChange()
+    })
+}
+
 
 if (document.querySelector("#close-list-depart-resto-spec")) {
     document.querySelector("#close-list-depart-resto-spec").addEventListener("click", () => {
         document.querySelector(".result_container_resto_spec").style.display="none"
+        iconsChange()
+    })
+}
+
+if (document.querySelector(".open-navleft-resto-spec")) {
+    document.querySelector(".open-navleft-resto-spec").addEventListener("click", () => {
+        document.querySelector(".result_container_resto_spec").style.display="block"
+        iconsChange()
     })
 }
 
 if (document.querySelector("#close-list-depart-resto-spec-arrond")) {
     document.querySelector("#close-list-depart-resto-spec-arrond").addEventListener("click", () => {
         document.querySelector(".result_container_resto_spec_arrond").style.display="none"
+        iconsChange()
+    })
+}
+
+if (document.querySelector(".open-navleft-resto-arrond")) {
+    document.querySelector(".open-navleft-resto-arrond").addEventListener("click", () => {
+        document.querySelector(".result_container_resto_spec_arrond").style.display="block"
+        iconsChange()
     })
 }
 
@@ -705,23 +745,55 @@ if (document.querySelector("#close-list-depart-resto-spec-arrond")) {
 if (document.querySelector("#close-list-depart-ferme")) {
     document.querySelector("#close-list-depart-ferme").addEventListener("click", () => {
         document.querySelector(".result_container_ferme").style.display="none"
+        iconsChange()
+    })
+}
+
+if (document.querySelector(".open-navleft-ferme")) {
+    document.querySelector(".open-navleft-ferme").addEventListener("click", () => {
+        document.querySelector(".result_container_ferme").style.display="block"
+        iconsChange()
     })
 }
 
 if (document.querySelector("#close-list-depart-ferme-spec")) {
     document.querySelector("#close-list-depart-ferme-spec").addEventListener("click", () => {
         document.querySelector(".result_container_ferme_spec").style.display="none"
+        iconsChange()
+    })
+}
+
+if (document.querySelector(".open-navleft-ferme-spec")) {
+    document.querySelector(".open-navleft-ferme-spec").addEventListener("click", () => {
+        document.querySelector(".result_container_ferme_spec").style.display="block"
+        iconsChange()
     })
 }
 
 if (document.querySelector("#close-list-depart-station")) {
     document.querySelector("#close-list-depart-station").addEventListener("click", () => {
         document.querySelector(".result_container_station").style.display="none"
+        iconsChange()
+    })
+}
+
+if (document.querySelector(".open-navleft-station")) {
+    document.querySelector(".open-navleft-station").addEventListener("click", () => {
+        document.querySelector(".result_container_station").style.display="block"
+        iconsChange()
     })
 }
 
 if (document.querySelector("#close-list-depart-station-spec")) {
     document.querySelector("#close-list-depart-station-spec").addEventListener("click", () => {
         document.querySelector(".result_container_station_spec").style.display="none"
+        iconsChange()
+    })
+}
+
+if (document.querySelector(".open-navleft-station-spec")) {
+    document.querySelector(".open-navleft-station-spec").addEventListener("click", () => {
+        document.querySelector(".result_container_station_spec").style.display="block"
+        iconsChange()
     })
 }
