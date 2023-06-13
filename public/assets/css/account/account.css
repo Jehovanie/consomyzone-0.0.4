@@ -1953,6 +1953,5 @@ a:focus {
 .content_notification_tributg {
     display: block;
     max-height: 60vh;
-    height: 60vh;
     overflow-y: scroll;
 }
