@@ -277,7 +277,7 @@ header .current-date{
   background-color: var(--bgColor);
   font: 300 16px "Oswald", sans-serif;
   color: var(--mainColor);
-  width: 85vw;
+  /* width: 85vw; */
   margin-left: 20vw;
 }
 
@@ -809,9 +809,7 @@ select::-ms-expand {
 }
 
 
-.avatar-account-fondateur img {
-  margin-left: 0 !important;
-}
+
 
 .bg-danger-content{
   display: inline;

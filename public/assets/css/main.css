@@ -258,13 +258,23 @@ body {
 
 .navbar-light-bar{
     /* background-color: #fff !important; */
-    width: 100vw;
+    width: 28vw;
     height: 10vh;
     /* box-shadow: -5px -5px 25px #4d4d4d !important; */
 }
 
 .navbar-light-bar .open-navleft{
     fill: #28BE21;
+}
+
+.nav-menu{
+    margin-left: 720px !important;
+    width: 30vw;
+}
+
+.nav-menu-connexion {
+    margin-left: 1320px !important;
+    width: 0vw;
 }
 
 .navbar-light-bar .open-navleft:hover {
@@ -938,6 +948,7 @@ li a .station {
     background-color: #f7f8f8;
     width: 400px;
     height: 60px;
+    margin-left: 3px !important;
     border-radius: 10px;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -961,7 +972,7 @@ li a .station {
 .bg-blanc{
     z-index: 1;
     background-color: #fff;
-    width: 100vw ;
+    /* width: 100vw ; */
     height: 90px;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
@@ -972,4 +983,13 @@ li a .station {
 
 .cursor-pointer{
     cursor: pointer;
+}
+
+.navbar-light-left .fa-x{
+    margin-left: 165px;
+}
+
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
 }

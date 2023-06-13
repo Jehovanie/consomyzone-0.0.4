@@ -18,7 +18,7 @@
 
 	<div id="settingProfilId">
 
-		<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+		<div class="content_left_menu_account fixed-top mt-3 col responsif-none">
 					<div class="left_menu">
 						{% include "shard/account_navleft.html.twig" %}
 					</div>
@@ -29,7 +29,7 @@
 					</div>
 				</div>
 		<div class="navbar-mobile">
-			<div class="fixed-top col responsif-none">
+			<div class="fixed-top col responsif-none bg-blanc">
 				{{ include('shard/account_navbar.html.twig') }}
 			</div>
 
@@ -54,7 +54,7 @@
 							<div class="col-lg-9 col-sm-12  mx-auto">
 								<div class="">
 									<h3 lng-tag="modifier_profil">Modifier votre profil</h3>
-									<div class="card card-pub mb-5">
+									<div class="card card-setting mb-5">
 
 										{% if message != null %}
 											<div id="succesMessage" class="alert alert-success">

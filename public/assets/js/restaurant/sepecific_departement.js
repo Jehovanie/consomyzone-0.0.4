@@ -1232,7 +1232,7 @@ function updateListe(restaurant, display){
             <div class="col-md-9">
                 <p class="text-center fw-bold fs-6">${restaurant.denominationF} </p>
                 <p>
-                    <img src="/assets/icon/NewIcons/icon-adres.png" alt="adres" width="20">
+                    <img src="/public/assets/icon/NewIcons/icon-adres.png" alt="adres" width="20">
                     ${restaurant.numvoie + " " + restaurant.typevoie + " " + restaurant.nomvoie + " " + restaurant.codpost + " " + restaurant.villenorm }
                 </p>
             </div>
