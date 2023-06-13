@@ -1032,19 +1032,28 @@ class TributGService extends PDOConnexionService{
 
     public function fetchAllPublicationComment( $user_id , $publication_id ){
 
-
-
         $table_comment = $this->getTableNameTributG($user_id) . "_commentaire";
 
-
-
-        $statement = $this->getPDO()->prepare("SELECT * FROM " . $table_comment . " WHERE pub_id = ". $publication_id);
-
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_comment  WHERE pub_id = $publication_id");
         $statement->execute();
+        $comments= $statement->fetchAll(PDO::FETCH_ASSOC);
 
+        $results= [];
+        if( count($comments) > 0 ){
+            foreach($comments as $comment){
+                $user_id= $comment["user_id"];
     
+                $sql = "SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id";
+                $statement = $this->getPDO()->prepare($sql);
+                $statement->execute();
+                $image = $statement->fetch();
+    
+                $comment["photo_profil"] = $image["photo_profil"];
+                array_push($results, $comment);
+            }
+        }
 
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
 
     }
 

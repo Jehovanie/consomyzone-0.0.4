@@ -1095,7 +1095,7 @@ function chargeMapAndMarkers(response1, map, markers) {
             })
             marker.setIcon(new icon_R);
 
-            if (marker_last_selected) {
+            if (marker_last_selected && marker_last_selected != marker) {
                 const icon_B = L.Icon.extend({
                     options: {
                         iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",

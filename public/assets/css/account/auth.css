@@ -256,8 +256,8 @@ main {
     border-bottom-color: dodgerblue !important;
 }
 
-#form .row>button {
-    background-color: #3AC334;
+.cta_connexion{
+    background-color: #3AC334 !important;
 }
 
 input {

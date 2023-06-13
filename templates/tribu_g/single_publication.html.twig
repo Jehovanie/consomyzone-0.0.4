@@ -84,40 +84,54 @@
 						<span id={{"nbr_comment_pub_" ~ pub.id }}>
 							{{(pub.nbr_c is same as(0) )? "" : pub.nbr_c }}
 						</span>
-						<a data-bs-toggle="collapse" href={{"#collapse_comment_" ~ pub.id }} onclick="fetchNotification({{pub.id}})">
-							<i class="bi bi-chat-square"></i>
+							
+						{# <a data-bs-toggle="collapse" href={{"#collapse_comment_" ~ pub.id }} onclick="fetchNotification({{pub.id}})"> #}
+						<a data-bs-toggle="modal" data-bs-target='{{"#modal_comment_publication_" ~ pub.id }}' data-bs-whatever="@mdo" onclick="fetchNotification({{pub.id}})">
+							<i class="fa-regular fa-comment comment"></i>
 						</a>
 					</div>
 				</div>
 			</div>
 
-			<div class="collapse m-2" id={{"collapse_comment_" ~ pub.id }}>
-				<div class="card card-body">
-					<label style="display:none;">Commentaires</label>
-
-					<div class="content_notification_tributg mb-3"></div>
-
-					<form class={{ "form_comment_" ~ pub.id }}>
-						<div class="mb-3 row">
-							<div class="row" id="soundClips"></div>
-
-							{# <div class="col-1 text-center">
-								<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
-								<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
-							</div> #}
-							<div class="col-12 ">
-								<textarea class='{{ "form-control text_input_" ~ pub.id ~ "_js_jheo" }}' name="commentaire" placeholder="Votre commentaire..." required></textarea>
-								<span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+			<!-- Modal comment publication-->
+			<div class="modal fade" id='{{"modal_comment_publication_" ~ pub.id }}' tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1 class="modal-title fs-5" id="exampleModalLabel">Commentaire de publication</h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class='{{"modal-body" ~ " content_comment_" ~ pub.id ~ "_js_jheo" }}'>
+							<div class="content_notification_tributg mb-3">
+								<div class="content_loading_js_jheo">
+									<div class="spinner-border text-primary d-block mx-auto" role="status">
+										<span class="visually-hidden">Loading...</span>
+									</div>
+								</div>
 							</div>
-							<div class="row" id="audiosPlayer"></div>
 						</div>
 
-						<Button type="button"  value="" class='{{"btn btn-primary float-end cta_send_notification_" ~ pub.id ~ "_js_jheo" }}' onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})">
-							Envoyer
-						</Button>
-					</form>
+						<hr>
+						<div class="comment_footer p-3 pt-0">
+							<form class={{ "form_comment_" ~ pub.id }}>
+								<div class="content_form_comment d-flex justify-content-end align-items-center">
+									<div id="soundClips"></div>
+
+									{# <div class="col-1 text-center">
+										<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+										<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+									</div> #}
+									<div id="audiosPlayer"></div>
+									<input class='{{ "text_input_comment text_input_" ~ pub.id ~ "_js_jheo" }}' name="commentaire" placeholder="Votre commentaire..." required>
+									<i class='{{"fa-solid fa-paper-plane float-end cta_send_notification_" ~ pub.id ~ "_js_jheo" }}' onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})"></i>
+								</div>
+							</form>
+						</div>
+					</div>
 				</div>
 			</div>
+			<!-- End Modal-->
+
 		</div>
 	</div>
 {% endif %}
