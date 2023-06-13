@@ -179,7 +179,7 @@
                                     <div class="col-md-9">
                                         <p class="text-center fw-bold fs-6">{{restaurant.denominationF}} </p>
                                         <p>
-                                            <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
+                                            <img src="{{asset('public/assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                             {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
                                         </p>
                                     </div>
@@ -211,17 +211,12 @@
                     </ul>
                     <div aria-label="..." class="mx-auto ms-4">
                         <ul class="pagination">
-                            <li class="page-item disabled">
-                            <a class="page-link prec_btn" href="#" tabindex="-1" aria-disabled="true" onclick="previousData(this)">Précédent</a>
+                            <li class="page-item prec_btn disabled" onclick="previousData(this)">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
                             </li>
-                            
-                            <li class="page-item"><a class="page-link disabled" href="#" id="current-page"></a></li>
-                            {#<li class="page-item" aria-current="page">
-                            <a class="page-link" href="#" onclick="pointData(this)">2</a>
-                            </li>
-                            <li class="page-item"><a class="page-link" href="#" onclick="pointData(this)">3</a></li> #}
-                            <li class="page-item">
-                            <a class="page-link next_btn" href="#" onclick="nextData(this)">Suivant</a>
+                            <li class="page-item"><a class="page-link disabled" href="#" id="current-page">1 / {{(restaurants | length / 10) | round(0, 'ceil')}} </a></li>
+                            <li class="page-item next_btn" onclick="nextData(this)">
+                                <a class="page-link" href="#">Suivant</a>
                             </li>
                         </ul>
                     </div>
