@@ -469,8 +469,10 @@ class AgendaService extends PDOConnexionService
 
     public function createEvent($nom_table_agenda,$a) {
 
-        $sql="INSERT INTO $nom_table_agenda(message,type,confidentialite,file_path,date,heure_debut,heure_fin,file_type,status) VALUES(
-            :message,:type,:confidentialite,:file_path,:date,:heure_debut,:heure_fin,:file_type,:status)";
+        $sql="INSERT INTO $nom_table_agenda(message,type,confidentialite".
+        ",file_path,date,heure_debut,heure_fin,file_type,status,restaurant,adresse,max_participant) VALUES(".
+        ":message,:type,:confidentialite,:file_path,:date,:heure_debut,".
+        ":heure_fin,:file_type,:status,:restaurant,:adresse,:max_participant)";
         $stmt = $this->getPDO()->prepare($sql);
         return  $stmt->execute($a);
        
@@ -539,11 +541,62 @@ class AgendaService extends PDOConnexionService
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
             "`file_type` varchar(40) NOT NULL,".
-           " `status` tinyint(1) DEFAULT 0".
+            " `status` tinyint(1) DEFAULT 0,".
+            "`restaurant` varchar(500) DEFAULT NULL,".
+            "`adresse` varchar(500) DEFAULT NULL,".
+            "`max_participant` int(11) NOT NULL DEFAULT 0".
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
     }
 
+    /** 
+    * @author tommy
+    */
+    public function getRestoPastilled($joinedTribuT,$ownedTribuT,$servTribuT){
 
+
+        $finalResult = []; 
+        $finalResult1=[];
+        foreach($joinedTribuT["tribu_t"] as $k=>$v){
+            if (!is_int($k)) {
+                $this->notNesterArray($v, $k, $joinedTribuT["tribu_t"],$servTribuT, $finalResult1);
+            } else {
+                $this->isNesterArray($v,$servTribuT, $finalResult);
+            }
+        }
+
+       
+        foreach ($ownedTribuT["tribu_t"] as $k => $v) {
+            if (!is_int($k)) {
+                $this->notNesterArray($v, $k, $joinedTribuT["tribu_t"],$servTribuT, $finalResult1);
+            } else {
+                $this->isNesterArray($v,$servTribuT, $finalResult);
+            }
+        }
+        
+        return array($finalResult,$finalResult1);
+    }
+
+
+    public function notNesterArray($v,$k,$a,$servTribuT,&$finalResult)
+    {   
+        if($k==="extension" && $v == "restaurant"){
+           $r= $servTribuT->getRestoPastilles($a["name"]."_restaurant", $a["name"]. "_restaurant_commentaire");
+            array_push($finalResult, array("path" => $a["logo_path"], $r));
+        }
+    }
+    public function isNesterArray($v,$servTribuT, &$finalResult)
+    {
+        
+        foreach ($v as $k1=>$v2) {
+            if ($k1 === "extension" && $v2 == "restaurant") {
+                $r=$servTribuT->getRestoPastilles($v["name"] . "_restaurant", $v["name"] . "_restaurant_commentaire");
+                array_push($finalResult,array("path"=>$v["logo_path"],$r));
+            }
+            
+        }
+        
+        
+    }
 }

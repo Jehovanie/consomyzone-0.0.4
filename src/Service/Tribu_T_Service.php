@@ -1361,6 +1361,7 @@ class Tribu_T_Service extends PDOConnexionService
                 as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";
 
         $stmt = $this->getPDO()->prepare($sql);
+         
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -1462,7 +1463,13 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
-    
+    public function getAllTribuTJoinedAndOwned($id){
+        $sql= "SELECT tribu_t_joined,tribu_t_owned FROM `user` WHERE id=$id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
 }
 

@@ -29,9 +29,11 @@
 
     <div class="content-agenda"></div>
     <div class="modale-agenda">
-        <dialog id="cookie-dialog" class="cookie flow-content" data-spacing="lg">
+            
 
-            <i class="fa-solid fa-x" id="close-modal-agenda"></i>
+        <dialog id="cookie-dialog" class="cookie flow-content" data-spacing="lg">
+            <div class="loader_agenda"></div>
+            <i class="fa-solid fa-x i-x" id="close-modal-agenda"></i>
             <form id="form_agenda">
                 <div class="item-mess wrapper">
                     <h2>Message</h2>
@@ -46,8 +48,8 @@
             
                     {# <input type="file" name="fileEvent" id="file" accept="image/*,application/*"> #}
                 </div>
-                <div class="d-flex">
-                    <div class="conf">
+                <div class="">
+                    {# <div class="conf">
                         <label>Confidentialité</label>
                         <div class="item-confid select">
                             
@@ -57,7 +59,7 @@
                                 <option value="3">Tribu-T</option>
                             </select>
                         </div>
-                    </div>
+                    </div> #}
                     <div class="tipeE">
                         <label>Type evenement</label>
                         <div class="item-confid select">
@@ -73,6 +75,31 @@
                 </div>
                 <div>
                     <input type="text" class="form__input form__input_autre" placeholder="Veuillez préciser l'événement" name="autreEvent" id="autreEvent">
+                    
+                    <div class="resto-pasti" id="choix-resto-type-past">
+                        <label>Choix restaurant</label>
+                        <div class="item-confid select">
+
+                            <select name="choixRestoPast" id="choixRestoPast" >
+                                <option class="choix-resto" value="1">Restaurants pastillés</option>
+                                <option class="choix-resto" value="2">Restaurants non pastillés</option>
+                            </select>
+                        </div>
+                        <div class="resto-pasti" id="content-list-pastille">
+                            {# <label>liste des restaurants pastillés</label> #}
+                            <div class="item-confid ">
+                                <ul class="list-pastille">
+                                     <li class="deroulant"><a class="a" href="#">liste des restaurants pastillés </a>
+                                    {# <select name="listPastille" id="list-pastille"></select> #}
+                                    <ul class="sous" id="list-pastille"></ul>
+                                </ul>
+                            </div>
+                        </div>
+                        <input type="text" class="form__input lieu_event hidden" placeholder="Veuillez entrer le nom du restaurant" name="lieuEventNonPastilled" id="lieuEventNonPastilled">
+                    </div>           
+                        <input type="text" class="form__input autre_event" placeholder="Veuillez entrer l'adresse" name="adresseEvent" id="adresseEvent">
+                        <input type="number" class="form__input nbr_max_event" placeholder="Veuillez entrer le nombre maximum de partucipant" name="nbrMax" id="nbrMax">
+
                 </div>
               
                 <div>
@@ -85,6 +112,14 @@
                   <button type="submit" id="valid_agenda" class="btn-valid-agenda">valider</button>
                 </div>
             </form>
+            
         </dialog>
+
+        <dialog id="dialog-apropos-resto-agenda" class="cookie flow-content" data-spacing="lg">
+            <div id="content-dialog-apropos"></div>
+        </dialog>
+        
     </div>
+
+
 {% endblock %}

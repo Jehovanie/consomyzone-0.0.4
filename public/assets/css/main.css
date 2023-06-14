@@ -975,7 +975,7 @@ li a .station {
 .bg-blanc{
     z-index: 1;
     background-color: #fff;
-    /* width: 100vw ; */
+    width: 100vw ;
     height: 90px;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
@@ -1002,9 +1002,9 @@ li a .station {
     padding-bottom: 5px;
 }
 
-hr{
+/* hr{
     opacity: 1 !important;
-}
+} */
 .navbar-light-left .fa-x{
     margin-left: 165px;
 }
@@ -1012,4 +1012,8 @@ hr{
 input::-ms-reveal,
 input::-ms-clear {
     display: none;
+}
+
+.card-couverture-pub-tribu-t nav{
+    border-radius: 0 15px 0 0;
 }

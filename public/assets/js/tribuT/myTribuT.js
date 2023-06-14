@@ -284,7 +284,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     </div>
                 </div>
                 <nav class="responsif-none mx-auto">
-                    <ul id="navBarTribu">
+                    <ul id="navBarTribu" class="navBarTribu-t">
                         <li class="listNavBarTribu">
                             <a id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>

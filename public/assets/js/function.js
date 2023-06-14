@@ -1727,10 +1727,10 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
     }
 }
 
-function createChargement(){
+function createChargement(elementParent=document.querySelector(".cart_map_js_jheo"),c="chargement_content chargment_content_js_jheo"){
     
-    document.querySelector(".cart_map_js_jheo").innerHTML = `
-        <div class="chargement_content chargment_content_js_jheo" id="toggle_chargement">
+    elementParent.innerHTML = `
+        <div class="${c}" id="toggle_chargement">
             <div class="containt">
                 <div class="word word-1">C</div>
                 <div class="word word-2">M</div>
@@ -1740,10 +1740,10 @@ function createChargement(){
     `
 }
 
-function deleteChargement(){
-    if(document.querySelector(".chargement_content_js_jheo")){
-        document.querySelector(".chargement_content_js_jheo").remove();
-        //document.querySelector(".chargement_content_js_jheo").style.display = "none";
+function deleteChargement(c="chargement_content_js_jheo"){
+    if(document.querySelector("."+c)){
+        document.querySelector("."+c).remove();
+        //document.querySelector(".charchargement_content_js_jheogement_content_js_jheo").style.display = "none";
     }
 }
 

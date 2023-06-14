@@ -1,6 +1,7 @@
 /**create event */
 let contenu = ""
-let dateEvent=""
+let dateEvent = ""
+let restaurant=""
 if(document.querySelector(".btn-creat-event"))
   document.querySelector(".btn-creat-event").onclick = (e) => {
   
@@ -30,16 +31,33 @@ if (document.querySelector(".btn-view-event")) {
   }
 }
 if (document.querySelectorAll("#eventType")) {
-     document.querySelector("#eventType").addEventListener("change", (e) => {
-       if (document.querySelector("#eventType").value === "2") {
-         document.querySelector("#autreEvent").style.display = "block"
-         
-       }else {
-         document.querySelector("#autreEvent").style.display="none"
-       }
+  document.querySelector("#eventType").addEventListener("change", (e) => {
+    if (document.querySelector("#eventType").value === "2") {
+      document.querySelector("#autreEvent").style.display = "block"
+      document.querySelector("#choix-resto-type-past").style.display = "none"
+    } else if (document.querySelector("#eventType").value === "1") {
+      document.querySelector("#choix-resto-type-past").style.display = "block"
+      document.querySelector("#autreEvent").style.display="none"
+    }
     });
   
 }
+
+if (document.querySelectorAll("#choixRestoPast")) {
+  document.querySelector("#choixRestoPast").addEventListener("change", (e) => {
+    if (document.querySelector("#choixRestoPast").value === "1") {
+      document.querySelector("#content-list-pastille").style.display = "block"
+      document.querySelector("#lieuEventNonPastilled").classList.toggle("no-hidden")
+      document.querySelector("#lieuEventNonPastilled").classList.toggle("hidden")
+    } else if (document.querySelector("#choixRestoPast").value === "2") {
+      document.querySelector("#lieuEventNonPastilled").classList.toggle("no-hidden")
+      document.querySelector("#lieuEventNonPastilled").classList.toggle("hidden")
+      document.querySelector("#content-list-pastille").style.display="none"
+    }
+  });
+}
+
+
 if (document.querySelector("#autreEvent")) {
   document.querySelector("#autreEvent").onchange = (e) => { 
       contenu=e.target.value
@@ -49,6 +67,9 @@ if (document.getElementById("valid_agenda")) {
   document.getElementById("valid_agenda").onclick = (e) => {
     e.preventDefault();
     const formData = new FormData(document.querySelector("#form_agenda"))
+    for (const [key, value] of formData) {
+      console.log(`${key}: ${value}\n`);
+      }
     let confidentiality = { confidentility: "moi uniquement", code: 1 }
     let eventType = { type: "repas", code: 1 }
     // console.log(formData.get("confidentialite"),formData.get("eventType"))
@@ -116,6 +137,9 @@ function sendAgenda(formData,confidentiality,eventType){
       confidentiality: JSON.stringify(confidentiality),
       eventType: JSON.stringify(eventType),
       dateEvent: dateEvent,
+      adresse: formData.get('adresseEvent'),
+      restaurant: restaurant,
+      maxParticipant: formData.get("nbrMax"),
       heureD: formData.get("timeDebut"),
       heureF: formData.get("timeFin")
       
@@ -549,7 +573,7 @@ function showCalendar(parentElement) {
     });
 
     //init calendar
-  plotDays(daysInMonth, firstDayPosition,monthNames,dateElement,calendarTitle,currentDate);
+    plotDays(daysInMonth, firstDayPosition,monthNames,dateElement,calendarTitle,currentDate);
     setTimeout(function () {
       highlightCurrentDate(dateElement,dateItems,currentDate);
     }, 50);
@@ -598,16 +622,27 @@ function createEvent(elements) {
     day.onclick = (e) => { 
       const cookieDialog = document.getElementById("cookie-dialog");
       dateEvent = e.target.dataset.date
-      //console.log(e.target.dataset.cookieAction)
+      const request = new Request("/user/agenda/restpastil", {
+          method: "GET",
+          headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+          }
+      })
+      fetch(request).then(r => {
+        createChargement(document.querySelector(".loader_agenda"), "chargement_content chargement_agenda")
+        if (r.status === 200 && r.ok) {
+            r.json().then(json => {
+              showRestoPastilled(json);
+              deleteChargement("chargement_agenda")
+            });
+        }
+      })
       if(cookieDialog)
           cookieDialog.showModal();
-      //     switch (e.target.dataset.cookieAction) {
-      //       case "show-dialog":
-      //         cookieDialog.showModal();
-              
-      //         break;
-      //     }
-      }
+    }
+     
+      
   })
 }
 
@@ -640,5 +675,221 @@ function inputFileModifName(cssSelector) {
   });
 }
 }
+function showRestoPastilled(array,container=document.querySelector("#list-pastille")) {
+  array.forEach(a1 => {
+    a1.forEach(a2 => {
+      const logoPath = a2["path"]
+      for (a of a2[0]) {
+        console.log(a)
+        let c = `<li class="" >
+                  <a onclick="voirApropos('${a.id}')">${a.denomination_f} </a>  
+                  <i class="fa-solid fa-plus plus-list-pastille" onclick="voirApropos('${a.id},${a.globalNote}')"></i>
+                </li>`
+        container.innerHTML += c;
+      }
+    });
+  })
+}
 
+function voirApropos(a,gN) {
+
+  document.querySelector("#dialog-apropos-resto-agenda").showModal()
+  const request = new Request(`/user/resto/apropos/${a}`, {
+          method: "GET",
+          headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+          }
+      })
+  fetch(request).then(r => { 
+      createChargement(document.querySelector(".loader_agenda"), "chargement_content chargement_agenda")
+        if (r.status === 200 && r.ok) {
+            r.json().then(json => {
+              console.log(json);
+              showDetailResto(json[0],gN);
+              deleteChargement("chargement_agenda")
+            });
+      }
+
+  })
+}
+
+function showDetailResto(a) {
+  let  restaurant = parseInt(a.restaurant) === 1 ?`<i class="fa-solid fa-utensils"></i> restaurant`:"";
+  let bar = parseInt(a.bar) === 1 ?`<i class="fa-solid fa-martini-glass-empty"></i> bar`:""
+  let creperie = parseInt(a.creperie) === 1 ?`<i class="fa-solid fa-pancakes"></i> creperie`:""
+  let fastFood = parseInt(a.fastFood) === 1 ?`<i class="fa-solid fa-burger"></i> fastFood`:""
+  let pizzeria = parseInt(a.pizzeria) === 1 ?`<i class="fa-solid fa-pizza-slice"></i> pizzeria`:""
+  let boulangerie =parseInt(a.boulangerie) === 1 ?`<i class="fa-solid fa-pie"></i> boulangerie`:""
+  let Brasserie =parseInt(a.brasserie) === 1 ?`<i class="fa-solid fa-beer-mug-empty"></i> Brasserie`:""
+  let cuisine_du_monde =parseInt(a.cuisineMonde) === 1 ?`<i class="fa-solid fa-hat-chef"></i> cuisine du monde`:""
+  let cafe =parseInt(a.cafe) === 1 ?`<i class="fa-solid fa-coffee-pot"></i> café`:""
+  let salon_de_the = parseInt(a.salonThe) === 1 ? `<i class="fa-solid fa-mug-tea"></i> salon de thé` : ""
+  let site = a.site1 != "" ? `<a class="btn btn-success" href="${a.site1}" target="_blank">Lien :  site Web</a>` : ""
+  let adresse=`${a.numvoie}  ${a.typevoie} ${a.nomvoie} ${a.codpost}  ${a.commune}`
+  let c=`<div class="content_home responsif-none">
+            <div id="close-detail-tous-resto">
+              <i class="fa-solid fa-x"></i>
+            </div>
+              <div class="left_content_home">
+              <div>
+                <div class="description" id="details-coord" data-toggle-id-resto="3309" data-toggle-id-dep="75" data-latitude="48.86184692382812" data-longitude="2.339128971099854" data-nom="DELICES\u0020DE\u0020MARENGO" data-codeinsee="75101">
+
+                          <div class="content_titre_details">
+                    
+                              <div class="titre col text-center">
+                      <h4>
+                        ${a.denominationF}
+                        <br>
+                        ${adresse}
+                      <span>
+                          <a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
+                        </span>
+
+                      </h4>
+                    </div>
+                  </div>
+
+                  <div class="p-4">
+                      
+                              <hr>
+                    <div class="content_note">
+                      <div class="start">
+                        <i class="fa-solid fa-star" data-rank="1"></i>
+                        <i class="fa-solid fa-star" data-rank="2"></i>
+                        <i class="fa-solid fa-star" data-rank="3"></i>
+                        <i class="fa-solid fa-star" data-rank="4"></i>
+
+                      </div>
+
+                      <div class="nombre_avis"></div>
+                    </div>
+
+                    <hr>
+                    
+                    <div class="content_activite">
+                      <p class="activite">
+                        <span class="fw-bold">Type restaurant:</span>
+                        ${restaurant}
+                        ${bar}
+                        ${creperie}
+                        ${fastFood}
+                        ${pizzeria}
+                        ${boulangerie}
+                        ${Brasserie}
+                        ${cuisine_du_monde}
+                        ${cafe}
+                        ${salon_de_the}
+                      </p>
+                    </div>
+
+                              <div class="content_tow_cta">
+                                    <div class="site_web non_active">
+                              ${site}
+                        </div>
+                                </div>
+
+                    <hr>
+
+                    <div class="fonctionnalite">
+                                  <h5>
+                        Fonctionalités:
+                      </h5>
+                      <ul>
+                         <li>${a.fonctionalite1}</li>
+                      </ul>
+
+
+                    </div>
+
+                    <hr>
+
+                    <div class="fourchette_de_prix">
+                      <h5>
+                        Fourchette de prix:
+                      </h5>
+                      <ul>
+                         <li>${a.fourchettePrix1}</li>
+                      </ul>
+                    </div>
+
+                    <hr>
+
+                    <div class="horaire">
+                      <h5>
+                        Horaires :
+                      </h5>
+                      <ul>
+                        <li>${a.horaires1}</li>
+                      </ul>
+                      <hr>
+
+                    </div>
+
+                    <div class="prestation">
+                      <h5>
+                        Prestation :
+                      </h5>
+                      <ul>
+                        <li>${a.prestation1}</li>
+                      </ul>
+                      <hr>
+
+                    </div>
+
+                    <div class="regime_speciaux">
+                      <h5>
+                        Régime spécial :
+                      </h5>
+                      <ul>
+                        <li>${a.regimeSpeciaux1}</li>
+                      </ul>
+                      <hr>
+
+                    </div>
+
+                    <div class="repas">
+                      <h5>
+                        Repas :
+                      </h5>
+                      <ul>
+                         <li>${a.repas1}</li>
+                      </ul>
+                      <hr>
+
+                    </div>
+
+                    <div class="tel">
+                      <h5>
+                        Téléphone :
+                      </h5>
+                      <ul>
+                        <li>${a.tel}</li>
+                      </ul>
+                      <hr>
+
+                    </div>
+
+                    <hr>
+
+                        <div class="content_one_cta text-center">
+                        <button class="btn btn-success" id="choise-js" type="button" onclick="setChoice('${a.id}','${a.denominationF}','${adresse}')">choisir</button>
+                      </div>
+                              
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+</div>`
+  document.querySelector("#dialog-apropos-resto-agenda > div").innerHTML=c
+}
+
+function setChoice(a, b,c) {
+
+  document.querySelector("#adresseEvent").value = c
+  document.querySelector("#content-list-pastille > div > ul > li>a").innerText = b
+  restaurant=b
+  document.querySelector("#dialog-apropos-resto-agenda").close()
+}
 /**end */

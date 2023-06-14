@@ -633,8 +633,9 @@ class AgendaController extends AbstractController
 
     }
 
+   
     #[Route("/user/tribu/agenda", name: "app_agenda")]
-    public function agenda(Status $status, Request $request)
+    public function agenda(Status $status)
     {
         $statusProfile = $status->statusFondateur($this->getUser());
         return $this->render("agenda/agenda.html.twig",[
@@ -664,6 +665,9 @@ class AgendaController extends AbstractController
             ":heure_fin"=>$req["heureF"],
             ":file_type"=>$req["fileType"],
             ":status"=>1,
+            ":restaurant"=>$req["restaurant"],
+            ":adresse"=>$req["adresse"],
+            ":max_participant"=>$req["maxParticipant"]
         );
         $fileUtils = new FilesUtils();
         $response = new Response();
@@ -787,6 +791,21 @@ class AgendaController extends AbstractController
             $response->setStatusCode(500);
             return $response;
         }
+        
+    }
+
+    #[Route("/user/agenda/restpastil", name:"agenda-pastille")]
+    public function agendaRestPastille(Tribu_T_Service $servT, 
+    AgendaService $agendaService,
+    Status $status,
+    SerializerInterface $jsonSerializer){
+        $d = $servT->getAllTribuTJoinedAndOwned($this->getUser()->getId());
+        $joinedTribuT = json_decode($d[0]["tribu_t_joined"], true);
+        $ownedTribuT = json_decode($d[0]["tribu_t_owned"], true);
+        $r=$agendaService->getRestoPastilled($joinedTribuT, $ownedTribuT,$servT);
+        $json =$jsonSerializer->serialize($r,'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+      
         
     }
 
