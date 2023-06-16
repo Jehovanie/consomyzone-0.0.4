@@ -793,20 +793,24 @@ class AgendaService extends PDOConnexionService
     public function getRestoPastilled($joinedTribuT,$ownedTribuT,$servTribuT){
         $finalResult = []; 
         $finalResult1=[];
-        foreach($joinedTribuT["tribu_t"] as $k=>$v){
-            if (!is_int($k)) {
-                $this->notNesterArray($v, $k, $joinedTribuT["tribu_t"],$servTribuT, $finalResult1);
-            } else {
-                $this->isNesterArray($v,$servTribuT, $finalResult);
+        if( isset($joinedTribuT["tribu_t"])){
+            foreach($joinedTribuT["tribu_t"] as $k=>$v){
+                if (!is_int($k)) {
+                    $this->notNesterArray($v, $k, $joinedTribuT["tribu_t"],$servTribuT, $finalResult1);
+                } else {
+                    $this->isNesterArray($v,$servTribuT, $finalResult);
+                }
             }
         }
 
        
-        foreach ($ownedTribuT["tribu_t"] as $k => $v) {
-            if (!is_int($k)) {
-                $this->notNesterArray($v, $k, $joinedTribuT["tribu_t"],$servTribuT, $finalResult1);
-            } else {
-                $this->isNesterArray($v,$servTribuT, $finalResult);
+        if( isset($ownedTribuT["tribu_t"])){
+            foreach ($ownedTribuT["tribu_t"] as $k => $v) {
+                if (!is_int($k)) {
+                    $this->notNesterArray($v, $k, $joinedTribuT["tribu_t"],$servTribuT, $finalResult1);
+                } else {
+                    $this->isNesterArray($v,$servTribuT, $finalResult);
+                }
             }
         }
         

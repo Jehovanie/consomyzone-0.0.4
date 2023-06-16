@@ -802,8 +802,9 @@ class AgendaController extends AbstractController
     Status $status,
     SerializerInterface $jsonSerializer){
         $d = $servT->getAllTribuTJoinedAndOwned($this->getUser()->getId());
-        $joinedTribuT = json_decode($d[0]["tribu_t_joined"], true);
-        $ownedTribuT = json_decode($d[0]["tribu_t_owned"], true);
+        $joinedTribuT = !is_null( $d[0]["tribu_t_joined"] ) ? json_decode($d[0]["tribu_t_joined"], true) : [];
+        $ownedTribuT =  !is_null( $d[0]["tribu_t_owned"] ) ? json_decode($d[0]["tribu_t_owned"], true) : [];
+        
         $r=$agendaService->getRestoPastilled($joinedTribuT, $ownedTribuT,$servT);
         $json =$jsonSerializer->serialize($r,'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
