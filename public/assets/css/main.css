@@ -4,6 +4,23 @@
     box-sizing: border-box;
 }
 
+:root {
+    --success: #3fbd63c4;
+    --success-md: #3fbd637c;
+    --success-l: #3fbd632d;
+    --info: #0069dec4;
+    --info-md: #0069de7c;
+    --info-l: #0069de2d;
+
+    --warning: #ef9400c4;
+    --warning-md: #ef94007c;
+    --warning-l: #ef94002d;
+
+    --danger: #ea4e2cc4;
+    --danger-md: #ea4e2c7c;
+    --danger-l: #ea4e2c2d;
+}
+
 body {
     background-color: #e2e0e0 !important;
     overflow-x: hidden;
@@ -975,7 +992,7 @@ li a .station {
 .bg-blanc{
     z-index: 1;
     background-color: #fff;
-    /* width: 100vw ; */
+    width: 100vw ;
     height: 90px;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
@@ -1003,9 +1020,9 @@ li a .station {
     padding-bottom: 5px;
 }
 
-hr{
+/* hr{
     opacity: 1 !important;
-}
+} */
 .navbar-light-left .fa-x{
     margin-left: 165px;
 }
@@ -1014,3 +1031,66 @@ input::-ms-reveal,
 input::-ms-clear {
     display: none;
 }
+
+.card-couverture-pub-tribu-t nav{
+    border-radius: 0 15px 0 0;
+}
+
+.toaster_custom{
+    margin-left: auto;
+    margin-right: auto;
+    width: 250px;
+    height: 150px;
+    border-radius: 5px;
+    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+.notification-toster {
+    background-color: #fff;
+    padding: 15px;
+    width: 450px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px #00000033;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-toster span {
+    font-size: 18px;
+    color: #5d6672 !important;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.notification-toster.success {
+    border: 1px solid var(--success-md);
+    background-color: var(--success-l);
+}
+
+
+
+/*******/
+.notification-toster.info {
+    border: 1px solid var(--info-md);
+    background-color: var(--info-l);
+}
+
+
+/*******/
+.notification-toster.warning {
+    border: 1px solid var(--warning-md);
+    background-color: var(--warning-l);
+}
+
+
+/********/
+.notification-toster.danger {
+    border: 1px solid var(--danger-md);
+    background-color: var(--danger-l);
+}
+

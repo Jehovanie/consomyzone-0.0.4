@@ -1727,10 +1727,10 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
     }
 }
 
-function createChargement(){
+function createChargement(elementParent=document.querySelector(".cart_map_js_jheo"),c="chargement_content chargment_content_js_jheo"){
     
-    document.querySelector(".cart_map_js_jheo").innerHTML = `
-        <div class="chargement_content chargment_content_js_jheo" id="toggle_chargement">
+    elementParent.innerHTML = `
+        <div class="${c}" id="toggle_chargement">
             <div class="containt">
                 <div class="word word-1">C</div>
                 <div class="word word-2">M</div>
@@ -1740,10 +1740,10 @@ function createChargement(){
     `
 }
 
-function deleteChargement(){
-    if(document.querySelector(".chargement_content_js_jheo")){
-        document.querySelector(".chargement_content_js_jheo").remove();
-        //document.querySelector(".chargement_content_js_jheo").style.display = "none";
+function deleteChargement(c="chargement_content_js_jheo"){
+    if(document.querySelector("."+c)){
+        document.querySelector("."+c).remove();
+        //document.querySelector(".charchargement_content_js_jheogement_content_js_jheo").style.display = "none";
     }
 }
 
@@ -1861,4 +1861,54 @@ function calculateDurationOfComment(dateOfComment) {
         return "aujourd'hui il y a " + lapsTime + " h"
     }
 
+}
+/**
+ * 
+ * @param {string} type , 
+ * type of toaste that you want to show message (ex: if success type="SUCCESS", 
+ * error type="DANGER", info type="INFO", warning type="WARNING")
+ * @param {string} message, message yuo want out put
+ * @param {Node} container, node who will be contain your toaster
+ * 
+ */
+function toaster(type,message,container) {
+    let div = document.createElement("div");
+    const divClass = "toaster_custom notification-toster " + type.toLowerCase();
+    div.setAttribute("class",divClass );
+    
+    let span = document.createElement("span")
+    span.setAttribute("class","span-toaster");
+    span.innerText=message
+    let color = "#28a745"
+    switch (type) { 
+        case "SUCCESS": {
+            color = "#28a745"
+            break;
+        }
+        case "ERROR": {
+            
+            color = "#E3000B"
+            break;
+        }
+        case "INFO": {
+            
+            color = "#2E9AFE"
+            break;
+        }
+        case "WARNING": {
+            
+            color = "#FFFF00"
+            break;
+        }
+        default: {
+            
+            color = "#28a745"
+            break;
+        }
+
+    }
+    div.appendChild(span)
+    container.appendChild(div);
+    div.style.background= color
+    // setTimeout(container.removeChild(div),3000)
 }
