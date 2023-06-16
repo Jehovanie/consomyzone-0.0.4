@@ -689,4 +689,26 @@ class AgendaService extends PDOConnexionService
 
         $stmt->execute();
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Check if this agenda is already share
+     * 
+     * @param string $table_agenda_partage_name : name of the table partage agenda
+     * @param string $agendaID : ID of the agenda to partage
+     * 
+     * @return boolean (true of false)
+     */
+    public function isAleardyShare($table_agenda_partage_name, $agendaID){
+
+        $sql="SELECT COUNT(agenda_id) as agendaID_count FROM $table_agenda_partage_name WHERE agenda_id= $agendaID";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $tab_agendaID_count=  $stmt->fetch(PDO::FETCH_ASSOC);
+
+        extract($tab_agendaID_count); /// $agendaID_count
+
+        return (intval($agendaID_count) > 0 ) ? true : false;
+    }
 }

@@ -108,6 +108,35 @@ class MailService {
     }
 
 
+    public function sendLinkToInviteOnAgenda($from, $fullName_from, $to, $fullName_to, $object, $message){
+        $userSendingEmail = ProdData::EMAIL_PROD;
+        $pass = ProdData::MDP_PROD;
+        $server = ProdData::SERVER_SMTP_PROD;
+        $port = ProdData::PORT_PROD;
+ 
+        // Generate connection configuration
+        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
+        $transport = Transport::fromDsn($dsn);
+        $customMailer = new Mailer($transport);
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($from ,$fullName_from)) 
+                ->to(new Address($to, $fullName_to ))
+                ->subject($object)
+                ->text($message)
+                // path of the Twig template to render
+                ->htmlTemplate('shard/mail/mail_template.html.twig')
+
+                // pass variables (name => value) to the template
+                ->context([
+                    'expiration_date' => new \DateTime('+1 days'),
+                    'username' => 'Jehovanie RAMANDRIJOEL',
+                ]);
+
+        $customMailer->send($email);
+    }
+
 
 }
 

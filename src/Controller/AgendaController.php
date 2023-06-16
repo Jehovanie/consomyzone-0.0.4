@@ -869,7 +869,8 @@ class AgendaController extends AbstractController
     public function shareAgendaForAll(
         Request $request,
         AgendaService $agendaService,
-        TributGService $tributGService
+        TributGService $tributGService,
+        Tribu_T_Service $tribuTService,
     ){
 
         if( !$this->getUser()){
@@ -894,6 +895,11 @@ class AgendaController extends AbstractController
             if( $confid === "Tribu-G"){
                 $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
 
+                ///Check if this agenda is already share
+                if( $agendaService->isAleardyShare($table_partage_agenda, $agendaID)){
+                    return $this->json(["message" => "Vous avez déjà partagé cet agenda.","status" => "alreadyShare"]);
+                }
+
                 ////get information( userID, fullName ) for all user in this tribu G
                 $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
 
@@ -907,8 +913,12 @@ class AgendaController extends AbstractController
                     dump($user_in_tribuG);
                 }
                 dd("atreo");
-            }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T"
-                return $this->json(["message" => "Partage for tribu T", "all_tribugT" => []]);
+            }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
+                
+                ///get all tribu T create bu this user 
+                $all_tribuT= $tribuTService->getAllTribuT($this->getUser()->getId());
+                
+                return $this->json(["message" => "Partage for tribu T", "status" => "tribuT", "all_tribugT" => $all_tribuT]);
 
             }else{ /// Moi uniquement
 

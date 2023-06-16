@@ -1156,7 +1156,7 @@ class TributGService extends PDOConnexionService{
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      * 
-     * @return array associatif (ex: ["status" => "roles", "verified" => "isverified" ])
+     * @return array associatif (ex: ["table_name" => ... , "count" => ... ])
      */
      public function getAllTableTribuG(){
         $results = array();
@@ -1174,8 +1174,8 @@ class TributGService extends PDOConnexionService{
             $tab= $table["table_name"];
             $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
             $statement->execute();
-            $temp = $statement->fetchAll(PDO::FETCH_ASSOC);
-            array_push($results, ["table_name" => $tab, "count" => $temp[0]['nbr']]);
+            $temp = $statement->fetch(PDO::FETCH_ASSOC);
+            array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
         }
         
         return $results;
@@ -1220,8 +1220,12 @@ class TributGService extends PDOConnexionService{
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
+     * Get one pub from ID
+     * 
      * @param string $table: table publication tribut G
      * @param int $pub_id: id publication
+     * 
+     * @return array associative : One publication
      */
     public function getOnePublication($table, $pub_id){
         ///get one publication
@@ -1265,7 +1269,17 @@ class TributGService extends PDOConnexionService{
         return $pub;
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Delete one comment from ID
+     * 
+     * @param string $table: table publication tribut G
+     * @param int $pub_id: id publication
+     * @param int $comment_id : id of the comment
+     * 
+     * @return void
+     */
     public function deleteOneCommentaire($table, $pub_id, $comment_id ){
         ///get one publication
         $table_pub= $table . "_publication";

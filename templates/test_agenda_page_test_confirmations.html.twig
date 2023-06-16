@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone: Restore mon mots de passe
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/css/account/auth.css') }}">
+
+    <style>
+        a {
+            text-decoration: none !important;
+            color: white !important;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/auth/auth.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+	<main>
+		<div class="content_global">
+			<div class="right_content">
+
+				<div class="row" style="height: 100%">
+					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6 m-auto p-3">
+						<div class="content_form">
+                            <h4> Agenda Partager </h4>
+							<p>
+                                Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à 
+                                titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer 
+                                le faux-texte dès qu'il est prêt ou que la mise en page est achevée. 
+                                Généralement, on utilise un texte en faux latin, le Lorem ipsum ou Lipsum
+                            </p>
+                            <div class="content_btn">
+                                <button type="button" class="btn btn-primary">
+                                    <a href="{{path("app_agenda_confirmation" , {"userID_sender": userID_sender, "agendaID": 8, "userID" : 2, "isAccepted": 1 })}}">Accepter</a>
+                                </button>
+                                <button type="button" class="btn btn-danger">
+                                    <a href="{{path("app_agenda_confirmation" , {"userID_sender": userID_sender,"agendaID": 8, "userID" : 2, "isAccepted": 0 })}}">Refuser</a>
+                                </button>
+                            </div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</main>
+
+{% endblock %}

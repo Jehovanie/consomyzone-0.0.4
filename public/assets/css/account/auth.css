@@ -256,7 +256,7 @@ main {
     border-bottom-color: dodgerblue !important;
 }
 
-.cta_connexion{
+.cta_connexion , .cta_inscription{
     background-color: #3AC334 !important;
 }
 
