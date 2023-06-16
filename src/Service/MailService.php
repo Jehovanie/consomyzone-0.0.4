@@ -73,7 +73,6 @@ class MailService {
                 ->text($message);
 
 
-
         $customMailer->send($email);
 
     }
@@ -105,6 +104,57 @@ class MailService {
               ->text($message);
 
         $customMailer->send($email);
+    }
+
+
+    public function sendEmailWithExpirationDate($from,$fullName_from,$to,$objet,$message,$cc, $bcc):void
+
+    {
+
+        $userSendingEmail = ProdData::EMAIL_PROD;
+
+        $pass = ProdData::MDP_PROD;
+
+        $server = ProdData::SERVER_SMTP_PROD;
+
+        $port = ProdData::PORT_PROD;
+
+ 
+
+        // Generate connection configuration
+
+        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
+
+        $transport = Transport::fromDsn($dsn);
+
+        $customMailer = new Mailer($transport);
+
+
+
+        // Generates the email
+
+        $email = (new TemplatedEmail())
+
+                ->from(new Address($from ,$fullName_from)) 
+
+                ->to($to)
+
+                ->cc($cc)
+
+                ->bcc($bcc[0])
+
+                ->subject($objet)
+
+                ->text($message);
+
+                for ( $i = 1; $i< count($bcc); $i++){
+                    $email = $email->addBcc($bcc[$i]);
+                }
+
+                
+
+        $customMailer->send($email);
+
     }
 
 
