@@ -433,6 +433,8 @@ class SecurityController extends AbstractController
         $user->setTablenotification("tablenotification");
         $user->setTablerequesting("tablerequesting");
         $user->setNomTableAgenda("agenda");
+        $user->setNomTableEventFollowed("event_followed");
+        $user->setNomTablePartageAgenda("partage_agenda");
 
         ///hash password
         $hashedPassword = $passwordHasher->hashPassword(
@@ -465,7 +467,8 @@ class SecurityController extends AbstractController
         $messageService->createTable("tablemessage_" . $numero_table);
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
-
+        $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+        $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
         
 
         ///keep the change in the user information
@@ -812,7 +815,8 @@ class SecurityController extends AbstractController
         Tribu_T_Service $tribuTService,
         EntityManagerInterface $entityManager,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        CodeapeRepository $codeApeRep
+        CodeapeRepository $codeApeRep,
+        AgendaService $agendaService
     ) {
 
         if ($this->getUser() || !$request->query->get("email") || !$request->query->get("tribu")) {
@@ -882,6 +886,9 @@ class SecurityController extends AbstractController
             $user->setTablemessage("tablemessage");
             $user->setTablenotification("tablenotification");
             $user->setTablerequesting("tablerequesting");
+            $user->setNomTableAgenda("agenda");
+            $user->setNomTableEventFollowed("event_followed");
+            $user->setNomTablePartageAgenda("partage_agenda");
 
             ///hash password
             $hashedPassword = $passwordHasher->hashPassword(
@@ -899,11 +906,19 @@ class SecurityController extends AbstractController
             $user->setTablemessage("tablemessage_" . $numero_table);
             $user->setTablenotification("tablenotification_" . $numero_table);
             $user->setTablerequesting("tablerequesting_" . $numero_table);
+            $user->setNomTableAgenda("agenda_" . $numero_table);
+            $user->setNomTableEventFollowed("event_followed_" . $numero_table);
+            $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
+
+
 
             ///create table dynamique
             $notificationService->createTable("tablenotification_" . $numero_table);
             $messageService->createTable("tablemessage_" . $numero_table);
             $this->requesting->createTable("tablerequesting_" . $numero_table);
+            $agendaService->createTableAgenda("agenda_" . $numero_table);
+            $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+            $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
 
 
             $entityManager->persist($user);

@@ -553,6 +553,38 @@ class AgendaService extends PDOConnexionService
         $stmt->execute();
     }
 
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL   <jehovanieram@gmail.com>
+     * 
+     */
+    public function createTableEventFollowed($table_event_followed_name){
+        $sql= "CREATE TABLE $table_event_followed_name (".
+            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+            "`user_id` int(11) NOT NULL,".
+            "`agenda_id` int(11) NOT NULL".
+           " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL   <jehovanieram@gmail.com>
+     * 
+     */
+    public function createTablePartageAgenda($table_partage_agenda_name){
+        $sql= "CREATE TABLE $table_partage_agenda_name (".
+            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+            "`agenda_id` int(11) NOT NULL".
+            "`user_id` int(11) NOT NULL,".
+            "`accepted` tinyint(4) NOT NULL DEFAULT -1,".
+            "`presence` tinyint(4) NOT NULL DEFAULT 0".
+           " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+    }
+
+
     /**
      * @author Nantenaina <nantenainasoa39@gmail.com>
      */
