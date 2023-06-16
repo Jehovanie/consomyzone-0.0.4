@@ -940,13 +940,13 @@ class AgendaController extends AbstractController
                 ///Settings table Agenda Partage.
                 $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_users_tribuG);
 
-                foreach($all_users_tribuG as $user_in_tribuG){
-                    // extract($user_in_tribuG); /// $userID, $fullName
+                // foreach($all_users_tribuG as $user_in_tribuG){
+                //     // extract($user_in_tribuG); /// $userID, $fullName
                     
-                    ///send email de confirmation s'il est va accepter ou refuser.
-                    dump($user_in_tribuG);
-                }
-                dd("atreo");
+                //     ///send email de confirmation s'il est va accepter ou refuser.
+                //     dump($user_in_tribuG);
+                // }
+                // dd("atreo");
             }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
                 
                 ///get all tribu T create bu this user 
@@ -963,7 +963,7 @@ class AgendaController extends AbstractController
         }
 
 
-        return $this->json(["message" => "Agenda partager"], 201);
+        return $this->json(["message" => "Agenda partager" ,"status" => "ok"]);
     }
 
 

@@ -1091,3 +1091,13 @@ a.btn-success{
 .tel{
   margin: 15px;
 }
+
+.x_close_agenda_share{
+  margin-left: 29vw;
+  margin-top: 12px;
+  color: #ccc;
+}
+
+.avatar-account-fondateur img {
+  margin-left: 0px !important;
+}

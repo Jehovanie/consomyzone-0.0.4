@@ -262,6 +262,27 @@ function showTimeLine(parentElement, datas) {
           let haveFile= (data.file_path === "/uploads/users/agenda/files/document/" || data.file_path === "/uploads/users/agenda/files/img/") ? false: true
           console.log(data.status)
           let isEnd = (data.status == 0) ? "<span class='bg-danger'> événement términé</span>" : "";
+          
+
+          /// is this event sharing------
+          let dataRankForShare= `agenda_share_${k}`;
+          let collapseOnleft= (isEnd === "") ? `
+            <div class="popup_partage hidden_partage" id='partage_agenda_${k}'>
+                <p> Vous souhaitez partager ! Pour tous ? </p>
+                <i class="fa-solid fa-lock-open hidden_partage fa_solid_open_dialog_for_share_js_jheo" data-rank="${dataRankForShare}"></i>
+                <div>
+                    <button class="cta_btn_partage cta_btn_partage_js_jheo" data-is-for-all="1" data-agenda-id='${data.id}'>Oui</button>
+                    <button class="cta_btn_partage cta_btn_partage_js_jheo" data-is-for-all="0" data-agenda-id='${data.id}'>Non</button>
+                </div>
+            </div>
+          ` : "";
+          let isShare= (isEnd === "") ? `<i class="fa-solid fa-share-nodes cta_share_agenda" id="cta_share_agenda_${k}" data-agenda-share="${k}" ></i>`: "";
+          /// ---------------------------
+
+              
+          
+          
+          
           let paperclip = ""
           if (haveFile) {
             paperclip=`<a href="/public${data.file_path}" download><i class="fa-solid fa-paperclip"></i></a>`
@@ -348,6 +369,23 @@ function showTimeLine(parentElement, datas) {
               </dialog>
           </div>  
           `
+
+
+          //// create a new dialog for share ---------------------------
+          let dialogShare= `
+          <div class="modale-share-agenda">
+              <dialog id="share_agenda-dialog-${dataRankForShare}" class="cookie flow-content" data-spacing="lg">
+
+                  <i class="fa-solid fa-x x_close_agenda_share" id="close-modal-agenda-share" onclick="closeShareAgenda('${dataRankForShare}')"></i>
+                  <div class="content_dialog content_dialog_for_share_agenda_share_${dataRankForShare}_js_jheo">
+                      <h3 class="text-primary">List</h3>
+                  </div>
+              </dialog>
+          </div>  
+        `
+        //// ---------------------------------------------------------
+
+
           console.log(data.file_path)
           let li =` <li class="${classTimeLine}">
                         <div class="info">
@@ -357,16 +395,18 @@ function showTimeLine(parentElement, datas) {
                             <h4 class="title">
                                 ${paperclip}
                                 <i class="fa-solid fa-plus modal-modif-agenda" data-rank="${k}"></i>
+                                ${isShare}
                                 ${isEnd}
                               
                             </h4>
                         </div>
+                        ${collapseOnleft}
                         <div class="content">
                           ${data.message}
                         </div>
                     </li>`
           ul.innerHTML += li
-          dialogContainer.innerHTML += dialogModif
+          dialogContainer.innerHTML += dialogModif  + " " + dialogShare;
           
           k++;
         }; 
@@ -453,6 +493,37 @@ function showTimeLine(parentElement, datas) {
               
           }; 
         })
+
+
+      ///---- share agenda ------------------------
+
+      if( document.querySelectorAll(".cta_share_agenda")){
+        document.querySelectorAll(".cta_share_agenda").forEach(cta_share_agenda => {
+            const agenda_to_share= cta_share_agenda.getAttribute("data-agenda-share");
+            
+            cta_share_agenda.addEventListener("click" , () => {
+                const block_share_agenda= document.querySelector(`#partage_agenda_${agenda_to_share}`)
+                block_share_agenda.classList.toggle("show_partage");
+                block_share_agenda.classList.toggle("hidden_partage");
+            })
+
+            bindEventAboutSharingEvent(agenda_to_share); 
+        })
+      }
+
+      let modalShare = document.querySelectorAll(`.modal-share-agenda`) 
+      if (modalShare.length > 0) 
+        modalShare.forEach(item => {
+          item.onclick = (e) => {
+            let k=item.dataset.rank
+            const sharedDialog = document.getElementById("share_agenda-dialog-" + k);
+            if (sharedDialog)
+                sharedDialog.showModal();
+          }; 
+
+      })
+      //---------------------------
+
       let finAgendas = document.querySelectorAll(".btn-fin-agenda")
       if (finAgendas.length > 0)
         finAgendas.forEach(item => {
@@ -582,6 +653,13 @@ function closeModifAgenda(k) {
   const cookieDialog = document.getElementById("modif-dialog-" + k);
   cookieDialog.close()
 }
+
+
+function closeShareAgenda(k) { 
+  const cookieDialog = document.getElementById("share_agenda-dialog-" + k);
+  cookieDialog.close()
+}
+
 
 
 
@@ -1103,3 +1181,177 @@ function showAgenda() {
 
 
 /**end */
+
+
+
+
+
+function bindEventAboutSharingEvent(agendaToShare){
+  const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+  parent.querySelectorAll(".cta_btn_partage_js_jheo").forEach(cta_btn_partage => {
+      cta_btn_partage.addEventListener('click',() => {
+          const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
+          const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
+
+          // const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
+          // createHtmlViewListTribuT(data_rank_modal)
+          // document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
+
+
+          shareAgenda(agendaID,shareFor, agendaToShare);
+
+      })
+  })
+}
+
+
+
+function shareAgenda(agendaID, shareFor, agendaToShare){
+  const request = new Request("/user/agenda/shares", {
+      method: "POST",
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'  
+      },
+      body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
+  })
+  fetch(request)
+      .then(response=>{
+          if(response.ok){   
+              return response.json();
+          }
+      })
+      .then(response => {
+
+          const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+          parent.classList.toggle("show_partage");
+          parent.classList.toggle("hidden_partage");
+
+
+          if( response.hasOwnProperty("status") ){
+
+            if( response.status === "ok"){
+              alert(response.message)
+
+            }else if( response.status === "tribuT"){
+              const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
+              createHtmlViewListTribuT(data_rank_modal, response.all_tribugT)
+              document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
+            }
+
+          }
+
+      })
+}
+
+
+
+
+function createHtmlViewListTribuT(dataRankForShare, tabListTribuT){
+
+  let html_list_tribuT = "";
+
+  let listTribuT= "";
+  tabListTribuT.forEach(({table_name}) => {
+    listTribuT += createSingleTribuT(table_name)
+  })
+
+  if( tabListTribuT.length >  0){
+    html_list_tribuT= `
+      <div class="content_list_tribuT">
+          <div class="header_list_tribuT">
+              <h3> Liste de votre tribuT.</h3>
+          </div>
+          <div class="list_content_tribuT">
+            ${listTribuT}
+          </div>
+          <div class="footer_list_tribuT">
+            <button type="button" class="btn_primary_tribuT btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo">Envoyer</button>
+          </div>
+      </div>
+    `
+    
+  }else{
+    html_list_tribuT= `
+      <div class="content_list_tribuT">
+        <div class="alert_danger_tribuT">
+          Vous n'avez pas encore créé de tribu T
+        </div>
+      </div>
+    `
+  }
+
+  document.querySelector(`.content_dialog_for_share_agenda_share_${dataRankForShare}_js_jheo`).innerHTML = html_list_tribuT;
+  if( tabListTribuT.length >  0){
+    bindEventForShareInTribuT(tabListTribuT, dataRankForShare)
+  }
+}
+
+function createSingleTribuT(table_name){
+  return `
+    <div class="form_check_tribuT">
+      <input class="form_check_input_tribuT" type="checkbox" id="${table_name}">
+      <label class="form_check_label_tribuT" for="${table_name}">
+        ${table_name}
+      </label>
+    </div>
+  `
+}
+
+function bindEventForShareInTribuT(tabListTribuT, dataRankForShare){
+    tabListTribuT.forEach(({table_name}) => {
+        document.querySelector(`#${table_name}`).addEventListener("input",() => {
+            if(document.querySelector(`#${table_name}`).checked){
+            tabListTribuT.forEach(({table_name: item }) => {
+                if( item !== table_name && document.querySelector(`#${item}`).checked){
+                    document.querySelector(`#${item}`).checked = false;
+                }
+            })
+            }
+        })
+    })
+
+
+  if( document.querySelector(`.btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo`)){
+      const cta_send_share_agenda_tribuT = document.querySelector(`.btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo`);
+      
+      cta_send_share_agenda_tribuT.addEventListener('click', () => {
+            let tribuT_checked = "";
+            tabListTribuT.forEach(({table_name: tribuT_item }) => {
+                if(document.querySelector(`#${tribuT_item}`).checked){
+                tribuT_checked = tribuT_item;
+                }
+            })
+    
+            if( tribuT_checked !== ""){
+                shareAgendaTribuT(tribuT_checked);
+            }else{
+                alert("Veuillez selectionner un tribu T");
+            }
+
+      })
+  }
+}
+
+function shareAgendaTribuT(tribuT_checked){
+    // const request = new Request("/user/agenda/shares/tribuT", {
+    //     method: "POST",
+    //     headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json'  
+    //     },
+    //     body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
+    // })
+
+    alert("on va faire une fetch")
+    console.log(tribuT_checked)
+
+    // fetch(request)
+    //     .then(response=>{
+    //         if(response.ok){   
+    //             return response.json();
+    //         }
+    //     })
+    //     .then(response => {
+    //     })
+}
