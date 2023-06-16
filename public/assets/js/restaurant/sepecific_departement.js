@@ -1015,12 +1015,15 @@ function createPagination(totalPages, page) {
             }
         })
 
-        if (tabMarker.length > 0) {
+        document.querySelector("p.nombre_de_resultat > span.nombre").textContent = document.querySelectorAll(".miseho").length
 
+        setPaginationNumber()
+
+        if (tabMarker.length > 0) {
             // console.log(tabMarker.length)
+            
             for (let j = 0; j < tabMarker.length; j++) {
                 markers.removeLayer(tabMarker[j]);
-                document.querySelector("p.nombre_de_resultat > span.nombre").textContent = document.querySelectorAll(".miseho").length
             }
 
             // console.log(map)
@@ -1308,11 +1311,26 @@ if( document.querySelector('#selectRestoArrondismentParis')){
         }
     
         document.querySelector("#resultTot").innerHTML = xData.length
+
+        let maxPage = Math.ceil(xData.length/10)
     
-        document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(xData.length/10)
+        document.querySelector("#current-page").innerHTML = 1 + "/" + maxPage
     
         //console.log(xData);
     
+        if (!document.querySelector(".prec_btn").classList.toString().includes("disabled")) {
+            document.querySelector(".prec_btn").classList.add("disabled")
+        }
+
+        if(maxPage == 1){
+            if (!document.querySelector(".next_btn").classList.toString().includes("disabled")) {
+                document.querySelector(".next_btn").classList.add("disabled")
+            }
+        }else{
+            if (document.querySelector(".next_btn").classList.toString().includes("disabled")) {
+                document.querySelector(".next_btn").classList.remove("disabled")
+            }
+        }
     
         if (tabMarker.length > 0) {
     
@@ -1367,7 +1385,7 @@ function sortList() {
 }
 
 function reverseList(e) {
-    const parent = document.querySelector("#all_ferme_in_dep")
+    const parent = document.querySelector("#all_ferme_in_dep > ul")
     const arr = Array.from(parent.childNodes);
     arr.reverse();
     parent.append(...arr);
@@ -1389,7 +1407,10 @@ function refreshData() {
             ferme.classList.add("miseho")
         }
     })
+
     document.querySelector("p.nombre_de_resultat > span.nombre").textContent = document.querySelectorAll("#all_ferme_in_dep > ul > li").length
+
+    setPaginationNumber()
 
 
     let xData = Array()
@@ -1422,33 +1443,67 @@ function previousData(element) {
 
     let maxPage = parseInt(document.querySelector("#current-page").textContent.split("/")[1])
 
-    if(current_page > 1){
+    const dep = new URLSearchParams(window.location.href).get("id_dep").replaceAll(/[^0-9]/g,"")
 
-        let page = (current_page)*10;
+    if(parseInt(dep) == 75){
 
-        let index = (current_page - 2)*10 + 1
-
-        console.log("page : " + page + " index : " + index);
-
-        console.log("---------------------------------");
-
-        for(let i=page; i>=index+10; i--){
-            console.log("i : " + i);
-            console.log("display-none : " + i);
-            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")"))
-            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")").style.display = "none"
-            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(index+Math.abs(page - i)) +")"))
-            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(index+Math.abs(page - i)) +")").style.display = ""
-            console.log("display-block : " + parseInt(index+Math.abs(page - i)));
+        if(current_page > 1){
+    
+            let page = (current_page)*10;
+    
+            let index = (current_page - 2)*10 + 1
+    
+            console.log("page : " + page + " index : " + index);
+    
+            console.log("---------------------------------");
+    
+            for(let i=page; i>=index+10; i--){
+                console.log("i : " + i);
+                console.log("display-none : " + i);
+                if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")"))
+                document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")").style.display = "none"
+                if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(index+Math.abs(page - i)) +")"))
+                document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(index+Math.abs(page - i)) +")").style.display = ""
+                console.log("display-block : " + parseInt(index+Math.abs(page - i)));
+            }
+            console.log("---------------------------------");
+    
+            document.querySelector("#current-page").innerHTML = current_page - 1 + "/" + maxPage
+    
+            document.querySelector(".next_btn").classList.remove("disabled");
+    
+        }if(current_page <= 2){
+            element.classList.add("disabled");
         }
-        console.log("---------------------------------");
-
-        document.querySelector("#current-page").innerHTML = current_page - 1 + "/" + maxPage
-
-        document.querySelector(".next_btn").classList.remove("disabled");
-
-    }if(current_page <= 2){
-        element.classList.add("disabled");
+    }else{
+        if(current_page > 1){
+    
+            let page = (current_page)*10;
+    
+            let index = (current_page - 2)*10
+    
+            console.log("page : " + page + " index : " + index);
+    
+            console.log("---------------------------------");
+    
+            for(let i=page; i>index+10; i--){
+                console.log("i : " + (i - 1));
+                console.log("display-none : " + (i - 1));
+                if(document.querySelectorAll(".miseho")[i - 1])
+                document.querySelectorAll(".miseho")[i - 1].style.display = "none"
+                if(document.querySelectorAll(".miseho")[parseInt(index+Math.abs(page - i))])
+                document.querySelectorAll(".miseho")[parseInt(index+Math.abs(page - i))].style.display = ""
+                console.log("display-block : " + parseInt(index+Math.abs(page - i)));
+            }
+            console.log("---------------------------------");
+    
+            document.querySelector("#current-page").innerHTML = current_page - 1 + "/" + maxPage
+    
+            document.querySelector(".next_btn").classList.remove("disabled");
+    
+        }if(current_page <= 2){
+            element.classList.add("disabled");
+        }
     }
 }
 
@@ -1458,31 +1513,103 @@ function nextData(element) {
 
     let maxPage = parseInt(document.querySelector("#current-page").textContent.split("/")[1])
 
-    if(current_page < maxPage){
-        let page = current_page * 10;
+    const dep = new URLSearchParams(window.location.href).get("id_dep").replaceAll(/[^0-9]/g,"")
 
-        let index = (current_page - 1)*10 + 1
+    if(parseInt(dep) == 75){
 
-        console.log("page : " + page + " index : " + index);
-
-        console.log("---------------------------------");
-
-        for(let i=index; i<=page; i++){
-            console.log("i : " + i);
-            console.log("display-none : " + i);
-            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")"))
-            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")").style.display = "none"
-            if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(page+Math.abs(index - i) + 1) +")"))
-            document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(page+Math.abs(index - i) + 1) +")").style.display = ""
-            console.log("display-block : " + parseInt(page+Math.abs(index - i) + 1));
+        if(current_page < maxPage){
+            let page = current_page * 10;
+    
+            let index = (current_page - 1)*10 + 1
+    
+            console.log("page : " + page + " index : " + index);
+    
+            console.log("---------------------------------");
+    
+            for(let i=index; i<=page; i++){
+                console.log("i : " + i);
+                console.log("display-none : " + i);
+                if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")"))
+                document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+i+")").style.display = "none"
+                if(document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(page+Math.abs(index - i) + 1) +")"))
+                document.querySelector("#all_ferme_in_dep > ul > li:nth-child("+ parseInt(page+Math.abs(index - i) + 1) +")").style.display = ""
+                console.log("display-block : " + parseInt(page+Math.abs(index - i) + 1));
+            }
+            console.log("---------------------------------");
+    
+            document.querySelector("#current-page").innerHTML = current_page+1 + "/" + maxPage
+    
+            document.querySelector(".prec_btn").classList.remove("disabled");       
+        }if(current_page == maxPage - 1){
+            element.classList.add("disabled");
         }
-        console.log("---------------------------------");
 
-        document.querySelector("#current-page").innerHTML = current_page+1 + "/" + maxPage
+    }else{
+        if(current_page < maxPage){
+            let page = current_page * 10;
+    
+            let index = (current_page - 1)*10
+    
+            console.log("page : " + page + " index : " + index);
+    
+            console.log("---------------------------------");
+    
+            for(let i=index; i<page; i++){
+                console.log("i : " + i);
+                console.log("display-none : " + i);
+                if(document.querySelectorAll(".miseho")[i])
+                document.querySelectorAll(".miseho")[i].style.display = "none"
+                if(document.querySelectorAll(".miseho")[parseInt(page+Math.abs(index - i))])
+                document.querySelectorAll(".miseho")[parseInt(page+Math.abs(index - i))].style.display = ""
+                console.log("display-block : " + parseInt(page+Math.abs(index - i)));
+            }
+            console.log("---------------------------------");
+    
+            document.querySelector("#current-page").innerHTML = current_page+1 + "/" + maxPage
+    
+            document.querySelector(".prec_btn").classList.remove("disabled");       
+        }if(current_page == maxPage - 1){
+            element.classList.add("disabled");
+        }
+    }
 
-        document.querySelector(".prec_btn").classList.remove("disabled");       
-    }if(current_page == maxPage - 1){
-        element.classList.add("disabled");
+
+}
+
+function setPaginationNumber(){
+
+    document.querySelector("#current-page").innerHTML = 1 + "/" + Math.ceil(parseInt(document.querySelector("#resultTot").innerHTML)/10)
+
+    if (!document.querySelector(".prec_btn").classList.toString().includes("disabled")) {
+        document.querySelector(".prec_btn").classList.add("disabled")
+    }
+
+    let listMiseho = document.querySelectorAll("#all_ferme_in_dep > ul > li.miseho")
+
+    if(listMiseho.length > 0){
+        if(document.querySelector("ul.pagination").style.display == "none"){
+            document.querySelector("ul.pagination").style.display = ""
+        }
+        for(let i = 0; i < listMiseho.length; i++){
+            if(i >= 10){
+                listMiseho[i].style.display = "none"
+            }
+        }
+
+        let maxPage = parseInt(document.querySelector("#current-page").textContent.split("/")[1])
+
+        if(maxPage == 1){
+            if (!document.querySelector(".next_btn").classList.toString().includes("disabled")) {
+                document.querySelector(".next_btn").classList.add("disabled")
+            }
+        }else{
+            if (document.querySelector(".next_btn").classList.toString().includes("disabled")) {
+                document.querySelector(".next_btn").classList.remove("disabled")
+            }
+        }
+
+    }else{
+        document.querySelector("ul.pagination").style.display = "none"
     }
 
 }

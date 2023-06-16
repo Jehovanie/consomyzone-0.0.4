@@ -8,7 +8,7 @@ namespace App\Service;
 
 use PDO;
 
-
+use function PHPUnit\Framework\equalTo;
 
 class AgendaService extends PDOConnexionService
 
@@ -551,6 +551,73 @@ class AgendaService extends PDOConnexionService
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
+    }
+
+    /**
+     * @author Nantenaina <nantenainasoa39@gmail.com>
+     */
+    public function sendPresenceLink($partage_agenda_table, $agenda_id){
+
+
+        $statement = $this->getPDO()->prepare("SELECT user_id FROM $partage_agenda_table WHERE accepted  = 1 AND agenda_id  = $agenda_id");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+
+    }
+
+    /**
+     * @author Nantenaina <nantenainasoa39@gmail.com>
+     */
+    public function setPresence($partage_agenda_table, $user_id, $agenda_id){
+
+        $sql = "UPDATE $partage_agenda_table set presence = ?  WHERE user_id = ? AND agenda_id = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute([1, $user_id, $agenda_id]);
+
+    }
+
+    public function getTimeOut($partage_agenda_table, $user_id, $agenda_id){
+
+        $statement = $this->getPDO()->prepare("SELECT presence_time_out FROM $partage_agenda_table WHERE user_id  = $user_id AND agenda_id  = $agenda_id");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result["presence_time_out"];
+
+    }
+
+    public function setTimeOut($partage_agenda_table, $user_id, $agenda_id, $timeOut, $format){
+
+        $now = new \DateTime();
+
+        $bigSeconds = $now->getTimestamp();
+
+        $time = 0;
+
+        if($format == "J"){
+            $time = $bigSeconds + $timeOut*86400;
+        }elseif($format == "H") {
+            $time = $bigSeconds + $timeOut*3600;
+        }elseif($format == "M"){
+            $time = $bigSeconds + $timeOut*60;
+        }else{
+            $time = $bigSeconds + $timeOut;
+        }
+
+        $sql = "UPDATE $partage_agenda_table set presence_time_out = ?, time_now = ?  WHERE user_id = ? AND agenda_id = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute([$time, $bigSeconds, $user_id, $agenda_id]);
+
     }
 
 

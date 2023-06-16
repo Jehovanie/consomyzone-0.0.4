@@ -9,26 +9,42 @@ namespace App\Controller;
 use App\Service\Status;
 
 use App\Entity\Consumer;
-
 use App\Entity\Supplier;
 use App\Service\FilesUtils;
 use App\Service\MailService;
+<<<<<<< HEAD
 
 use App\Service\AgendaService;
+=======
+use App\Service\AgendaService;
+use App\Service\TributGService;
+>>>>>>> nantenaina
 
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 
+use App\Repository\UserRepository;
 use App\Service\NotificationService;
+<<<<<<< HEAD
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+=======
+use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Component\Filesystem\Filesystem;
+
+>>>>>>> nantenaina
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+<<<<<<< HEAD
+=======
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+>>>>>>> nantenaina
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AgendaController extends AbstractController
@@ -971,5 +987,131 @@ class AgendaController extends AbstractController
 
 
 
+    #[Route("/agenda/presence/send/link/{agenda_id}", name: "agenda_send_presence_link")]
+    public function sendPresenceLink($agenda_id, 
+    MailService $mailService, 
+    AgendaService $agendaService, 
+    UserRepository $userRepository,
+    TributGService $tributGService,
+    NotificationService $notification
+    ): Response
+    {
+
+        $user = $this->getUser();
+
+        if($user){
+
+            $userId = $user->getId();
+    
+            $email_from = $user->getEmail();
+    
+            $object = "Lien pour faire de la présence";
+    
+            $listParticipant = $agendaService->sendPresenceLink("partage_agenda_".$userId, $agenda_id);
+    
+            //$infos = array();
+            $description = "";
+        
+            $list = array();
+
+            $body = $tributGService->getFullName($userId) . " vous a envoyé un lien pour votre présence à son agenda numéro " . $agenda_id . "
+            .\n Veuillez vérifier le lien dans votre adresse email";
+    
+            if(count($listParticipant) > 0){
+    
+                foreach ($listParticipant as $key) {
+                    $id = $key["user_id"];
+                    $email_to = $userRepository->findOneBy(["id" => $id])->getEmail();
+                    $link = $this->generateUrl("agenda_set_presence", array("table_partage_agenda" => "partage_agenda_".$userId, "agenda_id" => $agenda_id, "userId" => $id), UrlGeneratorInterface::ABSOLUTE_URL);
+                    $mailService->sendEmail(
+                        $email_from,
+                        $tributGService->getFullName($userId),
+                        $email_to,
+                        $tributGService->getFullName($id),
+                        $object,
+                        $description . "\nVeuillez cliquer le lien ci-dessous pour valider votre présence.\n" . $link
+                    );
+    
+                    $agendaService->setTimeOut("partage_agenda_".$userId, $id, $agenda_id, 15, "M");
+
+                    $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id, "presence_link", $body, null);
+        
+                    //array_push($list,$email_to);
+                    //array_push($infos, ["id" => $id, "fromName" => $tributGService->getFullName($userId), "email_from" => $email_from, "toName" => $tributGService->getFullName($id), "email_to" => $email_to]);
+                }
+
+                return $this->json("Lien bien envoyé");
+    
+            }else{
+                return $this->json("Aucune invitation accepté");
+            }
+        }else{
+            return $this->json("Vous êtes déconnecté ! Veuillez vous reconnecter !");
+        }
+
+    }
+
+    #[Route("/agenda/set/presence/{table_partage_agenda}/{agenda_id}/{userId}", name: "agenda_set_presence")]
+    public function setPresence(
+    $table_partage_agenda,
+    $agenda_id,
+    $userId,
+    MailService $mailService, 
+    AgendaService $agendaService, 
+    UserRepository $userRepository,
+    TributGService $tributGService,
+    NotificationService $notification
+    )
+    {
+
+        $timeOut = $agendaService->getTimeOut($table_partage_agenda, $userId, $agenda_id);
+
+        $now = new \DateTime();
+
+        $bigSeconds = $now->getTimestamp();
+
+        if($timeOut >= $bigSeconds){
+
+            $agendaService->setPresence($table_partage_agenda, $userId, $agenda_id);
+
+            /** SEND EMAIL FOR AGENDA CREATOR */
+            $id_creator = explode("_", $table_partage_agenda)[2];
+            $email_to_creator = $userRepository->findOneBy(["id" => $id_creator])->getEmail();
+            $creator_name = $tributGService->getFullName($id_creator);
+            $email_from = $userRepository->findOneBy(["id" => $userId])->getEmail();
+            $senderName = $tributGService->getFullName($userId);
+
+            $body = $creator_name . " vient de faire sa présence pour l'agenda numéro " . $agenda_id;
+
+            $mailService->sendEmail(
+                $email_from,
+                $senderName,
+                $email_to_creator,
+                $creator_name,
+                "Présence pour l'agenda numéro " . $agenda_id,
+                $body
+            );
+
+            $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_creator, "presence_agenda", $body, null);
+
+            return $this->redirectToRoute("agenda_presence_success");
+
+        }else{
+            return $this->redirectToRoute("agenda_presence_expired");
+        }
+
+    }
+
+    #[Route("/agenda/presence/expired", name: "agenda_presence_expired")]
+    public function presenceExpired() : Response
+    {
+        return $this->render('agenda/presence_expired.html.twig');
+    }
+
+    #[Route("/agenda/presence/success", name: "agenda_presence_success")]
+    public function presenceSuccess() : Response
+    {
+        return $this->render('agenda/presence_success.html.twig');
+    }
 
 }

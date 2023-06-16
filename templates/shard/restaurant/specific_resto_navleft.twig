@@ -126,7 +126,7 @@
                     <p  class="titre nombre_de_resultat" data-toggle-deparement="{{nom_dep}}">
                         Les Restaurants du département:
                         <span class="fw-bolder">{{nom_dep}}, </span>
-                        <span class="nombre">{{nomber_resto}}</span> résultats
+                        <span class="nombre" id="resultTot">{{nomber_resto}}</span> résultats
                     </p>
                     
                 </div>
@@ -136,10 +136,10 @@
                         <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li>
+                        <li >
                             <a class="dropdown-item active" onclick='reverseList(this)'>Croissant </a>
                         </li>
-                        <li>
+                        <li >
                             <a class="dropdown-item" onclick='reverseList(this)'>Décroissant</a>
                         </li>
                     </ul>
@@ -156,8 +156,15 @@
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
                     <ul>
+                        {% set i = 1 %}
+                        {% set display = "" %}
                         {% for restaurant in restaurants %}
-                            <li class="card-list"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')">
+                            {% if i > 10 %}
+
+                            {% set display = "none" %}
+                                
+                            {% endif %}
+                            <li class="card-list miseho" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')">
                                 <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
 
                                     <div class="col-md-9">
@@ -190,8 +197,20 @@
                                     </div>
                                 </div>
                             </li>
+                            {% set i = i+1 %}
                         {% endfor %}
                     </ul>
+                    <div aria-label="..." class="mx-auto ms-4">
+                        <ul class="pagination">
+                            <li class="page-item prec_btn disabled" onclick="previousData(this)">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
+                            </li>
+                            <li class="page-item"><a class="page-link disabled" href="#" id="current-page">1 / {{(restaurants | length / 10) | round(0, 'ceil')}} </a></li>
+                            <li class="page-item next_btn" onclick="nextData(this)">
+                                <a class="page-link" href="#">Suivant</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             
