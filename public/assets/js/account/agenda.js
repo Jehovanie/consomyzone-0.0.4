@@ -1230,7 +1230,7 @@ function shareAgenda(agendaID, shareFor, agendaToShare){
 
           if( response.hasOwnProperty("status") ){
 
-            if( response.status === "ok"){
+            if( response.status === "ok"  || response.status === "alreadyShare" ){
               alert(response.message)
 
             }else if( response.status === "tribuT"){
