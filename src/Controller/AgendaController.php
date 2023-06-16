@@ -12,39 +12,20 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\FilesUtils;
 use App\Service\MailService;
-<<<<<<< HEAD
-
 use App\Service\AgendaService;
-=======
-use App\Service\AgendaService;
-use App\Service\TributGService;
->>>>>>> nantenaina
-
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
-
-use App\Repository\UserRepository;
 use App\Service\NotificationService;
-<<<<<<< HEAD
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
-=======
-use Doctrine\ORM\EntityManagerInterface;
-
-use Symfony\Component\Filesystem\Filesystem;
-
->>>>>>> nantenaina
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-<<<<<<< HEAD
-=======
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
->>>>>>> nantenaina
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AgendaController extends AbstractController
