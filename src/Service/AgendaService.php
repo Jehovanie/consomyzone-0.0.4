@@ -546,4 +546,147 @@ class AgendaService extends PDOConnexionService
     }
 
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $table_partage_user_sender : name of the table partage agenda
+     * @param string $agendaID : ID of the agenda to partage
+     * @param array $userID : user id check if already accepted this agenda
+     * 
+     * 
+     * @return boolean
+     */
+    public function chackIfAlreadyAcceptedAgenda($table_partage_user_sender, $agendaID, $userID ){
+
+        $sql="SELECT origin,accepted FROM $table_partage_user_sender WHERE agenda_id= $agendaID AND user_id= $userID";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result=  $stmt->fetch(PDO::FETCH_ASSOC);
+
+        extract($result); /// $origin, $accepted
+
+        return ( $origin && intval($accepted) !== -1);
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Confidentialite : partager for ( tribu G or tribu T )
+     * 
+     * @param string $table_agenda_name : name of the table agenda
+     * @param string $agendaID : ID of the agenda
+     * 
+     * @return array associative [ "confid" => ... ]
+     */
+    public function getConfidentialite($table_agenda_name, $agendaID){
+        $sql="SELECT JSON_VALUE(confidentialite, '$.confidentility') as confid FROM $table_agenda_name where id= $agendaID";
+
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+
+       return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Settings table Agenda Partage.
+     * 
+     * @param string $table_agenda_partage_name : name of the table partage agenda
+     * @param string $agendaID : ID of the agenda to partage
+     * @param array $arrayAssUserId : array  associative for all users  with key 'userID'. ex [ [ 'userID' => 1 ] , ... ]
+     * 
+     * 
+     * @return void
+     */
+    public function setPartageAgenda($table_agenda_partage_name, $agendaID, $arrayAssUserId){
+
+        foreach($arrayAssUserId as $ass_userID ){
+            $sql = "INSERT INTO $table_agenda_partage_name (`agenda_id`, `user_id`) VALUES (?,?)";
+
+            $stmt = $this->getPDO()->prepare($sql);
+    
+            $stmt->bindParam(1, $agendaID);
+            $stmt->bindParam(2, $ass_userID["userID"]);
+
+            $stmt->execute();
+        }
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Handle confirm form the user ( may be accept or reject )
+     * 
+     * @param int $userID_sender : ID of the user own agenda to partage
+     * @param int $agendaID : ID of the agenda partage 
+     * @param int $userID : ID of the user to confirm this agenda partage
+     * @param string $type : type of  what the user accepted the invitation
+     * @param string $isAccepted: boolean (accept or refused)
+     * 
+     * @return int $alias: -1 : erreur on agenda ID: agenda n'existe pas
+     *                      0 : max participant attteint
+     *                      1 : agenda accepter;
+     */
+    public function setConfirmPartageAgenda(int $userID_sender, int $agendaID,int $userID, string $type, bool $isAccepted){
+
+        $agenda_table= "agenda_" . $userID_sender;
+        $agenda_partage_table= "partage_agenda_" . $userID_sender;
+
+        ////get max_participant agenda ( table agenda )
+        $sql="SELECT max_participant FROM $agenda_table WHERE id= $agendaID";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $tab_max_participant=  $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if(!array_key_exists("max_participant", $tab_max_participant)){
+            return -1;
+        }
+        extract($tab_max_participant); /// $max_participant
+
+        /// counte user already accepted this agenda
+        $sql="SELECT count(*) as nbr_accepted_agenda FROM $agenda_partage_table WHERE accepted='1'";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $tab_nbr_accepted_agenda=  $stmt->fetch(PDO::FETCH_ASSOC);
+        extract($tab_nbr_accepted_agenda); /// $nbr_accepted_agenda
+
+        if( intval($nbr_accepted_agenda) ===  intval($max_participant)){
+            return 0;
+        }
+
+        $sql = "UPDATE $agenda_partage_table set origin=?, accepted=? where agenda_id=? and user_id=?";
+
+        $stm = $this->getPDO()->prepare($sql);
+        $stm->bindParam(1, $type);
+        $stm->bindParam(2, $isAccepted);
+        $stm->bindParam(3, $agendaID);
+        $stm->bindParam(4, $userID);
+        $stm->execute();
+
+        return 1;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Persiste agenda to the user accepte.
+     * 
+     * @param int $userID : ID of the user to confirm this agenda partage
+     * @param int $agendaID : agenda ID to accepted
+     * 
+     * @return void
+     */
+    public function setEventFollowed($userID, $agendaID){
+        $eventFollowed_table= "event_followed_" . $userID;
+
+        $sql = "INSERT INTO $eventFollowed_table (`user_id`, `agenda_id`) VALUES (?,?)";
+
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->bindParam(1, $userID);
+        $stmt->bindParam(2, $agendaID);
+
+        $stmt->execute();
+    }
 }

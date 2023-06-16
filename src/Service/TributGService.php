@@ -347,7 +347,13 @@ class TributGService extends PDOConnexionService{
     }
 
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param int $userId: userID of the user
+     * 
+     * @return string full name of the user
+     */
     public function getFullName($userId)
     {
 
@@ -362,7 +368,13 @@ class TributGService extends PDOConnexionService{
     }
 
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param int $userId: userID of the user
+     * 
+     * @return string table Tribu G name 
+     */
     public function getTableNameTributG($userId)
     {
 
@@ -457,22 +469,17 @@ class TributGService extends PDOConnexionService{
 
     }
 
+    // public function getAllPublication(){
 
+    //     $sql = "SELECT * FROM tributg_".$commun_code_postal."";
 
-    public function getAllPublication(){
+    //     $statement = $this->getPDO()->query($sql);
 
-        $sql = "SELECT * FROM tributg_".$commun_code_postal."";
+    //     $resultat=$statement->fetchAll();
 
-        $statement = $this->getPDO()->query($sql);
+    //     return $resultat;
 
-        $resultat=$statement->fetchAll();
-
-        return $resultat;
-
-    }
-
-
-
+    // }
 
 
     public function getBanishedStatus($table_name,$user_id){
@@ -534,15 +541,12 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
-     * @param string $table_name: name of the table
-
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
-
+     * @param string $table_name: name of the table
+     * 
      * @return array array containing all user id in tribut G like [ [ "user_id" => ... ], ... ]
-
      */
-
     public function getAllTributG($table_name){
 
         $statement = $this->getPDO()->prepare('SELECT user_id FROM ' . $table_name);
@@ -576,21 +580,13 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
      * @param table_name: the name of the tributG
-
      * @param isVerfied: check validity
-
      * @param user_id: user id
-
      * 
-
      * @return array associatif (ex: ["status" => "roles", "verified" => "isverified" ])
-
      */
 
     public function getStatusAndIfValid($table_name, $isVerified,  $user_id){
@@ -610,17 +606,11 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
      * @param string $table_name: name of the table
-
      * 
-
      * @return single tribut G
-
      */
 
     public function getProfilTributG($table_name, $user_id ){
@@ -1286,6 +1276,29 @@ class TributGService extends PDOConnexionService{
 
         $statement = $this->getPDO()->prepare($sql);
         return $statement->execute();
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $tableName : table name tribu G
+     * 
+     * @return array associative like [ [ "userID" => ... , "fullName" => ... ], ... ] 
+     * 
+     */
+    public function getFullNameForAllMembers($tableName){
+        $results= [];
+        $all_users= $this->getAllTributG($tableName);
+        
+        foreach($all_users as $user){
+            $full_name= $this->getFullName(intval($user["user_id"]));
+
+            $result= ["userID" => intval($user["user_id"]), "fullName" => $full_name ];
+            array_push($results, $result);
+        }
+        
+        return $results;
     }
 
 }

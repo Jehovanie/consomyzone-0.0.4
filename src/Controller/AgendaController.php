@@ -6,28 +6,30 @@ namespace App\Controller;
 
 
 
+use App\Service\Status;
+
 use App\Entity\Consumer;
 
 use App\Entity\Supplier;
+use App\Service\FilesUtils;
+use App\Service\MailService;
 
 use App\Service\AgendaService;
-use App\Service\FilesUtils;
-use App\Service\TributGService;
 
+use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
+use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
-use App\Service\Status;
+
 use Doctrine\ORM\EntityManagerInterface;
-
-use Symfony\Component\HttpFoundation\Request;
-
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AgendaController extends AbstractController
 
@@ -789,6 +791,139 @@ class AgendaController extends AbstractController
         }
         
     }
+
+
+    #[Route("/page/test/confirmations/agenda-partager/{userID_sender}", name: "app_agenda_page_test_confirmations", methods: "GET")]
+    public function test_agenda_page_test_confirmations(
+        $userID_sender
+    ){
+
+        return $this->render("test_agenda_page_test_confirmations.html.twig",[
+            "userID_sender" => $userID_sender
+        ]);
+    }
+
+
+    #[Route("/confirmation/agenda/{userID_sender}/{agendaID}/partager/{userID}/{isAccepted}" , name: "app_agenda_confirmation", methods: "GET")]
+    public function agendaConfirmationEmail(
+        $userID_sender,
+        $agendaID,
+        $userID,
+        $isAccepted,
+        UserRepository $userRepository,
+        AgendaService $agendaService,
+        NotificationService $notificationService,
+        TributGService $tributGService
+    ){
+        $user_sender = $userRepository->findOneBy(["id" => intval($userID_sender)]); /// user entity (sender)
+        $user_sender_fullname= $tributGService->getFullName(intval($userID_sender)); /// user full name (sender)
+
+
+        $user= $userRepository->findOneBy(["id" => intval($userID)]); /// user entity (qui confirm)
+        $user_fullname= $tributGService->getFullName(intval($userID)); /// user full name (qui confirm)
+
+        $table_partage_user_sender= $user_sender->getNomTablePartageAgenda(); /// table partage agenda name (sender)
+
+        //// check if this user is already confirm this partage: (may be by "email" or "pub" and "accept" or "refuse")
+        if( $agendaService->chackIfAlreadyAcceptedAgenda($table_partage_user_sender, $agendaID, $userID )){
+
+            /// send notification for the user that his confirm
+            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez déjà répond cet agenda partager." );
+
+            return  $this->redirectToRoute("app_account");
+        }
+
+        ///Handle confirm form the user ( may be accept or reject )
+        $result= $agendaService->setConfirmPartageAgenda($userID_sender, $agendaID,$userID,"email", !!$isAccepted); /// -1: error / 0: max atteint / 1: persite 
+
+        if( intval($result) === 0 ){
+            /// max participant atteint
+            if( !!$isAccepted ){
+                $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheusement le nombre maximum de participant est atteint.";
+            }else{
+                $message= "Vous venez de refuser un agenda créé par " . $user_sender_fullname;
+            }
+
+            /// send  notification for the user that is request is reject because max atteint
+            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", $message );
+
+        }else if( intval($result) === 1 ){  //// accepted reussir
+            /// send  notification for the user this is request is persist.
+            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez accepté un agenda créer par " . $user_sender_fullname . ".");
+            
+            /// send  notification for the user that is creat this agenda someone accept her partage.
+            $notificationService->sendNotificationForOne($userID, $userID_sender,"Accepted Agenda", $user_fullname . " a accepté votre agenda partager");
+
+
+            //// Persiste agenda to the user accepte.
+            $agendaService->setEventFollowed($userID, $agendaID);
+        }
+
+        dd("Confirmation agenda partager via email");
+
+        return  $this->redirectToRoute("app_account");
+    }
+
+
+    #[Route("/user/agenda/shares", name: "app_shares_agenda", methods:"POST")]
+    public function shareAgendaForAll(
+        Request $request,
+        AgendaService $agendaService,
+        TributGService $tributGService
+    ){
+
+        if( !$this->getUser()){
+            return $this->json([ "message" => "No authorization"],401);
+        }
+
+        $agendaTableName = $this->getUser()->getNomTableAgenda();  /// table agenda  name
+        $table_partage_agenda = $this->getUser()->getNomTablePartageAgenda();  /// table partage agenda  name
+
+        //// data in request post
+        $req = json_decode($request->getContent(), true);
+        extract($req); ///  $agendaID , $shareFor
+        
+        if( intval($shareFor) === 1 ){ ///share for all
+            
+            $confidentialite_agenda= $agendaService->getConfidentialite($agendaTableName, $agendaID); /// Confidentialite : partager for ( tribu G or tribu T )
+
+            if(array_key_exists("confid", $confidentialite_agenda)){
+                extract($confidentialite_agenda); /// $confid
+            }
+
+            if( $confid === "Tribu-G"){
+                $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
+
+                ////get information( userID, fullName ) for all user in this tribu G
+                $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
+
+                ///Settings table Agenda Partage.
+                $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_users_tribuG);
+
+                foreach($all_users_tribuG as $user_in_tribuG){
+                    // extract($user_in_tribuG); /// $userID, $fullName
+                    
+                    ///send email de confirmation s'il est va accepter ou refuser.
+                    dump($user_in_tribuG);
+                }
+                dd("atreo");
+            }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T"
+                return $this->json(["message" => "Partage for tribu T", "all_tribugT" => []]);
+
+            }else{ /// Moi uniquement
+
+            }
+
+        }else{
+            /// share for little persone
+        }
+
+
+        return $this->json(["message" => "Agenda partager"], 201);
+    }
+
+
+
 
 
 }

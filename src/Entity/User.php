@@ -120,6 +120,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $nomTableAgenda;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nom_table_partage_agenda", type="string", length=200, nullable=true)
+     */
+    private $nomTablePartageAgenda;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nom_table_event_followed", type="string", length=200, nullable=true)
+     */
+    private $nomTableEventFollowed;
+
     
 
 
@@ -412,6 +427,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNomTableAgenda(string $nomTableAgenda)
     {
         $this->nomTableAgenda = $nomTableAgenda;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nomTablePartageAgenda
+     *
+     * @return  string
+     */ 
+    public function getNomTablePartageAgenda()
+    {
+        return $this->nomTablePartageAgenda;
+    }
+
+    /**
+     * Set the value of nomTablePartageAgenda
+     *
+     * @param  string  $nomTablePartageAgenda
+     *
+     * @return  self
+     */ 
+    public function setNomTablePartageAgenda(string $nomTablePartageAgenda)
+    {
+        $this->nomTablePartageAgenda = $nomTablePartageAgenda;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nomTableEventFollowed
+     *
+     * @return  string
+     */ 
+    public function getNomTableEventFollowed()
+    {
+        return $this->nomTableEventFollowed;
+    }
+
+    /**
+     * Set the value of nomTableEventFollowed
+     *
+     * @param  string  $nomTableEventFollowed
+     *
+     * @return  self
+     */ 
+    public function setNomTableEventFollowed(string $nomTableEventFollowed)
+    {
+        $this->nomTableEventFollowed = $nomTableEventFollowed;
 
         return $this;
     }
