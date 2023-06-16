@@ -575,8 +575,9 @@ class AgendaService extends PDOConnexionService
     public function createTablePartageAgenda($table_partage_agenda_name){
         $sql= "CREATE TABLE $table_partage_agenda_name (".
             "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
-            "`agenda_id` int(11) NOT NULL".
+            "`agenda_id` int(11) NOT NULL,".
             "`user_id` int(11) NOT NULL,".
+            "`origin` varchar(200) DEFAULT NULL,".
             "`accepted` tinyint(4) NOT NULL DEFAULT -1,".
             "`presence` tinyint(4) NOT NULL DEFAULT 0".
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
