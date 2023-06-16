@@ -825,7 +825,17 @@ dialog {
   border: none;
 }
 
-.loader_agenda .chargement_agenda{
+/* .loader_agenda .chargement_agenda{
+  height: 0 !important;
+  width: 0 !important;
+  display: flex;
+  position: absolute;
+  top: 250px;
+  left: 50%;
+  justify-content: center;
+} */
+
+.chargement_agenda {
   height: 0 !important;
   width: 0 !important;
   display: flex;
@@ -905,4 +915,96 @@ dialog {
   position: absolute;
   top: 0;
   right: 15px;
+}
+
+.plus-list-non-pastille{
+  position: absolute;
+  /* top: 0; */
+  right: 15px;
+}
+
+.content_titre_details h4{
+  width: 90%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.content_note .start{
+  margin: 15px;
+}
+
+.fw-bold{
+  font-weight: 700;
+  font-size: 14pt;
+}
+
+a.btn-success{
+  text-decoration: none;
+  width: 150px;
+  display: block;
+  height: 40px;
+  padding: 10px 15px 0px 18px;
+}
+
+.btn-success {
+  background-color: #157347 !important;
+  color: #fff;
+  border: none ;
+  width: 150px;
+  height: 50px;
+  border-radius: 5px;
+  font-size: 14pt;
+  margin-top: 5px;
+  margin-left: 10vw;
+ 
+}
+
+
+
+.btn-success:hover{
+  background-color: #1d6d48 !important;
+}
+
+.i-apropos{
+  position: absolute;
+  top: 120px;
+  right: 36vw;
+  color: #ccc;
+}
+
+.i-apropos:hover{
+  color: #979797;
+}
+
+.content_activite{
+  margin: 15px;
+}
+
+.fonctionnalite{
+  margin: 15px;
+}
+
+.fourchette_de_prix{
+  margin: 15px;
+}
+
+.horaire{
+  margin: 15px;
+}
+
+.prestation{
+  margin: 15px;
+}
+
+.regime_speciaux{
+  margin: 15px;
+}
+
+.repas{
+  margin: 15px;
+}
+
+.tel{
+  margin: 15px;
 }

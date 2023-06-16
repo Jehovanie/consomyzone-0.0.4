@@ -493,7 +493,10 @@ class AgendaService extends PDOConnexionService
                     file_path= :file_path,
                     heure_debut= :heure_debut,
                     heure_fin= :heure_fin,
-                    file_type= :file_type
+                    file_type= :file_type,
+                    restaurant= :restaurant,
+                    adresse= :adresse,
+                    max_participant =:max_participant
                 WHERE id= :id";
 
         $stmt = $this->getPDO()->prepare($sql);
@@ -598,5 +601,18 @@ class AgendaService extends PDOConnexionService
         }
         
         
+    }
+    /**
+     * @param string $tableAgendaUser table agenda user
+     * @param string $tableAgendaUser table publication of tribu_T ot tribu_G user
+     */
+    public function shareAgendaInPublication($tableAgendaUser,$tableTribuPublication,$idUser,$userName,$agendaId){
+        $sql= "INSERT INTO $tableTribuPublication(user_id,publication,confidentiality,photo,userfullname)".
+        "VALUES( $idUser  , (SELECT concat('$userName',' vous invite à participer à l\'événement ', ".
+        "message, ' qui aura lieu au ',restaurant, ' à l\'adresse ', adresse, ' merci de réserver dès maintenant votre participation ".
+		"car les places sont limitées.', ' kixxxdjeu',id) from $tableAgendaUser where id=$agendaId), 1 , ". 
+        "(SELECT file_path  from $tableAgendaUser  where id=$agendaId),'$userName')";
+        $stmt = $this->getPDO()->prepare($sql);
+        return $stmt->execute();
     }
 }

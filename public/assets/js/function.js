@@ -1812,3 +1812,54 @@ function setPhotoTribu(btn_photo){
     }
     
 }
+
+/**
+ * 
+ * @param {string} type , 
+ * type of toaste that you want to show message (ex: if success type="SUCCESS", 
+ * error type="DANGER", info type="INFO", warning type="WARNING")
+ * @param {string} message, message yuo want out put
+ * @param {Node} container, node who will be contain your toaster
+ * 
+ */
+function toaster(type,message,container) {
+    let div = document.createElement("div");
+    const divClass = "toaster_custom notification-toster " + type.toLowerCase();
+    div.setAttribute("class",divClass );
+    
+    let span = document.createElement("span")
+    span.setAttribute("class","span-toaster");
+    span.innerText=message
+    let color = "#28a745"
+    switch (type) { 
+        case "SUCCESS": {
+            color = "#28a745"
+            break;
+        }
+        case "ERROR": {
+            
+            color = "#E3000B"
+            break;
+        }
+        case "INFO": {
+            
+            color = "#2E9AFE"
+            break;
+        }
+        case "WARNING": {
+            
+            color = "#FFFF00"
+            break;
+        }
+        default: {
+            
+            color = "#28a745"
+            break;
+        }
+
+    }
+    div.appendChild(span)
+    container.appendChild(div);
+    div.style.background= color
+    // setTimeout(container.removeChild(div),3000)
+}

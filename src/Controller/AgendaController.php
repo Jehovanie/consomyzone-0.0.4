@@ -746,6 +746,9 @@ class AgendaController extends AbstractController
             ":heure_debut" => $req["heureD"],
             ":heure_fin" => $req["heureF"],
             ":file_type" => $req["fileType"],
+            ":restaurant" => $req["restaurant"],
+            ":adresse" => $req["adresse"],
+            ":max_participant" => $req["max_participant"],
             ":id" => $req["id"],
             
         );
@@ -808,6 +811,20 @@ class AgendaController extends AbstractController
       
         
     }
+    #[Route("/f", name: "agenda-f")]
+    public function shareAgendaInPublication(AgendaService $agendaService){
+            $tableAgenda=$this->getUser()->getNomTableAgenda();
+            $nom=$this->getUser()->getPseudo();
+            $userId= $this->getUser()->getId();
+            $r =$agendaService->shareAgendaInPublication($tableAgenda, "tribu_t_1_banane_publication",$userId,$nom,18);
 
+            $response=new Response();
+            if($r){
+                return $response->setStatusCode(200);
+            }else{
+                return $response->setStatusCode(500);
+            
+            }
+    }
 
 }
