@@ -14,7 +14,7 @@ class MarckerClusterSearch {
         try {
             this.getGeos()
             this.createMarkersCluster();
-            this.map = await create_map_content(this.geos, this.id_dep, "home");
+            this.map = await create_map_content(this.geos, this.id_dep, "search");
 
             const response = await fetch(url);
             this.default_data = await response.json();
@@ -295,11 +295,10 @@ class MarckerClusterSearch {
                     })
 
             }
-
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
-                    iconSize: [20, 35],
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                    iconSize:[32,52],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     //shadowUrl: 'my-icon-shadow.png',
@@ -319,7 +318,7 @@ class MarckerClusterSearch {
 
     updateLastMarkerSelected(marker, type) {
         const url = new URL(window.location.href);
-        if (this.marker_last_selected) {
+        if (this.marker_last_selected && this.marker_last_selected != marker) {
             let icon_marker = "";
             if (this.marker_last_selected_type === "station") {
                 icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-station-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
