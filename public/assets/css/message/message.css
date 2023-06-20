@@ -6,7 +6,7 @@
     
     position: absolute;
     right: 0;
-    top: 16vh;
+    top: 13vh;
 
     padding: 15px;
 }
@@ -279,9 +279,6 @@
 }
 
 @media screen and (min-width:1000px) {
-    .content_block_message{
-        margin-top: 120px !important;
-    }
 
     .content_amis {
         width: 275px !important;

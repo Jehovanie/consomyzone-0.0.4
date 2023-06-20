@@ -49,7 +49,7 @@
                         <div class="content_entete content_entete_js_jheo" data-toggle-id-user-to={{userToProfil.id}} >
                             {# {% dump(userToProfil.photo_profile) %} #}
                             <div class="content_img">
-                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/') ~ userToProfil.photo_profile  : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
+                                <img src={{ (userToProfil.photo_profile != null) ? userToProfil.photo_profile  : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
                             </div>
 
                             <div class="profil">
