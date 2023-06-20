@@ -480,7 +480,7 @@ function showTimeLine(parentElement, datas) {
               }
             })
             fetch(request).then(r => {
-              createChargement(document.querySelector(".loader_agenda_modif"), "chargement_content chargement_agenda")
+              createChargement(document.querySelector(".loader_agenda_modif"+k), "chargement_content chargement_agenda")
               if (r.status === 200 && r.ok) {
                   r.json().then(json => {
                     showRestoPastilled(json,document.querySelector("#list-pastille"+k),k);

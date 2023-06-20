@@ -169,7 +169,7 @@ class MarckerClusterSearch {
             const icon_R = L.Icon.extend({
                 options: {
                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                    iconSize: [20, 35],
+                    iconSize: [32, 50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     //shadowUrl: 'my-icon-shadow.png',
@@ -220,7 +220,7 @@ class MarckerClusterSearch {
             const icon_R = L.Icon.extend({
                 options: {
                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-                    iconSize: [20, 35],
+                    iconSize: [32, 50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     //shadowUrl: 'my-icon-shadow.png',
@@ -298,7 +298,7 @@ class MarckerClusterSearch {
             const icon_R = L.Icon.extend({
                 options: {
                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
-                    iconSize:[32,52],
+                    iconSize:[32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     //shadowUrl: 'my-icon-shadow.png',
@@ -331,7 +331,7 @@ class MarckerClusterSearch {
             const icon_B = L.Icon.extend({
                 options: {
                     iconUrl: icon_marker,
-                    iconSize: [20, 35],
+                    iconSize:[32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     //shadowUrl: 'my-icon-shadow.png',

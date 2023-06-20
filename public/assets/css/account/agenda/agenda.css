@@ -790,7 +790,7 @@ select::-ms-expand {
 }
 
 .form__input_time {
-  width: 149px;
+  width: 145px;
   height: 20px;
   margin-top: 15px;
 }
@@ -822,8 +822,8 @@ select::-ms-expand {
 
 .popup_partage{
   position: relative;
-  top: -26px;
-  right: -65%;
+  top: -19px;
+  right: -74%;
   border: 1px solid black;
   padding: 5px 10px;
   border-radius: 10px;
