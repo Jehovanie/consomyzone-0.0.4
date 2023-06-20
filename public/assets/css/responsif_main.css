@@ -23,6 +23,9 @@
 
 
 @media screen and (min-width:1000px) and (max-width: 1399px) {
+    .form__input_time {
+        width: 145px;
+    }
     .result_container_resto_spec .navbar-light-left {
         margin-top: 1rem !important;
     }
@@ -754,9 +757,9 @@
             background-color: white;
           }
 
-          #navBarTribu > li:nth-child(3){
-            /* margin-top: 15px; */
-          }
+          /* #navBarTribu > li:nth-child(3){
+             margin-top: 15px; 
+          } */
 
           .dropDownMenu{
             background-color: blue;
@@ -1008,8 +1011,13 @@
     }
 
 	
-   .flow-content i {
-        margin-left: 22vw !important;
+   .flow-content .i-x{
+        margin-left: 21vw !important;
+    }
+
+    .i-apropos {
+        top: 147px !important;
+        right: 39vw !important;
     }
 
     .content-logo-shearch {
@@ -1123,10 +1131,14 @@
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
         height: 165px !important;
     }
-    .flow-content i {
-        margin-left: 25vw !important;
+    .flow-content .i-x {
+        margin-left: 22vw !important;
     }
 
+    .i-apropos {
+        top: 147px !important;
+        right: 39vw !important;
+    }
     .content-logo-shearch {
         width: 28vw !important;
     }
@@ -1201,6 +1213,9 @@
     .nav-menu-connexion {
         margin-left: 1720px !important;
         width: 0vw;
+    }
+    .form__input_time {
+        width: 145px !important;
     }
 }
 

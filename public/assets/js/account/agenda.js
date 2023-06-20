@@ -480,7 +480,7 @@ function showTimeLine(parentElement, datas) {
               }
             })
             fetch(request).then(r => {
-              createChargement(document.querySelector(".loader_agenda_modif"), "chargement_content chargement_agenda")
+              createChargement(document.querySelector(".loader_agenda_modif"+k), "chargement_content chargement_agenda")
               if (r.status === 200 && r.ok) {
                   r.json().then(json => {
                     showRestoPastilled(json,document.querySelector("#list-pastille"+k),k);
@@ -1190,16 +1190,15 @@ function bindEventAboutSharingEvent(agendaToShare){
   const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
   parent.querySelectorAll(".cta_btn_partage_js_jheo").forEach(cta_btn_partage => {
       cta_btn_partage.addEventListener('click',() => {
-          const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
-          const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
-
-          // const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
-          // createHtmlViewListTribuT(data_rank_modal)
-          // document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
+          // const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
+          // const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
+          // shareAgenda(agendaID,shareFor, agendaToShare);
 
 
-          shareAgenda(agendaID,shareFor, agendaToShare);
-
+          const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+          parent.classList.toggle("show_partage");
+          parent.classList.toggle("hidden_partage");
+          alert("En cours de consctuction...");
       })
   })
 }

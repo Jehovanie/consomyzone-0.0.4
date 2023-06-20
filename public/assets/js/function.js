@@ -65,6 +65,10 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
             latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
             // latlng = L.latLng(latitude, longitude);
             zoom = 12;
+        } else if (map_for_type === "search") {
+            latlng= L.latLng(48.856470515304515, 2.35882043838501); ///centre Paris 
+            // latlng = L.latLng(latitude, longitude);
+            zoom = 6;
         } else if (map_for_type === "ferme") {
 
             latlng =id_dep ? L.latLng(centers[parseInt(id_dep)].lat, centers[parseInt(id_dep)].lng) : L.latLng(45.729191061299936, 2.4161955097725722);
