@@ -1048,8 +1048,16 @@ class TributGService extends PDOConnexionService{
     }
 
 
-        
-    public function getCountPartisant($table){
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get count of the user in tribu G  
+     * 
+     * @param string $table: table name of the tribu G
+     * 
+     * @return int count
+     */ 
+    public function getCountPartisant( string $table){
         $sql = "select count(*) as num_total from $table";
 
         $stmt = $this->getPDO()->prepare($sql);
