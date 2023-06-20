@@ -680,29 +680,15 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
-     * 
-
      * Persiste new publication in database
-
      * 
-
      * @param string $table_pub: Name of the table containing the publication
-
      * @param int $user_id: id of the user
-
      * @param string $publication_id: publication content
-
      * @param string $confid : confidential of the publication
-
      * @param string $photo: image in the publication
-
      * 
-
-     * 
-
      */
 
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){

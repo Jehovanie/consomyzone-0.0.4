@@ -29,7 +29,7 @@ if( document.querySelector(".content_publication_js_jheo")){
         })
 
         ///filter publications not show.
-        const last_pub_id_show= document.querySelector(".publication_js_jheo").getAttribute("data-toggle-pub-id")
+        const last_pub_id_show= document.querySelector(".publication_js_jheo") ? document.querySelector(".publication_js_jheo").getAttribute("data-toggle-pub-id") : 0;
         const new_publication = all_publication.filter(pub => parseInt(pub.id) > parseInt(last_pub_id_show))
 
         if( new_publication.length > 0 ){

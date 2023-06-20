@@ -1873,7 +1873,7 @@ a:focus {
 }
 
 .btn_actualise{
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -1893,8 +1893,8 @@ a:focus {
 }
 
 .spinner_custom{
-    width: 15px;
-    height: 15px;
+    width: 15px !important;
+    height: 15px !important;
     margin-right: 5px;
 }
 .text_mini{

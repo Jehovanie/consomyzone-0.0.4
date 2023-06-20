@@ -142,8 +142,7 @@ class UserController extends AbstractController
 
                     $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
-                    $newFilename = $profil[0]->getTributG() . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
-
+                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
                     $photo->move(
 
                         $destination,
@@ -154,7 +153,7 @@ class UserController extends AbstractController
                 }
 
 
-
+                
                 $tributGService->createOnePub($profil[0]->getTributG() . "_publication", $userId, $publication, $confid, $newFilename);
             }
 
