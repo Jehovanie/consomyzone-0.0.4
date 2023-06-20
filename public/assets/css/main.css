@@ -1094,3 +1094,26 @@ input::-ms-clear {
     background-color: var(--danger-l);
 }
 
+.container_error_page{
+    background: rgba(0,54,246,0);
+    background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    width: 100%;
+    z-index: 1;
+    height: 100vh;
+}
+
+.error_page{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    height: 30vh;
+    background: white;
+    border-radius: 15px;
+    text-align: center;
+    padding: 25px;
+
+    border: 1px solid red;
+}

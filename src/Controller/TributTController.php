@@ -21,7 +21,7 @@ use App\Service\MailService;
 
 use App\Service\UserService;
 
-use App\Services\FilesUtils;
+use App\Service\FilesUtils;
 use App\Form\PublicationType;
 use App\Service\TributGService;
 

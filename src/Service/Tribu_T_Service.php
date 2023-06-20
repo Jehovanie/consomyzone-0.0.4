@@ -860,27 +860,13 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-
     function getTypeUser($userId)
-
     {
-
-
-
         $statement = $this->getPDO()->prepare("SELECT type as result FROM user WHERE id  = $userId");
-
-
-
         $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-        return $result[0]["result"];
-
+        return $result ? $result["result"] : "unknown";
     }
 
 
