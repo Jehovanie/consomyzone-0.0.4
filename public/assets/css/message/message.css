@@ -262,6 +262,12 @@
     color: red;
 }
 
+.content_warning{
+    display: block;
+    width:70%;
+    margin: auto; 
+}
+
 @keyframes rotation {
     0%{
         transform: rotate(0deg);

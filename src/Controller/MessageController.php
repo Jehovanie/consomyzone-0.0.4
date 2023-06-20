@@ -81,19 +81,22 @@ class MessageController extends AbstractController
         }else{ /// the user not specified id user  in the url, just to chat box
 
             ////get random user in the tributG
-            $id_user_to_chat = 0; /// random id user
-            while( $id_user_to_chat === 0 || $id_user_to_chat == $user->getId() ){
-                $temp = rand(0, count($id_amis_tributG));
-                $i=0;
-                foreach($id_amis_tributG as $id_amis){
-                    if( $i === $temp){
-                        $id_user_to_chat = intval($id_amis["user_id"]);
-                        break;
+            if(  count($id_amis_tributG) > 1 ){
+                $id_user_to_chat = 0; /// random id user
+                while( $id_user_to_chat === 0 || $id_user_to_chat == $user->getId() ){
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i=0;
+                    foreach($id_amis_tributG as $id_amis){
+                        if( $i === $temp){
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
                     }
-                    $i++;
                 }
+            }else{
+                $id_user_to_chat= $user->getId();
             }
-
             // dd($id_user_to_chat);
         }
 
