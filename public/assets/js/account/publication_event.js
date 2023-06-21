@@ -1,7 +1,8 @@
-if( document.querySelector(".content_publication_js_jheo")){
 
-    const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
-    const fullname = document.querySelector(".main_user_id").getAttribute("data-toggle-full-name");
+const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
+const fullname = document.querySelector(".main_user_id").getAttribute("data-toggle-full-name");
+
+if( document.querySelector(".content_publication_js_jheo")){
 
     /// sse event
     const evtSource = new EventSource("/users/account/publications");
@@ -11,7 +12,6 @@ if( document.querySelector(".content_publication_js_jheo")){
 
         //// get data
         const all_publication = JSON.parse(event.data);
-
         ///mise a jour des nbrs des reactions de nbrs de comments 
         all_publication.forEach(publication => {
 
@@ -29,684 +29,93 @@ if( document.querySelector(".content_publication_js_jheo")){
         })
 
         ///filter publications not show.
-        const new_publication = all_publication.filter(pub => !document.querySelector("#pubication_js_"+ pub.id + "_jheo"))
-
-        //// add new publication
-        new_publication.forEach(publication => {
-
-            // <div class="publication_js_jheo" id={{"pubication_js_" ~ pub.id ~ "_jheo" }}>
-            const div_parent = document.createElement("div")
-
-            div_parent.classList.add("publication_js_jheo")
-
-            div_parent.setAttribute("id", "pubication_js_" + publication.id + "_jheo");
-
-
-
-            div_parent.setAttribute("data-toggle-pub-id", publication.id);
-
-            div_parent.setAttribute("data-toggle-pub-user-id", publication.user_id);
-
-
-
-                //<div class="card mb-2">
-
-                const div_card = document.createElement("div")
-
-                div_card.classList.add("card")
-
-                div_card.classList.add("mb-2")
-
-
-
-                        //<div class="card-header">
-
-                        const div_card_header = document.createElement("div")
-
-                        div_card_header.classList.add("card-header")
-
-
-
-
-
-                            //<a href="{{ path("user_profil", {"user_id":pub.user_id }) }}">
-
-                            const a = document.createElement("a");
-
-                            a.setAttribute("href","/user/profil/"+ publication.user_id);
-
-                            
-
-                                // <i>{{pub.userfullname}}</i>
-
-                                const i_userfullname = document.createElement("i");
-
-                                i_userfullname.innerText = publication.userfullname
-
-
-
-                            a.appendChild(i_userfullname);
-
-                        div_card_header.appendChild(a);
-
-                        //</a>
-
-                            
-
-            //             <i class="bi bi-play-fill"></i>
-
-                            const i_bi = document.createElement("i");
-
-                            i_bi.classList.add("bi");
-
-                            i_bi.classList.add("bi-play-fill");
-
-
-
-                        div_card_header.appendChild(i_bi)
-
-                            //<a href="#">
-
-                            const a_link = document.createElement("a");
-
-                            //<i class="bi bi-collection"></i>
-
-                            const i_bi_collection = document.createElement("i");
-
-                            i_bi_collection.classList.add("bi");
-
-                            i_bi_collection.classList.add("bi-collection");
-
-                            a_link.appendChild(i_bi_collection);
-
-                            //{{tributG.profil.name}}
-
-                            a_link.innerHTML = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribut-profil-name")
-
-                        div_card_header.appendChild(a_link);
-
-            //</div>
-
-                div_card.appendChild(div_card_header);
-
-            // div_parent.appendChild(div_card)
-
-                //         <div class="card-body">
-
-                    const div_card_body_content = document.createElement("div")
-
-                    div_card_body_content.classList.add("card-body")
-
-                //          <p class="card-text">{{pub.publication}}</p>
-
-                            const p_card_text = document.createElement("p");
-
-                            p_card_text.classList.add("card-text");
-
-                            p_card_text.innerText = publication.publication
-
-                            
-
-                    div_card_body_content.appendChild(p_card_text);
-
-
-
-                    if( publication.photo){
-
-                        const div_content_photo = document.createElement("div")
-
-                        div_content_photo.setAttribute("style", "max-heigth:100%; max-width: 100%;")
-
-
-
-                        const img = document.createElement("img");
-
-                        img.setAttribute("width","50%" )
-                        img.setAttribute("heigth","100px" )
-
-                        // img.classList.add("card-img-top");
-
-                        ///on dev -------------
-                        // img.setAttribute("src", "/assets/publications/photos/" + publication.photo);
-                        /// --------------------------------
-
-                        // on prod ----------
-                        img.setAttribute("src", "/public/assets/publications/photos/" + publication.photo);
-                        //-------------------
-
-                        img.setAttribute("alt", "Card image cap");
-
-
-
-                        div_content_photo.appendChild(img);
-
-
-
-                        div_card_body_content.appendChild(div_content_photo);
-
-
-
+        const last_pub_id_show= document.querySelector(".publication_js_jheo").getAttribute("data-toggle-pub-id")
+        const new_publication = all_publication.filter(pub => parseInt(pub.id) > parseInt(last_pub_id_show))
+
+        if( new_publication.length > 0 ){
+            if(document.querySelector(".btn_actualise_js_jheo").classList.contains("hidden_actualise")){
+                document.querySelector(".btn_actualise_js_jheo").classList.remove("hidden_actualise");
+            }
+
+            if(!document.querySelector(".btn_actualise_js_jheo").classList.contains("btn_actulise_annimation")){
+                document.querySelector(".btn_actualise_js_jheo").classList.add("btn_actulise_annimation");
+            }
+
+            setTimeout(() => {
+                document.querySelector(".btn_actualise_js_jheo").classList.add("hidden_actualise");
+                document.querySelector(".btn_actualise_js_jheo").classList.remove("btn_actulise_annimation");
+            }, 5000)
+        }
+    }
+}
+
+if( document.querySelector(".content_chargement_publication_js_jheo")){
+
+
+    window.addEventListener('scroll', function(e) {
+        const scroll_Y = window.scrollY;
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight
+
+        const content_description = document.querySelector(".need_position_fixed_js_jheo")
+        const scroll_goal= content_description.getBoundingClientRect().bottom +  content_description.getBoundingClientRect().height;
+        
+        if( parseInt(scroll_goal) - parseInt(scroll_Y) < 0 ){
+            if(!document.querySelector(".need_position_fixed_js_jheo").classList.contains("position_sticky")){
+                document.querySelector(".need_position_fixed_js_jheo").classList.add("position_sticky")
+            }
+        }else{
+            if(document.querySelector(".need_position_fixed_js_jheo").classList.contains("position_sticky")){
+                document.querySelector(".need_position_fixed_js_jheo").classList.remove("position_sticky")
+            }
+        }
+
+        if( parseInt(scroll_Y) === parseInt(scrollable)){
+
+            const loading_content= document.querySelector(".content_chargement_publication_js_jheo");
+            const last_pub_id= loading_content.getAttribute("data-toggle-pub-id");
+
+            const content_pub= document.querySelector(".content_publication_js_jheo");
+
+            fetch(`/tribuG/publications/${parseInt(last_pub_id) - 1 }`)
+                .then(response => response.text())
+                .then(response => {
+                    var responseHTML = (new DOMParser()).parseFromString(response, "text/html");
+
+                    if( responseHTML.querySelector(".publication_js_jheo")){
+                        document.querySelector(".content_chargement_publication_js_jheo").remove();
+                        content_pub.innerHTML  += response;
                     }
 
-                //             
 
-                //             <p class="card-text">
-
-                            const p_card_text_2 = document.createElement("p");
-
-                            p_card_text_2.classList.add("card-text");
-
-                //                 
-
-                                const i_small = document.createElement("i");
-
-
-
-                                    const small = document.createElement("small");
-
-                                    small.classList.add("text-muted");
-
-                                    small.innerText = "Publié le " +  publication.datetime
-
-                                i_small.appendChild(small);
-
-
-
-                            p_card_text_2.appendChild(i_small)
-
-                //              <span class="badge text-bg-primary" style="background-color:#0d6efd;">
-
-                                const span_badge = document.createElement("span");
-
-                                span_badge.classList.add("badge");
-
-                                span_badge.classList.add("text-bg-primary");
-
-                                span_badge.style.backgroundColor = "#0d6efd";
-
-                                    // <i class="bi bi-eye-fill"></i>
-                                    const i_bi_eye_fill = document.createElement("i");
-
-                                    i_bi_eye_fill.classList.add("bi");
-
-                                    i_bi_eye_fill.classList.add("bi-eye-fill");
-
-
-
-                                span_badge.appendChild(i_bi_eye_fill);
-
-                                    
-
-                                if( publication.confidentiality == 1 ){
-
-                                    span_badge.innerText += "Publique";
-
-                                }else if( publication.confidentiality == 2){
-
-                                    span_badge.innerText += "Ami(e)s";
-
-                                }else{
-
-                                    span_badge.innerText += "Moi uniquement";
-
-                                }
-
-
-
-                            p_card_text_2.appendChild(span_badge)
-
-
-
-                    div_card_body_content.appendChild(p_card_text_2);
-
-
-                div_card.appendChild(div_card_body_content);
-
-                // div_parent.appendChild(div_card_body_content);
-
-
-
-                    //  <div class="card-footer foot">
-
-                    const div_card_footer = document.createElement("div")
-
-                    div_card_footer.classList.add("card-footer")
-
-                    div_card_footer.classList.add("foot");
-
-
-
-                        //  <div class="row text-center">
-
-                        const div_text_center = document.createElement("div")
-
-                        div_text_center.classList.add("row")
-
-                        div_text_center.classList.add("text-center")
-
-
-
-                            // <div class="col-4 ">
-
-                            const div_col_4 = document.createElement("div")
-
-                            div_col_4.classList.add("col-4")
-
-
-
-                                // <span>
-
-                                const span_temp = document.createElement("span");
-
-
-
-                                    const span_reaction = document.createElement("span");
-
-                                    span_reaction.setAttribute("id","nbr_reaction_pub_" + publication.id)
-
-                                    span_reaction.innerText = publication.reactions.length > 0 ? publication.reactions.length : "";
-
-
-
-                                span_temp.appendChild(span_reaction);
-
-
-
-                                // </span>
-
-                                    //  <i class="bi-heat-fill" onclick="() => {alert('click reaction')}" style="cursor: pointer"></i>
-
-                                    const i_bi_heat_fill = document.createElement("i");
-
-
-
-                                    i_bi_heat_fill.classList.add("reaction_js_" + publication.id + "_jheo");
-
-
-
-                                    if(publication.reactions.find((reaction => parseInt(reaction.user_id) === user_id )) ){
-
-                                        i_bi_heat_fill.classList.add("bi-heart-fill");
-
-                                    }else{
-
-                                        i_bi_heat_fill.classList.add("bi-heart");
-
-                                    }
-
-
-
-                                    i_bi_heat_fill.onclick = () => isLike(publication.id,publication.user_id)
-
-                                    i_bi_heat_fill.style.cursor = "pointer";
-
-
-
-                                span_temp.appendChild(i_bi_heat_fill);
-
-
-
-                            div_col_4.appendChild(span_temp);
-
-
-
-                        div_text_center.appendChild(div_col_4);
-
-
-
-                            const div_col_4_chat_square = document.createElement("div");
-
-                            div_col_4_chat_square.classList.add("col-4");
-
-
-
-                                const span_nbr_comment = document.createElement("span");
-
-                                span_nbr_comment.setAttribute("id","nbr_comment_pub_" + publication.id);
-
-                                span_nbr_comment.innerText = publication.comments.length > 0? publication.comments.length : "";
-
-
-
-                            div_col_4_chat_square.appendChild(span_nbr_comment);
-
-
-
-                                const a_collapse = document.createElement("a");
-
-                                a_collapse.setAttribute("data-bs-toggle", "collapse");
-
-                                a_collapse.setAttribute("href", "#collapse_comment_" + publication.id  );
-
-                                a_collapse.setAttribute("id", "nbComment_" + publication.id);
-
-                                a_collapse.onclick = () => fetchNotification(publication.id);
-
-
-
-                                    const i_bi_chat_square = document.createElement("i");
-
-                                    i_bi_chat_square.classList.add("bi");
-
-                                    i_bi_chat_square.classList.add("bi-chat-square");
-
-
-
-                                a_collapse.appendChild(i_bi_chat_square);
-
-
-
-                            div_col_4_chat_square.appendChild(a_collapse);
-
-
-
-                        div_text_center.appendChild(div_col_4_chat_square);
-
-
-
-                            const div_col_4_souri_non_utilise = document.createElement("div")
-
-                            div_col_4_souri_non_utilise.classList.add("col-4");
-
-                            div_col_4_souri_non_utilise.classList.add("souri-non-utilise")
-
-                                    
-
-                                const a_collapse_2 = document.createElement("a");
-
-                                a_collapse_2.setAttribute("data-bs-toggle", "collapse");
-
-                                a_collapse_2.setAttribute("href", "#collapseExample3");
-
-                                a_collapse_2.setAttribute("role", "button");
-
-                                a_collapse_2.setAttribute("class", "souri-non-utilise")
-
-
-
-                                a_collapse_2.innerHTML = 1;
-
-                                a_collapse_2.innerHTML += "<i class='bi bi-share souri-non-utilise'></i>"
-
-
-
-                            div_col_4_souri_non_utilise.appendChild(a_collapse_2);
-
-
-
-                        div_text_center.appendChild(div_col_4_souri_non_utilise);
-
-                        
-
-                    div_card_footer.appendChild(div_text_center);
-
-
-                div_card.appendChild(div_card_footer);
-
-            // div_parent.appendChild(div_card_footer);
-
-            //      <div class="collapse m-2">
-
-                    const div_collapse = document.createElement("div");
-
-                    div_collapse.classList.add("collapse");
-
-                    div_collapse.classList.add("m-2");
-
-
-
-                    div_collapse.setAttribute("id", "collapse_comment_" + publication.id)
-
-
-
-                //      <div class="card card-body">
-
-                        const div_card_sous_collapse = document.createElement("div");
-
-                        div_card_sous_collapse.classList.add("card");
-
-                        div_card_sous_collapse.classList.add("card-body");
-
-
-
-                //          <label style="display:none;">Commentaires</label>
-
-                            const label = document.createElement("label");
-
-                            label.setAttribute("style", "display:none");
-
-                            label.innerHTML = "Commentaires";
-
-
-
-                        div_card_sous_collapse.appendChild(label);
-
-
-
-                            const div_content_notif = document.createElement("div");
-
-                            div_content_notif.setAttribute("class", "content_notification_tributg mb-3")
-
-
-
-                        div_card_sous_collapse.appendChild(div_content_notif);
-
-
-
-                            const form = document.createElement("form");
-
-                            form.classList.add("form_comment_"+ publication.id );
-
-                            // form.setAttribute("class", "form_comment_"+ fullname);
-
-
-
-                                /*const div_mb_3 = document.createElement("div");
-
-                                div_mb_3.classList.add("mb-3");
-
-
-
-                                    const textaread = document.createElement("textarea")
-
-                                    textaread.setAttribute("class", "form-control");
-
-                                    textaread.setAttribute("name", "commentaire");
-
-                                    textaread.setAttribute("placeholder", "Votre commentaire...");
-
-                                    textaread.setAttribute("required", "");
-
-
-
-                                div_mb_3.appendChild(textaread)
-
-
-
-                                    const span_text_danger = document.createElement("span");
-
-                                    span_text_danger.setAttribute("class", "text-danger");
-
-                                    span_text_danger.setAttribute("style", "display:none");
-
-                                    span_text_danger.innerHTML = "Le commentaire ne devrait pas être vide."
-
-
-
-                                div_mb_3.appendChild(span_text_danger)
-
-
-
-                            form.appendChild(div_mb_3);
-
-                //                     </div>
-
-                //                     <div class="row">
-
-                                const row_btn = document.createElement("div");
-
-                                row_btn.classList.add("row");
-
-                                    
-
-                                    const div_col_8 = document.createElement("div");
-
-                                    div_col_8.classList.add("col-8");
-
-
-
-                                row_btn.appendChild(div_col_8);
-
-
-
-                                    const div_col_4_2 = document.createElement("div")
-
-                                    div_col_4_2.classList.add("col-4");
-
-
-
-                                        const input_btn = document.createElement("input");
-
-                                        input_btn.setAttribute("type", "button");
-
-                                        input_btn.setAttribute("value", "Envoyer");
-
-                                        input_btn.setAttribute("class", "btn btn-primary float-end");
-
-
-
-                                        input_btn.onclick = () => handleAndSentNotification(publication.id, publication.user_id)
-
-                                    
-
-                                    div_col_4_2.appendChild(input_btn);
-
-
-
-                                row_btn.appendChild(div_col_4_2);
-
-
-
-                            form.appendChild(row_btn)*/
-
-                            form.innerHTML = `
-                            <div class="mb-3 row">
-                                <div class="row" id="soundClips"></div>
-
-                                <div class="col-1 text-center">
-                                    <i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
-                                    <i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
-                                </div>
-                                <div class="col-11 mt-1">
-                                    <textarea class="form-control" name="commentaire" placeholder="Votre commentaire..." required=""></textarea>
-                                    <span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
-                                </div>
-                                <div class="row" id="audiosPlayer"></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-8"></div>
-                                <div class="col-4 ">
-                                    <input type="button" value="Envoyer" class="btn btn-primary float-end" onclick="handleAndSentNotification(${publication.id}, ${publication.user_id})">
+                    if( parseInt(last_pub_id) > 1 ){
+                        content_pub.innerHTML  += `
+                            <div data-toggle-pub-id=${ last_pub_id - 1 } class="content_chargement_publication content_chargement_publication_js_jheo mt-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
                             </div>
                         `
+                    }else{
 
+                        removeChargement()
 
-
-                        div_card_sous_collapse.appendChild(form);
-
-                    
-
-                    div_collapse.appendChild(div_card_sous_collapse)
-
-
-                div_card.appendChild(div_collapse);  
-
-            div_parent.appendChild(div_card)
-
-            if( document.querySelector(".content_publication_js_jheo")){
-
-                document.querySelector(".content_publication_js_jheo").insertBefore(
-                    div_parent,
-                    document.querySelector(".content_publication_js_jheo").firstElementChild
-                    // null
-                );
-
-            }
-        })
-
-    }
-
-    if(document.querySelectorAll(".publication_js_jheo")){
-
-        const publications = document.querySelectorAll(".publication_js_jheo");
-
-        publications.forEach(publication => {
-
-            const publication_id = publication.getAttribute("data-toggle-pub-id");
-            const publication_user_id = publication.getAttribute("data-toggle-pub-user-id");
-
-            addAudio(publication,publication_id)
-
-            if( document.querySelector(".form_comment_"+ publication_id)){
-
-                const form_content = document.querySelector(".form_comment_"+ publication_id);
-                const input_content = form_content.querySelector("input");
-
-
-
-                input_content.addEventListener("click", (e) => {
-                    e.preventDefault();
-
-                    const datetime =new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11,19);
-
-                    console.log(form_content.querySelector("textarea").length );
-
-                    if((form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 0 ) || publication.querySelector("#audio_"+publication_id)){
-
-                        createCardComment(
-                            publication_id,
-                            fullname,
-                            datetime,
-                            form_content.querySelector("textarea").value ,
-                            publication.querySelector("#audio_"+publication_id) ? publication.querySelector("#audio_"+publication_id).src:""
-                        );
-
-    
-
-                        handleCommentPublished(
-
-                            publication_user_id,
-
-                            publication_id,
-
-                            form_content.querySelector("textarea").value,
-
-                            publication
-
-                        );
-
-    
-
+                        if( !document.querySelector(".reload_publication_js_jheo")){
+                            content_pub.innerHTML  += `
+                                <div class="content_chargement_publication reload_publication_js_jheo mt-3">
+                                    <button type="button" class="btn btn-primary">Il n'y a plus de publication</button>
+                                </div>
+                            `
+            
+                            document.querySelector(".reload_publication_js_jheo").addEventListener("click", () => {
+                                location.replace(location.href);
+                            })
+                        }
                     }
-
-                    ///delete content on form.
-
-                    form_content.querySelector("textarea").value = null
-
-
-
-
-
                 })
-
-            }
-
-        })
-
-    }
-
+        }
+    });
 }
+
 
 //// Pour empéche une publication vide.
 
@@ -732,6 +141,13 @@ if( document.querySelector(".send_new_pub_js_jheo")){
 
 
 
+}
+
+
+function removeChargement(){
+    if( document.querySelector(".content_chargement_publication_js_jheo")){
+        document.querySelector(".content_chargement_publication_js_jheo").remove();
+    }
 }
 
 function isLike(pub_id, author_id) {
@@ -804,182 +220,198 @@ function isLike(pub_id, author_id) {
 
 }
 
-function handleCommentPublished(author_id, publication_id , comment, bouton){
+function handleCommentPublished(author_id, publication_id , comment, bouton=null){
+    
+    let audioSrc = null;
 
-    let audioSrc = bouton.querySelector("#audio_" + publication_id) != null ? bouton.querySelector("#audio_" + publication_id).src : ""
-    if(bouton.querySelector("#audio_" + publication_id)){
-        console.log(bouton.querySelector("#audio_" + publication_id).src);
-    }
+    if( bouton ){
+        audioSrc = bouton.querySelector("#audio_" + publication_id) != null ? bouton.querySelector("#audio_" + publication_id).src : "";
+        
+        if(bouton.querySelector("#audio_" + publication_id)){
+            console.log(bouton.querySelector("#audio_" + publication_id).src);
+        }
 
-    if(bouton.querySelector("#soundClips > div.clip")){
-        bouton.querySelector("#soundClips > div.clip").remove();
-        bouton.querySelector("#soundClips > div.iconeDelete").remove();
-        bouton.querySelector("#soundClips").style.display="none"
+        if(bouton.querySelector("#soundClips > div.clip")){
+            bouton.querySelector("#soundClips > div.clip").remove();
+            bouton.querySelector("#soundClips > div.iconeDelete").remove();
+            bouton.querySelector("#soundClips").style.display="none"
+        }
     }
 
     fetch("/tributG/publications/comment", {
-
         headers: {
-
             'Content-Type': 'application/json',
-
             'Accept'  : 'application/json'
-
         },
-
         method: "POST",
-
         body: JSON.stringify({
-
             "author_id": author_id,
-
             "publication_id": publication_id,
-
             "comment": comment,
             "audio": audioSrc
-
         })
-
-    }).then(response => response.json())
-
-    .then(response => {
-        
-        console.log(response);
-
     })
+        .then(response => response.json())
+        .then(response => {
+            console.log(response);
+        })
 
 }
 
 
 function fetchNotification(publication_id){
 
+
+    const content_comment = document.querySelector(`.content_comment_${publication_id}_js_jheo`).querySelector(".content_notification_tributg")
+            
+    ////delete old comments
+    if (content_comment && content_comment.querySelectorAll(".card_comment_js")){
+        content_comment.querySelectorAll(".card_comment_js").forEach(comment => {
+            comment.remove();
+        })
+    }
+
+    document.querySelector(`.content_comment_${publication_id}_js_jheo`).querySelector(".content_notification_tributg").innerHTML = `
+        <div class="content_loading_js_jheo">
+            <div class="spinner-border text-primary d-block mx-auto" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `
+
+    const header = {
+        'Content-Type': 'application/json',
+        'Accept'  : 'application/json'
+    };
+
+    const options_request= {
+        headers: header,
+        method: "POST",
+        body: JSON.stringify({
+            "publication_id": publication_id,
+        })
+    }
     
 
-    fetch("/tributG/publications/comments/fetchall" , {
+    fetch("/tributG/publications/comments/fetchall", options_request )
+        .then(response => response.json())
+        .then(results => {
 
-        headers: {
+            if(document.querySelector(`.content_comment_${publication_id}_js_jheo`).querySelector(".content_loading_js_jheo")){
+                document.querySelector(`.content_comment_${publication_id}_js_jheo`).querySelector(".content_loading_js_jheo").remove();
+            }
 
-            'Content-Type': 'application/json',
+            if (results.success ){
+                if( results.comments.length > 0){
 
-            'Accept'  : 'application/json'
+                    results.comments.forEach(comment => {
 
-        },
+                        let audio;
 
-        method: "POST",
+                        if(comment.audioname){
+                            audio = `/uploads/users/audios/${comment.audioname}`;
+                        }
 
-        body: JSON.stringify({
+                        createCardComment(
+                            comment.user_id,
+                            comment.pub_id,
+                            comment.userfullname,
+                            comment.photo_profil,
+                            calculateDurationOfComment(comment.datetime),
+                            comment.id,
+                            comment.commentaire,
+                            audio,
+                            comment.id,
+                        );
 
-            "publication_id": publication_id,
+                    })
+
+                }else{
+                    content_comment.innerHTML= `
+                        <div class="alert alert-primary text-center no_comment_${publication_id}_js_jheo" role="alert">
+                            Laissez-moi un commentaire.
+                        </div>
+                    `
+                }
+
+            }else{
+                content_comment.innerHTML= `
+                    <div class="alert alert-warning text-center error_comment_${publication_id}_js_jheo" role="alert">
+                        Il y a une erreur sur votre reseaux!
+                    </div>
+                `
+            }
 
         })
 
-    }).then(response => response.json())
-
-    .then(results => {
+}
 
 
-
-        const content_comment = document.querySelector("#collapse_comment_" + publication_id ).querySelector(".content_notification_tributg")
-
-        
-
-        if (content_comment && content_comment.querySelectorAll(".card_comment_js")){
-
-            content_comment.querySelectorAll(".card_comment_js").forEach(comment => {
-
-                comment.parentElement.removeChild(comment);
-
-            })
-
-        }
-
-
-        if (results.success ){
-
-            if( results.comments.length > 0){
-
-                results.comments.forEach(comment => {
-                    let audio
-                    if(comment.audioname){
-                        audio = `/uploads/users/audios/${comment.audioname}`;
-                    }
-
-                    createCardComment(
-
-                        comment.pub_id,
-
-                        comment.userfullname,
-
-                        comment.datetime,
-
-                        comment.commentaire,
-
-                        audio
-
-                    );
-
-                })
-
-            }
-
-        }
-
-    })
+function formatDisplayComment(){
 
 }
 
-function createCardComment(publication_id, user_fullname,datetime,comment=null, audio=null ){
+function createCardComment(publication_user_id, publication_id, user_fullname, user_profil, datetime, comment_id=null, comment=null, audio=null){
 
-
+    comment_id = comment_id ? comment_id : 0;
 
     const card_comment = document.createElement("div");
-
-    card_comment.classList.add("card_comment_js");
-
-    card_comment.classList.add("card");
-
-    card_comment.classList.add("my-2");
-
-
+    card_comment.className = "card_comment_js card my-2";
+    card_comment.classList.add(`card_comment_${comment_id}_js_jheo`);
 
     const card_body = document.createElement("div");
-
     card_body.classList.add("card-body");
 
+    const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
 
+    const profil= user_profil ? user_profil : "/public/assets/image/img_avatar3.png";
 
-    const h5_comment = document.createElement("h5")
-
-    h5_comment.innerText = user_fullname;
-
-    
-
-    card_body.appendChild(h5_comment);
-
-
-
-    const span_comment = document.createElement("span")
-
-    span_comment.classList.add("blockquote-footer");
-
-
-
-    span_comment.innerText = datetime;
-
-
-
-    card_body.appendChild(span_comment);
-
-    
-    if(comment){
-        const p_comment = document.createElement("p")
-
-        p_comment.classList.add("card-text")
-
-        p_comment.innerText = comment;
-
-        card_body.appendChild(p_comment);
+    let comment_admin = "";
+    if( parseInt(publication_user_id) === parseInt(user_id)){
+        comment_admin= `
+            <div class="float-end dropstart">
+                <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                </span>
+                <ul class="dropdown-menu">
+                    <li>
+                        <button class="dropdown-item" onclick="changeComment('${comment_id}' , '${publication_id}')">
+                            <i class="fas fa-edit"></i>
+                            Modifier
+                        </button>
+                    </li>
+                    <li>
+                        <button data-bs-toggle="modal" data-bs-target="#deleteCommentConfirm" class="dropdown-item" onclick="show_modal_remove_com('${publication_id}', ${comment_id})">
+                            <i class="fas fa-trash" aria-hidden="true"></i>
+                            Supprimer
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        `
     }
+
+    const card_body_html= `
+        <div class="card">
+            <div class="card-body">
+                <div class="card_entete">
+                    <div class="content_profile">
+                        <div class="d-flex justify-content-end align-items-centerprofile_comment">
+                            <img src="${profil}" class="image_profile_comment me-2"/>
+                            <div class="name_date">
+                                <a href="/user/profil/${user_id}" class="card-title"> ${user_fullname}</a>
+                                <span class="datetime_comment">${datetime}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${comment_admin}
+                </div>
+                <p class="text_js_jheo ms-3 mt-2">${comment}</p>
+            </div>
+        </div>
+    `
+
+
     
     if(audio){
 
@@ -995,75 +427,134 @@ function createCardComment(publication_id, user_fullname,datetime,comment=null, 
 
     }
     
-    card_comment.appendChild(card_body);
+    // card_comment.appendChild(card_body);
+    card_comment.innerHTML = card_body_html;
 
-    
+    const content_comment = document.querySelector(`.content_comment_${publication_id}_js_jheo`).querySelector(".content_notification_tributg")
 
-    const content_comment = document.querySelector("#collapse_comment_" + publication_id ).querySelector(".content_notification_tributg")
-
-
-
+    ///if there is already content comment, insert a new comment on the top
     if (content_comment && content_comment.querySelectorAll(".card_comment_js").length > 0){
 
         content_comment.insertBefore(
-
             card_comment,
-
             content_comment.querySelector(".card_comment_js")
-
         )
 
     }else{
-
+        ///first comment
         content_comment.appendChild(card_comment);
-
     }
 
 }
 
+
+function changeComment(comment_id, publication_id){
+    const card_comment= document.querySelector(`.card_comment_${comment_id}_js_jheo`);
+    document.querySelector(`.text_input_${publication_id}_js_jheo`).value=card_comment.querySelector(".text_js_jheo").innerText;
+
+    document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).setAttribute("onclick", `handleChangeComment("${publication_id}", "${comment_id}")`);
+
+    // document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).innerText = "Modifier";
+}
+
+function show_modal_remove_com(pub_id, comm_id){
+    document.querySelector(".cta_confirme_del_com_js_jheo").setAttribute("onclick", `removeComment('${pub_id}', '${comm_id}')`);
+}
+
+function removeComment(pub_id,comment_id){
+    if( parseInt(pub_id)){
+        fetch(`/tribuG/publication/${pub_id}/comment/${comment_id}/delete`)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                document.querySelector(`.card_comment_${comment_id}_js_jheo`).remove();
+            })
+    }
+}
+
 function handleAndSentNotification(publication_id, publication_user_id){
 
-    if( document.querySelector(".form_comment_"+ publication_id)){
 
-        const form_content = document.querySelector(".form_comment_"+ publication_id);
-
-        const input_content = form_content.querySelector("input");
-
-
-
-        input_content.addEventListener("click", (e) => {
-            e.preventDefault();
-
-            const datetime =new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11,19);
-
-            // console.log(form_content.querySelector("textarea").value);
-            if(form_content.querySelector("textarea").value != null && form_content.querySelector("textarea").value.length > 1 )
-            {
-                createCardComment(
-                    publication_id,
-                    document.querySelector(".main_user_id").getAttribute("data-toggle-full-name"),
-                    datetime,
-                    form_content.querySelector("textarea").value 
-                );
-    
-                handleCommentPublished(
-    
-                    publication_user_id,
-    
-                    publication_id,
-    
-                    form_content.querySelector("textarea").value
-    
-                );
-                ///delete content on form.
-                form_content.querySelector("textarea").value = null
-            }
-
-
-        })
-
+    if( document.querySelector(`.no_comment_${publication_id}_js_jheo`)){
+        document.querySelector(`.no_comment_${publication_id}_js_jheo`).remove();
     }
 
+    if( document.querySelector(`.error_comment_${publication_id}_js_jheo`)){
+        document.querySelector(`.error_comment_${publication_id}_js_jheo`).remove();
+    }
+
+    if( document.querySelector(".form_comment_"+ publication_id)){
+        const form_content = document.querySelector(".form_comment_"+ publication_id);
+
+
+        if(form_content.querySelector("input").value != null && form_content.querySelector("input").value.length > 1 ){
+            const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
+            createCardComment(
+                user_id,
+                publication_id,
+                document.querySelector(".main_user_id").getAttribute("data-toggle-full-name"),
+                document.querySelector("#profilPartisant").getAttribute("src"),
+                "maintenant",
+                0,
+                form_content.querySelector("input").value 
+            );
+
+            handleCommentPublished(
+                publication_user_id,
+                publication_id,
+                form_content.querySelector("input").value
+            );
+            ///delete content on form.
+            form_content.querySelector("input").value = null
+        }
+    }
+}
+
+
+function handleChangeComment(publication_id, comment_id){
+    
+
+    const form_content = document.querySelector(".form_comment_"+ publication_id);
+    if(form_content.querySelector("input").value != null && form_content.querySelector("input").value.length > 1 ){
+
+        const card_comment= document.querySelector(`.card_comment_${comment_id}_js_jheo`);
+        card_comment.querySelector(".text_js_jheo").innerText= form_content.querySelector("input").value
+        // document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).innerHTML = "Envoyer";
+
+        const post_publication= document.querySelector(`#pubication_js_${publication_id}_jheo`);
+        const pub_user_id= parseInt(post_publication.getAttribute("data-toggle-pub-user-id"));
+
+        document.querySelector(`.cta_send_notification_${publication_id}_js_jheo`).setAttribute("onclick", `handleAndSentNotification('${publication_id}', '${pub_user_id}')`);
+
+        handleEditComment(
+            publication_id,
+            comment_id,
+            form_content.querySelector("input").value
+        );
+
+        ///delete content on form.
+        form_content.querySelector("input").value = null
+    }
+}
+
+function handleEditComment(publication_id, comment_id, text_comment){
+
+    const request_headers = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept'  : 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({
+            "publication_id": publication_id,
+            "comment_id": comment_id,
+            "comment_text": text_comment
+        })
+    }
+
+    fetch(`/tributG/publications/${publication_id}/comment/${comment_id}/change`, request_headers)
+        .then(response => response.json())
+        .then(response => console.log(response));
 }
 
 function getPub(pub_id, message, confid) {

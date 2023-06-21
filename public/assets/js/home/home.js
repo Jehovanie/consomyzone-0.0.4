@@ -1,5 +1,10 @@
 window.addEventListener('load', () => {
     
+    ///we use this variable to keep track for user search
+    if( localStorage.getItem("type")){
+        rmDataInLocalStorage("type")
+    }
+
     setDataInLocalStorage("type", "tous");
 
     // addMapTous();

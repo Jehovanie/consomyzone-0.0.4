@@ -35,7 +35,7 @@ use App\Service\NotificationService;
 use App\Repository\CodeapeRepository;
 
 use App\Repository\CommuneRepository;
-
+use App\Service\AgendaService;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -357,6 +357,7 @@ class SecurityController extends AbstractController
         NotificationService $notificationService,
         MessageService $messageService,
         VerifyEmailHelperInterface $verifyEmailHelper,
+        AgendaService $agendaService,
         CodeapeRepository $codeApeRep
     ) {
 
@@ -431,6 +432,9 @@ class SecurityController extends AbstractController
         $user->setTablemessage("tablemessage");
         $user->setTablenotification("tablenotification");
         $user->setTablerequesting("tablerequesting");
+        $user->setNomTableAgenda("agenda");
+        $user->setNomTableEventFollowed("event_followed");
+        $user->setNomTablePartageAgenda("partage_agenda");
 
         ///hash password
         $hashedPassword = $passwordHasher->hashPassword(
@@ -454,6 +458,7 @@ class SecurityController extends AbstractController
         $user->setTablemessage("tablemessage_" . $numero_table);
         $user->setTablenotification("tablenotification_" . $numero_table);
         $user->setTablerequesting("tablerequesting_" . $numero_table);
+        $user->setNomTableAgenda("agenda_" . $numero_table);
 
 
 
@@ -461,9 +466,10 @@ class SecurityController extends AbstractController
         $notificationService->createTable("tablenotification_" . $numero_table);
         $messageService->createTable("tablemessage_" . $numero_table);
         $this->requesting->createTable("tablerequesting_" . $numero_table);
-
-
-
+        $agendaService->createTableAgenda("agenda_" . $numero_table);
+        $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+        $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
+        
 
         ///keep the change in the user information
         $entityManager->persist($user);
@@ -508,7 +514,9 @@ class SecurityController extends AbstractController
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-        return $this->redirect($signatureComponents->getSignedUrl());
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
         ///-------------------------------------------------------///
 
 
@@ -541,7 +549,7 @@ class SecurityController extends AbstractController
 
 
     #[Route(path: '/inscription/resend-email', name: 'app_inscription-resend-email', methods: "POST")]
-    public function  resendEmail(Request $request, UserRepository $userRepository, VerifyEmailHelperInterface $verifyEmailHelper,)
+    public function  resendEmail(Request $request, UserRepository $userRepository, VerifyEmailHelperInterface $verifyEmailHelper, MailService $mailService)
     {
 
         //// send the mail
@@ -704,8 +712,7 @@ class SecurityController extends AbstractController
             $departement = strlen($departement) === 1 ? "0". $departement : $departement;
             // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
             $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
-            
-            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG) : $name_tributG;
+            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG,0,30) : $name_tributG;
             $user_profil->setTributg($name_tributG);
 
 
@@ -808,7 +815,8 @@ class SecurityController extends AbstractController
         Tribu_T_Service $tribuTService,
         EntityManagerInterface $entityManager,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        CodeapeRepository $codeApeRep
+        CodeapeRepository $codeApeRep,
+        AgendaService $agendaService
     ) {
 
         if ($this->getUser() || !$request->query->get("email") || !$request->query->get("tribu")) {
@@ -878,6 +886,9 @@ class SecurityController extends AbstractController
             $user->setTablemessage("tablemessage");
             $user->setTablenotification("tablenotification");
             $user->setTablerequesting("tablerequesting");
+            $user->setNomTableAgenda("agenda");
+            $user->setNomTableEventFollowed("event_followed");
+            $user->setNomTablePartageAgenda("partage_agenda");
 
             ///hash password
             $hashedPassword = $passwordHasher->hashPassword(
@@ -895,11 +906,19 @@ class SecurityController extends AbstractController
             $user->setTablemessage("tablemessage_" . $numero_table);
             $user->setTablenotification("tablenotification_" . $numero_table);
             $user->setTablerequesting("tablerequesting_" . $numero_table);
+            $user->setNomTableAgenda("agenda_" . $numero_table);
+            $user->setNomTableEventFollowed("event_followed_" . $numero_table);
+            $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
+
+
 
             ///create table dynamique
             $notificationService->createTable("tablenotification_" . $numero_table);
             $messageService->createTable("tablemessage_" . $numero_table);
             $this->requesting->createTable("tablerequesting_" . $numero_table);
+            $agendaService->createTableAgenda("agenda_" . $numero_table);
+            $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+            $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
 
 
             $entityManager->persist($user);

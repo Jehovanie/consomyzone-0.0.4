@@ -6,26 +6,27 @@ namespace App\Controller;
 
 
 
+use App\Service\Status;
+
 use App\Entity\Consumer;
-
 use App\Entity\Supplier;
-
+use App\Service\FilesUtils;
+use App\Service\MailService;
 use App\Service\AgendaService;
-
 use App\Service\TributGService;
-
 use App\Service\Tribu_T_Service;
-
+use App\Repository\UserRepository;
 use App\Service\NotificationService;
 
 use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
 
 class AgendaController extends AbstractController
 
@@ -630,4 +631,469 @@ class AgendaController extends AbstractController
         return $this->json("Restaurant bien sauvegardé");
 
     }
+
+   
+    #[Route("/user/tribu/agenda", name: "app_agenda")]
+    public function agenda(Status $status)
+    {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        return $this->render("agenda/agenda.html.twig",[
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+        ]);
+    }
+    #[Route("/user/create-event/agenda", name: "app_create_agenda")]
+    public function createEvent(Request $request,AgendaService $agendaService, Filesystem $fs){
+        $agendaTableName=$this->getUser()->getNomTableAgenda();
+        $req=json_decode($request->getContent(),true);
+        dump($req);
+        if( str_contains($req["fileType"],"image"))
+            $path="/public/uploads/users/agenda/files/img/";
+        else if(str_contains($req["fileType"], "application"))
+            $path = "/public/uploads/users/agenda/files/document/";
+        if(!($fs->exists($this->getParameter('kernel.project_dir') . $path)))
+            $fs->mkdir($this->getParameter('kernel.project_dir') . $path,0777);
+        
+        $param=array(
+            ":message"=>$req["agendaMessage"],
+            ":type"=>$req["eventType"],
+            ":confidentialite"=>$req["confidentiality"],
+            ":file_path"=>str_replace("/public","",($path.$req["fileName"])),
+            ":date"=>$req["dateEvent"],
+            ":heure_debut"=>$req["heureD"],
+            ":heure_fin"=>$req["heureF"],
+            ":file_type"=>$req["fileType"],
+            ":status"=>1,
+            ":restaurant"=>$req["restaurant"],
+            ":adresse"=>$req["adresse"],
+            ":max_participant"=>$req["maxParticipant"]
+        );
+        $fileUtils = new FilesUtils();
+        $response = new Response();
+        try{
+            if($req["fileSize"]>0)
+                $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $req["fileBTOA"], $req["fileName"]);
+            else
+                $fs->touch($this->getParameter('kernel.project_dir') . $path. $req["fileName"]);
+        }catch(\Exception $e){
+            $response->setStatusCode(500);
+            return $response;
+        }
+        $requestResponse=$agendaService->createEvent($agendaTableName,$param);
+       
+        if($requestResponse){
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response->setStatusCode(500);
+            return $response;
+        }
+
+
+    }
+    #[Route("/user/agenda", name: "app_get_agenda")]
+    public function getAgenda(AgendaService $agendaService, SerializerInterface $ser){
+        $agendaTableName = $this->getUser()->getNomTableAgenda();
+        $r=$agendaService->getAgenda($agendaTableName);
+        $date= array_column($r, 'date');
+        array_multisort($date, SORT_ASC, $r);
+       
+        $referenceDate=$r[0]["date"];
+        $final=[];
+        $tmp=[];
+        $j=0;
+        for($i=0;$i<count($r);$i++){
+            if($referenceDate ===$r[$i]["date"]){
+                $referenceDate = $r[$i]["date"];
+            }else{
+                $tmp=[];
+                $j++;
+                $referenceDate = $r[$i]["date"];
+            }
+            array_push($tmp,$r[$i]);
+            $final[$j]=$tmp;
+        }
+
+       for($i=0;$i<count($final);$i++){
+            $date = array_column($final[$i], 'heure_debut');
+            array_multisort($date, SORT_ASC, $final[$i]);
+       }
+        //dump($final);
+        $json=$ser->serialize($final,"json");
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route("/user/agenda/up", name: "agenda_update")]
+    public function updateAgendaTom(
+    Request $request, 
+    AgendaService $agendaService,
+    Filesystem $fs){
+        $agendaTableName = $this->getUser()->getNomTableAgenda();
+        $req = json_decode($request->getContent(), true);
+        if (str_contains($req["fileType"], "image"))
+            $path = "/public/uploads/users/agenda/files/img/";
+        else if (str_contains($req["fileType"], "application"))
+            $path = "/public/uploads/users/agenda/files/document/";
+        if (!($fs->exists($this->getParameter('kernel.project_dir') . $path)))
+            $fs->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        
+        $param=array(
+            ":message" => $req["agendaMessage"],
+            ":type" => $req["eventType"],
+            ":confidentialite" => $req["confidentiality"],
+            ":file_path" => str_replace("/public", "", ($path . $req["fileName"])),
+            ":heure_debut" => $req["heureD"],
+            ":heure_fin" => $req["heureF"],
+            ":file_type" => $req["fileType"],
+            ":restaurant" => $req["restaurant"],
+            ":adresse" => $req["adresse"],
+            ":max_participant" => $req["max_participant"],
+            ":id" => $req["id"],
+            
+        );
+
+        $fileUtils = new FilesUtils();
+        $response = new Response();
+        try {
+            if ($req["fileSize"] > 0)
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $req["fileBTOA"], $req["fileName"]);
+            else
+                $fs->touch($this->getParameter('kernel.project_dir') . $path . $req["fileName"]);
+        } catch (\Exception $e) {
+            $response->setStatusCode(500);
+            return $response;
+        }
+        $requestResponse = $agendaService->updateEvent($agendaTableName, $param);
+
+        if ($requestResponse) {
+            $response->setStatusCode(200);
+            return $response;
+        } else {
+            $response->setStatusCode(500);
+            return $response;
+        }
+        
+
+    }
+
+    #[Route("/user/agenda/up/status", name: "agenda_update_status")]
+    public function updateAgendaStatusTom(Request $request,AgendaService $agendaService){
+        $agendaTableName = $this->getUser()->getNomTableAgenda();
+        $req = json_decode($request->getContent(), true);
+        $param=array(
+            ":status"=>0,
+            ":id"=>$req["id"]
+        );
+        $requestResponse= $agendaService->updateEventStatus($agendaTableName,$param);
+        $response = new Response();
+        if ($requestResponse) {
+            $response->setStatusCode(200);
+            return $response;
+        } else {
+            $response->setStatusCode(500);
+            return $response;
+        }
+        
+    }
+
+    #[Route("/user/agenda/restpastil", name:"agenda-pastille")]
+    public function agendaRestPastille(Tribu_T_Service $servT, 
+    AgendaService $agendaService,
+    Status $status,
+    SerializerInterface $jsonSerializer){
+        $d = $servT->getAllTribuTJoinedAndOwned($this->getUser()->getId());
+        $joinedTribuT = !is_null( $d[0]["tribu_t_joined"] ) ? json_decode($d[0]["tribu_t_joined"], true) : [];
+        $ownedTribuT =  !is_null( $d[0]["tribu_t_owned"] ) ? json_decode($d[0]["tribu_t_owned"], true) : [];
+        
+        $r=$agendaService->getRestoPastilled($joinedTribuT, $ownedTribuT,$servT);
+        $json =$jsonSerializer->serialize($r,'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+      
+        
+    }
+    #[Route("/f", name: "agenda-f")]
+    public function shareAgendaInPublication(AgendaService $agendaService){
+            $tableAgenda=$this->getUser()->getNomTableAgenda();
+            $nom=$this->getUser()->getPseudo();
+            $userId= $this->getUser()->getId();
+            $r =$agendaService->shareAgendaInPublication($tableAgenda, "tribu_t_1_banane_publication",$userId,$nom,18);
+
+            $response=new Response();
+            if($r){
+                return $response->setStatusCode(200);
+            }else{
+                return $response->setStatusCode(500);
+            
+            }
+    }
+
+    #[Route("/page/test/confirmations/agenda-partager/{userID_sender}", name: "app_agenda_page_test_confirmations", methods: "GET")]
+    public function test_agenda_page_test_confirmations(
+        $userID_sender
+    ){
+
+        return $this->render("test_agenda_page_test_confirmations.html.twig",[
+            "userID_sender" => $userID_sender
+        ]);
+    }
+
+
+    #[Route("/confirmation/agenda/{userID_sender}/{agendaID}/partager/{userID}/{isAccepted}" , name: "app_agenda_confirmation", methods: "GET")]
+    public function agendaConfirmationEmail(
+        $userID_sender,
+        $agendaID,
+        $userID,
+        $isAccepted,
+        UserRepository $userRepository,
+        AgendaService $agendaService,
+        NotificationService $notificationService,
+        TributGService $tributGService
+    ){
+        $user_sender = $userRepository->findOneBy(["id" => intval($userID_sender)]); /// user entity (sender)
+        $user_sender_fullname= $tributGService->getFullName(intval($userID_sender)); /// user full name (sender)
+
+
+        $user= $userRepository->findOneBy(["id" => intval($userID)]); /// user entity (qui confirm)
+        $user_fullname= $tributGService->getFullName(intval($userID)); /// user full name (qui confirm)
+
+        $table_partage_user_sender= $user_sender->getNomTablePartageAgenda(); /// table partage agenda name (sender)
+
+        //// check if this user is already confirm this partage: (may be by "email" or "pub" and "accept" or "refuse")
+        if( $agendaService->chackIfAlreadyAcceptedAgenda($table_partage_user_sender, $agendaID, $userID )){
+
+            /// send notification for the user that his confirm
+            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez déjà répond cet agenda partager." );
+
+            return  $this->redirectToRoute("app_account");
+        }
+
+        ///Handle confirm form the user ( may be accept or reject )
+        $result= $agendaService->setConfirmPartageAgenda($userID_sender, $agendaID,$userID,"email", !!$isAccepted); /// -1: error / 0: max atteint / 1: persite 
+
+        if( intval($result) === 0 ){
+            /// max participant atteint
+            if( !!$isAccepted ){
+                $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheusement le nombre maximum de participant est atteint.";
+            }else{
+                $message= "Vous venez de refuser un agenda créé par " . $user_sender_fullname;
+            }
+
+            /// send  notification for the user that is request is reject because max atteint
+            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", $message );
+
+        }else if( intval($result) === 1 ){  //// accepted reussir
+            /// send  notification for the user this is request is persist.
+            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez accepté un agenda créer par " . $user_sender_fullname . ".");
+            
+            /// send  notification for the user that is creat this agenda someone accept her partage.
+            $notificationService->sendNotificationForOne($userID, $userID_sender,"Accepted Agenda", $user_fullname . " a accepté votre agenda partager");
+
+
+            //// Persiste agenda to the user accepte.
+            $agendaService->setEventFollowed($userID, $agendaID);
+        }
+
+        dd("Confirmation agenda partager via email");
+
+        return  $this->redirectToRoute("app_account");
+    }
+
+
+    #[Route("/user/agenda/shares", name: "app_shares_agenda", methods:"POST")]
+    public function shareAgendaForAll(
+        Request $request,
+        AgendaService $agendaService,
+        TributGService $tributGService,
+        Tribu_T_Service $tribuTService,
+    ){
+
+        if( !$this->getUser()){
+            return $this->json([ "message" => "No authorization"],401);
+        }
+
+        $agendaTableName = $this->getUser()->getNomTableAgenda();  /// table agenda  name
+        $table_partage_agenda = $this->getUser()->getNomTablePartageAgenda();  /// table partage agenda  name
+
+        //// data in request post
+        $req = json_decode($request->getContent(), true);
+        extract($req); ///  $agendaID , $shareFor
+        
+        if( intval($shareFor) === 1 ){ ///share for all
+            
+            $confidentialite_agenda= $agendaService->getConfidentialite($agendaTableName, $agendaID); /// Confidentialite : partager for ( tribu G or tribu T )
+
+            if(array_key_exists("confid", $confidentialite_agenda)){
+                extract($confidentialite_agenda); /// $confid
+            }
+
+            if( $confid === "Tribu-G"){
+                $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
+
+                ///Check if this agenda is already share
+                if( $agendaService->isAleardyShare($table_partage_agenda, $agendaID)){
+                    return $this->json(["message" => "Vous avez déjà partagé cet agenda.","status" => "alreadyShare"]);
+                }
+
+                ////get information( userID, fullName ) for all user in this tribu G
+                $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
+
+                ///Settings table Agenda Partage.
+                $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_users_tribuG);
+
+                // foreach($all_users_tribuG as $user_in_tribuG){
+                //     // extract($user_in_tribuG); /// $userID, $fullName
+                    
+                //     ///send email de confirmation s'il est va accepter ou refuser.
+                //     dump($user_in_tribuG);
+                // }
+                // dd("atreo");
+            }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
+                
+                ///get all tribu T create bu this user 
+                $all_tribuT= $tribuTService->getAllTribuT($this->getUser()->getId());
+                
+                return $this->json(["message" => "Partage for tribu T", "status" => "tribuT", "all_tribugT" => $all_tribuT]);
+
+            }else{ /// Moi uniquement
+
+            }
+
+        }else{
+            /// share for little persone
+        }
+
+
+        return $this->json(["message" => "Agenda partager" ,"status" => "ok"]);
+    }
+
+
+
+
+    #[Route("/agenda/presence/send/link/{agenda_id}", name: "agenda_send_presence_link")]
+    public function sendPresenceLink($agenda_id, 
+    MailService $mailService, 
+    AgendaService $agendaService, 
+    UserRepository $userRepository,
+    TributGService $tributGService,
+    NotificationService $notification
+    ): Response
+    {
+
+        $user = $this->getUser();
+
+        if($user){
+
+            $userId = $user->getId();
+    
+            $email_from = $user->getEmail();
+    
+            $object = "Lien pour faire de la présence";
+    
+            $listParticipant = $agendaService->sendPresenceLink("partage_agenda_".$userId, $agenda_id);
+    
+            //$infos = array();
+            $description = "";
+        
+            $list = array();
+
+            $body = $tributGService->getFullName($userId) . " vous a envoyé un lien pour votre présence à son agenda numéro " . $agenda_id . "
+            .\n Veuillez vérifier le lien dans votre adresse email";
+    
+            if(count($listParticipant) > 0){
+    
+                foreach ($listParticipant as $key) {
+                    $id = $key["user_id"];
+                    $email_to = $userRepository->findOneBy(["id" => $id])->getEmail();
+                    $link = $this->generateUrl("agenda_set_presence", array("table_partage_agenda" => "partage_agenda_".$userId, "agenda_id" => $agenda_id, "userId" => $id), UrlGeneratorInterface::ABSOLUTE_URL);
+                    $mailService->sendEmail(
+                        $email_from,
+                        $tributGService->getFullName($userId),
+                        $email_to,
+                        $tributGService->getFullName($id),
+                        $object,
+                        $description . "\nVeuillez cliquer le lien ci-dessous pour valider votre présence.\n" . $link
+                    );
+    
+                    $agendaService->setTimeOut("partage_agenda_".$userId, $id, $agenda_id, 15, "M");
+
+                    $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id, "presence_link", $body, null);
+        
+                    //array_push($list,$email_to);
+                    //array_push($infos, ["id" => $id, "fromName" => $tributGService->getFullName($userId), "email_from" => $email_from, "toName" => $tributGService->getFullName($id), "email_to" => $email_to]);
+                }
+
+                return $this->json("Lien bien envoyé");
+    
+            }else{
+                return $this->json("Aucune invitation accepté");
+            }
+        }else{
+            return $this->json("Vous êtes déconnecté ! Veuillez vous reconnecter !");
+        }
+
+    }
+
+    #[Route("/agenda/set/presence/{table_partage_agenda}/{agenda_id}/{userId}", name: "agenda_set_presence")]
+    public function setPresence(
+    $table_partage_agenda,
+    $agenda_id,
+    $userId,
+    MailService $mailService, 
+    AgendaService $agendaService, 
+    UserRepository $userRepository,
+    TributGService $tributGService,
+    NotificationService $notification
+    )
+    {
+
+        $timeOut = $agendaService->getTimeOut($table_partage_agenda, $userId, $agenda_id);
+
+        $now = new \DateTime();
+
+        $bigSeconds = $now->getTimestamp();
+
+        if($timeOut >= $bigSeconds){
+
+            $agendaService->setPresence($table_partage_agenda, $userId, $agenda_id);
+
+            /** SEND EMAIL FOR AGENDA CREATOR */
+            $id_creator = explode("_", $table_partage_agenda)[2];
+            $email_to_creator = $userRepository->findOneBy(["id" => $id_creator])->getEmail();
+            $creator_name = $tributGService->getFullName($id_creator);
+            $email_from = $userRepository->findOneBy(["id" => $userId])->getEmail();
+            $senderName = $tributGService->getFullName($userId);
+
+            $body = $creator_name . " vient de faire sa présence pour l'agenda numéro " . $agenda_id;
+
+            $mailService->sendEmail(
+                $email_from,
+                $senderName,
+                $email_to_creator,
+                $creator_name,
+                "Présence pour l'agenda numéro " . $agenda_id,
+                $body
+            );
+
+            $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_creator, "presence_agenda", $body, null);
+
+            return $this->redirectToRoute("agenda_presence_success");
+
+        }else{
+            return $this->redirectToRoute("agenda_presence_expired");
+        }
+
+    }
+
+    #[Route("/agenda/presence/expired", name: "agenda_presence_expired")]
+    public function presenceExpired() : Response
+    {
+        return $this->render('agenda/presence_expired.html.twig');
+    }
+
+    #[Route("/agenda/presence/success", name: "agenda_presence_success")]
+    public function presenceSuccess() : Response
+    {
+        return $this->render('agenda/presence_success.html.twig');
+    }
+
 }

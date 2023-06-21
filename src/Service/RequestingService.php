@@ -13,8 +13,9 @@ class RequestingService extends PDOConnexionService
 {
 
     private $u;
-    public function __construct(UserRepository $u){
-        $this->u=$u;
+    public function __construct(UserRepository $u)
+    {
+        $this->u = $u;
     }
     public function createTable($table_name)
     {
@@ -41,13 +42,19 @@ class RequestingService extends PDOConnexionService
         }
     }
 
-    public function setRequesting($tableName, $user_post, $user_received, $types, $content,$balise)
+    public function setRequesting($tableName, $user_post, $user_received, $types, $content, $balise)
     {
-        
+
         $sql = "INSERT INTO $tableName (user_post, user_received, types,content,balise) VALUES (?,?,?,?,?)";
         $statement = $this->getPDO()->prepare($sql);
-        $statement->execute([$user_post, $user_received, $types, $content,$balise]);
-    }		public function setRequestingTribut($tableName, $user_post, $user_received, $types, $content,$balise)    {                $sql = "INSERT INTO $tableName (user_post, user_received, types,content,balise,is_tribu) VALUES (?,?,?,?,?,?)";        $statement = $this->getPDO()->prepare($sql);        $statement->execute([$user_post, $user_received, $types, $content,$balise,1]);    }
+        $statement->execute([$user_post, $user_received, $types, $content, $balise]);
+    }
+    public function setRequestingTribut($tableName, $user_post, $user_received, $types, $content, $balise)
+    {
+        $sql = "INSERT INTO $tableName (user_post, user_received, types,content,balise,is_tribu) VALUES (?,?,?,?,?,?)";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute([$user_post, $user_received, $types, $content, $balise, 1]);
+    }
 
     ///from Nanta
     // public function setRequesting($tableName, $user_post, $user_received, $types, $tribu, $content){
@@ -56,7 +63,7 @@ class RequestingService extends PDOConnexionService
     //     $statement->execute([$user_post, $user_received,$types,$tribu,$content]);
     // }
 
-	public function setIsAccepted($tableName,  $table_requestin_balise, $user_post, $user_received )
+    public function setIsAccepted($tableName,  $table_requestin_balise, $user_post, $user_received)
     {
         $sql = "UPDATE $tableName SET is_accepted = 1, is_wait = 0 WHERE is_wait = 1 AND user_post = '$user_post' AND user_received = '$user_received' AND  balise = '$table_requestin_balise'";
         $statement = $this->getPDO()->prepare($sql);
@@ -65,7 +72,7 @@ class RequestingService extends PDOConnexionService
 
     // public function setIsRejected($tableName, $invitation_id){
     //     $sql = "UPDATE $tableName SET is_rejected = 1, is_wait = 0 WHERE id = $invitation_id";
-    public function setIsRejected($tableName,  $table_requestin_balise, $user_post, $user_received )
+    public function setIsRejected($tableName,  $table_requestin_balise, $user_post, $user_received)
     {
         $sql = "UPDATE $tableName SET is_rejected = 1, is_wait = 0 WHERE is_wait = 1 AND  user_post = '$user_post' AND user_received = '$user_received' AND  balise = '$table_requestin_balise'";
         $statement = $this->getPDO()->prepare($sql);
@@ -74,33 +81,34 @@ class RequestingService extends PDOConnexionService
 
     public function setIsCancel($tableName, $table_requestin_balise, $user_post, $user_received)
     {
-        
+
         $sql = "UPDATE $tableName SET is_cancelled = 1, is_wait = 0 WHERE is_wait = 1 AND user_post = '$user_post' AND user_received = '$user_received' AND balise = '$table_requestin_balise'";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
     }
-    
+
     public function getAllRequest($tableName)
     {
         $sql = "SELECT * FROM $tableName t ";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
-        $ts=$statement->fetchAll(PDO::FETCH_ASSOC);
-        $result=[];
-        foreach ( $ts as $t ){
-            $uPoster=$this->u->find($t["user_post"]);
-            $uReceiver=$this->u->find($t["user_received"]);
-             
-            $tmp["requesting"]=$t;
-            $tmp["userReceiving"]=(array)$uReceiver;
+        $ts = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = [];
+        foreach ($ts as $t) {
+            $uPoster = $this->u->find($t["user_post"]);
+            $uReceiver = $this->u->find($t["user_received"]);
+
+            $tmp["requesting"] = $t;
+            $tmp["userReceiving"] = (array)$uReceiver;
             $tmp["uPoster"] = (array)$uPoster;
-            array_push($result,$tmp);
+            array_push($result, $tmp);
         }
         return $result;
     }
 
     //select balise from tablerequesting_5 where balise = "tribug_01_ville_nord_oyonnax75";
-    public function showInvitation($tableName){
+    public function showInvitation($tableName)
+    {
         $sql = "SELECT * FROM $tableName WHERE types = 'invitation'";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
@@ -108,12 +116,12 @@ class RequestingService extends PDOConnexionService
         return $result;
     }
 
-    public function showDemande($tableName){
+    public function showDemande($tableName)
+    {
         $sql = "SELECT * FROM $tableName WHERE types = 'demande'";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-
 }

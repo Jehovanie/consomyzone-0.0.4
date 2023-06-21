@@ -1,13 +1,8 @@
- <div class="content_publication_js_jheo mb-2 mt-4">
-    {% if tributG.publications is defined %}
-        {% for pub in tributG.publications %}
-            <div class="publication_js_jheo"
-                id={{"pubication_js_" ~ pub.id ~ "_jheo" }}
-                data-toggle-pub-id={{pub.id}}
-                data-toggle-pub-user-id={{pub.user_id}}
-            >
-                <div class="card mb-2">
+<div class="content_publication_js_jheo mb-2">
+	{% if tributG.publications is defined %}
+		{% set last_pub_id= 0 %}
 
+<<<<<<< HEAD
                     <div class="card-header header_mobile">
 
                         <a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
@@ -77,82 +72,193 @@
                             </span>
                         </p>
                     </div>
+=======
+		{% for pub in tributG.publications %}
+>>>>>>> main
 
 
-                    <div class="card-footer foot">
-                        <div class="row text-center">
-                            <div class="col-4 ">
-                                <span>
-                                    <span id={{"nbr_reaction_pub_" ~ pub.id }}> 
-                                        {{(pub.reactions|length ) > 0 ? pub.reactions|length : "" }}
-                                    </span>
+			{% if pub.confidentiality == 1 or pub.user_id == app.user.id %}
+				<div class="publication_js_jheo" id={{"pubication_js_" ~ pub.id ~ "_jheo" }} data-toggle-pub-id={{pub.id}} data-toggle-pub-user-id={{pub.user_id}}>
+					<div class="card-pub-g mb-2 row">
+						<div class="col-1 profil_publication">
+							<img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (pub.photo_profil != null) ? pub.photo_profil : asset('uploads/users/photos/img_avatar.png') }}>
+						</div>
+						<div class="header_mobile col-8">
+							<a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
+								<i>{{pub.userfullname}}</i>
+							</a>
+							<p class="card-text">
+								<i>
+									<small class="text-muted">Publié le
+										{{pub.datetime}}
+									</small>
 
-                                    {# {% dump( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) %} #}
-                                    <i class='{{ "reaction_js_" ~ pub.id ~ "_jheo"}} {{( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) ?  "bi-heart-fill" : "bi-heart" }}'
-                                        onclick="isLike({{pub.id}}, {{pub.user_id}})" style="cursor:pointer;">
-                                    </i>
-                                    
-                                </span>
-                            </div>
-                            <div class="col-4">
-                                <span id={{"nbr_comment_pub_" ~ pub.id }}>
-                                    {{(pub.comments|length ) > 0 ? pub.reactions|length : "" }}
-                                </span>
-                                <a data-bs-toggle="collapse" href={{"#collapse_comment_" ~  pub.id }} onclick="fetchNotification({{pub.id}})">
-                                    <i class="bi bi-chat-square"></i>
-                                </a>
-                            </div>
-                            <div class="col-4 souri-non-utilise">
-                                <a data-bs-toggle="collapse" href="#" role="button" class="souri-non-utilise">
-                                    1
-                                    <i class="bi bi-share souri-non-utilise"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+								</i>
 
-                    <div class="collapse m-2" id={{"collapse_comment_" ~ pub.id }}>
-                        <div class="card card-body">
-                            <label style="display:none;">Commentaires</label>
+								<span class="badge text-bg-primary" style="background-color:#0d6efd;">
+									<i class="bi bi-eye-fill"></i>
 
-                            <div class="content_notification_tributg mb-3">
+									{% if pub.confidentiality == 1 %}
+										Publique
+									{% else %}
+										Moi uniquement
+									{% endif %}
+								</span>
+							</p>
 
-                                {# <div class="card my-2">
-                                    <div class="card-body">
-                                        <h5 >Fulle Name</h5>
-                                        <span class="blockquote-footer">date time</span>
-                                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                    </div>
-                                </div> #}
+							{# <i class="bi bi-play-fill"></i>
 
-                            </div>
+							<a href="#" style="text-decoration:none;">
+								<i class="bi bi-collection"></i>
+								{{tributG.profil.name}}
+							</a> #}
 
-                            <form class={{ "form_comment_" ~ pub.id }} >
-                                <div class="mb-3 row">
-                                    <div class="row" id="soundClips"></div>
-	
-                                    <div class="col-1 text-center">
-                                        <i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
-                                        <i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
-                                    </div>
-                                    <div class="col-11 mt-1">
-                                        <textarea class="form-control" name="commentaire" placeholder = "Votre commentaire..." required></textarea>
-                                        <span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
-                                    </div>
-                                    <div class="row" id="audiosPlayer"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-8"></div>
-                                    <div class="col-4 ">
-                                        <input type="button" value="Envoyer" class="btn btn-primary float-end">
-                                    </div>
-                                </div>
-                            </form>
+							
+						</div>
+						
+						<div class="col-2">
+							{% if pub.user_id == app.user.id %}
+								<span class="float-end dropstart">
+									<span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+										<i class="bi bi-three-dots" style="cursor:pointer"></i>
+									</span>
+									<ul class="dropdown-menu">
+										<li>
+											<button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
+												<i class="fas fa-edit"></i>
+												Modifier
+											</button>
+										</li>
+										<li>
+											<button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
+												<i class="fas fa-trash" aria-hidden="true"></i>
+												Supprimer
+											</button>
+										</li>
+									</ul>
+								</span>
+							{% endif %}
+						</div>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    {% endif %}
-</div> 
+						<div class="card-body">
+
+							<p class="card-text">{{pub.publication}}</p>
+
+							{% if pub.photo  %}
+								<div style="max-heigth:100%; max-width: 100%;">
+									<img width="100%" src={{asset('uploads/tribu_g/photos/') ~ pub.photo }} class="" alt="image publication">
+								</div>
+							{% endif %}
+
+							
+						</div>
+
+						<hr class="hr-g">
+						<div class="card-footer foot">
+							<div class="row text-center">
+								<div class="col-6 ">
+									<span>
+										<span id={{"nbr_reaction_pub_" ~ pub.id }}>
+											{{(pub.reactions|length ) > 0 ? pub.reactions|length : "" }}
+										</span>
+										<i class='{{ "reaction_js_" ~ pub.id ~ "_jheo"}} {{( (pub.reactions|filter(v => v.user_id|number_format == app.user.id ))|length > 0 ) ? "bi-heart-fill" : "bi-heart" }}' onclick="isLike({{pub.id}}, {{pub.user_id}})" style="cursor:pointer;"></i>
+									</span>
+								</div>
+								<div class="col-6">
+									<span id={{"nbr_comment_pub_" ~ pub.id }}>
+										{{(pub.comments|length ) > 0 ? pub.reactions|length : "" }}
+									</span>
+									
+									{# <a data-bs-toggle="collapse" href={{"#collapse_comment_" ~ pub.id }} onclick="fetchNotification({{pub.id}})"> #}
+									<a data-bs-toggle="modal" data-bs-target='{{"#modal_comment_publication_" ~ pub.id }}' data-bs-whatever="@mdo" onclick="fetchNotification({{pub.id}})">
+										<i class="fa-regular fa-comment comment"></i>
+									</a>
+								</div>
+							</div>
+						</div>
+
+
+						<!-- Modal comment publication-->
+						<div class="modal fade" id='{{"modal_comment_publication_" ~ pub.id }}' tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5" id="exampleModalLabel">Commentaire de publication de {{pub.userfullname}}</h1>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class='{{"modal-body" ~ " content_comment_" ~ pub.id ~ "_js_jheo" }}'>
+										<div class="content_notification_tributg mb-3">
+											<div class="content_loading_js_jheo">
+												<div class="spinner-border text-primary d-block mx-auto" role="status">
+													<span class="visually-hidden">Loading...</span>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<hr>
+									<div class="comment_footer p-3 pt-0">
+										<form class={{ "form_comment_" ~ pub.id }}>
+											<div class="content_form_comment d-flex justify-content-end align-items-center">
+												<div id="soundClips"></div>
+
+												{# <div class="col-1 text-center">
+													<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+													<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+												</div> #}
+												<div id="audiosPlayer"></div>
+												<input class='{{ "text_input_comment text_input_" ~ pub.id ~ "_js_jheo" }}' name="commentaire" placeholder="Votre commentaire..." required>
+												<i class='{{"fa-solid fa-paper-plane float-end cta_send_notification_" ~ pub.id ~ "_js_jheo" }}' onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})"></i>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Modal-->
+
+						{# <div class="collapse m-2" id={{"collapse_comment_" ~ pub.id }}>
+							<div class="card card-body">
+								<label style="display:none;">Commentaires</label>
+
+								<div class="content_notification_tributg mb-3"></div>
+
+								<form class={{ "form_comment_" ~ pub.id }}>
+									<div class="mb-3 row">
+										<div class="row" id="soundClips"></div>
+
+										<div class="col-1 text-center">
+											<i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+											<i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+										</div>
+										<div class="col-12 ">
+											<textarea class='{{ "form-control text_input_" ~ pub.id ~ "_js_jheo" }}' name="commentaire" placeholder="Votre commentaire..." required></textarea>
+											<span class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+										</div>
+										<div class="row" id="audiosPlayer"></div>
+									</div>
+
+									<Button type="button"  value="" class='{{"btn btn-primary float-end cta_send_notification_" ~ pub.id ~ "_js_jheo" }}' onclick="handleAndSentNotification({{pub.id}}, {{pub.user_id}})">
+										Envoyer
+									</Button>
+								</form>
+
+							</div>
+						</div> #}
+					</div>
+				</div>
+			{% endif %}
+
+			{% set last_pub_id= pub.id %}
+		{% endfor %}
+
+		{% if last_pub_id != 0 and  last_pub_id != 1  %}
+			<div class="content_chargement_publication content_chargement_publication_js_jheo mt-3" data-toggle-pub-id={{last_pub_id}} >
+				<div class="spinner-border text-primary" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		{% endif %}
+
+	{% endif %}
+</div>

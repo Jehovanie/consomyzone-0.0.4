@@ -27,6 +27,14 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
             document.querySelector("#fetch_member_tribug_js_jheo").classList.remove("text-white")
             document.querySelector("#fetch_member_tribug_js_jheo").classList.add("text-primary")
         }
+
+        document.querySelector(".content_bloc_js_jheo").innerHTML = `
+            <div class="spinner-grow text-info d-block mx-auto" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+
+
         fetch("/tributG/photos")
             .then(response => {
                 if (!response.ok) {
@@ -47,6 +55,10 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
                     document.querySelector(".content_bloc_js_jheo").innerHTML = response;
 
                     setGallerie(document.querySelectorAll("#gallery > img"))
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
                 }
             }).catch(error => {
                 console.log(error)
@@ -54,10 +66,18 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
     })
 }
 
+<<<<<<< HEAD
 /**
 * Upload photos
 */
 var loadFile = (event) => {
+=======
+
+/**
+* Upload photos
+*/
+function loadFile (event){
+>>>>>>> main
 
     let new_photo = document.createElement("img")
     new_photo.setAttribute("data-bs-toggle","modal")

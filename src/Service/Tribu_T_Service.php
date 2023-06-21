@@ -4,11 +4,10 @@
 
 namespace App\Service;
 
-
-
+use ArgumentCountError;
+use Exception;
 use PDO;
-
-
+use PDOException;
 
 class Tribu_T_Service extends PDOConnexionService
 
@@ -55,13 +54,7 @@ class Tribu_T_Service extends PDOConnexionService
                 id VARCHAR(300) NOT NULL PRIMARY KEY , 
 
                 user_id int(11) NULL,
-
-                name VARCHAR(250) NOT NULL DEFAULT '" . $name . "',
-
-                description VARCHAR(250) NOT NULL DEFAULT '" . $description . "',
-
-                avatar VARCHAR(250) NULL,
-
+                
                 roles VARCHAR(300) NOT NULL, 
 
                 status TINYINT(1) DEFAULT 0, 
@@ -300,8 +293,6 @@ class Tribu_T_Service extends PDOConnexionService
 
         }
 
-
-
         return $response;
 
     }
@@ -482,15 +473,15 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function setTribuT($tableTribut, $userId)
+    function setTribuT($tribu_T_name, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join)
 
     {
 
 
 
-        $fetch = $this->getPDO()->prepare("SELECT tribu_t FROM user WHERE id  = $userId");
+        $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
 
-
+        
 
         $fetch->execute();
 
@@ -499,24 +490,42 @@ class Tribu_T_Service extends PDOConnexionService
         $result = $fetch->fetch(PDO::FETCH_ASSOC);
 
 
-
-        $list = $result["tribu_t"];
-
-
-
-        if ($list == "") {
+        $date = \getdate();
+        $list = $result[$tribu_t_owned_or_join];
+   
+        if (!isset($list)) {
+            $array=array("tribu_t"=>array("name"=> $tribu_T_name,"description"=> $description,"extension"=> $extenstion,"logo_path"=>$path,"date"=>  $date));
+            $array1= json_encode($array);
 
             //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t = CONCAT(tribu_t, ';$tableTribut') WHERE id  = $userId");
 
             //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='".$tableTribut."' WHERE id  = $userId");
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='[\"" . $tableTribut . "\"]' WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array1 ."' WHERE id  = $userId");
 
         } else {
+            $array1= json_decode($list, true);
+           
+            $tmp = [];
+            $array =[];
+            
+            try{
+                array_push($tmp, ...$array1["tribu_t"]);
+            }catch(ArgumentCountError $e){
+                array_push($tmp, $array1["tribu_t"]);
+            }finally{
+                array_push($tmp, array("name" => $tribu_T_name, "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
+                $array = array("tribu_t" => $tmp);
+            }
 
+
+            if ($_ENV['APP_ENV'] == 'dev') 
+                dump($array);
+            
+            $array2 = json_encode($array);
             //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='".$list.";".$tableTribut."' WHERE id  = $userId");
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET tribu_t = JSON_ARRAY_APPEND (tribu_t, '$', '" . $tableTribut . "') WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array2."' WHERE id  = $userId");
 
         }
 
@@ -528,6 +537,15 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+
+    function getTribuTInfo($tribu_t_name){
+
+        $sql="SELECT *,tribu.roles as tribu_t_roles FROM $tribu_t_name as tribu LEFT JOIN user as u ON u.id=tribu.user_id WHERE tribu.roles = 'Fondateur'" ;
+        $exec=$this->getPDO()->prepare($sql);
+        $exec->execute();
+        return $resultat = $exec->fetch(PDO::FETCH_ASSOC);
+
+    }
 
 
     function fetchTribuT($userId)
@@ -554,13 +572,13 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function fetchJsonDataTribuT($userId)
+    function fetchJsonDataTribuT($userId,$tribu_t_owned_or_join)
 
     {
 
 
 
-        $statement = $this->getPDO()->prepare("SELECT json_extract(tribu_t, '$') as result FROM user WHERE id  = $userId");
+        $statement = $this->getPDO()->prepare("SELECT json_extract($tribu_t_owned_or_join, '$') as result FROM user WHERE id  = $userId");
 
 
 
@@ -1089,7 +1107,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function showAvatar($table, $id){
 
-
+        // dd($table);
 
         $sql = "SELECT avatar, roles FROM $table WHERE user_id = $id";
 
@@ -1219,7 +1237,11 @@ class Tribu_T_Service extends PDOConnexionService
 
             denomination_f VARCHAR(250) NOT NULL,
 
-            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB";
+            datetime timestamp NOT NULL DEFAULT current_timestamp(),
+
+            CONSTRAINT cst_id_resto UNIQUE (id_resto)
+            
+            )ENGINE=InnoDB";
         
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -1345,6 +1367,7 @@ class Tribu_T_Service extends PDOConnexionService
         as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id) as tb INNER JOIN bdd_resto ON tb.id_resto=bdd_resto.id";
 
         $stmt = $this->getPDO()->prepare($sql);
+         
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -1362,7 +1385,123 @@ class Tribu_T_Service extends PDOConnexionService
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    
+    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits){
+        if($idMin == 0){
+            $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+            . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
+           
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }else{
+            $sql = "SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+            . "as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id < :idmin ORDER BY id DESC LIMIT :limits";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }
+       
+    }
 
+    public function putCommentOnPublication($tableCommentaireName, 
+    $user_id,
+    $pub_id,
+    $commentaire,
+    $userFullname,
+    ){
+        
+        $datetime = new \DateTime();
+        $datetime=$datetime->format('Y-m-d H:i:s');
+        $array=array(
+            ":user_id"=>$user_id,
+            ":pub_id"=> $pub_id,
+            ":commentaire"=> $commentaire,
+            ":userFullname"=>$userFullname,
+           ":datetime"=>$datetime
+            
+        );
+        $sql="INSERT INTO $tableCommentaireName (user_id,pub_id,commentaire,userFullname,datetime) 
+        values(:user_id,:pub_id,:commentaire,:userFullname,:datetime)";
+        $stmt = $this->getPDO()->prepare($sql);
+        return $stmt->execute($array);
+    }
+
+    public function getCommentPubTribuT($tableCommentaireTribu_t,$idPub,$idMin,$limits){
+        //SELECT * FROM `tribu_t_1_banane_commentaire` as t1  LEFT JOIN user  as t2 on t1.user_id = t2.id where t1.id < 10 ORDER BY t1.id DESC LIMIT 3;
+        if($idMin == 0){
+            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1 WHERE t1.pub_id=:pub_id ORDER BY t1.id DESC LIMIT :limits";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
+            $stmt->bindValue(':pub_id', $idPub, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }else{
+            $sql = "SELECT * FROM $tableCommentaireTribu_t as t1 WHERE t1.id < :idmin and t1.pub_id =:pub_id ORDER BY t1.id DESC LIMIT :limits";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':idmin', $limits, PDO::PARAM_INT);
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
+            $stmt->bindValue(':pub_id', $idPub, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }
+        
+    }
+
+    public function getPartisanOfTribuT($tableTribuT){
+        $sql= "SELECT * FROM $tableTribuT as t1 left join (".
+        "SELECT id,type, case type when 'consumer' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName',".
+        "lastname,'adresse_postale',adresse_postale,'photo_profil',photo_profil,'tribuG',tributg) as infos FROM consumer as c where c.user_id= u.id)".
+        "when 'supplier' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName', lastname,".
+        "'adresse_postale',adresse_postale,'photo_profil',photo_profil,'tribuG',tributg)as infos FROM supplier as c where c.user_id= u.id)".
+        "end infos_profil from user as u ) as t2 on t2.id=t1.user_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all list of the table tribu T creat for this one persone
+     * 
+     * @param string $userID : ID of the agenda to partage
+     * 
+     * @return array list of the table tribu T.
+     */
+    public function getAllTribuT($userID){
+
+        $results = array();
+        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%', '%restaurant%'];
+        
+        $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribu_t_%'";
+        foreach($tab_not_like as $not_like ){
+            $query_sql .= " AND table_name NOT LIKE '$not_like' ";
+        }
+        $statement = $this->getPDO()->prepare($query_sql);
+        $statement->execute();
+        $all_tables = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $all_tables;
+    }
+
+    
+    public function getAllTribuTJoinedAndOwned($id){
+        $sql= "SELECT tribu_t_joined,tribu_t_owned FROM `user` WHERE id=$id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
 }
 

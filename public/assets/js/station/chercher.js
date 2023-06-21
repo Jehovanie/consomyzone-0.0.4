@@ -1,17 +1,21 @@
 // console.log(DEP)
 
-document.querySelector(".recherche-input-station-tom-js").onkeyup =(e) => {
-    if (e.code === "Enter" || e.code === "NumpadEnter") { 
-        redirectToSearch(e.target.value)
+if(document.querySelector(".recherche-input-station-tom-js")){
+    document.querySelector(".recherche-input-station-tom-js").onkeyup =(e) => {
+        if (e.code === "Enter" || e.code === "NumpadEnter") { 
+            redirectToSearch(e.target.value)
+        }
     }
 }
 
-document.querySelector(".content_input_search_dep_jheo_js").addEventListener("submit", (e) =>{
-    e.preventDefault();
-    if(document.querySelector(".input_search_dep_mobile_jheo_js").value){
-        redirectToSearch(document.querySelector(".input_search_dep_mobile_jheo_js").value)
-    }
-})
+if(document.querySelector(".content_input_search_dep_jheo_js")){
+    document.querySelector(".content_input_search_dep_jheo_js").addEventListener("submit", (e) =>{
+        e.preventDefault();
+        if(document.querySelector(".input_search_dep_mobile_jheo_js").value){
+            redirectToSearch(document.querySelector(".input_search_dep_mobile_jheo_js").value)
+        }
+    })
+}
 
 function redirectToSearch(value){
     

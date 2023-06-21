@@ -7,7 +7,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+    {# <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}"> #}
     {# <link rel="stylesheet" href="{{asset('assets/css/account/agenda_tribuG.css')}}"> #}
 
     <style>
@@ -37,26 +37,25 @@
 
 {% block body %}
     
-    <main class="main_user_id" 
-          id='{{app.user.id}}'
-          data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'
-    >
+    <main class="main_user_id" id='{{app.user.id}}' data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
         <div class="col-2">
-				<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
-					<div class="left_menu">
-						{% include "shard/account_navleft.html.twig" %}
-					</div>
-				</div>
-				<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
-					<div class="left_menu">
-						{% include "shard/account_navleft_mobile.html.twig" %}
-					</div>
-				</div>
-			</div>
+            <div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+                <div class="left_menu">
+                    {% include "shard/account_navleft.html.twig" %}
+                </div>
+            </div>
+            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+                <div class="left_menu">
+                    {% include "shard/account_navleft_mobile.html.twig" %}
+                </div>
+            </div>
+        </div>
+
+
 
         
         <div class="navbar-mobile">
-			<div class="fixed-top col responsif-none">
+			<div class="fixed-top col responsif-none bg-blanc">
 				{{ include('shard/account_navbar.html.twig') }}
 			</div>
 
@@ -65,27 +64,50 @@
 			</div>
 		</div>
 
-        <div class="content_right_actualite mobile-responsive" id="container-mobile">
+        <div class="content_right_actualite-g mobile-responsive" id="container-mobile">
             <div class="row">
-                <div class="col-xl-10 col-sm-12 col-md-10 col-lg-10">
+                <div class="col">
                     <div class="content_actualite">
                         <div class="entente">
                             <div class="container">
                                 <br>
-                                <div class="card card-pub p-3 bgPersonnalisee mb-5">
+                                <div class="card-pub p-3 bgPersonnalisee">
                                     {% include "tribu_g/head.html.twig" %}
-                                </div>
-                            </div>
-                            <div class="content_bloc_js_jheo">
-
-                                {% include "tribu_g/publications.html.twig" %}
                                 
-                                {# <div class="content_member_js_jheo">
-                                    {% include "tribu_g/member_tributG.html.twig" %}
-                                </div> #}
-                                {# <div class="content_member_js_jheo">
-                                    {% include "tribu_g/photos.html.twig" %}
-                                </div> #}
+
+                                    <a class="btn btn-primary btn_actualise btn_actualise_js_jheo hidden_actualise" href={{ path("app_account")}}>
+                                        <div class="spinner-border text-light spinner_custom" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <div class="text_mini">
+                                            Nouvelle publication
+                                        </div>
+                                    </a>
+
+                                    <div class="row mt-3">
+                                        <div class="col-8">
+                                            <div class="content_bloc_js_jheo row">
+                                                {% include "tribu_g/publications.html.twig" %}
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="card-appropos-g need_position_fixed_js_jheo">
+                                                <h4  class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name = {{tributG.profil.name}} >{{tributG.profil.name}}</h4>
+                                                <small>
+                                                    <i>{{tributG.profil.description}}</i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    {# <div class="content_member_js_jheo">
+                                        {% include "tribu_g/member_tributG.html.twig" %}
+                                    </div> #}
+                                    {# <div class="content_member_js_jheo">
+                                        {% include "tribu_g/photos.html.twig" %}
+                                    </div> #}
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -95,7 +117,19 @@
     </main>
 
     {% include "tribu_g/modal_publication.html.twig" %}
-    {% include "tribu_g/script_agenda_tribug.html.twig" %}
+    {# {% include "tribu_g/script_agenda_tribug.html.twig" %} #}
+    <!-- Modal -->
+    <div class="modal fade" id="agendaModalTribuG" tabindex="-1" aria-labelledby="agendaModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content agenda-modal-content">
+                <div class="modal-header header-modal-agenda">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% include "agenda/calendrier.html.twig" %}
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
-

@@ -6,7 +6,11 @@
 			<div class="col m-auto"> #}
 			<div class="col-4 m-auto">
 				{# <img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src="{% if profil[0].getPhotoProfil != null %} /uploads/profils/photos/{{profil[0].getPhotoProfil}} {% else %} /assets/image/cheerful-curly-business-girl-wearing-glasses.jpg {% endif %}" alt="{{ profil[0].getFirstname }}"> #}
+<<<<<<< HEAD
 				<img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/photo_user_') ~ app.user.id ~ "/" ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+=======
+				<img id="profilPartisant" style="min-height: 80px; min-width:80px; max-width:100px; max-height: 100px;" class="rounded-circle border border-info" src={{ (profil[0].getPhotoProfil != null) ?  profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
+>>>>>>> main
 				
 			</div>
 			<div class="col-8 m-auto">
@@ -110,18 +114,27 @@
 
 
 			<li
+				class="nav-item profil_js">
+				{# <a href="" class="nav-link link-dark not_autorised"> #}
+				<a href="{{ path('app_agenda')}}" class="nav-link link-dark">
+					<i class="bi bi-calendar2-event-fill "> </i>
+					<span lng-tag="profil"> Mon agenda</span>
+				</a>
+			</li>
+
+			<li
 				class="nav-item tribu_js">
 				{# <a href="{{path("setting_user_account")}}" class="nav-link link-dark"> #}
-				<a href="#" class="nav-link link-dark collapsed" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+				<a href="{{path("app_my_tribu_t")}}" class="nav-link link-dark collapsed">
 					{# <img src="{{asset('assets/image/icon-account.png')}}" alt="icon" width='25'> #}
 					<i class="fa-solid fa-users-rays fw-bold" style="color:black;"></i>
 					<span lng-tag="tribu_t">&nbsp;Tribu T</span>
 				</a>
 
+				{#  data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false"
 				<div class="collapse" id="tribut-collapse">
 					<ul class="na-ul-right mr-5">
 						<li>
-							{# <a href="{{ path("mon_tribut") }}" class="na-text-right pr-5">Publications</a> #}
 							<a href="{{ path("publication_list") }}" class="na-text-right pr-5" lng-tag="publications">Publications</a>
 						</li>
 						<li>
@@ -131,11 +144,10 @@
 							<a href="{{ path("create_tribu") }}" class="na-text-right" lng-tag="creer_tribu">Créer une tribu</a>
 						</li>
 						<li>
-							{# <a href="{{ path("all_tribut") }}" class="na-text-right">Autres tribus</a> #}
 							<a href="#" class="na-text-right" lng-tag="autres_tribus">Autres tribus</a>
 						</li>
 					</ul>
-				</div>
+				</div> #}
 
 			</li>
 
@@ -181,12 +193,12 @@
 					<span lng-tag="parametre_notification">Paramètre de notification</span>
 				</a>
 			</li>
-			<li class="nav-item mb-5">
+			{# <li class="nav-item mb-5">
 				<a href="#" class="nav-link link-dark not_autorised">
 					<i class="fa-solid fa-solid-nav fa-users  fa-lg"></i>
 					<span lng-tag="tribues_suivies">Les tribus suivies</span>
 				</a>
-			</li>
+			</li> #}
 
 		</ul>
 	</div>

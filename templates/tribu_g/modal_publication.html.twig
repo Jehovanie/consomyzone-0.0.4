@@ -169,6 +169,7 @@
 
 <!-- Modal show photo-->
 <div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<<<<<<< HEAD
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-body">
@@ -179,3 +180,37 @@
     </div>
   </div>
 </div>
+=======
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+				<img id="img_modal" style="width:100%">
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- End Modal show photo-->
+
+
+<!-- Modal Delete Comment-->
+<div class="modal fade" id="deleteCommentConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel_pub">Suppression</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body ">
+        <span>Voulez-vous confirmer la suppression de cette commentaire. ?</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Annuler</button>
+        <button type="button" class="btn btn-outline-danger cta_confirme_del_com_js_jheo" id="data-pub-id" onclick="removeComment(this)" data-bs-dismiss="modal"><i class="bi bi-trash3"></i> Oui</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+>>>>>>> main

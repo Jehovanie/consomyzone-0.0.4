@@ -198,119 +198,118 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
     event_source_notification.onmessage = function(event) {
 
-        const new_notification = JSON.parse(event.data);
+        if( event.data != ""){
+            const new_notification = JSON.parse(event.data);
+            if( document.querySelector(".nbr_notification_jheo_js")){
+
+                const nbr_actual_notification = document.querySelector(".nbr_notification_jheo_js").innerText;
+
+                if(parseInt(nbr_actual_notification) < new_notification.length){
 
 
 
-        if( document.querySelector(".nbr_notification_jheo_js")){
+                    const notification_unshow = new_notification.filter(item => {
 
-            const nbr_actual_notification = document.querySelector(".nbr_notification_jheo_js").innerText;
+                        if( item.isShow == "0" ){
 
-            if(parseInt(nbr_actual_notification) < new_notification.length){
+                            return item
 
-
-
-                const notification_unshow = new_notification.filter(item => {
-
-                    if( item.isShow == "0" ){
-
-                        return item
-
-                    }
-
-                })
-
-
-
-                //console.log("notification_unshow " + notification_unshow.length);
-
-                
-
-                // console.log(notification_unshow.length)
-
-                if( notification_unshow.length === 0 ){
-
-                    document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity="0"
-
-                }else{
-
-                    document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity="1"
-
-                    document.querySelector(".nbr_notification_jheo_js").innerText= notification_unshow.length;
-
-                }
-
-
-
-                if( document.querySelector(".content_card_notification_jheo_js")){
-
-
-
-                    ////delete old card
-
-                    //deleteCardElement();
-
-                    document.querySelector(".content_card_notification_jheo_js").innerHTML ="";
-
-
-
-                    ////show new notification
-
-                    new_notification.forEach(item => {
-
-                        // notif_id,parent_card, card_title_content, card_text_content,card_text_date, is_show, is_read, link, type invitation, isAccepted
-
-                        createAndAddCardNotification(
-
-                            item.id,
-                            document.querySelector(".content_card_notification_jheo_js"),
-                            "Une nouvelle notification.",
-                            item.content,
-                            item.datetime,
-                            item.isShow,
-                            item.isRead,
-                            item.type,
-                            "?tribu_name="+item.tribu+"&notif_id="+item.id,
-                            item.tribu/*,
-                            item.invitation,
-                            item.is_accepted*/
-
-                        )
+                        }
 
                     })
 
+
+
+                    //console.log("notification_unshow " + notification_unshow.length);
+
                     
+
+                    // console.log(notification_unshow.length)
+
+                    if( notification_unshow.length === 0 ){
+
+                        document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity="0"
+
+                    }else{
+
+                        document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity="1"
+
+                        document.querySelector(".nbr_notification_jheo_js").innerText= notification_unshow.length;
+
+                    }
+
+
 
                     if( document.querySelector(".content_card_notification_jheo_js")){
 
-                        document.querySelectorAll(".card_js_jheo").forEach(card =>{
 
-                            card.addEventListener("click", () => {
 
-                                const notification_id = card.getAttribute("data-toggle-notif-id");
+                        ////delete old card
 
-                                
+                        //deleteCardElement();
 
-                                fetch("/user/notification/read?notif_id="+ notification_id)
+                        document.querySelector(".content_card_notification_jheo_js").innerHTML ="";
 
-                                    .then(response => response.text())
 
-                                    .then(html => {
 
-                                        //document.querySelector(".content_text_js_jheo").innerHTML = html
+                        ////show new notification
 
-                                    })
+                        new_notification.forEach(item => {
 
-                            } )
+                            // notif_id,parent_card, card_title_content, card_text_content,card_text_date, is_show, is_read, link, type invitation, isAccepted
+
+                            createAndAddCardNotification(
+
+                                item.id,
+                                document.querySelector(".content_card_notification_jheo_js"),
+                                "Une nouvelle notification.",
+                                item.content,
+                                item.datetime,
+                                item.isShow,
+                                item.isRead,
+                                item.type,
+                                "?tribu_name="+item.tribu+"&notif_id="+item.id,
+                                item.tribu/*,
+                                item.invitation,
+                                item.is_accepted*/
+
+                            )
 
                         })
+
+                        
+
+                        if( document.querySelector(".content_card_notification_jheo_js")){
+
+                            document.querySelectorAll(".card_js_jheo").forEach(card =>{
+
+                                card.addEventListener("click", () => {
+
+                                    const notification_id = card.getAttribute("data-toggle-notif-id");
+
+                                    
+
+                                    fetch("/user/notification/read?notif_id="+ notification_id)
+
+                                        .then(response => response.text())
+
+                                        .then(html => {
+
+                                            //document.querySelector(".content_text_js_jheo").innerHTML = html
+
+                                        })
+
+                                } )
+
+                            })
+
+                        }
 
                     }
 
                 }
 
             }
-
         }
 
     }
@@ -324,8 +323,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 if( document.querySelector(".notification_jheo_js")){
 
     const notif_icon = document.querySelector(".notification_jheo_js");
-
-
 
     notif_icon.addEventListener("click", () => {
 
@@ -976,10 +973,61 @@ function createBadgeNotifContent(){
 
 }
 
-let langue = localStorage.getItem("langue")
+let fileInputProfils = document.querySelectorAll("#fileInputProfil");
+
+fileInputProfils.forEach(fileInputProfil=>{
+	
+	fileInputProfil.addEventListener("change", (e) => {
+
+        ///read file
+        const fileReader = new FileReader();
+
+        ////on load file
+        fileReader.addEventListener("load", () => {
+
+            let avatarPartisant = fileReader.result;
+
+            //console.log(avatarPartisant);
+
+            // Change profil
+            let profilPartisants = document.querySelectorAll("#profilPartisant");
+
+            profilPartisants.forEach(profilPartisant=>{
+                profilPartisant.src = avatarPartisant
+            })
+
+            //profilPartisant.src = avatarPartisant
+
+            if(document.querySelector("#roundedImg") != null){
+                document.querySelector("#roundedImg").src = avatarPartisant
+            }
+
+            let data = {
+                image : avatarPartisant
+            }
+
+            fetch(new Request("/user/profil/update/avatar", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => console.log(response));
+
+        });
+
+        ///run event load in file reader.
+        fileReader.readAsDataURL(e.target.files[0]);
+
+    })
+})
+
+
+/*let langue = localStorage.getItem("langue")
 
 if(langue){
     console.log("langue exist")
 }else{
     console.log("langue n'existe pas")
-}
+}*/

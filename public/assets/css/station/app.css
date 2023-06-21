@@ -2,6 +2,9 @@ body {
     background-color: white !important;
     overflow-x: hidden;
 }
+.navleft .list-depart {
+    margin-top: 83px !important;
+}
 
 .content_main{
     display: block;
@@ -187,6 +190,7 @@ input[type="range"]::-moz-slider-thumb{
 
 .content_description {
     height: 75vh !important;
+    padding: 0 !important;
 }
 
 .content_card{

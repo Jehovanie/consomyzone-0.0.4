@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-    const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id")
+    const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div") ? document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id") : null;
     let currentUserId = 0
     if(document.querySelector(".FtBjOlVf"))
         currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
     //     showNoteGlobale(idRestaurant)
     // }
 
-    document.querySelector("#text-note").onkeyup = (e) => { 
+    document.querySelector("#text-note").onkeyup = (e) => {
         if (document.querySelector(".flash-msg-ERREUR")) {
             document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
         }
@@ -48,7 +48,8 @@ window.addEventListener('load', () => {
        
         let note = document.querySelector("#text-note").value
         note=note.replace(/,/g,".")
-        const avis = document.querySelector("#message-text").value
+        const avis = document.querySelector("#message-text").value;
+        idRestaurant
         try {
             mustBeInferior4(note, document.querySelector("#text-note"), true)  
             const requestParam = {
@@ -83,17 +84,17 @@ window.addEventListener('load', () => {
         
         
     }
-    // if(document.querySelector("#see-tom-js")){
-    //     document.querySelector("#see-tom-js").onclick = () => {
-    //         const d=document.querySelectorAll(".fIQYlf")
-    //         if(d.length > 0){
-    //             d.forEach(i=>{
-    //                 i.parentNode.removeChild(i)
-    //             })
-    //         }
-    //         showAvis(currentUserId,idRestaurant) 
-    //     }
-    // }
+    if(document.querySelector("#see-tom-js")){
+        document.querySelector("#see-tom-js").onclick = () => {
+            const d=document.querySelectorAll(".fIQYlf")
+            if(d.length > 0){
+                d.forEach(i=>{
+                    i.parentNode.removeChild(i)
+                })
+            }
+            showAvis(currentUserId,idRestaurant) 
+        }
+    }
 
     if (document.querySelector("#UpDate-Avis-tom-js")) {
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 

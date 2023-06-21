@@ -1,12 +1,12 @@
 
-<nav class="navbar navbar-light navbar-expand-lg fixed-top">
+<nav class="navbar navbar-light navbar-expand-lg fixed-top bg-blanc">
 	<div class="container-fluid nav-bar row">
 		<a class="navbar-brand col-md-2" href="{{path('all_departement_touts')}}">
 			<img src="{{asset('assets/image/logo.jpg')}}" alt="logo" width="200">
 		</a>
-		<div class="recherche-navbar-account col-md-5 ">
+		{# <div class="recherche-navbar-account col-md-5 ">
 			{% include "shard/account_bar_de_recherche.html.twig" %}
-		</div>
+		</div> #}
 		<div class="collapse navbar-collapse col-md-2" id="navbarSupportedContent">
 			<ul class="navbar-nav ms-auto mb-2 mb-lg-0 icons-pdp ">
 					<li class="nav-item dropdown message">
@@ -71,13 +71,13 @@
 							<img class="nav-icon" src="{{asset('assets/image/icon-menu.png')}}" alt="">
 						</a>
 						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-							<li>
+							{# <li>
 								<a class="dropdown-item" href="#">Action</a>
 							</li>
 							<li>
-								<a class="dropdown-item" href="#" lng-tag="autre_action">Another action</a>
+								<a class="dropdown-item" href="#" lng-tag="autre_action">Autre</a>
 							</li>
-							<li><hr class="dropdown-divider"></li>
+							<li><hr class="dropdown-divider"></li> #}
 							<li>
 								<a class="dropdown-item" href="{{path('app_logout')}}" lng-tag="deconnexion">Déconnexion</a>
 							</li>
@@ -131,4 +131,3 @@
 
 {# content data important on back #}
 <div class="information_user_conected_jheo_js" data-toggle-user-id={{app.user.id}} data-toggle-notif={{app.user.tablenotification}} data-toggle-msg={{app.user.tablemessage}}></div>
-

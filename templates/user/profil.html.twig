@@ -12,10 +12,11 @@
 {% block javascripts %}
     <script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	<script src="{{ asset('assets/js/profiles/profile.js') }}" defer></script>
+
 {% endblock %}
 
 {% block body %}
-	{% dump( autre_profil) %}
 	<div id="settingautre_profilId">
 
 		<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
@@ -30,7 +31,7 @@
 		</div>
 
 		<div class="navbar-mobile">
-			<div class="fixed-top col responsif-none">
+			<div class="fixed-top col responsif-none  bg-blanc">
 				{{ include('shard/account_navbar.html.twig') }}
 			</div>
 
@@ -43,13 +44,17 @@
 			{# <section class="h-100 gradient-custom-2"> #}
 				<div class="">
 					<div class="">
-						<div class="ms-5 mb-5 col-lg-8 col-xl-8 col-md-12 col-sm-12">
+						<div class="mb-5 col-lg-8 col-xl-8 col-md-12 col-sm-12 mx-auto">
 							<div class="card">
 								<div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
 									<div class="ms-4 mt-5 d-flex flex-column profil_mobile" style="width: 150px;">
 										{#---------  photo de profil ---------- #}
+<<<<<<< HEAD
 										<img id="profilPartisant" src={{ (autre_profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/photo_user_') ~ autre_profil[0].getId ~ '/' ~ autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
 										
+=======
+										<img id="profilPartisant" src={{ (autre_profil[0].getPhotoProfil != null) ?  autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
+>>>>>>> main
 										{% if app.user.id == app.request.get('user_id') %}
 
 										 <label class="input-file w-100 text-center btn btn-primary" for="fileInputProfil"  style="z-index: 1;"><i class="bi bi-camera-fill"></i> Modifier
@@ -103,7 +108,11 @@
 										<div id="partisants-item">
 											<a href="#partisants" style="text-decoration:none;" onclick="">
 												<p class="mb-1">{{nombre_partisant}}</p>
+<<<<<<< HEAD
 												<p class="small text-muted mb-0">{{(nombre_partisant > 1 ) ? "Partisants" : "Partisant" }}</p>
+=======
+												<p class="small text-muted mb-0">{{(nombre_partisant > 1 ) ? "Partisans" : "Partisan" }}</p>
+>>>>>>> main
 											</a>
 											
 										</div>
@@ -116,7 +125,11 @@
 									<div id="gallery" style="margin-left:10%">
 										{% for img in images %}
 											{% set imgç_path = img|split('public/', 2)[1] %}
+<<<<<<< HEAD
 											<img src="{{'/' ~ imgç_path}}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+=======
+											<img src="{{asset(imgç_path)}}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+>>>>>>> main
 											
 										{% endfor %}
 									</div>
@@ -230,6 +243,7 @@
 
 	<script>
 
+<<<<<<< HEAD
 	let curent_location = window.location.href;
 
 	/**
@@ -328,6 +342,8 @@
 		}
 		
 	}*/
+=======
+>>>>>>> main
 
 	</script>
 

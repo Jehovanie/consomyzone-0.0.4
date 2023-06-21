@@ -1,10 +1,15 @@
-class MarckerClusterStation {
+class MarckerClusterHome {
 
     constructor(nom_dep = null, id_dep = null) {
         this.nom_dep = nom_dep ? nom_dep : null;
         this.id_dep = id_dep ? id_dep : null;
         this.is_online = false;
-        this.time_on_setInterval = 300;
+        this.time_on_setInterval = 1000;
+
+
+        if( document.querySelector("#open-navleft")){
+            document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
+        }
     }
 
     async onInit() {
@@ -68,11 +73,12 @@ class MarckerClusterStation {
     }
 
     createMarkersCluster() {
+        const temp= 200;
         this.markers = L.markerClusterGroup({
             chunkedLoading: true,
+            chunkInterval: temp * 5,
+            chunkDelay: temp,
             removeOutsideVisibleBounds: true,
-            chunkInterval: 100,
-            chunkDelay: 30,
         });
     }
 
@@ -101,56 +107,62 @@ class MarckerClusterStation {
 
     addStation(dataStation) {
 
-        // dataStation.forEach(item => {
-        //     this.settingSingleMarkerStation(item)
-        // })
+        dataStation.forEach(item => {
+            this.settingSingleMarkerStation(item)
+        })
 
-        const tab_data_station = splitArrayToMultipleArray(dataStation);
+        // const tab_data_station = splitArrayToMultipleArray(dataStation);
 
-        let i = 0;
-        const add_station_interval = setInterval(() => {
-            tab_data_station[i].forEach(item => {
-                this.settingSingleMarkerStation(item)
-            })
-            i++;
-            if (i === tab_data_station.length) {
-                clearInterval(add_station_interval)
-            }
-        }, this.time_on_setInterval)
+        // let i = 0;
+        // const add_station_interval = setInterval(() => {
+        //     tab_data_station[i].forEach(item => {
+        //         this.settingSingleMarkerStation(item)
+        //     })
+        //     i++;
+        //     if (i === tab_data_station.length) {
+        //         clearInterval(add_station_interval)
+        //     }
+        // }, this.time_on_setInterval)
     }
 
     addFerme(dataFerme) {
 
-        // dataFerme.forEach(item => {
-        //     this.settingSingleMarkerFerme(item)
-        // })
-        const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
+        dataFerme.forEach(item => {
+            this.settingSingleMarkerFerme(item)
+        })
 
-        let i = 0;
-        const add_ferme_interval = setInterval(() => {
-            tab_data_ferme[i].forEach(item => {
-                this.settingSingleMarkerFerme(item)
-            })
-            i++;
-            if (i === tab_data_ferme.length) {
-                clearInterval(add_ferme_interval)
-            }
-        }, this.time_on_setInterval);
+        // const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
+
+        // let i = 0;
+        // const add_ferme_interval = setInterval(() => {
+        //     tab_data_ferme[i].forEach(item => {
+        //         this.settingSingleMarkerFerme(item)
+        //     })
+        //     i++;
+        //     if (i === tab_data_ferme.length) {
+        //         clearInterval(add_ferme_interval)
+        //     }
+        // }, this.time_on_setInterval);
     }
 
     addResto(dataResto) {
-        const tab_data_resto = splitArrayToMultipleArray(dataResto);
 
-        let i = 0;
-        const add_resto_Interval = setInterval(() => {
-            tab_data_resto[i].forEach(item => {
-                this.settingSingleMarkerResto(item);
-            })
-            i++;
-            if (i === tab_data_resto.length) {
-                clearInterval(add_resto_Interval)
-            }
-        }, this.time_on_setInterval);
+        dataResto.forEach(item => {
+            this.settingSingleMarkerResto(item);
+        })
+
+        // const tab_data_resto = splitArrayToMultipleArray(dataResto);
+
+        // let i = 0;
+        // const add_resto_Interval = setInterval(() => {
+        //     tab_data_resto[i].forEach(item => {
+        //         this.settingSingleMarkerResto(item);
+        //     })
+        //     i++;
+        //     if (i === tab_data_resto.length) {
+        //         clearInterval(add_resto_Interval)
+        //     }
+        // }, this.time_on_setInterval);
     }
 
 
@@ -176,7 +188,13 @@ class MarckerClusterStation {
 
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png"
+                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                    iconSize: [20, 35],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    //shadowUrl: 'my-icon-shadow.png',
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
             })
             marker.setIcon(new icon_R);
@@ -348,10 +366,10 @@ class MarckerClusterStation {
                 if (!this.is_online) {
                     this.is_online = true;
                     await this.addPeripheriqueMarker(data);
+                    this.last_minll = new_min_ll;
+                    this.last_maxll = new_max_ll;
                 }
 
-                this.last_minll = new_min_ll;
-                this.last_maxll = new_max_ll;
             }
         } catch (e) {
             console.log(e.message)
@@ -375,7 +393,6 @@ class MarckerClusterStation {
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
 
-
             this.addMarker(this.checkeFilterType(new_data));
             this.is_online = false;
 
@@ -393,10 +410,20 @@ class MarckerClusterStation {
     }
 
     generateFilterAndSelectDep() {
-        // <div class="content_filter">
-        const content_filter = document.createElement("div");
-        content_filter.className = "content_filter";
+        // const content_filter = document.createElement("div");
+        // content_filter.className = "content_filter content_filter_js_jheo";
 
+        // this.generate_checkout_option(content_filter)
+
+        const content_filter_dep = document.createElement("div");
+        content_filter_dep.className = "content_filter_dep";
+        document.querySelector("#map").appendChild(content_filter_dep);
+
+        this.generate_select_dep(content_filter_dep) /// and bind event
+        // this.eventManagement();
+    }
+
+    generate_checkout_option(content_filter){
         this.generate_filter(content_filter, "filterTous", "Tous")
         this.generate_filter(content_filter, "filterFerme", "Ferme")
         this.generate_filter(content_filter, "filterStation", "Station")
@@ -409,13 +436,6 @@ class MarckerClusterStation {
         } else {
             document.querySelector("#map").appendChild(content_filter);
         }
-
-        const content_filter_dep = document.createElement("div");
-        content_filter_dep.className = "content_filter_dep";
-        document.querySelector("#map").appendChild(content_filter_dep);
-
-        this.generate_select_dep(content_filter_dep) /// and bind event
-        // this.eventManagement();
     }
 
     /* generate filter right */
@@ -484,7 +504,7 @@ class MarckerClusterStation {
 
     eventManagement() {
 
-        if (document.querySelector(".content_filter")) {
+        if (document.querySelector(".content_filter_js_jheo")) {
             const alltype = document.querySelectorAll(".content_filter input");
             alltype.forEach(item => {
                 item.addEventListener("click", (e) => this.changeType(e))
@@ -532,12 +552,20 @@ class MarckerClusterStation {
     }
 
     checkeFilterType(data) {
-        const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
-        let result_temp = [];
         let results = null;
-        for (let item of lists) {
-            results = this.handleOnlyStateCheckbox(result_temp, item)
-            result_temp = results;
+        if(document.querySelector(".content_filter_js_jheo")){
+            const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
+            let result_temp = [];
+            for (let item of lists) {
+                results = this.handleOnlyStateCheckbox(result_temp, item)
+                result_temp = results;
+            }
+        }else{
+            results= [
+                { type:"filterFerme", state: 1},
+                { type:"filterStation", state: 1},
+                { type:"filterResto", state: 1},
+            ]
         }
 
         const code_dep = document.querySelector(".input_select_dep_js_jheo").value.length < 3 ? document.querySelector(".input_select_dep_js_jheo").value : null;
@@ -547,11 +575,11 @@ class MarckerClusterStation {
             const { type, state } = item;
             if (state === 1) {
                 if (type === "filterFerme") {
-                    data_ferme = code_dep ? data.ferme.filter(({ departement }) => parseInt(departement) === parseInt(code_dep)) : data.ferme;
+                    data_ferme = code_dep ? data.ferme.filter(({ departement }) =>{  if( parseInt(code_dep) === 20){ return departement.trim() === "2A" || departement.trim() === "2B" || parseInt(departement) === 20 }else{ return parseInt(departement) === parseInt(code_dep)}}) : data.ferme;
                 } else if (type === "filterStation") {
-                    data_station = code_dep ? data.station.filter(({ departementCode }) => parseInt(departementCode) === parseInt(code_dep)) : data.station;
+                    data_station = code_dep ? data.station.filter(({ departementCode }) => { if( parseInt(code_dep) === 20){ return departementCode.trim() === "2A" || departementCode.trim() === "2B" || parseInt(departementCode) === 20 }else{ return parseInt(departementCode) === parseInt(code_dep) }} ) : data.station;
                 } else if (type === "filterResto") {
-                    data_resto = code_dep ? data.resto.filter(({ dep }) => parseInt(dep) === parseInt(code_dep)) : data.resto;
+                    data_resto = code_dep ? data.resto.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.trim() === "2A" || dep.trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.resto;
                 }
             }
         })
@@ -560,12 +588,10 @@ class MarckerClusterStation {
     }
 
     checkStateSelectedDep(e) {
-        localStorage.removeItem("coordTous")
-
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
             this.map.setView(L.latLng(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng))
-            this.map.setZoom(centers[parseInt(code_dep)].zoom)
+            this.map.setZoom(centers[parseInt(code_dep)].zoom +2 )
         }
         this.filterDataByDep();
     }
@@ -590,10 +616,20 @@ class MarckerClusterStation {
 
     filterDataByDep() {
         const data_filtered = this.checkeFilterType(this.default_data);
-
-        this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
+        console.log(data_filtered)
         this.removeMarker();
-        this.addMarker(this.data)
+        if( data_filtered.ferme.length > 0  && data_filtered.station.length > 0 ){
+            this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
+            this.addMarker(this.data)
+            console.log("not fetch")
+        }else{
+            let bounds = this.map.getBounds();
+            let minll = bounds.getSouthWest();
+            let maxll = bounds.getNorthEast();
+            const data = { "last": { min: minll, max:maxll}, "new": {} };
+            this.addPeripheriqueMarker(data)
+        }
+
     }
 
     removeMarker() {

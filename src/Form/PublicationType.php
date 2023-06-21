@@ -40,14 +40,13 @@ class PublicationType extends AbstractType
             ->add('confidentiality', ChoiceType::class, 
             [
                 'choices'  => [
-                    'Publique' => 1,
-                    'Ami(e)s' => 2,
-                    'Moi uniquement' => 3,
+                    'A tout les partisans de la tribu G' => 1,
+                    'Moi uniquement' => 2,
                 ],
                 'label' => false,
             ])
-        /*->add('user_id', HiddenType::class)
-        ->add('tributg_id', HiddenType::class)*/
+        /*->add('user_id', HiddenType::class)*/
+        ->add('tribu_t_name', HiddenType::class)
         ;
     }
 

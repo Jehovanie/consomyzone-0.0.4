@@ -133,10 +133,10 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.latitude',
                      'p.longitude',
                      'p.services')
-            ->where('p.departementCode = :q')
+            // ->where('p.departementCode = :q')
             // ->andWhere('p.departementName LIKE :k')
             ->andWhere('p.id = :t')
-            ->setParameter('q', $code )
+            // ->setParameter('q', $code )
             // ->setParameter('k', '%'. $new_nom_dep. '%' )
             ->setParameter('t',$id_station);
 
@@ -421,10 +421,11 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     'p.services');
 
         if( $mot_cles0 !== "" && $mot_cles1 === ""){
-            $qb = $qb->where("p.adresse LIKE :cles0")
-                ->orWhere("p.departementName LIKE :cles0")
-                ->orWhere("p.nom LIKE :cles0")
-                ->orWhere("p.services LIKE :cles0")
+            // ->where('MATCH_AGAINST(a.clasificacion, a.expediente, a.fecha, a.observaciones, a.signatura) AGAINST(:searchterm boolean)>0')
+            $qb = $qb->where("MATCH_AGAINST(p.adresse) AGAINST( :cles0 boolean)>0")
+                ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean)>0")
+                ->orWhere("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0")
+                ->orWhere("MATCH_AGAINST(p.services) AGAINST( :cles0 boolean)>0")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' );
 
         }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
@@ -441,19 +442,19 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             }else{
                 $qb = $qb->where("p.adresse LIKE :cles1")
                     ->orWhere("p.departementCode LIKE :cles1")
-                    ->orWhere("p.departementName LIKE :cles1")
-                    ->orWhere("p.nom LIKE :cles1")
-                    ->orWhere("p.services LIKE :cles1")
+                    ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean)>0")
+                    ->orWhere("MATCH_AGAINST(p.nom) AGAINST( :cles1 boolean)>0")
+                    ->orWhere("MATCH_AGAINST(p.services) AGAINST( :cles1 boolean)>0")
                     ->orWhere("CONCAT(p.departementCode,'',p.departementName) LIKE :cles1")
                     ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
         }else{
-            $qb = $qb->where("(p.adresse LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
-                ->orWhere("(p.adresse LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
-                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
-                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
-                ->orWhere("(p.departementName LIKE :cles0) AND ( p.adresse LIKE :cles1 )")
-                ->orWhere("(p.departementName LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
+            $qb = $qb->where("(MATCH_AGAINST(p.adresse) AGAINST( :cles0 boolean)>0) AND ( p.departementCode LIKE :cles1 )")
+                ->orWhere("(MATCH_AGAINST(p.adresse) AGAINST( :cles0 boolean)>0) AND ( MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean)>0)")
+                ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0) AND ( p.departementCode LIKE :cles1 )")
+                ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0) AND ( MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean)>0)")
+                ->orWhere("(MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean)>0) AND ( MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean)>0 )")
+                ->orWhere("(MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean)>0) AND ( p.departementCode LIKE :cles1 )")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
         }
@@ -468,50 +469,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             
 
         $results =$qb->execute();
-
-        $count = $this->createQueryBuilder("p")
-            ->select("COUNT(p.id) as total");
-
-        if( $mot_cles0 !== "" && $mot_cles1 === ""){
-            $count = $count->where("p.adresse LIKE :cles0")
-                ->orWhere("p.departementName LIKE :cles0")
-                ->orWhere("p.nom LIKE :cles0")
-                ->orWhere("p.services LIKE :cles0")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' );
-
-        }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
-            if( strlen($mot_cles1)===2){
-                if($mot_cles1 === "20" ){
-                    $count = $count->where("(p.departementCode LIKE :a OR p.departementCode LIKE :b )")
-                                ->setParameter('a',  "%2A%" )
-                                ->setParameter('b',  "%2B%");
-                }else{
-                    $count = $count->where("p.departementCode LIKE :cles1")
-                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
-                }
-            }else{
-                $count = $count->where("p.adresse LIKE :cles1")
-                    ->orWhere("p.departementCode LIKE :cles1")
-                    ->orWhere("p.departementName LIKE :cles1")
-                    ->orWhere("p.nom LIKE :cles1")
-                    ->orWhere("p.services LIKE :cles1")
-                    ->orWhere("CONCAT(p.departementCode,'',p.departementName) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
-            }
-        }else{
-            $count = $count->where("(p.adresse LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
-                ->orWhere("(p.adresse LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
-                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
-                ->orWhere("(p.nom LIKE :cles0) AND ( p.departementName LIKE :cles1 )")
-                ->orWhere("(p.departementName LIKE :cles0) AND ( p.adresse LIKE :cles1 )")
-                ->orWhere("(p.departementName LIKE :cles0) AND ( p.departementCode LIKE :cles1 )")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
-        }
-        $count = $count->getQuery()
-                ->getResult();
-
-        return [ $results , $count[0]["total"], "station"];
+        return [ $results , count($results) , "station"];
     }
 //    /**
 //     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects

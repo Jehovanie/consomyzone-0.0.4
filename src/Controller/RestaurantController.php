@@ -36,7 +36,8 @@ class RestaurantController extends AbstractController
         //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
         return $this->render("restaurant/index.html.twig", [
             "departements" => $departementRepository->getDep(),
-            "number_of_departement" => count($bddResto->getAllOpenedRestos()),
+            //"number_of_departement" => count($bddResto->getAllOpenedRestos()),
+            "number_of_departement" => count($bddResto->getCoordinateAndRestoIdForSpecific(75)),
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             // "codinsees" => $datas,
@@ -68,7 +69,8 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize
     ) {
-        $datas = $serialize->serialize($bddResto->getAllOpenedRestos(), 'json');
+        //$datas = $serialize->serialize($bddResto->getAllOpenedRestos(), 'json');
+        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific(75), 'json');
         return new JsonResponse($datas, 200, [], true);
     }
 
@@ -162,13 +164,15 @@ class RestaurantController extends AbstractController
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
         $datas = $code->getAllCodinsee($codeDep);
-        $resultCount = count($bddResto->getCoordinateAndRestoIdForSpecific($codeDep));
-        dump($resultCount);
+        $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+        $resultCount = count($resto);
+        // dump($resultCount);
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("restaurant/restaurant_arrondisment.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
+            "restaurants" => $bddResto->getCoordinateAndRestoIdForSpecificParis($codeDep),
             "codinsees" => $datas,
             "resto_nombre" => $resultCount,
             "profil" => $statusProfile["profil"],
@@ -417,4 +421,14 @@ class RestaurantController extends AbstractController
         $response = $serializer->serialize(["nombre_avis" => $response], 'json');
         return new JsonResponse($response, 200, [], true);
     }
+
+    #[Route("/user/resto/apropos/{idRestaurant}", name:"rest_apropos")]
+    public function getOneRestaurantById($idRestaurant,
+    BddRestoRepository $bdd,SerializerInterface $serializer){
+    
+       $r=$bdd->getOneRestaurantById($idRestaurant);
+        $response = $serializer->serialize($r, 'json');
+        return new JsonResponse($response, 200, [], true);
+    }
+    
 }

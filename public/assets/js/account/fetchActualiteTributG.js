@@ -26,6 +26,12 @@ if( document.querySelector("#fetch_actialite_tribug_js_jheo")){
             document.querySelector("#fetch_photo_tribug_js_jheo").classList.add("text-primary")
         }
 
+        document.querySelector(".content_bloc_js_jheo").innerHTML = `
+            <div class="spinner-grow text-info d-block mx-auto" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `;
+
         fetch("/tributG/actualite")
             .then(response => {
                 if (!response.ok) {

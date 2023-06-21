@@ -1,57 +1,6 @@
 
   
-function sendNote(event, _idUser, _idResto,_idRestoComment) {
-    const note = parseFloat(document.querySelector(`#text-note-tribu-t-${_idRestoComment}`).value, 10)
-    //console.log(document.querySelector(`#text-note-tribu-t-${_idRestoComment}`))
-    const commentaire =document.querySelector("#message-text-"+_idRestoComment).value
-    const content = {
-        idUser: _idUser,
-        idResto: _idResto,
-        tableName: table_restaurant_com,
-        note: note,
-        commentaire: commentaire
-    }
-   
-    const jsonStr = JSON.stringify(content)
-     console.log(jsonStr)
-    const request = new Request("/push/comment/resto/pastilled", {
-        method: "POST",
-        body: jsonStr,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    })
-    fetch(request).then(response => {
-        if (response.ok && response.status === 200) {
-           alert("nety")
-       }
-    } )
- }
-function updateNote(event, _idRestoComment) {
-    const note =parseFloat(document.querySelector("#text-note-tribu-t-"+_idRestoComment).value,10)
-    const commentaire =document.querySelector("#message-text-"+_idRestoComment).value
-    const content = {
-        tableName: table_restaurant_com,
-        note: note,
-        commentaire: commentaire,
-        idRestoComment:_idRestoComment
-    }
-    const jsonStr = JSON.stringify(content)
-    const request = new Request("/up/comment/resto/pastilled", {
-        method: "POST",
-        body: jsonStr,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    })
-    fetch(request).then(response => {
-        if (response.ok && response.status === 200) {
-           alert("nety")
-       }
-    } )
-}
+
     //document.querySelector("#text-note-tribu-t").onkeyup = (e) => { 
         // if (document.querySelector(".flash-msg-ERREUR")) {
         //     document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))

@@ -6,26 +6,28 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/restaurant/app.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/restaurant/sepecific_departement.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/restaurant/specifique_resto.css')}}">
 {% endblock %}
 
 {% block javascripts %}
 	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	<script src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
-	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
 	<script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
+	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
 {% endblock %}
 
 
 {% block body %}
-	<div class="responsif-none">
-        {% include 'shard/navbar.twig' %}
-    </div>
-    {% include 'shard/modalSearch.twig' %}
+	
+    {# {% include 'shard/modalSearch.twig' %} #}
 	<div class="">
 		<div class="responsif-none" id="tous">
 			{% include 'shard/restaurant/specific_resto_navleft.twig' %}
 		</div>
+        <div class="responsif-none">
+            {% include 'shard/navbar.twig' %}
+        </div>
 		<div class="">
 			<div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-spec-mobile"  onclick=" {% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}">
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -64,16 +66,21 @@
                 </svg>
             </div>
 			<div class="content_cart_map">
-				<div class="cart_map cart_map_js">
-					{# <div class="chargement_content" id="toggle_chargement">
-						<div class="content_box">
+				<div class="cart_map cart_map_js_jheo">
+					<div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
+						{# <div class="content_box">
 							<div class="box">
 								<div class="under_box"></div>
 							</div>
-						</div>
-					</div> #}
+						</div> #}
+                        <div class="containt">
+                            <div class="word word-1">C</div>
+                            <div class="word word-2">M</div>
+                            <div class="word word-3">Z</div>
+                        </div>
+					</div>
 					<div id="list-spesific-resto"></div>
-					<div id="map" class="map"></div>
+					{# <div id="map" class="map"></div> #}
 				</div>
 			</div>
 		</div>
@@ -87,4 +94,3 @@
     {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
 
 {% endblock %}
-

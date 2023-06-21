@@ -118,8 +118,12 @@ class TributGService extends PDOConnexionService{
             }catch(Error $error ){
 
                 throw $error;
-
+                
             }
+
+
+
+            $this->getPDO()->exec("Insert into tribu_g_list (table_name) values ('$name_table_tribuG')");
 
 
 
@@ -343,7 +347,13 @@ class TributGService extends PDOConnexionService{
     }
 
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param int $userId: userID of the user
+     * 
+     * @return string full name of the user
+     */
     public function getFullName($userId)
     {
 
@@ -358,7 +368,13 @@ class TributGService extends PDOConnexionService{
     }
 
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param int $userId: userID of the user
+     * 
+     * @return string table Tribu G name 
+     */
     public function getTableNameTributG($userId)
     {
 
@@ -453,22 +469,17 @@ class TributGService extends PDOConnexionService{
 
     }
 
+    // public function getAllPublication(){
 
+    //     $sql = "SELECT * FROM tributg_".$commun_code_postal."";
 
-    public function getAllPublication(){
+    //     $statement = $this->getPDO()->query($sql);
 
-        $sql = "SELECT * FROM tributg_".$commun_code_postal."";
+    //     $resultat=$statement->fetchAll();
 
-        $statement = $this->getPDO()->query($sql);
+    //     return $resultat;
 
-        $resultat=$statement->fetchAll();
-
-        return $resultat;
-
-    }
-
-
-
+    // }
 
 
     public function getBanishedStatus($table_name,$user_id){
@@ -530,15 +541,12 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
-     * @param string $table_name: name of the table
-
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
-
+     * @param string $table_name: name of the table
+     * 
      * @return array array containing all user id in tribut G like [ [ "user_id" => ... ], ... ]
-
      */
-
     public function getAllTributG($table_name){
 
         $statement = $this->getPDO()->prepare('SELECT user_id FROM ' . $table_name);
@@ -572,21 +580,13 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
      * @param table_name: the name of the tributG
-
      * @param isVerfied: check validity
-
      * @param user_id: user id
-
      * 
-
      * @return array associatif (ex: ["status" => "roles", "verified" => "isverified" ])
-
      */
 
     public function getStatusAndIfValid($table_name, $isVerified,  $user_id){
@@ -606,17 +606,11 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
      * @param string $table_name: name of the table
-
      * 
-
      * @return single tribut G
-
      */
 
     public function getProfilTributG($table_name, $user_id ){
@@ -767,11 +761,7 @@ class TributGService extends PDOConnexionService{
 
     public function getAllPublications($table_name){
 
-
-
-
-
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC;");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 5;");
 
         $statement->execute();
 
@@ -784,8 +774,15 @@ class TributGService extends PDOConnexionService{
         foreach( $publications as $publication ){
 
             $publication_id = $publication["id"];
+            $publication_user_id= $publication["user_id"];
 
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
 
+            $statement_photos->execute();
+
+            $photo_profil = $statement_photos->fetchAll(PDO::FETCH_ASSOC); /// [...photo_profil ]
+
+            $publication["photo_profil"] = $photo_profil[0]["photo_profil"];
 
             $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
 
@@ -986,6 +983,22 @@ class TributGService extends PDOConnexionService{
     }
 
 
+    public function changeComment(
+        $publication_id,
+        $comment_id,
+        $comment_text,
+        $user_id
+    ){
+        $table_comment = $this->getTableNameTributG($user_id) . "_commentaire";
+
+        $sql = "UPDATE  $table_comment  set commentaire = '$comment_text' where pub_id = '$publication_id' and id= '$comment_id'";
+
+        $statement = $this->getPDO()->prepare($sql);
+
+        return $statement->execute();
+    }
+
+
 
 
 
@@ -1009,19 +1022,28 @@ class TributGService extends PDOConnexionService{
 
     public function fetchAllPublicationComment( $user_id , $publication_id ){
 
-
-
         $table_comment = $this->getTableNameTributG($user_id) . "_commentaire";
 
-
-
-        $statement = $this->getPDO()->prepare("SELECT * FROM " . $table_comment . " WHERE pub_id = ". $publication_id);
-
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_comment  WHERE pub_id = $publication_id");
         $statement->execute();
+        $comments= $statement->fetchAll(PDO::FETCH_ASSOC);
 
+        $results= [];
+        if( count($comments) > 0 ){
+            foreach($comments as $comment){
+                $user_id= $comment["user_id"];
     
+                $sql = "SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id";
+                $statement = $this->getPDO()->prepare($sql);
+                $statement->execute();
+                $image = $statement->fetch();
+    
+                $comment["photo_profil"] = $image["photo_profil"];
+                array_push($results, $comment);
+            }
+        }
 
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
 
     }
 
@@ -1119,7 +1141,7 @@ class TributGService extends PDOConnexionService{
 
     public function showRightTributName($table)
     {
-        $statement = $this->getPDO()->prepare("SELECT name, description FROM $table LIMIT 1");
+        $statement = $this->getPDO()->prepare("c");
 
         $statement->execute();
 
@@ -1127,6 +1149,170 @@ class TributGService extends PDOConnexionService{
 
         return $result;
 
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * 
+     * @return array associatif (ex: ["table_name" => ... , "count" => ... ])
+     */
+     public function getAllTableTribuG(){
+        $results = array();
+        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%'];
+        
+        $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribug_%'";
+        foreach($tab_not_like as $not_like ){
+            $query_sql .= " AND table_name NOT LIKE '$not_like' ";
+        }
+        $statement = $this->getPDO()->prepare($query_sql);
+        $statement->execute();
+        $all_tables = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($all_tables as $table ){
+            $tab= $table["table_name"];
+            $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
+            $statement->execute();
+            $temp = $statement->fetch(PDO::FETCH_ASSOC);
+            array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
+        }
+        
+        return $results;
+    }
+
+    public function fetchAllTribuGMember(){
+
+        $rqt = "SELECT table_name FROM tribu_g_list";
+
+        $stmt = $this->getPDO()->prepare($rqt);
+
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if(count($result)>0){
+            $sql = "SELECT user_id, ";
+            for($i=0 ; $i < count($result); $i++){
+                if($i != count($result) -1){
+                    $sql .= "'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"] ." UNION SELECT user_id, ";
+                }else{
+                    $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
+                }
+            }
+            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id";
+            
+            //dd($sql);
+            $query = $this->getPDO()->prepare($sql);
+
+            $query->execute();
+
+            $result_final = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        }else{
+            $result_final = [];
+        }
+
+        return $result_final;
+
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get one pub from ID
+     * 
+     * @param string $table: table publication tribut G
+     * @param int $pub_id: id publication
+     * 
+     * @return array associative : One publication
+     */
+    public function getOnePublication($table, $pub_id){
+        ///get one publication
+        $table_pub= $table . "_publication";
+        $table_reaction= $table . "_reaction";
+        $table_commentaire= $table . "_commentaire";
+
+        // $sql= "SELECT * FROM $table_pub as t1 LEFT JOIN $table_reaction as b ON a.id = b.pub_id  WHERE id=$pub_id";
+        $sql="SELECT * FROM $table_pub as t1 
+                LEFT JOIN(
+                    SELECT pub_id,count(*) as nbr_c FROM $table_commentaire group by pub_id
+                ) as t2 
+                ON t1.id= t2.pub_id 
+                -- LEFT JOIN(
+                --     SELECT pub_id,count(*) as nbr_r FROM $table_reaction group by pub_id
+                -- ) as t3
+                -- ON t1.id= t3.pub_id
+                
+            WHERE id=$pub_id";
+
+        // $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+        // . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
+        
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $pub = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
+
+        $publication_user_id= $pub[0]["user_id"];
+        $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+        $statement_photos->execute();
+
+        $photo_profil = $statement_photos->fetchAll(PDO::FETCH_ASSOC); /// [...photo_profil ]
+
+        $pub[0]["photo_profil"] = $photo_profil[0]["photo_profil"];
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_reaction WHERE pub_id = $pub_id AND reaction= '1'");
+        $statement->execute();
+        $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $pub[0]["reactions"] = $reactions; /// [ ...reactions ]
+        return $pub;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Delete one comment from ID
+     * 
+     * @param string $table: table publication tribut G
+     * @param int $pub_id: id publication
+     * @param int $comment_id : id of the comment
+     * 
+     * @return void
+     */
+    public function deleteOneCommentaire($table, $pub_id, $comment_id ){
+        ///get one publication
+        $table_pub= $table . "_publication";
+        $table_reaction= $table . "_reaction";
+        $table_commentaire= $table . "_commentaire";
+
+        $sql= "DELETE FROM $table_commentaire WHERE id = $comment_id AND pub_id= $pub_id";
+
+        $statement = $this->getPDO()->prepare($sql);
+        return $statement->execute();
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $tableName : table name tribu G
+     * 
+     * @return array associative like [ [ "userID" => ... , "fullName" => ... ], ... ] 
+     * 
+     */
+    public function getFullNameForAllMembers($tableName){
+        $results= [];
+        $all_users= $this->getAllTributG($tableName);
+        
+        foreach($all_users as $user){
+            $full_name= $this->getFullName(intval($user["user_id"]));
+
+            $result= ["userID" => intval($user["user_id"]), "fullName" => $full_name ];
+            array_push($results, $result);
+        }
+        
+        return $results;
     }
 
 }
