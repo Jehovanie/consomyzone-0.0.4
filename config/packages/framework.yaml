@@ -18,7 +18,8 @@ framework:
         log: true
 
     assets:
-        base_path: '/public'
+        base_path: '/'
+        #base_path:'/public'
 
 when@test:
     framework:

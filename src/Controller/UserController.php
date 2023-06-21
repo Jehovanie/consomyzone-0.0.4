@@ -57,6 +57,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
 class UserController extends AbstractController
 
 {
