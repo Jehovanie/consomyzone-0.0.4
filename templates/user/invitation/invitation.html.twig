@@ -17,6 +17,11 @@
 {% block body %}
 
 	<div class="main_user_id">
+		<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+			<div class="left_menu">
+				{% include "shard/account_navleft_mobile.html.twig" %}
+			</div>
+		</div>
 
 		<div class="navbar-mobile">
 			<div class="fixed-top col responsif-none bg-blanc">
@@ -35,11 +40,7 @@
 						{% include "shard/account_navleft.html.twig" %}
 					</div>
 				</div>
-				<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
-					<div class="left_menu">
-						{% include "shard/account_navleft_mobile.html.twig" %}
-					</div>
-				</div>
+				
 			</div>
 
 

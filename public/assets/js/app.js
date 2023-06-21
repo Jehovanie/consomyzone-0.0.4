@@ -1,4 +1,4 @@
-const IS_DEV_MODE= false;
+const IS_DEV_MODE= true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -796,4 +796,16 @@ if (document.querySelector(".open-navleft-station-spec")) {
         document.querySelector(".result_container_station_spec").style.display="block"
         iconsChange()
     })
+}
+
+if (document.querySelector("#menu-mobile")) {
+    document.querySelector("#menu-mobile").onclick = () => {
+        if (document.querySelector("#container-mobile")) {
+            document.querySelector("#container-mobile").classList.toggle("content_right_actualite-g_menu");
+            document.querySelector(".card-pub").classList.toggle("bgPersonnalisee_menu");
+        } else if (document.querySelector(".content_right_actualite")) {
+            document.querySelector(".content_right_actualite").classList.toggle("content_right_actualite_menu");
+        } 
+        
+    }
 }

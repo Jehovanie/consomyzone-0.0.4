@@ -28,18 +28,19 @@ body{
 
 .content_left_menu_account {
     display: block;
-    width: 22%;
+    width: 17%;
     height: 100vh; 
     overflow: scroll;
+}
+
+.content_left_menu_account_tribu_t {
+    width: 22%;
 }
 
 .content_right_actualite{
     display: block;
     width: 78%;
-    /* height: 100vh; */
-    /* overflow-y: scroll; */
     overflow-x: hidden;
-    
     position: absolute;
     right: 0;
     top: 78px;
@@ -49,9 +50,8 @@ body{
 
 .content_right_actualite-g {
     display: block;
-    width: 78%;
-    /* height: 100vh; */
-    /* overflow-y: scroll; */
+    width: 83%;
+    
     overflow-x: hidden;
 
     position: absolute;
@@ -74,7 +74,7 @@ body{
 
 .content_right_profil{
     display: block;
-    width: 78%;
+    width: 83%;
     overflow: scroll;
     
     position: absolute;
@@ -85,7 +85,10 @@ body{
 
 
 .account-profils img{
-    width: 70px;
+    min-height: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    max-height: 80px;
 }
 
 .account-profils h4{
@@ -1067,7 +1070,7 @@ thead > tr{
 .content_right_actualite .pub-tribu-t .name-pub .pub-content p{
     margin-left: 25px;
     margin-top: 15px;
-    width: 50vw;
+    width: 48vw;
 }
 
 .content_right_actualite .pub-tribu-t .name-pub .pub-photo img{
@@ -1161,23 +1164,23 @@ thead > tr{
     position: absolute;
     top: 225px;
     left: 180px;
-    width: 300px;
-    border: none;
-    background-color: transparent;
-    font-size: 14pt;
-    font-weight: 700;
+    width: 300px !important;
+    border: none !important;
+    background-color: transparent   !important;
+    font-size: 14pt !important;
+    font-weight: 700    !important;
 }
 
 .description-tribu-t{
     position: absolute;
     top: 300px;
     left: 15px;
-    width: 470px;
-    height: 50px;
-    border: none;
-    resize: none;
-    background-color: transparent;
-    font-size: 12pt;
+    width: 470px !important;
+    height: 50px !important;
+    border: none !important;
+    resize: none !important;
+    background-color: transparent !important;
+    font-size: 12pt !important;
     /* text-align: center; */
 }
 
@@ -1852,9 +1855,7 @@ a:focus {
     margin-left: auto;
     margin-right: auto;
 }
-.content_left_menu_account{
-    background-color: #fff;
-}
+
 
 .position_sticky{
     position: fixed;
