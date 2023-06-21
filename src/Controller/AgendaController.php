@@ -905,6 +905,8 @@ class AgendaController extends AbstractController
         AgendaService $agendaService,
         TributGService $tributGService,
         Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        MailService $mailService
     ){
 
         if( !$this->getUser()){
@@ -917,7 +919,10 @@ class AgendaController extends AbstractController
         //// data in request post
         $req = json_decode($request->getContent(), true);
         extract($req); ///  $agendaID , $shareFor
-        
+
+        $agenda= $agendaService->getAgendaById($agendaTableName, intval($agendaID));
+
+
         if( intval($shareFor) === 1 ){ ///share for all
             
             $confidentialite_agenda= $agendaService->getConfidentialite($agendaTableName, $agendaID); /// Confidentialite : partager for ( tribu G or tribu T )
@@ -940,13 +945,29 @@ class AgendaController extends AbstractController
                 ///Settings table Agenda Partage.
                 $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_users_tribuG);
 
-                // foreach($all_users_tribuG as $user_in_tribuG){
-                //     // extract($user_in_tribuG); /// $userID, $fullName
+                foreach($all_users_tribuG as $user_in_tribuG){
+                    extract($user_in_tribuG); /// $userID, $fullName
+
+                    $email_user_to_send_email= $userRepository->find(intval($userID))->getEmail();
+
+                    // ($to, $fullName_to, $object, $agenda)
+                    $mailService->sendLinkToInviteOnAgenda(
+                        $email_user_to_send_email,
+                        $fullName,
+                        "Partage Agenda",
+                        $agenda,
+                        [
+                            "id" => $this->getUser()->getId(),
+                            "email" => $this->getUser()->getEmail(),
+                            "fullname" => $tributGService->getFullName(intval($this->getUser()->getId())),
+                            "userToID" => $userID
+                        ]
+                    );
                     
-                //     ///send email de confirmation s'il est va accepter ou refuser.
-                //     dump($user_in_tribuG);
-                // }
-                // dd("atreo");
+                    ///send email de confirmation s'il est va accepter ou refuser.
+                    dump($user_in_tribuG);
+                }
+                dd("atreo");
             }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
                 
                 ///get all tribu T create bu this user 

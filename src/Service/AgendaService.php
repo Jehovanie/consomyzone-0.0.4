@@ -820,6 +820,29 @@ class AgendaService extends PDOConnexionService
 
         return (intval($agendaID_count) > 0 ) ? true : false;
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get single agenda by their ID.
+     * 
+     * @param string $table_agenda_name : name of the table agenda
+     * @param string $agendaID : ID of the agenda to partage
+     * 
+     * @return agenda entity
+     */
+    public function getAgendaById($table_agenda_name, $agendaID){
+
+        $sql="SELECT id, message, file_path, date, heure_debut, heure_fin, restaurant, JSON_VALUE(confidentialite, '$.confidentility') as organisateur, JSON_VALUE(type, '$.type') as goal  FROM $table_agenda_name WHERE id= $agendaID";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $tab_agenda=  $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $tab_agenda;
+    }
+
+
+
     /** 
      * @author tommy
      */
@@ -884,4 +907,8 @@ class AgendaService extends PDOConnexionService
         $stmt = $this->getPDO()->prepare($sql);
         return $stmt->execute();
     }
+
+
+
+
 }

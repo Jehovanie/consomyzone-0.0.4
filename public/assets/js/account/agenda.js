@@ -1190,15 +1190,15 @@ function bindEventAboutSharingEvent(agendaToShare){
   const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
   parent.querySelectorAll(".cta_btn_partage_js_jheo").forEach(cta_btn_partage => {
       cta_btn_partage.addEventListener('click',() => {
-          // const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
-          // const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
-          // shareAgenda(agendaID,shareFor, agendaToShare);
+          const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
+          const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
+          shareAgenda(agendaID,shareFor, agendaToShare);
 
 
-          const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
-          parent.classList.toggle("show_partage");
-          parent.classList.toggle("hidden_partage");
-          alert("En cours de consctuction...");
+          // const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+          // parent.classList.toggle("show_partage");
+          // parent.classList.toggle("hidden_partage");
+          // alert("En cours de consctuction...");
       })
   })
 }

@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone{% endblock %}
+
+{% block body %}
+
+    {% apply inline_css %}
+        <style>
+            {# here, define your CSS styles as usual #}
+            .title {
+                color: blue;
+            }
+
+            .container_fluid{
+                background: rgba(0,54,246,0);
+                background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+                background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+                background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+                width: 100%;
+                z-index: 1;
+                height: 100%;
+
+                padding-top:30px;
+            }
+            .container{
+                position: relative;
+                top: 30%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                margin: auto;
+
+                display: block;
+                border-radius: 15px;
+                padding: 25px;
+                background: rgba(0,54,246,0);
+                background: linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+                background: -webkit-linear-gradient(90deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+            }
+
+            a{
+                text-decoration: none;
+                color: white;
+            }
+
+            .btn_style{
+                color: #fff;
+                border:none;
+                color: #fff;
+                border:none;
+                width: 150px;
+                height: 50px;
+                border-radius: 5px;
+                font-size: 14pt;
+                margin-top: 5px;
+                padding: 10px 15px;
+            }
+
+            .btn_primary{
+                background-color:#007bff;
+                margin-right: 10px;
+            }
+
+            .btn_danger{
+                background-color: #dc3545;
+            }
+
+            .image_logo{
+                display: block;
+                width: 160px;
+                height: 80px;
+            }
+
+
+        </style>
+
+        <div class="container_fluid">
+        
+            <div class="container">
+                <img class="image_logo" src="{{ email.image('@images/logo.png') }}" alt="Logo">
+                {# <img src="{{ absolute_url(asset('assets/image/logo.png')) }}" alt="Logo"> #}
+
+                <p class="content_date_current" >{{ today }}</p>
+
+                <h3 class="content_nom_destination" >Cher/chère {{fullNameTo}}</h3>
+
+                <p class="text_introduction">
+                    Nous avons le plaisir de vous inviter à notre evenement: {{ agenda.message }} 
+                    qui se tiendra le {{agenda.date|date('F jS')  }} à {{agenda.heure_debut}} jusqu'à {{agenda.heure_fin}} à {{agenda.restaurant ? agenda.restaurant : "Consomyzone" }}. 
+                    Cet événement est organisé par mon {{ agenda.organisateur}}.
+                </p>
+                
+                <p class="content_cta">
+                    Nous espérons sincèrement que vous pourrez vous joindre à nous et participer à cette journée exceptionnelle. <br>
+                    Nous vous remercions par avance pour votre réponse et nous attendons avec impatience de vous voir.
+                </p>
+                <p>
+                    <a  class="btn_style btn_primary" 
+                        href="{{absolute_url(path("app_agenda_confirmation" , {"userID_sender": user_sender.id, "agendaID": agenda.id, "userID" : user_sender.userToID , "isAccepted": 1 }))}}" 
+                        targer="_blank">
+                        Accepter
+                    </a>
+                    <a class="btn_style btn_danger" 
+                        href="{{absolute_url(path("app_agenda_confirmation" , {"userID_sender": user_sender.id, "agendaID": agenda.id, "userID" : user_sender.userToID , "isAccepted": 0 }))}}" 
+                        targer="_blank">
+                        Refuser
+                    </a>
+                </p>
+
+                {# <p class="text_muted"> (this link is valid until {{ expiration_date|date('F jS') }})</p> #}
+
+                <p>
+                    Cordialement,
+                </p>
+
+                <p>
+                    {{ user_sender.fullname }} <br>
+                    {{ user_sender.email }}
+                </p>
+            </div>
+        </div>
+
+    {% endapply %}
+{% endblock %}
