@@ -1731,8 +1731,6 @@ function closeRestoDetail(nom_dep, id_dep, codinsee) {
     }
 }
 
-<<<<<<< HEAD
-=======
 function createChargement(elementParent=document.querySelector(".cart_map_js_jheo"),c="chargement_content chargment_content_js_jheo"){
     
     elementParent.innerHTML = `
@@ -1765,7 +1763,6 @@ function deleteMap(){
     }
 }
 
->>>>>>> main
 /**
  * Set a viewing photos as a gallery
  * @param {NodeList} imgs : list of images elements for making gallery
@@ -1773,10 +1770,7 @@ function deleteMap(){
 
 function setGallerie(imgs){
     imgs.forEach(img => {
-<<<<<<< HEAD
-=======
             
->>>>>>> main
         //console.log(img);
         h = img.naturalHeight;
         w = img.naturalWidth;
@@ -1821,9 +1815,6 @@ function setPhotoTribu(btn_photo){
         document.querySelector("#img_modal").src = btn_photo.src
     }
     
-<<<<<<< HEAD
-}
-=======
 }
 
 
@@ -1925,4 +1916,3 @@ function toaster(type,message,container) {
     div.style.background= color
     // setTimeout(container.removeChild(div),3000)
 }
->>>>>>> main

@@ -2,79 +2,7 @@
 	{% if tributG.publications is defined %}
 		{% set last_pub_id= 0 %}
 
-<<<<<<< HEAD
-                    <div class="card-header header_mobile">
-
-                        <a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
-                            <i>{{pub.userfullname}}</i>
-                        </a>
-
-                        <i class="bi bi-play-fill"></i>
-                        
-                        <a href="#" style="text-decoration:none;">
-                            <i class="bi bi-collection"></i>
-                            {{tributG.profil.name}}
-                        </a>
-
-                        {% if pub.user_id == app.user.id %}
-                            <span class="float-end dropstart">
-                                <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                </span>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")' >
-                                            <i class="fas fa-edit"></i>
-                                            Modifier
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item"  onclick="confirm({{pub.id}})">
-                                            <i class="fas fa-trash" aria-hidden="true"></i>
-                                            Supprimer
-                                        </button>
-                                    </li>
-                                </ul>
-                            </span>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-body">
-
-                        <p class="card-text">{{pub.publication}}</p>
-
-                        {% if pub.photo  %}
-                            <div style="max-heigth:100%; max-width: 100%;" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
-                                {# <img width="50%;" heigth="100px;" src={{ asset("assets/publications/photos/") ~ pub.photo }}  class="" alt="image publication"> #}
-								<img width="50%;" heigth="100px;" src="{{asset('uploads/tribu_g/photos/') ~ table_tribu ~ "/" ~ pub.photo}}" class="" alt="" style="cursor:pointer;">
-
-                            </div>
-                        {% endif %}
-
-                        <p class="card-text">
-                            <i>
-                                <small class="text-muted">Publié le
-                                    {{pub.datetime}}
-                                </small>
-
-                            </i>
-
-                            <span class="badge text-bg-primary" style="background-color:#0d6efd;">
-                                <i class="bi bi-eye-fill"></i>
-                                
-                                {% if pub.confidentiality == 1 %}
-                                    Publique
-                                {% elseif pub.confidentiality == 2 %}
-                                    Ami(e)s
-                                {% else %}
-                                    Moi uniquement
-                                {% endif %}
-                            </span>
-                        </p>
-                    </div>
-=======
 		{% for pub in tributG.publications %}
->>>>>>> main
 
 
 			{% if pub.confidentiality == 1 or pub.user_id == app.user.id %}
