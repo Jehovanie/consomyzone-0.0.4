@@ -17,7 +17,7 @@
 
 {% block body %}
 
-	<div class="content_nav_top responsif-none bg-blanc-auth">
+	<div class="content_nav_top responsif-none">
 		{% include "shard/navbar.twig" %}
 	</div>
 
@@ -97,8 +97,8 @@
 									<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 								</div>
 							</div>
-							<div class="row center-align">
-								<button class="btn waves-effect waves-light">
+							<div class="row ms-1">
+								<button class="btn waves-effect waves-light cta_connexion">
 									Connexion
 								</button>
 							</div>
@@ -160,7 +160,7 @@
 									</div>
 								</div>
 								<div class="row center-align">
-									<button class="btn waves-effect waves-light inscription" type="submit">
+									<button class="btn waves-effect waves-light inscription cta_inscription" type="submit">
 										Inscription
 									</button>
 								</div>

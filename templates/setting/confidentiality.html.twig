@@ -17,7 +17,7 @@
 
 	<div id="settingProfilId">
 
-		<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+		<div class="content_left_menu_account fixed-top mt-3 col responsif-none">
 					<div class="left_menu">
 						{% include "shard/account_navleft.html.twig" %}
 					</div>
@@ -28,7 +28,7 @@
 					</div>
 				</div>
 		<div class="navbar-mobile">
-			<div class="fixed-top col responsif-none">
+			<div class="fixed-top col responsif-none bg-blanc">
 				{{ include('shard/account_navbar.html.twig') }}
 			</div>
 
@@ -54,7 +54,7 @@
 							<div class="mb-5 col-lg-9 col-sm-12 col_confidentialite" style="height:100%; margin-left:10%">
 								<div class="">
 									<h4 lng-tag="confidentialite">Confidentialité</h4>
-									<div class="card card-pub p-3">
+									<div class="card card-setting-confid p-3">
 
 										{% if message != null %}
 

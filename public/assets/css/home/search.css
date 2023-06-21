@@ -1,3 +1,10 @@
+.navbar{
+    z-index: 10000 !important;
+}
+.navleft .list-depart {
+    margin-top: 70px !important;
+}
+
 .navleft-detail {
     transform: translate(70vw, 15vh) !important;
 }

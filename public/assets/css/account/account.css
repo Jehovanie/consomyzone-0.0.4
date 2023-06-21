@@ -857,7 +857,7 @@ thead > tr{
 }
 
 .clearfix {
-    *zoom: 1;
+    zoom: 1;
 }
 
 .send_requesting:active{
@@ -1016,7 +1016,7 @@ thead > tr{
 
 .content_right_actualite .champ-pub {
     background-color: #fff; 
-    width: 75vw;
+    width: 76vw;
     border-radius: 15px;
 }
 
@@ -1829,7 +1829,7 @@ a:focus {
 }
 
 .card-appropos-g{
-    width: 100%;
+    width: 97%;
     height: 150px;
     padding: 15px;
     background-color: #fff;
@@ -1929,3 +1929,29 @@ a:focus {
     border: none !important;
 }
 
+.text_input_comment{
+    border-radius: 25px;
+    width: 85%;
+    margin-right: 5px;
+    border: 2px solid #3f3f3f;
+    padding: 8px;
+    padding-left: 15px;
+}
+
+.image_profile_comment{
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+}
+
+.datetime_comment{
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.content_notification_tributg {
+    display: block;
+    max-height: 60vh;
+    overflow-y: scroll;
+}

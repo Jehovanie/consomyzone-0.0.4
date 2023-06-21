@@ -190,6 +190,7 @@ input[type="range"]::-moz-slider-thumb{
 
 .content_description {
     height: 75vh !important;
+    padding: 0 !important;
 }
 
 .content_card{

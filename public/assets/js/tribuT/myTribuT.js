@@ -284,7 +284,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     </div>
                 </div>
                 <nav class="responsif-none mx-auto">
-                    <ul id="navBarTribu">
+                    <ul id="navBarTribu" class="navBarTribu-t">
                         <li class="listNavBarTribu">
                             <a id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
@@ -637,50 +637,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
     }
     //showCommentss();
 }
-function calculateDurationOfComment(dateOfComment) {
-    var date;
-    date = new Date();
-    let month
-    let day
-    if (parseInt(date.getUTCMonth() + 1, 10) <= 9) {
-        month = `0${date.getUTCMonth() + 1}`;
-    } else {
-        month=date.getUTCMonth() + 1
-    }
-    if (parseInt(date.getUTCDate(), 10) <= 9) {
-        day = `0${date.getUTCDate()}`;
-    } else {
-        day=date.getUTCDate()
-    }
-    const dateStr= date.getUTCFullYear() + '-' +month+ '-' +day
-    const hour= (date.getHours())+ ':' + (date.getMinutes())+ ':' + (date.getSeconds());
-    console.log(dateOfComment,dateStr,hour)
-    if(dateOfComment.split(" ")[0] != dateStr) {
-        const dateDetails = parseInt(((dateOfComment.split(" ")[0]).split("-")[2]), 10)
-        if ((dateDetails-date.getUTCDate())== 1) {
-            console.log("hier le " + dateOfComment.split(" ")[1])
-            return "hier le "+dateOfComment.split(" ")[1]
-        } else {
-            const since = date.getUTCDate() - dateDetails 
-            
-            console.log(dateDetails, date.getUTCDate())
-            console.log("depuis " + since + " j");
-            return "depuis " + since + " j"
-        }
-            
-    } else {
-        let lapsTime = Math.abs(parseInt(((dateOfComment.split(" ")[1]).split(":")[0]), 10) - parseInt(((hour.split(":")[0])), 10))
-        if (lapsTime == 0) {
-            const minuteDetailsOfComment = parseInt(((dateOfComment.split(" ")[1]).split(":")[1]), 10)
-            const minuteDetails=parseInt(((hour.split(":")[1])), 10)
-            lapsTime = Math.abs(minuteDetailsOfComment - minuteDetails)
-            return "aujourd'hui il y a " + lapsTime + " mn"
-        }
-        console.log("aujourd'hui il y a " + lapsTime + " h")
-        return "aujourd'hui il y a " + lapsTime + " h"
-    }
 
-}
 
 function showCommentaireTribu_T(event, idmin=0,b ) {
     event.preventDefault();

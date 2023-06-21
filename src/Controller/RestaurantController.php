@@ -421,4 +421,14 @@ class RestaurantController extends AbstractController
         $response = $serializer->serialize(["nombre_avis" => $response], 'json');
         return new JsonResponse($response, 200, [], true);
     }
+
+    #[Route("/user/resto/apropos/{idRestaurant}", name:"rest_apropos")]
+    public function getOneRestaurantById($idRestaurant,
+    BddRestoRepository $bdd,SerializerInterface $serializer){
+    
+       $r=$bdd->getOneRestaurantById($idRestaurant);
+        $response = $serializer->serialize($r, 'json');
+        return new JsonResponse($response, 200, [], true);
+    }
+    
 }

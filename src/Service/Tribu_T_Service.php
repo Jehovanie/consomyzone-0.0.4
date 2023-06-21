@@ -1361,6 +1361,7 @@ class Tribu_T_Service extends PDOConnexionService
                 as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";
 
         $stmt = $this->getPDO()->prepare($sql);
+         
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -1462,7 +1463,40 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all list of the table tribu T creat for this one persone
+     * 
+     * @param string $userID : ID of the agenda to partage
+     * 
+     * @return array list of the table tribu T.
+     */
+    public function getAllTribuT($userID){
+
+        $results = array();
+        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%', '%restaurant%'];
+        
+        $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribu_t_%'";
+        foreach($tab_not_like as $not_like ){
+            $query_sql .= " AND table_name NOT LIKE '$not_like' ";
+        }
+        $statement = $this->getPDO()->prepare($query_sql);
+        $statement->execute();
+        $all_tables = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $all_tables;
+    }
+
     
+    public function getAllTribuTJoinedAndOwned($id){
+        $sql= "SELECT tribu_t_joined,tribu_t_owned FROM `user` WHERE id=$id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
 }
 

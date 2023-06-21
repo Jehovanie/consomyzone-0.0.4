@@ -188,7 +188,7 @@ main {
 }
 
 .form input{
-    background-color: transparent;
+    /* background-color: transparent; */
     border: none;
     border-bottom: 1px solid #9e9e9e;
     border-radius: 0;
@@ -256,12 +256,12 @@ main {
     border-bottom-color: dodgerblue !important;
 }
 
-#form .row>button {
-    background-color: #3AC334;
+.cta_connexion , .cta_inscription{
+    background-color: #3AC334 !important;
 }
 
 input {
-    color: #FFF;
+    color: black !important;
     padding-left: 15px !important;
 }
 

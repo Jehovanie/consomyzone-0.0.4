@@ -92,8 +92,7 @@ class MailService {
 
         $customMailer->send($email);
     }
-
-
+    
     public function sendEmailWithExpirationDate($to,$objet,$message,$cc, $bcc):void
 
     {
