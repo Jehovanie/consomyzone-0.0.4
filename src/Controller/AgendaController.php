@@ -829,7 +829,8 @@ class AgendaController extends AbstractController
                     $email_to = $userRepository->findOneBy(["id" => $id])->getEmail();
                     $link = $this->generateUrl("agenda_set_presence", array("table_partage_agenda" => "partage_agenda_".$userId, "agenda_id" => $agenda_id, "userId" => $id), UrlGeneratorInterface::ABSOLUTE_URL);
                     $mailService->sendEmail(
-                        $email_from,
+                        //$email_from,
+                        "anonymous@geoinfography.com",
                         $tributGService->getFullName($userId),
                         $email_to,
                         $tributGService->getFullName($id),

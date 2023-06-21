@@ -7,5 +7,6 @@ class ProdData{
     const  MDP_PROD= "0f664d9019Fa+";
     const  SERVER_SMTP_PROD= "smtp-fr.securemail.pro";
     const  PORT_PROD= "465";
+    const  NOM_SENDER= "CONSOMYZONE";
 
 }
