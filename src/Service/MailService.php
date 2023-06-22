@@ -43,7 +43,7 @@ class MailService extends AbstractController {
 
 
 
-    public function sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message):void
+    public function sendEmail($to,$fullName_to,$objet,$message):void
 
     {
 
@@ -71,7 +71,7 @@ class MailService extends AbstractController {
 
         $email = (new TemplatedEmail())
 
-                ->from(new Address($from ,$fullName_from)) 
+                ->from(new Address($userSendingEmail ,"ConsoMyZone")) 
 
                 ->to(new Address($to, $fullName_to ))
 

@@ -245,8 +245,6 @@ class SecurityController extends AbstractController
 
             //// send the mail
             $mailService->sendEmail(
-                "geoinfography@infostat.fr", /// mail where from
-                "ConsoMyZone",  //// name the senders
                 $user->getEmail(), /// mail destionation
                 trim($user->getPseudo()), /// name destionation
                 "Confirmation de réinitialiser mon mot de passe", //// title of email
@@ -523,8 +521,6 @@ class SecurityController extends AbstractController
 
         //// send the mail
         $mailService->sendEmail(
-            "geoinfography@infostat.fr", /// mail where from
-            "ConsoMyZone",  //// name the senders
             $user->getEmail(), /// mail destionation
             trim($user->getPseudo()), /// name destionation
             "EMAIL CONFIRMATION", //// title of email
@@ -579,19 +575,10 @@ class SecurityController extends AbstractController
         ///send email
 
         $mailService->sendEmail(
-
-            "geoinfography@infostat.fr", /// mail where from
-
-            "ConsoMyZone",  //// name the senders
-
             $user->getEmail(), /// mail destionation
-
             trim($user->getPseudo()), /// name destionation
-
             "EMAIL CONFIRMATION", //// title of email
-
             "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
-
         );
 
 
@@ -611,29 +598,29 @@ class SecurityController extends AbstractController
         UserAuthenticator $loginAuth,
         VerifyEmailHelperInterface $verifyEmailHelper
     ) {
-
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
-        }
-
         ///to get info
         ///id de l'utilisateur.
         $userToVerifie = $userRepository->find($request->query->get('id'));
+
+        if ($this->getUser() || $userToVerifie->getVerifiedEmail() === true ) {
+            return $this->redirectToRoute('app_home');
+        }
+
 
         if (!$userToVerifie) {
             throw $this->createNotFoundException();
         }
 
         ///a verifier
-        // try {
-        //     $verifyEmailHelper->validateEmailConfirmation(
-        //         $request->getUri(),
-        //         $userToVerifie->getId(),
-        //         $userToVerifie->getEmail(),
-        //     );
-        // } catch (VerifyEmailExceptionInterface $e) {
-        //     return $this->redirectToRoute('app_login');
-        // }
+        try {
+            $verifyEmailHelper->validateEmailConfirmation(
+                $request->getUri(),
+                $userToVerifie->getId(),
+                $userToVerifie->getEmail(),
+            );
+        } catch (VerifyEmailExceptionInterface $e) {
+            return $this->redirectToRoute('app_login');
+        }
 
         ///change the to true the email verified
         $userToVerifie->setVerifiedMail(true);  ///get the user from database by id
@@ -690,18 +677,23 @@ class SecurityController extends AbstractController
             ////set profil
             if( $profil){
                 ///path file folder
-                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userToVerifie->getId() . "/";
+                $dir_exist = $filesyst->exists($path);
+
+                if ($dir_exist == false) {
+                    $filesyst->mkdir($path, 0777);
+                }
+
                 $temp = explode(";", $profil );
                 $extension = explode("/", $temp[0])[1];
                 $image_name = "profil_". $nom . "." . $extension;
+
                 ///save image in public/uploader folder
                 file_put_contents($path ."/". $image_name, file_get_contents($profil));
                 
                 ///set use profile
-                $user_profil->setPhotoProfil($image_name);
+                $user_profil->setPhotoProfil( $path . $image_name);
             }
-
-
 
             // $user_profil->setPhotoCouverture("photo de couverture");
 

@@ -881,6 +881,12 @@ class AgendaController extends AbstractController
             /// send  notification for the user that is request is reject because max atteint
             $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", $message );
 
+            /// send email
+            // $emailService->sendResponseAgenda(
+
+            // );
+
+
         }else if( intval($result) === 1 ){  //// accepted reussir
             /// send  notification for the user this is request is persist.
             $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez accepté un agenda créer par " . $user_sender_fullname . ".");
@@ -920,7 +926,13 @@ class AgendaController extends AbstractController
         $req = json_decode($request->getContent(), true);
         extract($req); ///  $agendaID , $shareFor
 
-        $agenda= $agendaService->getAgendaById($agendaTableName, intval($agendaID));
+        ///Check if this agenda is already share
+        if( $agendaService->isAleardyShare($table_partage_agenda, $agendaID)){
+            return $this->json(["message" => "Vous avez déjà partagé cet agenda.","status" => "alreadyShare"]);
+        }
+
+        //// get agenda to share
+        $agenda= $agendaService->getAgendaById($agendaTableName, intval($agendaID)); /// entity agenda
 
 
         if( intval($shareFor) === 1 ){ ///share for all
@@ -934,11 +946,6 @@ class AgendaController extends AbstractController
             if( $confid === "Tribu-G"){
                 $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
 
-                ///Check if this agenda is already share
-                if( $agendaService->isAleardyShare($table_partage_agenda, $agendaID)){
-                    return $this->json(["message" => "Vous avez déjà partagé cet agenda.","status" => "alreadyShare"]);
-                }
-
                 ////get information( userID, fullName ) for all user in this tribu G
                 $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
 
@@ -948,9 +955,10 @@ class AgendaController extends AbstractController
                 foreach($all_users_tribuG as $user_in_tribuG){
                     extract($user_in_tribuG); /// $userID, $fullName
 
+                    //// email of the user
                     $email_user_to_send_email= $userRepository->find(intval($userID))->getEmail();
 
-                    // ($to, $fullName_to, $object, $agenda)
+                    ///send email de confirmation s'il est va accepter ou refuser.
                     $mailService->sendLinkToInviteOnAgenda(
                         $email_user_to_send_email,
                         $fullName,
@@ -964,7 +972,6 @@ class AgendaController extends AbstractController
                         ]
                     );
                     
-                    ///send email de confirmation s'il est va accepter ou refuser.
                     dump($user_in_tribuG);
                 }
                 dd("atreo");
