@@ -50,6 +50,50 @@ class AgendaController extends AbstractController
     }
 
 
+    
+    public function sendEmailPartageAgenda(
+        $userRepository,
+        $mailService,
+        $notificationService,
+        $tributGService,
+        $agenda,
+        $all_partisans
+    ){
+
+        foreach($all_partisans as $partisan){
+            extract($partisan); /// $userID, $fullName
+
+            //// email of the user
+            $email_user_to_send_email= $userRepository->find(intval($userID))->getEmail();
+
+            ///send email de confirmation s'il est va accepter ou refuser.
+            $mailService->sendLinkToInviteOnAgenda(
+                $email_user_to_send_email,
+                $fullName,
+                "Partage Agenda",
+                $agenda,
+                [
+                    "id" => $this->getUser()->getId(),
+                    "email" => $this->getUser()->getEmail(),
+                    "fullname" => $tributGService->getFullName(intval($this->getUser()->getId())),
+                    "userToID" => $userID
+                ]
+            );
+
+
+            ///send notification : we have to send an email for invitation in agenda
+            $notificationService->sendNotificationForOne(
+                $this->getUser()->getId(),
+                intval($userID),
+                "Partage Agenda",
+                "Je tenais à vous informer que je vous ai envoyé une invitation importante par courrier électronique. 
+                Si vous avez des questions ou des préoccupations, n'hésitez pas à me contacter par e-mail ou par téléphone."
+            );
+        }
+    }
+
+
+
 
     /**
 
@@ -917,7 +961,8 @@ class AgendaController extends AbstractController
         TributGService $tributGService,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
-        MailService $mailService
+        MailService $mailService,
+        NotificationService $notificationService
     ){
 
         if( !$this->getUser()){
@@ -929,7 +974,9 @@ class AgendaController extends AbstractController
 
         //// data in request post
         $req = json_decode($request->getContent(), true);
-        extract($req); ///  $agendaID , $shareFor
+        extract($req); ///  $agendaID , $shareFor, $tribuTChecked
+
+       
 
         ///Check if this agenda is already share
         if( $agendaService->isAleardyShare($table_partage_agenda, $agendaID)){
@@ -941,63 +988,97 @@ class AgendaController extends AbstractController
 
 
         if( intval($shareFor) === 1 ){ ///share for all
-            
-            $confidentialite_agenda= $agendaService->getConfidentialite($agendaTableName, $agendaID); /// Confidentialite : partager for ( tribu G or tribu T )
 
-            if(array_key_exists("confid", $confidentialite_agenda)){
-                extract($confidentialite_agenda); /// $confid
-            }
+            if( !$tribuTChecked ){
+                 
+                $confidentialite_agenda= $agendaService->getConfidentialite($agendaTableName, $agendaID); /// Confidentialite : partager for ( tribu G or tribu T )
 
-            if( $confid === "Tribu-G"){
-                $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
+                if(array_key_exists("confid", $confidentialite_agenda)){
+                    extract($confidentialite_agenda); /// $confid
+                }
 
-                ////get information( userID, fullName ) for all user in this tribu G
-                $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
+                if( $confid === "Tribu-G"){
+                    $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
 
-                ///Settings table Agenda Partage.
-                $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_users_tribuG);
+                    ////get information( userID, fullName ) for all user in this tribu G
+                    $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
 
-                foreach($all_users_tribuG as $user_in_tribuG){
-                    extract($user_in_tribuG); /// $userID, $fullName
+                    ///Settings table Agenda Partage.
+                    $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_users_tribuG);
 
-                    //// email of the user
-                    $email_user_to_send_email= $userRepository->find(intval($userID))->getEmail();
-
-                    ///send email de confirmation s'il est va accepter ou refuser.
-                    $mailService->sendLinkToInviteOnAgenda(
-                        $email_user_to_send_email,
-                        $fullName,
-                        "Partage Agenda",
+                    $this->sendEmailPartageAgenda(
+                        $userRepository,
+                        $mailService,
+                        $notificationService,
+                        $tributGService,
                         $agenda,
-                        [
-                            "id" => $this->getUser()->getId(),
-                            "email" => $this->getUser()->getEmail(),
-                            "fullname" => $tributGService->getFullName(intval($this->getUser()->getId())),
-                            "userToID" => $userID
-                        ]
+                        $all_users_tribuG
                     );
 
 
                     ///send notification : we have to send an email for invitation in agenda
+                    $notificationService->sendNotificationForOne(
+                        $this->getUser()->getId(),
+                        $this->getUser()->getId(),
+                        "Partage Agenda",
+                        "Vous  venez de partager votre agenda sur votre Tribu G."
+                    );
+
+                }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
+                    
+                    ///get all tribu T for this user 
+                    $all_tribuT= $userRepository->getListTableTribuT();
+                    
+                    return $this->json(["message" => "Partage for tribu T", "status" => "tribuT", "all_tribugT" => $all_tribuT]);
+
+                }else{ /// Moi uniquement
+
                 }
+            }else{
 
-            }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
-                
-                ///get all tribu T create bu this user 
-                $all_tribuT= $tribuTService->getAllTribuT($this->getUser()->getId());
-                
-                return $this->json(["message" => "Partage for tribu T", "status" => "tribuT", "all_tribugT" => $all_tribuT]);
+                $all_partisans_tribuT=  $tributGService->getFullNameForAllMembers($tribuTChecked); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
 
-            }else{ /// Moi uniquement
+                ///Settings table Agenda Partage.
+                $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$all_partisans_tribuT);
 
+
+                $this->sendEmailPartageAgenda(
+                    $userRepository,
+                    $mailService,
+                    $notificationService,
+                    $tributGService,
+                    $agenda,
+                    $all_partisans_tribuT
+                );
+
+                ///send notification : we have to send an email for invitation in agenda
+                $notificationService->sendNotificationForOne(
+                    $this->getUser()->getId(),
+                    $this->getUser()->getId(),
+                    "Partage Agenda",
+                    "Vous  venez de partager votre agenda sur votre Tribu " . $tribuTChecked
+                );
             }
 
         }else{
             /// share for little persone
         }
-
-
         return $this->json(["message" => "Votre agenda est partagé." ,"status" => "shareSuccess"]);
+    }
+
+
+
+    #[ Route("/user/agenda/shares/tribuT", name:"app_share_agenda_tribuT", methods: "POST")]
+    public function shareAgendaTribuTAction(
+        Request $request,
+        AgendaService $agendaService,
+        TributGService $tributGService,
+        Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        MailService $mailService,
+        NotificationService $notificationService
+    ){
+
     }
 
 

@@ -1222,14 +1222,14 @@ function bindEventAboutSharingEvent(agendaToShare){
 
 
 
-function shareAgenda(agendaID, shareFor, agendaToShare){
+function shareAgenda(agendaID, shareFor, agendaToShare, tribuTChecked = null){
     const request = new Request("/user/agenda/shares", {
         method: "POST",
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'  
         },
-        body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
+        body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor, "tribuTChecked" : tribuTChecked })
     })
 
     fetch(request)
@@ -1253,10 +1253,12 @@ function shareAgenda(agendaID, shareFor, agendaToShare){
                     
                     alert(response.message)
                 }else if( response.status === "tribuT"){
-                    
-                    const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
-                    createHtmlViewListTribuT(data_rank_modal, response.all_tribugT)
-                    document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
+
+                    if( tribuTChecked === null  ){ ///already select tribu T
+                        const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
+                        createHtmlViewListTribuT(data_rank_modal,response.all_tribugT,agendaID, shareFor, agendaToShare)
+                        document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
+                    }
                 }
 
             }
@@ -1267,7 +1269,7 @@ function shareAgenda(agendaID, shareFor, agendaToShare){
 
 
 
-function createHtmlViewListTribuT(dataRankForShare, tabListTribuT){
+function createHtmlViewListTribuT(dataRankForShare, tabListTribuT,agendaID, shareFor, agendaToShare){
 
     let html_list_tribuT = "";
 
@@ -1306,7 +1308,7 @@ function createHtmlViewListTribuT(dataRankForShare, tabListTribuT){
 
     ////bind event on list tribu T
     if( tabListTribuT.length >  0){
-        bindEventForShareInTribuT(tabListTribuT, dataRankForShare)
+        bindEventForShareInTribuT(tabListTribuT, dataRankForShare,agendaID, shareFor, agendaToShare)
     }
 }
 
@@ -1321,7 +1323,7 @@ function createSingleTribuT(table_name){
     `
 }
 
-function bindEventForShareInTribuT(tabListTribuT, dataRankForShare){
+function bindEventForShareInTribuT(tabListTribuT, dataRankForShare,agendaID, shareFor, agendaToShare){
 
     /// handle event  click
     tabListTribuT.forEach(({table_name}) => {
@@ -1356,7 +1358,7 @@ function bindEventForShareInTribuT(tabListTribuT, dataRankForShare){
                 loaderForAgenda(document.querySelector(".content_loader_agenda_js_jheo"))
 
                 /// ACTION
-                shareAgendaTribuT(tribuT_checked);
+                shareAgenda(agendaID, shareFor, agendaToShare,tribuT_checked)
 
             }else{
                 alert("Veuillez selectionner un tribu T");
@@ -1364,34 +1366,6 @@ function bindEventForShareInTribuT(tabListTribuT, dataRankForShare){
 
       })
   }
-}
-
-function shareAgendaTribuT(tribuT_checked){
-    // const request = new Request("/user/agenda/shares/tribuT", {
-    //     method: "POST",
-    //     headers: {
-    //         'Accept': 'application/json',
-    //         'Content-Type': 'application/json'  
-    //     },
-    //     body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
-    // })
-
-    console.log("on va faire une fetch")
-    console.log(tribuT_checked)
-
-    setTimeout(() => {
-        ///remove loader
-        removeLoaderForAgenda();
-    }, 5000);
-
-    // fetch(request)
-    //     .then(response=>{
-    //         if(response.ok){   
-    //             return response.json();
-    //         }
-    //     })
-    //     .then(response => {
-    //     })
 }
 
 

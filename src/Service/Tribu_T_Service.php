@@ -1453,7 +1453,7 @@ class Tribu_T_Service extends PDOConnexionService
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
-     * Get all list of the table tribu T creat for this one persone
+     * Get all list of the table tribu T in the database
      * 
      * @param string $userID : ID of the agenda to partage
      * 
