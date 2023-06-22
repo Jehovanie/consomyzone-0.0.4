@@ -522,11 +522,28 @@ class AgendaService extends PDOConnexionService
     /**
      * @author Tommy
      */
-    public function getAgenda($nom_table_agenda){
+    public function getAgenda($nom_table_agenda, $agenda_partage_name){
+
+        $results = [];
+
         $sql="SELECT * FROM $nom_table_agenda  ORDER BY id ASC";
         $stmt = $this->getPDO()->prepare($sql);
-       $stmt->execute();
-       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute();
+        $all_agenda = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($all_agenda as $single_agenda) {
+            $agendaID= $single_agenda['id'];
+
+            $sql="SELECT count(*) as count_share FROM $agenda_partage_name WHERE agenda_id= $agendaID";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+           
+            $single_agenda["isAlreadyShare"] = intval($result["count_share"]) > 0 ? true : false;
+
+            array_push($results,$single_agenda);
+        }
+        return $results ;
     }
 
 

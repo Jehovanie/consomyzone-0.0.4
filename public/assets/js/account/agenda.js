@@ -276,7 +276,8 @@ function showTimeLine(parentElement, datas) {
                 </div>
             </div>
           ` : "";
-          let isShare= (isEnd === "") ? `<i class="fa-solid fa-share-nodes cta_share_agenda" id="cta_share_agenda_${k}" data-agenda-share="${k}" ></i>`: "";
+          let isAlreadyShare= data.isAlreadyShare ? "red_color" : "";
+          let isShare= (isEnd === "") ? `<i class="fa-solid fa-share-nodes cta_share_agenda ${isAlreadyShare} share_agenda_${data.id}" id="cta_share_agenda_${k}" data-agenda-share="${k}" ></i>`: "";
           /// ---------------------------
 
               
@@ -376,7 +377,7 @@ function showTimeLine(parentElement, datas) {
           <div class="modale-share-agenda">
               <dialog id="share_agenda-dialog-${dataRankForShare}" class="cookie flow-content" data-spacing="lg">
 
-                  <i class="fa-solid fa-x x_close_agenda_share" id="close-modal-agenda-share" onclick="closeShareAgenda('${dataRankForShare}')"></i>
+                  <i class="fa-solid fa-x x_close_agenda_share" id="close-modal-${dataRankForShare}" onclick="closeShareAgenda('${dataRankForShare}')"></i>
                   <div class="content_dialog content_dialog_for_share_agenda_share_${dataRankForShare}_js_jheo">
                       <h3 class="text-primary">List</h3>
                   </div>
@@ -1169,8 +1170,8 @@ function showAgenda() {
       createChargement(document.querySelector(".loader_agenda"), "chargement_content chargement_agenda")
       if (response.status === 200 && response.ok) {
         response.json().then(json => {
-          console.log(json)
-          showTimeLine(document.querySelector("body > div.content-agenda"), json)
+            console.log(json)
+            showTimeLine(document.querySelector("body > div.content-agenda"), json)
             deleteChargement("chargement_agenda")
         })
            
@@ -1187,60 +1188,80 @@ function showAgenda() {
 
 
 function bindEventAboutSharingEvent(agendaToShare){
-  const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
-  parent.querySelectorAll(".cta_btn_partage_js_jheo").forEach(cta_btn_partage => {
-      cta_btn_partage.addEventListener('click',() => {
-          const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
-          const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
-          shareAgenda(agendaID,shareFor, agendaToShare);
+    const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+    parent.querySelectorAll(".cta_btn_partage_js_jheo").forEach(cta_btn_partage => {
+        cta_btn_partage.addEventListener('click',() => {
+            /// CREATE LOADER
+            loaderForAgenda(document.querySelector(".content_loader_agenda_js_jheo"))
+           
+
+            /// ACTION 
+            const isShareForAll= parseInt( cta_btn_partage.getAttribute("data-is-for-all")) === 1 ? true : false;
+
+            if( isShareForAll ) { 
+                const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
+                const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
+
+                shareAgenda(agendaID,shareFor, agendaToShare);
+        
+            }else{
+                alert("On doit ouvrir un modal dialog (list des partisans)");
+            }
+
+            
+
+            // const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+            // parent.classList.toggle("show_partage");
+            // parent.classList.toggle("hidden_partage");
+            // alert("is Share for all ? " + isShareForAll);
 
 
-          // const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
-          // parent.classList.toggle("show_partage");
-          // parent.classList.toggle("hidden_partage");
-          // alert("En cours de consctuction...");
-      })
-  })
+        })
+    })
 }
 
 
 
 function shareAgenda(agendaID, shareFor, agendaToShare){
-  const request = new Request("/user/agenda/shares", {
-      method: "POST",
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'  
-      },
-      body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
-  })
-  fetch(request)
-      .then(response=>{
-          if(response.ok){   
-              return response.json();
-          }
-      })
-      .then(response => {
+    const request = new Request("/user/agenda/shares", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
+    })
 
-          const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
-          parent.classList.toggle("show_partage");
-          parent.classList.toggle("hidden_partage");
+    fetch(request)
+        .then(response=>response.json())
+        .then(response => {
+            ///remove loader
+            removeLoaderForAgenda();
+
+            //// close div content ask partage agenda for all
+            const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
+            parent.classList.toggle("show_partage");
+            parent.classList.toggle("hidden_partage");
 
 
-          if( response.hasOwnProperty("status") ){
+            if( response.hasOwnProperty("status") ){
+                if(response.status === "shareSuccess" ){
 
-            if( response.status === "ok"  || response.status === "alreadyShare" ){
-              alert(response.message)
+                    document.querySelector(`.share_agenda_${agendaID}`).classList.add("red_color");
+                    alert(response.message)
+                }else if(response.status === "alreadyShare"){
+                    
+                    alert(response.message)
+                }else if( response.status === "tribuT"){
+                    
+                    const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
+                    createHtmlViewListTribuT(data_rank_modal, response.all_tribugT)
+                    document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
+                }
 
-            }else if( response.status === "tribuT"){
-              const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
-              createHtmlViewListTribuT(data_rank_modal, response.all_tribugT)
-              document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
             }
 
-          }
-
-      })
+        })
 }
 
 
@@ -1248,64 +1269,69 @@ function shareAgenda(agendaID, shareFor, agendaToShare){
 
 function createHtmlViewListTribuT(dataRankForShare, tabListTribuT){
 
-  let html_list_tribuT = "";
+    let html_list_tribuT = "";
 
-  let listTribuT= "";
-  tabListTribuT.forEach(({table_name}) => {
-    listTribuT += createSingleTribuT(table_name)
-  })
+    let listTribuT= "";
+    tabListTribuT.forEach(({table_name}) => {
+        listTribuT += createSingleTribuT(table_name)
+    })
 
-  if( tabListTribuT.length >  0){
-    html_list_tribuT= `
-      <div class="content_list_tribuT">
-          <div class="header_list_tribuT">
-              <h3> Liste de votre tribuT.</h3>
-          </div>
-          <div class="list_content_tribuT">
-            ${listTribuT}
-          </div>
-          <div class="footer_list_tribuT">
-            <button type="button" class="btn_primary_tribuT btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo">Envoyer</button>
-          </div>
-      </div>
-    `
-    
-  }else{
-    html_list_tribuT= `
-      <div class="content_list_tribuT">
-        <div class="alert_danger_tribuT">
-          Vous n'avez pas encore créé de tribu T
-        </div>
-      </div>
-    `
-  }
+    if( tabListTribuT.length >  0){
+        html_list_tribuT= `
+            <div class="content_list_tribuT">
+                <div class="header_list_tribuT">
+                    <h3> Liste de votre tribuT.</h3>
+                </div>
+                <div class="list_content_tribuT">
+                    ${listTribuT}
+                </div>
+                <div class="footer_list_tribuT">
+                    <button type="button" class="btn_primary_tribuT btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo">Envoyer</button>
+                </div>
+            </div>
+        `
 
-  document.querySelector(`.content_dialog_for_share_agenda_share_${dataRankForShare}_js_jheo`).innerHTML = html_list_tribuT;
-  if( tabListTribuT.length >  0){
-    bindEventForShareInTribuT(tabListTribuT, dataRankForShare)
-  }
+    }else{
+        html_list_tribuT= `
+            <div class="content_list_tribuT">
+                <div class="alert_danger_tribuT">
+                Vous n'avez pas encore créé de tribu T
+                </div>
+            </div>
+        `
+    }
+
+    ///injection HTMl
+    document.querySelector(`.content_dialog_for_share_agenda_share_${dataRankForShare}_js_jheo`).innerHTML = html_list_tribuT;
+
+    ////bind event on list tribu T
+    if( tabListTribuT.length >  0){
+        bindEventForShareInTribuT(tabListTribuT, dataRankForShare)
+    }
 }
 
 function createSingleTribuT(table_name){
-  return `
-    <div class="form_check_tribuT">
-      <input class="form_check_input_tribuT" type="checkbox" id="${table_name}">
-      <label class="form_check_label_tribuT" for="${table_name}">
-        ${table_name}
-      </label>
-    </div>
-  `
+    return `
+        <div class="form_check_tribuT">
+            <input class="form_check_input_tribuT" type="checkbox" id="${table_name}">
+            <label class="form_check_label_tribuT" for="${table_name}">
+                ${table_name}
+            </label>    
+        </div>
+    `
 }
 
 function bindEventForShareInTribuT(tabListTribuT, dataRankForShare){
+
+    /// handle event  click
     tabListTribuT.forEach(({table_name}) => {
         document.querySelector(`#${table_name}`).addEventListener("input",() => {
             if(document.querySelector(`#${table_name}`).checked){
-            tabListTribuT.forEach(({table_name: item }) => {
-                if( item !== table_name && document.querySelector(`#${item}`).checked){
-                    document.querySelector(`#${item}`).checked = false;
-                }
-            })
+                tabListTribuT.forEach(({table_name: item }) => {
+                    if( item !== table_name && document.querySelector(`#${item}`).checked){
+                        document.querySelector(`#${item}`).checked = false;
+                    }
+                })
             }
         })
     })
@@ -1318,12 +1344,20 @@ function bindEventForShareInTribuT(tabListTribuT, dataRankForShare){
             let tribuT_checked = "";
             tabListTribuT.forEach(({table_name: tribuT_item }) => {
                 if(document.querySelector(`#${tribuT_item}`).checked){
-                tribuT_checked = tribuT_item;
+                    tribuT_checked = tribuT_item;
                 }
             })
     
             if( tribuT_checked !== ""){
+                ///close modal dialog
+                document.querySelector(`#close-modal-${dataRankForShare}`).click();
+
+                /// CREATE LOADER
+                loaderForAgenda(document.querySelector(".content_loader_agenda_js_jheo"))
+
+                /// ACTION
                 shareAgendaTribuT(tribuT_checked);
+
             }else{
                 alert("Veuillez selectionner un tribu T");
             }
@@ -1342,8 +1376,13 @@ function shareAgendaTribuT(tribuT_checked){
     //     body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor })
     // })
 
-    alert("on va faire une fetch")
+    console.log("on va faire une fetch")
     console.log(tribuT_checked)
+
+    setTimeout(() => {
+        ///remove loader
+        removeLoaderForAgenda();
+    }, 5000);
 
     // fetch(request)
     //     .then(response=>{
@@ -1353,4 +1392,17 @@ function shareAgendaTribuT(tribuT_checked){
     //     })
     //     .then(response => {
     //     })
+}
+
+
+function loaderForAgenda(parent, className){
+    document.querySelector(".content_loader_agenda_js_jheo").classList.remove("hidden");
+    document.querySelector(".content_agenda_js_jheo").classList.add("content_agenda_opacity")
+    createChargement(parent, className);
+}
+
+function removeLoaderForAgenda(){
+    document.querySelector(".content_loader_agenda_js_jheo").classList.add("hidden");
+    document.querySelector(".content_agenda_js_jheo").classList.remove("content_agenda_opacity")
+    deleteChargement();
 }

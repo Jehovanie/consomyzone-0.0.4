@@ -642,6 +642,8 @@ class AgendaController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
         ]);
     }
+
+
     #[Route("/user/create-event/agenda", name: "app_create_agenda")]
     public function createEvent(Request $request,AgendaService $agendaService, Filesystem $fs){
         $agendaTableName=$this->getUser()->getNomTableAgenda();
@@ -694,7 +696,10 @@ class AgendaController extends AbstractController
     #[Route("/user/agenda", name: "app_get_agenda")]
     public function getAgenda(AgendaService $agendaService, SerializerInterface $ser){
         $agendaTableName = $this->getUser()->getNomTableAgenda();
-        $r=$agendaService->getAgenda($agendaTableName);
+
+        $agendaPartageName= $this->getUser()->getNomTablePartageAgenda();
+
+        $r=$agendaService->getAgenda($agendaTableName, $agendaPartageName);
         $date= array_column($r, 'date');
         array_multisort($date, SORT_ASC, $r);
        
@@ -971,10 +976,11 @@ class AgendaController extends AbstractController
                             "userToID" => $userID
                         ]
                     );
-                    
-                    dump($user_in_tribuG);
+
+
+                    ///send notification : we have to send an email for invitation in agenda
                 }
-                dd("atreo");
+
             }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
                 
                 ///get all tribu T create bu this user 
@@ -991,7 +997,7 @@ class AgendaController extends AbstractController
         }
 
 
-        return $this->json(["message" => "Agenda partager" ,"status" => "ok"]);
+        return $this->json(["message" => "Votre agenda est partagé." ,"status" => "shareSuccess"]);
     }
 
 
@@ -999,11 +1005,11 @@ class AgendaController extends AbstractController
 
     #[Route("/agenda/presence/send/link/{agenda_id}", name: "agenda_send_presence_link")]
     public function sendPresenceLink($agenda_id, 
-    MailService $mailService, 
-    AgendaService $agendaService, 
-    UserRepository $userRepository,
-    TributGService $tributGService,
-    NotificationService $notification
+        MailService $mailService, 
+        AgendaService $agendaService, 
+        UserRepository $userRepository,
+        TributGService $tributGService,
+        NotificationService $notification
     ): Response
     {
 
@@ -1063,14 +1069,14 @@ class AgendaController extends AbstractController
 
     #[Route("/agenda/set/presence/{table_partage_agenda}/{agenda_id}/{userId}", name: "agenda_set_presence")]
     public function setPresence(
-    $table_partage_agenda,
-    $agenda_id,
-    $userId,
-    MailService $mailService, 
-    AgendaService $agendaService, 
-    UserRepository $userRepository,
-    TributGService $tributGService,
-    NotificationService $notification
+        $table_partage_agenda,
+        $agenda_id,
+        $userId,
+        MailService $mailService, 
+        AgendaService $agendaService, 
+        UserRepository $userRepository,
+        TributGService $tributGService,
+        NotificationService $notification
     )
     {
 

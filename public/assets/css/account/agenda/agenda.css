@@ -1101,3 +1101,17 @@ a.btn-success{
 .avatar-account-fondateur img {
   margin-left: 0px !important;
 }
+
+.content_loader_agenda {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.content_agenda_opacity{
+  opacity: 0.3;
+}
+
+.red_color{
+  color: red;
+}
