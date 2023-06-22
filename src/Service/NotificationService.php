@@ -77,23 +77,17 @@ class NotificationService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
      * To send notification.
-
+     * 
      * @param int $user_id_post: user dispatch an action and send notification
-
      * @param int $user_id: user receive notification
-
      * @param string $type: type of message (ex:publication, reaction, commentaire, ajout amis, ... )
-
      * @param string $content: content of message
-
+     * 
+     * @return void
      */
-
     public function sendNotificationForOne(int $user_id_post,int $user_id,string $type, string $content ){
 
         ///get the name of the table notification for $user_id_post to send new notification
@@ -102,13 +96,13 @@ class NotificationService extends PDOConnexionService{
 
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
         ///insert notification
 
-        $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+        $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
             
 
@@ -156,13 +150,13 @@ class NotificationService extends PDOConnexionService{
 
             $statement->execute();
 
-            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
             ///insert notification
 
-            $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+            $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
                 
 
@@ -274,7 +268,7 @@ class NotificationService extends PDOConnexionService{
 
             $statement->execute();
 
-            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
@@ -284,7 +278,7 @@ class NotificationService extends PDOConnexionService{
 
             ////set notification
 
-            $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+            $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
             
 
@@ -334,11 +328,11 @@ class NotificationService extends PDOConnexionService{
 
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
-        $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+        $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
             
 
@@ -368,11 +362,11 @@ class NotificationService extends PDOConnexionService{
 
             $statement->execute();
 
-            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
-            if( $result[0]["isShow"] !== "1" ){
+            if( $result["isShow"] !== "1" ){
 
                 $sql = "UPDATE " . $table . " SET isShow = 1  WHERE id = " . intval($notif["notif_id"]);
 
@@ -444,11 +438,11 @@ class NotificationService extends PDOConnexionService{
 
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
-        if( $result[0]["isRead"] !== "1" ){
+        if( $result["isRead"] !== "1" ){
 
             $sql = "UPDATE " . $table . " SET isRead = 1  WHERE id = " . intval($notif_id);
 
@@ -480,13 +474,13 @@ class NotificationService extends PDOConnexionService{
 
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
         ///insert notification
 
-        $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+        $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
             
 
@@ -504,13 +498,13 @@ class NotificationService extends PDOConnexionService{
 
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
         ///insert notification
 
-        $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead, tribu) VALUES (?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead, tribu) VALUES (?,?,?,?,?,?,?)";
 
             
 
@@ -540,11 +534,11 @@ class NotificationService extends PDOConnexionService{
 
 
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
-        if( $result[0]["is_accepted"] !== "1" ){
+        if( $result["is_accepted"] !== "1" ){
 
             $sql = "UPDATE " . $table . " SET is_accepted = 1  WHERE id = " . intval($notif_id);
 
@@ -570,11 +564,11 @@ class NotificationService extends PDOConnexionService{
 
 
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
-        if( $result[0]["is_accepted"] !== "2" ){
+        if( $result["is_accepted"] !== "2" ){
 
             $sql = "UPDATE " . $table . " SET is_accepted = 2  WHERE id = " . intval($notif_id);
 
@@ -634,13 +628,13 @@ class NotificationService extends PDOConnexionService{
 
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 
         ///insert notification
 
-        $sql = "INSERT INTO " . $result[0]["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+        $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
             
 
