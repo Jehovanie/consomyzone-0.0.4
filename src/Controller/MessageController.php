@@ -161,7 +161,13 @@ class MessageController extends AbstractController
         ///save all image
         if(count($images) > 0 ){
             
-            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/'; 
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/';
+            
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist == false) {
+                $filesyst->mkdir($path, 0777);
+            }
+
             foreach( $images as $image ){
                 // Function to write image into file
                 $temp = explode(";", $image );
