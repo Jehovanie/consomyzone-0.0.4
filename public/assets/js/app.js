@@ -809,3 +809,18 @@ if (document.querySelector("#menu-mobile")) {
         
     }
 }
+
+if (document.querySelector("#menu-mobile-tribut")) {
+    document.querySelector("#menu-mobile-tribut").onclick = () => {
+        if (document.querySelector(".content_list_menu_tribut_mob")) {
+            document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
+        }
+    }
+}
+
+if (document.querySelector(".tribu_t")) {
+    document.querySelector(".tribu_t").onclick = () => {
+        alert("Please")
+        // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
+    }
+}
