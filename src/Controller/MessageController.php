@@ -127,7 +127,6 @@ class MessageController extends AbstractController
             "message" => $old_message
         ];
 
-
         return $this->render('user/message/amis.html.twig', [
             "profil" => $profil,
             "statusTribut" => $tributGService->getStatusAndIfValid(

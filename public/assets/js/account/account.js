@@ -973,9 +973,9 @@ function createBadgeNotifContent(){
 
 }
 
-let fileInputProfils = document.querySelectorAll("#fileInputProfil");
+// let fileInputProfils = document.querySelectorAll("#fileInputProfil");
 
-fileInputProfils.forEach(fileInputProfil=>{
+document.querySelectorAll("#fileInputProfil").forEach(fileInputProfil=>{
 	
 	fileInputProfil.addEventListener("change", (e) => {
 

@@ -56,7 +56,7 @@ if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector
             const img = document.createElement("img")
             img.src = uploaded_image
             img.setAttribute("alt","Image upload")
-            img.setAttribute("style", "width:100px; height:100px");
+            img.setAttribute("style", "width:100px; height:100px;");
             document.querySelector(".content_image_input_js_jheo").style.display= "flex"
 
             const parentImage = document.querySelector(".content_image_input_js_jheo")
@@ -337,3 +337,35 @@ function handleMessageResponse(date, message,image_list=null,image,status){
     }
 
 }
+
+document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
+    
+    let target = e.target.value.toLowerCase()
+
+    let divs = document.querySelectorAll("div.list_users > div.discussion")
+
+    if(divs.length > 0){
+        for (var i = 0; i < divs.length; i++) {
+            let a = divs[i].textContent.toLowerCase();
+        
+            if (a) {
+              if (a.indexOf(target) > -1) {
+                divs[i].style.display = "";
+              } else {
+                divs[i].style.display = "none";
+              }
+            }
+          }
+    }
+    
+})
+
+const imgs = document.querySelectorAll("section > div.messages-chat.mode_pc > div > div > div > img")
+const fullPage = document.querySelector('#fullpage');
+
+imgs.forEach(img => {
+  img.addEventListener('click', function() {
+    fullPage.style.backgroundImage = 'url(' + img.src + ')';
+    fullPage.style.display = 'block';
+  });
+});

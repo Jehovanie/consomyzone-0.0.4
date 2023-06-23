@@ -16,7 +16,7 @@
 						{# <div class="row content_entete_js_jheo" data-toggle-id-user-to={{userToProfil.id}}> #}
 
 						<div class="d-flex flex-row justify-content-start" data-toggle-id-user-to={{userToProfil.id}}>
-							<img style="width:45px; height:45px" class="rounded-circle" src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/photo_user_') ~ userToProfil.id ~ '/' ~ userToProfil.photo_profile : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}">
+							<img style="width:45px; height:45px" class="rounded-circle" src={{ (userToProfil.photo_profile != null) ? userToProfil.photo_profile : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}">
 							<a style="margin-left:10px; text-decoration:none;" href="{{ path("user_profil", {"user_id":userToProfil.id })}}" data-toggle-id-user-to={{userToProfil.id}}>
 								{{ userToProfil.firstname  ~ " " ~  userToProfil.lastname }}
 
@@ -47,7 +47,7 @@
                                        tooltip={{amis.email}} 
                                        class="list_amis_to_chat">
 
-                                        <img style="width:45px; height:45px; border-radius:50%" src="{{ ( amis.photo != null) ? asset('uploads/users/photos/photo_user_') ~ amis.id ~ '/' ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
+                                        <img style="width:45px; height:45px; border-radius:50%" src="{{ ( amis.photo != null) ? amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
                                         <h6 style="margin-top:10px; margin-left:2px">{{amis.firstname ~ " " ~ amis.lastname }} </h6>
                                     </a>
                                    
@@ -62,102 +62,114 @@
 					<div class="card-body overflow-auto h-100 mb-5 bg-white" data-mdb-perfect-scrollbar="true" style="margin-top:60px; margin-left:0px">
 
 
-                        {% if userToProfil.message|length > 0  %}
+                        <section class="chats" data-myid="{{app.user.id}}" data-toggle-current-profil={{(profil[0].getPhotoProfil is same as (null)) ? "null" : profil[0].getPhotoProfil }} data-toggle-other-profil={{(userToProfil.photo_profile is same as (null)) ? "null" : userToProfil.photo_profile }}>
+						
+						<div class="messages-chat">
+							{% if userToProfil.message|length > 0  %}
 
-                                {% for msg in userToProfil.message %}
+								{% set iter = 0 %}
+								{% set margin_bott = "" %}
 
-                                    {# ////user connnected #}
-                                    {# {% if msg.isForMe is same as("0") %} #}
-                                    {% if msg.isForMe == "0" %}
-                                        <div class="message" id={{"message_" ~ msg.id}}>
-                                            <div class="avatar_message right_place">
-                                                <div>
-                                                    <span>{{msg.datetime}}</span>
+								{% for msg in userToProfil.message %}
 
-                                                    <div class="message_single">
-                                                        {% if msg.content is defined and msg.content.text is defined %}
-                                                            <p>{{msg.content ? msg.content.text : "" }}</p>
-                                                        {% endif %}
-                                                        
-                                                        {% if msg.content.images is defined and msg.content.images|length > 0  %}
-                                                            <div class="content_image_message_mobile image_right">
-                                                                {% for image in msg.content.images %}
-                                                                    <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
-                                                                {% endfor %}
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
-                                                        
-                                                </div>  
-                                                <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/photo_user_') ~ profil[0].getId ~ '/' ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
-                                            </div>
-                                        </div>
+									{% if iter == userToProfil.message|length - 1 %}
 
-                                    {# ////user to talk by: other #}
-                                    {% else %}
+										{% set margin_bott = "margin-bottom: 60px !important;" %}
 
-                                        <div class="message" id={{"message_" ~ msg.id}}>
-                                            <div class="avatar_message left_place">
+									{% endif %}
 
-                                                {#---------  photo de profil ---------- #}
-                                                <img src={{ (userToProfil.photo_profile != null) ? asset('uploads/users/photos/photo_user_') ~ userToProfil.id ~ '/' ~ userToProfil.photo_profile   : asset('uploads/users/photos/img_avatar.png') }} alt="{{ userToProfil.firstname }}" >
-                                                <div>
-                                                    <span>{{msg.datetime}}</span>
+									{% if msg.isForMe == "1" %}
 
-                                                    <div class="message_single">
-                                                        {% if msg.content is defined and msg.content.text is defined %}
-                                                            <p>{{msg.content ? msg.content.text : "" }}</p>
-                                                        {% endif %}
-                                                        {% if msg.content.images is defined and msg.content.images|length > 0  %}
-                                                            <div class="content_image_message_mobile image_left">
-                                                                {% for image in msg.content.images %}
-                                                                    <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
-                                                                {% endfor %}
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>                                
-                                            </div>
-                                        </div>
+										<div class="message" style={{margin_bott}} id={{"message_" ~ msg.id}}>
+											<div class="photo" style="background-image: url({{ (userToProfil.photo_profile != null) ? userToProfil.photo_profile   : asset('public/uploads/users/photos/img_avatar.png') }} ">
+												<div class="online"></div>
+											</div>
+											<div>
+												{% if msg.content is defined and msg.content.text is defined %}
+													{% if msg.content.text %}
+														<p class="text">{{msg.content.text}}</p>
+													{% endif %}
+													{# <p class="text">{{msg.content ? msg.content.text : "" }}</p> #}
+												{% endif %}
 
-                                    {% endif %}
-                                    
-                                {% endfor %}
+												{% if msg.content.images is defined and msg.content.images|length > 0  %}
+													<div class="img_slide_left">
+														{% for image in msg.content.images %}
+															<img class="img_msg" src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
+														{% endfor %}
+													</div>
+												{% endif %}
+											</div>
 
-                        {% else %}
-                            <p class="text-center"> Envoyer lui Hello!!!</p>
-                        {% endif %}
+										</div>
+										<p class="time">
+											{{msg.datetime}}</p>
 
+									{% else %}
+										<div class="message" style={{margin_bott}} id={{"message_" ~ msg.id}}>
+											<div class="response">
+												{% if msg.content is defined and msg.content.text is defined %}
+													{% if msg.content.text %}
+														<p class="text">{{msg.content.text}}</p>
+													{% endif %}
+													{# <p class="text">{{msg.content ? msg.content.text : "" }}</p> #}
+												{% endif %}
 
-					</div>
-					<div class="card-footer fixed-bottom text-muted d-flex justify-content-start align-items-center p-3 bg-white card_mobile" style="margin-left:0px">
-						<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp" alt="avatar 3" style="width: 40px; height: 100%;">
-						<div class="content_input_message content_input_message_js_jheo mode_mobile" data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{userToProfil.id}} >
-                            
-                            <div class="input_message w-100">
+												{% if msg.content.images is defined and msg.content.images|length > 0  %}
+													<div class="img_slide_right">
+														{% for image in msg.content.images %}
+															<img class="img_msg" src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
+														{% endfor %}
+													</div>
+												{% endif %}
+												<p class="time-right">
+													{{msg.datetime}}</p>
+											</div>
 
-                                {# if the user put many image #}
-                                <div class="globla_message w-100">
-                                    <div class="content_image_input content_image_input_js_jheo">
-                                    </div>
-                                    <textarea  rows="1" type="text" placeholder="Votre message" name="message" class="w-100 input_message_js_jheo" ></textarea>
-                                </div>
+										</div>
+
+									{% endif %}
+
+									{% set iter = iter + 1 %}
+
+								{% endfor %}
+							{% else %}
+								<p class="text-center">
+									Envoyer lui Hello!!!</p>
+							{% endif %}
+						</div>
+
+						<div class="content_input_message content_input_message_js_jheo mode_mobile" style="width: 80% !important;left:10% !important;" data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id={{userToProfil.id}}>
+
+							<div
+								class="input_message">
 
 								{# record for voice... #}
-                                <i class="fa-solid fa-microphone outer_icon_micro"></i>
+								<i class="ms-2 fa-solid fa-microphone outer_icon_micro"></i>
 
-                                {# input file image #}
-                                <i class="fa-solid fa-file-import fa-xl ms-3 i_input_file outer_icon_message">
-                                    <input type="file"  class="first-input" multiple aria-disabled> 
-                                </i>
+								{# input file image #}
+								<i class="fa-solid fa-file-import fa-xl ms-3 i_input_file outer_icon_message">
+									<input type="file" class="first-input" multiple aria-disabled>
+								</i>
 
-                                {# to send message  #}
-                                <i class="fa-solid fa-paper-plane outer_icon_message btn_send_message_js_jheo paper_mobile"></i>
+								{# if the user put many image #}
+								<div class="globla_message">
+									<div class="content_image_input content_image_input_js_jheo">
+										<i class="fa-solid fa-file-import fa-xl ms-3 i_input_file_under_image"></i>
+									</div>
+									<textarea rows="1" type="text" placeholder="Votre message" name="message" class="input_message_js_jheo"></textarea>
+								</div>
 
-                            </div>
-                        </div>
+								{# to send message  #}
+								<i class="fa-solid fa-paper-plane outer_icon_message btn_send_message_js_jheo"></i>
+
+							</div>
+						</div>
+
+					</section>
 
 					</div>
+					
 				</div>
 
 				{# </div> #}
