@@ -602,7 +602,7 @@ class SecurityController extends AbstractController
         ///id de l'utilisateur.
         $userToVerifie = $userRepository->find($request->query->get('id'));
 
-        if ($this->getUser() || $userToVerifie->getVerifiedEmail() === true ) {
+        if ($this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
 

@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Controller;
 
 
@@ -27,6 +25,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+ini_set('max_execution_time', '600');
 
 class AgendaController extends AbstractController
 
@@ -896,7 +896,8 @@ class AgendaController extends AbstractController
         UserRepository $userRepository,
         AgendaService $agendaService,
         NotificationService $notificationService,
-        TributGService $tributGService
+        TributGService $tributGService,
+        MailService $mailService
     ){
         $user_sender = $userRepository->findOneBy(["id" => intval($userID_sender)]); /// user entity (sender)
         $user_sender_fullname= $tributGService->getFullName(intval($userID_sender)); /// user full name (sender)
@@ -923,20 +924,18 @@ class AgendaController extends AbstractController
             /// max participant atteint
             if( !!$isAccepted ){
                 $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheusement le nombre maximum de participant est atteint.";
+
+                ////send email que le nombre maximun est atteint.
+
             }else{
                 $message= "Vous venez de refuser un agenda créé par " . $user_sender_fullname;
             }
 
             /// send  notification for the user that is request is reject because max atteint
             $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", $message );
-
-            /// send email
-            // $emailService->sendResponseAgenda(
-
-            // );
-
-
+            dd("Confirmation : REFUSE OU TAILLE MAX ATTEINT");
         }else if( intval($result) === 1 ){  //// accepted reussir
+
             /// send  notification for the user this is request is persist.
             $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez accepté un agenda créer par " . $user_sender_fullname . ".");
             
@@ -946,9 +945,22 @@ class AgendaController extends AbstractController
 
             //// Persiste agenda to the user accepte.
             $agendaService->setEventFollowed($userID, $agendaID);
-        }
 
-        dd("Confirmation agenda partager via email");
+            $agenda= $agendaService->getAgendaById($user_sender->getNomTableAgenda(), intval($agendaID)); /// entity agenda
+
+            /// send email
+            $mailService->sendResponseAcceptAgenda(
+                $user->getEmail(),
+                $user_fullname,
+                "Agenda Accepter",
+                $agenda,
+                [
+                    "id" => $user_sender->getId(),
+                    "email" => $user_sender->getEmail(),
+                    "fullname" => $tributGService->getFullName(intval($user_sender->getId())),
+                ]
+            );
+        }
 
         return  $this->redirectToRoute("app_account");
     }

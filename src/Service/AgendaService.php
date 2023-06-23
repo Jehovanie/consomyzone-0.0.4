@@ -925,7 +925,4 @@ class AgendaService extends PDOConnexionService
         return $stmt->execute();
     }
 
-
-
-
 }

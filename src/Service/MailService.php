@@ -10,10 +10,11 @@ use Twig\Environment;
 
 use App\Entity\ProdData;
 
+use App\Service\AgendaService;
+
 use Symfony\Component\Mime\Address;
 
 use Symfony\Component\Mailer\Mailer;
-
 use Symfony\Component\Mailer\Transport;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bridge\Twig\Mime\WrappedTemplatedEmail;
@@ -39,6 +40,22 @@ class MailService extends AbstractController {
 
         return (!preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $str)) ? false : true;
 
+    }
+
+
+    public function configSendEmail(){
+
+        $userSendingEmail = ProdData::EMAIL_PROD;
+        $pass = ProdData::MDP_PROD;
+        $server = ProdData::SERVER_SMTP_PROD;
+        $port = ProdData::PORT_PROD;
+ 
+        // Generate connection configuration
+        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
+        $transport = Transport::fromDsn($dsn);
+        $customMailer = new Mailer($transport);
+
+        return $customMailer;
     }
 
 
@@ -117,15 +134,8 @@ class MailService extends AbstractController {
     public function sendLinkToInviteOnAgenda($to, $fullName_to, $object, $agenda, $user_sender){
 
         $userSendingEmail = ProdData::EMAIL_PROD;
-        $pass = ProdData::MDP_PROD;
-        $server = ProdData::SERVER_SMTP_PROD;
-        $port = ProdData::PORT_PROD;
- 
-        // Generate connection configuration
-        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
-        $transport = Transport::fromDsn($dsn);
-        $customMailer = new Mailer($transport);
 
+        $customMailer = $this->configSendEmail();
 
         ///// Generates the email
         $email = (new TemplatedEmail())
@@ -137,11 +147,42 @@ class MailService extends AbstractController {
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
 
         //// Generate email with the contents html
-        $emai=  $email->html($this->renderView('emails/mail_template.html.twig',[
+        $email =  $email->html($this->renderView('emails/mail_invitation_agenda.html.twig',[
                     'email' => new WrappedTemplatedEmail($this->twig, $email),
                     'user_sender' => $user_sender,
                     'today' => $date_fr,
                     'expiration_date' => new \DateTime('+7 days'),
+                    'fullNameTo' => $fullName_to,
+                    'agenda' => $agenda
+                ]));
+
+        $customMailer->send($email);
+    }
+
+
+    public function sendResponseAcceptAgenda($to, $fullName_to, $object, $agenda, $user_sender){
+        
+        $userSendingEmail = ProdData::EMAIL_PROD;
+
+        $customMailer = $this->configSendEmail();
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        ///// Generates the email
+        $email = (new TemplatedEmail())
+                    ->from(new Address($userSendingEmail ,"ConsoMyZone")) 
+                    ->to(new Address($to, $fullName_to ))
+                    ->subject($object);
+        
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html
+        $email =  $email->html($this->renderView('emails/mail_invitation_accept_agenda.html.twig',[
+                    'email' => new WrappedTemplatedEmail($this->twig, $email),
+                    'user_sender' => $user_sender,
+                    'today' => $date_fr,
                     'fullNameTo' => $fullName_to,
                     'agenda' => $agenda
                 ]));
@@ -191,8 +232,6 @@ class MailService extends AbstractController {
         $customMailer->send($email);
 
     }
-
-
 
 }
 
