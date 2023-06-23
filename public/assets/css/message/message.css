@@ -145,11 +145,13 @@
 
 .input_message textarea{
     width: 100%;
-    /* min-height: 54px; */
     margin-right: 25px;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
+    border: solid 1px #E6E7ED ;
+    /* border-bottom: solid 1px #E6E7ED ; */
     resize: none;
+    outline-color: #75f8a1;
 }
 
 .input_message i{
@@ -705,4 +707,7 @@
     background-repeat: no-repeat no-repeat;
     background-position: center center;
     background-color: black;
+  }
+  #search_friend_input{
+    outline-color: #75f8a1;
   }
