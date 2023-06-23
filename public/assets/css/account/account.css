@@ -526,7 +526,7 @@ thead > tr{
 }
 
 .back_gray{
-    background-color: lightgray;
+    background-color: lightgray !important;
 }
 
 .border_gray{

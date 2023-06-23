@@ -61,15 +61,10 @@ if( document.querySelector(".information_user_conected_jheo_js")){
     document.querySelector(".content_message_nav_bar").parentElement.addEventListener("click",() => {
 
         fetch("/user/setshow/messages")
-
             .then(response => response.json())
-
             .then(data => {
-
                 console.log("Result for setshow message.")
-
                 console.log(data)
-
             })
 
     })
@@ -84,81 +79,49 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
     event_source_show_message.onmessage=function(event){
 
-
-
         /// last message for each user
-
         const new_message= JSON.parse(event.data);
 
-        
-
         /// check if there is no message in the modal.
-
         if(document.querySelectorAll(".show_single_message_popup").length === 0){
 
-
-
             /// show all last messages for each user
-
             new_message.forEach(single_message => {
-                
+
                 ///card message
                 createAndAddCardMessage(
-
                     single_message.message.id,
-
                     single_message.message.user_post,
-
                     single_message.firstname,
-
                     single_message.lastname,
-
                     single_message.message.content,
-
                     single_message.message.isForMe,
-
                     single_message.message.isRead,
-
                     single_message.profil
-
                 );
 
             })
 
         }else{ /// there is alread card message 
 
-
-
             /// get all card message exit
-
             const div_message_already_show = document.querySelectorAll(".show_single_message_popup");
 
-
-
             //// get all id message in the popup
-
             const tab_id_msg_already_show = [];
 
             div_message_already_show.forEach(element => {
-
                 tab_id_msg_already_show.push(element.getAttribute("id"))
-
             })
 
 
 
             //// filter new message from server and show the message don't show
-
             const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(item.message.id))
 
-
-
             /// for each rest message let's show
-
             new_msg.forEach(single_message => {
 
-                /*console.log("show message 2")
-                console.log(single_message)*/
 
                 createAndAddCardMessage(
 
@@ -628,22 +591,6 @@ if (document.querySelector("#send-request")) {
 
 function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForMe, isRead, profil){
 
-    // <div class="show_single_message_popup back_gray">
-
-    //     <img src="{{asset('assets/image/message1.jpg')}}" alt="Profil">
-
-    //     <div class="content_info_message_popup">
-
-    //         <h5>Lorem, ipsum dolor.</h5>
-
-    //         <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, debitis...</p>
-
-    //     </div>
-
-    // </div>
-
-
-
     //// format the message to long
     const { text, images } = JSON.parse(message)
     if( text.length> 100){
@@ -656,7 +603,6 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
     }
 
     ///CHECK IF  THIS USER SEND MESSAGE IS ALREADY IN THE POPUP MASSAGE
-
 
     ////get all message popup
     const popup_message = document.querySelectorAll(".show_single_message_popup");
@@ -681,34 +627,26 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
     /// the user is already in the popup message
     if(popup_message_already_exist && popup_message_id){
 
-
-
         ///select the popup message 
-
         const card_message = document.querySelector(".modal_message_"+ popup_message_id);
 
         card_message.setAttribute("class", "show_single_message_popup modal_message_"+id);
 
-
-
         ///change the last message id to the new message id
-
         card_message.setAttribute("id",id);
 
 
 
         ///format the form and text
 
-        if(isForMe == "1"){
+        if(parseInt(isForMe) === 1){
 
-            if(isRead == "1"){ /// already read 
+            if(parseInt(isRead) === 1 ){ /// already read 
 
                 card_message.classList.add("border_gray");
-
             }else{/// not read but send for me
 
                 card_message.classList.add("back_gray");
-
             }
 
             /// the message
@@ -716,101 +654,60 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
         }else{
 
             /// this for her, i send it.
-
             card_message.classList.add("border_gray");
-
 
             card_message.querySelector("p").innerHTML ="<span class='fst-italic fs-6'>vous: </span>" +   message;
             // card_message.querySelector("p").innerHTML ="<span class='fst-italic fs-6'>vous: </span>" +   message;
         }
 
 
-
     /// if the user is not in the popup message list
-
     }else{
-
-
 
         ///create card message and add in the message modal popup
         const card = document.createElement("div");
 
         card.setAttribute("class", "show_single_message_popup modal_message_"+id);
 
-      
-
         /// set the id of the card message
         card.setAttribute("id",id);
 
-
-
         /// user author
         card.setAttribute("data-toggle-other-id",other_id);
-
-
 
         const img = document.createElement("img");
 
         if( profil ){
 
-            ////----- on dev ------------------------------------------------
-            // console.log("on dev")
-            img.setAttribute("src", "/uploads/users/photos/" + profil);
-
-            ////----- on prod ------------------------------------------------
-            // img.setAttribute("src", "/public/uploads/users/photos/" + profil);
-
+            img.setAttribute("src", profil);
         }else{
-            ////----- on dev ------------------------------------------------
-            console.log("on dev")
-            img.setAttribute("src", "/assets/image/message1.jpg");
-
-            ////----- on prod ------------------------------------------------
-            // img.setAttribute("src", "/public/assets/image/message1.jpg");
-
+            img.setAttribute("src", "/public/assets/image/message1.jpg");
         }
-
 
         img.setAttribute("alt", "Profil");
 
-
-
         const div_content_info_message_popup = document.createElement("div");
-
         div_content_info_message_popup.classList.add("content_info_message_popup");
 
 
-
         const h5 = document.createElement("h5");
-
         h5.innerHTML = firstname + " " + lastname;
-
-
 
         const p = document.createElement("p");
 
-
-
-        if(isForMe == "1"){
-
-            if(isRead == "1"){
+        if(parseInt(isForMe) === 1 ){
+            if(parseInt(isRead) === 1){
 
                 card.classList.add("border_gray");
-
             }else{
 
                 card.classList.add("back_gray");
-
             }
-
             p.innerHTML =message;
-
         }else{
 
             card.classList.add("border_gray");
-
             p.innerHTML ="<span class='fst-italic fs-6'>vous: </span>" +   message;
-
         }
 
 
@@ -840,7 +737,7 @@ function createAndAddCardNotification(notif_id,parent_card, card_title_content, 
 
     card.setAttribute("data-toggle-notif-id" , notif_id)
 
-    if(is_read == "0"){
+    if(parseInt(is_read) === 0){
         card.classList.add("back_gray");
     }
 
@@ -856,26 +753,10 @@ function createAndAddCardNotification(notif_id,parent_card, card_title_content, 
 
     const p = document.createElement("p");
     p.classList.add("card-text");
-    
-    /*if(invitation != null){
-        if(isAccepted == 1){
-            p.innerHTML = card_text_content + "<button style=\"display:block;padding-left:5px;\" class=\"btn btn-sm w-50 mx-auto\" disabled=\"true\">Invitation acceptée</button>";
-        }else if(isAccepted == 2){
-            p.innerHTML = card_text_content + "<button style=\"display:block;padding-left:5px;\" class=\"btn btn-sm w-50 mx-auto\" disabled=\"true\">Invitation rejetée</button>";
-        }
-        else{
-            p.innerHTML = card_text_content + "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" href=\""+link+"\">Voir l'invitation</a>";
-        }
-        
-    }else{
-        p.innerHTML = card_text_content
-    }*/
-
     p.innerHTML = card_text_content
 
     let url = "";
     let ancor = p.querySelector("a");
-
     if(ancor){
         href = ancor.dataset.ancre;
         if(type == "commentaire" || type == "reaction"){
@@ -890,11 +771,9 @@ function createAndAddCardNotification(notif_id,parent_card, card_title_content, 
     const p_date = document.createElement("p");
 
     p_date.classList.add("text-right");
-
     p_date.innerHTML = "<footer class='blockquote-footer'><cite>"+ card_text_date + " </cite></footer>";
 
     card_body.appendChild(p_date);
-
 
     card.appendChild(card_body);
 
@@ -912,38 +791,18 @@ function deleteCardElement(){
 
 
     all_cards.forEach(item => {
-
         parent_card.removeChild(item)
-
     })
-
-
-
 }
 
 
 
 function createBadgeNotifContent(){
 
-
-
-    // <div class="badge_notification">
-
-    //     <span class="nbr_notification_jheo_js">0</span>
-
-    // </div>
-
-
-
     const content_notification = document.querySelector(".content_notification");
-
-
-
     const div_badge = document.createElement("div");
 
     div_badge.classList.add("badge_notification");
-
-
 
     const span_nbr_notification = document.createElement("span")
 
@@ -958,17 +817,13 @@ function createBadgeNotifContent(){
     if( content_notification.querySelector(".nav-link")){
 
         content_notification.insertBefore(
-
             div_badge,  
-
             content_notification.querySelector(".nav-link")
-
         );
 
     }else{
 
         content_notification.appendChild(div_badge);
-
     }
 
 }
@@ -976,7 +831,6 @@ function createBadgeNotifContent(){
 let fileInputProfils = document.querySelectorAll("#fileInputProfil");
 
 fileInputProfils.forEach(fileInputProfil=>{
-	
 	fileInputProfil.addEventListener("change", (e) => {
 
         ///read file
@@ -1019,15 +873,5 @@ fileInputProfils.forEach(fileInputProfil=>{
 
         ///run event load in file reader.
         fileReader.readAsDataURL(e.target.files[0]);
-
     })
 })
-
-
-/*let langue = localStorage.getItem("langue")
-
-if(langue){
-    console.log("langue exist")
-}else{
-    console.log("langue n'existe pas")
-}*/
