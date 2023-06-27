@@ -847,53 +847,54 @@ select::-ms-expand {
   display: none !important;
 }
 
-.content_list_tribuT{
+.content_list_tribuT , .content_list_partisans{
   padding: 20px;
   height: 100%;
 }
 
-.header_list_tribuT{
+
+.header_list_tribuT , .header_list_partisan{
   margin-bottom: 20px;
 }
 
-.list_content_tribuT{
+.list_content_tribuT, .list_content_partisans{
   display: block;
-  max-height: 50vh;
+  height: 50vh;
   overflow-y: scroll;
   z-index: 1000;
   position: relative;
 }
-.footer_list_tribuT{
+.footer_list_tribuT, .footer_list_partisans{
   display: block;
   position: absolute;
   bottom: 15px;
 }
-.form_check_tribuT{
+.form_check_tribuT, .form_check_partisan{
   display: flex;
   padding: 5px;
   border-bottom: 1px solid black;
 }
 
-.form_check_tribuT:hover{
+.form_check_tribuT:hover, .form_check_partisan:hover{
   border-bottom: 1px solid #0B5CD1;
   color: #0B5CD1;
 }
 
-.form_check_input_tribuT{
+.form_check_input_tribuT, .form_check_input_partisan{
   margin-right: 10px;
 }
-.btn_primary_tribuT{
+.btn_primary_tribuT, .btn_primary_list_partisans{
   padding: 10px 50px;
   border-radius: 10px;
 }
 
-.btn_primary_tribuT:hover{
+.btn_primary_tribuT:hover, .btn_primary_list_partisans:hover{
   border-color:  #0B5CD1;
   color: white;
   background-color:  #0B5CD1;
 }
 
-.alert_danger_tribuT{
+.alert_danger_tribuT, .alert_danger_partisans{
   position: absolute;
   top: 50%;
   left: 50%;

@@ -984,11 +984,10 @@ class AgendaController extends AbstractController
         $agendaTableName = $this->getUser()->getNomTableAgenda();  /// table agenda  name
         $table_partage_agenda = $this->getUser()->getNomTablePartageAgenda();  /// table partage agenda  name
 
+
         //// data in request post
         $req = json_decode($request->getContent(), true);
-        extract($req); ///  $agendaID , $shareFor, $tribuTChecked
-
-       
+        extract($req); ///  $agendaID , $shareFor, $tribuTChecked, $listUsers [ [ "userID" => ... , "fullName" => ... ], ... ] ;
 
         ///Check if this agenda is already share
         if( $agendaService->isAleardyShare($table_partage_agenda, $agendaID)){
@@ -999,6 +998,37 @@ class AgendaController extends AbstractController
         $agenda= $agendaService->getAgendaById($agendaTableName, intval($agendaID)); /// entity agenda
 
 
+        if( count($listUsers ) > 0){
+           
+            ///Settings table Agenda Partage.
+            $agendaService->setPartageAgenda($table_partage_agenda, $agendaID,$listUsers);
+
+            ////send email 
+            $this->sendEmailPartageAgenda(
+                $userRepository,
+                $mailService,
+                $notificationService,
+                $tributGService,
+                $agenda,
+                $listUsers
+            );
+
+            $tribu=  $tribuTChecked ? "Tribu T." : "Tribu G.";
+
+            ///send notification : we have to send an email for invitation in agenda
+            $notificationService->sendNotificationForOne(
+                $this->getUser()->getId(),
+                $this->getUser()->getId(),
+                "Partage Agenda",
+                "Vous  venez de partager votre agenda sur votre " . $tribu . "."
+            );
+
+            return $this->json(["message" => "Votre agenda est partagé." ,"status" => "shareSuccess"]);
+        }
+
+       
+
+       
         if( intval($shareFor) === 1 ){ ///share for all
 
             if( !$tribuTChecked ){
@@ -1072,8 +1102,33 @@ class AgendaController extends AbstractController
                 );
             }
 
-        }else{
-            /// share for little persone
+        }else{ /// send list of the user in tribu T or tribu G
+
+            $confidentialite_agenda= $agendaService->getConfidentialite($agendaTableName, $agendaID); /// Confidentialite : partager for ( tribu G or tribu T )
+            if(array_key_exists("confid", $confidentialite_agenda)){
+                extract($confidentialite_agenda); /// $confid
+            }
+
+            if( $confid === "Tribu-G"){
+                $tribuG_name = $tributGService->getTableNameTributG($this->getUser()->getId()); /// table tribuG name
+
+                ////get information( userID, fullName ) for all user in this tribu G
+                $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ]
+
+                return $this->json(["message" => "Share for same person in tribu G", "status" => "Not all tribu", "all_users_tribuG" => $all_users_tribuG]);
+            }else{
+
+                if( !$tribuTChecked ){
+                    ///get all tribu T for this user 
+                    $all_tribuT= $userRepository->getListTableTribuT();
+                    return $this->json(["message" => "Partage for tribu T", "status" => "tribuT", "all_tribugT" => $all_tribuT]);
+                }else{
+    
+                    $all_partisans_tribuT=  $tributGService->getFullNameForAllMembers($tribuTChecked); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
+
+                    return $this->json(["message" => "Share for same person in tribu G", "status" => "Not all tribu", "all_users_tribu" => $all_partisans_tribuT]);
+                }
+            }
         }
         return $this->json(["message" => "Votre agenda est partagé." ,"status" => "shareSuccess"]);
     }

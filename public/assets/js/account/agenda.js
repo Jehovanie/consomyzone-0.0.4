@@ -1191,45 +1191,36 @@ function bindEventAboutSharingEvent(agendaToShare){
     const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
     parent.querySelectorAll(".cta_btn_partage_js_jheo").forEach(cta_btn_partage => {
         cta_btn_partage.addEventListener('click',() => {
+
+            ////close popup //////////////////////////////////////////////////////////////////
+            document.querySelector(`#partage_agenda_${agendaToShare}`).classList.toggle("show_partage");
+            document.querySelector(`#partage_agenda_${agendaToShare}`).classList.toggle("hidden_partage");
+            /////////////////////////////////////////////////////////////////////////////////
+
             /// CREATE LOADER
             loaderForAgenda(document.querySelector(".content_loader_agenda_js_jheo"))
            
 
             /// ACTION 
-            const isShareForAll= parseInt( cta_btn_partage.getAttribute("data-is-for-all")) === 1 ? true : false;
+            // const isShareForAll= parseInt( cta_btn_partage.getAttribute("data-is-for-all")) === 1 ? true : false;
+            const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
+            const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
 
-            if( isShareForAll ) { 
-                const agendaID= parseInt(cta_btn_partage.getAttribute('data-agenda-id'));
-                const shareFor= parseInt(cta_btn_partage.getAttribute("data-is-for-all"));
-
-                shareAgenda(agendaID,shareFor, agendaToShare);
-        
-            }else{
-                alert("On doit ouvrir un modal dialog (list des partisans)");
-            }
-
-            
-
-            // const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
-            // parent.classList.toggle("show_partage");
-            // parent.classList.toggle("hidden_partage");
-            // alert("is Share for all ? " + isShareForAll);
-
-
+            shareAgenda(agendaID,shareFor, agendaToShare);
         })
     })
 }
 
 
 
-function shareAgenda(agendaID, shareFor, agendaToShare, tribuTChecked = null){
+function shareAgenda(agendaID, shareFor, agendaToShare,listUsers=[], tribuTChecked = null){
     const request = new Request("/user/agenda/shares", {
         method: "POST",
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'  
         },
-        body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor, "tribuTChecked" : tribuTChecked })
+        body: JSON.stringify({"agendaID" : agendaID, "shareFor" : shareFor,"listUsers": listUsers, "tribuTChecked" : tribuTChecked })
     })
 
     fetch(request)
@@ -1237,12 +1228,6 @@ function shareAgenda(agendaID, shareFor, agendaToShare, tribuTChecked = null){
         .then(response => {
             ///remove loader
             removeLoaderForAgenda();
-
-            //// close div content ask partage agenda for all
-            const parent = document.querySelector(`#partage_agenda_${agendaToShare}`);
-            parent.classList.toggle("show_partage");
-            parent.classList.toggle("hidden_partage");
-
 
             if( response.hasOwnProperty("status") ){
                 if(response.status === "shareSuccess" ){
@@ -1254,11 +1239,15 @@ function shareAgenda(agendaID, shareFor, agendaToShare, tribuTChecked = null){
                     alert(response.message)
                 }else if( response.status === "tribuT"){
 
-                    if( tribuTChecked === null  ){ ///already select tribu T
+                    if( tribuTChecked === null  ){ ///not select tribu T
                         const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
-                        createHtmlViewListTribuT(data_rank_modal,response.all_tribugT,agendaID, shareFor, agendaToShare)
+                        createHtmlViewListTribuT(data_rank_modal,response.all_tribugT,agendaID, shareFor, agendaToShare);
                         document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
                     }
+                }else if (response.status === "Not all tribu"){
+                    const data_rank_modal= document.querySelector(".fa_solid_open_dialog_for_share_js_jheo").getAttribute("data-rank");
+                    createHtmlViewListPartisan(data_rank_modal,response.all_users_tribu,agendaID, shareFor, agendaToShare);
+                    document.querySelector(`#share_agenda-dialog-${data_rank_modal}`).showModal();
                 }
 
             }
@@ -1312,12 +1301,64 @@ function createHtmlViewListTribuT(dataRankForShare, tabListTribuT,agendaID, shar
     }
 }
 
+function createHtmlViewListPartisan(dataRankForShare, usersList, agendaID, shareFor, agendaToShare){
+    let html_list_user = "";
+  
+    if( usersList.length > 1 ){
+        let list_user= "";
+        usersList.forEach(({userID, fullName}) => {
+            list_user += createSinglePartisanOnList(userID, fullName)
+        })
+
+        html_list_user= `
+            <div class="content_list_partisans">
+                <div class="header_list_partisans">
+                    <h3> Liste des partisant dans votre tribu G.</h3>
+                </div>
+                <div class="list_content_partisans">
+                    ${list_user}
+                </div>
+                <div class="footer_list_partisans">
+                    <button type="button" class="btn_primary_list_partisans btn_send_share_agenda_list_partisan_${dataRankForShare}_js_jheo">Envoyer</button>
+                </div>
+            </div>
+        `
+      
+    }else{
+        html_list_user= `
+            <div class="content_list_partisans">
+                <div class="alert_danger_partisans">
+                    Il n'y a que toi dans ce tribu.
+                </div>
+            </div>
+        `
+    }
+
+    ///injection HTMl
+    document.querySelector(`.content_dialog_for_share_agenda_share_${dataRankForShare}_js_jheo`).innerHTML = html_list_user;
+
+    if( usersList.length > 1 ){
+        bindEventForShareForSamePartisan(usersList, dataRankForShare,agendaID, shareFor, agendaToShare)
+    }
+}
+
 function createSingleTribuT(table_name){
     return `
         <div class="form_check_tribuT">
             <input class="form_check_input_tribuT" type="checkbox" id="${table_name}">
             <label class="form_check_label_tribuT" for="${table_name}">
                 ${table_name}
+            </label>    
+        </div>
+    `
+}
+
+function createSinglePartisanOnList(userID, fullName){
+    return `
+        <div class="form_check_partisan">
+            <input class="form_check_input_partisan" type="checkbox" id="single_user_${userID}_js_jheo">
+            <label class="form_check_label_partisan" for="single_user_${userID}_js_jheo">
+                ${fullName}
             </label>    
         </div>
     `
@@ -1339,33 +1380,67 @@ function bindEventForShareInTribuT(tabListTribuT, dataRankForShare,agendaID, sha
     })
 
 
-  if( document.querySelector(`.btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo`)){
-      const cta_send_share_agenda_tribuT = document.querySelector(`.btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo`);
-      
-      cta_send_share_agenda_tribuT.addEventListener('click', () => {
-            let tribuT_checked = "";
-            tabListTribuT.forEach(({table_name: tribuT_item }) => {
-                if(document.querySelector(`#${tribuT_item}`).checked){
-                    tribuT_checked = tribuT_item;
+    if( document.querySelector(`.btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo`)){
+        const cta_send_share_agenda_tribuT = document.querySelector(`.btn_send_share_agenda_tribuT_${dataRankForShare}_js_jheo`);
+        
+        cta_send_share_agenda_tribuT.addEventListener('click', () => {
+                let tribuT_checked = "";
+                tabListTribuT.forEach(({table_name: tribuT_item }) => {
+                    if(document.querySelector(`#${tribuT_item}`).checked){
+                        tribuT_checked = tribuT_item;
+                    }
+                })
+        
+                if( tribuT_checked !== ""){
+                    ///close modal dialog
+                    document.querySelector(`#close-modal-${dataRankForShare}`).click();
+
+                    /// CREATE LOADER
+                    loaderForAgenda(document.querySelector(".content_loader_agenda_js_jheo"))
+
+                    /// ACTION
+                    shareAgenda(agendaID, shareFor, agendaToShare,[], tribuT_checked)
+
+                }else{
+                    alert("Veuillez selectionner un tribu T");
+                }
+
+        })
+    }
+}
+
+
+function bindEventForShareForSamePartisan(usersList, dataRankForShare, agendaID, shareFor, agendaToShare){
+
+    if( document.querySelector(`.btn_send_share_agenda_list_partisan_${dataRankForShare}_js_jheo`)){
+        const cta_send_share_agenda = document.querySelector(`.btn_send_share_agenda_list_partisan_${dataRankForShare}_js_jheo`);
+        
+        cta_send_share_agenda.addEventListener('click', () => {
+            let users_checked = [ ];
+
+            usersList.forEach(({userID, fullName}) => {
+                if(document.querySelector(`#single_user_${userID}_js_jheo`).checked){
+                    users_checked.push({ userID, fullName});
                 }
             })
     
-            if( tribuT_checked !== ""){
+            if( users_checked.length > 0){
                 ///close modal dialog
                 document.querySelector(`#close-modal-${dataRankForShare}`).click();
+
+                console.log(users_checked);
 
                 /// CREATE LOADER
                 loaderForAgenda(document.querySelector(".content_loader_agenda_js_jheo"))
 
                 /// ACTION
-                shareAgenda(agendaID, shareFor, agendaToShare,tribuT_checked)
+                shareAgenda(agendaID, shareFor, agendaToShare,users_checked)
 
             }else{
-                alert("Veuillez selectionner un tribu T");
+                alert("Veuillez selectionner au moins un partisan.");
             }
-
-      })
-  }
+        })
+    }
 }
 
 
