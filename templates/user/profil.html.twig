@@ -77,7 +77,7 @@
 												<p class="small text-muted mb-0">A propos</p>
 											</a>
 										</div>
-										{% if app.user.id == app.request.get('user_id') %}
+										{# {% if app.user.id == app.request.get('user_id') %}
 											<div class="px-3" id="add-item">
 												<a href="#add_photos" style="text-decoration:none;" onclick="">
 												 <label class="input-file" for="fileInputProfil_add"  style="z-index: 1;cursor:pointer;">
@@ -89,7 +89,7 @@
 													
 												</a>
 											</div>
-										{% endif %}
+										{% endif %} #}
 									
 										<div class="px-3" id="gallery-item">
 											<a href="#photos" style="text-decoration:none;" onclick="showGalleryProfil()">
@@ -103,9 +103,7 @@
 												<p class="mb-1">{{nombre_partisant}}</p>
 												<p class="small text-muted mb-0">{{(nombre_partisant > 1 ) ? "Partisans" : "Partisan" }}</p>
 											</a>
-											
 										</div>
-										
 									</div>
 								</div>
 
@@ -122,9 +120,9 @@
 
 								<div class="card-body p-4 text-black apropos_profil">
 									<div class="">
-										<p class="lead fw-bolder mb-1" lng-tag="apropos">A propos 
+										<p class="lead fw-bolder mb-1" lng-tag="apropos">Mon profil
 										{% if app.user.id == app.request.get('user_id') %}
-											<a href="{{ path("account_setting") }}" class="float-end text-decoration-none fs-6 me-2"> <i class="bi bi-pencil-square"></i> Modifier l'information<a></p>
+											<a href="{{ path("account_setting") }}" class="float-end text-decoration-none fs-6 me-2"> <i class="bi bi-pencil-square"></i>Paramètre de mon compte<a></p>
 
 										{% endif %}
 										<div class="row fw-light">
@@ -135,7 +133,7 @@
 												</p>
 												<p class="font-italic mb-1">
 													<i class="bi bi-geo-alt"></i>
-													Address: {{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
+													Addresse: {{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
 												</p>
 												<p class="font-italic mb-1">
 													<i class="bi bi-mailbox"></i>
@@ -213,22 +211,17 @@
 	</div>
 	
 	
-<!-- Modal show photo-->
-<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-body">
-      <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-        <img id="img_modal" style="width:100%">
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-	<script>
-
-
-	</script>
+	<!-- Modal show photo-->
+	<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+		<div class="modal-body">
+		<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+			<img id="img_modal" style="width:100%">
+		</div>
+		
+		</div>
+	</div>
+	</div>
 
 {% endblock %}

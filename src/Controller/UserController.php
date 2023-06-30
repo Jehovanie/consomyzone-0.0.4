@@ -132,7 +132,7 @@ class UserController extends AbstractController
 
 
 
-            if ($publication && $confid) {
+            if ($publication || $confid) {
 
 
 
@@ -181,6 +181,8 @@ class UserController extends AbstractController
                 ),
 
                 "publications" => $tributGService->getAllPublications($profil[0]->getTributg()),
+
+                "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
 
             ],
 

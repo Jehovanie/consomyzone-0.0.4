@@ -32,7 +32,7 @@ if( document.querySelector(".content_publication_js_jheo")){
         const last_pub_id_show= document.querySelector(".publication_js_jheo") ? document.querySelector(".publication_js_jheo").getAttribute("data-toggle-pub-id") : 0;
         const new_publication = all_publication.filter(pub => parseInt(pub.id) > parseInt(last_pub_id_show))
 
-        if( new_publication.length > 0 ){
+        if( new_publication.length > 0 && document.querySelector(".content_publication_js_jheo") ){
             if(document.querySelector(".btn_actualise_js_jheo").classList.contains("hidden_actualise")){
                 document.querySelector(".btn_actualise_js_jheo").classList.remove("hidden_actualise");
             }
@@ -76,7 +76,7 @@ if( document.querySelector(".content_chargement_publication_js_jheo")){
 
             const content_pub= document.querySelector(".content_publication_js_jheo");
 
-            fetch(`/tribuG/publications/${parseInt(last_pub_id) - 1 }`)
+            fetch(`/tribuG/publications/${parseInt(last_pub_id)}`)
                 .then(response => response.text())
                 .then(response => {
                     var responseHTML = (new DOMParser()).parseFromString(response, "text/html");
@@ -87,30 +87,30 @@ if( document.querySelector(".content_chargement_publication_js_jheo")){
                     }
 
 
-                    if( parseInt(last_pub_id) > 1 ){
-                        content_pub.innerHTML  += `
-                            <div data-toggle-pub-id=${ last_pub_id - 1 } class="content_chargement_publication content_chargement_publication_js_jheo mt-3">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        `
-                    }else{
+                    // if( parseInt(last_pub_id) > 1 ){
+                    //     content_pub.innerHTML  += `
+                    //         <div data-toggle-pub-id=${ last_pub_id - 1 } class="content_chargement_publication content_chargement_publication_js_jheo mt-3">
+                    //             <div class="spinner-border text-primary" role="status">
+                    //                 <span class="visually-hidden">Loading...</span>
+                    //             </div>
+                    //         </div>
+                    //     `
+                    // }else{
 
-                        removeChargement()
+                    //     removeChargement()
 
-                        if( !document.querySelector(".reload_publication_js_jheo")){
-                            content_pub.innerHTML  += `
-                                <div class="content_chargement_publication reload_publication_js_jheo mt-3">
-                                    <button type="button" class="btn btn-primary">Il n'y a plus de publication</button>
-                                </div>
-                            `
+                    //     if( !document.querySelector(".reload_publication_js_jheo")){
+                    //         content_pub.innerHTML  += `
+                    //             <div class="content_chargement_publication reload_publication_js_jheo mt-3">
+                    //                 <button type="button" class="btn btn-primary">Il n'y a plus de publication</button>
+                    //             </div>
+                    //         `
             
-                            document.querySelector(".reload_publication_js_jheo").addEventListener("click", () => {
-                                location.replace(location.href);
-                            })
-                        }
-                    }
+                    //         document.querySelector(".reload_publication_js_jheo").addEventListener("click", () => {
+                    //             location.replace(location.href);
+                    //         })
+                    //     }
+                    // }
                 })
         }
     });

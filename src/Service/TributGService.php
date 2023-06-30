@@ -143,7 +143,7 @@ class TributGService extends PDOConnexionService{
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) NOT NULL,
+                    publication VARCHAR(250) DEFAULT NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
@@ -575,8 +575,23 @@ class TributGService extends PDOConnexionService{
 
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param table_name: the name of the tributG
+     * @param user_id: user id
+     * 
+     * @return string : fondateur ou utilistateur
+     */
+    public function getCurrentStatus($table_name, $userID){
+        
+        $statement = $this->getPDO()->prepare("SELECT roles FROM $table_name WHERE user_id = $userID");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
+        return $result['roles'];
 
+    }
 
 
     /**
@@ -590,17 +605,10 @@ class TributGService extends PDOConnexionService{
      */
 
     public function getStatusAndIfValid($table_name, $isVerified,  $user_id){
+        
+        $status= $this->getCurrentStatus($table_name, $user_id);
 
-
-
-        $statement = $this->getPDO()->prepare("SELECT roles FROM $table_name WHERE user_id = $user_id LIMIT 1");
-
-        $statement->execute();
-
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        return ["status" => $result[0]['roles'] , "verified" => $isVerified ];
-
+        return ["status" => $status, "verified" => $isVerified ];
     }
 
 
@@ -747,7 +755,7 @@ class TributGService extends PDOConnexionService{
 
     public function getAllPublications($table_name){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 5;");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 6;");
 
         $statement->execute();
 
@@ -766,9 +774,9 @@ class TributGService extends PDOConnexionService{
 
             $statement_photos->execute();
 
-            $photo_profil = $statement_photos->fetchAll(PDO::FETCH_ASSOC); /// [...photo_profil ]
+            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
 
-            $publication["photo_profil"] = $photo_profil[0]["photo_profil"];
+            $publication["photo_profil"] = $photo_profil["photo_profil"];
 
             $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
 
@@ -800,6 +808,25 @@ class TributGService extends PDOConnexionService{
 
         return $resultats; /// [ [...publication, "comments" => ... , "reactions" => ... ], ...]
 
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get number all  publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return number : count of publications in this table
+     */
+    public function getCountAllPublications($table_name){
+
+        $statement = $this->getPDO()->prepare("SELECT COUNT(*) as count_publication FROM $table_name" ."_publication;");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC); // [ count_publication => ... ]
+        extract($result);  /// $count_publication
+
+        return $count_publication;
     }
 
 
@@ -1261,6 +1288,23 @@ class TributGService extends PDOConnexionService{
 
         $pub[0]["reactions"] = $reactions; /// [ ...reactions ]
         return $pub;
+    }
+
+
+    public function getNextPubID($table_publication, $last_pubID){
+        $next_pubID=0;
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $table_publication ORDER BY id DESC");
+        $statement->execute();
+        $all_ID = $statement->fetchAll(PDO::FETCH_ASSOC);
+        for($i=0 ; $i < count($all_ID); $i++){
+            if( intval($all_ID[$i]["id"]) === intval($last_pubID) && $i+1 < count($all_ID) ){
+                $next_pubID= intval($all_ID[$i+1]["id"]);
+                break;
+            }
+        }
+
+        return $next_pubID;
     }
 
     /**
