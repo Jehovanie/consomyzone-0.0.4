@@ -81,12 +81,11 @@ class MailService extends AbstractController {
      * 
      * @param string $email_to: Email address to send the link
      * @param string $fullName_to: Full name of the user to send the link
-     * @param string $object : Object of the email
-     * @param string $message : Message to send
+     * @param array $context : [ [ "object" => ... "template" => ... "link" => ... ]]
      * 
      * @return void
      */
-    public function sendEmailToConfirmInscription($email_to,$fullName_to,$objet,$link):void
+    public function sendLinkOnEmailAboutAuthenticator($email_to,$fullName_to,$context):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -94,58 +93,21 @@ class MailService extends AbstractController {
         $email = (new TemplatedEmail())
                 ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
                 ->to(new Address($email_to, $fullName_to ))
-                ->subject($objet);
+                ->subject($context["object"]);
 
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
 
-        //// Generate email with the contents html
-        $email =  $email->html($this->renderView('emails/mail_confirm_inscription.html.twig',[
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email =  $email->html($this->renderView($context["template"],[
                 'email' => new WrappedTemplatedEmail($this->twig, $email),
                 'today' => $date_fr,
                 'fullNameTo' => $fullName_to,
-                'link' => $link
+                'link' => $context["link"]
             ]));
 
         $customMailer->send($email);
     }
-
-        /**
-     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-     * 
-     * @param string $email_to: Email address to send the link
-     * @param string $fullName_to: Full name of the user to send the link
-     * @param string $object : Object of the email
-     * @param string $message : Message to send
-     * 
-     * @return void
-     */
-    public function sendEmailToResetPassword($email_to,$fullName_to,$objet,$link):void
-    {
-        $customMailer =  $this->configSendEmail();
-
-        // Generates the email
-        $email = (new TemplatedEmail())
-                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
-                ->to(new Address($email_to, $fullName_to ))
-                ->subject($objet);
-
-        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
-        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
-
-        //// Generate email with the contents html
-        $email =  $email->html($this->renderView('emails/mail_reset_password.html.twig',[
-                'email' => new WrappedTemplatedEmail($this->twig, $email),
-                'today' => $date_fr,
-                'fullNameTo' => $fullName_to,
-                'link' => $link
-            ]));
-
-        $customMailer->send($email);
-    }
-
-
-
     
     public function sendEmailWithCc($from,$fullName_from,$to,$fullName_to,$cc,$objet,$message):void
     {
@@ -277,9 +239,7 @@ class MailService extends AbstractController {
         $customMailer->send($email);
 
     }
-
 }
-
 
 
 ?>

@@ -252,11 +252,14 @@ class SecurityController extends AbstractController
             // );
 
               
-            $mailService->sendEmailToResetPassword(
+            $mailService->sendLinkOnEmailAboutAuthenticator(
                 $user->getEmail(), /// mail destionation
                 trim($user->getPseudo()), /// name destionation
-                "Confirmation de réinitialiser Mot de passe", //// object of the email
-                $signatureComponents->getSignedUrl() /// link
+                [
+                    "object" => "Confirmation de réinitialiser Mot de passe",
+                    "template" => "emails/mail_reset_password.html.twig",
+                    "link" => $signatureComponents->getSignedUrl() /// link
+                ]
             );
 
             $flash = [
@@ -529,11 +532,14 @@ class SecurityController extends AbstractController
 
 
        
-        $mailService->sendEmailToConfirmInscription(
-            $user->getEmail(), /// mail destionation
-            trim($user->getPseudo()), /// name destionation
-            "Confirmation d'inscription sur ConsoMyZone", //// object of the email
-            $signatureComponents->getSignedUrl() /// link
+        $mailService->sendLinkOnEmailAboutAuthenticator(
+            $user->getEmail(), /// mail destination
+            trim($user->getPseudo()), /// name destination
+            [
+                "object" => "Confirmation d'inscription sur ConsoMyZone", //// object of the email
+                "link" => $signatureComponents->getSignedUrl(), /// link
+                "template" => "emails/mail_confirm_inscription.html.twig"
+            ]
         );
 
         ///don't change this, it used to handle error from user like : email exist, mdp don't match, ... 
