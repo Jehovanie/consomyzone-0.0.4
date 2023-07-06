@@ -1635,6 +1635,7 @@ if (document.querySelector("#list-depart-mobile")) {
 
 function addListDepartRest() {
     document.querySelector("#open-navleft-resto-mobile").addEventListener('click', () => {
+        alert("Please select")
         document.querySelector("#open-navleft-resto-mobile").style.opacity = 0
         document.querySelector("#open-navleft-resto-mobile").style.transition = "opacity 0.5s ease-in-out";
 
