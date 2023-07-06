@@ -1830,7 +1830,7 @@ a:focus {
 
 .card-appropos-g{
     width: 97%;
-    height: 150px;
+    /* height: 150px; */
     padding: 15px;
     background-color: #fff;
     border-radius: 15px;
