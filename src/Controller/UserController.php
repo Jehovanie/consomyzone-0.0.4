@@ -85,7 +85,9 @@ class UserController extends AbstractController
 
         EntityManagerInterface $entityManager,
 
-        TributGService $tributGService
+        TributGService $tributGService,
+
+        UserRepository $userRepository
 
     ): Response {
 
@@ -104,7 +106,8 @@ class UserController extends AbstractController
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-
+        
+        $all_TribuT= $userRepository->getListTableTribuT();
 
         $new_publication = $this->createForm(PublicationType::class);
 
@@ -186,8 +189,8 @@ class UserController extends AbstractController
 
             ],
 
-            "new_publication" => $new_publication->createView()
-
+            "new_publication" => $new_publication->createView(),
+            "all_tribuT" => $all_TribuT
         ]);
     }
 
