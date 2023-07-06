@@ -243,20 +243,30 @@ class SecurityController extends AbstractController
                 ['id' => $user->getId()] /// param id
             );
 
-            //// send the mail
-            $mailService->sendEmail(
+            // //// send the mail
+            // $mailService->sendEmail(
+            //     $user->getEmail(), /// mail destionation
+            //     trim($user->getPseudo()), /// name destionation
+            //     "Confirmation de réinitialiser mon mot de passe", //// title of email
+            //     "Cliquez ici pour modifier votre mot de passe " . $signatureComponents->getSignedUrl() /// content: link
+            // );
+
+              
+            $mailService->sendEmailToResetPassword(
                 $user->getEmail(), /// mail destionation
                 trim($user->getPseudo()), /// name destionation
-                "Confirmation de réinitialiser mon mot de passe", //// title of email
-                "Cliquez ici pour modifier votre mot de passe " . $signatureComponents->getSignedUrl() /// content: link
+                "Confirmation de réinitialiser Mot de passe", //// object of the email
+                $signatureComponents->getSignedUrl() /// link
             );
 
             $flash = [
                 "titre" => "SUCCESS",
-                "content" => "Nous avons envoyé un lien dans votre adresse e-mail pour modifier votre mot de passe."
+                "content" => "Nous avons envoyé un e-mail pour confirmer votre changement de mots de passe."
             ];
             ///On quitte
             goto quit;
+
+            // return $this->redirect($request->getUri());
         }
 
         quit:
@@ -500,6 +510,13 @@ class SecurityController extends AbstractController
         */
 
 
+        /// IN DEVELOPMENT----- delete this when PROD ------------///
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
+        ///-------------------------------------------------------///
+
+
 
         //// prepare email which we wish send
         $signatureComponents = $verifyEmailHelper->generateSignature(
@@ -511,20 +528,12 @@ class SecurityController extends AbstractController
 
 
 
-        /// IN DEVELOPMENT----- delete this when PROD ------------///
-        if( strtolower($_ENV["APP_ENV"]) === "dev"){
-            return $this->redirect($signatureComponents->getSignedUrl());
-        }
-        ///-------------------------------------------------------///
-
-
-
-        //// send the mail
-        $mailService->sendEmail(
+       
+        $mailService->sendEmailToConfirmInscription(
             $user->getEmail(), /// mail destionation
             trim($user->getPseudo()), /// name destionation
-            "EMAIL CONFIRMATION", //// title of email
-            "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
+            "Confirmation d'inscription sur ConsoMyZone", //// object of the email
+            $signatureComponents->getSignedUrl() /// link
         );
 
         ///don't change this, it used to handle error from user like : email exist, mdp don't match, ... 

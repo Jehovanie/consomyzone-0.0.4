@@ -30,6 +30,7 @@ class MailService extends AbstractController {
         Environment $twig
     ){
         $this->twig= $twig;
+        $this->defaultEmailSender = ProdData::EMAIL_PROD;
     }
 
 
@@ -60,46 +61,90 @@ class MailService extends AbstractController {
 
 
 
-    public function sendEmail($to,$fullName_to,$objet,$message):void
+    public function sendEmail($email_to,$fullName_to,$objet,$message):void
 
     {
-
-        $userSendingEmail = ProdData::EMAIL_PROD;
-
-        $pass = ProdData::MDP_PROD;
-
-        $server = ProdData::SERVER_SMTP_PROD;
-
-        $port = ProdData::PORT_PROD;
-
- 
-
-        // Generate connection configuration
-
-        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
-
-        $transport = Transport::fromDsn($dsn);
-
-        $customMailer = new Mailer($transport);
-
-
+        $customMailer =  $this->configSendEmail();
 
         // Generates the email
-
         $email = (new TemplatedEmail())
-
-                ->from(new Address($userSendingEmail ,"ConsoMyZone")) 
-
-                ->to(new Address($to, $fullName_to ))
-
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
                 ->subject($objet)
-
                 ->text($message);
-
 
         $customMailer->send($email);
 
     }
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $email_to: Email address to send the link
+     * @param string $fullName_to: Full name of the user to send the link
+     * @param string $object : Object of the email
+     * @param string $message : Message to send
+     * 
+     * @return void
+     */
+    public function sendEmailToConfirmInscription($email_to,$fullName_to,$objet,$link):void
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($objet);
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html
+        $email =  $email->html($this->renderView('emails/mail_confirm_inscription.html.twig',[
+                'email' => new WrappedTemplatedEmail($this->twig, $email),
+                'today' => $date_fr,
+                'fullNameTo' => $fullName_to,
+                'link' => $link
+            ]));
+
+        $customMailer->send($email);
+    }
+
+        /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $email_to: Email address to send the link
+     * @param string $fullName_to: Full name of the user to send the link
+     * @param string $object : Object of the email
+     * @param string $message : Message to send
+     * 
+     * @return void
+     */
+    public function sendEmailToResetPassword($email_to,$fullName_to,$objet,$link):void
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($objet);
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html
+        $email =  $email->html($this->renderView('emails/mail_reset_password.html.twig',[
+                'email' => new WrappedTemplatedEmail($this->twig, $email),
+                'today' => $date_fr,
+                'fullNameTo' => $fullName_to,
+                'link' => $link
+            ]));
+
+        $customMailer->send($email);
+    }
+
+
 
     
     public function sendEmailWithCc($from,$fullName_from,$to,$fullName_to,$cc,$objet,$message):void
