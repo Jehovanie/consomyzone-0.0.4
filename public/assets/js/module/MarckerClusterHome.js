@@ -170,7 +170,7 @@ class MarckerClusterHome {
 
         const url = new URL(window.location.href);
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon("assets/icon/NewIcons/icon-station-new-B.png") });
+        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png") });
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {
             const coordAndZoom = {
@@ -197,7 +197,7 @@ class MarckerClusterHome {
                     shadowAnchor: [22, 94]
                 }
             })
-            marker.setIcon(new icon_R);
+            marker.setIconn(new icon_R);
 
             this.updateLastMarkerSelected(marker, "station")
         })
@@ -212,7 +212,7 @@ class MarckerClusterHome {
 
         var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement + "." + adress;
 
-        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIcon('assets/icon/NewIcons/icon-ferme-new-B.png') });
+        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') });
 
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
@@ -236,7 +236,7 @@ class MarckerClusterHome {
                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png"
                 }
             })
-            marker.setIcon(new icon_R);
+            marker.setIconn(new icon_R);
 
             this.updateLastMarkerSelected(marker, "ferme")
         })
@@ -252,7 +252,7 @@ class MarckerClusterHome {
         // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
         var pathDetails = "/restaurant/departement/" + departementName + "/" + item.dep + "/details/" + item.id;
         var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-        var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIcon('assets/icon/NewIcons/icon-resto-new-B.png') });
+        var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png') });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {
@@ -298,7 +298,7 @@ class MarckerClusterHome {
                     iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png"
                 }
             })
-            marker.setIcon(new icon_R);
+            marker.setIconn(new icon_R);
 
             this.updateLastMarkerSelected(marker, "resto")
         })
@@ -323,7 +323,7 @@ class MarckerClusterHome {
                     iconUrl: icon_marker
                 }
             })
-            this.marker_last_selected.setIcon(new icon_B)
+            this.marker_last_selected.setIconn(new icon_B)
         }
         this.marker_last_selected = marker;
         this.marker_last_selected_type = type;
