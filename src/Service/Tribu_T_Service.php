@@ -1457,7 +1457,7 @@ class Tribu_T_Service extends PDOConnexionService
      * 
      * @param string $userID : ID of the agenda to partage
      * 
-     * @return array list of the table tribu T.
+     * @return array list of the table tribu T. [ [ "table_name" => ... ], ... ]
      */
     public function getAllTribuT($userID){
 

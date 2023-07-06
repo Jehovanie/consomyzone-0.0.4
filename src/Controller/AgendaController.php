@@ -976,7 +976,7 @@ class AgendaController extends AbstractController
         MailService $mailService,
         NotificationService $notificationService
     ){
-
+        //// if no user connected
         if( !$this->getUser()){
             return $this->json([ "message" => "No authorization"],401);
         }
@@ -1115,7 +1115,7 @@ class AgendaController extends AbstractController
                 ////get information( userID, fullName ) for all user in this tribu G
                 $all_users_tribuG = $tributGService->getFullNameForAllMembers($tribuG_name); /// [ [ "userID" => ... , "fullName" => ... ], ... ]
 
-                return $this->json(["message" => "Share for same person in tribu G", "status" => "Not all tribu", "all_users_tribuG" => $all_users_tribuG]);
+                return $this->json(["message" => "Share for same person in tribu G", "status" => "Not all tribu", "all_users_tribu" => $all_users_tribuG]);
             }else{
 
                 if( !$tribuTChecked ){
@@ -1132,23 +1132,6 @@ class AgendaController extends AbstractController
         }
         return $this->json(["message" => "Votre agenda est partagé." ,"status" => "shareSuccess"]);
     }
-
-
-
-    #[ Route("/user/agenda/shares/tribuT", name:"app_share_agenda_tribuT", methods: "POST")]
-    public function shareAgendaTribuTAction(
-        Request $request,
-        AgendaService $agendaService,
-        TributGService $tributGService,
-        Tribu_T_Service $tribuTService,
-        UserRepository $userRepository,
-        MailService $mailService,
-        NotificationService $notificationService
-    ){
-
-    }
-
-
 
 
     #[Route("/agenda/presence/send/link/{agenda_id}", name: "agenda_send_presence_link")]
