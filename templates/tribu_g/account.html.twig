@@ -92,10 +92,26 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="card-appropos-g need_position_fixed_js_jheo">
+                                                {# <h5> Votre tribu G : </h5>
                                                 <h4  class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name = {{tributG.profil.name}} >{{tributG.profil.name}}</h4>
                                                 <small>
                                                     <i>{{tributG.profil.description}}</i>
-                                                </small>
+                                                </small> #}
+
+                                                <div class="content_list_tribuT mt-3">
+                                                    <h4 > Liste de vos tribu T :</h4>
+
+                                                    {% if all_tribuT|length > 0  %}
+                                                        <ul>
+                                                            {% for item in all_tribuT %}
+                                                                <li> <a href="#"> {{item.table_name}} </a></li>
+                                                            {% endfor %}
+                                                        </ul>
+
+                                                    {% else %}
+                                                        <p> Vous n'avez pas encore créer un tribu T</p>
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
