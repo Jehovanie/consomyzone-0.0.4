@@ -1,9 +1,3 @@
-///we use this variable to keep track for user search
-if( localStorage.getItem("type")){
-	rmDataInLocalStorage("type")
-}
-setDataInLocalStorage("type", "ferme");
-
 window.addEventListener('load', () => {
 	addListFermeMobile()
 

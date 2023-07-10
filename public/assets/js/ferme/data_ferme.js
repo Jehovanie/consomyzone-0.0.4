@@ -1,13 +1,5 @@
-///we use this variable to keep track for user search
-if( localStorage.getItem("type")){
-	rmDataInLocalStorage("type")
-}
-setDataInLocalStorage("type", "ferme");
-
-
 window.addEventListener('load', () => {
 	// addMapFerme()
-    // setDataInLocalStorage("type", "ferme");
 
 	document.querySelectorAll("#list_departements > div> a").forEach(item => {
         item.onclick = (e) => {

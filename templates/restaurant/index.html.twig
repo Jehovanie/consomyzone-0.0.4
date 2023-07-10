@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block javascripts %}
+
+    {# ///we use this to keep track for user search don't add a "defer" //////////////////////// #}
+	<script type="text/javascript"  src="{{asset('assets/js/search_localStorage.js')}}"></script>
+    {# ////////////////////////////////////////////////////////////////////////////////////////// #}
+
 	<script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script>
 	{# // <script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script> #}
     {# <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script> #}
@@ -86,8 +91,9 @@
             </div>
         </div>
     </div>
-{{ include('shard/restaurant/list_avis.html.twig') }}
-{{ include('shard/restaurant/modal_avis_resto.html.twig') }}
-{{ include('shard/restaurant/modal_modif_avis.html.twig') }}
+    
+    {{ include('shard/restaurant/list_avis.html.twig') }}
+    {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
+    {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
 
 {% endblock %}

@@ -169,17 +169,20 @@ class HomeController extends AbstractController
         BddRestoRepository $bddRestoRepository,
         $type = null
     ){
-
+        ///De quoi avez-vous besoin ?
         $cles0 = $request->query->get("cles0") ? trim($request->query->get("cles0")) : "";
+
+        ///Adresse, quartier, ville, département
         $cles1 = $request->query->get("cles1") ? trim($request->query->get("cles1")) : "";
+
         $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
 
         $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tous"  );
         $type= $condition ? $cles0: $type;
         $cles0= $condition ? "": $cles0;
         // $size = $type !== "ferme" && $type !== "restaurant" && $type !== "station" && $type !== "station service" ? 6:20;
-        $size = $type ? 20:6;
-        // $size = 20;
+        // $size = $type ? 20:6;
+        $size = 20;
         $all = [
             "station" => $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
             "ferme" => $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
