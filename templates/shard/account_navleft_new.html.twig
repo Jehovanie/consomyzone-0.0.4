@@ -1,5 +1,19 @@
 
 	<aside :class="sidebarToggle && 'zf ph'" class="content-nav-left qo -ud-translate-x-full _u f nj xr _e u ou q l bv ip hp dp oa">
+		<button :class="sidebarToggle &amp;&amp; 'ga'" class="vu jc g -ud-right-9.5 pa nj xr ni bj wr _k uo qh" @click="sidebarToggle = !sidebarToggle">
+			<span class="jc h cg bf sd">
+				<span class="du-block g m yd vc">
+					<span class="jc h r q uj cs zh cf td ya gp fp yo df zo" :class="{ 'df zo': !sidebarToggle }"></span>
+					<span class="jc h r q uj cs zh cf td ya gp fp _o df gw" :class="{ 'df gw': !sidebarToggle }"></span>
+					<span class="jc h r q uj cs zh cf td ya gp fp ap df bp" :class="{ 'df bp': !sidebarToggle }"></span>
+				</span>
+				<span class="du-block g m yd vc _f">
+					<span class="jc uj cs zh gp fp zo g ha r ef vc ud yo" :class="{ 'ud yo': !sidebarToggle }"></span>
+					<span class="jc uj cs zh gp fp gw g q ia yd td ud hw" :class="{ 'ud hw': !sidebarToggle }"></span>
+				</span>
+			</span>
+		</button>
+
 		<nav class="ml rl fv gc ru" x-data="{selected: 'actualite'}" x-init="
 				                selected = JSON.parse(localStorage.getItem('selected'));
 				                $watch('selected', value => localStorage.setItem('selected', JSON.stringify(value)))">

@@ -3357,3 +3357,13 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   width: 50px;
   border-radius: 50%;
 }
+
+.content-nav-bar .logo-cmz-connected{
+  width: 200px;
+}
+
+@media (max-width: 900px){
+  .content-nav-bar .logo-cmz-connected {
+    width: 100px;
+  }
+}
