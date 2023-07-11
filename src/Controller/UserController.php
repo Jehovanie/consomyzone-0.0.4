@@ -74,6 +74,13 @@ class UserController extends AbstractController
     }
 
 
+    #[Route("/user/actualite", name: "app_actualite")]
+    public function Actualite(): Response
+    {
+        return $this->render("user/actualite.html.twig");
+    }
+
+
 
  
     #[Route("/user/account", name: "app_account")]
