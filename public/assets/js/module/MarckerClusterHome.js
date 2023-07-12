@@ -1,11 +1,11 @@
-class MarckerClusterHome {
+class MarckerClusterHome extends MapModule  {
 
-    constructor(nom_dep = null, id_dep = null) {
-        this.nom_dep = nom_dep ? nom_dep : null;
-        this.id_dep = id_dep ? id_dep : null;
+    constructor(nom_dep = null, id_dep = null,map_for_type="tous") {
+        // this.nom_dep = nom_dep ? nom_dep : null;
+        // this.id_dep = id_dep ? id_dep : null;
+        super(id_dep,nom_dep, map_for_type)
         this.is_online = false;
         this.time_on_setInterval = 1000;
-
 
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
@@ -13,32 +13,35 @@ class MarckerClusterHome {
     }
 
     async onInit() {
-        const url = `/getLatitudeLongitudeForAll`;
+        // const url = `/getLatitudeLongitudeForAll`;
+        const url= "/dataHome";
         try {
-            this.getGeos()
+            // this.settingGeos()
             this.createMarkersCluster();
+            // const bounds = this.map.getBounds();
+            // this.last_minll = bounds.getSouthWest();
+            // this.last_maxll = bounds.getNorthEast();
 
-            this.map = await create_map_content(this.geos, this.id_dep, "home");
-            const bounds = this.map.getBounds();
-            this.last_minll = bounds.getSouthWest();
-            this.last_maxll = bounds.getNorthEast();
+            // const data = { "last": { min: this.last_minll, max: this.last_maxll }, "new": {} };
+            // const fetch_options=  {
+            //     method: "POST",
+            //     headers: {
+            //         'Accept': 'application/json',
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify(data)
+            // }
 
-            const data = { "last": { min: this.last_minll, max: this.last_maxll }, "new": {} };
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
+            const response = await fetch(url);
             this.default_data = await response.json();
             this.data = this.default_data;
+
+            // this.map = await create_map_content(this.geos, this.id_dep, "home");
+            await this.initMap();
+
             // console.log(this.data)
             this.bindAction();
-        } catch (e) {
+        }catch(e){
             console.log(e)
         }
     }
@@ -73,12 +76,43 @@ class MarckerClusterHome {
     }
 
     createMarkersCluster() {
+        const that = this;
         const temp= 200;
         this.markers = L.markerClusterGroup({
             chunkedLoading: true,
             chunkInterval: temp * 5,
             chunkDelay: temp,
             removeOutsideVisibleBounds: true,
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
+                }
+            },
         });
     }
 
@@ -167,6 +201,11 @@ class MarckerClusterHome {
 
 
     settingSingleMarkerStation(item) {
+
+
+        ///icon
+        ///mise en avant
+        ///event to details
 
         const url = new URL(window.location.href);
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
@@ -329,30 +368,13 @@ class MarckerClusterHome {
         this.marker_last_selected_type = type;
     }
 
-    addEventOnMap(map, markers) {
-        map.on("resize zoom", (e) => {
-            const coordAndZoom = {
-                zoom: e.target._zoom,
-                coord: e.target._lastCenter
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-        })
-
+    addEventOnMap(map) {
         map.on("zoomend dragend", async (e) => {
 
             let bounds = map.getBounds();
             let minll = bounds.getSouthWest();
             let maxll = bounds.getNorthEast();
             this.updateData(minll, maxll)
-        })
-
-
-        map.on("dragend", (e) => {
-            const coordAndZoom = {
-                zoom: e.target.getZoom(),
-                coord: e.target.getCenter()
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
         })
     }
 
@@ -410,10 +432,10 @@ class MarckerClusterHome {
     }
 
     generateFilterAndSelectDep() {
-        // const content_filter = document.createElement("div");
-        // content_filter.className = "content_filter content_filter_js_jheo";
+        const content_filter = document.createElement("div");
+        content_filter.className = "content_filter content_filter_js_jheo";
 
-        // this.generate_checkout_option(content_filter)
+        this.generate_checkout_option(content_filter)
 
         const content_filter_dep = document.createElement("div");
         content_filter_dep.className = "content_filter_dep";

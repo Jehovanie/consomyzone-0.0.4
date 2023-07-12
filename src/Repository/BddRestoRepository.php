@@ -448,6 +448,23 @@ class BddRestoRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
         return $query->execute();
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Resto
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
     //    /**
     //     * @return BddResto[] Returns an array of BddResto objects
     //     */

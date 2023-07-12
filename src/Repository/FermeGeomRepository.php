@@ -473,6 +473,23 @@ class FermeGeomRepository extends ServiceEntityRepository
         return [ $results , count($results) , "ferme"];
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Ferme
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
 
     //    /**
     //     * @return FermeGeom[] Returns an array of FermeGeom objects

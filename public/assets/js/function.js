@@ -102,12 +102,12 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
         if( document.querySelector("#toggle_chargement")){
             content_map.removeChild(document.querySelector("#toggle_chargement"))
         }
-        var map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
+        var map = L.map('map', { zoomControl: false , center: centered, zoom: zoom, layers: [tiles] });
 
         // layerControl = L.control.layers(null, overlayPane, {position: 'topleft'});
         // layerControl.addTo(map);
         //L.control.layers(null,baseLayers,{position: 'bottomright'}).addTo(map);
-
+        
         L.geoJson(geos, {
             style: {
                 weight: 2,

@@ -75,9 +75,9 @@
     .avatar-account img {
         transform: translate(-8px, 1px);
     }
-    .leaflet-control-container{
+    /* .leaflet-control-container{
         display: none ;
-    }
+    } */
     .leaflet-control-zoom{
         display: block !important;
     }

@@ -471,6 +471,24 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $results =$qb->execute();
         return [ $results , count($results) , "station"];
     }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Station
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
 //    /**
 //     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects
 //     */

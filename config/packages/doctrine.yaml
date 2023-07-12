@@ -18,6 +18,8 @@ doctrine:
         dql:
             string_functions:
                 MATCH_AGAINST: App\Extensions\Doctrine\MatchAgainst
+            numeric_functions:
+                RAND: App\Extensions\Doctrine\Rand
 
 when@test:
     doctrine:
