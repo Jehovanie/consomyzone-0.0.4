@@ -43,7 +43,7 @@ class MapModule{
             this.longitude= coords.longitude;
     
         }catch(err){
-            console.log(err)
+            console.log(err.message)
         }finally{
             const memoryCenter= localStorage.getItem("memoryCenter") ? JSON.parse(localStorage.getItem("memoryCenter")) : null;
             const tiles= this.initTales();
@@ -60,7 +60,6 @@ class MapModule{
             }).addTo(this.map);
         }
 
-        console.log("create map vita")
     }
 
     handleEventOnMap(){
@@ -126,7 +125,8 @@ class MapModule{
             try{
                 const position = await this.getUserLocation();
                 const { coords } = position ;
-                this.map.setView(L.latLng(coords.latitude, coords.longitude), 6);
+
+                this.updateCenter(coords.latitude,coords.longitude, 6)
             }catch(e){
                 alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.")
             }
@@ -141,6 +141,10 @@ class MapModule{
             }
             setDataInLocalStorage("memoryCenter", JSON.stringify(coordAndZoom))
         })
+    }
+
+    updateCenter(lat, long, zoom){
+        this.map.setView(L.latLng(lat, long), zoom);
     }
 
     addControlPlaceholders(map) {
