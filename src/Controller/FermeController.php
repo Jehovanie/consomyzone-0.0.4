@@ -205,24 +205,16 @@ class FermeController extends AbstractController
     }
 
     /**
-
      * @Route("/ferme/departement/{nom_dep}/{id_dep}/allFerme" , name="getAllFermeInDepartement", methods={"GET"} )
-
      */
-
     public function getAllFermeInDepartement(Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
-
     {
-
+        $id_dep= strlen($id_dep) === 1 ? "0" . $id_dep : $id_dep;
         return $this->json(
-
             $fermeGeomRepository->getAllFermeInDepartement(
-
                 $nom_dep,
                 $id_dep
-
             )
-
         );
     }
 

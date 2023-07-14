@@ -1371,8 +1371,8 @@ function fetchDetailsVialink(selector, link) {
 }
 
 function getDetailStation(depart_name, depart_code, id, inHome = false) {
+
     const id_selector = !inHome ? "#content-details-station" : "#content_details_home_js_jheo";
-    
     const linkGetDetails= `/station/departement/${depart_name}/${depart_code}/details/${id}`;
     fetchDetails(id_selector,linkGetDetails)
 
@@ -1432,6 +1432,7 @@ function fetchDetails(selector,linkGetDetail) {
 }
 
 function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
+    
     let remove = !inHome ? document.getElementById("remove-detail-ferme") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")

@@ -1,24 +1,25 @@
-class MarckerClusterStation {
+class MarckerClusterStation extends MapModule  {
 
     constructor(price_min, price_max, type = null, nom_dep = null, id_dep = null) {
+        super(id_dep, nom_dep, "station");
+
         this.price_min = price_min;
         this.price_max = price_max;
         this.type = type ? type : null;
-        this.nom_dep = nom_dep ? nom_dep : null;
-        this.id_dep = id_dep ? id_dep : null;
+
     }
 
     async onInit() {
         this.ALREADY_INIT = false;
         try {
-            this.getGeos()
             this.createMarkersCluster();
 
             const response = await fetch("/getLatitudeLongitudeStation/?max=" + this.price_max + "&min=" + this.price_min + "&type=" + this.type + "&nom_dep=" + this.nom_dep + "&id_dep=" + this.id_dep);
             this.default_data = await response.json();
-            this.map = await create_map_content(this.geos, this.id_dep, "station");
-
             this.data = this.default_data;
+
+            await this.initMap();
+
             this.bindAction()
         } catch (e) {
             console.log(e)
@@ -62,66 +63,37 @@ class MarckerClusterStation {
 
     bindAction() {
         this.addMarker(this.data);
-        this.addEventOnMap(this.map, this.markers);
+        // this.addEventOnMap(this.map, this.markers);
         this.setNumberOfMarker();
         this.generateAllCard();
     }
 
-    addEventOnMap(map, markers) {
-        map.on('moveend zoomend dragend', function (e) {
-            const coordAndZoom = {
-                zoom: e.target.getZoom(),
-                coord: e.target.getCenter()
-            }
-            setDataInLocalStorage("coordStation", JSON.stringify(coordAndZoom))
+    // addEventOnMap(map,) {
+    //     // map.on('moveend zoomend dragend', function (e) {
+    //         // var bounds = map.getBounds();
+    //         // var zoom = map.getZoom();
+    //         // var markersDisplayed = false;
 
+    //         // if (zoom > 8) {
+    //         //     markers.eachLayer(function (layer) {
+    //         //         if (bounds.contains(layer.getLatLng())) {
+    //         //             markersDisplayed = true;
+    //         //             layer.openPopup();
+    //         //             layer.unbindTooltip()
+    //         //         }
+    //         //     });
+    //         // } else if (markersDisplayed) {
+    //         //     markersDisplayed = false;
+    //         //     markers.eachLayer(function (layer) {
+    //         //         if (bounds.contains(layer.getLatLng())) {
+    //         //             layer.closePopup();
+    //         //         }
+    //         //     });
+    //         // }
 
-            // var bounds = map.getBounds();
-            // var zoom = map.getZoom();
-            // var markersDisplayed = false;
-
-            // if (zoom > 8) {
-            //     markers.eachLayer(function (layer) {
-            //         if (bounds.contains(layer.getLatLng())) {
-            //             markersDisplayed = true;
-            //             layer.openPopup();
-            //             layer.unbindTooltip()
-            //         }
-            //     });
-            // } else if (markersDisplayed) {
-            //     markersDisplayed = false;
-            //     markers.eachLayer(function (layer) {
-            //         if (bounds.contains(layer.getLatLng())) {
-            //             layer.closePopup();
-            //         }
-            //     });
-            // }
-
-            // this.markers.refreshClusters();
-        });
-    }
-
-    getGeos() {
-        this.geos = [];
-        if (this.id_dep) {
-            if (this.id_dep == 20) {
-                for (let corse of ['2A', '2B'])
-                    this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
-            } else {
-                this.geos.push(franceGeo.features.find(element => element.properties.code == this.id_dep))
-            }
-        } else {
-            document.querySelectorAll("#list_departements .element").forEach(item => {
-                const dep = item.dataset.toggleDepartId
-                if (dep == 20) {
-                    for (let corse of ['2A', '2B'])
-                        this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
-                } else {
-                    this.geos.push(franceGeo.features.find(element => element.properties.code == dep))
-                }
-            })
-        }
-    }
+    //         // this.markers.refreshClusters();
+    //     // });
+    // }
 
     setNumberOfMarker() {
         /// change the number of result in div
@@ -191,40 +163,28 @@ class MarckerClusterStation {
                 marker.openPopup();
             });
             
-            marker.on('click', () => {
-
-                const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-                this.map.setView(latlng, 11);
-
-                if (screen.width < 991) {
-                    getDetailStationForMobile(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
-                } else {
-                    getDetailsStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id)
-                }
-
-                const url = new URL(window.location.href);
+            marker.on('click', (e) => {
+                this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+                
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
                         iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
-                        //shadowUrl: 'my-icon-shadow.png',
                         shadowSize: [68, 95],
                         shadowAnchor: [22, 94]
                     }
                 })
-
                 marker.setIcon(new icon_R);
 
                 if (this.marker_last_selected && this.marker_last_selected != marker ) {
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
                             iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],
-                            //shadowUrl: 'my-icon-shadow.png',
                             shadowSize: [68, 95],
                             shadowAnchor: [22, 94]
                         }
@@ -232,8 +192,13 @@ class MarckerClusterStation {
                     this.marker_last_selected.setIcon(new icon_B)
                 }
                 this.marker_last_selected = marker;
-
                 this.markers.refreshClusters();
+    
+                if (screen.width < 991) {
+                    getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim().replace("?", "") + "/details/" + item.id)
+                } else {
+                    getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
+                }
             })
 
             marker.on("mouseover", () => {
@@ -260,10 +225,10 @@ class MarckerClusterStation {
             elements.forEach(element => {
                 element.parentElement.removeChild(element);
             })
-
+            
             this.data.forEach(element => {
                 parent_elements.querySelector("ul").innerHTML += `
-                    <li class="card-list element open_detail_jheo_js" onclick="getDetailStation('${this.id_dep}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
+                    <li class="card-list element open_detail_jheo_js" onclick="getDetailFromListLeft('${this.id_dep}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
                         <div class="row container-depart element card_list_element_jheo_js" id="${element.id}">
                             <div class="col-md-9">
                                 <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>

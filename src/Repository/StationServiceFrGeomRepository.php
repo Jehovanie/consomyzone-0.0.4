@@ -148,7 +148,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
     ///jheo : getLatitudeLongitude
     public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null)
     {
-
+        $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
 
         ////filter with min and max
         if( $min || $max){

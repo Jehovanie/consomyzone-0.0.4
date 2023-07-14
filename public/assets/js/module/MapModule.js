@@ -5,16 +5,19 @@
 class MapModule{
 
     constructor(idDep= null,nomDep, map_for_type="tous"){
-        this.id_dep= idDep ? parseInt(idDep) : null;
-        this.nom_dep= nomDep ? nomDep.tolower() : null;
-        this.geos= [];
-        this.defaultZoom= 6;
-        this.map= null;
-        this.mapForType=map_for_type;
-
+        this.currentUrl= new URL(window.location.href);
         ////default values but these distroy when we get the user position
         this.latitude= 46.61171462536897;
         this.longitude= 1.8896484375000002;
+        this.defaultZoom= 6;
+        this.zoomDetails= 15;
+        this.geos= [];
+
+        this.mapForType=map_for_type;
+        this.id_dep= idDep ? parseInt(idDep) : null;
+        this.nom_dep= nomDep ? nomDep : null;
+        this.map= null;
+
     }
 
     initTales(){
@@ -47,12 +50,15 @@ class MapModule{
         }finally{
             const memoryCenter= localStorage.getItem("memoryCenter") ? JSON.parse(localStorage.getItem("memoryCenter")) : null;
             const tiles= this.initTales();
+
+            this.settingLatLong();
             
             this.map = L.map('map', {
-                zoomControl: false,
-                center: memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude),
-                zoom: memoryCenter ? memoryCenter.zoom : this.defaultZoom,
-                layers: [tiles] 
+                    zoomControl: false,
+                    // center: memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude),
+                    center:this.id_dep ? L.latLng(this.latitude, this.longitude) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude)),
+                    zoom:this.id_dep ? this.defaultZoom : ( memoryCenter ? memoryCenter.zoom : this.defaultZoom ),
+                    layers: [tiles] 
                 }
             );
             L.control.zoom({
@@ -73,11 +79,30 @@ class MapModule{
 
     settingGeos(){
         let geos= [];
-        for (let f of franceGeo.features) {
-            geos.push(f)
+    
+        if(this.id_dep || this.nom_dep ){
+            if( this.id_dep === 20 ){
+                for( let corse of ["2A", "2B"]){
+                    this.geos.push(franceGeo.features.find(element => element.properties.code === corse))
+                }
+            }else{
+                geos.push(franceGeo.features.find(element => parseInt(element.properties.code) === this.id_dep))
+            }
+        }else {
+            for (let f of franceGeo.features) {
+                geos.push(f)
+            }
         }
-
         return geos;
+    }
+
+
+    settingLatLong(){
+        if( this.id_dep){
+            this.latitude= centers[this.id_dep].lat;
+            this.longitude= centers[this.id_dep].lng;
+            this.defaultZoom= centers[this.id_dep].zoom;
+        }
     }
 
     addGeoJsonToMap(){
@@ -120,6 +145,7 @@ class MapModule{
             document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition)
         }
 
+        ////handle event set to the current position
         document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click" ,async (e)=>{
             e.preventDefault();
             try{

@@ -1,11 +1,8 @@
 class MarckerClusterHome extends MapModule  {
 
     constructor(nom_dep = null, id_dep = null,map_for_type="tous") {
-        // this.nom_dep = nom_dep ? nom_dep : null;
-        // this.id_dep = id_dep ? id_dep : null;
+    
         super(id_dep,nom_dep, map_for_type)
-        this.currentUrl= new URL(window.location.href);
-        this.zoomDetails= 15;
 
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
@@ -23,6 +20,7 @@ class MarckerClusterHome extends MapModule  {
             this.data = this.default_data;
 
             await this.initMap();
+
             this.bindAction();
 
         }catch(e){
@@ -44,7 +42,7 @@ class MarckerClusterHome extends MapModule  {
                     this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
                 }
             } else {
-                this.geos.push(franceGeo.features.find(element => element.properties.code == this.id_dep))
+                this.geos.push(franceGeo.features.find(element => element.properties.code === this.id_dep))
             }
         } else {
             for (let f of franceGeo.features) {
@@ -177,7 +175,7 @@ class MarckerClusterHome extends MapModule  {
             if (screen.width < 991) {
                 getDetailHomeForMobile("/station/departement/" + dataStation.departementCode.toString().trim() + "/" + dataStation.departementName.trim().replace("?", "") + "/details/" + dataStation.id)
             } else {
-                getDetailStation(dataStation.departementCode.toString().trim(), dataStation.departementName.trim().replace("?", ""), dataStation.id, true)
+                getDetailStation( dataStation.departementName.trim().replace("?", ""), dataStation.departementCode.toString().trim(), dataStation.id, true)
             }
 
         })
