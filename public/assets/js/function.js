@@ -1371,17 +1371,19 @@ function fetchDetailsVialink(selector, link) {
 }
 
 function getDetailStation(depart_name, depart_code, id, inHome = false) {
-    // console.log(depart_name, depart_code, id)
+    const id_selector = !inHome ? "#content-details-station" : "#content_details_home_js_jheo";
+    
+    const linkGetDetails= `/station/departement/${depart_name}/${depart_code}/details/${id}`;
+    fetchDetails(id_selector,linkGetDetails)
 
-    let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home")
+    let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home");
+
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
-
-    const id_selector = !inHome ? "#content-details-station" : "#content-details-home";
-    fetchDetails(id_selector, depart_name, depart_code, id)
 }
 
 function getDetailStationForMobile(depart_name, depart_code, id) {
+
     // console.log(depart_name, depart_code, id)
     if (document.querySelector(".btn_retours_specifique_jheo_js")) {
         document.querySelector(".btn_retours_specifique_jheo_js").click();
@@ -1391,47 +1393,55 @@ function getDetailStationForMobile(depart_name, depart_code, id) {
         document.querySelector(".get_action_detail_on_map_js_jheo").click();
     }
 
-    fetchDetails(".content_detail_js_jheo", depart_name, depart_code, id)
+    ///link to get details
+    const linkGetDetails= `/station/departement/${depart_name}/${depart_code}/details/${id}`;
+    fetchDetails(".content_detail_js_jheo",linkGetDetails)
 }
 
-function fetchDetails(selector, departName, departCode, id) {
+function fetchDetails(selector,linkGetDetail) {
+
+    document.querySelector(selector).innerHTML = null;
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
 
-    console.log(departName, departCode, id);
-
-    fetch(`/station/departement/${departName}/${departCode}/details/${id}`)
+    fetch(linkGetDetail, myHeaders)
         .then(response => {
             return response.text()
         }).then(r => {
-            document.querySelector(selector).innerHTML = null;
 
             const parser = new DOMParser();
             const htmlDocument = parser.parseFromString(r, "text/html");
-            if( htmlDocument.querySelector(".content_body")){
+
+            if( htmlDocument.querySelector(".content_body_details_jheo_js")){
                 document.querySelector(selector).innerHTML = r
             }else{
                 document.querySelector(selector).innerHTML = `
-                    <div class="alert alert-danger d-flex align-items-center" role="alert">
-                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <div class="alert alert-danger d-flex align-items-center alert_details_marker_position" role="alert">
                         <div>
-                            Nous avons rencontre une probleme de connexion.
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div>
+                                Nous avons rencontre une probleme de connexion.
+                            </div>
                         </div>
-                    </div>`
+                    </div>
+                `
             }
-
         })
 
 }
 
-function getDetailsFerme(pathDetails, inHome = false) {
+function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
     let remove = !inHome ? document.getElementById("remove-detail-ferme") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
 
-    const id_selector = !inHome ? "#content-details-ferme" : "#content-details-home";
-    fetchDetailFerme(id_selector, pathDetails);
+    const id_selector = !inHome ? "#content-details-ferme" : "#content_details_home_js_jheo";
+
+    document.querySelector(id_selector).innerHTML = null
+
+    const pathDetails = `/ferme/departement/${nameDepart}/${codeDepart}/details/${idFerme}`
+    fetchDetails(id_selector, pathDetails);
 }
 
 function getDetailsFermeForMobile(pathDetails) {
@@ -1447,21 +1457,22 @@ function getDetailsFermeForMobile(pathDetails) {
     }
 
     // fetchDetails(".content_detail_js_jheo", depart_name,depart_code,id)
-    fetchDetailFerme(".content_detail_js_jheo", pathDetails)
+    fetchDetails(".content_detail_js_jheo", pathDetails)
 }
 
-function fetchDetailFerme(selector, link) {
 
-    let myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
-    fetch(link, myHeaders)
-        .then(response => {
-            return response.text()
-        }).then(r => {
-            document.querySelector(selector).innerHTML = null
-            document.querySelector(selector).innerHTML = r
-        })
+function getDetailResto(codeDepart, nameDepart, idResto, inHome= false){
 
+    let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    const id_selector = !inHome ? "#content-details-resto" : "#content_details_home_js_jheo";
+
+    document.querySelector(id_selector).innerHTML = null
+    // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
+    const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`
+    fetchDetails(id_selector, pathDetails);
 }
 
 
