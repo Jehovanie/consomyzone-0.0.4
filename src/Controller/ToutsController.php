@@ -284,10 +284,25 @@ class ToutsController extends AbstractController
 
     #[Route("/dataHome", name:"dataForHome", methods:["GET"])]
     public function getDateHome(
+        Request $request,
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
     ){
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            return $this->json([
+                "station" => $stationServiceFrGeomRepository->getRestoBetweenAnd($minx, $miny, $maxx, $maxy),
+                "ferme" => $fermeGeomRepository->getRestoBetweenAnd($minx, $miny, $maxx, $maxy),
+                "resto" => $bddRestoRepository->getRestoBetweenAnd($minx, $miny, $maxx, $maxy)
+            ]);
+        }
+
         $taille= 3000;
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
@@ -295,9 +310,6 @@ class ToutsController extends AbstractController
             "resto" => $bddRestoRepository->getSomeDataShuffle($taille)
         ]);
     }
-
-
-
     
 
     #[Route('/getLatitudeLongitudeForAll', name: 'for_explore_cat_tous', methods:["GET", "POST"])]

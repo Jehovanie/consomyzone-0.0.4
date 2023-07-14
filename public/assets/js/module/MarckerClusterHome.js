@@ -4,8 +4,8 @@ class MarckerClusterHome extends MapModule  {
         // this.nom_dep = nom_dep ? nom_dep : null;
         // this.id_dep = id_dep ? id_dep : null;
         super(id_dep,nom_dep, map_for_type)
-        this.is_online = false;
-        this.time_on_setInterval = 1000;
+        this.currentUrl= new URL(window.location.href);
+        this.zoomDetails= 15;
 
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
@@ -14,33 +14,17 @@ class MarckerClusterHome extends MapModule  {
 
     async onInit() {
         // const url = `/getLatitudeLongitudeForAll`;
-        const url= "/dataHome";
         try {
-            // this.settingGeos()
             this.createMarkersCluster();
-            // const bounds = this.map.getBounds();
-            // this.last_minll = bounds.getSouthWest();
-            // this.last_maxll = bounds.getNorthEast();
 
-            // const data = { "last": { min: this.last_minll, max: this.last_maxll }, "new": {} };
-            // const fetch_options=  {
-            //     method: "POST",
-            //     headers: {
-            //         'Accept': 'application/json',
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify(data)
-            // }
+            const response = await fetch("/dataHome");
 
-            const response = await fetch(url);
             this.default_data = await response.json();
             this.data = this.default_data;
 
-            // this.map = await create_map_content(this.geos, this.id_dep, "home");
             await this.initMap();
-
-            // console.log(this.data)
             this.bindAction();
+
         }catch(e){
             console.log(e)
         }
@@ -118,6 +102,7 @@ class MarckerClusterHome extends MapModule  {
 
     addMarker(newData) {
         const { station, ferme, resto } = newData;
+
         if (station || ferme || resto) {
 
             if (station.length > 0) {
@@ -133,6 +118,7 @@ class MarckerClusterHome extends MapModule  {
             if (resto.length > 0) {
                 this.addResto(resto);
             }
+
             this.map.addLayer(this.markers);
         } else {
             console.log("ERREUR : L'erreur se produit par votre réseaux.")
@@ -144,281 +130,204 @@ class MarckerClusterHome extends MapModule  {
         dataStation.forEach(item => {
             this.settingSingleMarkerStation(item)
         })
-
-        // const tab_data_station = splitArrayToMultipleArray(dataStation);
-
-        // let i = 0;
-        // const add_station_interval = setInterval(() => {
-        //     tab_data_station[i].forEach(item => {
-        //         this.settingSingleMarkerStation(item)
-        //     })
-        //     i++;
-        //     if (i === tab_data_station.length) {
-        //         clearInterval(add_station_interval)
-        //     }
-        // }, this.time_on_setInterval)
     }
 
     addFerme(dataFerme) {
-
         dataFerme.forEach(item => {
             this.settingSingleMarkerFerme(item)
         })
-
-        // const tab_data_ferme = splitArrayToMultipleArray(dataFerme);
-
-        // let i = 0;
-        // const add_ferme_interval = setInterval(() => {
-        //     tab_data_ferme[i].forEach(item => {
-        //         this.settingSingleMarkerFerme(item)
-        //     })
-        //     i++;
-        //     if (i === tab_data_ferme.length) {
-        //         clearInterval(add_ferme_interval)
-        //     }
-        // }, this.time_on_setInterval);
     }
 
     addResto(dataResto) {
-
         dataResto.forEach(item => {
             this.settingSingleMarkerResto(item);
         })
-
-        // const tab_data_resto = splitArrayToMultipleArray(dataResto);
-
-        // let i = 0;
-        // const add_resto_Interval = setInterval(() => {
-        //     tab_data_resto[i].forEach(item => {
-        //         this.settingSingleMarkerResto(item);
-        //     })
-        //     i++;
-        //     if (i === tab_data_resto.length) {
-        //         clearInterval(add_resto_Interval)
-        //     }
-        // }, this.time_on_setInterval);
     }
 
 
     settingSingleMarkerStation(item) {
 
-
-        ///icon
-        ///mise en avant
-        ///event to details
-
-        const url = new URL(window.location.href);
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png") });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png") , id: item.id });
+
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
-        marker.on('click', (e) => {
-            const coordAndZoom = {
-                zoom: e.target.__parent._zoom + 1,
-                coord: e.target.__parent._cLatLng
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
+        
+        this.handleClickStation(marker, item)
+        this.markers.addLayer(marker);
+    }
 
-            // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-            if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim().replace("?", "") + "/details/" + item.id)
-            } else {
-                getDetailStation(item.departementCode.toString().trim(), item.departementName.trim().replace("?", ""), item.id, true)
-            }
-
+    handleClickStation(stationMarker,dataStation){
+            
+        stationMarker.on('click', (e) => {
+            this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                    iconSize: [20, 35],
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+                    iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
-                    //shadowUrl: 'my-icon-shadow.png',
                     shadowSize: [68, 95],
                     shadowAnchor: [22, 94]
                 }
             })
-            marker.setIconn(new icon_R);
 
-            this.updateLastMarkerSelected(marker, "station")
+            stationMarker.setIcon(new icon_R);
+            this.updateLastMarkerSelected(stationMarker, "station");
+            
+            if (screen.width < 991) {
+                getDetailHomeForMobile("/station/departement/" + dataStation.departementCode.toString().trim() + "/" + dataStation.departementName.trim().replace("?", "") + "/details/" + dataStation.id)
+            } else {
+                getDetailStation(dataStation.departementCode.toString().trim(), dataStation.departementName.trim().replace("?", ""), dataStation.id, true)
+            }
+
         })
 
-        this.markers.addLayer(marker);
     }
 
     settingSingleMarkerFerme(item) {
-        const url = new URL(window.location.href);
+      
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
         // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
 
         var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement + "." + adress;
 
-        var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') });
-
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') , id: item.id });
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
-
-        marker.on('click', (e) => {
-            const coordAndZoom = {
-                zoom: e.target.__parent._zoom + 1,
-                coord: e.target.__parent._cLatLng
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-
-            let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-            if (screen.width < 991) {
-                getDetailHomeForMobile(pathDetails)
-            } else {
-                getDetailsFerme(pathDetails, true)
-            }
-
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png"
-                }
-            })
-            marker.setIconn(new icon_R);
-
-            this.updateLastMarkerSelected(marker, "ferme")
-        })
+        this.handleClickFerme(marker, item);
+        
         this.markers.addLayer(marker);
     }
 
+
+    handleClickFerme(fermeMarker, dataFerme ){
+
+        fermeMarker.on('click', (e) => {
+            this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                    iconSize: [32,50],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
+                }
+            })
+            fermeMarker.setIcon(new icon_R);
+            this.updateLastMarkerSelected(fermeMarker, "ferme")
+
+            if (screen.width < 991) {
+                let pathDetails = `/ferme/departement/${dataFerme.departementName}/${dataFerme.departement}/details/${dataFerme.id}`
+                getDetailHomeForMobile(pathDetails)
+            } else {
+                // getDetailsFerme(pathDetails, true)getDetailStation
+                getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true)
+            }
+
+        })
+    }
+
     settingSingleMarkerResto(item) {
-        const url = new URL(window.location.href);
+
         const departementName = item.depName
         const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
 
-        // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-        var pathDetails = "/restaurant/departement/" + departementName + "/" + item.dep + "/details/" + item.id;
         var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-        var marker = L.marker(L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png') });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png') , id: item.id });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
-        marker.on('click', (e) => {
-            const coordAndZoom = {
-                zoom: e.target.__parent._zoom + 1,
-                coord: e.target.__parent._cLatLng
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-            // window.location = pathDetails;
 
-            let screemMax = window.matchMedia("(max-width: 1000px)")
-            let screemMin = window.matchMedia("(min-width: 1000px)")
-            let remove = document.getElementById("remove-detail")
-
-            if (screemMax.matches) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                location.assign(pathDetails)
-            } else if (screemMin.matches) {
-
-                remove.removeAttribute("class", "hidden");
-                remove.setAttribute("class", "navleft-detail fixed-top")
-
-                var myHeaders = new Headers();
-                myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
-                fetch(`/restaurant/departement/${departementName}/${item.dep}/details/${item.id}`, myHeaders)
-                    .then(response => {
-                        return response.text()
-                    }).then(r => {
-                        document.querySelector("#content-details").innerHTML = null
-                        document.querySelector("#content-details").innerHTML = r
-
-                        document.querySelector("#close-detail-tous-resto").addEventListener("click", () => {
-                            document.querySelector("#content-details").style.display = "none"
-                        })
-                        document.querySelector("#content-details").removeAttribute("style")
-
-                    })
-
-            }
-
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png"
-                }
-            })
-            marker.setIconn(new icon_R);
-
-            this.updateLastMarkerSelected(marker, "resto")
-        })
-
+        this.handleClickResto(marker, item)
         this.markers.addLayer(marker);
     }
 
+    handleClickResto(restoMarker, dataResto){
+        
+        restoMarker.on('click', (e) => {
+            this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
+                    iconSize: [32,50],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
+                }
+            })
+            restoMarker.setIcon(new icon_R);
+            this.updateLastMarkerSelected(restoMarker, "resto")
+            
+            if (screen.width < 991) {
+                var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
+                location.assign(pathDetails)
+            } else {
+                getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true)
+            }
+        })
+
+    }
+
+
     updateLastMarkerSelected(marker, type) {
-        const url = new URL(window.location.href);
-        if (this.marker_last_selected) {
+        if (this.marker_last_selected && this.marker_last_selected !== marker ) {
+
             let icon_marker = "";
             if (this.marker_last_selected_type === "station") {
-                icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-station-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-station-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
             } else if (this.marker_last_selected_type === "ferme") {
-                icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
             } else if (this.marker_last_selected_type === "resto") {
-                icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
             }
 
             const icon_B = L.Icon.extend({
                 options: {
-                    iconUrl: icon_marker
+                    iconUrl: icon_marker,
+                    iconSize: [32,50],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
             })
-            this.marker_last_selected.setIconn(new icon_B)
+            this.marker_last_selected.setIcon(new icon_B)
         }
+
         this.marker_last_selected = marker;
         this.marker_last_selected_type = type;
+        
+        this.markers.refreshClusters();
     }
 
     addEventOnMap(map) {
-        map.on("zoomend dragend", async (e) => {
+        map.on("resize moveend", () => { 
+            const x= this.#getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.#getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
 
-            let bounds = map.getBounds();
-            let minll = bounds.getSouthWest();
-            let maxll = bounds.getNorthEast();
-            this.updateData(minll, maxll)
+            const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+
+            this.addPeripheriqueMarker(new_size)
         })
     }
 
-    async updateData(new_min_ll, new_max_ll) {
+    async addPeripheriqueMarker(new_size) {
         try {
-            const data = { "last": { min: this.last_minll, max: this.last_maxll }, "new": { min: new_min_ll, max: new_max_ll } };
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
 
-            if ((this.last_minll.lat > new_min_ll.lat) && (this.last_maxll.lng < new_max_ll.lng)) {
-                ///same action update
-
-                if (!this.is_online) {
-                    this.is_online = true;
-                    await this.addPeripheriqueMarker(data);
-                    this.last_minll = new_min_ll;
-                    this.last_maxll = new_max_ll;
-                }
-
-            }
-        } catch (e) {
-            console.log(e.message)
-        }
-    }
-
-    async addPeripheriqueMarker(data) {
-        const url = `/getLatitudeLongitudeForAll`;
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+            const response = await fetch(`/dataHome${param}`);
             let new_data = await response.json();
 
             new_data.ferme = new_data.ferme.filter(item => !this.default_data.ferme.some(j => j.id === item.id))
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
-
+         
             this.addMarker(this.checkeFilterType(new_data));
-            this.is_online = false;
 
-            // this.default_data= [ ...this.default_data, ...new_data ]
             this.default_data = {
                 ...this.default_data,
                 ferme: this.default_data.ferme.concat(new_data.ferme),
@@ -657,5 +566,12 @@ class MarckerClusterHome extends MapModule  {
     removeMarker() {
         this.markers.clearLayers();
         this.map.removeLayer(this.markers);
+    }
+
+    #getMax(max,min){
+        if(Math.abs(max)<Math.abs(min))
+            return {max:min,min:max} 
+        else
+           return {max:max,min:min}
     }
 }

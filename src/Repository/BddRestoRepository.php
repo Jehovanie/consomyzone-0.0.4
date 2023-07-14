@@ -339,8 +339,8 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function getAllOpenedRestos()
-    {
+    public function getAllOpenedRestos(){
+        
         return $this->createQueryBuilder("r")
             ->select("r.id,
                     r.denominationF,
@@ -460,8 +460,90 @@ class BddRestoRepository extends ServiceEntityRepository
      */
     public function getSomeDataShuffle($limits= 1000){
         return $this->createQueryBuilder("r")
+                    ->select("r.id,
+                        r.denominationF,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
                     ->orderBy('RAND()')
                     ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+
+    public function getRestoBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select("r.id,
+                        r.denominationF,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiY as lat,
+                        r.poiX as long")
+                    ->where("ABS(r.poiX) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.poiY) >=ABS(:miny)")
+                    ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy("r.id", 'ASC')
+                    ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();
     }

@@ -484,8 +484,62 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
      */
     public function getSomeDataShuffle($limits= 1000){
         return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
                     ->orderBy('RAND()')
                     ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+
+    
+    public function getRestoBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy('RAND()')
+                    ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();
     }

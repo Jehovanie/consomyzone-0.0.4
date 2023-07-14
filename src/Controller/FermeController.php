@@ -118,13 +118,9 @@ class FermeController extends AbstractController
 
 
     /**
-
      * @Route("/ferme/departement/{nom_dep}/{id_dep}" , name="specific_departement", methods={"GET"} )
-
      */
-
     public function getSpecifiqueDep(CodeapeRepository $codeApeRep, Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
-
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());

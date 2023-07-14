@@ -95,7 +95,6 @@ class RestaurantController extends AbstractController
         return new JsonResponse($datas, 200, [], true);
     }
 
-    //http://localhost:8000/restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
     #[Route("/restaurant/specific", name: "app_specific_dep_restaurant", methods: ["GET"])]
     public function getSpecificRestaurant(
         BddRestoRepository $bddResto,
@@ -265,6 +264,32 @@ class RestaurantController extends AbstractController
         // ], 200);
 
         return $this->render("shard/restaurant/details.js.twig", [
+            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+
+        ]);
+    }
+
+    /** 
+     * DON'T CHANGE THIS ROUTE: It's use in js file. 
+     * 
+     * @Route("/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="app_detail_restaurant" , methods="GET" )
+     */
+    public function detailRestaurant(
+        CodeapeRepository $codeApeRep,
+        BddRestoRepository $bddResto,
+        Status $status,
+        $nom_dep,
+        $id_dep,
+        $id_restaurant
+    ): Response {
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        return $this->render("restaurant/detail_resto.html.twig", [
             "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,

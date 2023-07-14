@@ -484,12 +484,102 @@ class FermeGeomRepository extends ServiceEntityRepository
      */
     public function getSomeDataShuffle($limits= 1000){
         return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme',
+                        'r.adresseFerme',
+                        'r.departement',
+                        'r.departementName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
                     ->orderBy('RAND()')
                     ->setMaxResults($limits)
                     ->getQuery()
                     ->getResult();
     }
 
+    
+    public function getRestoBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme as nom',
+                        'r.adresseFerme as add',
+                        'r.departement as dep',
+                        'r.departementName as depName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy('RAND()')
+                    ->setMaxResults(200)
+                    ->getQuery()
+                    ->getResult();
+    }
 
     //    /**
     //     * @return FermeGeom[] Returns an array of FermeGeom objects

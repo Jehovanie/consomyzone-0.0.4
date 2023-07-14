@@ -70,22 +70,13 @@ class StationController extends AbstractController
  
 
     /**
-
      * @Route("/station/departement/{depart_code}/{depart_name}" , name="specific_station_departement", methods={"GET"})
-
      */
-
     public function specifiStationDepartement(CodeapeRepository $codeApeRep, Status $status, Request $request, StationServiceFrGeomRepository $stationServiceFrGeomRepository, $depart_code, $depart_name)
-
     {
 
-        if (strlen($depart_code) === 1) {
-            $depart_code = "0" . $depart_code;
-        }
-
+        $depart_code = strlen($depart_code) === 1 ? "0" . $depart_code : $depart_code;
         $statusProfile = $status->statusFondateur($this->getUser());
-
-
 
         return $this->render("station/specificStationDepartement.html.twig", [
 
