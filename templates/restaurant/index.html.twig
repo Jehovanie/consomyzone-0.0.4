@@ -12,7 +12,14 @@
 	<script type="text/javascript"  src="{{asset('assets/js/search_localStorage.js')}}"></script>
     {# ////////////////////////////////////////////////////////////////////////////////////////// #}
 
-	<script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script>
+	{# <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
+
+    
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterResto.js') }}" defer></script>
+
+	<script type="text/javascript" src="{{ asset('assets/js/restaurant/marckerClusterResto_all_dep.js') }}" defer></script>
+
 	{# // <script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script> #}
     {# <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script> #}
     {# <script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script> #}
@@ -68,17 +75,16 @@
                     </g>
                 </svg>
             </div>
-            <div id="remove-detail" class="hidden responsif-none">
-                <div class="list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
-            </div>
+{# 
+            <div id="remove-detail-resto" class="hidden responsif-none">
+                <div class="list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content_detail_resto_js_jheo"></div>
+            </div> #}
+
+            {{ include('shard/restaurant/detail_resto_navleft.html.twig') }}
+            
             <div class="content_cart_map">
-                <div class="cart_map cart_map_js_jheo">
+                <div class="cart_map cart_map_js_jheo cart_map_js">
                     <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-                        {# <div class="content_box">
-                            <div class="box">
-                                <div class="under_box"></div>
-                            </div>
-                        </div> #}
                         <div class="containt">
                             <div class="word word-1">C</div>
                             <div class="word word-2">M</div>

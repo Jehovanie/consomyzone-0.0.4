@@ -1460,7 +1460,7 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false){
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
 
-    const id_selector = !inHome ? "#content-details-resto" : "#content_details_home_js_jheo";
+    const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
 
     document.querySelector(id_selector).innerHTML = null
     // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}

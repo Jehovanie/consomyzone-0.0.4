@@ -249,6 +249,18 @@ body {
     fill: #000;
 }
 
+#close-detail-resto{
+    position: absolute;
+    right: 23px;
+    z-index: 1000;
+    top: 10px;
+    font-size: 1.1rem;
+}
+
+#close-detail-resto:hover{
+    transform: scale(1.1);
+}
+
 #close-detail-ferme {
     position: absolute;
     right: 20px;

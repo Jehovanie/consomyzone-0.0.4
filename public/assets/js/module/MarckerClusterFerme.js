@@ -34,21 +34,11 @@ class MarckerClusterFerme extends MapModule {
 
     bindAction(){
         this.addMarker(this.data);
-        this.addEventOnMap(this.map);
         this.setNumberOfMarker();
         // this.generateAllCard();
     }
 
-    addEventOnMap(map){
-        map.on("resize zoomend dragend", (e) => {
-            const coordAndZoom = {
-                zoom: e.target._zoom,
-                coord:e.target._lastCenter
-            }
-            setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
-        })
-    }
-
+    
     setNumberOfMarker(){
         /// change the number of result in div
         if( document.querySelector(".content_nombre_result_js_jheo")){
