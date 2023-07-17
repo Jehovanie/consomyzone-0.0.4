@@ -1,3 +1,8 @@
+if( localStorage.getItem("type")){
+    rmDataInLocalStorage("type")
+}
+setDataInLocalStorage("type", "ferme");
+
 window.addEventListener('load', () => {
 	// addMapFerme()
     // setDataInLocalStorage("type", "ferme");

@@ -12,10 +12,11 @@ if( document.querySelector(".form_content_search_navbar_js")){
     }
 
     search_form.addEventListener("submit", (e) => {
-        const cles0 = document.querySelector(".input_search_type_js").value;
-        const cles1= document.querySelector(".input_mots_cle_js").value;
+        const cles0 = document.querySelector(".input_search_type_js").value.trim();
+        const cles1= document.querySelector(".input_mots_cle_js").value.trim();
+
         if( cles0=== "" && cles1 === "" ){
-            alert("Veuillez entre mots cles pour la recherche.")
+            alert("Veuillez entrer les mots clés pour la recherche!")
             e.preventDefault();
 
             if( cles0=== "" ){

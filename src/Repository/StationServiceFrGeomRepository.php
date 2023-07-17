@@ -406,6 +406,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select('p.id',
                     'p.adresse as add',
+                    'p.adresse as commune',
                     'p.departementCode as dep',
                     'p.departementName as depName',
                     'p.prixE85',

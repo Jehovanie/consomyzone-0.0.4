@@ -1,3 +1,8 @@
+if( localStorage.getItem("type")){
+    rmDataInLocalStorage("type")
+}
+setDataInLocalStorage("type", "station");
+
 //// HIDE DETAILS STATION POP UP
 if(document.querySelector("#close-detail-station")){
     document.querySelector("#close-detail-station").addEventListener("click", () => { 

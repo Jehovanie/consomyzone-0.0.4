@@ -418,33 +418,35 @@ class FermeGeomRepository extends ServiceEntityRepository
             );
 
         if( $mot_cles0 !=="" && $mot_cles1 === "" ){
-            // ->where('MATCH_AGAINST(a.clasificacion, a.expediente, a.fecha, a.observaciones, a.signatura) AGAINST(:searchterm boolean)>0')
-            $qb =  $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
-                    ->orWhere("p.departement LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0")
-                    // ->orWhere("p.nomFerme LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
-                    ->orWhere("p.codePostal LIKE :cles0")
-                    // ->orWhere("p.motDuFermier LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.motDuFermier) AGAINST( :cles0 boolean) > 0")
-                    // ->orWhere("p.nomProprietaire LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
-                    ->setParameter('cles0', '%'.$mot_cles0.'%');
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.nomFerme LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                $qb =  $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
+                          ->orWhere("p.nomFerme LIKE :cles0")
+                          ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0")
+                          //->orWhere("MATCH_AGAINST(p.motDuFermier) AGAINST( :cles0 boolean) > 0")
+                          ->orWhere("p.nomProprietaire LIKE :cles0")
+                          ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
+                          ->setParameter('cles0', '%'.$mot_cles0.'%');
+            }
+            
 
         }else if ( $mot_cles0 === "" && $mot_cles1 !== "" ){
-            if( strlen($mot_cles1) === 2 ){
+            if( strlen($mot_cles1) <= 2 ){
                 $qb =  $qb->where("p.departement LIKE :cles1")
                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
                 $qb =  $qb->where("MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.departement LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.codePostal LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("MATCH_AGAINST(p.motDuFermier) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                          ->orWhere("p.adresseFerme LIKE :cles1")
+                          ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
+                          ->orWhere("p.departementName LIKE :cles1")
+                          ->orWhere("p.nomProprietaire LIKE :cles1")
+                          ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles1 boolean) > 0")
+                          ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                          ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
         }else{
@@ -458,6 +460,17 @@ class FermeGeomRepository extends ServiceEntityRepository
                 ->orWhere("(p.departementName LIKE :cles0) OR (p.departementName LIKE :cles1)")
                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+            /*$qb = $qb->where("p.nomFerme LIKE :cles0")
+                ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
+                ->orWhere("p.adresseFerme LIKE :cles1")
+                ->orWhere("MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0")
+                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (p.adresseFerme LIKE :cles1 )")
+                ->orWhere("(p.denominationF LIKE :cles0) AND (MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(p.denominationF LIKE :cles0) AND (CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 )")
+                ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                ->setParameter('cles1', '%'. $mot_cles1. '%' );*/
         }
         
         // $qb = $qb->setFirstResult($page_current)

@@ -1686,7 +1686,7 @@ class TributTController extends AbstractController
 
         $userId = $this->getUser()->getId();
 
-        $userEmail = $this->getUser()->getEmail();
+        //$userEmail = $this->getUser()->getEmail();
 
         $data = json_decode($request->getContent(), true);
 
@@ -1710,8 +1710,6 @@ class TributTController extends AbstractController
             $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
 
             $mailService->sendEmail(
-                $userEmail,
-                $from_fullname,
                 $principal,
                 "Amis",
                 $object,
@@ -1737,8 +1735,6 @@ class TributTController extends AbstractController
             $tribuTService->addMemberTemp($table, $principal);
             // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
             $mailService->sendEmail(
-                $userEmail,
-                $from_fullname,
                 $principal,
                 "Amis",
                 $object,
@@ -1759,8 +1755,6 @@ class TributTController extends AbstractController
                     $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
         
                     $mailService->sendEmail(
-                        $userEmail,
-                        $from_fullname,
                         $c,
                         "Amis",
                         $object,
@@ -1788,8 +1782,6 @@ class TributTController extends AbstractController
                     
                     // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
                     $mailService->sendEmail(
-                        $userEmail,
-                        $from_fullname,
                         $c,
                         "Amis",
                         $object,

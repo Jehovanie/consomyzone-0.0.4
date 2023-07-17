@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Service\SortResultService;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
+use App\Service\StringTraitementService;
 use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -167,11 +169,13 @@ class HomeController extends AbstractController
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
-        $type = null
+        $type = null,
+        SortResultService $sortResultService,
+        StringTraitementService $stringTraitementService
     ){
 
-        $cles0 = $request->query->get("cles0") ? trim($request->query->get("cles0")) : "";
-        $cles1 = $request->query->get("cles1") ? trim($request->query->get("cles1")) : "";
+        $cles0 = $request->query->get("cles0") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles0"))) : "";
+        $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
         $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
 
         $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tous"  );
@@ -215,6 +219,21 @@ class HomeController extends AbstractController
             ], 200);
         }
 
+        //dd($results[0]);
+
+        $resultSort = array();
+
+        $resultSort0 = $sortResultService->shortResult($cles0, $cles1, $results);
+
+        //dd($resultSort0);
+
+        $nombreResult = $results[1];
+
+        $type = $results[2];
+
+        array_push($resultSort, [0 => $resultSort0, 1 => $nombreResult, 2 => $type]);
+
+        $results = $resultSort[0];
 
         return $this->render("home/search_result.html.twig", [
             "results" => $results,
@@ -224,4 +243,5 @@ class HomeController extends AbstractController
             "page" => $page
         ]);
     }
+
 }
