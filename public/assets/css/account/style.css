@@ -3368,7 +3368,7 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   }
 }
 
-.active{
-    background-color: #3056D3;
-    color: white;
-  }
+.list-nav-left:is(:link,:active,:visited).active{
+  background-color: #3056D3;
+  color: white;
+}

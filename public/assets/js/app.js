@@ -824,3 +824,5 @@ if (document.querySelector(".tribu_t")) {
         // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
     }
 }
+
+
