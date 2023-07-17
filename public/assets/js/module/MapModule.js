@@ -31,9 +31,21 @@ class MapModule{
 
 
     getUserLocation(){
-        return new Promise((resolve, reject) =>
-            navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
-        );
+        console.log(typeof(localStorage.getItem("userLocate")))
+        if( !localStorage.getItem("userLocate")){
+            localStorage.setItem("userLocate", false)
+            if( confirm("Souhaitez-vous que nous utiliser votre position ?") ){
+                localStorage.setItem("userLocate", true);
+                return new Promise((resolve, reject) =>
+                    navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
+                );
+            }
+        }else if( localStorage.getItem("userLocate").toString()  === "true"){
+            return new Promise((resolve, reject) =>
+                navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
+            );
+        }
+        return false;
     }
 
     async createMap(){
