@@ -11,11 +11,12 @@
 
 {% block javascripts %}
 	<script type="text/javascript"  src="{{asset('assets/js/search_localStorage.js')}}"></script>
+
 	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
-	<script src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
+	<script type="text/javascript" src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
-	<script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
-	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
+	<script type="text/javascript" src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
+	<script type="text/javascript" src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
 {% endblock %}
 
 

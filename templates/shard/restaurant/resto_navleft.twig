@@ -52,6 +52,8 @@
     </nav> #}
     <div class="container-fluid list-depart">
         <div class="head-left">
+            
+            {# entete list department #}
             <div class="row">
                 <div class="col-md-2">
                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
@@ -82,6 +84,8 @@
                         </g>
                     </svg>
                 </div>
+
+                {# content result number  #}
                 <div class="col-md-8">
                     <p>
                         Restaurants à Paris.
@@ -89,6 +93,8 @@
                     </p>
 
                 </div>
+
+                {# hide liste  #}
                 <div class="col-md-2">
                     <i class="fa-solid fa-x" id="close-list-depart-resto"></i>
                 </div>
@@ -97,6 +103,8 @@
                     <input class="input-grey-rounded" id="recherche-input-restaurant-tom-js" type="text" placeholder="Recherche par departement ">
                 </div> #}
             </div>
+
+            {# list department #}
             <div class="container list-depart-all" id="Scrollbar">
                 <div id="list_departements">
                     {% for departement in departements %}
@@ -395,7 +403,6 @@
                     {% endfor %} 
                 </div>
             </div>
-            
         </div>
     </div>
 </div>

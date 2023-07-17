@@ -1144,12 +1144,10 @@ function addRestaurantToMap(nom_dep, code_dep) {
 
                     let marker = L.marker(
                         L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)),
-                        { 
+                        {
                             icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
-                           
                             cleNom: item.denominationF,
                             id: item.id
-
                         }
                     );
 
@@ -1226,12 +1224,12 @@ function addRestaurantToMap(nom_dep, code_dep) {
 
                 map.addLayer(markers);
 
-                map.on("resize zoomend dragend", (e) => {
+                map.on("zoom dragend", (e) => {
                     const coordAndZoom = {
-                        zoom: e.target._zoom,
-                        coord: e.target.getCenter()
+                        zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
+                        coord: e.target._lastCenter ? e.target._lastCenter : { lat: this.latitude, lng: this.longitude }
                     }
-                    setDataInLocalStorage("coord", JSON.stringify(coordAndZoom))
+                    setDataInLocalStorage("memoryCenter", JSON.stringify(coordAndZoom))
                 })
             
                 /// mise a jour de liste on left

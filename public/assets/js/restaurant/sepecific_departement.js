@@ -85,12 +85,7 @@ centerss[75] = {
 
 window.addEventListener('load', () => {
 
-    const geos = []
-    document.querySelectorAll("#all_ferme_in_dep > div > a").forEach(item => {
-        item.onclick = () => {
-            localStorage.removeItem("coord")
-        }
-    })
+    const geos = [];
 
     if (window.location.href.includes("/restaurant/arrondissement/specific")) {
         const dep = new URLSearchParams(window.location.href).get("id_dep")
@@ -529,12 +524,22 @@ window.addEventListener('load', () => {
                     maxZoom: 20
                 })
 
-                rmDataInLocalStorage("coordResto");
-
                 const zoom = centerss[parseInt(dep)].zoom;
                 const centered = L.latLng(centerss[parseInt(dep)].lat, centerss[parseInt(dep)].lng);
+                const memoryCenter= localStorage.getItem("memoryCenter") ? JSON.parse(localStorage.getItem("memoryCenter")) : null;
+                
+                map = L.map('map', 
+                    { 
+                        zoomControl: false,
+                        center:dep ? L.latLng(centers[this.id_dep].lat, centers[this.id_dep].lng) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(centers[this.id_dep].lat, centers[this.id_dep].lng)),
+                        zoom: zoom, 
+                        layers: [tiles] 
+                    }
+                );
 
-                map = L.map('map', { center: centered, zoom: zoom, layers: [tiles] });
+                L.control.zoom({
+                    position: 'bottomright'
+                }).addTo(this.map);
                 
 
                 L.geoJson(geos, {

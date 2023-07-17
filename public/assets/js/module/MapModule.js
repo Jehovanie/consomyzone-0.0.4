@@ -31,7 +31,6 @@ class MapModule{
 
 
     getUserLocation(){
-        console.log(typeof(localStorage.getItem("userLocate")))
         if( !localStorage.getItem("userLocate")){
             localStorage.setItem("userLocate", false)
             if( confirm("Souhaitez-vous que nous utiliser votre position ?") ){
@@ -40,7 +39,7 @@ class MapModule{
                     navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
                 );
             }
-        }else if( localStorage.getItem("userLocate").toString()  === "true"){
+        }else if( localStorage.getItem("userLocate").toString() === "true"){
             return new Promise((resolve, reject) =>
                 navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
             );
