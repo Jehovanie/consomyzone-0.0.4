@@ -318,3 +318,21 @@
     /******/
     /******/
 })();
+
+if (document.getElementById("content-nav-left")) {
+    // Get the container element
+    var btnContainer = document.getElementById("content-nav-left");
+
+    // Get all buttons with class="btn" inside the container
+    var listNav = btnContainer.getElementsByClassName("list-nav-left");
+
+    // Loop through the buttons and add the active class to the current/clicked button
+    for (var list = 0; list < listNav.length; list++) {
+    listNav[list].addEventListener("click", function() {
+        var current = document.getElementsByClassName("active");
+        current[0].className = current[0].className.replace(" active", "");
+        this.className += " active";
+    });
+}
+}
+

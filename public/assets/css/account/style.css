@@ -3367,3 +3367,8 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
     width: 100px;
   }
 }
+
+.active{
+    background-color: #3056D3;
+    color: white;
+  }
