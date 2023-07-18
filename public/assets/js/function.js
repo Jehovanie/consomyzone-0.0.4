@@ -1366,6 +1366,9 @@ function getDetailStation(depart_name, depart_code, id, inHome = false) {
 
     const id_selector = !inHome ? "#content-details-station" : "#content_details_home_js_jheo";
     const linkGetDetails= `/station/departement/${depart_name}/${depart_code}/details/${id}`;
+
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading()
+
     fetchDetails(id_selector,linkGetDetails)
 
     let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home");
@@ -1401,12 +1404,17 @@ function fetchDetails(selector,linkGetDetail) {
         .then(response => {
             return response.text()
         }).then(r => {
-
             const parser = new DOMParser();
             const htmlDocument = parser.parseFromString(r, "text/html");
 
             if( htmlDocument.querySelector(".content_body_details_jheo_js")){
+
+                if( document.querySelector(".mini_chargement_content_js_jheo")){
+                    document.querySelector(".mini_chargement_content_js_jheo").remove()
+                }
+
                 document.querySelector(selector).innerHTML = r
+                
             }else{
                 document.querySelector(selector).innerHTML = `
                     <div class="alert alert-danger d-flex align-items-center alert_details_marker_position" role="alert">
@@ -1431,7 +1439,7 @@ function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
 
     const id_selector = !inHome ? "#content-details-ferme" : "#content_details_home_js_jheo";
 
-    document.querySelector(id_selector).innerHTML = null
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading()
 
     const pathDetails = `/ferme/departement/${nameDepart}/${codeDepart}/details/${idFerme}`
     fetchDetails(id_selector, pathDetails);
@@ -1462,7 +1470,8 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false){
 
     const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
 
-    document.querySelector(id_selector).innerHTML = null
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading()
+
     // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
     const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`
     fetchDetails(id_selector, pathDetails);
@@ -1919,4 +1928,17 @@ function toaster(type,message,container) {
     container.appendChild(div);
     div.style.background= color
     // setTimeout(container.removeChild(div),3000)
+}
+
+
+function createMiniCMZloading(){
+    return `
+        <div class="mini_chargement_content mini_chargement_content_js_jheo" id="toggle_chargement">
+            <div class="containt">
+                <div class="word word-1">C</div>
+                <div class="word word-2">M</div>
+                <div class="word word-3">Z</div>
+            </div>
+        </div>
+    `
 }

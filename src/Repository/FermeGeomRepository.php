@@ -59,8 +59,8 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.id',
                 'p.nomFerme',
                 'p.adresseFerme',
-                'p.latitude',
-                'p.longitude',
+                'p.latitude as lat',
+                'p.longitude as long',
                 'p.addBy'
             )
             // ->setMaxResults(10)

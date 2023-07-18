@@ -1146,3 +1146,16 @@ input::-ms-clear {
     margin-top: 70%;
     text-align: center;
 }
+
+.mini_chargement_content {
+    position: absolute;
+    top: 48%;
+    left: 42%;
+}
+
+.mini_chargement_content  .word{
+    display: inline-block;
+    padding: 5px;
+    color: white;
+    font-size: 15px;
+}
