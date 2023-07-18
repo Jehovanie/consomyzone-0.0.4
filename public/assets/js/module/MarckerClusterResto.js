@@ -9,7 +9,7 @@ class MarckerClusterResto extends MapModule  {
         try{
             this.createMarkersCluster();
 
-            const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/Coord/All/Restaurant`;
+            const link =( this.nom_dep && this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}` : `/Coord/All/Restaurant`;
             const response= await fetch(link);
             this.default_data= await response.json();
             this.data= this.default_data; 
@@ -63,8 +63,16 @@ class MarckerClusterResto extends MapModule  {
 
     bindAction(){
         this.addMarker(this.data);
-        // this.setNumberOfMarker();
+        this.setNumberOfMarker();
         // this.generateAllCard();
+    }
+
+    getAlreadyInit(){
+        return this.ALREADY_INIT;
+    }
+
+    setAlreadyInit(val){
+        this.ALREADY_INIT = val;
     }
 
 
@@ -93,7 +101,7 @@ class MarckerClusterResto extends MapModule  {
 
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
                         iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
@@ -106,7 +114,7 @@ class MarckerClusterResto extends MapModule  {
                 if (this.marker_last_selected && this.marker_last_selected != marker ) {
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  url.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
                             iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],
@@ -134,5 +142,48 @@ class MarckerClusterResto extends MapModule  {
 
         })
         this.map.addLayer(this.markers);
+    }
+
+    setNumberOfMarker(){
+        /// change the number of result in div
+        if( document.querySelector(".content_nombre_result_js_jheo")){
+            document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
+        }
+
+        /// change the number of result in div for the left translate
+        if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
+            document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+        }
+    }
+
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                marker.fireEvent('click');  
+            }
+        });
+    }
+
+    filterByFirstLetterOnName(letter){
+        const new_data= [];
+        this.removeMarker();
+        
+        this.default_data.forEach(item => {
+            if(item.denominationF.toLowerCase().charAt(0) === letter.toLowerCase()){
+                new_data.push(item)
+            }
+        })
+        // alert(new_data.length)
+        this.addMarker(new_data)
+    }
+
+    removeMarker(){
+        this.markers.clearLayers();
+        this.map.removeLayer(this.markers);
+    }
+
+    resetToDefaultMarkers(){
+        this.removeMarker();
+        this.addMarker(this.default_data)
     }
 }

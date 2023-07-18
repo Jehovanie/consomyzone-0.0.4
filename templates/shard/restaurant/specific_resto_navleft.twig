@@ -38,49 +38,6 @@
                             </a>
                         {% endif %}
                     </div>
-                    {# <div class="col-md-7">
-                       
-                        <a class="logo" href="{{path('app_home')}}">
-                            <img src="{{asset('assets/image/logo.png')}}" alt="" >
-                        </a>
-                    </div>
-                    <div class="col-md-2 mt-4 me-auto" id="close-navleft">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
-                        width="5vw" height="5vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
-                            stroke="none">
-                                <path d="M634 986 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M857 994 c-4 -4 -7 -22 -7 -40 0 -37 21 -49 76 -42 27 3 29 6 29 43
-                                    l0 40 -45 3 c-25 2 -49 0 -53 -4z"/>
-                                <path d="M534 886 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M754 886 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M414 776 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M634 776 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M304 676 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M532 682 c-8 -6 -12 -23 -10 -43 3 -34 3 -34 53 -34 l50 0 0 40 c0
-                                    40 0 40 -40 43 -22 1 -46 -2 -53 -6z"/>
-                                <path d="M414 556 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M642 562 c-8 -6 -12 -23 -10 -43 3 -34 3 -34 53 -34 l50 0 0 40 c0
-                                    40 0 40 -40 43 -22 1 -46 -2 -53 -6z"/>
-                                <path d="M524 466 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M752 471 c-8 -5 -12 -22 -10 -42 3 -34 3 -34 53 -34 50 0 50 0 53 34
-                                    4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
-                                <path d="M644 356 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                                <path d="M872 361 c-8 -5 -12 -22 -10 -42 3 -34 3 -34 53 -34 50 0 50 0 53 34
-                                4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
-                            </g>
-                        </svg>
-                    </div> #}
                     <div class="col-2 mt-5">
                         <i class="fa-solid fa-x" id="close-list-depart-resto-spec" ></i>
                     </div>
@@ -122,16 +79,16 @@
                         </g>
                     </svg>
                 </div>
+
                 <div class="col-md-8">
                     <p  class="titre nombre_de_resultat" data-toggle-deparement="{{nom_dep}}">
                         Les Restaurants du département:
-                        <span class="fw-bolder">{{nom_dep}}, </span>
-                        <span class="nombre" id="resultTot">{{nomber_resto}}</span> résultats
+                        <span class="fw-bolder">{{nom_dep}}, </span><br>
+                        <span class="nombre content_nombre_result_js_jheo" id="resultTot">{{nomber_resto}}</span> résultats
                     </p>
-                    
                 </div>
 
-                <div class="dropdown col-md-2">
+                {# <div class="dropdown col-md-2">
                     <a class="btn dropdown-toggle" title="Tire par" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
                     </a>
@@ -143,10 +100,11 @@
                             <a class="dropdown-item" onclick='reverseList(this)'>Décroissant</a>
                         </li>
                     </ul>
-                </div>
+                </div> #}
 
                 {# pagination content #}
-                <div class="pagination">
+                {# <div class="pagination"> #}
+                <div class="pagination_alphabet pagination_alphabet_jheo_js">
                     <ul>
                         <!--pages or li are comes from javascript -->
                         
@@ -155,20 +113,24 @@
             </div>
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
-                    <ul>
+                    <ul  class="content_list_resto_spec_js_jheo">
                         {% set i = 1 %}
-                        {% set display = "" %}
-                        {% for restaurant in restaurants %}
-                            {% if i > 10 %}
+                        {# {% set display = "" %} #}
+                        {% set stateClass = "" %}
 
-                            {% set display = "none" %}
-                                
+                        {% for restaurant in restaurants %}
+
+                            {% if i > 10 %}
+                                {# {% set display = "none" %} #}
+                                {% set stateClass = "hidden" %}
                             {% endif %}
-                            <li class="card-list miseho" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')">
+
+                            {# <li class="card-list miseho" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')"> #}
+                            <li class="card-list miseho name_resto_js_jheo {{stateClass}}"  onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
                                 <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
 
                                     <div class="col-md-9">
-                                        <p class="text-center fw-bold fs-6">{{restaurant.denominationF}} </p>
+                                        <p class="text-center fw-bold fs-6 id_departement_js_jheo">{{restaurant.denominationF}} </p>
                                         <p>
                                             <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                             {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
@@ -197,9 +159,12 @@
                                     </div>
                                 </div>
                             </li>
+
                             {% set i = i+1 %}
                         {% endfor %}
                     </ul>
+                    
+                    {# pagination list #}
                     <div aria-label="..." class="mx-auto ms-4">
                         <ul class="pagination">
                             <li class="page-item prec_btn disabled" onclick="previousData(this)">
@@ -217,5 +182,5 @@
         </div>
     </div>
 </div>
-{% include 'shard/restaurant/detail_resto_navleft.twig' %}
+{# {% include 'shard/restaurant/detail_resto_navleft.twig' %} #}
 

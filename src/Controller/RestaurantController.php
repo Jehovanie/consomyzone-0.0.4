@@ -105,8 +105,11 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
+
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+
         $resultCount = count($datas);
+
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("restaurant/specific_departement.html.twig", [
@@ -162,7 +165,9 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
+
         $datas = $code->getAllCodinsee($codeDep);
+        
         $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
         $resultCount = count($resto);
         // dump($resultCount);

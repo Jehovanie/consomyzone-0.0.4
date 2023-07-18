@@ -6,9 +6,11 @@ class MapModule{
 
     constructor(idDep= null,nomDep, map_for_type="tous"){
         this.currentUrl= new URL(window.location.href);
+
         ////default values but these distroy when we get the user position
         this.latitude= 46.61171462536897;
         this.longitude= 1.8896484375000002;
+
         this.defaultZoom= 6;
         this.zoomDetails= 15;
         this.geos= [];
@@ -17,7 +19,6 @@ class MapModule{
         this.id_dep= idDep ? parseInt(idDep) : null;
         this.nom_dep= nomDep ? nomDep : null;
         this.map= null;
-
     }
 
     initTales(){
@@ -109,7 +110,7 @@ class MapModule{
 
 
     settingLatLong(){
-        if( this.id_dep){
+        if( this.id_dep ){
             this.latitude= centers[this.id_dep].lat;
             this.longitude= centers[this.id_dep].lng;
             this.defaultZoom= centers[this.id_dep].zoom;
