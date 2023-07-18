@@ -3396,6 +3396,12 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   font-style: italic;
 }
 
+.head-pub .name-content .p-title span{
+  font-size: 12pt;
+  font-style: italic;
+  color: #000;
+}
+
 .head-pub .status-content{
   margin-top: -15px;
   margin-left: 10px;
@@ -3426,4 +3432,35 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   font-style: italic;
   color: #969696;
   margin-left: 15px;
+}
+
+.reaction-icon{
+  padding: 15px;
+}
+
+.fa-regular.fa-comment.comment{
+  margin-left: 15px;
+  margin-top: 3px;
+}
+
+.name-content .form-pub{
+  margin: 10px;
+  color: #9b9b9b;
+  font-style: italic;
+}
+
+.icon-piece-join{
+  color: #6b6b6b;
+}
+
+.icon-piece-join i{
+  margin-bottom: 10px;
+  margin-top: -5px;
+  margin-left: 15px;
+}
+
+.apropos-tribu-g{
+  position: fixed;
+  top: 165px;
+  right: 0;
 }
