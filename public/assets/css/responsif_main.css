@@ -96,7 +96,9 @@
         /* transition: all 0.3s ease; */
     }
 
-    
+    .card-pub-actu img {
+        width: 62vw;
+    }
 
     .content_box {
         height: 12%;
@@ -1031,7 +1033,9 @@
 /* pc */
 
 @media screen and (min-width:1020px) and (max-width: 1230px) {
-
+    .card-pub-actu img {
+            width: 52vw;
+        }
     .content_list {
         margin-left: -15px;
     }
@@ -1090,6 +1094,10 @@
 }
 
 @media screen and (min-width:1231px) and (max-width: 1304px) {
+
+    .card-pub-actu img {
+            width: 52vw;
+        }
     .form__input_time {
         width: 145px;
     }
@@ -1220,6 +1228,10 @@
 }
 
 @media screen and (min-width:1440px) and (max-width: 1550px) {
+    .card-pub-actu img {
+        width: 52vw;
+    }
+
     .result_container_resto_spec .navbar-light-left {
         margin-top: 1rem !important;
     }
@@ -1358,6 +1370,14 @@
 }
 
 @media screen and (min-width: 1551px) and (max-width: 1679px) {
+
+    .card-pub-actu img {
+        width: 52vw;
+    }
+    .head-pub .param-content i {
+        margin-left: 460px !important;
+    }
+
     .container-invitation {
         margin-left: 355px !important;
     }
@@ -1471,6 +1491,12 @@
 }
 
 @media screen and (min-width: 1680px) and (max-width: 1799px){
+    .card-pub-actu img {
+        width: 52vw;
+    }
+    .head-pub .param-content i {
+            margin-left: 470px !important;
+        }
     .container-invitation {
         margin-left: 355px !important;
     }
@@ -1592,6 +1618,13 @@
 }
 
 @media screen and (min-width: 1800px) and (max-width: 1899px) {
+    .card-pub-actu img {
+        width: 65vw;
+    }
+
+    .head-pub .param-content i {
+        margin-left: 830px;
+    }
     .container-invitation {
         margin-left: 355px !important;
     }
@@ -1714,7 +1747,16 @@
 
 
 @media screen and (min-width: 1900px){
+    .card-pub-actu img {
+        width: 65vw;
+    }
+    .head-pub .param-content i {
+        margin-left: 840px !important;
+    }
 
+    .\32xl\:ud-max-w-230 {
+        max-width: 80.5rem !important;
+    }
     .content_right_actualite .exprime-pub{
         margin-top: 340px !important;
     }
