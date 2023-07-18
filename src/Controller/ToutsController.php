@@ -303,7 +303,7 @@ class ToutsController extends AbstractController
             ]);
         }
 
-        $taille= 3000;
+        $taille= 2000;
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),

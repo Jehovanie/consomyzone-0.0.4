@@ -323,8 +323,10 @@ class MarckerClusterHome extends MapModule  {
             new_data.ferme = new_data.ferme.filter(item => !this.default_data.ferme.some(j => j.id === item.id))
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
-         
-            this.addMarker(this.checkeFilterType(new_data));
+
+            const result= this.checkeFilterType(new_data);
+
+            this.addMarker(result);
 
             this.default_data = {
                 ...this.default_data,
@@ -357,8 +359,8 @@ class MarckerClusterHome extends MapModule  {
         this.generate_filter(content_filter, "filterFerme", "Ferme")
         this.generate_filter(content_filter, "filterStation", "Station")
         this.generate_filter(content_filter, "filterResto", "Réstaurant")
-        this.generate_filter(content_filter, "filterVehicule", "Véhicule", true, true)
-        this.generate_filter(content_filter, "filterCommerce", "Commerce", true, true)
+        // this.generate_filter(content_filter, "filterVehicule", "Véhicule", true, true)
+        // this.generate_filter(content_filter, "filterCommerce", "Commerce", true, true)
 
         if (screen.width < 991) {
             document.querySelector(".content_filter_global_modal_jheo_js").appendChild(content_filter)
@@ -448,7 +450,9 @@ class MarckerClusterHome extends MapModule  {
     }
 
     changeType(e) {
-        document.querySelector(".btn_close_modal_filter_jheo_js")?.click();
+        if(document.querySelector(".btn_close_modal_filter_jheo_js")){
+            document.querySelector(".btn_close_modal_filter_jheo_js").click();
+        }
 
         if (e.target.name === "filterTous") {
             if (document.querySelector("#filterTous").checked) {
@@ -462,7 +466,8 @@ class MarckerClusterHome extends MapModule  {
             }
         }
 
-        const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
+        // const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
+        const lists = ["filterFerme", "filterStation", "filterResto"];
 
         let result_temp = [];
         let results = null;
@@ -470,7 +475,6 @@ class MarckerClusterHome extends MapModule  {
             results = this.handleOnlyStateCheckbox(result_temp, item)
             result_temp = results;
         }
-
         if (results.every(item => item.state === 1)) {
             document.querySelector("#filterTous").checked = true;
         } else {
@@ -483,7 +487,11 @@ class MarckerClusterHome extends MapModule  {
     checkeFilterType(data) {
         let results = null;
         if(document.querySelector(".content_filter_js_jheo")){
-            const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
+
+            /// these is id on the option field 
+            // const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
+            const lists = ["filterFerme", "filterStation", "filterResto"];
+
             let result_temp = [];
             for (let item of lists) {
                 results = this.handleOnlyStateCheckbox(result_temp, item)
@@ -520,7 +528,7 @@ class MarckerClusterHome extends MapModule  {
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
             this.map.setView(L.latLng(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng))
-            this.map.setZoom(centers[parseInt(code_dep)].zoom +2 )
+            this.map.setZoom(centers[parseInt(code_dep)].zoom)
         }
         this.filterDataByDep();
     }
@@ -545,20 +553,19 @@ class MarckerClusterHome extends MapModule  {
 
     filterDataByDep() {
         const data_filtered = this.checkeFilterType(this.default_data);
-        console.log(data_filtered)
+
         this.removeMarker();
-        if( data_filtered.ferme.length > 0  && data_filtered.station.length > 0 ){
+
+        if( data_filtered.ferme.length > 0  || data_filtered.station.length > 0 ||  data_filtered.resto.length > 0 ){
             this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
             this.addMarker(this.data)
-            console.log("not fetch")
-        }else{
-            let bounds = this.map.getBounds();
-            let minll = bounds.getSouthWest();
-            let maxll = bounds.getNorthEast();
-            const data = { "last": { min: minll, max:maxll}, "new": {} };
-            this.addPeripheriqueMarker(data)
         }
 
+        const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+
+        this.addPeripheriqueMarker(new_size)
     }
 
     removeMarker() {
