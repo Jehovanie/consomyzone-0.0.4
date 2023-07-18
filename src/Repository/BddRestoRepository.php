@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\BddResto;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Service\DicoRestoForSearchService;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<BddResto>
@@ -144,7 +145,7 @@ class BddRestoRepository extends ServiceEntityRepository
 
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
-
+        $dicoResto = new DicoRestoForSearchService();
         $page_current =$page > 1 ? $page * 10 +1  : 0;
         // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
         //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
@@ -186,14 +187,45 @@ class BddRestoRepository extends ServiceEntityRepository
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
                         
         if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
             if( strlen($mot_cles0) <= 2 ){
                 
                 $qb = $qb->where("p.denominationF LIKE :cles0")
                          ->setParameter('cles0', '%'. $mot_cles0. '%' );
             }else{
-                $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
-                         ->orWhere("p.denominationF LIKE :cles0")
-                         ->setParameter('cles0', '%' . $mot_cles0. '%');
+                if($dicoResto->isCafe($mot_cles0)){
+                    $qb = $qb->where('p.cafe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isThe($mot_cles0)){
+                    $qb = $qb->where('p.salonThe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCuisine($mot_cles0)){
+                    $qb = $qb->where('p.cuisineMonde = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBrasserie($mot_cles0)){
+                    $qb = $qb->where('p.brasserie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBar($mot_cles0)){
+                    $qb = $qb->where('p.bar = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCreperie($mot_cles0)){
+                    $qb = $qb->where('p.creperie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isFastFood($mot_cles0)){
+                    $qb = $qb->where('p.fastFood = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isPizzeria($mot_cles0)){
+                    $qb = $qb->where('p.pizzeria = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                    $qb = $qb->where('p.boulangerie = :identifier')
+                             ->setParameter('identifier', true);
+                }else{
+
+                    $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
+                             ->orWhere("p.denominationF LIKE :cles0")
+                             ->setParameter('cles0', '%' . $mot_cles0. '%');
+                }
             }
                 
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
@@ -266,7 +298,6 @@ class BddRestoRepository extends ServiceEntityRepository
         //     ->getQuery();
 
         $qb = $qb->getQuery();
-            
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();

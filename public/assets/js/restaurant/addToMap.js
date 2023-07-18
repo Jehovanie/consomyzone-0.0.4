@@ -1,8 +1,4 @@
 ///we use this variable to keep track for user search
-if( localStorage.getItem("type")){
-    rmDataInLocalStorage("type")
-}
-setDataInLocalStorage("type", "restaurant");
 
 window.addEventListener('load', () => {
     

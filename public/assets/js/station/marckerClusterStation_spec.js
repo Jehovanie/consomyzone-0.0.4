@@ -1,10 +1,6 @@
 //// check screen to add the screen filter. ////
 checkScreen();
 
-//// set type use if the user wants to search one.
-setDataInLocalStorage("type", "station");
-
-
 //// get information important to the station.
 const parsedUrl = new URL(window.location.href);
 const type= parsedUrl.searchParams.get("type") ? parsedUrl.searchParams.get("type") : "tous" /// type of esscence
