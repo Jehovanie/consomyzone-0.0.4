@@ -328,8 +328,6 @@ if (document.querySelector(".list-nav-left")) {
         links.forEach((link) => {
             if (link.href.includes(`${activPage}`)) {
                 link.classList.add("active");
-            }else if (!link.href.includes(`${activPage}`)) {
-                link.classList.remove("active");
             }
         });
     }

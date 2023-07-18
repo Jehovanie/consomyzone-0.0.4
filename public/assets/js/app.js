@@ -826,3 +826,30 @@ if (document.querySelector(".tribu_t")) {
 }
 
 
+/**
+ * active navigation bar map
+ */
+if (document.querySelector(".list-nav-bar")) {
+    const activPage = window.location.pathname
+    const links = document.querySelectorAll('.list-nav-bar');
+    const specFerm = document.querySelector('.result_container_ferme_spec_js')
+    const specReto = document.querySelector('.result_container_resto_spec_js')
+    const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
+    const specStation = document.querySelector('.result_container_station_spec_js')
+    
+    if (links.length) {
+        links.forEach((link) => {
+            if (link.href.includes(`${activPage}`)) {
+                link.classList.add("active");
+            } else if (specFerm) {
+                document.querySelector("#ferme-page").classList.add("active");
+            } else if (specReto) {
+                document.querySelector("#resto-page").classList.add("active");
+            } else if (specRestoArrond) {
+                document.querySelector("#resto-page").classList.add("active");
+            } else if (specStation) {
+                document.querySelector("#station-page").classList.add("active");
+            }
+        });
+    }
+}

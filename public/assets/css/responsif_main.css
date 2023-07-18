@@ -1047,9 +1047,9 @@
         margin-top: 1rem !important;
     }
 
-    .spec-dep {
+    /* .spec-dep {
         margin-top: 115px;
-    }
+    } */
 
     .result_container_ferme_spec .navbar-light-left {
         margin-top: 1rem !important;
@@ -1106,9 +1106,9 @@
         margin-top: 1rem !important;
     }
 
-    .spec-dep {
+    /* .spec-dep {
         margin-top: 115px;
-    }
+    } */
 
     .result_container_ferme_spec .navbar-light-left {
         margin-top: 1rem !important;
@@ -1175,9 +1175,9 @@
         margin-top: 1rem !important;
     }
 
-    .spec-dep {
+    /* .spec-dep {
         margin-top: 115px;
-    }
+    } */
 
     .result_container_ferme_spec .navbar-light-left {
         margin-top: 1rem !important;
@@ -1243,9 +1243,9 @@
         max-height: 70px !important;
     }
 
-    .spec-dep {
+    /* .spec-dep {
         margin-top: 115px;
-    }
+    } */
 
     .result_container_ferme_spec .navbar-light-left {
         margin-top: 1rem !important;
@@ -1310,9 +1310,9 @@
         margin-top: 35px !important;
     }
 
-    .result_container_station_spec .head-left {
+    /* .result_container_station_spec .head-left {
         padding-top: 70px !important;
-    }
+    } */
 
     .navbar-light-left .fa-x {
         margin-left: 162px !important;
@@ -1374,6 +1374,11 @@
     .card-pub-actu img {
         width: 52vw;
     }
+
+    .to\/4\/2 {
+        margin-left: -6.5rem !important;
+    }
+
     .head-pub .param-content i {
         margin-left: 460px !important;
     }
@@ -1404,7 +1409,7 @@
     }
 
     .content-logo-shearch {
-        width: 28vw !important;
+        width: 40vw !important;
     }
 
     .left_menu {
@@ -1431,9 +1436,9 @@
         margin-top: 35px !important;
     }
 
-    .result_container_station_spec .head-left {
+    /* .result_container_station_spec .head-left {
         padding-top: 70px !important;
-    }
+    } */
 
     .navbar-light-left .fa-x {
         margin-left: 185px !important;
@@ -1494,6 +1499,10 @@
     .card-pub-actu img {
         width: 52vw;
     }
+
+    .to\/4\/2 {
+        margin-left: -9.3rem !important;
+    }
     .head-pub .param-content i {
             margin-left: 470px !important;
         }
@@ -1523,7 +1532,7 @@
     }
 
     .content-logo-shearch {
-        width: 28vw !important;
+        width: 40vw !important;
     }
 
     .head-left {
@@ -1554,9 +1563,9 @@
         margin-top: 35px !important;
     }
 
-    .result_container_station_spec .head-left {
+    /* .result_container_station_spec .head-left {
         padding-top: 70px !important;
-    }
+    } */
 
     .navbar-light-left .fa-x {
         margin-left: 195px !important;
@@ -1622,6 +1631,10 @@
         width: 65vw;
     }
 
+    .to\/4\/2 {
+        width: 56% !important;
+    }
+
     .head-pub .param-content i {
         margin-left: 830px;
     }
@@ -1651,7 +1664,7 @@
     }
 
     .content-logo-shearch {
-        width: 28vw !important;
+        width: 40vw !important;
     }
 
     .head-left {
@@ -1678,9 +1691,9 @@
         margin-top: 35px !important;
     }
 
-    .result_container_station_spec .head-left {
+    /* .result_container_station_spec .head-left {
         padding-top: 70px !important;
-    }
+    } */
 
     .navbar-light-left .fa-x {
         margin-left: 220px !important;
@@ -1750,6 +1763,12 @@
     .card-pub-actu img {
         width: 65vw;
     }
+
+    .to\/4\/2 {
+        margin-left: -16.5rem !important;
+        width: 56% !important;
+    }
+
     .head-pub .param-content i {
         margin-left: 840px !important;
     }
@@ -1805,7 +1824,7 @@
     }
 
     .content-logo-shearch {
-        width: 28vw !important;
+        width: 40vw !important;
     }
 
     .navbar-light-bar .navbar-brand img {
@@ -1851,10 +1870,10 @@
     .result_container_station_spec .navbar-light-left{
 	    margin-top: 35px !important;
     }
-
+/* 
     .result_container_station_spec .head-left{
 	    padding-top: 70px !important;
-    }
+    } */
 
     .navbar-light-left .fa-x {
         margin-left: 230px !important;
