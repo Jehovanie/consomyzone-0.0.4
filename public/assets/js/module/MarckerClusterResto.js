@@ -64,7 +64,7 @@ class MarckerClusterResto extends MapModule  {
     bindAction(){
         this.addMarker(this.data);
         this.setNumberOfMarker();
-        // this.generateAllCard();
+        this.addEventOnMap(this.map);
     }
 
     getAlreadyInit(){
@@ -86,7 +86,7 @@ class MarckerClusterResto extends MapModule  {
             const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
 
             const marker = L.marker(
-                L.latLng(parseFloat(item.poiY), parseFloat(item.poiX)),
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
                 {
                     icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
                     cleNom: item.denominationF,
@@ -144,6 +144,19 @@ class MarckerClusterResto extends MapModule  {
         this.map.addLayer(this.markers);
     }
 
+      
+    addEventOnMap(map) {
+        map.on("resize moveend", () => { 
+            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+
+            const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+
+            this.addPeripheriqueMarker(new_size)
+        })
+    }
+
+
     setNumberOfMarker(){
         /// change the number of result in div
         if( document.querySelector(".content_nombre_result_js_jheo")){
@@ -185,5 +198,28 @@ class MarckerClusterResto extends MapModule  {
     resetToDefaultMarkers(){
         this.removeMarker();
         this.addMarker(this.default_data)
+    }
+
+  
+    async addPeripheriqueMarker(new_size) {
+        try {
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+
+            const response = await fetch(`/Coord/All/Restaurant${param}`);
+            let new_data = await response.json();
+
+            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
+         
+            this.addMarker(this.checkeFilterType(new_data));
+          
+            this.default_data.concat(new_data)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    checkeFilterType(data) {
+        return data;
     }
 }

@@ -66,11 +66,24 @@ class RestaurantController extends AbstractController
 
     #[Route("/Coord/All/Restaurant", name: "app_coord_restaurant", methods: ["GET"])]
     public function getAllRestCoor(
+        Request $request,
         BddRestoRepository $bddResto,
         SerializerInterface $serialize
     ) {
-        //$datas = $serialize->serialize($bddResto->getAllOpenedRestos(), 'json');
-        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific(75), 'json');
+      
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $serialize->serialize($bddResto->getRestoBetweenAnd($minx, $miny, $maxx, $maxy), 'json');
+
+            return new JsonResponse($datas, 200, [], true);
+        }
+
+        $datas = $serialize->serialize($bddResto->getSomeDataShuffle(2000), 'json');
         return new JsonResponse($datas, 200, [], true);
     }
 

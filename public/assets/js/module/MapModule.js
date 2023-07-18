@@ -182,7 +182,7 @@ class MapModule{
     }
 
     updateCenter(lat, long, zoom){
-        this.map.setView(L.latLng(lat, long), zoom);
+        this.map.setView(L.latLng(lat, long), zoom, { animation: true });
     }
 
     addControlPlaceholders(map) {
@@ -552,5 +552,12 @@ class MapModule{
         this.settingMemoryCenter();
         // this.bindControlOnLeaflet(this.map);
         // this.bindEventLocationForMobile();
+    }
+    
+    getMax(max,min){
+        if(Math.abs(max)<Math.abs(min))
+            return {max:min,min:max} 
+        else
+           return {max:max,min:min}
     }
 }

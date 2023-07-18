@@ -36,6 +36,7 @@ class MarckerClusterFerme extends MapModule {
         this.addMarker(this.data);
         this.setNumberOfMarker();
         // this.generateAllCard();
+        this.addEventOnMap(this.map);
     }
 
     
@@ -98,7 +99,7 @@ class MarckerClusterFerme extends MapModule {
         newData.forEach(item => {
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
             let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
@@ -150,6 +151,17 @@ class MarckerClusterFerme extends MapModule {
 
         })
         this.map.addLayer(this.markers);
+    }
+
+    addEventOnMap(map) {
+        map.on("resize moveend", () => { 
+            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+
+            const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+
+            this.addPeripheriqueMarker(new_size)
+        })
     }
 
     removeMarker(){
@@ -221,4 +233,27 @@ class MarckerClusterFerme extends MapModule {
             }
         });
     }
+
+    async addPeripheriqueMarker(new_size) {
+        try {
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+
+            const response = await fetch(`/getLatitudeLongitudeFerme${param}`);
+            let new_data = await response.json();
+            console.log(new_data);
+            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
+         
+            this.addMarker(this.checkeFilterType(new_data));
+            this.default_data.concat(new_data);
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    
+    checkeFilterType(data) {
+        return data;
+    }
+
 }

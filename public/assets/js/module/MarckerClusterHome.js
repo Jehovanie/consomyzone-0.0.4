@@ -30,7 +30,7 @@ class MarckerClusterHome extends MapModule  {
 
     bindAction() {
         this.addMarker(this.data);
-        this.addEventOnMap(this.map, this.markers);
+        this.addEventOnMap(this.map);
         this.generateFilterAndSelectDep()
     }
 
@@ -303,8 +303,8 @@ class MarckerClusterHome extends MapModule  {
 
     addEventOnMap(map) {
         map.on("resize moveend", () => { 
-            const x= this.#getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-            const y= this.#getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
@@ -564,12 +564,5 @@ class MarckerClusterHome extends MapModule  {
     removeMarker() {
         this.markers.clearLayers();
         this.map.removeLayer(this.markers);
-    }
-
-    #getMax(max,min){
-        if(Math.abs(max)<Math.abs(min))
-            return {max:min,min:max} 
-        else
-           return {max:max,min:min}
     }
 }

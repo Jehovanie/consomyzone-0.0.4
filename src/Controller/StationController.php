@@ -33,9 +33,7 @@ class StationController extends AbstractController
 {
 
     /**
-
      * @Route("/station", name="app_station", methods={"GET", "POST"})
-
      */
 
     public function station(CodeapeRepository $codeApeRep, Status $status, DepartementRepository $departementRepository, StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request): Response

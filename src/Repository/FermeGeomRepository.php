@@ -170,11 +170,10 @@ class FermeGeomRepository extends ServiceEntityRepository
     }
 
     ///jheo : getLatitudeLongitude
-    public function getLatitudeLongitudeFerme()
+    public function getLatitudeLongitudeFerme($limits= 1000)
     {
-
         // Remarque : $id_ferme dans la base peut parfois combinaison des lettres et des chiffres.
-        $qb = $this->createQueryBuilder('p')
+        return $this->createQueryBuilder('p')
             ->select(
                 'p.id',
                 'p.nomFerme',
@@ -183,10 +182,11 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.departementName',
                 'p.latitude',
                 'p.longitude'
-            );
-
-        $query = $qb->getQuery();
-        return $query->execute();
+            )
+            ->orderBy('RAND()')
+            ->setMaxResults($limits)
+            ->getQuery()
+            ->getResult();
     }
 
     public function getAllFilterByLatLong($data){
@@ -513,6 +513,7 @@ class FermeGeomRepository extends ServiceEntityRepository
                         'r.degustation',
                         'r.marcherProduit',
                         'r.motDuFermier',
+                        'r.produitFerme',
                         'r.produitFerme as ferme',
                         'r.codePostal',
                         'r.nomProprietaire',
@@ -575,7 +576,7 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
                     ->setParameter("maxy", $maxy)
-                    ->orderBy('RAND()')
+                    ->orderBy("r.id", 'ASC')
                     ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();
