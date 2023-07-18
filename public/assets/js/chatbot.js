@@ -44,26 +44,6 @@ function runSpinner(){
 }
 
 /**
- * Function for salutation from a chatbot.
- * @constructor
- */
-function salutation() {
-
-    let date_now = new Date().toLocaleTimeString()
-
-    document.querySelector("#conversation").innerHTML = `
-    <div class="qf">
-        <div class="qb vh hi vj yr el yl">
-            <p>
-            👋 Bonjour! Je suis CMZ Chatbot. Je peux repondre à vos question.
-            </p>
-        </div>
-        <p class="nn">${date_now}</p>
-    </div>
-`
-}
-
-/**
  * Function for suggestion initial from a chatbot.
  * @constructor
  */
@@ -71,7 +51,7 @@ function runSuggestion() {
 
     let date_now = new Date().toLocaleTimeString()
 
-    document.querySelector("#conversation").innerHTML += `
+    let sugg = `
         <div class="qf">
             <div class="qb vh hi vj yr el yl">
                 <p>Que veux-tu savoir aujourd'hui ?</p>
@@ -92,29 +72,10 @@ function runSuggestion() {
             <p class="nn">${date_now}</p>
         </div>
     `
-}
-
-
-/**
- * Function for writing a request from user.
- * @constructor
- * @param {string} request - The question from user.
- */
-function writeRequest(request) {
+    setTimeout(function(){
+        document.querySelector("#conversation").innerHTML += sugg
+    },1500)
     
-    let date_now = new Date().toLocaleTimeString()
-
-    let req = request.textContent
-
-    let res = `<div class="qf rb">
-            <div class="qb vh ii oj el yl">
-            <p class="eo">${req}</p>
-            </div>
-            <p class="in nn">${date_now}</p>
-        </div>`
-
-    document.querySelector("#conversation").innerHTML += res
-
 }
 
 /**
@@ -127,36 +88,15 @@ function findInDict(elem) {
 
     let cle = elem.getAttribute("cle")
 
-    let date_now = new Date().toLocaleTimeString()
-
     Object.entries(dico).forEach(([key, value]) => {
         Object.entries(value).forEach(([key2, value2]) => {
             if(cle==key2){
-                //console.log(value2);
 
-                document.querySelector("#conversation").innerHTML += `<div class="qf rb">
-                    <div class="qb vh ii oj el yl">
-                    <p class="eo">${value2.label}</p>
-                    </div>
-                    <p class="in nn">${date_now}</p>
-                </div>`
+                writeRequest(value2.label)
 
                 runSpinner()
 
-                setTimeout(function(){
-
-                    if(document.querySelector(".dot-spinner")){
-                        document.querySelector(".dot-spinner").remove();
-                    }
-
-                    document.querySelector("#conversation").innerHTML += `<div class="qf">
-                        <div class="qb vh hi vj yr el yl">
-                        <p>${value2.response}</p>
-                            <button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1" onclick="runSuggestion()">Menu principal</button>
-                        </div>
-                        <p class="nn">${date_now}</p>
-                    </div>`
-                },1500)
+                writeResponse(value2.response, true)
 
             }
         })
@@ -185,7 +125,7 @@ function getResponse(cle, dico) {
 
                 template += `<div class="qf">
                         <div class="qb vh hi vj yr el yl">
-                            <p>Que veux-tu savoir aujourd'hui ?</p>
+                            <p> Que veux-tu savoir aujourd'hui ?</p>
                             <div class="text-center">`
 
                 Object.entries(value).forEach(([key2, value2]) => {
@@ -218,7 +158,7 @@ function getResponse(cle, dico) {
 
 function find(elem) {
 
-    writeRequest(elem)
+    writeRequest(elem.textContent)
 
     runSpinner()
 
@@ -246,13 +186,95 @@ function find(elem) {
  */
 function searchResultKey(q) {
 
-    console.log(q);
+    writeRequest(q)
+    
+    runSpinner()
 
-    let doc = nlp(q)
+    let terms = q.normalize("NFD").replace(/\p{Diacritic}/gu, "").split(" ")
 
-    console.log(doc.data());
+    let response = ""
+
+    for(let term of terms){
+        term = term.trim()
+        for(const [key, value] of Object.entries(dico_response)) {
+            let keys = key.split(",")
+
+            for(let k of keys){
+                if(term.trim().toLowerCase() == k.trim().toLowerCase()){
+                    //console.log(value)
+                    if(!response.includes(value)){
+                        response = value;
+                    }
+                    
+                }
+            }
+            //console.log(key + value);
+        }
+    }
+
+    writeResponse(response)
+
+    console.log(response);
+
 }
 
+
+/**
+ * Function writing a request user
+ * @constructor
+ * @param {string} request - Request sending by user
+ */
+function writeRequest(request) {
+
+    let date_now = new Date().toLocaleTimeString()
+
+    if(request){
+        document.querySelector("#conversation").innerHTML += `<div class="qf rb">
+            <div class="qb vh ii oj el yl">
+            <p class="eo">${request}</p>
+            </div>
+            <p class="in nn">${date_now}</p>
+        </div>`
+    }
+}
+
+/**
+ * Function writing a response chatbot
+ * @constructor
+ * @param {string} response - Response sending by Chatbot
+ */
+function writeResponse(response, menu=false) {
+
+    let date_now = new Date().toLocaleTimeString()
+
+    if(response){
+        setTimeout(function(){
+
+            if(document.querySelector(".dot-spinner")){
+                document.querySelector(".dot-spinner").remove();
+            }
+            
+            if(menu==false){
+                document.querySelector("#conversation").innerHTML += `<div class="qf">
+                    <div class="qb vh hi vj yr el yl">
+                    <p>${response}</p>
+                    </div>
+                    <p class="nn">${date_now}</p>
+                </div>`
+            }else{
+                document.querySelector("#conversation").innerHTML += `<div class="qf">
+                    <div class="qb vh hi vj yr el yl">
+                    <p>${response}</p>
+                    <button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1 h-100 p-1" onclick="runSuggestion()"> Menu principal</button>
+                    </div>
+                    <p class="nn">${date_now}</p>
+                </div>`
+            }
+            
+        },1500)
+    }
+
+}
 /***********************Action*************** */
 
 
@@ -301,19 +323,30 @@ let dico = {
     }
 }
 
+let dico_response = {
+    "slt, salut, cv, ca va, cc, coucou, bjr, bonjour" : "Bonjour!",
+    "consomyzone, cmz, definition" :"ConsoMyZone est une application de consommation de service de votre proximité.",
+    "compte" : "Si vous avez déjà un compte, veuillez connecter <a href='/connexion'>ici</a>. Si vous n'avez pas un compte, je vous propose d'inscrire <a href='/connexion'>ici</a>. en choisissant le menu inscription.",
+    "resto, restaurant, pizza, pizzeria, creperie, repas" : ""
+}
+
 document.querySelector("#openChat").addEventListener("click", function(){
+
     openChat()
+
     runSpinner()
 
-    setTimeout( function(){
-        salutation()
-        runSuggestion()
-    }, 1500);
+    //Salutation
+    writeResponse("👋 Bonjour! Je suis CMZ Chatbot. Je peux repondre à vos question.")
+
+    runSuggestion()
 
 })
 
 document.querySelector("#closeChat").addEventListener("click", function(){
+
     closeChat()
+
 })
 
 document.querySelector("#text-search").addEventListener("keyup", function(e){
@@ -322,12 +355,17 @@ document.querySelector("#text-search").addEventListener("keyup", function(e){
 
         searchResultKey(e.target.value)
 
-        console.log(e.target.value);
-
         e.target.value =""
 
     }
     
 })
 
+document.querySelector("#btn-send").addEventListener("click", function(e){
+
+    searchResultKey(document.querySelector("#text-search").value)
+
+    document.querySelector("#text-search").value =""
+    
+})
 
