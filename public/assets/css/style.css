@@ -3348,7 +3348,25 @@
       color: inherit;
       text-decoration: none;
   }
+
+  /******** Editing with Elie ************/
+  .el{
+    padding-bottom: 0.125rem !important;
+  }
   
+  .btn_b{
+    border-color: rgb(48 86 211 / var(--tw-bg-opacity)) !important;
+    background-color: rgb(48 86 211 / var(--tw-bg-opacity)) !important;
+    color: white !important;
+  }
+  .btn_b:hover{
+    color: #212529 !important;
+    background-color: white!important;
+  }
+  .nn{
+    color: white !important;
+  }
+
   .dot-spinner span{
     width:6px;
     height: 6px;
