@@ -8,7 +8,6 @@ if(document.querySelector("#close-detail-station")){
 if( document.querySelectorAll(".list_item_dep_station_js_jheo").length > 0 ){
     document.querySelectorAll(".list_item_dep_station_js_jheo").forEach(card_dom => {
         card_dom.addEventListener("click",() => {
-            localStorage.removeItem("coordStation")
             card_dom.querySelector(".plus")?.click()
         })
     })
