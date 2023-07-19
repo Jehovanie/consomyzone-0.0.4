@@ -594,116 +594,124 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/user/profil', name: 'user_profil')]
 
-
-
-
-    #[Route('/user/profil/{user_id}', name: 'user_profil')]
-
-    public function index($user_id, EntityManagerInterface $entityManager, TributGService $tributGService): Response
+    public function index(): Response
 
     {
-
-
-
-        $user = $this->getUser();
-
-        $userId = $user->getId();
-
-        $myuserType = $user->getType();
-
-        $myProfil = null;
-
-
-
-        if ($myuserType == "consumer") {
-
-            $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        } elseif ($myuserType == "supplier") {
-
-            $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-        }
-
-
-
-
-
-
-        $tribu_t = new Tribu_T_Service();
-
-
-
-        $userType = $tribu_t->getTypeUser($user_id);
-
-
-
-        $profil = null;
-
-
-
-        $type = "";
-
-
-
-        if ($userType == "consumer") {
-
-            $type = "Consommateur";
-
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
-        } elseif ($userType == "supplier") {
-
-            $type = "Fournisseur";
-
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
-        }
-
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
-
-        $images = glob($path . "*.*");
-
-        $images_trie = [];
-
-        for ($i = count($images) - 1; $i >= 0; $i--) {
-            # code...
-            array_push($images_trie, $images[$i]);
-        }
-
-        $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-
-
-        return $this->render('user/profil.html.twig', [
-
-            "profil" => $myProfil,
-
-            "autre_profil" => $profil,
-
-            "type" => $type,
-
-            "images" => $images_trie,
-
-            "statusTribut" => $tributGService->getStatusAndIfValid(
-
-                $profil[0]->getTributg(),
-
-                $profil[0]->getIsVerifiedTributGAdmin(),
-
-                $user_id
-
-            ),
-
-            "tributG" => [
-                "table" => $profil[0]->getTributg(),
-
-                "profil" => $tributGService->getProfilTributG(
-                    $profil[0]->getTributg(),
-                    $user_id
-                ),
-            ],
-
-            "nombre_partisant" => $nombre_partisant
-
-        ]);
+        return $this->render('user/profil.html.twig');
     }
+
+
+
+
+
+    // #[Route('/user/profil/{user_id}', name: 'user_profil')]
+
+    // public function index($user_id, EntityManagerInterface $entityManager, TributGService $tributGService): Response
+
+    // {
+
+
+
+    //     $user = $this->getUser();
+
+    //     $userId = $user->getId();
+
+    //     $myuserType = $user->getType();
+
+    //     $myProfil = null;
+
+
+
+    //     if ($myuserType == "consumer") {
+
+    //         $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+    //     } elseif ($myuserType == "supplier") {
+
+    //         $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+    //     }
+
+
+
+
+
+
+    //     $tribu_t = new Tribu_T_Service();
+
+
+
+    //     $userType = $tribu_t->getTypeUser($user_id);
+
+
+
+    //     $profil = null;
+
+
+
+    //     $type = "";
+
+
+
+    //     if ($userType == "consumer") {
+
+    //         $type = "Consommateur";
+
+    //         $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
+    //     } elseif ($userType == "supplier") {
+
+    //         $type = "Fournisseur";
+
+    //         $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
+    //     }
+
+    //     $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
+
+    //     $images = glob($path . "*.*");
+
+    //     $images_trie = [];
+
+    //     for ($i = count($images) - 1; $i >= 0; $i--) {
+    //         # code...
+    //         array_push($images_trie, $images[$i]);
+    //     }
+
+    //     $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
+
+
+    //     return $this->render('user/profil.html.twig', [
+
+    //         "profil" => $myProfil,
+
+    //         "autre_profil" => $profil,
+
+    //         "type" => $type,
+
+    //         "images" => $images_trie,
+
+    //         "statusTribut" => $tributGService->getStatusAndIfValid(
+
+    //             $profil[0]->getTributg(),
+
+    //             $profil[0]->getIsVerifiedTributGAdmin(),
+
+    //             $user_id
+
+    //         ),
+
+    //         "tributG" => [
+    //             "table" => $profil[0]->getTributg(),
+
+    //             "profil" => $tributGService->getProfilTributG(
+    //                 $profil[0]->getTributg(),
+    //                 $user_id
+    //             ),
+    //         ],
+
+    //         "nombre_partisant" => $nombre_partisant
+
+    //     ]);
+    // }
 
 
 

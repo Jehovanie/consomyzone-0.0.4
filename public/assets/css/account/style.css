@@ -3464,3 +3464,16 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   top: 165px;
   right: 0;
 }
+
+.account-message-conected img{
+  border-radius: 50%;
+}
+
+.account-profil-conected .pdp img{
+  border-radius: 50%;
+  width: 152px;
+}
+
+.disabled-link {
+  pointer-events: none;
+}
