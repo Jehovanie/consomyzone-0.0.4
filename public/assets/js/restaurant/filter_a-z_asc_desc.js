@@ -60,6 +60,8 @@ function createPagination(totalPages, page){
                 active = "alphabet_active";
                 handleFilterFirstChar(letters[plength]);
                 OBJECT_MARKERS_RESTO.filterByFirstLetterOnName(letters[page])
+            
+                document.querySelector(".content_pagination_js_jheo").classList.add("hidden");
             }
         }else{ //else leave empty to the active variable
             active = "";
@@ -122,7 +124,7 @@ function handleFilterFirstChar(letter){
     const all_card_elements=document.querySelectorAll(".content_list_resto_spec_js_jheo .card-list.name_resto_js_jheo");
     let count_not_hidden=0;
     for(let i=0 ; i<all_card_elements.length ; i++ ){
-        if(all_card_elements[i].querySelector(".id_departement_js_jheo").innerText.charAt(0).toLowerCase() !== letter.toLowerCase()){
+        if(all_card_elements[i].querySelector(".name_to_filter_js_jheo").innerText.charAt(0).toLowerCase() !== letter.toLowerCase()){
             if(!all_card_elements[i].classList.contains("hidden")){
                 all_card_elements[i].classList.add("hidden")
             }
@@ -139,13 +141,18 @@ function handleFilterFirstChar(letter){
 
 function refreshDataList(){
     const all_card_elements=document.querySelectorAll(".content_list_resto_spec_js_jheo .card-list.name_resto_js_jheo");
-    for(let i=0 ; i<all_card_elements.length ; i++ ){
-        if(all_card_elements[i].classList.contains("hidden")){
-            all_card_elements[i].classList.remove("hidden")
-        }
-    }
+    // for(let i=0 ; i<all_card_elements.length ; i++ ){
+    //     if(all_card_elements[i].classList.contains("hidden")){
+    //         all_card_elements[i].classList.remove("hidden")
+    //     }
+    // }
+
+    pagginationModule(".content_list_resto_spec_js_jheo",".name_resto_js_jheo",10)
+
     document.querySelector(".content_nombre_result_js_jheo").innerText= all_card_elements.length;
     document.querySelector(".alphabet_active").classList.remove("alphabet_active");
 
     OBJECT_MARKERS_RESTO.resetToDefaultMarkers();
+
+    document.querySelector(".content_pagination_js_jheo").classList.remove("hidden");
 }

@@ -114,23 +114,23 @@
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
                     <ul  class="content_list_resto_spec_js_jheo">
-                        {% set i = 1 %}
+                        {# {% set i = 1 %} #}
                         {# {% set display = "" %} #}
-                        {% set stateClass = "" %}
+                        {# {% set stateClass = "" %} #}
 
                         {% for restaurant in restaurants %}
 
-                            {% if i > 10 %}
-                                {# {% set display = "none" %} #}
+                            {# {% if i > 10 %}
+                                {% set display = "none" %}
                                 {% set stateClass = "hidden" %}
-                            {% endif %}
+                            {% endif %} #}
 
                             {# <li class="card-list miseho" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')"> #}
-                            <li class="card-list miseho name_resto_js_jheo {{stateClass}}"  onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
+                            <li class="card-list miseho name_resto_js_jheo"  onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
                                 <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
 
                                     <div class="col-md-9">
-                                        <p class="text-center fw-bold fs-6 id_departement_js_jheo">{{restaurant.denominationF}} </p>
+                                        <p class="text-center fw-bold fs-6 name_to_filter_js_jheo">{{restaurant.denominationF}} </p>
                                         <p>
                                             <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                             {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
@@ -160,12 +160,12 @@
                                 </div>
                             </li>
 
-                            {% set i = i+1 %}
+                            {# {% set i = i+1 %} #}
                         {% endfor %}
                     </ul>
                     
                     {# pagination list #}
-                    <div aria-label="..." class="mx-auto ms-4">
+                    {# <div aria-label="..." class="mx-auto ms-4">
                         <ul class="pagination">
                             <li class="page-item prec_btn disabled" onclick="previousData(this)">
                                 <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
@@ -175,7 +175,7 @@
                                 <a class="page-link" href="#">Suivant</a>
                             </li>
                         </ul>
-                    </div>
+                    </div> #}
                 </div>
             </div>
             

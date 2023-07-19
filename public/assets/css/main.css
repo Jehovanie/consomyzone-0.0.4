@@ -1159,3 +1159,10 @@ input::-ms-clear {
     color: white;
     font-size: 15px;
 }
+.hiddenPage{
+    display: none !important;
+}
+
+.user_select_None{
+    user-select: none;
+}

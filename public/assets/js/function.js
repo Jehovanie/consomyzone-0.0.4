@@ -1942,3 +1942,136 @@ function createMiniCMZloading(){
         </div>
     `
 }
+
+
+
+function pagginationModule(parentSelector, childSelector, numberPerPage){
+
+    const parentHTML= document.querySelector(parentSelector);
+    const allChildHtml= document.querySelectorAll(childSelector);
+
+    
+    for(let i = 0; i < allChildHtml.length; i++){
+        if( i + 1  > numberPerPage ){
+            if(!allChildHtml[i].classList.contains("hidden")){
+                allChildHtml[i].classList.add("hidden");
+            }
+        }else{
+            if(allChildHtml[i].classList.contains("hidden")){
+                allChildHtml[i].classList.remove("hidden");
+            }
+        }
+    }
+
+
+    const countPage= Math.ceil(allChildHtml.length / numberPerPage);
+
+    ////create pagination footer
+    if( !parentHTML.querySelector(".content_pagination_js_jheo")){
+
+        const contentPagination= document.createElement("div");
+        const disabled= countPage === 1 ? "disabled" : "";
+
+        contentPagination.className = "content_pagination content_pagination_js_jheo";
+        contentPagination.innerHTML = `
+            <ul class="pagination">
+                <li class="page-item prec_btn prec_btn_js_jheo disabled">
+                    <a class="page-link user_select_None" href="#" tabindex="-1" aria-disabled="true">
+                        Précédent
+                    </a>
+                </li>
+
+                <li class="page-item">
+                    <a class="page-link user_select_None disabled current_page_js_jheo" href="#" id="current-page">
+                        1/${countPage}
+                    </a>
+                </li>
+                
+                <li class="page-item next_btn nex_btn_js_jheo ${disabled}">
+                    <a class="page-link user_select_None" href="#">
+                        Suivant
+                    </a>
+                </li>
+            </ul>
+        `
+         ////create pagination footer
+        parentHTML.appendChild(contentPagination)
+    }
+
+
+    document.querySelector(".prec_btn_js_jheo").addEventListener("click", (e)=> {
+        e.preventDefault();
+
+        if(!document.querySelector(".prec_btn_js_jheo").classList.contains("disabled") ){
+
+            let current_page = parseInt(document.querySelector(".current_page_js_jheo").textContent.split("/")[0])
+            let maxPage = parseInt(document.querySelector(".current_page_js_jheo").textContent.split("/")[1]);
+
+            document.querySelector(".current_page_js_jheo").innerText = `${current_page - 1}/${maxPage}`;
+            
+            if(document.querySelector(".nex_btn_js_jheo").classList.contains("disabled") ){
+                document.querySelector(".nex_btn_js_jheo").classList.remove("disabled")
+            }
+
+            const startStep= (current_page-2) * numberPerPage;
+            const endStep= (current_page-1) * numberPerPage;
+            console.log(startStep, endStep);
+            updateList(startStep,endStep,allChildHtml);
+
+            if( current_page - 1 === 1 ){
+                document.querySelector(".prec_btn_js_jheo").classList.add("disabled") 
+            }
+        }
+    })
+
+
+    document.querySelector(".nex_btn_js_jheo").addEventListener("click", (e)=> {
+        e.preventDefault();
+        if(!document.querySelector(".nex_btn_js_jheo").classList.contains("disabled") ){
+            const current_page = parseInt(document.querySelector(".current_page_js_jheo").textContent.split("/")[0])
+            const maxPage = parseInt(document.querySelector(".current_page_js_jheo").textContent.split("/")[1]);
+
+            document.querySelector(".current_page_js_jheo").innerText = `${current_page + 1}/${maxPage}`;
+            
+            if(document.querySelector(".prec_btn_js_jheo").classList.contains("disabled") ){
+                document.querySelector(".prec_btn_js_jheo").classList.remove("disabled")
+            }
+
+            const startStep= current_page * numberPerPage;
+            const endStep= (current_page+1) * numberPerPage;
+
+            updateList(startStep,endStep,allChildHtml);
+
+
+            if( current_page + 1 === maxPage ){
+                document.querySelector(".nex_btn_js_jheo").classList.add("disabled") 
+            }
+        }
+    })
+
+
+
+    function updateList(startStep,endStep,allChildHtml){
+
+        if( !document.querySelector(".alphabet_active")){
+            for(let i = 0; i < allChildHtml.length; i++){
+                if( startStep > i || i + 1 > endStep ){ 
+                    if(!allChildHtml[i].classList.contains("hidden")){
+                        allChildHtml[i].classList.add("hidden");
+                    }
+                }else{
+                    if(allChildHtml[i].classList.contains("hidden")){
+                        allChildHtml[i].classList.remove("hidden");
+                    }
+                }
+            }
+    
+        }else{
+            console.log("tatara hafa")
+            const alphabet_active= document.querySelector(".alphabet_active").innerText.toLowerCase();
+
+            // all_card_elements[i].querySelector(".name_to_filter_js_jheo").innerText.charAt(0).toLowerCase() !== letter.toLowerCase()
+        }
+    }
+
+}

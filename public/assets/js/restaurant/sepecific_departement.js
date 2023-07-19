@@ -1583,9 +1583,11 @@ function nextData(element) {
                 console.log("i : " + i);
                 console.log("display-none : " + i);
                 if(document.querySelectorAll(".miseho")[i])
-                document.querySelectorAll(".miseho")[i].style.display = "none"
+                    document.querySelectorAll(".miseho")[i].style.display = "none"
+
                 if(document.querySelectorAll(".miseho")[parseInt(page+Math.abs(index - i))])
-                document.querySelectorAll(".miseho")[parseInt(page+Math.abs(index - i))].style.display = ""
+                    document.querySelectorAll(".miseho")[parseInt(page+Math.abs(index - i))].style.display = ""
+
                 console.log("display-block : " + parseInt(page+Math.abs(index - i)));
             }
             console.log("---------------------------------");
@@ -1593,7 +1595,9 @@ function nextData(element) {
             document.querySelector("#current-page").innerHTML = current_page+1 + "/" + maxPage
     
             document.querySelector(".prec_btn").classList.remove("disabled");       
-        }if(current_page == maxPage - 1){
+        }
+        
+        if(current_page == maxPage - 1){
             element.classList.add("disabled");
         }
     }
