@@ -1,3 +1,8 @@
+body{
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
 .content_filter {
     display: block;
     padding: 15px;

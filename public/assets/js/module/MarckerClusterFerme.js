@@ -41,14 +41,16 @@ class MarckerClusterFerme extends MapModule {
 
     
     setNumberOfMarker(){
-        /// change the number of result in div
-        if( document.querySelector(".content_nombre_result_js_jheo")){
-            document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
-        }
+        if( this.id_dep){
+            /// change the number of result in div
+            if( document.querySelector(".content_nombre_result_js_jheo")){
+                document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
+            }
 
-        /// change the number of result in div for the left translate
-        if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
-            document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            /// change the number of result in div for the left translate
+            if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
+                document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            }
         }
     }
 

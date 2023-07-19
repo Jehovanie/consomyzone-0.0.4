@@ -1,3 +1,7 @@
+#map {
+    margin-left: -3rem !important;
+}
+
 .kidje3{
     width: 115px;
 }
@@ -21,4 +25,10 @@
 
 .content_description {
     height: 600px;
+}
+
+.content_container_list{
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }

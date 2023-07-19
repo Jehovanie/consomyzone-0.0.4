@@ -1,15 +1,11 @@
 body {
     background-color: white !important;
-    overflow-x: hidden;
+    height: 100vh !important;
+    overflow: hidden !important;
 }
 .navleft .list-depart {
     margin-top: 0 !important;
 }
-
-.content_main{
-    display: block;
-}
-
 .filter_other_mobile{
     display: none;
 }
@@ -171,6 +167,7 @@ input[type="range"]::-moz-slider-thumb{
 }
 
 .content_main{
+    display: block;
     position: relative;
 }
 
@@ -307,6 +304,12 @@ input[type="range"]::-moz-slider-thumb{
     background: linear-gradient(to right, #45f58d, #3bfbe4)1;
     border-radius: 100px;
     padding: 0.5em 1em 0.5em 2.5em;
+}
+
+.content_container_list{
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }
 
 @keyframes translateFull {

@@ -527,9 +527,10 @@ class MarckerClusterHome extends MapModule  {
     checkStateSelectedDep(e) {
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
-            this.map.setView(L.latLng(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng))
-            this.map.setZoom(centers[parseInt(code_dep)].zoom)
+            this.updateCenter(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng, centers[parseInt(code_dep)].zoom)
+            setDataInLocalStorage("memoryCenter", JSON.stringify({ zoom:  centers[parseInt(code_dep)].zoom ,coord: { lat:enters[parseInt(code_dep)].lat , lng: enters[parseInt(code_dep)].lng }}))
         }
+
         this.filterDataByDep();
     }
 

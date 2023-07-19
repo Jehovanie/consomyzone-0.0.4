@@ -578,7 +578,7 @@ body {
 #map {
     width: 100vw;
     height: 100vh;
-    margin-left: -3rem;
+    /* margin-left: -3rem; */
 }
 
 .leaflet-control-zoom.leaflet-bar.leaflet-control{
@@ -1068,7 +1068,7 @@ li a .station {
 }
 
 .spec-dep{
-    margin-top: 50px;
+    margin-top: 35px;
 }
 
 .bg-blanc{
@@ -1237,7 +1237,7 @@ input::-ms-clear {
 .to\/4\/2 {
     width: 43% !important;
     margin-left: -3rem;
-    margin-top: -1rem;
+    /* margin-top: -1rem; */
 }
 
 .vd-head{

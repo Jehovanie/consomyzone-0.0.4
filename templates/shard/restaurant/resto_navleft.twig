@@ -106,9 +106,9 @@
 
             {# list department #}
             <div class="container list-depart-all" id="Scrollbar">
-                <div id="list_departements">
-                    {% for departement in departements %}
-                        <ul>
+                <div class="content_container_list" id="list_departements">
+                    <ul>
+                        {% for departement in departements %}
                             {% if departement.id is same as('75')%}
                                 <li>
                                     <a class="text-decoration-none text-dark" href="{{path('app_dep_restaurant_arrondisme', {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
@@ -399,8 +399,8 @@
                                     </a>
                                 </li>
                             {% endif %}
-                        </ul>
-                    {% endfor %} 
+                        {% endfor %} 
+                    </ul>
                 </div>
             </div>
         </div>
