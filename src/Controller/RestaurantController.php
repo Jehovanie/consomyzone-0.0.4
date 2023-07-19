@@ -473,5 +473,33 @@ class RestaurantController extends AbstractController
         $response = $serializer->serialize($r, 'json');
         return new JsonResponse($response, 200, [], true);
     }
+
+    #[Route("/restaurant/poi/limit", name: 'app_poi', methods: ["GET"])]
+    public function getAllPoi(SerializerInterface $serializer, BddRestoRepository $rep)
+    {
+
+        $response = $rep->getAllOpenedRestosV2(10000);
+
+        $json = $serializer->serialize($response, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route("/restaurant/maxmin", name: 'app_minmax', methods: ["GET"])]
+    public function getRestoBetweenAnd(
+        SerializerInterface $serializer,
+        Request $request,
+        BddRestoRepository $rep
+    ) {
+
+        $minx = $request->query->get("minx");
+        $maxx = $request->query->get("maxx");
+        $miny = $request->query->get("miny");
+        $maxy = $request->query->get("maxy");
+        //dd(abs($minx));
+        // $response=$rep->getRestoBetweenAnd(abs($minx),abs($miny),abs($maxx),abs($maxy));
+        $response = $rep->getRestoBetweenAnd($minx, $miny, $maxx, $maxy);
+        $json = $serializer->serialize($response, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
     
 }

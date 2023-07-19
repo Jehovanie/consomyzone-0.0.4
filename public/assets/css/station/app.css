@@ -3,7 +3,7 @@ body {
     overflow-x: hidden;
 }
 .navleft .list-depart {
-    margin-top: 83px !important;
+    margin-top: 0 !important;
 }
 
 .content_main{

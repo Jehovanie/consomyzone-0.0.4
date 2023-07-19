@@ -2,14 +2,14 @@
 <html lang="FR-fr" translate="no">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>
                 {% block title %}Welcome!{% endblock %}
         </title>
 
         <link rel="icon" href="{{asset('assets/icon/icon_cmz.jpg')}}">
-        
         <link rel="stylesheet" href="{{asset('assets/css/main.css')}}">
         <link rel="stylesheet" href="{{asset('assets/css/chargement_style.css')}}">
         {# <link rel="stylesheet" href="{{asset('assets/css/bootstrap/bootstrap.min.css')}}"> #}
@@ -36,8 +36,9 @@
 
         <script src="{{ asset('assets/js/centers_tous.js') }}" defer></script>
         <script src="{{ asset('assets/js/franceGeoJson.js') }}" defer></script>
-        <script src="{{ asset("assets/js/app.js")}}" defer></script>
-        <script src="{{ asset("assets/js/function.js")}}" defer></script>
+        <script src="{{asset("assets/js/app.js")}}" defer></script>
+        <script src="{{asset("assets/js/account/app.js")}}" defer></script>
+        <script src="{{asset("assets/js/function.js")}}" defer></script>
         
 
         <script src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js" integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=" crossorigin=""></script>
@@ -55,7 +56,10 @@
         
 
     </head>
-    <body>
+    <body x-data="{ page: 'profile', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
+    darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))" :class="{'b yn mj': darkMode === true}" class="">
+	
 
         {% block body %}{% endblock %}
         
@@ -65,3 +69,4 @@
         <script src="{{ asset('assets/js/owlcarousel/owl.carousel.min.js')}}"></script>
     </body>
 </html>
+

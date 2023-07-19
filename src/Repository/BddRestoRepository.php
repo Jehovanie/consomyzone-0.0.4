@@ -384,6 +384,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    
     public function getAllFilterByLatLong($data){
         extract($data); //// $last [ min [ lat , lng ], max [ lat, lng ] ], $new [ min [ lat, lng ], max [ lat, lng ] ]
         // dump("-2.548957109000000 3.440684080123901 46.88474655000000 49.18113327026367 ");
@@ -574,4 +575,43 @@ class BddRestoRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function getAllOpenedRestosV2($limits = 0){
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiX,
+                    r.poiY")
+        ->orderBy('RAND()')
+        ->setMaxResults($limits)
+        ->getQuery()
+        ->getResult();
+    }
 }
