@@ -104,7 +104,9 @@ class BddRestoRepository extends ServiceEntityRepository
                 r.prestation1,r.regimeSpeciaux1,
                 r.repas1,r.typeCuisine1,
                 r.dep,r.depName,r.tel,
-                r.poiX,r.poiY"
+                r.poiX,r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
             )
             ->where("r.dep =:dep")
             ->setParameter("dep",$dep)

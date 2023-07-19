@@ -59,7 +59,9 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.id',
                 'p.nomFerme',
                 'p.adresseFerme',
+                'p.latitude',
                 'p.latitude as lat',
+                'p.longitude',
                 'p.longitude as long',
                 'p.addBy'
             )
@@ -90,7 +92,9 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.departement',
                 'p.departementName',
                 'p.latitude',
-                'p.longitude'
+                'p.longitude',
+                'p.latitude as lat',
+                'p.longitude as long'
             )
             ->where('p.departement = :k')
             ->andWhere("p.disabled = :disabled")
