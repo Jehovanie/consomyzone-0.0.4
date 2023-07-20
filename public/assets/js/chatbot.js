@@ -11,7 +11,7 @@ function openChat() {
     document.querySelector("#chat_container").style="width:28vw;height:92vh; position: fixed;bottom: 0; right: 0; z-index:1003;"
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     //document.querySelector("#conversation").innerHTML =""
-
+    document.querySelector("#chat_header").style="display:";
 }
 
 /**
@@ -28,7 +28,8 @@ function closeChat() {
 
     document.querySelector("#conversation").innerHTML += `
                     <div class="qf text-center popup_exit">
-                        <div class="qb vh hi vj yr el yl">
+                        <i class="fas fa-close icon_exit" onclick="escapeChat()"></i>
+                        <div class="qb vh hi vj yr el yl popup_exit_int">
                         <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
                         <div class="p-4">
                             <button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
@@ -37,7 +38,7 @@ function closeChat() {
                         </div>
                         
                     </div>`
-
+    
     document.querySelector(".popup_exit").scrollIntoView();
 
 }
@@ -47,9 +48,12 @@ function closeChat() {
  * @constructor
  */
 function endChat() {
+    
     document.querySelector("#chat_container").style="width:70px;height:70px; position: fixed;bottom: 0; right: 0; z-index:1003;background-color:transparent;"
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML =""
+    document.querySelector("#closeChat").disabled = false
+    document.querySelector("#chat_header").style="display:none"; 
 }
 
 /**
@@ -57,6 +61,8 @@ function endChat() {
  * @constructor
  */
 function escapeChat() {
+
+    document.querySelector("#closeChat").disabled = false
 
     let divs = document.querySelectorAll("#conversation > div")
 
@@ -274,7 +280,7 @@ function searchResultKey(q) {
 
         q = q.normalize("NFD").replace(/\p{Diacritic}/gu, "")
 
-        if(cle.trim().toLowerCase().includes(q.trim().toLowerCase())){
+        if(q.trim().toLowerCase().includes(cle.trim().toLowerCase())){
 
             response = valeur
 
@@ -460,10 +466,10 @@ let dico = {
 }
 
 let dico_specifique = {
+    "je m'appelle" : "Enchanté, je m'appelle ConsoMyZone.",
     "ca va" : "👨‍⚕️ Je vais bien, merci.",
-    "ca va?" : "👨‍⚕️ Je vais bien, merci.",
-    "comment ca va?" : "👨‍⚕️ Je vais bien, merci.",
     "au revoir" : "👋 Merci, à bientôt.",
+    "va tu" : "👨‍⚕️ Je vais bien, merci.",
     "bye bye" : "👋 Merci, à bientôt.",
     "station service" : "L'opérateur station-service est en rapport direct avec la clientèle : service en carburant (si station traditionnelle), encaissement des sommes des marchandises ou services vendus sont ses tâches principales. Pour voir plus dans CMZ, veuillez consulter <a href='/station'> ici</a>.",
     "sp 95" : "Le SP95-E10 est l'essence sans plomb qui contient jusqu'à 10% d'éthanol en volume. Le SP95 contient 7,5 % d'éthanol (en pur ou en dérivé). Pour voir plus dans CMZ, veuillez consulter <a href='/station'> ici</a>.",
@@ -483,50 +489,66 @@ let dico_response = {
 }
 
 let main_suggestion = {
-    def_cmz : "📌 C'est quoi ConsoMyZone ou CMZ ?",
+    def_cmz : "📌 A propos de ConsoMyZone?",
     serv_cmz :"♻️ Quelles services chez CMZ ?",
     use_cmz :"🛠️ Nécessaire pour quel CMZ ?",
     connect_cmz :"🏘️ Partie connecté de CMZ ?",
     noconnect_cmz :"💎 Partie non connecté de CMZ ?"
 }
 
+if(document.querySelector("#openChat")){
 
-document.querySelector("#openChat").addEventListener("click", function(){
+    document.querySelector("#openChat").addEventListener("click", function(){
 
-    openChat()
-
-    runSpinner()
-
-    //Salutation
-    writeResponse("👋 Bonjour, bienvenue sur le site! Que pouvons-nous faire pour vous aider?")
-
-    runSuggestion()
-
-
-})
-
-document.querySelector("#closeChat").addEventListener("click", function(){
-
-    closeChat()
-
-})
-
-document.querySelector("#text-search").addEventListener("keyup", function(e){
-
-    if (e.key === 'Enter' || e.keyCode === 13) {
-
-        searchResultKey(e.target.value)
-
-        e.target.value =""
-
-    }
+        openChat()
     
-})
-
-document.querySelector("#btn-send").addEventListener("click", function(e){
-
-    searchResultKey(document.querySelector("#text-search").value)
-
-    document.querySelector("#text-search").value =""
+        runSpinner()
     
-})
+        //Salutation
+        writeResponse("👋 Bonjour, bienvenue sur le site! Que pouvons-nous faire pour vous aider?")
+    
+        runSuggestion()
+    
+    
+    })
+}
+
+if(document.querySelector("#closeChat")){
+
+    document.querySelector("#closeChat").addEventListener("click", function(e){
+
+        document.querySelector("#closeChat").disabled = true
+    
+        closeChat()
+    
+    })
+}
+
+if(document.querySelector("#text-search")){
+
+    document.querySelector("#text-search").addEventListener("keyup", function(e){
+
+        if (e.key === 'Enter' || e.keyCode === 13) {
+    
+            searchResultKey(e.target.value)
+    
+            e.target.value =""
+    
+        }
+        
+    })
+
+}
+
+if(document.querySelector("#btn-send")){
+
+    document.querySelector("#btn-send").addEventListener("click", function(e){
+
+        searchResultKey(document.querySelector("#text-search").value)
+    
+        document.querySelector("#text-search").value =""
+        
+    })
+    
+}
+
