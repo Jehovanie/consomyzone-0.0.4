@@ -1394,7 +1394,6 @@ function getDetailStationForMobile(depart_name, depart_code, id) {
 }
 
 function fetchDetails(selector,linkGetDetail) {
-
     document.querySelector(selector).innerHTML = null;
 
     const myHeaders = new Headers();
@@ -1473,7 +1472,7 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false){
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
 
     // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
-    const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`
+    const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
     fetchDetails(id_selector, pathDetails);
 }
 

@@ -627,15 +627,15 @@ class SecurityController extends AbstractController
         }
 
         ///a verifier
-        try {
-            $verifyEmailHelper->validateEmailConfirmation(
-                $request->getUri(),
-                $userToVerifie->getId(),
-                $userToVerifie->getEmail(),
-            );
-        } catch (VerifyEmailExceptionInterface $e) {
-            return $this->redirectToRoute('app_login');
-        }
+        // try {
+        //     $verifyEmailHelper->validateEmailConfirmation(
+        //         $request->getUri(),
+        //         $userToVerifie->getId(),
+        //         $userToVerifie->getEmail(),
+        //     );
+        // } catch (VerifyEmailExceptionInterface $e) {
+        //     return $this->redirectToRoute('app_login');
+        // }
 
         ///change the to true the email verified
         $userToVerifie->setVerifiedMail(true);  ///get the user from database by id

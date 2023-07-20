@@ -408,8 +408,12 @@ class FermeGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select(
                 'p.id',
+                'p.nomFerme',
                 'p.nomFerme as nom',
+                'p.adresseFerme',
                 'p.adresseFerme as add',
+                'p.departement',
+                'p.departementName',
                 'p.departement as dep',
                 'p.departementName as depName',
                 'p.produitFerme as ferme',
