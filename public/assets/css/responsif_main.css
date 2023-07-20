@@ -90,9 +90,10 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        /* border: none !important; */
-        /* transition: all 0.3s ease; */
+    
     }
+
+    
 
     .card-pub-actu img {
         width: 62vw;
@@ -1016,6 +1017,9 @@
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 17vh !important;
     }
+    .account-profil-conected .pdp img {
+        width: 110px !important;
+    }
 }
 
 @media screen and (max-width:500px) and (min-width:400px) {
@@ -1025,6 +1029,10 @@
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 18vh !important;
+    }
+
+    .account-profil-conected .pdp img {
+        width: 110px !important;
     }
 }
 

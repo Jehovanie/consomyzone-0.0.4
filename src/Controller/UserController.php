@@ -599,6 +599,78 @@ class UserController extends AbstractController
         ]);
     }
 
+    // #[Route('/user/profil', name: 'user_profil')]
+
+    // public function index(): Response
+
+    // {
+
+    //     $user = $this->getUser(); /// user connected
+    //     $userId = $user->getId(); /// ID of the user connected
+    //     $myuserType = $user->getType(); /// type of user connected 
+    //     $myProfil = null; /// profile of user connected
+
+    //     if ($myuserType == "consumer") {
+    //         $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+    //     } elseif ($myuserType == "supplier") {
+    //         $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+    //     }
+
+
+    //     $tribu_t = new Tribu_T_Service();
+
+    //     $userType = $tribu_t->getTypeUser($user_id); /// type of the other user 
+
+    //     if( $userType === "unknown"){
+    //         throw new NotFoundHttpException();
+    //     }
+        
+    //     $profil = null; /// profil of the other user 
+
+    //     $type = "";
+    //     if ($userType === "consumer") {
+
+    //         $type = "Consommateur";
+    //         $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id); /// other user profil
+    //     } elseif ($userType === "supplier") {
+
+    //         $type = "Fournisseur";
+    //         $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id); /// other user profil
+    //     }
+
+    //     $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
+    //     $images = glob($path . "*.*");
+    //     $images_trie = [];
+
+    //     for ($i = count($images) - 1; $i >= 0; $i--) {
+    //         array_push($images_trie, $images[$i]);
+    //     }
+
+    //     ///nbr user for the other user 
+    //     $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
+
+
+    //     return $this->render('user/profil.html.twig', [
+    //         "profil" => $myProfil,
+    //         "autre_profil" => $profil,
+    //         "type" => $type,
+    //         "images" => $images_trie,
+    //         "statusTribut" => $tributGService->getStatusAndIfValid(
+    //             $myProfil[0]->getTributg(),
+    //             $myProfil[0]->getIsVerifiedTributGAdmin(),
+    //             $userId
+    //         ),
+    //         "tributG" => [
+    //             "table" => $profil[0]->getTributg(),
+    //             "profil" => $tributGService->getProfilTributG(
+    //                 $profil[0]->getTributg(),
+    //                 $user_id
+    //             ),
+    //         ],
+    //         "nombre_partisant" => $nombre_partisant
+    //     ]);
+    // }
+
 
 
 
@@ -609,69 +681,104 @@ class UserController extends AbstractController
 
     {
 
-        $user = $this->getUser(); /// user connected
-        $userId = $user->getId(); /// ID of the user connected
-        $myuserType = $user->getType(); /// type of user connected 
-        $myProfil = null; /// profile of user connected
+
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $myuserType = $user->getType();
+
+        $myProfil = null;
+
+
 
         if ($myuserType == "consumer") {
+
             $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } elseif ($myuserType == "supplier") {
+
             $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
 
+
+
+
+
         $tribu_t = new Tribu_T_Service();
 
-        $userType = $tribu_t->getTypeUser($user_id); /// type of the other user 
 
-        if( $userType === "unknown"){
-            throw new NotFoundHttpException();
-        }
-        
-        $profil = null; /// profil of the other user 
+
+        $userType = $tribu_t->getTypeUser($user_id);
+
+
+
+        $profil = null;
+
+
 
         $type = "";
-        if ($userType === "consumer") {
+
+
+
+        if ($userType == "consumer") {
 
             $type = "Consommateur";
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id); /// other user profil
-        } elseif ($userType === "supplier") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
+        } elseif ($userType == "supplier") {
 
             $type = "Fournisseur";
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id); /// other user profil
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
         }
 
         $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
+
         $images = glob($path . "*.*");
+
         $images_trie = [];
 
         for ($i = count($images) - 1; $i >= 0; $i--) {
+            # code...
             array_push($images_trie, $images[$i]);
         }
 
-        ///nbr user for the other user 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
 
 
         return $this->render('user/profil.html.twig', [
+
             "profil" => $myProfil,
+
             "autre_profil" => $profil,
+
             "type" => $type,
+
             "images" => $images_trie,
+
             "statusTribut" => $tributGService->getStatusAndIfValid(
-                $myProfil[0]->getTributg(),
-                $myProfil[0]->getIsVerifiedTributGAdmin(),
-                $userId
+
+                $profil[0]->getTributg(),
+
+                $profil[0]->getIsVerifiedTributGAdmin(),
+
+                $user_id
+
             ),
+
             "tributG" => [
                 "table" => $profil[0]->getTributg(),
+
                 "profil" => $tributGService->getProfilTributG(
                     $profil[0]->getTributg(),
                     $user_id
                 ),
             ],
+
             "nombre_partisant" => $nombre_partisant
+
         ]);
     }
 
@@ -2256,6 +2363,14 @@ class UserController extends AbstractController
 
 
         return $this->json("Photo de profil bien à jour");
+    }
+
+    #[Route('/user/reception', name: 'user_boit_reception')]
+
+    public function boiteReception(): Response
+
+    {
+        return $this->render('user/boitDeReception/index.html.twig');
     }
 
   
