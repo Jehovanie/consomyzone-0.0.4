@@ -530,7 +530,11 @@ if(document.querySelector("#text-search")){
 
         if (e.key === 'Enter' || e.keyCode === 13) {
     
-            searchResultKey(e.target.value)
+            if(e.target.value!=""){
+
+                searchResultKey(e.target.value)
+
+            }
     
             e.target.value =""
     
@@ -544,7 +548,11 @@ if(document.querySelector("#btn-send")){
 
     document.querySelector("#btn-send").addEventListener("click", function(e){
 
-        searchResultKey(document.querySelector("#text-search").value)
+        if(document.querySelector("#text-search").value){
+
+            searchResultKey(document.querySelector("#text-search").value)
+            
+        }
     
         document.querySelector("#text-search").value =""
         
