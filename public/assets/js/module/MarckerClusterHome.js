@@ -157,7 +157,8 @@ class MarckerClusterHome extends MapModule  {
     handleClickStation(stationMarker,dataStation){
             
         stationMarker.on('click', (e) => {
-            this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+            this.updateCenter( parseFloat(dataStation.lat ), parseFloat(dataStation.long ), this.zoomDetails);
+            
             const icon_R = L.Icon.extend({
                 options: {
                     iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
@@ -185,11 +186,9 @@ class MarckerClusterHome extends MapModule  {
     settingSingleMarkerFerme(item) {
       
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-        // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
+        const title = "<span class='fw-bolder'>Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'> <br> Departement:</span>" + item.departement + "." + adress;
 
-        var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement + "." + adress;
-
-        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') , id: item.id });
+        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') , id: item.id });
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
         this.handleClickFerme(marker, item);
@@ -201,7 +200,7 @@ class MarckerClusterHome extends MapModule  {
     handleClickFerme(fermeMarker, dataFerme ){
 
         fermeMarker.on('click', (e) => {
-            this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+            this.updateCenter( parseFloat(dataFerme.lat ), parseFloat(dataFerme.long ), this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
                     iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
@@ -228,23 +227,23 @@ class MarckerClusterHome extends MapModule  {
 
     settingSingleMarkerResto(item) {
 
-        const departementName = item.depName
-        const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+        const departementName = item.depName + '<br>';
+        const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
 
-        var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
+        var title = "<span class='fw-bolder'> Restaurant: </span>  " + item.denominationF + " <br><span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
         var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png') , id: item.id });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
-        this.handleClickResto(marker, item)
+        this.handleClickResto(marker, item);
         this.markers.addLayer(marker);
     }
 
     handleClickResto(restoMarker, dataResto){
         
         restoMarker.on('click', (e) => {
-            this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+            this.updateCenter( parseFloat(dataResto.lat ), parseFloat(dataResto.long ), this.zoomDetails);
 
             const icon_R = L.Icon.extend({
                 options: {
@@ -294,11 +293,10 @@ class MarckerClusterHome extends MapModule  {
             })
             this.marker_last_selected.setIcon(new icon_B)
         }
+        this.markers.refreshClusters();
 
         this.marker_last_selected = marker;
         this.marker_last_selected_type = type;
-        
-        this.markers.refreshClusters();
     }
 
     addEventOnMap(map) {

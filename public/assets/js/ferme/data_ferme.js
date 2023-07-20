@@ -59,5 +59,8 @@ window.addEventListener('load', () => {
         })
     }
 
-    pagginationModule(".content_list_ferme_spec_js_jheo",".name_ferme_js_jheo",10)
+    
+    if(document.querySelector(".name_ferme_js_jheo")){
+           pagginationModule(".content_list_ferme_spec_js_jheo",".name_ferme_js_jheo",10)
+    }
 });

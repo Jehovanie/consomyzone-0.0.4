@@ -100,13 +100,13 @@ class MarckerClusterFerme extends MapModule {
     addMarker(newData){
         newData.forEach(item => {
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-            let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
+            let title = "<span class='fw-bolder'> Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'><br>Departement: </span>" + item.departement +"." + adress;
             let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
-                this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
                 const icon_R = L.Icon.extend({
                     options: {

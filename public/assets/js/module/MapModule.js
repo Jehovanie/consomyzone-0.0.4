@@ -182,6 +182,10 @@ class MapModule{
     }
 
     updateCenter(lat, long, zoom){
+        console.log("lat: " , lat)
+        console.log("long: " , long)
+        console.log("zoom: ", zoom)
+        
         this.map.setView(L.latLng(lat, long), zoom, { animation: true });
     }
 

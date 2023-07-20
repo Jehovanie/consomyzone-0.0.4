@@ -830,14 +830,15 @@ if (document.querySelector(".tribu_t")) {
  * active navigation bar map
  */
 if (document.querySelector(".list-nav-bar")) {
-    const activPage = window.location.pathname
+    const activPage = window.location.pathname;
+    
     if( activPage.includes("/ferme")){
         document.querySelector("#ferme-page").classList.add("active");
     }else if( activPage.includes("/restaurant")){
         document.querySelector("#resto-page").classList.add("active");
     }else if( activPage.includes("/station")){
         document.querySelector("#station-page").classList.add("active");
-    }else{
+    }else if(activPage.length === 1 ){
         document.querySelector("#tous-page").classList.add("active");
     }
     // const links = document.querySelectorAll('.list-nav-bar');

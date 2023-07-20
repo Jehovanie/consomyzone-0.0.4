@@ -164,7 +164,7 @@ class MarckerClusterStation extends MapModule  {
             });
             
             marker.on('click', (e) => {
-                this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+                this.updateCenter( parseFloat(item.latitude ), parseFloat(item.longitude ), this.zoomDetails);
                 
                 const icon_R = L.Icon.extend({
                     options: {

@@ -97,7 +97,7 @@ class MarckerClusterResto extends MapModule  {
             marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
 
             marker.on('click', (e) => {
-                this.updateCenter(e.target.__parent._cLatLng.lat, e.target.__parent._cLatLng.lng, this.zoomDetails);
+                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
                 const icon_R = L.Icon.extend({
                     options: {
