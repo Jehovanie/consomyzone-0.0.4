@@ -167,7 +167,7 @@ class DicoRestoForSearchService extends StringTraitementService{
 
         $mot_cles0 = strtolower($mot_cles0);
 
-        $fastfood = array("fastfood", "fastfoods");
+        $fastfood = array("fastfood", "fastfod", "fastfoods", "fastfod");
 
         if (in_array($mot_cles0, $fastfood))
         {

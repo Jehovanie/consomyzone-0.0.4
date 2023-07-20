@@ -426,7 +426,6 @@ class FermeGeomRepository extends ServiceEntityRepository
                 $qb =  $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
                           ->orWhere("p.nomFerme LIKE :cles0")
                           ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0")
-                          //->orWhere("MATCH_AGAINST(p.motDuFermier) AGAINST( :cles0 boolean) > 0")
                           ->orWhere("p.nomProprietaire LIKE :cles0")
                           ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
                           ->setParameter('cles0', '%'.$mot_cles0.'%');
@@ -454,10 +453,10 @@ class FermeGeomRepository extends ServiceEntityRepository
                 ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
                 ->orWhere("p.adresseFerme LIKE :cles1")
                 ->orWhere("MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (p.adresseFerme LIKE :cles1 )")
-                ->orWhere("(p.nomFerme LIKE :cles0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.nomFerme LIKE :cles0) AND (p.adresseFerme LIKE :cles1 )")
+                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) OR (p.adresseFerme LIKE :cles1 )")
+                ->orWhere("(p.nomFerme LIKE :cles0) OR (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
+                ->orWhere("(p.nomFerme LIKE :cles0) OR (p.adresseFerme LIKE :cles1 )")
                 ->orWhere("(MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
                 ->orWhere("(MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0) AND (p.adresseFerme LIKE :cles1 )")
                 ->orWhere("(p.nomProprietaire LIKE :cles0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
@@ -465,11 +464,6 @@ class FermeGeomRepository extends ServiceEntityRepository
                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
         }
-        
-        // $qb = $qb->setFirstResult($page_current)
-        //         ->setMaxResults($size)
-        //         ->orderBy('p.nomFerme', 'ASC')
-        //         ->getQuery();
 
         $qb = $qb->orderBy('p.nomFerme', 'ASC')
                  ->getQuery();
@@ -478,30 +472,4 @@ class FermeGeomRepository extends ServiceEntityRepository
         $results = $qb->execute();
         return [ $results , count($results) , "ferme"];
     }
-
-
-    //    /**
-    //     * @return FermeGeom[] Returns an array of FermeGeom objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?FermeGeom
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

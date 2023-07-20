@@ -108,7 +108,7 @@ class SortResultService extends StringTraitementService
                 }
                 
                 /** Déduction lev total */
-                if(floatval($levNom) <= 0.5 && floatval($levAdresse) >= 1){
+                /*if(floatval($levNom) <= 0.5 && floatval($levAdresse) >= 1){
                     $levTotal = floatval($levNom);
                 }elseif(floatval($levNom) >= 0.5 && floatval($levAdresse) == 0){
                     $levTotal = floatval($levAdresse);
@@ -118,30 +118,30 @@ class SortResultService extends StringTraitementService
                     $levTotal = floatval($levAdresse);
                 }else{
                     $levTotal = floatval($levNom) + floatval($levAdresse);
-                }
+                }*/
 
-                /*
+                
                 if(floatval($levNom) == 0 && floatval($levAdresse) == 0){
                     $levTotal = 0;
                 }elseif((floatval($levNom) == 0 && floatval($levAdresse) > 1)){
                     $levTotal = 0.5 + floatval($levNom);
                 }elseif(floatval($levNom) == 0.5 && floatval($levAdresse) > 1){
-                    $levTotal = 1.5 + floatval($levNom);
+                    $levTotal = 1.3 + floatval($levNom);
                 }elseif((floatval($levNom) == 0 && floatval($levAdresse) == 1)){
                     $levTotal = 0.2;
                 }elseif((floatval($levNom) == 0.5 && floatval($levAdresse) == 1)){
                     $levTotal = 0.4;
                 }elseif(floatval($levNom) == 0.5 && floatval($levAdresse) == 0){
-                    $levTotal = 0.2;
+                    $levTotal = 0.3;
                 }elseif(floatval($levNom) > 0.5 && floatval($levAdresse) == 0){
                     $levTotal = 0.5 + floatval($levAdresse);
                 }elseif(floatval($levNom) > 0.5 && floatval($levAdresse) == 1){
-                    $levTotal = 1 + floatval($levNom);
+                    $levTotal = 1 + floatval($levAdresse);
                 }elseif(floatval($levNom) > 1 && floatval($levAdresse) == 1){
                     $levTotal = 1.5 + floatval($levAdresse);
                 }else{
                     $levTotal = floatval($levNom) + floatval($levAdresse);
-                }*/
+                }
             }
 
             $key["levTotal"] = $levTotal;
