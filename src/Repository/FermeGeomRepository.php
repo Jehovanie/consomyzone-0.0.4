@@ -449,20 +449,23 @@ class FermeGeomRepository extends ServiceEntityRepository
             }
 
         }else{
-            $qb = $qb->where("p.nomFerme LIKE :cles0")
-                ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("p.adresseFerme LIKE :cles1")
-                ->orWhere("MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) OR (p.adresseFerme LIKE :cles1 )")
-                ->orWhere("(p.nomFerme LIKE :cles0) OR (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.nomFerme LIKE :cles0) OR (p.adresseFerme LIKE :cles1 )")
-                ->orWhere("(MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0) AND (p.adresseFerme LIKE :cles1 )")
-                ->orWhere("(p.nomProprietaire LIKE :cles0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.nomProprietaire LIKE :cles0) AND (p.adresseFerme LIKE :cles1 )")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0 AND p.departement LIKE :cles1")
+                             ->orWhere("p.nomFerme LIKE :cles0 AND p.departement LIKE :cles1")
+                             ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0 AND p.departement LIKE :cles1")
+                             ->orWhere("p.nomProprietaire LIKE :cles0 AND p.departement LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
+                    ->orWhere("(p.nomFerme LIKE :cles0) OR (p.adresseFerme LIKE :cles1 )")
+                    ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
+                    ->orWhere("p.nomProprietaire LIKE :cles0")
+                    ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+            }
         }
 
         $qb = $qb->orderBy('p.nomFerme', 'ASC')

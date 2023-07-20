@@ -455,27 +455,25 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
         }else{
-            
-            $qb = $qb->where("p.nom LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0")
-                    ->orWhere("p.adresse LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0)")
-                    ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0) AND (p.adresse LIKE :cles1 )")
-                    ->orWhere("(p.nom LIKE :cles0) AND (MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0)")
-                    ->orWhere("(p.nom LIKE :cles0) AND (p.adresse LIKE :cles1 )")
-                    ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0)")
-                    ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0) AND (p.departementName LIKE :cles1 )")
-                    ->orWhere("(p.nom LIKE :cles0) AND (MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0)")
-                    ->orWhere("(p.nom LIKE :cles0) AND (p.departementName LIKE :cles1 )")
-                    ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
-        }
 
-        // $qb = $qb->setFirstResult($page_current)
-        //     ->setMaxResults($size)
-        //     ->orderBy('p.nom', 'ASC')
-        //     ->getQuery();
+            if( strlen($mot_cles1) <= 2 ){
+                
+                $qb = $qb->where("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0 AND p.departementCode LIKE :cles1")
+                         ->orWhere("p.nom LIKE :cles0 AND p.departementCode LIKE :cles1")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0)")
+                        ->orWhere("(p.nom LIKE :cles0) OR (p.adresse LIKE :cles1 )")
+                        ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
+                        ->orWhere("p.departementName LIKE :cles1")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+            }
+            
+        }
 
         $qb = $qb->orderBy('p.nom', 'ASC')
                  ->getQuery();
@@ -484,28 +482,4 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $results =$qb->execute();
         return [ $results , count($results) , "station"];
     }
-//    /**
-//     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?StationServiceFrGeom
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
