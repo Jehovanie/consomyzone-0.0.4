@@ -2312,6 +2312,14 @@ class UserController extends AbstractController
         return $this->json("Photo de profil bien à jour");
     }
 
+    #[Route('/user/reception', name: 'user_boit_reception')]
+
+    public function boiteReception(): Response
+
+    {
+        return $this->render('user/boitDeReception/index.html.twig');
+    }
+
   
     /** UPDATE PASSWORD */
     /*
