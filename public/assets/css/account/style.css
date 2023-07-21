@@ -3476,9 +3476,41 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 
 .disabled-link {
   pointer-events: none;
+  cursor: not-allowed !important;
 }
 
 .account-setting-connected .mdf-pdp img{
   width: 90px;
   border-radius: 50%;
+}
+
+.head-pub .name-content-g {
+  display: flex;
+  width: 30rem;
+}
+
+.head-pub .name-content-g .p-title {
+  font-size: 10pt;
+  font-style: italic;
+}
+
+.head-pub .name-content-g .p-title span {
+  font-size: 12pt;
+  font-style: italic;
+  color: #000;
+}
+
+.name-content-g .form-pub {
+  margin: 10px;
+  color: #9b9b9b;
+  font-style: italic;
+}
+
+.head-pub .param-content-g i {
+  margin-left: 230px;
+}
+
+.pub-g-input{
+  border: none !important;
+  width: 50vw;
 }
