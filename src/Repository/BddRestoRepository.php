@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\BddResto;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Service\DicoRestoForSearchService;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<BddResto>
@@ -146,7 +147,7 @@ class BddRestoRepository extends ServiceEntityRepository
 
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
-
+        $dicoResto = new DicoRestoForSearchService();
         $page_current =$page > 1 ? $page * 10 +1  : 0;
         // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
         //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
@@ -184,66 +185,169 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.tel,
                         p.poiX as long,
                         p.poiY as lat,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie) as rue,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
+                        
         if( $mot_cles0 !== "" && $mot_cles1 === "" ){
-          
-            $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.typevoie) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.villenorm) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.commune) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("p.codpost LIKE :cles0")
-                // ->orWhere("p.denominationF LIKE :cles0")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' );
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.denominationF LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                if($dicoResto->isCafe($mot_cles0)){
+                    $qb = $qb->where('p.cafe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isThe($mot_cles0)){
+                    $qb = $qb->where('p.salonThe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCuisine($mot_cles0)){
+                    $qb = $qb->where('p.cuisineMonde = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBrasserie($mot_cles0)){
+                    $qb = $qb->where('p.brasserie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBar($mot_cles0)){
+                    $qb = $qb->where('p.bar = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCreperie($mot_cles0)){
+                    $qb = $qb->where('p.creperie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isFastFood($mot_cles0)){
+                    $qb = $qb->where('p.fastFood = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isPizzeria($mot_cles0)){
+                    $qb = $qb->where('p.pizzeria = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                    $qb = $qb->where('p.boulangerie = :identifier')
+                             ->setParameter('identifier', true);
+                }else{
+
+                    $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
+                             ->orWhere("p.denominationF LIKE :cles0")
+                             ->setParameter('cles0', '%' . $mot_cles0. '%');
+                }
+            }
                 
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            if( strlen($mot_cles1) === 2 ){
+            
+            if( strlen($mot_cles1) <= 2 ){
                 
                 $qb = $qb->where("p.dep LIKE :cles1")
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
 
-                $qb = $qb->where("p.dep LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.nomvoie) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.depName LIKE :cles1")
-                    ->orWhere("p.typevoie LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.villenorm) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.codpost LIKE :cles1")
-                    ->orWhere("p.numvoie LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.denominationF) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
-                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                $qb = $qb->where("MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                         ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
         }else {
 
-            $qb = $qb->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( MATCH_AGAINST(p.nomvoie) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.depName LIKE :cles0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.villenorm) AGAINST( :cles1 boolean) > 0 )")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( p.dep LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.commune LIKE :cles1)")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if($dicoResto->isCafe($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.cafe = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.cafe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.cafe = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );     
+                }
+            }elseif($dicoResto->isThe($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.salonThe = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.salonThe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.salonThe = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCuisine($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.cuisineMonde = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.cuisineMonde = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.cuisineMonde = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBrasserie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.brasserie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.brasserie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.brasserie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBar($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.bar = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.bar = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.bar = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCreperie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.creperie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.creperie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.creperie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isFastFood($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.fastFood = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.fastFood = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.fastFood = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isPizzeria($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.pizzeria = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.pizzeria = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.pizzeria = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.boulangerie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.boulangerie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.boulangerie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
 
-        }
-        // $qb = $qb->setFirstResult($page_current)
-        //     ->setMaxResults($size)
-        //     ->orderBy('p.nomvoie', 'ASC')
-        //     ->getQuery();
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0 AND p.dep LIKE :cles1")
+                             ->orWhere("p.denominationF LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+    
+                    $qb = $qb->where("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0)")
+                             ->orWhere("(p.denominationF LIKE :cles0) OR (CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
 
-        $qb = $qb->orderBy('p.nomvoie', 'ASC')
-                 ->getQuery();
+                }
+
+            }
             
+        }
+
+        $qb = $qb->getQuery();
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();
@@ -503,7 +607,7 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getRestoBetweenAnd($minx,$miny,$maxx,$maxy){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
         return $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,

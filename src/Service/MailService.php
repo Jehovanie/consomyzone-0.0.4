@@ -60,7 +60,6 @@ class MailService extends AbstractController {
     }
 
 
-
     public function sendEmail($email_to,$fullName_to,$objet,$message):void
 
     {
@@ -74,8 +73,8 @@ class MailService extends AbstractController {
                 ->text($message);
 
         $customMailer->send($email);
-
     }
+
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
@@ -109,21 +108,17 @@ class MailService extends AbstractController {
         $customMailer->send($email);
     }
     
-    public function sendEmailWithCc($from,$fullName_from,$to,$fullName_to,$cc,$objet,$message):void
+    public function sendEmailWithCc($to,$fullName_to,$cc,$objet,$message):void
     {
-        $userSendingEmail = ProdData::EMAIL_PROD;
-        $pass = ProdData::MDP_PROD;
-        $server = ProdData::SERVER_SMTP_PROD;
-        $port = ProdData::PORT_PROD;
- 
+         
         // Generate connection configuration
-        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
+        $dsn = "smtp://" . urlencode(ProdData::EMAIL_PROD) . ":" .urlencode(ProdData::MDP_PROD) . "@" . ProdData::SERVER_SMTP_PROD;
         $transport = Transport::fromDsn($dsn);
         $customMailer = new Mailer($transport);
 
         // Generates the email
         $email = (new TemplatedEmail())
-                ->from(new Address($from ,$fullName_from)) 
+                ->from(new Address(ProdData::EMAIL_PROD, ProdData::NOM_SENDER)) 
                 ->to(new Address($to, $fullName_to ))
                 ->cc($cc[0]);
 
@@ -197,16 +192,14 @@ class MailService extends AbstractController {
         $customMailer->send($email);
     }
 
-    public function sendEmailWithExpirationDate($from,$fullName_from,$to,$objet,$message,$cc, $bcc):void
+    
+    public function sendEmailWithExpirationDate($to,$objet,$message,$cc, $bcc):void
+
     {
-        $userSendingEmail = ProdData::EMAIL_PROD;
-        $pass = ProdData::MDP_PROD;
-        $server = ProdData::SERVER_SMTP_PROD;
-        $port = ProdData::PORT_PROD;
 
         // Generate connection configuration
 
-        $dsn = "smtp://" . urlencode($userSendingEmail) . ":" .urlencode($pass) . "@" . $server;
+        $dsn = "smtp://" . urlencode(ProdData::EMAIL_PROD) . ":" .urlencode(ProdData::MDP_PROD) . "@" . ProdData::SERVER_SMTP_PROD;
 
         $transport = Transport::fromDsn($dsn);
 
@@ -218,7 +211,7 @@ class MailService extends AbstractController {
 
         $email = (new TemplatedEmail())
 
-                ->from(new Address($from ,$fullName_from)) 
+                ->from(new Address(ProdData::EMAIL_PROD, ProdData::NOM_SENDER)) 
 
                 ->to($to)
 
@@ -234,11 +227,10 @@ class MailService extends AbstractController {
                     $email = $email->addBcc($bcc[$i]);
                 }
 
-                
-
         $customMailer->send($email);
 
     }
+
 }
 
 

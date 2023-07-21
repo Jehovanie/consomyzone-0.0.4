@@ -78,7 +78,7 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $serialize->serialize($bddResto->getRestoBetweenAnd($minx, $miny, $maxx, $maxy), 'json');
+            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy), 'json');
 
             return new JsonResponse($datas, 200, [], true);
         }
@@ -485,7 +485,7 @@ class RestaurantController extends AbstractController
     }
 
     #[Route("/restaurant/maxmin", name: 'app_minmax', methods: ["GET"])]
-    public function getRestoBetweenAnd(
+    public function getRestoBetweenMinmax(
         SerializerInterface $serializer,
         Request $request,
         BddRestoRepository $rep
@@ -496,8 +496,7 @@ class RestaurantController extends AbstractController
         $miny = $request->query->get("miny");
         $maxy = $request->query->get("maxy");
         //dd(abs($minx));
-        // $response=$rep->getRestoBetweenAnd(abs($minx),abs($miny),abs($maxx),abs($maxy));
-        $response = $rep->getRestoBetweenAnd($minx, $miny, $maxx, $maxy);
+        $response = $rep->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
         $json = $serializer->serialize($response, 'json');
         return new JsonResponse($json, 200, [], true);
     }

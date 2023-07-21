@@ -297,9 +297,9 @@ class ToutsController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             return $this->json([
-                "station" => $stationServiceFrGeomRepository->getRestoBetweenAnd($minx, $miny, $maxx, $maxy),
-                "ferme" => $fermeGeomRepository->getRestoBetweenAnd($minx, $miny, $maxx, $maxy),
-                "resto" => $bddRestoRepository->getRestoBetweenAnd($minx, $miny, $maxx, $maxy)
+                "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy)
             ]);
         }
 

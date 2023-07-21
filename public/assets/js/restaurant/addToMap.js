@@ -1,3 +1,5 @@
+///we use this variable to keep track for user search
+
 window.addEventListener('load', () => {
     addRestaurantToMap();
     

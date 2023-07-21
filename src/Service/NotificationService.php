@@ -490,7 +490,7 @@ class NotificationService extends PDOConnexionService{
 
 
 
-    public function sendNotificationForTribuGmemberOrOneUser(int $user_id_post,int $user_id,string $type, string $content, string $tribu){
+    public function sendNotificationForTribuGmemberOrOneUser(int $user_id_post,int $user_id,string $type, string $content, string $tribu = null){
 
         ///get the name of the table notification for $user_id_post to send new notification
 

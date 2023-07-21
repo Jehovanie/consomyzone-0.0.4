@@ -1150,7 +1150,7 @@ class AgendaController extends AbstractController
 
             $userId = $user->getId();
     
-            $email_from = $user->getEmail();
+            //$email_from = $user->getEmail();
     
             $object = "Lien pour faire de la présence";
     
@@ -1159,7 +1159,7 @@ class AgendaController extends AbstractController
             //$infos = array();
             $description = "";
         
-            $list = array();
+            //$list = array();
 
             $body = $tributGService->getFullName($userId) . " vous a envoyé un lien pour votre présence à son agenda numéro " . $agenda_id . "
             .\n Veuillez vérifier le lien dans votre adresse email";
@@ -1171,8 +1171,6 @@ class AgendaController extends AbstractController
                     $email_to = $userRepository->findOneBy(["id" => $id])->getEmail();
                     $link = $this->generateUrl("agenda_set_presence", array("table_partage_agenda" => "partage_agenda_".$userId, "agenda_id" => $agenda_id, "userId" => $id), UrlGeneratorInterface::ABSOLUTE_URL);
                     $mailService->sendEmail(
-                        $email_from,
-                        $tributGService->getFullName($userId),
                         $email_to,
                         $tributGService->getFullName($id),
                         $object,
@@ -1225,14 +1223,12 @@ class AgendaController extends AbstractController
             $id_creator = explode("_", $table_partage_agenda)[2];
             $email_to_creator = $userRepository->findOneBy(["id" => $id_creator])->getEmail();
             $creator_name = $tributGService->getFullName($id_creator);
-            $email_from = $userRepository->findOneBy(["id" => $userId])->getEmail();
-            $senderName = $tributGService->getFullName($userId);
+            // $email_from = $userRepository->findOneBy(["id" => $userId])->getEmail();
+            // $senderName = $tributGService->getFullName($userId);
 
             $body = $creator_name . " vient de faire sa présence pour l'agenda numéro " . $agenda_id;
 
             $mailService->sendEmail(
-                $email_from,
-                $senderName,
                 $email_to_creator,
                 $creator_name,
                 "Présence pour l'agenda numéro " . $agenda_id,

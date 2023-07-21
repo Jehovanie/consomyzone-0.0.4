@@ -1,3 +1,4 @@
+
 //// HIDE DETAILS STATION POP UP
 if(document.querySelector("#close-detail-station")){
     document.querySelector("#close-detail-station").addEventListener("click", () => { 
