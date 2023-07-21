@@ -1367,14 +1367,15 @@ function getDetailStation(depart_name, depart_code, id, inHome = false) {
     const id_selector = !inHome ? "#content-details-station" : "#content_details_home_js_jheo";
     const linkGetDetails= `/station/departement/${depart_name}/${depart_code}/details/${id}`;
 
-    document.querySelector(id_selector).innerHTML = createMiniCMZloading()
-
-    fetchDetails(id_selector,linkGetDetails)
-
+    
+    
     let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home");
-
+    
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
+
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading()
+    fetchDetails(id_selector,linkGetDetails)
 }
 
 function getDetailStationForMobile(depart_name, depart_code, id) {
@@ -1394,7 +1395,7 @@ function getDetailStationForMobile(depart_name, depart_code, id) {
 }
 
 function fetchDetails(selector,linkGetDetail) {
-    document.querySelector(selector).innerHTML = null;
+    // document.querySelector(selector).innerHTML = null;
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');

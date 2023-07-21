@@ -48,8 +48,13 @@ class MapModule{
         return false;
     }
 
-    async createMap(){
+    async createMap(lat= null, long=null){
         let position = null, coords= null;
+
+        if( lat !=null && long != null){
+            this.latitude = lat;
+            this.longitude= long;
+        }
 
         try{
             position = await this.getUserLocation();
@@ -140,35 +145,35 @@ class MapModule{
     }
 
     eventSetPositionOnMap(){
-        const cta_setCurrentPosition = document.createElement('a');
-        cta_setCurrentPosition.setAttribute('href',"#");
-        cta_setCurrentPosition.setAttribute('title',"Ma position");
-        cta_setCurrentPosition.setAttribute('role',"button");
-        cta_setCurrentPosition.setAttribute('aria-label', "Ma position");
-        cta_setCurrentPosition.setAttribute('aria-disabled', "false");
+        // const cta_setCurrentPosition = document.createElement('a');
+        // cta_setCurrentPosition.setAttribute('href',"#");
+        // cta_setCurrentPosition.setAttribute('title',"Ma position");
+        // cta_setCurrentPosition.setAttribute('role',"button");
+        // cta_setCurrentPosition.setAttribute('aria-label', "Ma position");
+        // cta_setCurrentPosition.setAttribute('aria-disabled', "false");
 
-        cta_setCurrentPosition.className= "cta_setCurrentPosition cta_setCurrentPosition_jheo_js";
+        // cta_setCurrentPosition.className= "cta_setCurrentPosition cta_setCurrentPosition_jheo_js";
 
-        cta_setCurrentPosition.innerHTML= `
-            <i class="fa-solid fa-street-view ma_position"></i>
-        `
+        // cta_setCurrentPosition.innerHTML= `
+        //     <i class="fa-solid fa-street-view ma_position"></i>
+        // `
 
-        if( document.querySelector(".leaflet-control-zoom-out")){
-            document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition)
-        }
+        // if( document.querySelector(".leaflet-control-zoom-out")){
+        //     document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition)
+        // }
 
-        ////handle event set to the current position
-        document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click" ,async (e)=>{
-            e.preventDefault();
-            try{
-                const position = await this.getUserLocation();
-                const { coords } = position ;
+        // ////handle event set to the current position
+        // document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click" ,async (e)=>{
+        //     e.preventDefault();
+        //     try{
+        //         const position = await this.getUserLocation();
+        //         const { coords } = position ;
 
-                this.updateCenter(coords.latitude,coords.longitude, 6)
-            }catch(e){
-                alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.")
-            }
-        })
+        //         this.updateCenter(coords.latitude,coords.longitude, 6)
+        //     }catch(e){
+        //         alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.")
+        //     }
+        // })
     }
 
     settingMemoryCenter(){
@@ -533,7 +538,7 @@ class MapModule{
         });
     }
 
-    async initMap(){
+    async initMap(lat= null,long= null){
         
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
@@ -549,7 +554,7 @@ class MapModule{
         }
 
 
-        await this.createMap();
+        await this.createMap(lat,long);
         this.eventSetPositionOnMap();
 
         this.addGeoJsonToMap();

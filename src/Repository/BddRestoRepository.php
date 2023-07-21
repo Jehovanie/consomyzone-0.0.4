@@ -161,6 +161,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.commune,
                         p.villenorm,
                         p.codpost,
+                        p.denominationF,
                         p.denominationF as nom,
                         p.nomvoie,
                         p.compvoie,

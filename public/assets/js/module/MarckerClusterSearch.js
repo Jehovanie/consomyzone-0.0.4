@@ -19,8 +19,8 @@ class MarckerClusterSearch extends MapModule  {
             this.data = this.default_data;
 
             // this.map = await create_map_content(this.geos, this.id_dep, "search");
-
-            await this.initMap();
+            const firstData= this.data.results[0][0]
+            await this.initMap(firstData.lat, firstData.long);
 
             this.bindAction();
 

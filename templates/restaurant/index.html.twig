@@ -5,14 +5,11 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/restaurant/app.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/chatbot.css')}}">
 {% endblock %}
 
 
 {% block javascripts %}
-
-    {# ///we use this to keep track for user search don't add a "defer" //////////////////////// #}
-	<script type="text/javascript"  src="{{asset('assets/js/search_localStorage.js')}}"></script>
-    {# ////////////////////////////////////////////////////////////////////////////////////////// #}
 
 	{# <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/data_resto.js') }}" defer></script>
@@ -102,6 +99,7 @@
         </div>
     </section>
 
+    {% include 'shard/chatbot.twig' %}
     {{ include('shard/restaurant/list_avis.html.twig') }}
     {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
     {{ include('shard/restaurant/modal_modif_avis.html.twig') }}

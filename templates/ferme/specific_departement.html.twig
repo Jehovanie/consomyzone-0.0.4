@@ -10,9 +10,6 @@
 
 
 {% block javascripts %}
-    {# ///we use this to keep track for user search don't add a "defer" //////////////////////// #}
-	<script type="text/javascript"  src="{{asset('assets/js/search_localStorage.js')}}"></script>
-    {# ////////////////////////////////////////////////////////////////////////////////////////// #}
 
 	<script src="{{asset('assets/js/ferme/data_ferme.js')}}" defer></script>
 
@@ -94,5 +91,6 @@
 			</div>
 		</div>
 	</div>
+    {% include 'shard/chatbot.twig' %}
 {% endblock %}
 
