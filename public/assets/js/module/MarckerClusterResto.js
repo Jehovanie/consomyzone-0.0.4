@@ -208,12 +208,21 @@ class MarckerClusterResto extends MapModule  {
 
             const response = await fetch(`/Coord/All/Restaurant${param}`);
             let new_data = await response.json();
+            
+            // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
 
-            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
-         
-            this.addMarker(this.checkeFilterType(new_data));
-          
-            this.default_data.concat(new_data)
+            const new_data_tab= [];
+            for (let data of new_data) {
+                //console.log(data.id)
+                const b=this.default_data.some((element)=>{return  element.id === data.id})
+                //console.log(b)
+                if(!b){
+                    new_data_tab.push(data)
+                }
+            }
+
+            this.addMarker(this.checkeFilterType(new_data_tab));
+            this.default_data.concat(new_data_tab)
         } catch (e) {
             console.log(e)
         }
