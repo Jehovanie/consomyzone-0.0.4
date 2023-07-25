@@ -8,7 +8,7 @@
  * @constructor
  */
 function openChat() {
-    document.querySelector("#chat_container").style="width:28vw;height:85vh; position: fixed;bottom: 0; right: 0; z-index:1003;"
+    document.querySelector("#chat_container").style="width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px !important; z-index:1003;"
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     //document.querySelector("#conversation").innerHTML =""
 }
@@ -46,7 +46,7 @@ function closeChat() {
  * @constructor
  */
 function endChat() {
-    document.querySelector("#chat_container").style="width:70px;height:70px; position: fixed;bottom: 0; right: 0; z-index:1003;background-color:transparent !important;"
+    document.querySelector("#chat_container").style="height:70px; position: fixed;bottom: 0; right: -580px !important; z-index:1003;background-color:transparent;"
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML =""
 }
@@ -56,15 +56,21 @@ function endChat() {
  * @constructor
  */
 function escapeChat() {
+
     let divs = document.querySelectorAll("#conversation > div")
+
     let divs_len = divs.length - 1
+
     divs.forEach(qf=>{
         qf.style=""
     })
+
     if(document.querySelector(".popup_exit")){
         document.querySelector(".popup_exit").remove()
     }
+
     document.querySelector("#conversation > div:nth-child("+divs_len+")").scrollIntoView();
+
 }
 
 /**
@@ -506,4 +512,34 @@ document.querySelector("#btn-send").addEventListener("click", function(e){
     document.querySelector("#text-search").value =""
     
 })
+
+
+
+
+var controller = new ScrollMagic.Controller();
+
+		// build tween
+		var tween = TweenMax.to("#animate", 0.5, {scale: 3, ease: Linear.easeNone});
+
+		// build scene
+		var scene = new ScrollMagic.Scene({triggerElement: "#multiDirect", duration: 400, offset: 250})
+						.setTween(tween)
+						.setPin("#animate")
+						.addIndicators({name: "resize"}) // add indicators (requires plugin)
+						.addTo(controller);
+
+		// init controller horizontal
+		var controller_h = new ScrollMagic.Controller({vertical: false});
+
+		// build tween horizontal
+		var tween_h = TweenMax.to("#animate", 0.5, {rotation: 360, ease: Linear.easeNone});
+
+		// build scene
+		var scene_h = new ScrollMagic.Scene({duration: 700})
+						.setTween(tween_h)
+						.setPin("#animate")
+						.addIndicators({name: "rotate"}) // add indicators (requires plugin)
+						.addTo(controller_h);
+
+
 

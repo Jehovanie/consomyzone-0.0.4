@@ -1041,6 +1041,9 @@
 /* pc */
 
 @media screen and (min-width:1020px) and (max-width: 1251px) {
+    .navleft-chat{
+        right: -205px !important;
+    }
     .apropos-tribu-g {
         width: 220px !important;
         top: 140px !important;
@@ -1136,6 +1139,10 @@
 }
 
 @media screen and (min-width:1260px) and (max-width: 1304px) {
+
+    .navleft-chat{
+        right: -545px !important;
+    }
     .apropos-tribu-g {
         width: 220px !important;
         top: 140px !important;
@@ -1454,12 +1461,16 @@
         width: 315px !important;
     }
 
+    .navleft-chat{
+        right: -625px !important;
+    }
+
     .card-pub-actu img {
         width: 52vw;
     }
 
     #map {
-        margin-left: -12rem !important;
+        margin-left: -5rem !important;
     }
 
     .to\/4\/2 {
@@ -1583,6 +1594,9 @@
 }
 
 @media screen and (min-width: 1680px) and (max-width: 1799px){
+    .navleft-chat{
+        right: -640px !important;
+    }
 
     .apropos-tribu-g{
         width: 300px !important;
@@ -1596,7 +1610,7 @@
     }
 
     #map {
-        margin-left: -12rem !important;
+        margin-left: -8rem !important;
     }
 
     .to\/4\/2 {
@@ -1726,6 +1740,9 @@
 }
 
 @media screen and (min-width: 1800px) and (max-width: 1899px) {
+    .navleft-chat{
+        right: -700px !important;
+    }
     .card-pub-actu img {
         width: 65vw;
     }
@@ -1871,6 +1888,10 @@
 
 
 @media screen and (min-width: 1900px){
+
+    .navleft-chat{
+        right: -703px !important;
+    }
 
     .apropos-tribu-g{
         width: 270px !important;
