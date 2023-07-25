@@ -382,6 +382,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    
     public function getAllFilterByLatLong($data){
         extract($data); //// $last [ min [ lat , lng ], max [ lat, lng ] ], $new [ min [ lat, lng ], max [ lat, lng ] ]
         // dump("-2.548957109000000 3.440684080123901 46.88474655000000 49.18113327026367 ");
@@ -448,28 +449,91 @@ class BddRestoRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
         return $query->execute();
     }
-    //    /**
-    //     * @return BddResto[] Returns an array of BddResto objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?BddResto
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getAllOpenedRestosV2($limits = 0){
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiX,
+                    r.poiY")
+        ->orderBy('RAND()')
+        ->setMaxResults($limits)
+        ->getQuery()
+        ->getResult();
+    }
+    
+    public function getRestoBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiX,
+                    r.poiY")
+        ->where("ABS(r.poiX) >=ABS(:minx) ")
+        ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
+        ->andWhere("ABS(r.poiY) >=ABS(:miny)")
+        ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
+        ->setParameter("minx", $minx)
+        ->setParameter("maxx", $maxx)
+        ->setParameter("miny", $miny)
+        ->setParameter("maxy", $maxy)
+        ->orderBy("r.id", 'ASC')
+        ->setMaxResults(100)
+        ->getQuery()
+        ->getResult();
+    }
 }

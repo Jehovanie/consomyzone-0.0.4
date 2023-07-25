@@ -1,4 +1,4 @@
-const IS_DEV_MODE= false;
+const IS_DEV_MODE= true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -796,4 +796,60 @@ if (document.querySelector(".open-navleft-station-spec")) {
         document.querySelector(".result_container_station_spec").style.display="block"
         iconsChange()
     })
+}
+
+if (document.querySelector("#menu-mobile")) {
+    document.querySelector("#menu-mobile").onclick = () => {
+        if (document.querySelector("#container-mobile")) {
+            document.querySelector("#container-mobile").classList.toggle("content_right_actualite-g_menu");
+            document.querySelector(".card-pub").classList.toggle("bgPersonnalisee_menu");
+        } else if (document.querySelector(".content_right_actualite")) {
+            document.querySelector(".content_right_actualite").classList.toggle("content_right_actualite_menu");
+        } 
+        
+    }
+}
+
+if (document.querySelector("#menu-mobile-tribut")) {
+    document.querySelector("#menu-mobile-tribut").onclick = () => {
+        if (document.querySelector(".content_list_menu_tribut_mob")) {
+            document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
+        }
+    }
+}
+
+if (document.querySelector(".tribu_t")) {
+    document.querySelector(".tribu_t").onclick = () => {
+        alert("Please")
+        // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
+    }
+}
+
+
+/**
+ * active navigation bar map
+ */
+if (document.querySelector(".list-nav-bar")) {
+    const activPage = window.location.pathname
+    const links = document.querySelectorAll('.list-nav-bar');
+    const specFerm = document.querySelector('.result_container_ferme_spec_js')
+    const specReto = document.querySelector('.result_container_resto_spec_js')
+    const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
+    const specStation = document.querySelector('.result_container_station_spec_js')
+    
+    if (links.length) {
+        links.forEach((link) => {
+            if (link.href.includes(`${activPage}`)) {
+                link.classList.add("active");
+            } else if (specFerm) {
+                document.querySelector("#ferme-page").classList.add("active");
+            } else if (specReto) {
+                document.querySelector("#resto-page").classList.add("active");
+            } else if (specRestoArrond) {
+                document.querySelector("#resto-page").classList.add("active");
+            } else if (specStation) {
+                document.querySelector("#station-page").classList.add("active");
+            }
+        });
+    }
 }

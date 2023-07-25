@@ -1,92 +1,22 @@
-
-@media screen and (min-width:1400px) and (max-width: 1550px) {
-    .result_container_resto_spec .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .spec-dep {
-        margin-top: 115px;
-    }
-
-    .result_container_ferme_spec .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .result_container_station_spec .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .result_container_resto_spec_arrond .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-}
-
-
-@media screen and (min-width:1000px) and (max-width: 1399px) {
-    .form__input_time {
-        width: 145px;
-    }
-    .result_container_resto_spec .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .spec-dep {
-        margin-top: 115px;
-    }
-
-    .result_container_ferme_spec .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .result_container_station_spec .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .result_container_resto_spec_arrond .navbar-light-left {
-        margin-top: 1rem !important;
-    }
-
-    .content-logo-shearch {
-        width: 387px;
-    }
-
-    .nav-menu {
-        margin-left: 620px !important;
-        width: 33vw !important;
-    }
-    .nav-menu-connexion {
-        margin-left: 1270px !important;
-        margin-top: -2px;
-        width: 0vw;
-    }
-
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-        height: 112px !important;
-    }
-
-    .form__input_time {
-        margin-top: 15px !important;
-        width: 140px !important;
-        height: 20px !important;
-    }
-}
-
 @media screen and (min-width:1000px) {
     .avatar-account img {
         transform: translate(-8px, 1px);
     }
-    .leaflet-control-container{
-        display: none ;
+
+    .leaflet-control-container {
+        display: none;
     }
-    .leaflet-control-zoom{
+
+    .leaflet-control-zoom {
         display: block !important;
     }
 
-    .recherche-modale .modal-content{
+    .recherche-modale .modal-content {
         width: 40vw;
         height: 10vh;
     }
-    .responsif-none-mobile{
+
+    .responsif-none-mobile {
         display: none !important;
     }
 
@@ -103,25 +33,26 @@
         border-radius: 15px !important;
     }
 
-    .bgPersonnalisee{
-        /* background-image: linear-gradient(#888888 285px, #ffffff 0%); */
+    .bgPersonnalisee {
         border: none !important;
-        /* height: 450px !important; */
     }
-    .bgPersonnalisee_tribut{
+
+    .bgPersonnalisee_tribut {
         background-image: linear-gradient(#888888 320px, #ffffff 0%);
         border: none !important;
         /* height: 350px !important; */
     }
-
-    .listTribu_t_mobile{
-        margin-top: 100px !important;
+    
+    #profilTribu{
+        height: 150px;
+        border-radius: 10px;
     }
 
-    .tribuT_form{
+    .tribuT_form {
         margin-left: 10% !important;
     }
-    .row_confidentiality{
+
+    .row_confidentiality {
         margin-left: 10% !important;
     }
 
@@ -130,61 +61,80 @@
         display: none !important;
     }
 
-    .titre-invitation{
+    .titre-invitation {
         margin-left: 10% !important;
     }
 
-    .right_content.contentTribu{
+    .right_content.contentTribu {
         margin-left: 15% !important;
     }
-    /* .table-list-membre{
-        margin-left: 25% !important;
-    } */
+
+    .change_photo_tribuG_js_jheo{
+        font-size: 18pt;
+        margin-top: 5px;
+        cursor: pointer;
+        background-position: 0px -130px;
+        background-size: auto;
+        width: 20px;
+        height: 20px;
+        background-repeat: no-repeat;
+        display: inline-block;
+    }
 }
 
-@media screen and (max-width:1000px){
+/* phone */
+
+@media screen and (max-width:1000px) {
+
     *,
     *::before,
-    *::after{
+    *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        /* border: none !important; */
-        /* transition: all 0.3s ease; */
+    
     }
+
+    
+
+    .card-pub-actu img {
+        width: 62vw;
+    }
+
     .content_box {
         height: 12%;
         width: 20%;
     }
-    #list-depart-mobile{
+
+    #list-depart-mobile {
         position: absolute;
         transition: all 2s ease-in-out !important;
         background-color: #fff;
         z-index: 407;
     }
 
-    #list-depart-resto-mobile{
+    #list-depart-resto-mobile {
         position: absolute;
         transition: all 2s ease-in-out !important;
-            background-color: #fff;
+        background-color: #fff;
     }
 
-    #list-arrand-resto{
+    #list-arrand-resto {
         position: absolute;
         transition: all 2s ease-in-out !important;
         background-color: #fff;
         /* z-index: 407 !important; */
     }
 
-    .responsif-none{
+    .responsif-none {
         display: none !important;
     }
 
-    .leaflet-control-zoom{
+    .leaflet-control-zoom {
         display: none !important;
     }
 
-    .content_cart_map-respons{
+    .content_cart_map-respons {
         width: 100vw !important;
         height: 100vh !important;
         /* margin-top: 50px !important; */
@@ -324,7 +274,7 @@
         fill: #fff;
     }
 
-    .leaflet-horizontalmiddle .home-mobile svg{
+    .leaflet-horizontalmiddle .home-mobile svg {
         margin-top: 5px;
     }
 
@@ -359,9 +309,9 @@
     }
 
 
-        
-    
-    .content-mobil-resto{
+
+
+    .content-mobil-resto {
         position: relative;
         z-index: 1400 !important;
         background-color: #fff;
@@ -370,15 +320,15 @@
         /* overflow-y: scroll !important; */
     }
 
-    .list-depart-all-mobile{
+    .list-depart-all-mobile {
         position: relative;
         height: 75vh;
         overflow-y: scroll !important;
     }
-   
 
-    
-    .list-depart-all-mobile ul li{
+
+
+    .list-depart-all-mobile ul li {
         list-style: none;
         background-color: #e7e7e7;
         width: 90vw;
@@ -390,16 +340,16 @@
         font-size: 11pt;
     }
 
-    .list-depart-all-mobile ul li h5{
-    
+    .list-depart-all-mobile ul li h5 {
+
         font-size: 12pt;
     }
 
-    .list-depart-all-mobile ul li .container-depart{
+    .list-depart-all-mobile ul li .container-depart {
         margin: auto auto auto auto;
     }
 
-    .list-depart-all-mobile ul li .container-depart svg{
+    .list-depart-all-mobile ul li .container-depart svg {
         fill: #28BE21;
         width: 5vw;
         height: 5vh;
@@ -415,7 +365,7 @@
         transform: scale(1.2);
     }
 
-    .open-navleft-mobile svg{
+    .open-navleft-mobile svg {
         position: absolute;
         left: 15px;
         top: 15px;
@@ -427,13 +377,13 @@
         border-radius: 50%;
     }
 
-    
 
-    .logo-consomyzone{
+
+    .logo-consomyzone {
         width: 50vw;
     }
 
-    .logo-consomyzone img{
+    .logo-consomyzone img {
         width: 50vw !important;
     }
 
@@ -484,7 +434,7 @@
         margin-top: 15px;
     }
 
-    .ferme-specific-mobile h4{
+    .ferme-specific-mobile h4 {
         font-size: 12pt;
         font-weight: 700;
     }
@@ -493,14 +443,14 @@
         font-size: 10pt;
     }
 
-    #list-specific-depart{
+    #list-specific-depart {
         position: absolute;
         transition: all 2s ease-in-out !important;
         background-color: #fff;
         z-index: 407;
     }
 
-    #list-spesific-resto{
+    #list-spesific-resto {
         position: absolute;
         transition: all 2s ease-in-out !important;
         background-color: #fff;
@@ -512,20 +462,20 @@
         height: 100vh !important;
     }
 
-    .content_detail_mobile hr{
+    .content_detail_mobile hr {
         width: 90%;
         margin-left: auto;
         margin-right: auto;
     }
 
-    .content_detail_mobile p{
+    .content_detail_mobile p {
         width: 90%;
         margin-left: auto;
         margin-right: auto;
         text-align: justify;
     }
 
-    .content_detail_mobile .horaires li span{
+    .content_detail_mobile .horaires li span {
         display: block;
         width: 100%;
         margin-left: auto;
@@ -533,7 +483,7 @@
         text-align: justify;
     }
 
-    .content-mobil-ferme-detail{
+    .content-mobil-ferme-detail {
         position: relative;
         z-index: 1400 !important;
         background-color: #fff;
@@ -542,21 +492,21 @@
         /* overflow-y: scroll !important; */
     }
 
-    
-    .titre-ferme h4 a{
+
+    .titre-ferme h4 a {
         font-size: 10pt !important;
     }
 
-    .list-depart-all{
+    .list-depart-all {
         position: relative;
         height: 75vh;
         overflow-y: scroll !important;
     }
-   
-    
 
-    
-    .list-depart-all ul li{
+
+
+
+    .list-depart-all ul li {
         list-style: none;
         background-color: #e7e7e7;
         width: 90vw;
@@ -568,16 +518,16 @@
         font-size: 11pt;
     }
 
-    .list-depart-all ul li h5{
-    
+    .list-depart-all ul li h5 {
+
         font-size: 12pt;
     }
 
-    .list-depart-all ul li .container-depart{
+    .list-depart-all ul li .container-depart {
         margin: auto auto auto auto;
     }
 
-    .list-depart-all ul li .container-depart svg{
+    .list-depart-all ul li .container-depart svg {
         fill: #28BE21;
         width: 5vw;
         height: 5vh;
@@ -593,394 +543,484 @@
         transform: scale(1.2);
     }
 
-    .content-detaile-resto{
+    .content-detaile-resto {
         background-color: #fff;
     }
 
-    .content-detaile-resto h4 span{
+    .content-detaile-resto h4 span {
         font-size: 10pt;
     }
-        
-        .content-mobil-ferme{
-            position: relative;
-            z-index: 400 !important;
-            background-color: #fff;
-            width: 100vw;
-            height: 100vh;
-        }
-        .content_list_menu{
-            width: 60px !important;
-        }
 
-        .account-profils{
-            width: 60px !important;
-        }
+    .content-mobil-ferme {
+        position: relative;
+        z-index: 400 !important;
+        background-color: #fff;
+        width: 100vw;
+        height: 100vh;
+    }
 
+    .content_list_menu {
+        width: 60px !important;
+    }
 
-        .account-profils .rounded-circle{
-            width: 40px !important;
-            height: 40px !important;
-            margin-left: 6px;
-            margin-bottom: 13px;
-            overflow-y: scroll !important;
-
-        }
-
-        .content_global , .right_content{
-            width: 100vw;
-            margin-right: 5px;
-        }
-
-        .tribut_t_reponsive{
-            width: 100vw !important;
-            margin-left: 18px !important;
-        }
-        .container-custom{
-            padding: 2px !important;
-            margin-left: 2px !important;
-        }
-
-        .logo{
-            width: 140px !important;
-        }
-        .profilTribu{
-            width: 50vw !important;
-            max-width: 200px !important;
-            left: 0px !important;
-        }
-        .img_account, .nav-icon{
-            width: 30px !important;
-            margin-top: 0px !important;
-        }
-        .img_menu{
-            margin-top: 0 !important;
-        }
-
-        .navbar-mobile{
-            width: 100vw !important;
-            height: 66px !important;
-        }
-
-        .badge_message, .badge_notification{
-            top: -5px !important;
-            left: 15px !important;
-        }
-
-        .fw-bolder{
-            width: 95vw !important;
-        }
-
-        .navbar-brand{
-            font-size: large !important;
-            margin-right: 0 !important;
-        }
-        
-        .container-invitation{
-            margin-left: 30px !important;
-            margin-top: 30px !important;
-            /* width: 100vw !important; */
-            
-        }
-        #panneau{
-            margin: -50px !important;
-            width: 100vw !important;
-        }
-        #onglets{
-            margin-top: 70px !important;
-        }
-        .demande , .invitation-conf, #contenus{
-            width: 95vw !important;
-        }
-
-        .content_left_menu_account_mobile{
-            width:17vw !important;
-        }
-
-        .notification_popup , .message_popup{
-            right: 2px !important;
-           width: 100vw !important;
-           /* left: 2px !important; */
-        }
-
-        ul.dropdown-menu[data-bs-popper]{
-            width: 60px !important;
-            right: 2px !important;
-            float: right !important;
-            left: 56vw !important;
-        }
-        .na-ul-right{
-            margin-left: -10px !important;
-        }
-
-        .content_right_profil{
-            position: relative !important;
-            margin-left: -43px !important;
-            top: 10px !important;
-            width:109vw !important;
-        }
-        
-        .mobile-responsive{
-            margin-top: -10%;
-        }
-
-        #profilTribu{
-            min-width: 500%;
-            text-align: center;
-            margin-left: 50%;
-        }
-
-        label[for="fileInputTribu"]{
-            margin-left: 80px;
-        }
-
-        .tribuNameContent-mobile, #navBarTribu{
-            font-size: small;
-            color: black;
-        }
-
-        .bgPersonnalisee{
-            background-image: linear-gradient(#888888 320px, #ffffff 0%);
-            border: none !important;
-            /* height: 450px !important; */
-        }
-        .bgPersonnalisee_tribut{
-            background-image: linear-gradient(#888888 320px, #ffffff 0%);
-            border: none !important;
-        }
+    .account-profils {
+        width: 60px !important;
+    }
 
 
-        ul#navBarTribu {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            /*overflow: hidden;*/
-            background-color: white;
-          }
+    .account-profils .rounded-circle {
+        width: 40px !important;
+        height: 40px !important;
+        margin-left: 6px;
+        margin-bottom: 13px;
+        overflow-y: scroll !important;
 
-          /* #navBarTribu > li:nth-child(3){
+    }
+
+    .content_global,
+    .right_content {
+        width: 100vw;
+        margin-right: 5px;
+    }
+
+    .tribut_t_reponsive {
+        width: 100vw !important;
+        margin-left: 18px !important;
+    }
+
+    .container-custom {
+        padding: 2px !important;
+        margin-left: 2px !important;
+    }
+
+    .logo {
+        width: 140px !important;
+    }
+
+    .profilTribu {
+        width: 50vw !important;
+        max-width: 200px !important;
+        left: 0px !important;
+    }
+
+    .img_account,
+    .nav-icon {
+        width: 30px !important;
+        margin-top: 0px !important;
+    }
+
+    .img_menu {
+        margin-top: 0 !important;
+    }
+
+    .navbar-mobile {
+        width: 100vw !important;
+        height: 66px !important;
+    }
+
+    .badge_message,
+    .badge_notification {
+        top: -5px !important;
+        left: 15px !important;
+    }
+
+    .fw-bolder {
+        width: 95vw !important;
+    }
+
+    .navbar-brand {
+        font-size: large !important;
+        margin-right: 0 !important;
+    }
+
+    .container-invitation {
+        margin-left: 30px !important;
+        margin-top: 30px !important;
+        /* width: 100vw !important; */
+
+    }
+
+    .container-invitation-menu {
+        margin-left: 90px !important;
+    }
+
+    #panneau {
+        margin: -50px !important;
+        width: 100vw !important;
+    }
+
+    #onglets {
+        margin-top: 70px !important;
+    }
+
+    .demande,
+    .invitation-conf,
+    #contenus {
+        width: 95vw !important;
+    }
+
+    .content_left_menu_account_mobile {
+        width: 15vw !important;
+    }
+
+    .account-profils img {
+        min-height: 40px !important;
+        min-width: 40px !important;
+        max-width: 40px !important;
+        max-height: 40px !important;
+    }
+
+    .left_menu {
+        padding-left: 0 !important;
+        padding-top: 15px;
+        margin-top: -40px;
+    }
+
+    
+
+    .notification_popup,
+    .message_popup {
+        right: 2px !important;
+        width: 100vw !important;
+        /* left: 2px !important; */
+    }
+
+    ul.dropdown-menu[data-bs-popper] {
+        width: 60px !important;
+        right: 2px !important;
+        float: right !important;
+        left: 56vw !important;
+    }
+
+    .na-ul-right {
+        margin-left: -10px !important;
+    }
+
+    .content_right_profil {
+        position: relative !important;
+        margin-left: -43px !important;
+        top: 10px !important;
+        width: 109vw !important;
+    }
+
+    .mobile-responsive {
+        margin-top: -10%;
+    }
+
+    
+
+    label[for="fileInputTribu"] {
+        margin-left: 80px;
+    }
+
+    .tribuNameContent-mobile,
+    #navBarTribu {
+        font-size: small;
+        color: black;
+    }
+
+    .bgPersonnalisee {
+        background-image: linear-gradient(#888888 320px, #ffffff 0%);
+        border: none !important;
+        width: 100vw;
+        margin-left: 0;
+    }
+    .bgPersonnalisee_menu {
+        width: 90vw !important;
+    }
+
+    .content_right_actualite-g {
+        width: 100% !important;
+    }
+
+    .content_right_actualite-g_menu {
+        width: 88% !important;
+    }
+
+    .card-pub-g {
+        width: 137% !important;
+        margin-left: 2px !important;
+    }
+
+    .bgPersonnalisee_tribut {
+        background-image: linear-gradient(#888888 320px, #ffffff 0%);
+        border: none !important;
+    }
+
+
+    ul#navBarTribu {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        /*overflow: hidden;*/
+        background-color: white;
+    }
+
+    /* #navBarTribu > li:nth-child(3){
              margin-top: 15px; 
           } */
 
-          .dropDownMenu{
-            background-color: blue;
-            text-align: justify !important;
-          }
-          .colorWhite{
-            color: white !important;
-          }
+    .dropDownMenu {
+        background-color: blue;
+        text-align: justify !important;
+    }
+
+    .colorWhite {
+        color: white !important;
+    }
 
 
-          .content_right_actualite {
-            width: 100% !important;
-            height: 100vh !important;
-            overflow-y: scroll;
-            /* overflow-x: hidden; */
-            position: relative !important;
-            right: 0;
-            top: -60px !important;
-            padding: 0px !important;
-            margin-left: 0px !important;
-        }
+    .content_right_actualite {
+        width: 100% !important;
+        height: 100vh !important;
+        overflow-y: scroll;
+        /* overflow-x: hidden; */
+        position: relative !important;
+        right: 0;
+        top: -60px !important;
+        padding: 0px !important;
+        margin-left: 0px !important;
+    }
 
-        .contentImage-mobile{
-            width: 180px !important;
-        }
+    .contentImage-mobile {
+        width: 80px !important;
+    }
 
-        #btnShowModalAddPub{
-            width: 80% !important;
-            font-size: medium;
-        }
+    #btnShowModalAddPub {
+        width: 80% !important;
+        font-size: medium;
+    }
 
-        .user_button{
-            width: 80% !important;
-            margin-left: 25px !important;
-            font-size: small;
-        }
+    .content_title_tribuG {
+        transform: translate(27px, 4%) !important;
+        width: 140px;
+    }
 
-        .rangee{
-            top: 10px !important;
-        }
+    .user_button {
+        width: 80% !important;
+        margin-left: 25px !important;
+        font-size: small;
+    }
 
-        .content_bloc_js_jheo{
-            margin-top: 15px !important;
-            background-color: transparent;
-            margin-bottom: 3px !important;
-            border-radius: 5px !important;
-        }
+    .rangee {
+        top: 10px !important;
+    }
+
+    .content_bloc_js_jheo {
+        margin-top: 15px !important;
+        background-color: transparent;
+        margin-bottom: 3px !important;
+        border-radius: 5px !important;
+    }
 
 
-        .publication_js_jheo{
-            margin-left: -15px !important;
-            margin-right: -15px !important;
-            margin-bottom: 5px !important;
+    .publication_js_jheo {
+        margin-left: -15px !important;
+        margin-right: -15px !important;
+        margin-bottom: 5px !important;
 
-        }
+    }
 
-        .mobile-responsive{
-            margin-bottom: 50px !important;
-        }
+    .mobile-responsive {
+        margin-bottom: 50px !important;
+    }
 
-        .div_mobile{
-            padding: 0rem!important;
-        }
+    .div_mobile {
+        padding: 0rem !important;
+    }
 
-        .nom_mobile{
-            margin-top: 100px !important;
-            width: 60%;
-        }
+    .nom_mobile {
+        margin-top: 100px !important;
+        width: 60%;
+    }
 
-        .profil_mobile{
-            margin-top: -10px !important;
-        }
+    .profil_mobile {
+        margin-top: -10px !important;
+    }
 
-        .right_content{
-            margin-left: 0px !important;
-            margin-right: 15px !important;
-            width: 95vw !important;
+    .right_content {
+        margin-left: 0px !important;
+        margin-right: 15px !important;
+        width: 95vw !important;
 
-        }
+    }
 
-        .listpub_mobile{
-            margin-left: 0px !important;
-        }
+    .listpub_mobile {
+        margin-left: 0px !important;
+    }
 
-        .publication_mobile{
-            margin-left: 20px !important;
-        }
+    .publication_mobile {
+        margin-left: 20px !important;
+    }
 
-        /* .listTribu_t_mobile{
+    /* .listTribu_t_mobile{
             margin-left: -150px !important;
         }*/
 
-        .table-list-membre{
-            margin-left: 0px !important;
-            width: 100% !important;
-        }
+    .table-list-membre {
+        margin-left: 0px !important;
+        width: 100% !important;
+    }
 
-        .tribuT_mobile{
-            margin-left: 0px !important;
-            margin-right: 0px !important;
-            width: 100vw !important;
-        }
+    .tribuT_mobile {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+        width: 100vw !important;
+    }
 
-        .tribuT_form{
-            /* margin-left: 30px !important; */
-            padding-right: 0px !important;
-            width: 95% !important
-        } 
+    .tribuT_form {
+        /* margin-left: 30px !important; */
+        padding-right: 0px !important;
+        width: 95% !important
+    }
 
-        .setting_mobile{
-            margin-left: 10px !important;
-        }
+    .setting_mobile {
+        margin-left: 10px !important;
+    }
 
-        .security_mobile{
-            margin-left: 5px !important;
-        }
+    .security_mobile {
+        margin-left: 5px !important;
+    }
 
-        /* .confidentialite_mobile{
-            margin-left: -30px !important;
-        } */
-        .col_confidentialite{
-            margin-left: 10px !important;
-        }
 
-        /* .outer_icon_message_mobile{
-            margin-bottom: 17px !important;
-        } */
+    .col_confidentialite {
+        margin-left: 10px !important;
+    }
 
-        #profilTribu {
-            min-width: 100% !important;
-            text-align: center;
-            margin-left: 10px !important;
-        }
+    #profilTribu {
+        text-align: center;
+        margin-left: 10px !important;
+        height: 60px;
+        border-radius: 10px;
+    }
 
-        .monTribu_mobile{
-            width: 100% !important;
-        }
+    .monTribu_mobile {
+        width: 100% !important;
+    }
 
-        .contentTribu{
-            margin-left: 0px !important;
-            margin-right: 0px !important;
-        }
-      
-        .paper_mobile{
-            margin-bottom: 15px !important;
-        }
-        .membre-tribut{
-            margin-top: 20px !important;
-        }
-        .detail_agenda_mobile_cont{
-            margin-left: 0px !important;
-        }
-        .detail_agenda_mobile{
-            margin-right: 0px !important;
-        }
-        .avatar-account img {
-            width: 40px !important;
-            border-radius: 50%;
-            margin-top: 2px !important;
-            margin-left: 2px;
-        }
-        .row>.item-photo {
+    .contentTribu {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
 
-            width: 30% !important;
-        }
-        #gallery{
-            margin-left: 0px !important;
-        }
+    .paper_mobile {
+        margin-bottom: 15px !important;
+    }
 
-        .card-couverture-pub-tribu-t{
-            width: 100vw !important;
-            margin-top: -190px !important;
-        }
+    .membre-tribut {
+        margin-top: 20px !important;
+    }
 
-        .card-couverture-pub-tribu-t .content-couverture{
-            width: 100vw !important;
-        }
+    .detail_agenda_mobile_cont {
+        margin-left: 0px !important;
+    }
 
-        .card-couverture-pub-tribu-t .content-couverture h1{
-            margin-left: 150px !important;
-        }
-        .card-couverture-pub-tribu-t .content-couverture .p-mobile{
-            margin-left: 150px !important;
-        }
+    .detail_agenda_mobile {
+        margin-right: 0px !important;
+    }
 
-        .content_right_actualite .card-couverture-pub-tribu-t .nome-fontateur-tribu-t{
-            margin-top: 55px !important;
-        }
+    .card-couverture-pub-tribu-t {
+        width: 100vw !important;
+        margin-top: -190px !important;
+    }
 
-        .champ-pub{
-            width: 100vw !important;
-            margin-top: 250px !important;
-        }
+    .card-couverture-pub-tribu-t .content-couverture {
+        width: 100vw !important;
+    }
 
-        .content_right_actualite .pub-tribu-t {
-            width: 100vw !important;
-        }
+    .card-couverture-pub-tribu-t .content-couverture h1 {
+        margin-left: 150px !important;
+    }
 
-        .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-            height: 50px !important;
-        }
+    .card-couverture-pub-tribu-t .content-couverture .p-mobile {
+        margin-left: 150px !important;
+    }
 
-        .content-tribu-t-name{
-            margin-left: -150px;
-        }
+    .content_right_actualite .card-couverture-pub-tribu-t .nome-fontateur-tribu-t {
+        margin-top: 55px !important;
+    }
 
-        .content-tribu-t{
-            width: 140vw;
-        }
-        
-        
+    .champ-pub {
+        width: 100vw !important;
+        margin-top: 250px !important;
+    }
+
+    .content_right_actualite .pub-tribu-t {
+        width: 100vw !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 50px !important;
+    }
+
+    .content-tribu-t-name {
+        margin-left: -150px;
+    }
+
+    .content-tribu-t {
+        width: 140vw;
+    }
+
+    .content_right_actualite {
+        width: 100vw !important;
+    }
+
+    .content_right_actualite_menu {
+        width: 83vw !important;
+        margin-left: 60px !important;
+    }
+
+    .bgPersonnalisee {
+        background-image: none !important;
+    }
+
+    .change_photo_tribuG_js_jheo{
+        font-size: 12pt !important;
+        margin-left: -30px;
+    }
+
+    .card-my-tribu-t .avatar-tribu {
+        width: 35px !important;
+        height: 35px;
+        border-radius: 15px;
+    }
+
+    .content_list_menu_tribut_mob {
+        background-color: #fff;
+        padding: 20px;
+        width: 304px !important;
+        height: 100vh;
+        margin-left: -85vw;
+        transition: margin-left 1.5s;
+    }
+
+    .content_list_menu_tribut_mob .card-my-tribu-t a{
+        color: #000;
+        text-decoration: none;
+    }
+
+    .transition-mob{
+        margin-left: 0;
+        transition: margin-left 1.5s;
+    }
+
+    /* .left_menu {
+        background-color: transparent;
+    } */
+
 }
 
 @media screen and (max-width:400px) and (min-width:300px) {
     .content_right_actualite .card-couverture-pub-tribu-t .nome-fontateur-tribu-t p {
         margin-top: -25px !important;
-        
+
     }
 
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture{
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 17vh !important;
+    }
+    .account-profil-conected .pdp img {
+        width: 110px !important;
     }
 }
 
@@ -989,13 +1029,898 @@
         margin-top: 0 !important;
     }
 
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture{
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 18vh !important;
     }
+
+    .account-profil-conected .pdp img {
+        width: 110px !important;
+    }
+}
+
+/* pc */
+
+@media screen and (min-width:1020px) and (max-width: 1251px) {
+    .navleft-chat{
+        right: -205px !important;
+    }
+    .apropos-tribu-g {
+        width: 220px !important;
+        top: 140px !important;
+    }
+
+    .ep {
+        margin-left: -64px;
+    }
+
+    .navbar-brand img {
+        width: 7rem !important;
+    }
+
+    .nav-item a {
+        font-size: 10pt !important;
+    }
+
+    .nav-item li{
+        margin-left: 15px !important;
+    }
+
+    .xn {
+        padding-left: 4rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 390px;
+        margin-left: 20px !important;
+    }
+
+    .uf {
+        max-width: 44.75rem !important;
+    }
+
+    .card-pub-actu img {
+            width: 52vw;
+        }
+    .content_list {
+        margin-left: -15px;
+    }
+    .form__input_time {
+        width: 145px;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    /* .spec-dep {
+        margin-top: 115px;
+    } */
+
+    .result_container_ferme_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 360px;
+    }
+
+    .nav-menu {
+        margin-left: 390px !important;
+        width: 42vw;
+    }
+
+    .nav-menu-connexion {
+        margin-left: 950px !important;
+        margin-top: -2px;
+        width: 0vw;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .form__input_time {
+        margin-top: 15px !important;
+        width: 140px !important;
+        height: 20px !important;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 110px !important;
+    }
+}
+
+@media screen and (min-width:1260px) and (max-width: 1304px) {
+
+    .navleft-chat{
+        right: -545px !important;
+    }
+    .apropos-tribu-g {
+        width: 220px !important;
+        top: 140px !important;
+    }
+
+    .xn {
+        padding-left: 4rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 530px;
+        margin-left: 20px !important;
+    }
+
+    .uf {
+        max-width: 44.75rem !important;
+    }
+    .card-pub-actu img {
+            width: 52vw;
+        }
+    .form__input_time {
+        width: 145px;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    /* .spec-dep {
+        margin-top: 115px;
+    } */
+
+    .result_container_ferme_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 360px;
+    }
+
+    .nav-menu {
+        margin-left: 570px !important;
+        width: 35vw !important;
+    }
+
+    .nav-menu-connexion {
+        margin-left: 1140px !important;
+        margin-top: -2px;
+        width: 0vw;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .form__input_time {
+        margin-top: 15px !important;
+        width: 140px !important;
+        height: 20px !important;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 110px !important;
+    }
+
+    .content_list {
+        margin-left: -15px;
+    }
+
+    .account-profils img{
+        min-height: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        max-height: 60px !important;
+    }
+}
+
+@media screen and (min-width:1305px) and (max-width: 1439px) {
+
+    .apropos-tribu-g {
+        width: 290px !important;
+        top: 140px !important;
+    }
+
+    .xn {
+        padding-left: 4rem !important;
+    }
+
+    .head-pub .param-content-g i {
+        margin-left: 140px !important;
+    }
+
+    .uf {
+        max-width: 44.75rem !important;
+    }
+    .card-pub {
+        margin-left: 0px !important;
+    }
+
+    .form__input_time {
+        width: 145px;
+    }
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    /* .spec-dep {
+        margin-top: 115px;
+    } */
+
+    .result_container_ferme_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 530px;
+        margin-left: 20px !important;
+    }
+
+    .nav-menu {
+        margin-left: 620px !important;
+        width: 33vw !important;
+    }
+    .nav-menu-connexion {
+        margin-left: 1180px !important;
+        margin-top: -2px;
+        width: 0vw;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .form__input_time {
+        margin-top: 15px !important;
+        width: 140px !important;
+        height: 20px !important;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 110px !important;
+    }
+
+    .account-profils img{
+        min-height: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        max-height: 60px !important;
+    }
+}
+
+@media screen and (min-width:1440px) and (max-width: 1550px) {
+    .apropos-tribu-g {
+        width: 290px !important;
+        top: 140px !important;
+    }
+    .card-pub-actu img {
+        width: 52vw;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .account-profils img {
+        min-height: 70px !important;
+        min-width: 70px !important;
+        max-width: 70px !important;
+        max-height: 70px !important;
+    }
+
+    /* .spec-dep {
+        margin-top: 115px;
+    } */
+
+    .result_container_ferme_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .container-invitation {
+        margin-left: 430px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t {
+        margin-top: -225px !important;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 334px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .flow-content .i-x {
+        margin-left: 22vw !important;
+    }
+
+    .i-apropos {
+        top: 147px !important;
+        right: 39vw !important;
+    }
+
+    .content-logo-shearch {
+        width: 50vw !important;
+    }
+
+    .head-left {
+        padding-top: 10px !important;
+    }
+
+   
+
+    .result_container_resto_spec .head-left {
+        padding-top: 0 !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 15px !important;
+    }
+
+    .result_container_resto_spec_arrond .head-left {
+        padding-top: 20px !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    /* .result_container_station_spec .head-left {
+        padding-top: 70px !important;
+    } */
+
+    .navbar-light-left .fa-x {
+        margin-left: 162px !important;
+    }
+
+    .navbar-light-bar .navbar-brand img {
+        margin-top: 5px !important;
+    }
+
+    .nav__toggler {
+        margin-left: 930px !important;
+    }
+
+    .card-pub {
+        width: 83vw;
+        margin-left: 0;
+    }
+
+    .card-setting {
+        width: 73vw;
+        margin-left: -23px;
+    }
+
+    .card-setting-password {
+        width: 73vw;
+        margin-left: -59px;
+    }
+
+    .card-setting-confid {
+        width: 73vw;
+        margin-left: -116px;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 15px !important;
+    }
+
+    .nav-menu {
+        margin-left: 600px !important;
+        width: 30vw !important;
+    }
+
+    .nav-menu-connexion {
+        /* margin-left: 1720px !important; */
+        width: 0vw;
+    }
+
+    .form__input_time {
+        width: 145px !important;
+    }
+
+    .content_list {
+        margin-left: -15px;
+    }
+}
+
+@media screen and (min-width: 1551px) and (max-width: 1679px) {
+    .apropos-tribu-g {
+        width: 315px !important;
+    }
+
+    .navleft-chat{
+        right: -625px !important;
+    }
+
+    .card-pub-actu img {
+        width: 52vw;
+    }
+
+    #map {
+        margin-left: -5rem !important;
+    }
+
+    .to\/4\/2 {
+        margin-left: -6.5rem !important;
+    }
+
+    .head-pub .param-content i {
+        margin-left: 460px !important;
+    }
+
+    .container-invitation {
+        margin-left: 355px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t {
+        margin-top: -220px !important;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 235px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .flow-content .i-x {
+        margin-left: 22vw !important;
+    }
+
+    .i-apropos {
+        top: 147px !important;
+        right: 39vw !important;
+    }
+
+    .content-logo-shearch {
+        width: 40vw !important;
+    }
+
+    .left_menu {
+        height: 899px;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 15px !important;
+    }
+
+    .result_container_resto_spec .head-left {
+        padding-top: 20px !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec_arrond .head-left {
+        padding-top: 70px !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    /* .result_container_station_spec .head-left {
+        padding-top: 70px !important;
+    } */
+
+    .navbar-light-left .fa-x {
+        margin-left: 185px !important;
+    }
+
+    .navbar-light-bar .navbar-brand img {
+        margin-top: 5px !important;
+    }
+
+    .nav__toggler {
+        margin-left: 970px !important;
+    }
+
+    .card-pub {
+        width: 80vw;
+        margin-left: 0;
+    }
+
+    .card-setting {
+        width: 73vw;
+        margin-left: -23px;
+    }
+
+    .card-setting-password {
+        width: 73vw;
+        margin-left: -59px;
+    }
+
+    .card-setting-confid {
+        width: 73vw;
+        margin-left: -116px;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 110px !important;
+    }
+
+    .content_list {
+        margin-left: -15px;
+    }
+
+    .nav-menu {
+        margin-left: 650px !important;
+        width: 30vw !important;
+    }
+
+    .nav-menu-connexion {
+        margin-left: 1430px !important;
+        width: 0vw;
+    }
+
+    .form__input_time {
+        width: 145px !important;
+    }
+}
+
+@media screen and (min-width: 1680px) and (max-width: 1799px){
+    .navleft-chat{
+        right: -640px !important;
+    }
+
+    .apropos-tribu-g{
+        width: 300px !important;
+    }
+    .card-pub-actu img {
+        width: 52vw;
+    }
+
+    .\32xl\:ud-max-w-230 {
+        max-width: 63.5rem !important;
+    }
+
+    #map {
+        margin-left: -8rem !important;
+    }
+
+    .to\/4\/2 {
+        margin-left: -9.3rem !important;
+    }
+    .head-pub .param-content i {
+            margin-left: 470px !important;
+        }
+    .container-invitation {
+        margin-left: 355px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t {
+        margin-top: -220px !important;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 265px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .flow-content .i-x {
+        margin-left: 22vw !important;
+    }
+
+    .i-apropos {
+        top: 147px !important;
+        right: 39vw !important;
+    }
+
+    .content-logo-shearch {
+        width: 40vw !important;
+    }
+
+    .head-left {
+        padding-top: 35px !important;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec .head-left {
+        padding-top: 70px !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec_arrond .head-left {
+        padding-top: 70px !important;
+    }
+
+    .left_menu {
+        height: 899px;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    /* .result_container_station_spec .head-left {
+        padding-top: 70px !important;
+    } */
+
+    .navbar-light-left .fa-x {
+        margin-left: 195px !important;
+    }
+
+    .navbar-light-bar .navbar-brand img {
+        margin-top: 5px !important;
+    }
+
+    .nav__toggler {
+        margin-left: 1230px !important;
+    }
+
+    .card-pub {
+        width: 82.7vw;
+        margin-left: -2vw;
+    }
+
+    .card-setting {
+        width: 73vw;
+        margin-left: -23px;
+    }
+
+    .card-setting-password {
+        width: 73vw;
+        margin-left: -59px;
+    }
+
+    .card-setting-confid {
+        width: 73vw;
+        margin-left: -116px;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 80px !important;
+    }
+
+    .content_list {
+        margin-left: -15px;
+    }
+
+    .nav-menu {
+        margin-left: 760px !important;
+        width: 30vw !important;
+    }
+
+    .nav-menu-connexion {
+        margin-left: 1530px !important;
+        width: 0vw;
+    }
+
+    .form__input_time {
+        width: 145px !important;
+    }
+
+    .content_right_actualite {
+        top: 79px !important;
+    }
+}
+
+@media screen and (min-width: 1800px) and (max-width: 1899px) {
+    .navleft-chat{
+        right: -700px !important;
+    }
+    .card-pub-actu img {
+        width: 65vw;
+    }
+    .apropos-tribu-g{
+        width: 260px !important;
+    }
+
+    #map {
+        margin-left: -12rem !important;
+    }
+
+    .ep {
+        margin-left: -90px;
+    }
+
+    .to\/4\/2 {
+        width: 56% !important;
+    }
+
+    .head-pub .param-content i {
+        margin-left: 830px;
+    }
+    .container-invitation {
+        margin-left: 355px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t {
+        margin-top: -220px !important;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 265px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .flow-content .i-x {
+        margin-left: 22vw !important;
+    }
+
+    .i-apropos {
+        top: 147px !important;
+        right: 39vw !important;
+    }
+
+    .content-logo-shearch {
+        width: 40vw !important;
+        margin-left: -155px !important;
+    }
+
+    .head-left {
+        padding-top: 35px !important;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec .head-left {
+        padding-top: 70px !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    .result_container_resto_spec_arrond .head-left {
+        padding-top: 70px !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 35px !important;
+    }
+
+    /* .result_container_station_spec .head-left {
+        padding-top: 70px !important;
+    } */
+
+    .navbar-light-left .fa-x {
+        margin-left: 220px !important;
+    }
+
+    .navbar-light-bar .navbar-brand img {
+        margin-top: 5px !important;
+    }
+
+    .nav__toggler {
+        margin-left: 1230px !important;
+    }
+
+    .card-pub {
+        width: 82.7vw;
+        margin-left: -6vw;
+    }
+
+    .card-setting {
+        width: 73vw;
+        margin-left: -23px;
+    }
+
+    .card-setting-password {
+        width: 73vw;
+        margin-left: -59px;
+    }
+
+    .card-setting-confid {
+        width: 73vw;
+        margin-left: -116px;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 80px !important;
+    }
+
+    .content_list {
+        margin-left: -15px;
+    }
+
+    .nav-menu {
+        margin-left: 760px !important;
+        width: 30vw !important;
+    }
+
+    .nav-menu-connexion {
+        margin-left: 1530px !important;
+        width: 0vw;
+    }
+
+    .form__input_time {
+        width: 145px !important;
+    }
+
+    .content_right_actualite {
+        top: 79px !important;
+    }
+    .left_menu {
+        height: 929px;
+    }
+
 }
 
 
 @media screen and (min-width: 1900px){
+
+    .navleft-chat{
+        right: -703px !important;
+    }
+
+    .apropos-tribu-g{
+        width: 270px !important;
+    }
+
+    ul#navBarTribu li.listNavBarTribu a {
+        padding: 5px 5px !important;
+    }
+
+    .card-pub-actu img {
+        width: 65vw;
+    }
+
+    #map {
+        margin-left: -16rem !important;
+    }
+
+    .to\/4\/2 {
+        margin-left: -16.5rem !important;
+        width: 56% !important;
+    }
+
+    .head-pub .param-content i {
+        margin-left: 840px !important;
+    }
+
+    .\32xl\:ud-max-w-230 {
+        max-width: 80.5rem !important;
+    }
     .content_right_actualite .exprime-pub{
         margin-top: 340px !important;
     }
@@ -1009,18 +1934,28 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-        height: 165px !important;
+        height: 100px !important;
     }
 
     .content_right_actualite {
-        top: 78px !important; 
+        top: 78px !important;
+        /* width: 86% !important; */
+    }
+
+    .content_right_actualite-g {
+        width: 86vw !important;
+    }
+
+    .card-tribu-g {
+        width: 80.9vw !important;
     }
     .container-invitation {
         margin-left: 419px !important;
     }
 
     .content_list {
-        margin-top: 140px !important;
+        margin-top: 0 !important;
+        margin-left: -25px;
     }
 
 	
@@ -1034,7 +1969,7 @@
     }
 
     .content-logo-shearch {
-        width: 28vw !important;
+        width: 40vw !important;
     }
 
     .navbar-light-bar .navbar-brand img {
@@ -1080,10 +2015,10 @@
     .result_container_station_spec .navbar-light-left{
 	    margin-top: 35px !important;
     }
-
+/* 
     .result_container_station_spec .head-left{
 	    padding-top: 70px !important;
-    }
+    } */
 
     .navbar-light-left .fa-x {
         margin-left: 230px !important;
@@ -1094,8 +2029,8 @@
     }
 
     .card-pub {
-        width: 76vw;
-        margin-left: -70px;
+        width: 82.7vw;
+        margin-left: -100px;
     }
 
     .card-setting {
@@ -1126,124 +2061,39 @@
         margin-left: 1720px !important;
         width: 0vw;
     }
-}
 
-@media screen and (min-width: 1445px) and (max-width: 1899px){
-    .container-invitation {
-        margin-left: 430px !important;
-    }
-
-    .content_right_actualite .card-couverture-pub-tribu-t {
-        margin-top: -315px !important;
-    }
-
-    .content_right_actualite .exprime-pub {
-        margin-top: 334px !important;
-    }
-
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-        height: 165px !important;
-    }
-    .flow-content .i-x {
-        margin-left: 22vw !important;
-    }
-
-    .i-apropos {
-        top: 147px !important;
-        right: 39vw !important;
-    }
-    .content-logo-shearch {
-        width: 28vw !important;
-    }
-    .head-left{
-        padding-top: 35px !important;
-    }
-
-    .result_container_resto_spec .navbar-light-left{
-	margin-top: 35px !important;
-    }
-
-    .result_container_resto_spec .head-left{
-	 padding-top: 70px !important;
-    }
-    .result_container_resto_spec_arrond .navbar-light-left{
-	margin-top: 35px !important;
-    }
-
-    .result_container_resto_spec_arrond .head-left{
-	 padding-top: 70px !important;
-    }
-
-    .result_container_station_spec .navbar-light-left{
-	margin-top: 35px !important;
-    }
-
-    .result_container_station_spec .head-left{
-	 padding-top: 70px !important;
-    }
-
-    .navbar-light-left .fa-x {
-        margin-left: 215px !important;
-    }
-
-    .navbar-light-bar .navbar-brand img {
-        margin-top: 5px !important;
-    }
-
-    .nav__toggler {
-        margin-left: 1230px !important;
-    }
-
-    .card-pub {
-        width: 78vw;
-        margin-left: -70px;
-    }
-
-    .card-setting {
-        width: 73vw;
-        margin-left: -23px;
-    }
-
-    .card-setting-password {
-        width: 73vw;
-        margin-left: -59px;
-    }
-
-    .card-setting-confid {
-        width: 73vw;
-        margin-left: -116px;
-    }
-
-    .listTribu_t_mobile {
-        margin-top: 110px !important;
-    }
-
-    .nav-menu {
-        margin-left: 951px !important;
-        width: 25vw !important;
-    }
-
-    .nav-menu-connexion {
-        margin-left: 1720px !important;
-        width: 0vw;
-    }
-    .form__input_time {
-        width: 145px !important;
+    .left_menu {
+        height: 930px;
     }
 }
 
-@media screen and (min-height: 600px)  and (max-height : 899px){
+/* **************respensif height************ */
+
+@media screen and (min-height: 600px)  and (max-height : 799px){
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 21vh !important;
     }
 }
 
-
-
-@media screen and (min-height: 900px) and (max-height : 1056px) {
+@media screen and (min-height: 800px) and (max-height : 1056px) {
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 216px !important;
     }
-    
-    
-}
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
+        height: 157px !important;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 355px !important;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t {
+        margin-top: -240px !important;
+        height: 25vh !important;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: -115px !important;
+    }
+}  

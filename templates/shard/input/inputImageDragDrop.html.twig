@@ -1,0 +1,19 @@
+<div class="image-upload">
+	
+	<div class="image-upload-wrap">
+<input class="image-upload-input" type='file' onchange="readURL(this);" accept="image/png, image/jpeg, image/gif"/>
+
+		<div class="drag-text">
+			<img src="{{asset('assets/image/uplaodIcon.png')}}" alt="">
+			<h3>Faites glisser et déposez un fichier ou sélectionnez ajouter une image</h3>
+		</div>
+	</div>
+	<div class="image-upload-content">
+		<img class="image-upload-image" src="#" alt="your image"/>
+		<div class="image-title-wrap">
+			<button type="button" onclick="removeUpload()" class="remove-image-uplaod">Suppression
+				<span class="image-title">Uploaded Image</span>
+			</button>
+		</div>
+	</div>
+</div>
