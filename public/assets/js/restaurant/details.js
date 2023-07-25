@@ -2,8 +2,21 @@
 /* THIS CODE USES THE  INSTANCE  of 'MarckerClusterResto' CREATED IN FILE marckerClusterResto_spec.js */
 /*--------------------------------------------------------------------------------------------------------*/
 
-function getDetailFromListLeft(nom_dep, id_dep, id_ferme) {
-    OBJECT_MARKERS_RESTO.clickOnMarker(id_ferme)
+function getDetailFromListLeft(nom_dep, id_dep, id_resto) {
+    
+    if(OBJECT_MARKERS_RESTO.checkIsExist(id_resto)){
+        OBJECT_MARKERS_RESTO.clickOnMarker(id_resto)
+    }else{
+        if (screen.width < 991) {
+            var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+            location.assign(pathDetails)
+        } else {
+            getDetailResto(id_dep, nom_dep, id_resto, false)
+        }
+
+        /// update card and the markers new
+        OBJECT_MARKERS_RESTO.fetchOneData(id_resto)
+    }
 }
 
 

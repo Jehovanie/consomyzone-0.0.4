@@ -8,13 +8,13 @@ class MarckerClusterResto extends MapModule  {
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
-            this.initMap();
-
+            
             const link =( this.nom_dep && this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}` : `/Coord/All/Restaurant`;
             const response= await fetch(link);
             this.default_data= await response.json();
             this.data= this.default_data; 
             
+            this.initMap();
 
             this.bindAction()
         }catch(e){
@@ -78,70 +78,83 @@ class MarckerClusterResto extends MapModule  {
 
     addMarker(newData){
         newData.forEach(item => {
+            this.settingSingleMarker(item, false)
+        })
 
-            const departementName = item.depName
-            const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+        this.map.addLayer(this.markers);
+    }
 
-            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
-            const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
 
-            const marker = L.marker(
-                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
-                {
-                    icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
-                    cleNom: item.denominationF,
-                    id: item.id
+    settingSingleMarker(item, isSelected= false){
+
+        const departementName = item.depName
+        const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+
+        const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
+        const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
+
+        const marker = L.marker(
+            L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+            {
+                icon: isSelected ? setIconn('assets/icon/NewIcons/icon-resto-new-Rr.png') : setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
+                cleNom: item.denominationF,
+                id: item.id
+            }
+        );
+
+        marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
+
+        marker.on('click', (e) => {
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                    iconSize: [32,50],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
                 }
-            );
+            })
 
-            marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
+            marker.setIcon(new icon_R);
 
-            marker.on('click', (e) => {
-                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
-
-                const icon_R = L.Icon.extend({
+            if (this.marker_last_selected && this.marker_last_selected != marker ) {
+                const icon_B = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
                         iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
+                        //shadowUrl: 'my-icon-shadow.png',
                         shadowSize: [68, 95],
                         shadowAnchor: [22, 94]
                     }
                 })
-                marker.setIcon(new icon_R);
+                this.marker_last_selected.setIcon(new icon_B)
+            }
+            this.marker_last_selected = marker;
 
-                if (this.marker_last_selected && this.marker_last_selected != marker ) {
-                    const icon_B = L.Icon.extend({
-                        options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
-                            iconSize: [32,50],
-                            iconAnchor: [11, 30],
-                            popupAnchor: [0, -20],
-                            //shadowUrl: 'my-icon-shadow.png',
-                            shadowSize: [68, 95],
-                            shadowAnchor: [22, 94]
-                        }
-                    })
-                    this.marker_last_selected.setIcon(new icon_B)
-                }
-                this.marker_last_selected = marker;
+            this.markers.refreshClusters();
 
-                this.markers.refreshClusters();
-
-                if (screen.width < 991) {
-                    var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                    location.assign(pathDetails)
-                } else {
-                    getDetailResto(item.dep, item.depName, item.id, false)
-                }
-
-            })
-
-            this.markers.addLayer(marker);
+            if (screen.width < 991) {
+                var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                location.assign(pathDetails)
+            } else {
+                getDetailResto(item.dep, item.depName, item.id, false)
+            }
 
         })
-        this.map.addLayer(this.markers);
+
+        this.markers.addLayer(marker);
+
+        if( isSelected ) {
+            this.marker_last_selected= marker;
+
+            this.markers.refreshClusters();
+            this.map.addLayer(this.markers);
+        }
     }
 
       
@@ -171,12 +184,49 @@ class MarckerClusterResto extends MapModule  {
         }
     }
 
+    checkIsExist(idToCheck){
+        return this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
+    }
+
     clickOnMarker(id){
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');  
+                marker.fireEvent('click'); 
             }
         });
+    }
+
+  
+
+    async fetchOneData(id){
+        try {
+    
+            if(this.marker_last_selected){
+                const icon_B = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
+                        iconSize: [32,50],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        //shadowUrl: 'my-icon-shadow.png',
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
+                    }
+                })
+                this.marker_last_selected.setIcon(new icon_B)
+            }
+
+            const api_data= `/api/restaurant/${this.id_dep}/${this.id_dep}/details/${id}`;
+            const response = await fetch(api_data);
+            let { details } = await response.json();
+            this.updateCenter(details.lat, details.long, this.zoomDetails);
+            
+            this.settingSingleMarker(details, true);
+
+            this.default_data= this.default_data.concat([details]);
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     filterByFirstLetterOnName(letter){

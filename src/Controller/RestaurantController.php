@@ -37,7 +37,7 @@ class RestaurantController extends AbstractController
         return $this->render("restaurant/index.html.twig", [
             "departements" => $departementRepository->getDep(),
             //"number_of_departement" => count($bddResto->getAllOpenedRestos()),
-            "number_of_departement" => count($bddResto->getCoordinateAndRestoIdForSpecific(75)),
+            "number_of_departement" => $bddResto->getAccountRestauranting(),
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             // "codinsees" => $datas,
@@ -132,7 +132,7 @@ class RestaurantController extends AbstractController
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
 
-        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+        $datas = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
 
         $resultCount = $bddResto->getAccountRestauranting($codeDep);
 
@@ -146,8 +146,6 @@ class RestaurantController extends AbstractController
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
-            
-
         ]);
     }
 
@@ -203,7 +201,7 @@ class RestaurantController extends AbstractController
         return $this->render("restaurant/restaurant_arrondisment.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
-            "restaurants" => $bddResto->getCoordinateAndRestoIdForSpecificParis($codeDep),
+            "restaurants" => $resto,
             "codinsees" => $datas,
             "resto_nombre" => $resultCount,
             "profil" => $statusProfile["profil"],
@@ -309,8 +307,10 @@ class RestaurantController extends AbstractController
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
      * 
      * @Route("/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="app_detail_restaurant" , methods="GET" )
+     * @Route("/api/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="api_detail_restaurant" , methods="GET" )
      */
     public function detailRestaurant(
+        Request $request,
         CodeapeRepository $codeApeRep,
         BddRestoRepository $bddResto,
         Status $status,
@@ -319,9 +319,19 @@ class RestaurantController extends AbstractController
         $id_restaurant
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
+        $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        if(str_contains($request->getPathInfo(), '/api/restaurant')){
+            return $this->json([
+                "details" => $details,
+                "id_dep" => $id_dep,
+                "nom_dep" => $nom_dep,
+            ], 200);
+        }
+
 
         return $this->render("restaurant/detail_resto.html.twig", [
-            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],

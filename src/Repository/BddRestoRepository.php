@@ -93,6 +93,35 @@ class BddRestoRepository extends ServiceEntityRepository
     {
     }
 
+    public function getAllRestoIdForSpecificDepartement($dep)
+    {
+        return $this->createQueryBuilder("r")
+            ->select("r.id,r.denominationF,
+                r.numvoie,r.typevoie,
+                r.nomvoie,r.compvoie,
+                r.codpost,r.villenorm,
+                r.commune,r.restaurant,
+                r.brasserie,r.creperie,
+                r.fastFood,r.pizzeria,
+                r.boulangerie,r.bar,
+                r.cuisineMonde,r.cafe,
+                r.salonThe,r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,r.horaires1,
+                r.prestation1,r.regimeSpeciaux1,
+                r.repas1,r.typeCuisine1,
+                r.dep,r.depName,r.tel,
+                r.poiX,r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep",$dep)
+            ->getQuery()
+            ->getResult();
+    }
+
+
     public function getCoordinateAndRestoIdForSpecific($dep)
     {
         return $this->createQueryBuilder("r")
@@ -399,22 +428,42 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getOneRestaurant($dep, $id)
     {
         return $this->createQueryBuilder("r")
-            ->select("r.id,r.denominationF,
-                r.numvoie,r.typevoie,
-                r.nomvoie,r.compvoie,
-                r.codpost,r.villenorm,
-                r.commune,r.restaurant,
-                r.brasserie,r.creperie,
-                r.fastFood,r.pizzeria,
-                r.boulangerie,r.bar,
-                r.cuisineMonde,r.cafe,
-                r.salonThe,r.site1,
+            ->select("r.id,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
                 r.fonctionalite1,
-                r.fourchettePrix1,r.horaires1,
-                r.prestation1,r.regimeSpeciaux1,
-                r.repas1,r.typeCuisine1,
-                r.dep,r.depName,r.tel,r.codinsee,
-                r.poiX,r.poiY")
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.codinsee,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
             ->where("r.dep =:dep")
             ->andWhere("r.id =:id")
             //->groupBy("r.denominationF, r.poiX, r.poiY")
