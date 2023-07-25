@@ -164,16 +164,49 @@
 			<!-- ====== Chart Two Start -->
 			<div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none">
 				<div class="kb qg ss">
-					<div class="kb qs">
+					{# <div class="kb qs">
 						<h4 class="tn kn zn gs">C'est quoi tribu G?</h4>
+					</div> #}
+                    <div class="kb qs">
+                        <img id="profilTribu" src="{{tributG.profil.avatar ? asset('uploads/tribus/photos/' ~ tributG.profil.avatar) : asset('uploads/tribus/photos/avatar_tribu.jpg')}}">
 					</div>
+                    <div class="responsif-none">
+                        {% if tributG.profil.roles is same as("fondateur") %}
+                            <label style="margin-left:15%;" for="fileInputTribu">
+                                <i class="bi bi-camera-fill change_photo_tribuG_js_jheo"></i>
+                            </label>
+                            <input type="file" name="fileInputTribu" id="fileInputTribu" style="display:none;visibility:none;">
+                        {% else %}
+                            <div class="my-2"></div>
+                        {% endif %}
+                    </div>
 
 				</div>
 
 				<div>
 					<div class="-ud-ml-5 -ud-mb-9">
-						<p>tribu G c'est Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis ex enim, commodi eaque quod esse.</p>
+                        <div class="mb-5">
+                            <h4 class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name={{tributG.profil.name}}>{{tributG.profil.name}}</h4>
+                            <small>
+                                <i>{{tributG.profil.description}}</i>
+                            </small>
+                        </div>
+
 					</div>
+                    <nav class="nav-tribu-g">
+                        <ul id="navBarTribu">
+                            <li class="listNavBarTribu tribu_active">
+                                <a href="#" id="fetch_actialite_tribug_js_jheo" class="active text-white" lng-tag="actualite">Actualité</a>
+                            </li>
+                            <li class="listNavBarTribu">
+                                <a style="cursor:pointer;" href="#" id="fetch_member_tribug_js_jheo">Partisans</a>
+                            </li>
+
+                            <li class="listNavBarTribu">
+                                <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_js_jheo">Photos</a>
+                            </li>
+                        </ul>
+                    </nav>
 				</div>
 			</div>
 			<!-- ====== Chart Two End -->

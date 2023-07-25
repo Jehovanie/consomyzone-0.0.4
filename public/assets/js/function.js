@@ -2064,4 +2064,47 @@ function openMenu(){
 			}
 			
 		}
-	}
+}
+    
+
+/**
+ * All add input image
+ * @parm inputImage.html.twig
+ */
+function readURL(input) {
+  if (input.files && input.files[0]) {
+
+    var reader = new FileReader();
+
+      reader.onload = function (e) {
+        
+      $('.image-upload-wrap').hide();
+
+      $('.image-upload-image').attr('src', e.target.result);
+      $('.image-upload-content').show();
+
+      $('.image-title').html(input.files[0].name);
+    };
+
+    reader.readAsDataURL(input.files[0]);
+
+  } else {
+    removeUpload();
+  }
+}
+
+/**
+ * All remove input image
+ * @parm inputImage.html.twig
+ */
+function removeUpload() {
+  $('.image-upload-input').replaceWith($('.image-upload-input').clone());
+  $('.image-upload-content').hide();
+  $('.image-upload-wrap').show();
+}
+$('.image-upload-wrap').bind('dragover', function () {
+    $('.image-upload-wrap').addClass('image-dropping');
+  });
+  $('.image-upload-wrap').bind('dragleave', function () {
+    $('.image-upload-wrap').removeClass('image-dropping');
+});

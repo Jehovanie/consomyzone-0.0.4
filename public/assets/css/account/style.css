@@ -3512,5 +3512,5 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 
 .pub-g-input{
   border: none !important;
-  width: 50vw;
+  width: 50vw !important;
 }
