@@ -13,13 +13,13 @@ class MarckerClusterHome extends MapModule  {
         // const url = `/getLatitudeLongitudeForAll`;
         try {
             this.createMarkersCluster();
+            this.initMap();
 
             const response = await fetch("/dataHome");
 
             this.default_data = await response.json();
             this.data = this.default_data;
 
-            await this.initMap();
 
             this.bindAction();
 

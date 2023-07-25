@@ -49,39 +49,38 @@ class MapModule{
     }
 
     async createMap(lat= null, long=null){
-        let position = null, coords= null;
 
         if( lat !=null && long != null){
             this.latitude = lat;
             this.longitude= long;
         }
 
-        try{
-            position = await this.getUserLocation();
-            coords = position.coords;
-            this.latitude = coords.latitude;
-            this.longitude= coords.longitude;
-    
-        }catch(err){
-            console.log(err.message)
-        }finally{
-            const memoryCenter= localStorage.getItem("memoryCenter") ? JSON.parse(localStorage.getItem("memoryCenter")) : null;
-            const tiles= this.initTales();
+        const memoryCenter= localStorage.getItem("memoryCenter") ? JSON.parse(localStorage.getItem("memoryCenter")) : null;
+        const tiles= this.initTales();
 
-            this.settingLatLong();
-            
-            this.map = L.map('map', {
-                    zoomControl: false,
-                    // center: memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude),
-                    center:this.id_dep ? L.latLng(this.latitude, this.longitude) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude)),
-                    zoom:this.id_dep ? this.defaultZoom : ( memoryCenter ? memoryCenter.zoom : this.defaultZoom ),
-                    layers: [tiles] 
-                }
-            );
-            L.control.zoom({
-                position: 'bottomright'
-            }).addTo(this.map);
-        }
+        this.settingLatLong();
+        
+        this.map = L.map('map', {
+                zoomControl: false,
+                center:this.id_dep ? L.latLng(this.latitude, this.longitude) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude)),
+                zoom:this.id_dep ? this.defaultZoom : ( memoryCenter ? memoryCenter.zoom : this.defaultZoom ),
+                layers: [tiles] 
+            }
+        );
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(this.map);
+
+        // let position = null, coords= null;
+        // try{
+        //     position = await this.getUserLocation();
+        //     coords = position.coords;
+        //     this.latitude = coords.latitude;
+        //     this.longitude= coords.longitude;
+        // }catch(err){
+        //     console.log(err.message)
+        // }finally{
+        // }
 
     }
 
@@ -145,35 +144,35 @@ class MapModule{
     }
 
     eventSetPositionOnMap(){
-        // const cta_setCurrentPosition = document.createElement('a');
-        // cta_setCurrentPosition.setAttribute('href',"#");
-        // cta_setCurrentPosition.setAttribute('title',"Ma position");
-        // cta_setCurrentPosition.setAttribute('role',"button");
-        // cta_setCurrentPosition.setAttribute('aria-label', "Ma position");
-        // cta_setCurrentPosition.setAttribute('aria-disabled', "false");
+        const cta_setCurrentPosition = document.createElement('a');
+        cta_setCurrentPosition.setAttribute('href',"#");
+        cta_setCurrentPosition.setAttribute('title',"Ma position");
+        cta_setCurrentPosition.setAttribute('role',"button");
+        cta_setCurrentPosition.setAttribute('aria-label', "Ma position");
+        cta_setCurrentPosition.setAttribute('aria-disabled', "false");
 
-        // cta_setCurrentPosition.className= "cta_setCurrentPosition cta_setCurrentPosition_jheo_js";
+        cta_setCurrentPosition.className= "cta_setCurrentPosition cta_setCurrentPosition_jheo_js";
 
-        // cta_setCurrentPosition.innerHTML= `
-        //     <i class="fa-solid fa-street-view ma_position"></i>
-        // `
+        cta_setCurrentPosition.innerHTML= `
+            <i class="fa-solid fa-street-view ma_position"></i>
+        `
 
-        // if( document.querySelector(".leaflet-control-zoom-out")){
-        //     document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition)
-        // }
+        if( document.querySelector(".leaflet-control-zoom-out")){
+            document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition)
+        }
 
-        // ////handle event set to the current position
-        // document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click" ,async (e)=>{
-        //     e.preventDefault();
-        //     try{
-        //         const position = await this.getUserLocation();
-        //         const { coords } = position ;
+        ////handle event set to the current position
+        document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click" ,async (e)=>{
+            e.preventDefault();
+            try{
+                const position = await this.getUserLocation();
+                const { coords } = position ;
 
-        //         this.updateCenter(coords.latitude,coords.longitude, 6)
-        //     }catch(e){
-        //         alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.")
-        //     }
-        // })
+                this.updateCenter(coords.latitude,coords.longitude, 6)
+            }catch(e){
+                alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.")
+            }
+        })
     }
 
     settingMemoryCenter(){
@@ -538,7 +537,7 @@ class MapModule{
         });
     }
 
-    async initMap(lat= null,long= null){
+    initMap(lat= null,long= null){
         
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
@@ -554,8 +553,8 @@ class MapModule{
         }
 
 
-        await this.createMap(lat,long);
-        this.eventSetPositionOnMap();
+        this.createMap(lat,long);
+        // this.eventSetPositionOnMap();
 
         this.addGeoJsonToMap();
         this.settingMemoryCenter();

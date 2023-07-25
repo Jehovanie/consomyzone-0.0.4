@@ -8,13 +8,13 @@ class MarckerClusterResto extends MapModule  {
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
+            this.initMap();
 
             const link =( this.nom_dep && this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}` : `/Coord/All/Restaurant`;
             const response= await fetch(link);
             this.default_data= await response.json();
             this.data= this.default_data; 
             
-            await this.initMap();
 
             this.bindAction()
         }catch(e){
