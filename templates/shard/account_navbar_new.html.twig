@@ -49,6 +49,7 @@
 							</h5>
 						</div>
 
+						 {# notification list #}
 						<ul class="lc hg tg ph ip pd rl ym fn">
 							<li class="nr cg h lc mg qg vg qh sq js yk">
 								<a class="lc mg ug" href="#">
@@ -240,7 +241,8 @@
 								Message (02)
 							</h5>
 						</div>
-
+						
+						{# message list  #}
 						<ul class="lc hg tg ph ip pd rl ym fn">
 							
 						
@@ -343,12 +345,12 @@
 			<div class="h" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
 				<a class="nav-bar-conected lc mg vg avatar-account-connected" href="#" @click.prevent="dropdownOpen = ! dropdownOpen">
 					<span class="pc tu in">
-						<span class="jc un mn zn gs">Nom user</span>
-						<span class="jc nn">Fondateur</span>
+						<span class="jc un mn zn gs"> {{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }} </span>
+						<span class="jc nn">{{userConnected.status_tribuG}}</span>
 					</span>
 
 					<span class="th ni vj bj wr uk">
-						<img src="/assets/image/img_avatar3.png" alt="">
+						<img src="{{userConnected.photo_profil}}" alt="Photo profil">
 					</span>
 
 					<svg :class="dropdownOpen && 'ag'" class="mk fs pc rs hp ep" width="12" height="8" viewbox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">

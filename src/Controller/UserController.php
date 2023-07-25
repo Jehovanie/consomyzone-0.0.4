@@ -59,13 +59,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
-
 {
 
-
-
     private $entityManager;
-
 
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -76,11 +72,25 @@ class UserController extends AbstractController
 
 
     #[Route("/user/actualite", name: "app_actualite")]
-    public function Actualite(): Response
+    public function Actualite(
+        Status $status,
+        TributGService $tributGService,
+    ): Response
     {
-        return $this->render("user/actualite.html.twig");
-    }
+        $profil= $status->userProfilService($this->getUser());
 
+        $publications = [];
+
+        $pub_tribuG= $tributGService->getAllPublications($profil['tableTribuG']);
+        $publications= array_merge($publications, $pub_tribuG);
+
+        ///all publication on tribu T
+
+        return $this->render("user/actualite.html.twig", [
+            "userConnected" => $profil,
+            "publications" => $publications
+        ]);
+    }
 
 
  
