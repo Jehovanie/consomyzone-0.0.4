@@ -112,7 +112,7 @@
         <button type="button" class="d-none get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
     
-    {% include 'shard/chatbot.twig' %}
+    {{ include('shard/chatBot.html.twig') }}
     {# filter modal  #}
     {% include 'shard/station/detail_station_navleft.twig' %}
     {% include 'shard/station/modalFilterStation.html.twig' %}
