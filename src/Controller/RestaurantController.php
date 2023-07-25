@@ -100,10 +100,23 @@ class RestaurantController extends AbstractController
 
     #[Route("/Coord/Spec/Restaurant/{dep}", name: "app_coord_spec_restaurant", methods: ["GET"])]
     public function getSpecificRestCoor(
+        Request $request,
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         $dep
     ) {
+
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep), 'json');
+
+            return new JsonResponse($datas, 200, [], true);
+        }
         $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep), 'json');
         return new JsonResponse($datas, 200, [], true);
     }
@@ -121,7 +134,7 @@ class RestaurantController extends AbstractController
 
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
 
-        $resultCount = count($datas);
+        $resultCount = $bddResto->getAccountRestauranting($codeDep);
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
@@ -150,7 +163,8 @@ class RestaurantController extends AbstractController
         $codeDep = $dataRequest["id_dep"];
         $codinsee = $dataRequest["codinsee"];
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
-        $resultCount = count($datas);
+        $resultCount= $bddResto->getAccountRestauranting($codeDep);
+        
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("shard/restaurant/specific_mobile_departement.js.twig", [
@@ -182,7 +196,7 @@ class RestaurantController extends AbstractController
         $datas = $code->getAllCodinsee($codeDep);
         
         $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
-        $resultCount = count($resto);
+        $resultCount = $bddResto->getAccountRestauranting($codeDep);
         // dump($resultCount);
         $statusProfile = $status->statusFondateur($this->getUser());
 
@@ -210,8 +224,7 @@ class RestaurantController extends AbstractController
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
         $datas = $code->getAllCodinsee($codeDep);
-        $resultCount = count($bddResto->getCoordinateAndRestoIdForSpecific($codeDep));
-        dump($resultCount);
+        $resultCount= $bddResto->getAccountRestauranting($codeDep);
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("shard/restaurant/arrondisment_resto_mobile_navleft.twig", [

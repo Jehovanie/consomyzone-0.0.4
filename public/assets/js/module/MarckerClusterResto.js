@@ -158,14 +158,16 @@ class MarckerClusterResto extends MapModule  {
 
 
     setNumberOfMarker(){
-        /// change the number of result in div
-        if( document.querySelector(".content_nombre_result_js_jheo")){
-            document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
-        }
+        if( !this.id_dep){
+            /// change the number of result in div
+            if( document.querySelector(".content_nombre_result_js_jheo")){
+                document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
+            }
 
-        /// change the number of result in div for the left translate
-        if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
-            document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            /// change the number of result in div for the left translate
+            if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
+                document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            }
         }
     }
 
@@ -206,7 +208,8 @@ class MarckerClusterResto extends MapModule  {
             const { minx, miny, maxx, maxy }= new_size;
             const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
 
-            const response = await fetch(`/Coord/All/Restaurant${param}`);
+            const api_data= (this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}/${param}` : `/Coord/All/Restaurant${param}`;
+            const response = await fetch(api_data);
             let new_data = await response.json();
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)))
 

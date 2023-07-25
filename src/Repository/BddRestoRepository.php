@@ -65,14 +65,20 @@ class BddRestoRepository extends ServiceEntityRepository
         }
     }
 
-    function getAccountRestauranting()
+    function getAccountRestauranting($idDep=null)
     {
-        return $this->createQueryBuilder("r")
-            ->select("count(r.id)")
+        $query= $this->createQueryBuilder("r")
+                ->select("count(r.id)");
             //->groupBy('r.denominationF, r.poiX, r.poiY')
             //->having('COUNT(r.denominationF)>1 and COUNT(r.poiX)>1 and COUNT(r.poiY)>1')
-            ->getQuery()
-            ->getSingleScalarResult();
+                         
+        if( $idDep ){
+            $query = $query->where("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        return $query->getQuery()
+                     ->getSingleScalarResult();
     }
     function getAccountSpecificRestauranting($dep)
     {
@@ -111,7 +117,8 @@ class BddRestoRepository extends ServiceEntityRepository
             )
             ->where("r.dep =:dep")
             ->setParameter("dep",$dep)
-            ->orderBy("r.denominationF", 'ASC')
+            ->orderBy('RAND()')
+            ->setMaxResults(2000)
             ->getQuery()
             ->getResult();
     }
@@ -608,8 +615,8 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
-        return $this->createQueryBuilder("r")
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+        $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
                         r.numvoie,
@@ -650,8 +657,14 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->setParameter("minx", $minx)
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
-                    ->setParameter("maxy", $maxy)
-                    ->orderBy("r.id", 'ASC')
+                    ->setParameter("maxy", $maxy);
+                    
+        if( $idDep ){
+            $query = $query->andWhere("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        return $query->orderBy('RAND()')
                     ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();
