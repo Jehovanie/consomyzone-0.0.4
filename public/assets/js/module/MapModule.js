@@ -55,7 +55,7 @@ class MapModule{
             this.longitude= long;
         }
 
-        const memoryCenter= localStorage.getItem("memoryCenter") ? JSON.parse(localStorage.getItem("memoryCenter")) : null;
+        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
         const tiles= this.initTales();
 
         this.settingLatLong();
@@ -181,7 +181,7 @@ class MapModule{
                 zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
                 coord: e.target._lastCenter ? e.target._lastCenter : { lat: this.latitude, lng: this.longitude }
             }
-            setDataInLocalStorage("memoryCenter", JSON.stringify(coordAndZoom))
+            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
         })
     }
 

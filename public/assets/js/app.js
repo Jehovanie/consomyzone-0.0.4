@@ -655,6 +655,14 @@ function addMapFermeStation(nom_dep=null, id_dep=null){
 }
 
 
+function setDataInSessionStorage(type , value){
+    sessionStorage.setItem(type, value );
+}
+
+function getDataInSessionStorage(type){
+    return sessionStorage.getItem(type);
+}
+
 function setDataInLocalStorage(type , value){
     localStorage.setItem(type, value );
 }
