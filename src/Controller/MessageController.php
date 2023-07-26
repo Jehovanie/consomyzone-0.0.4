@@ -368,4 +368,16 @@ class MessageController extends AbstractController
         ]);
     }
 
+    #[Route('/user/message/{user_id}', name: 'app_message_user')]
+    public function getMessageUser(MessageService $messageService, $user_id): Response
+    {
+        $user = $this->getUser();
+
+        $table_message = $user->getTablemessage();
+
+        $messages = $messageService->getAllOldMessage($user_id, $table_message);
+
+        return $this->json($messages);
+    }
+
 }

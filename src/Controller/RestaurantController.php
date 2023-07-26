@@ -2,19 +2,22 @@
 
 namespace App\Controller;
 
-use App\Entity\AvisRestaurant;
-use App\Repository\AvisRestaurantRepository;
-use App\Repository\BddRestoRepository;
-use App\Repository\CodeapeRepository;
-use App\Repository\CodeinseeRepository;
-use App\Repository\DepartementRepository;
 use App\Service\Status;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Entity\AvisRestaurant;
+use App\Service\TributGService;
+use App\Repository\UserRepository;
+use App\Repository\CodeapeRepository;
+use App\Repository\BddRestoRepository;
+use App\Repository\CodeinseeRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
+use App\Repository\AvisRestaurantRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RestaurantController extends AbstractController
 {
@@ -25,7 +28,10 @@ class RestaurantController extends AbstractController
         CodeapeRepository $codeApeRep,
         DepartementRepository $departementRepository,
         BddRestoRepository $bddResto,
-        CodeinseeRepository $code
+        CodeinseeRepository $code,
+        TributGService $tributGService,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository
 
     ) {
         $statusProfile = $status->statusFondateur($this->getUser());
@@ -34,6 +40,44 @@ class RestaurantController extends AbstractController
         // $datas = $code->getAllCodinsee($id_dep);
         // dump($dataRequest);
         //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
+
+        
+            ///current user connected
+        $user = $this->getUser();
+
+        //dd($user);
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
+
+        
         return $this->render("restaurant/index.html.twig", [
             "departements" => $departementRepository->getDep(),
             //"number_of_departement" => count($bddResto->getAllOpenedRestos()),
@@ -41,7 +85,8 @@ class RestaurantController extends AbstractController
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             // "codinsees" => $datas,
-            "codeApes" => $codeApeRep->getCode()
+            "codeApes" => $codeApeRep->getCode(),
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 
