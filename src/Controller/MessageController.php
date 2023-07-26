@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+
+use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\MessageService;
@@ -144,11 +146,17 @@ class MessageController extends AbstractController
         MessageService $messageService,
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
+        Status $status,
     ): Response {
+        
         ///check the user connected
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
+
+        ////status user connected --- status on navBar -------------
+        $userConnected= $status->userProfilService($this->getUser());
+        // dd($userConnected);
 
         ///current user connected
         $user = $this->getUser();
@@ -158,11 +166,11 @@ class MessageController extends AbstractController
         // ////profil user connected
         $profil = $tributGService->getProfil($user, $entityManager);
 
-
         ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
 
         ///get all id the user in the same tribut G for me
-        $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+        $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
+
 
         ///to contains profil user information
         $amis_in_tributG = [];
@@ -179,12 +187,13 @@ class MessageController extends AbstractController
                 "firstname" => $profil_amis->getFirstname(),
                 "lastname" => $profil_amis->getLastname(),
                 "image_profil" => $profil_amis->getPhotoProfil(),
+                "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"])
             ];
 
             ///get it
             array_push($amis_in_tributG, $amis);
         }
-
+        // dd($amis_in_tributG);
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
 
 
@@ -196,22 +205,25 @@ class MessageController extends AbstractController
 
         } else { /// the user not specified id user  in the url, just to chat box
 
-            ////get random user in the tributG
-            $id_user_to_chat = 0; /// random id user
-            while ($id_user_to_chat === 0 || $id_user_to_chat == $user->getId()) {
-                $temp = rand(0, count($id_amis_tributG));
-                $i = 0;
-                foreach ($id_amis_tributG as $id_amis) {
-                    if ($i === $temp) {
-                        $id_user_to_chat = intval($id_amis["user_id"]);
-                        break;
+            if( count($id_amis_tributG) !== 1 ){
+                ////get random user in the tributG
+                $id_user_to_chat = 0; /// random id user
+                while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i = 0;
+                    foreach ($id_amis_tributG as $id_amis) {
+                        if ($i === $temp) {
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
                     }
-                    $i++;
                 }
+            }else{
+                $id_user_to_chat = $user->getId();
             }
-
-            // dd($id_user_to_chat);
         }
+
 
         ///user to chat
         $user_to = $userRepository->find($id_user_to_chat);
@@ -240,11 +252,12 @@ class MessageController extends AbstractController
             "firstname" => $profil_user_to->getFirstname(),
             "lastname" => $profil_user_to->getLastname(),
             "image_profil" => $profil_user_to->getPhotoProfil(),
-            "message" => $old_message
+            "messages" => $old_message,
+            "status" => strtoupper($user_to->getType())
         ];
 
-
         return $this->render('user/message/amis.html.twig', [
+            "userConnected" => $userConnected,
             "profil" => $profil,
             "statusTribut" => $tributGService->getStatusAndIfValid(
                 $profil[0]->getTributg(),

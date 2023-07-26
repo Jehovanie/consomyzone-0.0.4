@@ -58,6 +58,7 @@ class Status {
             "firstname" => $profil->getFirstname(),
             "lastname" => $profil->getLastname(),
             "photo_profil" => $profil->getPhotoProfil(),
+            "userType" => $userType,
             "tableTribuG" => $profil->getTributG(),
             "status_tribuG" => strtoupper($this->tributGService->getStatus($profil->getTributG(),$user->getId())),
             "tableNotification" => $user->getTablenotification(),

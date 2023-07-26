@@ -596,35 +596,18 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function fetchAllPub($table_pub)
-
-    {
-
-
+    function fetchAllPub($table_pub){
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_pub ORDER BY datetime DESC");
-
-
-
         $statement->execute();
 
-
-
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
         return $result;
-
     }
 
 
 
-    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo)
-
-    {
-
-
+    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo){
 
         $statement = $this->getPDO()->prepare("INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) values (:user_id, :publication, :confidentiality, :photo, :userfullname)");
 
