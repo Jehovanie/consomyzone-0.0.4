@@ -18,10 +18,10 @@
 	<script type="text/javascript" src="{{ asset('assets/js/station/marckerClusterStation_all_dep.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/station/filter_price_type.js')}}" defer></script>
 
-    <script type="text/javascript" src="{{ asset('assets/js/station/fetch_left_side_all_dep.js') }}" defer></script>
-    <script  src="{{ asset('assets/js/station/chercher.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/station/chercher.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/station/details.js')}}" defer></script>
 
+    {# <script type="text/javascript" src="{{ asset('assets/js/station/fetch_left_side_all_dep.js') }}" defer></script> #}
 {% endblock %}
 
 {% block body %}
@@ -42,29 +42,39 @@
                    <i class="fa-solid fa-filter"></i>
                 </button> #}
 
-                {# collapse filter it's show when the screen other than mobile #}
-                <button class="btn btn-primary filter_other_mobile cta_filter_other_mobile" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                {# ==========================  FILTER ========================== #}
+                {# <button class="btn btn-primary filter_other_mobile cta_filter_other_mobile" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <i class="fa-solid fa-filter"></i>
-                </button>
+                </button> #}
+                {# ========================== END FILTER ========================== #}
                 
-                {# filter collapse #}
+                {# ========================== CONTENT FILTER  ========================== #}
                 <div class="collapse content_filter_global filter_other_mobile content_filter_global_jheo_js"  id="collapseExample">
                     {# CONTENT FILTER ADD ON JS #}
                 </div>
+                {# ========================== END CONTENT FILTER  ======================== #}
+
+                {# ========================== CONTENT MAP  ========================== #}
                 <div class="content_cart_map">
                     <div class="cart_map cart_map_js">
+
+                        {# ========================= CHARGEMENT FOR MAP ========================= #}
                         <div class="chargement_content" id="toggle_chargement">
-                            {# <div class="content_box">
-                                <div class="box">
-                                    <div class="under_box"></div>
-                                </div>
-                            </div> #}
                             <div class="containt">
                                 <div class="word word-1">C</div>
                                 <div class="word word-2">M</div>
                                 <div class="word word-3">Z</div>
                             </div>
                         </div>
+                        {# ========================= END CHARGEMENT  ========================= #}
+
+
+
+                        {# ========================= MAP GENERATE FROM JS ========================= #}
+                        {# <div id="map" class="map"></div> #}
+                        {# ========================= END MAP  ========================= #}
+
+                        {# ========================= FETCH LIST FOR MOBILE ========================= #}
                         <div class="content_show_list_mobile fetch_list_departement_jheo_js">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="10vw" height="10vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
                                 <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
@@ -99,20 +109,22 @@
                                 </g>
                             </svg>
                         </div>
-                        {# <div id="map" class="map"></div> #}
+                        {# ===================== END FETCH LIST FOR MOBILE ========================= #}
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row content_left_side_mobile">
+        {# <div class="row content_left_side_mobile">
             {% include 'shard/station/fetchLeftSide.html.twig' %}
-        </div>
+        </div> #}
 
-        <button type="button" class="d-none get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
+        {# <button type="button" class="get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button> #}
     </div>
     
     {{ include('shard/chatBot.html.twig') }}
+    
     {# filter modal  #}
     {% include 'shard/station/detail_station_navleft.twig' %}
     {% include 'shard/station/modalFilterStation.html.twig' %}
