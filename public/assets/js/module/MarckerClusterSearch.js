@@ -1,8 +1,7 @@
-class MarckerClusterSearch {
+class MarckerClusterSearch extends MapModule  {
 
     constructor(nom_dep = null, id_dep = null) {
-        this.nom_dep = nom_dep ? nom_dep : null;
-        this.id_dep = id_dep ? id_dep : null;
+        super(id_dep,nom_dep, "search")
 
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
@@ -12,13 +11,16 @@ class MarckerClusterSearch {
     async onInit() {
         const url = new Request(url_test.href.replace("search", 'api/search'));
         try {
-            this.getGeos()
+            // this.getGeos()
             this.createMarkersCluster();
-            this.map = await create_map_content(this.geos, this.id_dep, "search");
-
+            
             const response = await fetch(url);
             this.default_data = await response.json();
             this.data = this.default_data;
+
+            // this.map = await create_map_content(this.geos, this.id_dep, "search");
+            const firstData= this.data.results[0][0]
+            await this.initMap(firstData.lat, firstData.long);
 
             this.bindAction();
 
@@ -31,23 +33,6 @@ class MarckerClusterSearch {
         const { results } = this.data;
         this.addMarker(results[0]);
         // this.addEventOnMap(this.map, this.markers);
-    }
-
-    getGeos() {
-        this.geos = [];
-        if (this.id_dep) {
-            if (this.id_dep === 20) {
-                for (let corse of ['2A', '2B']) {
-                    this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
-                }
-            } else {
-                this.geos.push(franceGeo.features.find(element => element.properties.code == this.id_dep))
-            }
-        } else {
-            for (let f of franceGeo.features) {
-                this.geos.push(f)
-            }
-        }
     }
 
     displayData() {
@@ -163,7 +148,7 @@ class MarckerClusterSearch {
             if (screen.width < 991) {
                 getDetailHomeForMobile("/station/departement/" + item.dep.toString().trim() + "/" + item.depName.trim().replace("?", "") + "/details/" + item.id)
             } else {
-                getDetailStation(item.dep.toString().trim(), item.depName.trim().replace("?", ""), item.id, true)
+                getDetailStation(item.depName.trim().replace("?", ""), item.dep.toString().trim(),item.id, true)
             }
 
             const icon_R = L.Icon.extend({
@@ -188,49 +173,36 @@ class MarckerClusterSearch {
     }
 
     settingSingleMarkerFerme(item) {
-        const url = new URL(window.location.href);
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-        // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
 
-        var title = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nomFerme + ".<span class='fw-bolder'> Departement:</span>  <br>" + item.departement + "." + adress;
-
+        var title = "<span class='fw-bolder'>Ferme:</span> " + item.nomFerme + ". <br><span class='fw-bolder'> Departement:</span>" + item.departement + "." + adress;
         var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
 
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
-
         marker.on('click', (e) => {
-
-            const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-            this.map.setView(latlng, 13);
-
-            const coordAndZoom = {
-                zoom: e.target.__parent._zoom + 1,
-                coord: e.target.__parent._cLatLng
-            }
-            setDataInLocalStorage("coordTous", JSON.stringify(coordAndZoom))
-
-            let pathDetails = `/ferme/departement/${item.depName}/${item.dep}/details/${item.id}`
-            if (screen.width < 991) {
-                getDetailHomeForMobile(pathDetails)
-            } else {
-                getDetailsFerme(pathDetails, true)
-            }
-
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+            
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-                    iconSize: [32, 50],
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                    iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
-                    //shadowUrl: 'my-icon-shadow.png',
                     shadowSize: [68, 95],
                     shadowAnchor: [22, 94]
                 }
             })
             marker.setIcon(new icon_R);
+            this.updateLastMarkerSelected(marker, "ferme");
 
-            this.updateLastMarkerSelected(marker, "ferme")
+            if (screen.width < 991) {
+                let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+                getDetailHomeForMobile(pathDetails)
+            } else {
+                // getDetailsFerme(pathDetails, true)getDetailStation
+                getDetailFerme(item.departement, item.departementName, item.id, true)
+            }
 
 
             this.markers.refreshClusters();
@@ -240,77 +212,38 @@ class MarckerClusterSearch {
 
     settingSingleMarkerResto(item) {
 
-        const url = new URL(window.location.href);
         const departementName = item.depName
         const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
 
-        // const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-        var pathDetails = "/restaurant/departement/" + departementName + "/" + item.dep + "/details/" + item.id;
-        var title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-        
-        const poiY= item.lat;
-        const poiX= item.long;
-        var marker = L.marker(L.latLng(parseFloat(poiY), parseFloat(poiX)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id });
+        const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
+        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
         marker.on('click', (e) => {
-
-            const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-            this.map.setView(latlng, 13);
-
-            const coordAndZoom = {
-                zoom: e.target.__parent._zoom + 1,
-                coord: e.target.__parent._cLatLng
-            }
-            setDataInLocalStorage("coordSearch", JSON.stringify(coordAndZoom))
-            // window.location = pathDetails;
-
-            let screemMax = window.matchMedia("(max-width: 1000px)")
-            let screemMin = window.matchMedia("(min-width: 1000px)")
-            let remove = document.getElementById("remove-detail")
-
-            if (screemMax.matches) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                location.assign(pathDetails)
-            } else if (screemMin.matches) {
-
-                remove.removeAttribute("class", "hidden");
-                remove.setAttribute("class", "navleft-detail fixed-top")
-
-                var myHeaders = new Headers();
-                myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
-                fetch(`/restaurant/departement/${departementName}/${item.dep}/details/${item.id}`, myHeaders)
-                    .then(response => {
-                        return response.text()
-                    }).then(r => {
-                        document.querySelector("#content-details").innerHTML = null
-                        document.querySelector("#content-details").innerHTML = r
-
-                        document.querySelector("#close-detail-tous-resto").addEventListener("click", () => {
-                            document.querySelector("#content-details").style.display = "none"
-                        })
-                        document.querySelector("#content-details").removeAttribute("style")
-
-                    })
-
-            }
-
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : url.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
-                    iconSize:[32,50],
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
+                    iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
-                    //shadowUrl: 'my-icon-shadow.png',
                     shadowSize: [68, 95],
                     shadowAnchor: [22, 94]
                 }
             })
             marker.setIcon(new icon_R);
 
-            this.updateLastMarkerSelected(marker, "resto")
+            this.updateLastMarkerSelected(marker, "resto");
             
+            if (screen.width < 991) {
+                var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
+                location.assign(pathDetails)
+            } else {
+                getDetailResto(item.dep, item.depName, item.id, true)
+            }
+
             this.markers.refreshClusters();
         })
 
@@ -318,15 +251,15 @@ class MarckerClusterSearch {
     }
 
     updateLastMarkerSelected(marker, type) {
-        const url = new URL(window.location.href);
+
         if (this.marker_last_selected && this.marker_last_selected != marker) {
             let icon_marker = "";
             if (this.marker_last_selected_type === "station") {
-                icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-station-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-station-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
             } else if (this.marker_last_selected_type === "ferme") {
-                icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
             } else if (this.marker_last_selected_type === "resto") {
-                icon_marker = IS_DEV_MODE ? `${url.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${url.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
             }
 
             const icon_B = L.Icon.extend({
@@ -344,16 +277,6 @@ class MarckerClusterSearch {
         }
         this.marker_last_selected = marker;
         this.marker_last_selected_type = type;
-    }
-
-    addEventOnMap(map, markers) {
-        map.on("resize zoom dragend", (e) => {
-            const coordAndZoom = {
-                zoom: e.target._zoom,
-                coord: e.target._lastCenter
-            }
-            setDataInLocalStorage("coordSearch", JSON.stringify(coordAndZoom))
-        })
     }
 
     async updateData(new_min_ll, new_max_ll) {

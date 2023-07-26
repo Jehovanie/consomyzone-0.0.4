@@ -16,10 +16,10 @@
         display: none;
     }
     .content_filter {
-        width: 180px;
+        width: 130px;
         position: absolute;
         top: 110px;
-        right: 25px;
+        right: 21px;
         z-index: 1000;
         font-size: 0.8rem;
     }

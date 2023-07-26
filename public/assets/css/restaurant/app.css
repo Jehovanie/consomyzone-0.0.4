@@ -1,3 +1,7 @@
+#map {
+    margin-left: -3rem !important;
+}
+
 .kidje3{
     width: 115px;
 }
@@ -12,9 +16,19 @@
 }
 
 .navleft .list-depart {
-    margin-top: 83px !important;
+    margin-top: 0 !important;
 }
 
 .choix_list_cart {
+    text-align: center;
+}
+
+.content_description {
+    height: 600px;
+}
+
+.content_container_list{
+    display: flex;
+    justify-content: center;
     text-align: center;
 }

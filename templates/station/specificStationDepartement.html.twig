@@ -7,12 +7,14 @@
 	<link rel="stylesheet" href="{{asset('assets/css/station/app.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/station/app_specifique.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/station/responsif_station.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
 {% endblock %}
 
 
 {% block javascripts %}
 	<script type="text/javascript" src="{{asset('assets/js/station/data_station.js')}}" defer></script>
-	
+
+	<script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterStation.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/station/marckerClusterStation_spec.js')}}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/station/filter_a-z_asc_desc.js') }}" defer></script>
@@ -104,15 +106,16 @@
 			</div>
 		</div>
 
-		<div class="row content_left_side_mobile content_left_side_mobile_js_jheo">
+		{# <div class="row content_left_side_mobile content_left_side_mobile_js_jheo">
             {% include 'shard/station/fetchLeftSideSpecifique.html.twig' %}
-        </div>
+        </div> #}
 		<button type="button" class="d-none get_action_detail_on_map_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
 	</div>
 	{# filter modal  #}
     {% include 'shard/station/modalFilterStation.html.twig' %}
 	{% include 'shard/station/modalDetailMobil.html.twig' %}
 	{% include 'shard/station/detail_station_navleft.twig' %}
+	{% include 'shard/chatbot.twig' %}
 
 {% endblock %}
 

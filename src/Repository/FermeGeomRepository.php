@@ -60,7 +60,9 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.nomFerme',
                 'p.adresseFerme',
                 'p.latitude',
+                'p.latitude as lat',
                 'p.longitude',
+                'p.longitude as long',
                 'p.addBy'
             )
             // ->setMaxResults(10)
@@ -90,7 +92,9 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.departement',
                 'p.departementName',
                 'p.latitude',
-                'p.longitude'
+                'p.longitude',
+                'p.latitude as lat',
+                'p.longitude as long'
             )
             ->where('p.departement = :k')
             ->andWhere("p.disabled = :disabled")
@@ -170,11 +174,10 @@ class FermeGeomRepository extends ServiceEntityRepository
     }
 
     ///jheo : getLatitudeLongitude
-    public function getLatitudeLongitudeFerme()
+    public function getLatitudeLongitudeFerme($limits= 1000)
     {
-
         // Remarque : $id_ferme dans la base peut parfois combinaison des lettres et des chiffres.
-        $qb = $this->createQueryBuilder('p')
+        return $this->createQueryBuilder('p')
             ->select(
                 'p.id',
                 'p.nomFerme',
@@ -183,10 +186,11 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.departementName',
                 'p.latitude',
                 'p.longitude'
-            );
-
-        $query = $qb->getQuery();
-        return $query->execute();
+            )
+            ->orderBy('RAND()')
+            ->setMaxResults($limits)
+            ->getQuery()
+            ->getResult();
     }
 
     public function getAllFilterByLatLong($data){
@@ -404,10 +408,14 @@ class FermeGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select(
                 'p.id',
+                'p.nomFerme',
                 'p.nomFerme as nom',
+                'p.adresseFerme',
                 'p.adresseFerme as add',
                 'p.email',
                 'p.genre',
+                'p.departement',
+                'p.departementName',
                 'p.departement as dep',
                 'p.departementName as depName',
                 'p.produitFerme as ferme',
@@ -477,4 +485,138 @@ class FermeGeomRepository extends ServiceEntityRepository
         $results = $qb->execute();
         return [ $results , count($results) , "ferme"];
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Ferme
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme',
+                        'r.adresseFerme',
+                        'r.departement',
+                        'r.departementName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme as nom',
+                        'r.adresseFerme as add',
+                        'r.departement as dep',
+                        'r.departementName as depName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy("r.id", 'ASC')
+                    ->setMaxResults(200)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    //    /**
+    //     * @return FermeGeom[] Returns an array of FermeGeom objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('f.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?FermeGeom
+    //    {
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

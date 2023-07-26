@@ -54,6 +54,8 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select('p.id',
                      'p.nom',
+                     'p.departementName',
+                     'p.departementCode',
                      'p.prixE85',
                      'p.prixGplc',
                      'p.prixSp95',
@@ -148,7 +150,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
     ///jheo : getLatitudeLongitude
     public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null)
     {
-
+        $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
 
         ////filter with min and max
         if( $min || $max){
@@ -482,4 +484,100 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $results =$qb->execute();
         return [ $results , count($results) , "station"];
     }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Station
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+
+    
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy('RAND()')
+                    ->setMaxResults(200)
+                    ->getQuery()
+                    ->getResult();
+    }
+//    /**
+//     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('s.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?StationServiceFrGeom
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
 }

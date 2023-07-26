@@ -3,6 +3,10 @@ main {
     top: unset !important;
 }
 
+#map {
+    margin-left: 0rem !important;
+}
+
 .element {
     height: 160px;
 }

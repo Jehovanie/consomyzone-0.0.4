@@ -1,7 +1,6 @@
 window.addEventListener('load', () => {
 	addListFermeMobile()
 
-
 	// addMapFerme()
     // setDataInLocalStorage("type", "ferme");
 

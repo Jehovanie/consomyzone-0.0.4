@@ -1,12 +1,4 @@
 window.addEventListener('load', () => {
-	// addMapFerme()
-    // setDataInLocalStorage("type", "ferme");
-
-	document.querySelectorAll("#list_departements > div> a").forEach(item => {
-        item.onclick = (e) => {
-            localStorage.removeItem("coordFerme")
-        }
-    })
 
 	/*format numero*/
 	// let items = document.querySelector("#content-details-ferme > div > div.left_content_home > div > div > div.content_tel > ul > li")
@@ -65,5 +57,10 @@ window.addEventListener('load', () => {
                 sessionStorage.setItem("fff", idFerme)
             })
         })
+    }
+
+    
+    if(document.querySelector(".name_ferme_js_jheo")){
+           pagginationModule(".content_list_ferme_spec_js_jheo",".name_ferme_js_jheo",10)
     }
 });

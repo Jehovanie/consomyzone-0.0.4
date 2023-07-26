@@ -30,11 +30,7 @@ use App\Service\RequestingService;
 
 use Proxies\__CG__\App\Entity\User;
 
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
 use App\Service\NotificationService;
-
 use App\Service\PDOConnexionService;
 
 use App\Repository\ConsumerRepository;
@@ -51,10 +47,15 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
 
+use Symfony\Component\Routing\RouterInterface;
+
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
@@ -74,6 +75,13 @@ class UserController extends AbstractController
     }
 
 
+    #[Route("/user/actualite", name: "app_actualite")]
+    public function Actualite(): Response
+    {
+        return $this->render("user/actualite.html.twig");
+    }
+
+
 
  
     #[Route("/user/account", name: "app_account")]
@@ -84,7 +92,9 @@ class UserController extends AbstractController
 
         EntityManagerInterface $entityManager,
 
-        TributGService $tributGService
+        TributGService $tributGService,
+
+        UserRepository $userRepository
 
     ): Response {
 
@@ -103,7 +113,8 @@ class UserController extends AbstractController
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-
+        
+        $all_TribuT= $userRepository->getListTableTribuT();
 
         $new_publication = $this->createForm(PublicationType::class);
 
@@ -131,7 +142,7 @@ class UserController extends AbstractController
 
 
 
-            if ($publication && $confid) {
+            if ($publication || $confid) {
 
 
 
@@ -141,8 +152,7 @@ class UserController extends AbstractController
 
                     $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
-                    $newFilename = $profil[0]->getTributG() . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
-
+                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
                     $photo->move(
 
                         $destination,
@@ -153,7 +163,7 @@ class UserController extends AbstractController
                 }
 
 
-
+                
                 $tributGService->createOnePub($profil[0]->getTributG() . "_publication", $userId, $publication, $confid, $newFilename);
             }
 
@@ -182,10 +192,12 @@ class UserController extends AbstractController
 
                 "publications" => $tributGService->getAllPublications($profil[0]->getTributg()),
 
+                "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
+
             ],
 
-            "new_publication" => $new_publication->createView()
-
+            "new_publication" => $new_publication->createView(),
+            "all_tribuT" => $all_TribuT
         ]);
     }
 
@@ -587,6 +599,78 @@ class UserController extends AbstractController
         ]);
     }
 
+    // #[Route('/user/profil', name: 'user_profil')]
+
+    // public function index(): Response
+
+    // {
+
+    //     $user = $this->getUser(); /// user connected
+    //     $userId = $user->getId(); /// ID of the user connected
+    //     $myuserType = $user->getType(); /// type of user connected 
+    //     $myProfil = null; /// profile of user connected
+
+    //     if ($myuserType == "consumer") {
+    //         $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+    //     } elseif ($myuserType == "supplier") {
+    //         $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+    //     }
+
+
+    //     $tribu_t = new Tribu_T_Service();
+
+    //     $userType = $tribu_t->getTypeUser($user_id); /// type of the other user 
+
+    //     if( $userType === "unknown"){
+    //         throw new NotFoundHttpException();
+    //     }
+        
+    //     $profil = null; /// profil of the other user 
+
+    //     $type = "";
+    //     if ($userType === "consumer") {
+
+    //         $type = "Consommateur";
+    //         $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id); /// other user profil
+    //     } elseif ($userType === "supplier") {
+
+    //         $type = "Fournisseur";
+    //         $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id); /// other user profil
+    //     }
+
+    //     $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
+    //     $images = glob($path . "*.*");
+    //     $images_trie = [];
+
+    //     for ($i = count($images) - 1; $i >= 0; $i--) {
+    //         array_push($images_trie, $images[$i]);
+    //     }
+
+    //     ///nbr user for the other user 
+    //     $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
+
+
+    //     return $this->render('user/profil.html.twig', [
+    //         "profil" => $myProfil,
+    //         "autre_profil" => $profil,
+    //         "type" => $type,
+    //         "images" => $images_trie,
+    //         "statusTribut" => $tributGService->getStatusAndIfValid(
+    //             $myProfil[0]->getTributg(),
+    //             $myProfil[0]->getIsVerifiedTributGAdmin(),
+    //             $userId
+    //         ),
+    //         "tributG" => [
+    //             "table" => $profil[0]->getTributg(),
+    //             "profil" => $tributGService->getProfilTributG(
+    //                 $profil[0]->getTributg(),
+    //                 $user_id
+    //             ),
+    //         ],
+    //         "nombre_partisant" => $nombre_partisant
+    //     ]);
+    // }
+
 
 
 
@@ -704,7 +788,6 @@ class UserController extends AbstractController
     public function Dashboard(
         EntityManagerInterface $entityManager,
         TributGService $tributGService
-
     ): Response {
 
         $user = $this->getUser();
@@ -719,7 +802,6 @@ class UserController extends AbstractController
         }
 
         return $this->render("user/dashboard_super_admin/dashboard.html.twig", [
-
             "profil" => $profil,
             "statusTribut" => $tributGService->getStatusAndIfValid(
                 $profil[0]->getTributg(),
@@ -739,31 +821,17 @@ class UserController extends AbstractController
     }
 
 
-
-
-
     #[Route('/user/dashboard-membre', name: 'app_dashboardmembre')]
 
     public function DashboardMembre(
-
         Request $request,
-
         EntityManagerInterface $entityManager,
-
         TributGService $tributGService,
-
         UserRepository $userRepository,
-
         ConsumerRepository $consumerRepository,
-
         SupplierRepository $supplierRepository
-
     ): Response {
-
-
-
         $table_name = $request->query->get("table");
-
         // dd($table_name);
 
 
@@ -2295,6 +2363,14 @@ class UserController extends AbstractController
 
 
         return $this->json("Photo de profil bien à jour");
+    }
+
+    #[Route('/user/reception', name: 'user_boit_reception')]
+
+    public function boiteReception(): Response
+
+    {
+        return $this->render('user/boitDeReception/index.html.twig');
     }
 
   

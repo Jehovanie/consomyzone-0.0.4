@@ -1,4 +1,4 @@
-<div class="content_body">
+<div class="content_body content_body_details_jheo_js">
     <div class="row">
         <div class="col-12 mx-auto">
             <div class="left_content_home">
@@ -8,13 +8,13 @@
                         
                         <div class="content_titre_details p-2">
                             {% if station.nom %}
-                                <h4>
+                                <h3 class=" text-center">
                                     {{station.nom |lower }}
-                                </h4>
+                                </h3>
                                 {% else %}
-                                <h4>
+                                <h3 >
                                     La station de Inconnu
-                                </h4>
+                                </h3>
                             {% endif %}
                         </div>
 
@@ -145,8 +145,6 @@
                                 </li>
                             </ul>
                             <hr>
-                    
-                    
                         </div>
                     </div>
                 </div>

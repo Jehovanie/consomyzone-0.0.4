@@ -6,22 +6,36 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/restaurant/app.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/restaurant/sepecific_departement.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/restaurant/specifique_resto.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
+    {# <link rel="stylesheet" href="{{asset('assets/css/restaurant/specifique_resto.css')}}"> #}
+    <link rel="stylesheet" href="{{asset('assets/css/restaurant/app_specifique.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
 {% endblock %}
 
 {% block javascripts %}
+
+	<script type="text/javascript" src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
+
 	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
-	<script src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
-	<script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
-	<script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script>
-	<script src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/restaurant/data_resto.js') }}" defer></script>
+
+	{# <script type="text/javascript" src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script> #}
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterResto.js') }}" defer></script>
+	<script type="text/javascript" src="{{asset('assets/js/restaurant/marckerClusterResto_spec.js')}}" defer></script>
+
+	<script type="text/javascript" src="{{ asset('assets/js/restaurant/filter_a-z_asc_desc.js') }}" defer></script>
+
+	<script type="text/javascript" src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
+
 {% endblock %}
 
 
 {% block body %}
 	
     {# {% include 'shard/modalSearch.twig' %} #}
-	<div class="">
+	<div class="resto_specifique_dep_js_jheo" data-resto-codeDep= "{{id_dep}}" data-resto-nameDep="{{nom_dep}}">
 		<div class="responsif-none" id="tous">
 			{% include 'shard/restaurant/specific_resto_navleft.twig' %}
 		</div>
@@ -65,14 +79,12 @@
                     </g>
                 </svg>
             </div>
+
+            {{ include('shard/restaurant/detail_resto_navleft.html.twig') }}
+
 			<div class="content_cart_map">
-				<div class="cart_map cart_map_js_jheo">
+				<div class="cart_map cart_map_js cart_map_js_jheo">
 					<div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-						{# <div class="content_box">
-							<div class="box">
-								<div class="under_box"></div>
-							</div>
-						</div> #}
                         <div class="containt">
                             <div class="word word-1">C</div>
                             <div class="word word-2">M</div>
@@ -89,6 +101,7 @@
         <div class="FtBjOlVf" data-dem="2ahUK:Ewip3tqU6Ob7AhW3gc:4B.{{app.user.id}}H:bAUBJQQ-EN6BAhzEAo"></div>
     {% endif %}
 
+    {% include 'shard/chatbot.twig' %}
     {{ include('shard/restaurant/list_avis.html.twig') }}
     {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
     {{ include('shard/restaurant/modal_modif_avis.html.twig') }}

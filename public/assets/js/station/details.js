@@ -1,4 +1,4 @@
-function getDetailStation(depart_name, depart_code, id) { 
+function getDetailFromListLeft(depart_name, depart_code, id) { 
     OBJECT_MARKERS_STATION.clickOnMarker(id)
 }
 

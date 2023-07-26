@@ -173,6 +173,12 @@ class HomeController extends AbstractController
         SortResultService $sortResultService,
         StringTraitementService $stringTraitementService
     ){
+        // ///De quoi avez-vous besoin ?
+        // $cles0 = $request->query->get("cles0") ? trim($request->query->get("cles0")) : "";
+
+        // ///Adresse, quartier, ville, département
+        // $cles1 = $request->query->get("cles1") ? trim($request->query->get("cles1")) : "";
+
 
         $cles0 = $request->query->get("cles0") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles0"))) : "";
         $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
@@ -182,8 +188,8 @@ class HomeController extends AbstractController
         $type= $condition ? $cles0: $type;
         $cles0= $condition ? "": $cles0;
         // $size = $type !== "ferme" && $type !== "restaurant" && $type !== "station" && $type !== "station service" ? 6:20;
-        $size = $type ? 20:6;
-        // $size = 20;
+        // $size = $type ? 20:6;
+        $size = 20;
         $all = [
             "station" => $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),
             "ferme" => $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size),

@@ -1,11 +1,16 @@
-<div class="navleft fixed-top">
+<div class="navleft fixed-top cmz-left-container">
 	<div class="container-fluid list-depart">
 		<div class="head-left">
-			<div class="row">
+			<div class="row cmz-left-results-indications">
 				<div class="col-md-10">
 					<h6 class="modal-title" id="exampleModalLabel">
-                        Résultats de votre recherche:
-
+						{% if cles0 != "" %}
+							Résultat(s) pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span><br>
+						{% else %}
+							{% set rubrique = type == "resto"?"restaurant":type %}
+							<b>{{rubrique|upper}}</b> à <span id="cles1">{{cles1}}</span><br>
+						{% endif %}
+                        
                         {% if results[1] > 0 %}
                             <i class="total_number_js">({{results[1] > 1 ? results[1] ~ " resultats" : "1 resultat"  }})</i>
                         {% else %}
@@ -16,7 +21,7 @@
 			</div>
 			<div class="container list-depart-all" id="Scrollbar">
 				<div id="list_departements">
-					<ul>
+					<ul class="mb-5">
 						{% for item in results[0] %}
 							{% include "card/card.html.twig" %}
 						{% endfor %}

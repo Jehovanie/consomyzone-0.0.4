@@ -3,6 +3,7 @@
 {% block title %}ConsoMyZone: Recherche{% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
@@ -10,11 +11,14 @@
 
 {% block javascripts %}
     {# <script src="{{asset('assets/js/home/fetchLeftSide.js')}}" defer></script>  #}
-
-    <script src="{{ asset('assets/js/module/MarckerClusterSearch.js') }}" type="text/javascript" defer></script>
-	<script src="{{ asset('assets/js/home/marckerClusterSearch.js') }}" type="text/javascript" defer></script>
-    <script src="{{asset('assets/js/home/search.js')}}" type="text/javascript" defer></script>
+    {# <script type="text/javascript" src="{{asset('assets/js/home/data_home.js')}}" defer></script> #}
     <script src="{{asset('assets/js/home/data_search.js')}}" type="text/javascript" defer></script>
+	
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterSearch.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/home/marckerClusterSearch.js') }}" defer></script>
+    
+    <script type="text/javascript" src="{{asset('assets/js/home/detail_search.js')}}" defer></script>
 
 {% endblock %}
 
@@ -38,45 +42,11 @@
                     </div>
                     <div class="cart_map cart_map_js">
                         <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-                            <div class="content_box">
-                                <div class="box">
-                                    <div class="under_box"></div>
-                                </div>
+                            <div class="containt">
+                                <div class="word word-1">C</div>
+                                <div class="word word-2">M</div>
+                                <div class="word word-3">Z</div>
                             </div>
-                        </div>
-                        <div class="content_show_list_mobile fetch_list_departement_jheo_js">
-                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="10vw" height="10vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-                                <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
-                                    <path d="M350 930 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M570 930 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M450 830 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M670 830 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M570 720 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M790 720 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M680 620 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M900 620 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M570 500 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M790 500 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M460 410 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M680 410 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M340 300 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                        -56 20 l-49 0 0 -40z"/>
-                                    <path d="M560 300 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
-                                    -56 20 l-49 0 0 -40z"/>
-                                </g>
-                            </svg>
                         </div>
                         {# <div id="map" class="map map_js_jheo"></div> #}
                     </div>
@@ -84,13 +54,14 @@
             </div>
         </div>
 
-        <div class="row content_left_side_mobile">
+        {# <div class="row content_left_side_mobile">
             {% include 'shard/home/fetchLeftSide.html.twig' %}
-        </div>
+        </div> #}
 
         <button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
 
+    {% include 'shard/chatbot.twig' %}
     {% include 'shard/home/detail_home_navleft.twig' %}
     {% include 'shard/home/modal_detail_home_mobile.html.twig' %}
 

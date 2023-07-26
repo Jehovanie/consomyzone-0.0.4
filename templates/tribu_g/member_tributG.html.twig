@@ -11,6 +11,7 @@
                         <th scope="col">Nom</th>
                         <th scope="col">Prénom</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Statu</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -21,7 +22,8 @@
                             <td>{{item.firstname}}</td>
                             <td>{{item.lastname}}</td>
                             <td>{{item.email}}</td>
-                            <td> <a class="btn btn-primary" href={{path("user_profil", { user_id : item.id })}}> Voir profil</a> </td>
+                            <td class="text-primary">{{item.status|upper }}</td>
+                            <td> <a class="btn btn-primary" href={{path("user_profil", { user_id : item.id })}}> Profil</a> </td>
                         </tr>
                     {% endfor %}
                 </tbody>

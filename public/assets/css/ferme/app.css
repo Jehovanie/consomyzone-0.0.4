@@ -1,5 +1,5 @@
 .navleft .list-depart {
-    margin-top: 83px !important;
+    margin-top: 0 !important;
 }
 .content_description {
     height: 75vh !important;
@@ -25,4 +25,12 @@
 
 .content_description{
     padding: 0 !important;
+}
+
+
+
+.content_container_list{
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }

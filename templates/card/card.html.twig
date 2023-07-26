@@ -11,11 +11,11 @@
                     {% endif %}
                 </span>
             </div>
-            <h5 class="card-title element_title_js" id="rubriqueName">
-                <a href="#" onclick="getDetails('{{type}}', '{{item.depName}}', '{{item.dep}}', '{{item.id}}')">{{item.nom|replace({'?': ''})|upper }}</a>
+            <h5 class="card-title element_title_js" id="rubriqueName" onclick="getDetailFromListLeft('{{type}}', '{{item.depName}}', '{{item.dep}}', '{{item.id}}')">
+                <a href="#">{{item.nom|replace({'?': '','#': ''})|upper|trim }}</a>
             </h5>
             <p class="card-text cmz-adresse">
-                <a href="#" class="small">{{item.add|replace({'?': ''})|capitalize}}</a>
+                <a href="#" class="small">{{item.add|replace({'?': ''})|capitalize|trim}}</a>
             </p>
             {% if type == "resto" %}
             <div class="cmz-categories-list">
@@ -82,7 +82,7 @@
             {% if item.tel is defined %}
                 {% if item.tel %}
                     <div class="cmz-tel">
-                        <button onclick="displayContact(this)" type="button" class="btn btn-secondary btn-rounded">
+                        <button onclick="displayContact(this)" type="button" class="btn btn-secondary">
                             <i class="bi bi-telephone-plus"></i> Afficher le N°
                         </button>
                         <span style="display:none;" class="tel">
@@ -94,7 +94,7 @@
             {% if item.email is defined %}
                 {% if item.email %}
                     <div class="cmz-tel">
-                        <button onclick="displayContact(this)" type="button" class="btn btn-secondary btn-rounded">
+                        <button onclick="displayContact(this)" type="button" class="btn btn-secondary">
                             <i class="bi bi-envelope-plus"></i> Afficher l'email
                         </button>
                         <span style="display:none;" class="tel">

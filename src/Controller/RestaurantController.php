@@ -66,11 +66,24 @@ class RestaurantController extends AbstractController
 
     #[Route("/Coord/All/Restaurant", name: "app_coord_restaurant", methods: ["GET"])]
     public function getAllRestCoor(
+        Request $request,
         BddRestoRepository $bddResto,
         SerializerInterface $serialize
     ) {
-        //$datas = $serialize->serialize($bddResto->getAllOpenedRestos(), 'json');
-        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific(75), 'json');
+      
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy), 'json');
+
+            return new JsonResponse($datas, 200, [], true);
+        }
+
+        $datas = $serialize->serialize($bddResto->getSomeDataShuffle(2000), 'json');
         return new JsonResponse($datas, 200, [], true);
     }
 
@@ -95,7 +108,6 @@ class RestaurantController extends AbstractController
         return new JsonResponse($datas, 200, [], true);
     }
 
-    //http://localhost:8000/restaurant/specific?nom_dep=Loire-Atlantique&id_dep=44
     #[Route("/restaurant/specific", name: "app_specific_dep_restaurant", methods: ["GET"])]
     public function getSpecificRestaurant(
         BddRestoRepository $bddResto,
@@ -106,8 +118,11 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
+
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+
         $resultCount = count($datas);
+
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("restaurant/specific_departement.html.twig", [
@@ -163,7 +178,9 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
+
         $datas = $code->getAllCodinsee($codeDep);
+        
         $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
         $resultCount = count($resto);
         // dump($resultCount);
@@ -265,6 +282,32 @@ class RestaurantController extends AbstractController
         // ], 200);
 
         return $this->render("shard/restaurant/details.js.twig", [
+            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+
+        ]);
+    }
+
+    /** 
+     * DON'T CHANGE THIS ROUTE: It's use in js file. 
+     * 
+     * @Route("/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="app_detail_restaurant" , methods="GET" )
+     */
+    public function detailRestaurant(
+        CodeapeRepository $codeApeRep,
+        BddRestoRepository $bddResto,
+        Status $status,
+        $nom_dep,
+        $id_dep,
+        $id_restaurant
+    ): Response {
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        return $this->render("restaurant/detail_resto.html.twig", [
             "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
@@ -429,6 +472,33 @@ class RestaurantController extends AbstractController
        $r=$bdd->getOneRestaurantById($idRestaurant);
         $response = $serializer->serialize($r, 'json');
         return new JsonResponse($response, 200, [], true);
+    }
+
+    #[Route("/restaurant/poi/limit", name: 'app_poi', methods: ["GET"])]
+    public function getAllPoi(SerializerInterface $serializer, BddRestoRepository $rep)
+    {
+
+        $response = $rep->getAllOpenedRestosV2(10000);
+
+        $json = $serializer->serialize($response, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route("/restaurant/maxmin", name: 'app_minmax', methods: ["GET"])]
+    public function getRestoBetweenMinmax(
+        SerializerInterface $serializer,
+        Request $request,
+        BddRestoRepository $rep
+    ) {
+
+        $minx = $request->query->get("minx");
+        $maxx = $request->query->get("maxx");
+        $miny = $request->query->get("miny");
+        $maxy = $request->query->get("maxy");
+        //dd(abs($minx));
+        $response = $rep->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+        $json = $serializer->serialize($response, 'json');
+        return new JsonResponse($json, 200, [], true);
     }
     
 }

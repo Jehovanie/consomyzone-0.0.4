@@ -19,11 +19,9 @@ class Status {
 
     public function statusFondateur($user){
         if (!$user) {
-            return [
-                "profil" => "",
-                "statusTribut" => ""
-            ];
+            return [ "profil" => "", "statusTribut" => "" ];
         }
+        
         $userType = $user->getType();
         $userId = $user->getId();
         $profil = "";

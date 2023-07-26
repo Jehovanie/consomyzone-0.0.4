@@ -60,32 +60,29 @@ class ToutsController extends AbstractController
     
 
     /**
-
      * @Route("/" , name="all_departement_touts" , methods={"GET", "POST"})
-
      * @Route("/" , name="app_home" , methods={"GET", "POST"})
-
      */
 
     public function getAllDepartementTouts(CodeapeRepository $codeApeRep,Status $status, DepartementRepository $departementRepository, Request $request, UserRepository $userRepository): Response
 
     {
 
-        return $this->redirectToRoute("restaurant_all_dep");
+        // return $this->redirectToRoute("restaurant_all_dep");
         
-        // $statusProfile = $status->statusFondateur($this->getUser());
+        $statusProfile = $status->statusFondateur($this->getUser());
 
-        // return $this->render("home/index.html.twig", [
+        return $this->render("home/index.html.twig", [
 
-        //     "toutsdepartements" => $departementRepository->getDep(),
+            "toutsdepartements" => $departementRepository->getDep(),
 
-        //     "number_of_departement" => $departementRepository->getCountDepartement()[0]["1"],
+            "number_of_departement" => $departementRepository->getCountDepartement()[0]["1"],
 
-        //     "profil" => $statusProfile["profil"],
+            "profil" => $statusProfile["profil"],
 
-        //     "statusTribut" => $statusProfile["statusTribut"],
-        //     "codeApes" => $codeApeRep->getCode()
-        // ]);
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+        ]);
 
     }
 
@@ -285,7 +282,34 @@ class ToutsController extends AbstractController
     }
 
 
+    #[Route("/dataHome", name:"dataForHome", methods:["GET"])]
+    public function getDateHome(
+        Request $request,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        FermeGeomRepository $fermeGeomRepository,
+        BddRestoRepository $bddRestoRepository,
+    ){
+        if($request->query->has("minx") && $request->query->has("miny") ){
 
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            return $this->json([
+                "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy)
+            ]);
+        }
+
+        $taille= 2000;
+        return $this->json([
+            "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
+            "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
+            "resto" => $bddRestoRepository->getSomeDataShuffle($taille)
+        ]);
+    }
     
 
     #[Route('/getLatitudeLongitudeForAll', name: 'for_explore_cat_tous', methods:["GET", "POST"])]

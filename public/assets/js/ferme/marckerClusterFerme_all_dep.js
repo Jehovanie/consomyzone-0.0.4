@@ -1,4 +1,3 @@
-
 ////INSTANCE ///
 const OBJECT_MARKERS_FERME= new MarckerClusterFerme()
 OBJECT_MARKERS_FERME.onInit();

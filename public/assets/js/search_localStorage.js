@@ -1,7 +1,9 @@
-localStorage.getItem("type") ?? localStorage.removeItem("type")
+if( localStorage.getItem("type") ){
+    localStorage.removeItem("type")
+}
 
-const link= new URL(window.location.href)
-const linkPathname= link.pathname;
+const link_now= new URL(window.location.href)
+const linkPathname= link_now.pathname;
 
 if( linkPathname.includes("/restaurant")){
     localStorage.setItem("type", "restaurant");
@@ -9,4 +11,6 @@ if( linkPathname.includes("/restaurant")){
     localStorage.setItem("type", "ferme");
 }else if( linkPathname.includes("/station")){
     localStorage.setItem("type", "station");
+}else if( linkPathname.length === 1  ||  linkPathname.includes("/search/tous") ){
+    localStorage.setItem("type", "tous");
 }

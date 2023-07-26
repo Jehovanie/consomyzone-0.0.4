@@ -64,12 +64,13 @@
 }
 
 .cmz-tel > span.tel{
-    color: #5f6872;
+    color: #1b2836;
     font-weight: normal !important;
 }
 
 .cmz-tel > button {
     border-radius: 10rem;
+    background-color: #6C757D !important;
 }
 
 .cmz-categories-list{
@@ -89,4 +90,13 @@
 
 .list_result_search .content_text{
     width: inherit;
+}
+
+.cmz-left-container{
+    margin-top: 3%;
+    margin-left: 0.5%;
+}
+
+.cmz-left-results-indications{
+    margin-left: 4%;
 }

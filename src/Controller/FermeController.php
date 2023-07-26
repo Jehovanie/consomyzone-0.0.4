@@ -29,6 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Symfony\Component\Serializer\SerializerInterface;
 
 class FermeController extends AbstractController
@@ -118,13 +119,9 @@ class FermeController extends AbstractController
 
 
     /**
-
      * @Route("/ferme/departement/{nom_dep}/{id_dep}" , name="specific_departement", methods={"GET"} )
-
      */
-
     public function getSpecifiqueDep(CodeapeRepository $codeApeRep, Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
-
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());
@@ -209,24 +206,16 @@ class FermeController extends AbstractController
     }
 
     /**
-
      * @Route("/ferme/departement/{nom_dep}/{id_dep}/allFerme" , name="getAllFermeInDepartement", methods={"GET"} )
-
      */
-
     public function getAllFermeInDepartement(Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
-
     {
-
+        $id_dep= strlen($id_dep) === 1 ? "0" . $id_dep : $id_dep;
         return $this->json(
-
             $fermeGeomRepository->getAllFermeInDepartement(
-
                 $nom_dep,
                 $id_dep
-
             )
-
         );
     }
 
@@ -281,31 +270,42 @@ class FermeController extends AbstractController
 
 
     /**
-
      * @Route("/getLatitudeLongitudeFerme" , name="getLatitudeLongitudeFerme" , methods={"GET"})
-
      */
+    public function getLatitudeLongitudeFerme(
+        Request $request,
+        FermeGeomRepository $fermeGeomRepository,
+        SerializerInterface $serialize
+    ){
 
-    public function getLatitudeLongitudeFerme(FermeGeomRepository $fermeGeomRepository, Request $request)
+        // if ($request->query->get("nom_dep") != null && $request->query->get("id_dep") != null) {
 
-    {
+        //     return $this->json(
 
-        if ($request->query->get("nom_dep") != null && $request->query->get("id_dep") != null) {
+        //         $fermeGeomRepository->getAllFermeInDepartement(
 
-            return $this->json(
+        //             $request->query->get("nom_dep"),
 
-                $fermeGeomRepository->getAllFermeInDepartement(
+        //             $request->query->get("id_dep")
 
-                    $request->query->get("nom_dep"),
+        //         )
 
-                    $request->query->get("id_dep")
+        //     );
+        // }
 
-                )
+        if($request->query->has("minx") && $request->query->has("miny") ){
 
-            );
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas= $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            return $this->json($datas);
         }
 
-        return $this->json($fermeGeomRepository->getLatitudeLongitudeFerme());
+        return $this->json($fermeGeomRepository->getSomeDataShuffle(2000));
     }
 
     #[Route("/avis/ferme/{idFerme}", name: "avis_ferme", methods: ["POST"])]

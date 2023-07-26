@@ -1,4 +1,5 @@
-<div class="navleft fixed-top result_container_resto_spec_arrond">
+<div class="navleft  result_container_resto_spec_arrond result_container_resto_spec_arrond_js">
+
     <nav class="navbar navbar-light navbar-light-left fixed-top">
         <div class="container-fluid">
             
@@ -63,7 +64,7 @@
                         </svg>
                     </div> #}
                     <div class="col-2 mt-5">
-                        <i class="fa-solid fa-x" id="close-list-depart-resto-spec-arrond" style="margin-left: 165px;"></i>
+                        <i class="fa-solid fa-x" id="close-list-depart-resto-spec-arrond"></i>
                     </div>
                 </div> 
             <hr>
@@ -71,7 +72,7 @@
         
     </nav>
     <div class="container-fluid list-depart">
-<div class="head-left spec-dep">
+        <div class="head-left spec-dep">
 
             <div class="row">
                 <div class="col-md-2">
@@ -108,7 +109,7 @@
                     <p  class="titre" data-toggle-deparement="{{nom_dep}}">
                         Les restaurants du département:
 						<span class="fw-bolder">{{nom_dep}}, </span>
-                        <span id="resultTot">{{resto_nombre}}</span> résultats
+                        <span  class="nombre content_nombre_result_js_jheo" id="resultTot">{{resto_nombre}}</span> résultats
                     </p>
                 </div>
             </div>
@@ -123,6 +124,16 @@
                 {% endif %} 
                 {% endfor %}
             </select>
+
+             {# pagination content #}
+                {# <div class="pagination"> #}
+            <div class="pagination_alphabet pagination_alphabet_jheo_js">
+                <ul>
+                    <!--pages or li are comes from javascript -->
+                    
+                </ul>
+            </div>
+
             {# <div class="container list-depart-all" id="Scrollbar">
                 <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
                     {% for codinsee in codinsees %}
@@ -163,26 +174,31 @@
                 </div>
             </div> #}
             <div class="container list-depart-all-specific" id="Scrollbar">
-                <div class="list_result" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
-                    <ul>
-                        {% set i = 1 %}
-                        {% set display = "" %}
-                        {% for restaurant in restaurants %}
-                            {% if i > 10 %}
+                <div class="list_result content_container_list" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
+                    <ul class="content_list_resto_spec_js_jheo">
+                        {# {% set i = 1 %} #}
+                       {# {% set display = "" %} #}
+                        {# {% set stateClass = "" %} #}
 
-                            {% set display = "none" %}
-                                
-                            {% endif %}
-                            <li class="card-list" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')">
+                        {% for restaurant in restaurants %}
+
+                            {# {% if i > 10 %} #}
+                                {# {% set display = "none" %} #}
+                                {# {% set stateClass = "hidden" %} #}
+                            {# {% endif %} #}
+
+                            {# <li class="card-list" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')"> #}
+                            <li class="card-list name_resto_js_jheo" onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
                                 <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
 
                                     <div class="col-md-9">
-                                        <p class="text-center fw-bold fs-6">{{restaurant.denominationF}} </p>
+                                        <p class="text-center fw-bold fs-6 id_departement_js_jheo">{{restaurant.denominationF}} </p>
                                         <p>
                                             <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                             {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
                                         </p>
                                     </div>
+
                                     <div class="col-md-2">
                                         <a id="open-detail">
                                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
@@ -207,10 +223,11 @@
                                     </div>
                                 </div>
                             </li>
-                            {% set i = i+1 %}
+
+                            {# {% set i = i+1 %} #}
                         {% endfor %}
                     </ul>
-                    <div aria-label="..." class="mx-auto ms-4">
+                    {# <div aria-label="..." class="mx-auto ms-4">
                         <ul class="pagination">
                             <li class="page-item prec_btn disabled" onclick="previousData(this)">
                                 <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
@@ -220,7 +237,7 @@
                                 <a class="page-link" href="#">Suivant</a>
                             </li>
                         </ul>
-                    </div>
+                    </div> #}
                 </div>
             </div>
             

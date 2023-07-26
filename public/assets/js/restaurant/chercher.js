@@ -1,4 +1,4 @@
-console.log(DEP)
+// console.log(DEP)
 
 document.querySelector("#recherche-input-restaurant-tom-js").onkeyup = (e) => {
     if (e.code === "Enter" || e.code === "NumpadEnter") { 

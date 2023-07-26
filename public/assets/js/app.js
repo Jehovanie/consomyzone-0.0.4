@@ -14,32 +14,56 @@ if( document.querySelector(".form_content_search_navbar_js")){
     search_form.addEventListener("submit", (e) => {
         const cles0 = document.querySelector(".input_search_type_js").value.trim();
         const cles1= document.querySelector(".input_mots_cle_js").value.trim();
+        
+        if(url.includes("restaurant") || url.includes("ferme") || url.includes("station") || url.includes("/search/restaurant") || url.includes("/search/ferme") || url.includes("/search/station")){
+            
+            if( cles0=== "" && cles1 === "" ){
 
-        if( cles0=== "" && cles1 === "" ){
-
-            alert("Veuillez renseigner les deux champs!")
-
-            e.preventDefault();
-            document.querySelector(".input_search_type_js").classList.add("border_red")
-            document.querySelector(".input_mots_cle_js").classList.add("border_red")
-
-        }else if( cles0=== "" || cles1 === "" ){
- 
-            document.querySelector(".input_mots_cle_js").classList.add("border_red")
-
-            if( cles0=== "" ){
-                alert("Veuillez renseigner le nom de "+ getDataInLocalStorage("type"))
-                document.querySelector(".input_search_type_js").classList.add("border_red")
+                alert("Veuillez renseigner au moins l'adresse!")
+    
                 e.preventDefault();
-            }
-
-            if( cles1=== "" ){
-                alert("Veuillez renseigner l'addresse!")
+                // document.querySelector(".input_search_type_js").classList.add("border_red")
                 document.querySelector(".input_mots_cle_js").classList.add("border_red")
+    
+            }else if(cles1 === ""){
+                alert("L'addresse est obligatoire!")
                 e.preventDefault();
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+            }
+        }else{
+
+            if( cles0=== "" && cles1 === "" ){
+    
+                alert("Veuillez renseigner les deux champs!")
+    
+                e.preventDefault();
+                document.querySelector(".input_search_type_js").classList.add("border_red")
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+    
+            }else if( cles0=== "" || cles1 === "" ){
+     
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+    
+                if( cles0=== "" ){
+                    if(getDataInLocalStorage("type") != "tous"){
+                        alert("Veuillez renseigner le nom de "+ getDataInLocalStorage("type"))
+                    }else{
+                        alert("Veuillez renseigner de quoi vous avez besoin !")
+                    }
+                    document.querySelector(".input_search_type_js").classList.add("border_red")
+                    e.preventDefault();
+                }
+    
+                if( cles1=== "" ){
+                    alert("Veuillez renseigner l'addresse!")
+                    document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    e.preventDefault();
+                }
+    
             }
 
         }
+
     })
 
     const inputs=  [document.querySelector(".input_search_type_js"), document.querySelector(".input_mots_cle_js")];
@@ -810,4 +834,73 @@ if (document.querySelector(".open-navleft-station-spec")) {
         document.querySelector(".result_container_station_spec").style.display="block"
         iconsChange()
     })
+}
+
+if (document.querySelector("#menu-mobile")) {
+    document.querySelector("#menu-mobile").onclick = () => {
+        if (document.querySelector("#container-mobile")) {
+            document.querySelector("#container-mobile").classList.toggle("content_right_actualite-g_menu");
+            document.querySelector(".card-pub").classList.toggle("bgPersonnalisee_menu");
+        } else if (document.querySelector(".content_right_actualite")) {
+            document.querySelector(".content_right_actualite").classList.toggle("content_right_actualite_menu");
+        } 
+        
+    }
+}
+
+if (document.querySelector("#menu-mobile-tribut")) {
+    document.querySelector("#menu-mobile-tribut").onclick = () => {
+        if (document.querySelector(".content_list_menu_tribut_mob")) {
+            document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
+        }
+    }
+}
+
+if (document.querySelector(".tribu_t")) {
+    document.querySelector(".tribu_t").onclick = () => {
+        alert("Please")
+        // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
+    }
+}
+
+
+/**
+ * active navigation bar map
+ */
+if (document.querySelector(".list-nav-bar")) {
+    const activPage = window.location.pathname;
+    
+    if( activPage.includes("/ferme")){
+        document.querySelector("#ferme-page").classList.add("active");
+    }else if( activPage.includes("/restaurant")){
+        document.querySelector("#resto-page").classList.add("active");
+    }else if( activPage.includes("/station")){
+        document.querySelector("#station-page").classList.add("active");
+    }else if(activPage.length === 1 ){
+        document.querySelector("#tous-page").classList.add("active");
+    }
+    // const links = document.querySelectorAll('.list-nav-bar');
+    // const specFerm = document.querySelector('.result_container_ferme_spec_js')
+    // const specReto = document.querySelector('.result_container_resto_spec_js')
+    // const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
+    // const specStation = document.querySelector('.result_container_station_spec_js')
+    // const tous = document.querySelector('.content_tous_js_jheo')
+    
+    // if (links.length) {
+    //     links.forEach((link) => {
+    //         if (link.href.includes(`${activPage}`)) {
+    //             link.classList.add("active");
+    //         } else if (specFerm) {
+    //             document.querySelector("#ferme-page").classList.add("active");
+    //         } else if (specReto) {
+    //             document.querySelector("#resto-page").classList.add("active");
+    //         } else if (specRestoArrond) {
+    //             document.querySelector("#resto-page").classList.add("active");
+    //         } else if (specStation) {
+    //             document.querySelector("#station-page").classList.add("active");
+    //         }else if(tous ){
+    //             document.querySelector("#station-page").classList.add("active");
+    //         }
+    //     });
+    // }
 }
