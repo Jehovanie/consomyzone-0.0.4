@@ -58,6 +58,7 @@ class MapModule{
         const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
         const tiles= this.initTales();
 
+        /// if there is departementSpecified
         this.settingLatLong();
         
         this.map = L.map('map', {
