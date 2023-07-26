@@ -406,6 +406,8 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.id',
                 'p.nomFerme as nom',
                 'p.adresseFerme as add',
+                'p.email',
+                'p.genre',
                 'p.departement as dep',
                 'p.departementName as depName',
                 'p.produitFerme as ferme',

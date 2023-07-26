@@ -85,7 +85,7 @@ body {
 
 .navleft .list-depart span{
     font-size: 10pt;
-    font-weight: 700;
+    /*font-weight: 700;*/
 }
 
 .navleft .list-depart-all{
