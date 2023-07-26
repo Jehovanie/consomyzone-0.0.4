@@ -69,7 +69,7 @@
                    
                     <ul class="content_list_station_left_jheo_js">
                         {% for  station in stations %}
-                            <li class="card-list element">
+                            <li class="card-list element open_detail_jheo_js" onclick="getDetailFromListLeft('{{departCode}}','{{departName}}','{{station.id}}')">
                                 <div class="row container-depart pt-4 element" id="{{station.id}}">
                                     <div class="col-md-9">
                                         <p> 

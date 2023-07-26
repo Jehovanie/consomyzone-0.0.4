@@ -74,18 +74,20 @@ class UserController extends AbstractController
     #[Route("/user/actualite", name: "app_actualite")]
     public function Actualite(
         Status $status,
-        TributGService $tributGService,
+        TributGService $tribuGService,
+        Tribu_T_Service $tribuTService,
     ): Response
     {
         $profil= $status->userProfilService($this->getUser());
 
         $publications = [];
 
-        $pub_tribuG= $tributGService->getAllPublications($profil['tableTribuG']);
+        $pub_tribuG= $tribuGService->getAllPublications($profil['tableTribuG']);
         $publications= array_merge($publications, $pub_tribuG);
-
+        // dd($publications);
         ///all publication on tribu T
-
+        $test= $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
+        dd($test);
         return $this->render("user/actualite.html.twig", [
             "userConnected" => $profil,
             "publications" => $publications
