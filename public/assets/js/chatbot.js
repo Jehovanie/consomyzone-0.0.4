@@ -790,6 +790,8 @@ document.querySelectorAll("div.cg-chat").forEach(amis=>{
             // get message from other user
 
             getChat(user_id)
+
+            // check the new message
             checkNewMessage(user_id)
 
         }else{
