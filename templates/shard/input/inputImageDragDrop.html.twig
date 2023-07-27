@@ -1,8 +1,11 @@
 <div class="image-upload">
 	
 	<div class="image-upload-wrap">
-<input class="image-upload-input" type='file' onchange="readURL(this);" accept="image/png, image/jpeg, image/gif"/>
-
+		{% if InputDropDown is defined %}
+			{{ form_row(InputDropDown, {'attr': {'class': 'image-upload-input', 'accept': 'image/png, image/jpeg, image/gif', 'onchange':'readURL(this);'}}) }}
+		{% else %}
+			<input class="image-upload-input" id="{{id}}" name="{{name}}" type="file" onchange="readURL(this);" accept="image/png, image/jpeg, image/gif"/>
+		{% endif %}
 		<div class="drag-text">
 			<img src="{{asset('assets/image/uplaodIcon.png')}}" alt="">
 			<h3>Faites glisser et déposez un fichier ou sélectionnez ajouter une image</h3>

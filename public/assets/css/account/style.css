@@ -3425,6 +3425,11 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 
 .card-pub-actu{
   padding: 20px;
+  width: 100%;
+}
+
+.card-pub-actu img {
+  width: inherit;
 }
 
 .card-reaction .text-comment{
@@ -3462,6 +3467,12 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 .apropos-tribu-g{
   position: fixed;
   top: 165px;
+  right: 0;
+}
+
+.apropos-tribu-t {
+  position: fixed;
+  top: 130px;
   right: 0;
 }
 

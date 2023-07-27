@@ -834,7 +834,7 @@ ul#navBarTribu {
 }
 
 .clearfix {
-    *zoom: 1;
+    zoom: 1;
 }
 
 .send_requesting:active{
@@ -918,4 +918,5 @@ ul#navBarTribu {
     border: 1px solid #000;
 }
 
+ 
 

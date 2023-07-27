@@ -307,7 +307,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 
             </div>
             <div id="tribu_t_conteuneur" class="exprime-pub">
-                <divclass="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+                <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
                     <div class=" uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
@@ -316,7 +316,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                             </div>
                             <div class="name-content-h">
                                 <div class="name-content">
-                                    <p class="form-pub">Partagez ce que vous pensez, Tommy...</p>
+                                    <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Partagez ce que vous pensez, Tommy...</p>
                                 </div>
                             </div>
                         </div>

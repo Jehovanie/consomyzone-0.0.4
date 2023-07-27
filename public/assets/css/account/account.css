@@ -39,12 +39,12 @@ body{
 
 .content_right_actualite{
     display: block;
-    width: 78%;
+    /* width: 84%; */
     overflow-x: hidden;
-    position: absolute;
+    /* position: absolute;
     right: 0;
     top: 78px;
-    padding: 15px;
+    padding: 15px; */
 
 }
 
@@ -994,13 +994,11 @@ thead > tr{
 }
 
 .content_right_actualite .card-couverture-pub-tribu-t{
-    width: 55vw;
+    width: inherit;
     height: 28vh;
-    margin-top: 150px;
+    /* margin-top: 150px; */
     background-color: #fff;
     border-radius: 15px ;
-    /* position: fixed;
-    z-index: 5;*/
 } 
 
 .content_right_actualite .card-couverture-pub-tribu-t .hr-pub{
@@ -1008,7 +1006,7 @@ thead > tr{
 }
 
 .content_right_actualite .card-couverture-pub-tribu-t .content-couverture{
-    width: 55vw;
+    width: inherit;
     height: 20vh;
     margin-top: 0;
     background-color: #8888;
@@ -1021,11 +1019,11 @@ thead > tr{
 }
 
 .pub-t{
-    width: 55vw;
+    width: 100%;
 }
 
 .list-pub-new{
-    width: 55vw;
+    width: inherit;
 }
 
 .head-pub .param-content i {
@@ -1988,3 +1986,5 @@ a:focus {
     background-color: #02042A;
     color: #ccc;
 }
+
+
