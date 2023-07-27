@@ -436,6 +436,89 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                             ->setParameter('cles0', '%'. $mot_cles0. '%' );
             }else{
 
+                $qb = $qb->where("p.nom LIKE :cles0")
+                         ->orWhere("p.services LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }
+
+        }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
+            if( strlen($mot_cles1) <= 2 ){
+                if($mot_cles1 === "20"){
+                    $qb = $qb->where("p.departementCode LIKE :a")
+                            ->orWhere("p.departementCode LIKE :b")
+                            ->setParameter('a',  "%2A%" )
+                            ->setParameter('b',  "%2B%");
+                }else{
+                    $qb =  $qb->where("p.departementCode LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+                $qb = $qb->where("p.adresse LIKE :cles1")
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+        }else{
+
+            if( strlen($mot_cles1) <= 2 ){
+                
+                $qb = $qb->where("p.nom LIKE :cles0 AND p.departementCode LIKE :cles1")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("p.nom LIKE :cles0 AND p.adresse LIKE :cles1")
+                        ->orWhere("p.services LIKE :cles0 AND p.adresse LIKE :cles1")
+                        ->orWhere("p.nom LIKE :cles0 AND p.departementName LIKE :cles1")
+                        ->orWhere("p.nom LIKE :cles0 AND CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                        ->orWhere("p.nom LIKE :cles0 AND CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+            }
+            
+        }
+
+        $qb = $qb->orderBy('p.nom', 'ASC')
+                 ->getQuery();
+            
+
+        $results =$qb->execute();
+        return [ $results , count($results) , "station"];
+    }
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1 , int $page = 1, $size = 20 )
+    {
+        // $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // const { adresse:add, departementName: depName, departementCode: dep, nom } = item;
+        // // showResultSearchNavBar("station", nom, add, dep, depName, id);
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                    'p.adresse as add',
+                    'p.adresse as commune',
+                    'p.departementCode as dep',
+                    'p.departementName as depName',
+                    'p.prixE85',
+                    'p.prixGplc',
+                    'p.prixSp95',
+                    'p.prixSp95E10',
+                    'p.prixSp98',
+                    'p.prixGasoil',
+                    'p.prixGasoil as station',
+                    'p.nom',
+                    'p.latitude as lat',
+                    'p.longitude as long',
+                    'p.services');
+
+        if( $mot_cles0 !== "" && $mot_cles1 === ""){
+            
+            if( strlen($mot_cles0) <= 2 ){
+            
+                $qb = $qb->where("p.nom LIKE :cles0")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+
                 $qb = $qb->where("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0")
                          ->orWhere("p.services LIKE :cles0")
                          ->setParameter('cles0', '%'. $mot_cles0. '%' );

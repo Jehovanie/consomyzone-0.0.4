@@ -190,7 +190,8 @@ class RestaurantController extends AbstractController
         return $this->render("restaurant/restaurant_arrondisment.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
-            "restaurants" => $bddResto->getCoordinateAndRestoIdForSpecificParis($codeDep),
+            "type" => "resto",
+            "restaurants" => $resto,
             "codinsees" => $datas,
             "resto_nombre" => $resultCount,
             "profil" => $statusProfile["profil"],

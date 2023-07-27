@@ -4,11 +4,22 @@
 			<div class="row cmz-left-results-indications">
 				<div class="col-md-10">
 					<h6 class="modal-title" id="exampleModalLabel">
+						
 						{% if cles0 != "" %}
-							Résultat(s) pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span><br>
+							{% if otherResult == true %}
+								Désolé, nous n’avons pas de résultats pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span>
+								<br>Cependant ces résultats pourraient vous intéresser<br>
+							{% else %}
+								Résultat(s) pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span><br>
+							{% endif %}
 						{% else %}
 							{% set rubrique = type == "resto"?"restaurant":type %}
-							<b>{{rubrique|upper}}</b> à <span id="cles1">{{cles1}}</span><br>
+							{% if otherResult == true %}
+								Désolé, nous n’avons pas de <span id="cles0"><b>{{rubrique|upper}}</b></span> à <span id="cles1">{{cles1}}</span>
+								<br>Cependant ces résultats pourraient vous intéresser<br>
+							{% else %}
+								<b>{{rubrique|upper}}</b> à <span id="cles1">{{cles1}}</span><br>
+							{% endif %}
 						{% endif %}
                         
                         {% if results[1] > 0 %}
