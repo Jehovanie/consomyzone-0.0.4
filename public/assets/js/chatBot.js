@@ -540,6 +540,3 @@ var controller = new ScrollMagic.Controller();
 						.setPin("#animate")
 						.addIndicators({name: "rotate"}) // add indicators (requires plugin)
 						.addTo(controller_h);
-
-
-

@@ -973,6 +973,9 @@ thead > tr{
     background-color: #fff;
     height: 100vh;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 42vw;
 }
 
 .back-tribu-t .avatar-tribu{
@@ -991,21 +994,21 @@ thead > tr{
 }
 
 .content_right_actualite .card-couverture-pub-tribu-t{
-    width: 76vw;
+    width: 55vw;
     height: 28vh;
-    margin-top: -225px;
+    margin-top: 150px;
     background-color: #fff;
     border-radius: 15px ;
-    position: fixed;
-    z-index: 5;
-}
+    /* position: fixed;
+    z-index: 5;*/
+} 
 
 .content_right_actualite .card-couverture-pub-tribu-t .hr-pub{
     width: 50vw;
 }
 
 .content_right_actualite .card-couverture-pub-tribu-t .content-couverture{
-    width: 76vw;
+    width: 55vw;
     height: 20vh;
     margin-top: 0;
     background-color: #8888;
@@ -1013,8 +1016,24 @@ thead > tr{
 }
 
 .content_right_actualite .exprime-pub {
-    margin-top: 245px;
+    margin-top: 10px;
     
+}
+
+.pub-t{
+    width: 55vw;
+}
+
+.list-pub-new{
+    width: 55vw;
+}
+
+.head-pub .param-content i {
+    margin-left: 250px !important;
+}
+
+.head-pub .name-content {
+    width: 450px !important;
 }
 
 .content_right_actualite .champ-pub {
@@ -1955,4 +1974,17 @@ a:focus {
     display: block;
     max-height: 60vh;
     overflow-y: scroll;
+}
+
+.y-photo{
+    bottom: -3.75rem !important;
+}
+
+.y-photo label{
+    background-color: #ccc;
+    color: #02042A;
+}
+.y-photo label:hover {
+    background-color: #02042A;
+    color: #ccc;
 }
