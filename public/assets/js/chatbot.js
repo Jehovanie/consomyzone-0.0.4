@@ -56,6 +56,13 @@ function endChat() {
 
     document.querySelector("#chat_header").style ="display:none;"
     document.querySelector("#amis_list").style ="display:none;"
+
+    if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0" && document.querySelector("#amis_list").getAttribute("data-my-id")=="0"){
+
+        document.querySelector("#amis_list").setAttribute("data-my-id","0")
+        
+    }
+
 }
 
 /**
@@ -308,6 +315,7 @@ function searchResultKey(q) {
     }
 
     writeResponse(response)
+    runSuggestion()
 
 }
 
@@ -401,7 +409,7 @@ function sendChat(message, images =[], user_id) {
         images : images
     }
 
-    //console.log(data);
+    console.log(data);
 
     fetch("/user/push/message", {
         headers: {
@@ -414,9 +422,15 @@ function sendChat(message, images =[], user_id) {
         if(response.status == 200){
             //writeRequest(message)
             console.log("message sended...");
+
+            if(document.querySelectorAll("div.content_image_input_js_jheo > img").length > 0){
+                document.querySelectorAll("div.content_image_input_js_jheo > img").forEach(img=>{
+                    img.remove()
+                })
+            }
+            
         }
     })
-
 
 }
 
@@ -443,7 +457,7 @@ function getChat(user_id) {
 
                 for(let img of content.images){
 
-                    img_doc += `<img src="${img}" alt="photo" style="height:100px;">`
+                    img_doc += `<img src="${img}" class="mb-1" alt="photo" style="height:100px;border-radius:5px;">`
 
                 }
                 
@@ -511,7 +525,7 @@ function checkNewMessage(user_id) {
 
                     for(let img of content.images){
     
-                        img_doc += `<img src="${img}" alt="photo" style="height:100px;">`
+                        img_doc += `<img src="${img}" class="mb-1" alt="photo" style="height:100px;border-radius:5px;">`
     
                     }
                     
@@ -554,8 +568,15 @@ function checkNewMessage(user_id) {
  * @constructor
  */
 function lanceChat() {
-    document.querySelector("#amis_list").setAttribute("data-my-id",'-1')
-    document.querySelector("#openChat").click()
+
+    document.querySelector("div.user-chat-display").setAttribute("data-user-id","0")
+
+    runSpinner()
+
+    writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+
+    runSuggestion()
+
 }
 
 /***********************Action*************** */
@@ -664,9 +685,9 @@ document.querySelector("#openChat").addEventListener("click", function(){
 
     openChat()
 
-    runSpinner()
+    if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
 
-    if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0){
+        runSpinner()
 
         writeResponse("Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br><button class='ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100' type='button' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</button>")
 
@@ -674,17 +695,18 @@ document.querySelector("#openChat").addEventListener("click", function(){
 
         if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
 
+            runSpinner()
+
             writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
     
             runSuggestion()
             
         }else{
-            //console.log("fonctionnalité message entre user");
-    
-            writeResponse("<p class='text-center'> Vous êtes amis sur ConsoMyZone.<br>Lancer une discussion<p>")
+            
+            getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+        
         }
     }
-
 
 })
 
@@ -707,7 +729,7 @@ document.querySelector("#text-search").addEventListener("keyup", function(e){
         }else{
             //console.log("send message user");
 
-            sendChat(e.target.value, [], document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+            sendChat(e.target.value, image_list, document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
         }
         
 
@@ -719,7 +741,7 @@ document.querySelector("#text-search").addEventListener("keyup", function(e){
 
 document.querySelector("#btn-send").addEventListener("click", function(e){
 
-    if(user_id == 0){
+    if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == 0){
 
         if(document.querySelector("#text-search").value){
 
@@ -731,7 +753,7 @@ document.querySelector("#btn-send").addEventListener("click", function(e){
 
         //console.log("send message user");
 
-        sendChat(document.querySelector("#text-search").value, [], document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+        sendChat(document.querySelector("#text-search").value, image_list, document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
 
     }
     
@@ -794,6 +816,8 @@ document.querySelectorAll("div.cg-chat").forEach(amis=>{
             // check the new message
             checkNewMessage(user_id)
 
+            document.querySelector(".btn-input-file").style="cursor:pointer;"
+
         }else{
         
             document.querySelector("#profile-user").src = "https://www.iconpacks.net/icons/1/free-help-icon-1160-thumb.png"
@@ -806,9 +830,57 @@ document.querySelectorAll("div.cg-chat").forEach(amis=>{
             
             document.querySelector("div.user-chat-display").setAttribute("data-user-id","0")
 
-            document.querySelector("#openChat").click()
+            document.querySelector(".btn-input-file").style="cursor:not-allowed;"
+
+            runSpinner()
+
+            writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+    
+            runSuggestion()
             
         }
 
     })
+})
+
+/** Upload file */
+
+let image_list = [];
+
+document.querySelector("#input-file").addEventListener("change", (e) => {
+
+    ///read file
+    const reader = new FileReader();
+
+    ////on load file
+    reader.addEventListener("load", () => {
+
+        /// file as url
+        const uploaded_image = reader.result;
+
+        ///let get multiple images (files)
+        image_list.push(reader.result);
+
+        //// for the content image above the input message
+        const img = document.createElement("img")
+        img.src = uploaded_image
+        img.style = "width:100px;height:100px;"
+        img.setAttribute("alt","Image upload")
+        document.querySelector(".content_image_input_js_jheo").style.display= "flex"
+
+        const parentImage = document.querySelector(".content_image_input_js_jheo")
+
+        //// add in the first the new image upload
+        if(parentImage.querySelector("img")){
+            parentImage.insertBefore(img, parentImage.querySelector("img"))
+        }else{
+            document.querySelector(".content_image_input_js_jheo").appendChild(img)
+        }
+
+    });
+
+
+    ///run event load in file reader.
+    reader.readAsDataURL(e.target.files[0]);
+        
 })

@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -146,11 +147,12 @@ class MessageController extends AbstractController
     // }
 
 
-    #[Route('/user/push/message', name: 'app_message_push' , methods: ['POST'])]
+    #[Route('/user/push/message', name: 'app_message_push' , methods: ['POST','GET'])]
     public function pushMessage(
         Request $request,
         UserRepository $userRepository,
         MessageService $messageService,
+        Filesystem $filesyst
 
     ): Response
     {
@@ -164,15 +166,24 @@ class MessageController extends AbstractController
         if(count($images) > 0 ){
             
             $path = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/'; 
+
+            $dir_exist = $filesyst->exists($path);
+
+            if($dir_exist==false){
+    
+                $filesyst->mkdir($path, 0777);
+    
+            }
+
             foreach( $images as $image ){
                 // Function to write image into file
                 $temp = explode(";", $image );
                 $extension = explode("/", $temp[0])[1];
                 $image_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $from . "_to_" . $to . "." . $extension;
                 ///save image in public/uploader folder
-                file_put_contents($path ."/". $image_name, file_get_contents($image));
+                file_put_contents($path . $image_name, file_get_contents($image));
                 
-                array_push($image_lists, $image_name);
+                array_push($image_lists, "/public/uploads/messages/". $image_name);
             }
         }
 
