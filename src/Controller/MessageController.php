@@ -224,6 +224,8 @@ class MessageController extends AbstractController
             }
         }
 
+        // $id_user_to_chat= 20;
+
 
         ///user to chat
         $user_to = $userRepository->find($id_user_to_chat);
@@ -447,6 +449,7 @@ class MessageController extends AbstractController
         
         /// current user
         $user = $this->getUser();
+
         /// my table name
         $user_tablemessage = $user->getTablemessage();
 
@@ -468,6 +471,7 @@ class MessageController extends AbstractController
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
         $response->headers->set('Cache-Control', 'no-cache');
         $response->headers->set('Content-Type', 'text/event-stream');
+        
         return $response;
 
     }
