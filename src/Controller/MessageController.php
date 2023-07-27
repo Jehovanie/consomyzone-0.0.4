@@ -12,6 +12,7 @@ use App\Repository\UserRepository;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -277,7 +278,7 @@ class MessageController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         MessageService $messageService,
-
+        Filesystem $filesyst
     ): Response
     {
         /// get data from front on json format
@@ -303,13 +304,20 @@ class MessageController extends AbstractController
                 $image_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $from . "_to_" . $to . "." . $extension;
                 ///save image in public/uploader folder
                 file_put_contents($path ."/". $image_name, file_get_contents($image));
-                
-                array_push($image_lists, $image_name);
+                array_push($image_lists, "/public/uploads/messages/". $image_name);
             }
         }
 
+        if(count($image_lists) > 0  && $message === ""){
+            $type= "image";
+        }else if( count($image_lists) > 0 && $message !== "" ){
+            $type= "text_image";
+        }else{
+            $type= "text";
+        }
+
         ///persist message data and return the last id form their table
-        $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_lists ])); /// [ ["last_id_message" => .. ] ]
+        $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_lists ]),$type); /// [ ["last_id_message" => .. ] ]
 
         return $this->json([
            "id" => $result[0]["last_id_message"]
@@ -471,7 +479,7 @@ class MessageController extends AbstractController
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
         $response->headers->set('Cache-Control', 'no-cache');
         $response->headers->set('Content-Type', 'text/event-stream');
-        
+
         return $response;
 
     }

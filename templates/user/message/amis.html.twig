@@ -148,10 +148,15 @@
                                         <div class="qb vh hi vj yr el yl">
                                             
                                             {% if message.message_type is same as('text') %}
-                                                <p>
-                                                   {{message.content.text}}
-                                                </p>
+                                                <p>{{message.content.text}}</p>
                                             {% elseif (message.message_type is same as('image'))  %}
+                                                <div class="content_image_msg">
+                                                    {% for image in message.content.images %}
+                                                        <img class="message_image_item" src="{{image}}" alt="image">
+                                                    {% endfor %}
+                                                </div>
+                                            {% elseif (message.message_type is same as('text_image'))  %}
+                                                <p>{{message.content.text}}</p>
                                                 <div class="content_image_msg">
                                                     {% for image in message.content.images %}
                                                         <img class="message_image_item" src="{{image}}" alt="image">
@@ -169,6 +174,13 @@
                                             {% if message.message_type is same as('text') %}
                                                 <p class="eo">{{message.content.text}}</p>
                                             {% elseif (message.message_type is same as('image')) %}
+                                                <div class="content_image_msg">
+                                                    {% for image in message.content.images %}
+                                                        <img class="message_image_item" src="{{image}}" alt="image">
+                                                    {% endfor %}
+                                                </div>
+                                            {% elseif (message.message_type is same as('text_image'))  %}
+                                                <p class="eo">{{message.content.text}}</p>
                                                 <div class="content_image_msg">
                                                     {% for image in message.content.images %}
                                                         <img class="message_image_item" src="{{image}}" alt="image">
