@@ -81,10 +81,11 @@
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result content_container_list" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}" data-toggle-dep-name="{{nom_dep}}">
                     <ul class="content_list_ferme_spec_js_jheo">
-                        {% for  ferme in fermes %}
-                            <li class="card-list name_ferme_js_jheo" onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
+                        {% for  rubrique in fermes %}
+                            {% include "card/card_rubrique.html.twig" %}
+                            {# <li class="card-list name_ferme_js_jheo" onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{ferme.id}}')">
                                 <div class="row container-depart pt-4 element" data-toggle-id="{{ferme.id}}" data-toggle-latitude ="{{(ferme.latitude) ? ferme.latitude : '0' }}" data-toggle-longitude="{{(ferme.longitude) ? ferme.longitude : '0'}}">
-                                    <div class="col-md-9">
+                                    <div class="col-md-12">
                                         <p class="text-center fw-bold fs-6 id_departement name_to_filter_js_jheo">{{ferme.nomFerme}} </p>
                                         <p>
                                             <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
@@ -112,7 +113,7 @@
                                         </a>
                                     </div>
                                 </div>
-                            </li>
+                            </li> #}
                         {% endfor %}
                     </ul>
                 </div>

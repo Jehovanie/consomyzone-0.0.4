@@ -161,14 +161,14 @@ body {
 .navleft .list-depart-all-specific ul .card-list {
     list-style: none;
     background-color: #ffffff;
-    width: 18vw;
+    width: 24vw;
     height: auto;
     padding: 15px;
     /* margin-left: -40px; */
     margin-left: -10px;
     margin-bottom: 20px;
     border-radius: 40px;
-    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+    box-shadow: 0px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
     overflow: hidden;
 }
@@ -176,9 +176,9 @@ body {
     transform: scale(1.009);
 }
 
-.navleft .list-depart-all-specific-station ul .card-list {
+/* .navleft .list-depart-all-specific-station ul .card-list {
     height: 40vh !important;
-}
+} */
 
 .navleft .list-depart-all-specific ul li h5 {
 
@@ -1253,3 +1253,6 @@ input::-ms-clear {
     margin-left: -1.5rem;
 }
 
+.rubrique-item{
+    padding-bottom: 25px !important;
+}

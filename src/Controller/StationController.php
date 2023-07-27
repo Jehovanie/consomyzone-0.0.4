@@ -82,6 +82,8 @@ class StationController extends AbstractController
 
             "departName" => $depart_name,
 
+            "type" => "station",
+
             // "stations"   => $stationServiceFrGeomRepository->getStationByDepartement($depart_code, $depart_name, 0),
             "stations"   => $stationServiceFrGeomRepository->getAllStationInDepartement($depart_code, $depart_name),
 

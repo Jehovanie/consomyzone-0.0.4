@@ -114,53 +114,9 @@
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result content_container_list" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
                     <ul  class="content_list_resto_spec_js_jheo">
-                        {# {% set i = 1 %} #}
-                        {# {% set display = "" %} #}
-                        {# {% set stateClass = "" %} #}
 
-                        {% for restaurant in restaurants %}
-
-                            {# {% if i > 10 %}
-                                {% set display = "none" %}
-                                {% set stateClass = "hidden" %}
-                            {% endif %} #}
-                            {# {% include "card/card.html.twig" %} #}
-                            {# <li class="card-list miseho" style="display:{{display}}"  onclick="getDetail(event,'{{nom_dep}}','{{id_dep}}','{{restaurant.id}}','{{restaurant.denominationF}}')"> #}
-                            <li class="card-list miseho name_resto_js_jheo"  onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
-                                <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
-
-                                    <div class="col-md-9">
-                                        <p class="text-center fw-bold fs-6 name_to_filter_js_jheo">{{restaurant.denominationF}} </p>
-                                        <p>
-                                            <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
-                                            {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <a id="open-detail">
-                                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
-
-                                                <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
-                                                stroke="none">
-                                                    <path d="M2375 4954 c-231 -24 -462 -78 -641 -149 -782 -310 -1321 -993 -1440
-                                                    -1824 -21 -141 -23 -445 -5 -581 23 -170 77 -398 116 -485 8 -16 26 -59 40
-                                                    -95 175 -426 486 -804 870 -1056 1052 -689 2449 -398 3148 658 313 473 437
-                                                    1008 360 1568 -135 995 -920 1789 -1923 1945 -101 15 -440 28 -525 19z m285
-                                                    -395 c108 -17 187 -60 254 -137 32 -37 72 -96 90 -132 l31 -65 3 -519 3 -519
-                                                    332 6 c183 3 418 3 523 -1 188 -7 192 -8 256 -40 172 -85 278 -295 249 -496
-                                                    -23 -164 -114 -297 -249 -363 l-76 -38 -518 -3 -517 -3 -3 -517 -3 -517 -28
-                                                    -59 c-79 -170 -238 -266 -437 -266 -199 0 -358 96 -437 266 l-28 59 -3 517 -3
-                                                    517 -517 3 -518 3 -76 38 c-176 87 -280 295 -249 497 21 138 112 279 221 343
-                                                    98 57 120 59 652 59 l487 -1 3 517 3 517 29 62 c16 35 35 68 42 74 8 6 14 20
-                                                    14 29 0 47 174 151 280 169 77 12 115 12 190 0z"/>
-                                                </g>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-
-                            {# {% set i = i+1 %} #}
+                        {% for rubrique in restaurants %}
+                            {% include "card/card_rubrique.html.twig" %}
                         {% endfor %}
                     </ul>
                     

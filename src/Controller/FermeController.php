@@ -132,6 +132,8 @@ class FermeController extends AbstractController
 
             "nom_dep" => $nom_dep,
 
+            "type" => "ferme",
+
             "fermes" => $fermeGeomRepository->getFermByDep($nom_dep, $id_dep, 0),
 
             "nomber_ferme" => $fermeGeomRepository->getCountFerme($nom_dep, $id_dep)[0]["1"],

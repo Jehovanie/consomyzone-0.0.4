@@ -67,6 +67,9 @@ function createPagination(totalPages, page){
                 active = "alphabet_active";
                 handleFilterFirstChar(letters[plength]);
                 OBJECT_MARKERS_STATION.filterByFirstLetterOnName(letters[page])
+
+                document.querySelector(".content_pagination_js_jheo").classList.add("hidden");
+
             }
         }else{ //else leave empty to the active variable
             active = "";
@@ -128,12 +131,12 @@ function reverseCardElement(){
 
 function handleFilterFirstChar(letter){
 
-    const class_selector= screen.width < 991 ? "content_list_station_left_mobile_jheo_js" : "content_list_station_left_jheo_js";
-    const all_card_elements=document.querySelectorAll(`.${class_selector} > .element`);
+    const class_selector= screen.width < 991 ? "content_list_station_left_mobile_jheo_js" : "content_list_station_spec_js_jheo";
+    const all_card_elements=document.querySelectorAll(`.${class_selector} > .element_js_jheo`);
 
     let count_not_hidden=0;
     for(let i=0 ; i<all_card_elements.length ; i++ ){
-        if(all_card_elements[i].querySelector(".id_departement").innerText.trim().charAt(0).toLowerCase() !== letter.toLowerCase()){
+        if(all_card_elements[i].querySelector(".name_to_filter_js_jheo").innerText.trim().charAt(0).toLowerCase() !== letter.toLowerCase()){
             all_card_elements[i].classList.add("hidden")
         }else{
             if(all_card_elements[i].classList.contains("hidden")){
@@ -162,6 +165,8 @@ function refreshDataList(){
 
     document.querySelector(".alphabet_active").classList.remove("alphabet_active");
     OBJECT_MARKERS_STATION.resetToDefaultMarkers();
+
+    document.querySelector(".content_pagination_js_jheo").classList.remove("hidden");
 
     closeFilterIfModal()
 }

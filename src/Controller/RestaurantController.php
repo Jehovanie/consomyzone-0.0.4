@@ -128,6 +128,7 @@ class RestaurantController extends AbstractController
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
+            "type" => "resto",
             "restaurants" => $datas,
             "nomber_resto" => $resultCount,
             "profil" => $statusProfile["profil"],

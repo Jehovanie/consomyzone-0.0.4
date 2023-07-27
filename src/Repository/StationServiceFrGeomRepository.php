@@ -83,8 +83,11 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             ->select('p.id',
                      'p.nom',
                      'p.latitude',
+                     'p.latitude as lat',
                      'p.longitude',
+                     'p.longitude as long',
                      'p.adresse',
+                     'p.adresse as add',
                      'p.prixE85',
                      'p.prixGplc',
                      'p.prixSp95',
@@ -92,7 +95,9 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.prixSp98',
                      'p.prixGasoil',
                      'p.departementName',
-                     'p.departementCode')
+                     'p.departementName depName',
+                     'p.departementCode',
+                     'p.departementCode as dep')
                      ->orderBy("p.nom", 'ASC');
         if( $code === "20"){
             $qb->where('p.departementCode = :q')

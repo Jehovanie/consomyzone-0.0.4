@@ -15,7 +15,7 @@ if( document.querySelector(".form_content_search_navbar_js")){
         const cles0 = document.querySelector(".input_search_type_js").value.trim();
         const cles1= document.querySelector(".input_mots_cle_js").value.trim();
         
-        if(url.includes("restaurant") || url.includes("ferme") || url.includes("station") || url.includes("/search/restaurant") || url.includes("/search/ferme") || url.includes("/search/station")){
+        if(current_url.includes("/restaurant") || current_url.includes("/ferme") || current_url.includes("/station")){
             
             if( cles0=== "" && cles1 === "" ){
 

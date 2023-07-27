@@ -553,4 +553,8 @@ class MarckerClusterSearch extends MapModule  {
             }
         });
     }
+
+    redirectOnAdresse(lat, lng, zoom){
+        this.map.setView([lat, lng], zoom);
+    }
 }
