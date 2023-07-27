@@ -99,7 +99,7 @@ class MessageService extends PDOConnexionService{
     public function getNumberMessageNotShow(string $table_name ){
         $sql = "SELECT count(*) as not_show FROM ". $table_name. " WHERE isShow=0";
         $result = $this->getPDO()->query($sql);
-        return $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result->fetch(PDO::FETCH_ASSOC);
     }
 
     /**

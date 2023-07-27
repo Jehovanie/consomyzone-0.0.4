@@ -326,7 +326,8 @@ class MessageController extends AbstractController
         $nbr_msg_not_show = $messageService->getNumberMessageNotShow(
             $this->getUser()->getTablemessage()
         ); // [ ["not_show" => ... ]]
-        $result = $nbr_msg_not_show[0]["not_show"]; // ...
+
+        $result = $nbr_msg_not_show["not_show"]; // ...
        
         /// send event to the client
         $response = new StreamedResponse();
