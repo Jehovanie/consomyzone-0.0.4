@@ -44,13 +44,11 @@ class Status {
         $userType = $user->getType();
         $userId = $user->getId();
         $profil = "";
-
         if ($userType == "consumer") {
-            $profil = $this->entityManager->getRepository(Consumer::class)->findOneBy(['id' => intval($userId)]);
+            $profil = $this->entityManager->getRepository(Consumer::class)->findOneBy(['userId' => intval($userId)]);
         } else {
-            $profil = $this->entityManager->getRepository(Supplier::class)->findOneBy(['id' => intval($userId)]);
+            $profil = $this->entityManager->getRepository(Supplier::class)->findOneBy(['userId' => intval($userId)]);
         }
-
         return [
             "id" => $user->getId(),
             "email" => $user->getEmail(),

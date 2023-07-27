@@ -212,7 +212,7 @@ function sendMessage(message, image_list){
 function handleMessageResponse(date, message,image_list=null,image,status){
 
     const card_msg= document.createElement("div");
-    card_msg.className= "qf rb hard_msg_jheo_js";
+    card_msg.className= "qf rb";
     card_msg.setAttribute("id", "message_id_jheo_js");
 
     let image_html_list= "";
