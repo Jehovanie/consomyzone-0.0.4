@@ -242,7 +242,7 @@ class BddRestoRepository extends ServiceEntityRepository
                              ->setParameter('identifier', true);
                 }else{
 
-                    $qb = $qb->where("p.denominationF LIKE :cles0")
+                    $qb = $qb->where("REPLACE(p.denominationF) LIKE :cles0")
                              ->setParameter('cles0', '%' . $mot_cles0. '%');
                 }
             }
@@ -255,7 +255,7 @@ class BddRestoRepository extends ServiceEntityRepository
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
 
-                $qb = $qb->where("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1")
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
@@ -267,7 +267,7 @@ class BddRestoRepository extends ServiceEntityRepository
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
                     //dd("p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm");
-                    $qb = $qb->where("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isCafe($mot_cles0)){
@@ -275,15 +275,15 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.cafe = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.cafe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
-                             ->setParameter('cles1', '%'. $mot_cles1. '%' );     
+                    $qb = $qb->where("p.cafe = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isThe($mot_cles0)){
                 if( strlen($mot_cles1) <= 2 ){
                     $qb = $qb->where("p.salonThe = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.salonThe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.salonThe = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isCuisine($mot_cles0)){
@@ -291,7 +291,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.cuisineMonde = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.cuisineMonde = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.cuisineMonde = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isBrasserie($mot_cles0)){
@@ -299,7 +299,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.brasserie = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.brasserie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.brasserie = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isBar($mot_cles0)){
@@ -307,7 +307,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.bar = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.bar = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.bar = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isCreperie($mot_cles0)){
@@ -315,7 +315,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.creperie = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.creperie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.creperie = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isFastFood($mot_cles0)){
@@ -323,7 +323,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.fastFood = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.fastFood = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.fastFood = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isPizzeria($mot_cles0)){
@@ -331,7 +331,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.pizzeria = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.pizzeria = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.pizzeria = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }elseif($dicoResto->isBoulangerie($mot_cles0)){
@@ -339,19 +339,19 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.boulangerie = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.boulangerie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.boulangerie = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }else{
 
                 if( strlen($mot_cles1) <= 2 ){
                 
-                    $qb = $qb->where("p.denominationF LIKE :cles0 AND p.dep LIKE :cles1")
+                    $qb = $qb->where("REPLACE(p.denominationF) LIKE :cles0 AND p.dep LIKE :cles1")
                              ->setParameter('cles0', '%'. $mot_cles0. '%' )
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
     
-                    $qb = $qb->where("(p.denominationF LIKE :cles0) AND (CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 )")
+                    $qb = $qb->where("(REPLACE(p.denominationF) LIKE :cles0) AND (REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 )")
                              ->setParameter('cles0', '%'. $mot_cles0. '%' )
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
 
@@ -473,7 +473,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.cafe = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.cafe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.cafe = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.cafe = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );     
                 }
@@ -482,7 +482,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.salonThe = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.salonThe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.salonThe = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.salonThe = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -491,7 +491,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.cuisineMonde = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.cuisineMonde = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.cuisineMonde = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.cuisineMonde = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -500,7 +500,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.brasserie = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.brasserie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.brasserie = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.brasserie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -509,7 +509,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.bar = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.bar = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.bar = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.bar = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -518,7 +518,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.creperie = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.creperie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.creperie = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.creperie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -527,7 +527,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.fastFood = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.fastFood = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.fastFood = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.fastFood = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -536,7 +536,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.pizzeria = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.pizzeria = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.pizzeria = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.pizzeria = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -545,7 +545,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.boulangerie = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.boulangerie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                    $qb = $qb->where("p.boulangerie = 1 AND REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
                              ->orWhere("p.boulangerie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }

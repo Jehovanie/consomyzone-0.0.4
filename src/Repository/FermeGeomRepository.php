@@ -441,8 +441,8 @@ class FermeGeomRepository extends ServiceEntityRepository
                 $qb = $qb->where("p.nomFerme LIKE :cles0")
                          ->setParameter('cles0', '%'. $mot_cles0. '%' );
             }else{
-                $qb =  $qb->where("p.nomFerme LIKE :cles0")
-                          ->orWhere("p.nomProprietaire LIKE :cles0")
+                $qb =  $qb->where("REPLACE(p.nomFerme) LIKE :cles0")
+                          ->orWhere("REPLACE(p.nomProprietaire) LIKE :cles0")
                           ->setParameter('cles0', '%'.$mot_cles0.'%');
             }
             
@@ -452,10 +452,10 @@ class FermeGeomRepository extends ServiceEntityRepository
                 $qb =  $qb->where("p.departement LIKE :cles1")
                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
-                $qb =  $qb->where("p.adresseFerme LIKE :cles1")
-                          ->orWhere("p.departementName LIKE :cles1")
-                          ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
-                          ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                $qb =  $qb->where("REPLACE(p.adresseFerme) LIKE :cles1")
+                          ->orWhere("REPLACE(p.departementName) LIKE :cles1")
+                          ->orWhere("REPLACE(CONCAT(p.departement,' ',p.departementName)) LIKE :cles1")
+                          ->orWhere("REPLACE(CONCAT(p.departementName,' ',p.departement)) LIKE :cles1")
                           ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
@@ -465,25 +465,25 @@ class FermeGeomRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.departement LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.adresseFerme LIKE :cles1")
-                            ->orWhere("p.departementName LIKE :cles1")
-                            ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
-                            ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                    $qb = $qb->where("REPLACE(p.adresseFerme) LIKE :cles1")
+                            ->orWhere("REPLACE(p.departementName) LIKE :cles1")
+                            ->orWhere("REPLACE(CONCAT(p.departement,' ',p.departementName)) LIKE :cles1")
+                            ->orWhere("REPLACE(CONCAT(p.departementName,' ',p.departement)) LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             } else{
 
                 if( strlen($mot_cles1) <= 2 ){
-                    $qb = $qb->where("p.nomFerme LIKE :cles0 AND p.departement LIKE :cles1")
-                                 ->orWhere("p.nomProprietaire LIKE :cles0 AND p.departement LIKE :cles1")
+                    $qb = $qb->where("REPLACE(p.nomFerme) LIKE :cles0 AND p.departement LIKE :cles1")
+                                 ->orWhere("REPLACE(p.nomProprietaire) LIKE :cles0 AND p.departement LIKE :cles1")
                                  ->setParameter('cles0', '%'. $mot_cles0. '%' )
                                  ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
 
-                    $qb = $qb->where("(p.nomFerme LIKE :cles0) AND (p.adresseFerme LIKE :cles1)")
-                        ->orWhere("p.nomFerme LIKE :cles0 AND p.departementName LIKE :cles1")
-                        ->orWhere("p.nomFerme LIKE :cles0 AND CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
-                        ->orWhere("p.nomFerme LIKE :cles0 AND CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                    $qb = $qb->where("(REPLACE(p.nomFerme) LIKE :cles0) AND (REPLACE(p.adresseFerme) LIKE :cles1)")
+                        ->orWhere("REPLACE(p.nomFerme) LIKE :cles0 AND REPLACE(p.departementName) LIKE :cles1")
+                        ->orWhere("REPLACE(p.nomFerme) LIKE :cles0 AND REPLACE(CONCAT(p.departement,' ',p.departementName)) LIKE :cles1")
+                        ->orWhere("REPLACE(p.nomFerme) LIKE :cles0 AND REPLACE(CONCAT(p.departementName,' ',p.departement)) LIKE :cles1")
                         ->setParameter('cles0', '%'. $mot_cles0. '%' )
                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
