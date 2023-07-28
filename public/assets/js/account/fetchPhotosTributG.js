@@ -1,14 +1,21 @@
 if( document.querySelector("#fetch_photo_tribug_js_jheo")){
     const btn_photos = document.querySelector("#fetch_photo_tribug_js_jheo");
-    
+
     btn_photos.addEventListener("click",(e) => {
         e.preventDefault();
         if(!btn_photos.classList.contains("active")){
             btn_photos.classList.add("active")
             btn_photos.classList.add("text-white")
             btn_photos.classList.remove("text-primary")
+            document.querySelector("#showCreatePub").style.display="none";
             
         }
+
+        document.querySelector(".content_bloc_js_jheo div").innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
 
         if(document.querySelector("#fetch_actialite_tribug_js_jheo").classList.contains("active")){
             document.querySelector("#fetch_actialite_tribug_js_jheo").classList.remove("active")
@@ -48,7 +55,10 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
                     document.querySelector(".content_bloc_js_jheo").innerHTML = response;
 
                     setGallerie(document.querySelectorAll("#gallery > img"))
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
                 }
             }).catch(error => {
                 console.log(error)
@@ -56,11 +66,18 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
     })
 }
 
+<<<<<<< HEAD
+/**
+* Upload photos
+*/
+var loadFile = (event) => {
+=======
 
 /**
 * Upload photos
 */
 function loadFile (event){
+>>>>>>> main
 
     let new_photo = document.createElement("img")
     new_photo.setAttribute("data-bs-toggle","modal")

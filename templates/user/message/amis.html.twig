@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ConsoMyZone{% endblock %}
+{% block title %}ConsoMyZone
+{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
@@ -259,8 +260,6 @@
                             </h5>
                             <p class="mn">{{userToProfil.status}}</p>
 
-                            <span class="jc _c yj _r xa"></span>
-
                             <p class="mn sb rl gu 2xl:ud-px-15">
                                 Lorem ipsum dolor sit amet, consectetur solium adipiscing
                                 elit Pellentesque so ferme.
@@ -302,6 +301,7 @@
         </div>
     </main>
 </div>
+{# {{include('user/message/amis_mobile.html.twig')}} #}
 
     {# list des amis dans le tribu G 
         <div class="content_amis">

@@ -247,7 +247,7 @@ class MarckerClusterFerme extends MapModule {
             new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
          
             this.addMarker(this.checkeFilterType(new_data));
-            this.default_data.concat(new_data);
+            this.default_data= this.default_data.concat(new_data);
         } catch (e) {
             console.log(e)
         }

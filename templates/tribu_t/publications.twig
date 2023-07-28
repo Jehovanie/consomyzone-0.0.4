@@ -1,0 +1,144 @@
+{% if publication is defined %}
+    
+    {% for pub in publication %}
+
+        <div id="pub_number_{{pub.id}}_remove">
+            <div class="card mb-2">
+
+                <div class="card-header">
+
+                    <a href="{{ path("user_profil", {"user_id":pub.user_id }) }}">
+                        <i>{{pub.userfullname}}</i>
+                    </a>
+                    <i class="bi bi-play-fill"></i>
+                    <a href="#">
+                        <i class="bi bi-collection"></i>
+                        {{ tribu["name"] }}
+                    </a>
+
+                    {% if pub.user_id == app.user.id  %}
+
+                        <span class="float-end dropstart">
+                            <span id="modifPub{{pub.id}}" class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                            </span>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
+                                        <i class="fas fa-edit"></i>
+                                        Modifier</button>
+                                </li>
+                                <li>
+
+                                    <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
+                                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                                        Supprimer
+                                    </button>
+                                </li>
+                            </ul>
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="card-body" id="pub_number_{{pub.id}}">
+
+                    <p class="card-text">{{pub.publication}}</p>
+
+                    {% if pub.photo != null %}
+
+                        <div style="max-heigth:100%; max-width: 100%;" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+                            <img width="50%;" heigth="100px;" src="{{asset('uploads/tribu_t/photos/') ~ table_tribu ~ "/" ~ pub.photo}}" class="" alt="" style="cursor:pointer;">
+                        </div>
+
+                    {% endif %}
+                    <p class="card-text">
+                        <i>
+                            <small class="text-muted">Publié le
+                                {{pub.datetime|date("d/m/Y h:m:s")}}
+
+                            </small>
+
+                        </i>
+                        <span class="badge text-bg-primary" style="background-color:#0d6efd;">
+                            <i class="bi bi-eye-fill"></i>
+
+                            {% if pub.confidentiality == 1 %}
+                                Publique
+                            {% elseif pub.confidentiality == 2 %}
+                                Ami(e)s
+                            {% else %}
+                                Moi uniquement
+                            {% endif %}
+                        </span>
+                    </p>
+                </div>
+
+                <div class="card-footer foot">
+                    <div class="row text-center">
+                        <div class="col-4 ">
+                            <span>
+                                <span id="nombreReaction{{pub.id}}">
+                                    {% if pub.reaction_number > 0 %}
+                                        {{pub.reaction_number}}
+                                    {% endif %}
+                                </span>
+                                <i class="{% if pub.reaction == 1 %}bi-heart-fill{% else %}bi-heart{% endif %}" onclick="IsLike({{pub.id}}, this)" style="cursor:pointer;"></i>
+                            </span>
+                        </div>
+                        <div class="col-4">
+                            <a data-bs-toggle="collapse" href="#commentaire{{pub.id}}" id="nbComment{{pub.id}}">
+                                {% if pub.commentaire_number > 0 %}
+                                    {{pub.commentaire_number}}
+                                {% endif %}
+                                <i class="bi bi-chat-square"></i>
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a data-bs-toggle="collapse" href="#collapseExample3" role="button">
+                                1
+                                <i class="bi bi-share souri-non-utilise"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="collapse m-2" id="commentaire{{pub.id}}">
+                    <div class="card card-body" id="comment{{pub.id}}">
+                        <label id="commentNotnul_{{pub.id}}" style="display:none;">Commentaires</label>
+
+                        <div></div>
+
+                        <form id="form_{{pub.id}}">
+                            <input type="hidden" value="{{pub.id}}" id="pub_id_{{pub.id}}">
+                            <input type="hidden" value="{{pub.user_id}}" id="user_id_{{pub.id}}">
+                            <div class="mb-3 row">
+                                <div class="row" id="soundClips"></div>
+
+                                <div class="col-2 text-center">
+                                    <i id="start" class="bi bi-mic-fill" style="color:blue;font-size:40px;cursor:pointer;"></i>
+                                    <i id="stop" class="bi bi-mic-fill" style="color:red;font-size:40px;cursor:pointer;display:none;"></i>
+                                </div>
+                                <div class="col-10 mt-1">
+                                    <textarea class="form-control" name="commentaire" id="newComment_{{pub.id}}" placeholder="Votre commentaire..."></textarea>
+                                    <span id="comment_vide_{{pub.id}}" class="text-danger" style="display:none;">Commentaire ne devrait être vide</span>
+                                </div>
+                                <div class="row" id="audiosPlayer"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8"></div>
+                                <div class="col-4 ">
+                                    <input id="submitComment_{{pub.id}}" type="submit" value="Envoyer" class="btn btn-primary float-end">
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+{% endif %}

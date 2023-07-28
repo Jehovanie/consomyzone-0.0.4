@@ -245,8 +245,6 @@ function handleMessageResponse(date, message,image_list=null,image,status){
 
 
     // <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
-  
-
     ////insert into block message
     if(document.querySelector(".content_form_message_jheo_js")){
 
@@ -259,3 +257,35 @@ function handleMessageResponse(date, message,image_list=null,image,status){
     }
 
 }
+
+document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
+    
+    let target = e.target.value.toLowerCase()
+
+    let divs = document.querySelectorAll("div.list_users > div.discussion")
+
+    if(divs.length > 0){
+        for (var i = 0; i < divs.length; i++) {
+            let a = divs[i].textContent.toLowerCase();
+        
+            if (a) {
+              if (a.indexOf(target) > -1) {
+                divs[i].style.display = "";
+              } else {
+                divs[i].style.display = "none";
+              }
+            }
+          }
+    }
+    
+})
+
+const imgs = document.querySelectorAll("section > div.messages-chat.mode_pc > div > div > div > img")
+const fullPage = document.querySelector('#fullpage');
+
+imgs.forEach(img => {
+  img.addEventListener('click', function() {
+    fullPage.style.backgroundImage = 'url(' + img.src + ')';
+    fullPage.style.display = 'block';
+  });
+});

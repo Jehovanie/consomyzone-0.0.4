@@ -58,16 +58,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
 class UserController extends AbstractController
 {
 
     private $entityManager;
 
+    private $appKernel;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    private $filesyst;
+
+
+    public function __construct(EntityManagerInterface $entityManager,KernelInterface $appKernel, Filesystem $filesyst){
 
         $this->entityManager = $entityManager;
+        $this->appKernel = $appKernel;
+        $this->filesyst = $filesyst;
+
     }
 
 
@@ -156,7 +164,15 @@ class UserController extends AbstractController
 
             $newFilename = "";
 
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$profil[0]->getTributg().'/';
 
+            $dir_exist = $this->filesyst->exists($destination);
+
+            if($dir_exist==false){
+
+                $this->filesyst->mkdir($destination, 0777);
+
+            }
 
             if ($publication || $confid) {
 
@@ -194,7 +210,9 @@ class UserController extends AbstractController
 
             "profil" => $profil,
 
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "table_tribu" => $profil[0]->getTributg(),
+
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
 
             "tributG" => [
                 "table" => $profil[0]->getTributg(),

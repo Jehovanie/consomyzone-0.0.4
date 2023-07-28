@@ -32,12 +32,15 @@ class TributGController extends AbstractController
 {
 
     private $appKernel;
+    private $filesyst;
 
-    function __construct(KernelInterface $appKernel)
+    function __construct(KernelInterface $appKernel,Filesystem $filesyst)
 
     {
 
         $this->appKernel = $appKernel;
+        $this->filesyst = $filesyst;
+
     }
 
     #[Route("/tributG/publications/reaction", name: "app_tribut_reaction")]
@@ -357,6 +360,8 @@ class TributGController extends AbstractController
 
             "profil" => $profil,
 
+            "table_tribu" => $table_tributG_name,
+
             "tributG" => [
 
                 "profil" => $tributGService->getProfilTributG(
@@ -396,6 +401,8 @@ class TributGController extends AbstractController
 
 
         return $this->render("tribu_g/photos.html.twig", [
+
+            "table_tribu" => $table_tributG_name,
 
             "photos" => $tributGService->getAllPhotos($table_tributG_name),
 

@@ -689,7 +689,7 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
                     ->setParameter("maxy", $maxy)
-                    ->orderBy("r.id", 'ASC')
+                    ->orderBy('RAND()')
                     ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();
