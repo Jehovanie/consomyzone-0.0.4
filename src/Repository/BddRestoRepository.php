@@ -261,7 +261,15 @@ class BddRestoRepository extends ServiceEntityRepository
 
         }else {
 
-            if($dicoResto->isCafe($mot_cles0)){
+            if(strtolower($mot_cles0) == "resto" || strtolower($mot_cles0) == "restos" || strtolower($mot_cles0) == "restaurant" || strtolower($mot_cles0) == "restaurants"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCafe($mot_cles0)){
                 if( strlen($mot_cles1) <= 2 ){
                     $qb = $qb->where("p.cafe = 1 AND p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
