@@ -6,6 +6,7 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
 {% endblock %}
 {% block bootstrap %}
@@ -20,106 +21,313 @@
 {% endblock %}
 
 {% block body %}
-    <div class="content-navleft-nav">
-        {{ include('shard/agenda_navleft.html.twig') }}
-    </div>
-    <div class="fixed-top col responsif-none bg-blanc">
-        {{ include('shard/agenda_navbar.html.twig') }}
-    </div>
+<div class="nh">
+	{% include 'shard/account_navleft_new.html.twig' %}
+	{% include 'shard/account_navbar_new.html.twig' %}
+    <!-- ===== Main Content Start ===== -->
+    <main class="gv hm hv">
+        <div class="sk bu 2xl:ud-p-11">
+            <!-- ====== Calendar Section Start -->
+            <div class="va mf">
+                <div class="lc ig xs ys _s rg rh ni bj wr nj xr hb sk mm">
+                    <div class="lc mg ug">
+                        <p class="tn zn gs kt">
+                            December 2025
+                        </p>
 
-    <div class="content-agenda content_agenda_js_jheo"></div>
-    <div class="modale-agenda">
-            
-        <dialog id="cookie-dialog" class="cookie flow-content" data-spacing="lg">
-            <div class="loader_agenda"></div>
-            <i class="fa-solid fa-x i-x" id="close-modal-agenda"></i>
-            <form id="form_agenda">
-                <div class="item-mess wrapper">
-                    <h2>Message</h2>
-                        <textarea  placeholder="Votre message ..." name="message" id="message" class="form__input"></textarea>
-                    </div>
-                <div class="item-file">
-                  <input type="file" name="fileEvent" id="file-first" accept="image/*,application/*" class="inputfile inputfile-1"    data-multiple-caption="{count} files selected" multiple />
-                    <label for="file-first"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
-                            <path
-                                d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z" />
-                        </svg> <span>choisissez un fichier&hellip;</span></label>
-            
-                    {# <input type="file" name="fileEvent" id="file" accept="image/*,application/*"> #}
-                </div>
-                <div class="">
-                    <div class="conf">
-                        <label>Confidentialité</label>
-                        <div class="item-confid select">
-                            
-                            <select name="confidentialite" id="confidentialite">
-                                <option value="1">Moi uniquement</option>
-                                <option value="2">Tribu-G</option>
-                                <option value="3">Tribu-T</option>
-                            </select>
+                                {# <div class="content-agenda content_agenda_js_jheo"></div>
+                                <div class="modale-agenda">
+                                        
+                                    <dialog id="cookie-dialog" class="cookie flow-content" data-spacing="lg">
+                                        <div class="loader_agenda"></div>
+                                        <i class="fa-solid fa-x i-x" id="close-modal-agenda"></i>
+                                        <form id="form_agenda">
+                                            <div class="item-mess wrapper">
+                                                <h2>Message</h2>
+                                                    <textarea  placeholder="Votre message ..." name="message" id="message" class="form__input"></textarea>
+                                                </div>
+                                            <div class="item-file">
+                                            <input type="file" name="fileEvent" id="file-first" accept="image/*,application/*" class="inputfile inputfile-1"    data-multiple-caption="{count} files selected" multiple />
+                                                <label for="file-first"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                                                        <path
+                                                            d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z" />
+                                                    </svg> <span>choisissez un fichier&hellip;</span></label>
+                                        
+                                            </div>
+                                            <div class="">
+                                                <div class="conf">
+                                                    <label>Confidentialité</label>
+                                                    <div class="item-confid select">
+                                                        
+                                                        <select name="confidentialite" id="confidentialite">
+                                                            <option value="1">Moi uniquement</option>
+                                                            <option value="2">Tribu-G</option>
+                                                            <option value="3">Tribu-T</option>
+                                                        </select> #}
+                        <div class="lc mg tg">
+                            <button>
+                                <svg width="8" height="14" viewbox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.70711 0.292893C8.09763 0.683418 8.09763 1.31658 7.70711 1.70711L2.41421 7L7.70711 12.2929C8.09763 12.6834 8.09763 13.3166 7.70711 13.7071C7.31658 14.0976 6.68342 14.0976 6.29289 13.7071L0.292893 7.70711C-0.0976323 7.31658 -0.0976323 6.68342 0.292893 6.29289L6.29289 0.292893C6.68342 -0.0976311 7.31658 -0.0976311 7.70711 0.292893Z" fill="#637381"/>
+                                </svg>
+                            </button>
+                            <button>
+                                <svg width="8" height="14" viewbox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 13.7071C-0.0976311 13.3166 -0.0976311 12.6834 0.292893 12.2929L5.58579 7L0.292893 1.7071C-0.097631 1.31658 -0.097631 0.683415 0.292893 0.292892C0.683418 -0.0976334 1.31658 -0.0976333 1.70711 0.292892L7.70711 6.29289C8.09763 6.68342 8.09763 7.31658 7.70711 7.70711L1.70711 13.7071C1.31658 14.0976 0.683418 14.0976 0.292893 13.7071Z" fill="#637381"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                    <div class="tipeE">
-                        <label>Type evenement</label>
-                        <div class="item-confid select">
 
-                            <select name="eventType" id="eventType">
-                                <option class="opt" value="1">Repas</option>
-                                <option class="opt" value="2">Autres</option>
+                    <div class="lc mg vg">
+                        <div class="h ka nc sh nj xr">
+                            <select name="" id="" class="h ka sc eg sh ni bj wr tj nm mm vo">
+                                <option value="">Week</option>
+                                <option value="">Month</option>
+                                <option value="">Year</option>
                             </select>
+                            <span class="g i j/2 la -ud-translate-y-1/2">
+                                <svg width="11" height="6" viewbox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5.49652 5.57195C5.29784 5.57195 5.09917 5.50239 4.93361 5.34588L0.496609 0.963677C0.380718 0.841949 0.380718 0.650662 0.480054 0.528935C0.595945 0.407207 0.778061 0.407207 0.893953 0.511545L5.33096 4.89375C5.41374 4.9807 5.56274 4.9807 5.66208 4.89375L10.0991 0.511545C10.215 0.389817 10.3971 0.407207 10.513 0.528935C10.6289 0.650662 10.6123 0.841949 10.4964 0.963677L6.05942 5.32849C5.89386 5.485 5.69519 5.57195 5.49652 5.57195Z" fill="#212B36"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.65444 5.65773L0.212873 1.27101L0.208441 1.26636C-0.0635564 0.980663 -0.0621445 0.535609 0.170632 0.250361L0.180818 0.237879L0.191885 0.226255C0.463883 -0.0594399 0.887599 -0.0579557 1.15917 0.186543L1.16629 0.192953L5.49652 4.4697L9.81622 0.203348C10.1204 -0.109866 10.5585 -0.0286158 10.8011 0.226255C11.1055 0.545928 11.0287 1.01 10.7846 1.26636L10.7799 1.27131L6.3321 5.64672C6.10301 5.86329 5.8101 6 5.49652 6C5.20451 6 4.90666 5.89629 4.66099 5.66405L4.65444 5.65773ZM10.0991 0.511545L5.66208 4.89375C5.56274 4.9807 5.41374 4.9807 5.33096 4.89375L0.893953 0.511545C0.778061 0.407207 0.595945 0.407207 0.480054 0.528935C0.380718 0.650662 0.380718 0.841949 0.496609 0.963677L4.93361 5.34588C5.09917 5.50239 5.29784 5.57195 5.49652 5.57195C5.69519 5.57195 5.89386 5.485 6.05942 5.32849L10.4964 0.963677C10.6123 0.841949 10.6289 0.650662 10.513 0.528935C10.3971 0.407207 10.215 0.389817 10.0991 0.511545Z" fill="#212B36"/>
+                                </svg>
+                            </span>
                         </div>
-                        
 
+                        <div>
+                            <button class="lc mg sg qh un eo oj br el rl">
+                                <svg class="hk" width="20" height="20" viewbox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.75 9.3125H10.7187V1.25C10.7187 0.875 10.4062 0.53125 10 0.53125C9.625 0.53125 9.28125 0.84375 9.28125 1.25V9.3125H1.25C0.875 9.3125 0.53125 9.625 0.53125 10.0312C0.53125 10.4062 0.84375 10.75 1.25 10.75H9.3125V18.75C9.3125 19.125 9.625 19.4687 10.0312 19.4687C10.4062 19.4687 10.75 19.1562 10.75 18.75V10.7187H18.75C19.125 10.7187 19.4687 10.4062 19.4687 10C19.4687 9.625 19.125 9.3125 18.75 9.3125Z" fill="white"/>
+                                </svg>
+
+                                Add Event
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <input type="text" class="form__input form__input_autre" placeholder="Veuillez préciser l'événement" name="autreEvent" id="autreEvent">
-                    
-                    <div class="resto-pasti" id="choix-resto-type-past">
-                        <label>Choix restaurant</label>
-                        <div class="item-confid select">
-
-                            <select name="choixRestoPast" id="choixRestoPast" >
-                                <option class="choix-resto" value="1">Restaurants pastillés</option>
-                                <option class="choix-resto" value="2">Restaurants non pastillés</option>
-                            </select>
-                        </div>
-                        <div class="resto-pasti" id="content-list-pastille">
-                            {# <label>liste des restaurants pastillés</label> #}
-                            <div class="item-confid ">
-                                <ul class="list-pastille">
-                                     <li class="deroulant"><a class="a" href="#">liste des restaurants pastillés </a>
-                                    {# <select name="listPastille" id="list-pastille"></select> #}
-                                    <ul class="sous" id="list-pastille"></ul>
-                                </ul>
-                            </div>
-                        </div>
-                        <input type="text" class="form__input lieu_event hidden" placeholder="Veuillez entrer le nom du restaurant" name="lieuEventNonPastilled" id="lieuEventNonPastilled">
-                    </div>           
-                        <input type="text" class="form__input autre_event" placeholder="Veuillez entrer l'adresse" name="adresseEvent" id="adresseEvent">
-                        <input type="number" class="form__input nbr_max_event" placeholder="Veuillez entrer le nombre maximum de partucipant" name="nbrMax" id="nbrMax">
-
+                <div class="yd nf nj xr">
+                    <table class="yd">
+                        <thead>
+                            <tr class="oc fg di oj eo">
+                                <th class="lc mg pg qc nn dw uk zv fi">
+                                    <span class="pc tu">
+                                        Sunday
+                                    </span>
+                                    <span class="jc vu">
+                                        Sun
+                                    </span>
+                                </th>
+                                <th class="lc mg pg qc nn dw uk zv">
+                                    <span class="pc tu">
+                                        Monday
+                                    </span>
+                                    <span class="jc vu">
+                                        Mon
+                                    </span>
+                                </th>
+                                <th class="lc mg pg qc nn dw uk zv">
+                                    <span class="pc tu">
+                                        Tuesday
+                                    </span>
+                                    <span class="jc vu">
+                                        Tue
+                                    </span>
+                                </th>
+                                <th class="lc mg pg qc nn dw uk zv">
+                                    <span class="pc tu">
+                                        Wednesday
+                                    </span>
+                                    <span class="jc vu">
+                                        Wed
+                                    </span>
+                                </th>
+                                <th class="lc mg pg qc nn dw uk zv">
+                                    <span class="pc tu">
+                                        Thursday
+                                    </span>
+                                    <span class="jc vu">
+                                        Thur
+                                    </span>
+                                </th>
+                                <th class="lc mg pg qc nn dw uk zv">
+                                    <span class="pc tu">
+                                        Friday
+                                    </span>
+                                    <span class="jc vu">
+                                        Fri
+                                    </span>
+                                </th>
+                                <th class="lc mg pg qc nn dw uk zv gi">
+                                    <span class="pc tu">
+                                        Saturday
+                                    </span>
+                                    <span class="jc vu">
+                                        Sat
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Line 1 -->
+                            <tr class="oc fg">
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">1</span>
+                                    <div class="nr rt uc yd xf cg jl">
+                                        <span class="sr pt">
+                                            More
+                                        </span>
+                                        <div class="nw e lc hg g k ma jb ae sh wi ej vj yr ll jl gn oo rr tr nt tt mu">
+                                            <span class="ow mn tn zn gs">
+                                                Redesign Website
+                                            </span>
+                                            <span class="pw mn un zn gs">
+                                                1 Dec - 2 Dec
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">2</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">3</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">4</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">5</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">6</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">7</span>
+                                </td>
+                            </tr>
+                            <!-- Line 1 -->
+                            <!-- Line 2 -->
+                            <tr class="oc fg">
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">8</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">9</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">10</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">11</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">12</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">13</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs uk du">
+                                    <span class="tn zn gs">14</span>
+                                </td>
+                            </tr>
+                            <!-- Line 2 -->
+                            <!-- Line 3 -->
+                            <tr class="oc fg">
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">15</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">16</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">17</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">18</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">19</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">20</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs uk du">
+                                    <span class="tn zn gs">21</span>
+                                </td>
+                            </tr>
+                            <!-- Line 3 -->
+                            <!-- Line 4 -->
+                            <tr class="oc fg">
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">22</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">23</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">24</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">25</span>
+                                    <div class="nr rt uc yd xf cg jl">
+                                        <span class="sr pt">
+                                            More
+                                        </span>
+                                        <div class="nw e lc hg g k ma jb be sh wi ej vj yr ll jl gn oo rr tr nt ut mu">
+                                            <span class="ow mn tn zn gs">
+                                                App Design
+                                            </span>
+                                            <span class="pw mn un zn gs">
+                                                25 Dec - 27 Dec
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">26</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">27</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs uk du">
+                                    <span class="tn zn gs">28</span>
+                                </td>
+                            </tr>
+                            <!-- Line 4 -->
+                            <!-- Line 5 -->
+                            <tr class="oc fg">
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">29</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">30</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">31</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">1</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">2</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs vk du">
+                                    <span class="tn zn gs">3</span>
+                                </td>
+                                <td class="h cg tc qt uv ni bj wr xo mw cp sq hs uk du">
+                                    <span class="tn zn gs">4</span>
+                                </td>
+                            </tr>
+                            <!-- Line 5 -->
+                        </tbody>
+                    </table>
                 </div>
-              
-                <div>
-                    <label for="timeDebut">Début :</label>
-                    <input type="time" name="timeDebut" id="timeDebut" class="form__input form__input_time">
-                    <label for="timeFin">Fin :</label>
-                    <input type="time" name="timeFin" id="timeFin" class="form__input form__input_time">
-                </div>
-                <div>
-                  <button type="submit" id="valid_agenda" class="btn-valid-agenda">valider</button>
-                </div>
-            </form>
-            
-        </dialog>
+            </div>
+            <!-- ====== Calendar Section End -->
+        </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
 
-        <dialog id="dialog-apropos-resto-agenda" class="cookie flow-content" data-spacing="lg">
-            <div id="content-dialog-apropos"></div>
-        </dialog>
-        
-    </div>
-
+</div>
 
     <div class="content_loader_agenda hidden content_loader_agenda_js_jheo">
         <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">

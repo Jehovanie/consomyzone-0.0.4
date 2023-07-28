@@ -17,11 +17,11 @@
                         <label for="formFileMultiple" class="form-label">Confidentialité</label>
                         {{form_row(new_publication.confidentiality)}}
                     </div>
-                    <div class="mb-3">
+                    {# <div class="mb-3">
                         <label for="formFileMultiple" class="form-label">Photo</label>
                         {{form_row(new_publication.photo)}}
-                    </div>
-                    {% include 'shard/input/inputImageDragDrop.html.twig' %}
+                    </div> #}
+                    {% include 'shard/input/inputImageDragDrop.html.twig' with {'InputDropDown': new_publication.photo} %}
 
                 </div>
                 <div class="modal-footer">
