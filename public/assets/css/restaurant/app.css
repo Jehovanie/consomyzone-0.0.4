@@ -11,9 +11,9 @@
     font-size: 12pt;
 }
 
-.container-depart{
+/* .container-depart{
     pointer-events: none;
-}
+} */
 
 .navleft .list-depart {
     margin-top: 0 !important;
@@ -30,5 +30,5 @@
 .content_container_list{
     display: flex;
     justify-content: center;
-    text-align: center;
+    /* text-align: center; */
 }

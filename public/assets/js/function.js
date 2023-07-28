@@ -1933,6 +1933,10 @@ function toaster(type,message,container) {
     // setTimeout(container.removeChild(div),3000)
 }
 
+function displayContact(element){
+    element.style.display="none"
+    element.nextElementSibling.style.display = "";
+}
 
 function createMiniCMZloading(){
     return `

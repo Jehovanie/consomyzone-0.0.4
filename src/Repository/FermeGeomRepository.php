@@ -58,7 +58,15 @@ class FermeGeomRepository extends ServiceEntityRepository
             ->select(
                 'p.id',
                 'p.nomFerme',
+                'p.nomFerme as nom',
+                'p.departement',
+                'p.departement as dep',
+                'p.departementName',
+                'p.departementName as depName',
+                'p.genre',
+                'p.email',
                 'p.adresseFerme',
+                'p.adresseFerme as add',
                 'p.latitude',
                 'p.latitude as lat',
                 'p.longitude',
@@ -412,6 +420,100 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.nomFerme as nom',
                 'p.adresseFerme',
                 'p.adresseFerme as add',
+                'p.email',
+                'p.genre',
+                'p.departement',
+                'p.departementName',
+                'p.departement as dep',
+                'p.departementName as depName',
+                'p.produitFerme as ferme',
+                'p.codePostal',
+                'p.nomProprietaire',
+                'p.motDuFermier',
+                'p.ville',
+                'p.latitude as lat',
+                'p.longitude as long',
+            );
+
+        if( $mot_cles0 !=="" && $mot_cles1 === "" ){
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.nomFerme LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                $qb =  $qb->where("p.nomFerme LIKE :cles0")
+                          ->orWhere("p.nomProprietaire LIKE :cles0")
+                          ->setParameter('cles0', '%'.$mot_cles0.'%');
+            }
+            
+
+        }else if ( $mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb =  $qb->where("p.departement LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $qb =  $qb->where("p.adresseFerme LIKE :cles1")
+                          ->orWhere("p.departementName LIKE :cles1")
+                          ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                          ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else{
+            if(strtolower($mot_cles0) == "ferme" || strtolower($mot_cles0) == "fermes"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.departement LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.adresseFerme LIKE :cles1")
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            } else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.nomFerme LIKE :cles0 AND p.departement LIKE :cles1")
+                                 ->orWhere("p.nomProprietaire LIKE :cles0 AND p.departement LIKE :cles1")
+                                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+
+                    $qb = $qb->where("(p.nomFerme LIKE :cles0) AND (p.adresseFerme LIKE :cles1)")
+                        ->orWhere("p.nomFerme LIKE :cles0 AND p.departementName LIKE :cles1")
+                        ->orWhere("p.nomFerme LIKE :cles0 AND CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                        ->orWhere("p.nomFerme LIKE :cles0 AND CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+
+
+            }
+        }
+
+        $qb = $qb->orderBy('p.nomFerme', 'ASC')
+                 ->getQuery();
+                
+
+        $results = $qb->execute();
+        return [ $results , count($results) , "ferme"];
+    }
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 1, $size= 20 )
+    {
+        $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // const { adresseFerme: add , departement: dep , departementName: depName, nomFerme: nom } = item ;
+        // // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nomFerme',
+                'p.nomFerme as nom',
+                'p.adresseFerme',
+                'p.adresseFerme as add',
+                'p.email',
+                'p.genre',
                 'p.departement',
                 'p.departementName',
                 'p.departement as dep',

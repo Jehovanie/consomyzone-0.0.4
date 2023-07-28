@@ -34,7 +34,7 @@ class MarckerClusterStation extends MapModule  {
             this.data = this.default_data;
 
             this.removeMarker();
-            this.generateAllCard();
+            // this.generateAllCard();
             this.setNumberOfMarker();
 
             if (document.querySelector(".alphabet_active span")) {
@@ -64,7 +64,7 @@ class MarckerClusterStation extends MapModule  {
         this.addMarker(this.data);
         // this.addEventOnMap(this.map, this.markers);
         this.setNumberOfMarker();
-        this.generateAllCard();
+        // this.generateAllCard();
     }
 
     // addEventOnMap(map,) {

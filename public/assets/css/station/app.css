@@ -309,7 +309,7 @@ input[type="range"]::-moz-slider-thumb{
 .content_container_list{
     display: flex;
     justify-content: center;
-    text-align: center;
+    /* text-align: center; */
 }
 
 @keyframes translateFull {

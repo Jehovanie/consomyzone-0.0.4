@@ -225,7 +225,7 @@ class MarckerClusterSearch extends MapModule  {
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
                     iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
@@ -552,5 +552,9 @@ class MarckerClusterSearch extends MapModule  {
                 marker.fireEvent('click');
             }
         });
+    }
+
+    redirectOnAdresse(lat, lng, zoom){
+        this.map.setView([lat, lng], zoom);
     }
 }
