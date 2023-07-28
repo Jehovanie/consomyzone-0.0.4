@@ -143,6 +143,7 @@ class BddRestoRepository extends ServiceEntityRepository
 
     public function getCoordinateAndRestoIdForSpecific($dep)
     {
+        $dep= strlen($dep) === 1  ? "0" . $dep : $dep;
         return $this->createQueryBuilder("r")
             ->select("r.id,
                 r.denominationF,
@@ -704,13 +705,7 @@ class BddRestoRepository extends ServiceEntityRepository
                 r.poiX as long,
                 r.poiY as lat"
             )
-            ->where("r.dep =:dep")
             ->andWhere("r.id =:id")
-            //->groupBy("r.denominationF, r.poiX, r.poiY")
-            //->having('count(r.denominationF)=1')  
-            //->andHaving('count(r.poiX)=1')
-            //->andHaving('count(r.poiY) =1')
-            ->setParameter("dep", $dep)
             ->setParameter("id", $id)
             ->orderBy("r.id", 'ASC')
             ->getQuery()

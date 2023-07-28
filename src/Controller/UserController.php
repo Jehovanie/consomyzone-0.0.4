@@ -680,7 +680,7 @@ class UserController extends AbstractController
         }
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-
+        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
         return $this->render('user/profil.html.twig', [
             "userConnected" => $userConnected,
             "profil" => $myProfil,
@@ -702,8 +702,8 @@ class UserController extends AbstractController
                 ),
             ],
 
-            "nombre_partisant" => $nombre_partisant
-
+            "nombre_partisant" => $nombre_partisant,
+            "status_tribuT_autre_profil" =>$status_tribuT_autre_profil
         ]);
     }
 

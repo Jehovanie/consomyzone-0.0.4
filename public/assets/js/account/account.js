@@ -515,7 +515,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
         card_msg.innerHTML= `
             <a class="lc mg ug" href='/user/message?user_id=${other_id}'>
                 <div class="h sa wf uk th ni ej">
-                    <img src='${profil}' alt="User"/>
+                    <img class="image_profil_navbar_msg"  src='${profil}' alt="User"/>
                     <span class="g l m xe qd th pi jj sj ra"></span>
                 </div>
 

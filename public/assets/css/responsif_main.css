@@ -128,10 +128,6 @@
         display: none !important;
     }
 
-    .leaflet-control-zoom {
-        display: none !important;
-    }
-
     .content_cart_map-respons {
         width: 100vw !important;
         height: 100vh !important;
@@ -1065,7 +1061,7 @@
     }
 
     .nav-item a {
-        font-size: 10pt !important;
+        font-size: 8pt !important;
     }
 
     .nav-item li{
@@ -1151,7 +1147,7 @@
     }
 
     .navleft-chat{
-        right: -545px !important;
+        right: -300px !important;
     }
     .apropos-tribu-g {
         width: 220px !important;
@@ -1494,7 +1490,7 @@
     }
 
     .navleft-chat{
-        right: -625px !important;
+        right: -370px !important;
     }
 
     /* .card-pub-actu img {
@@ -1502,7 +1498,7 @@
     } */
 
     #map {
-        margin-left: -5rem !important;
+        /* margin-left: -5rem !important; */
     }
 
     .to\/4\/2 {
@@ -1630,7 +1626,7 @@
         width: 74%;
     }
     .navleft-chat{
-        right: -640px !important;
+        right: -400px !important;
     }
 
     .apropos-tribu-g{
@@ -1649,7 +1645,7 @@
     }
 
     #map {
-        margin-left: -8rem !important;
+        /* margin-left: -8rem !important; */
     }
 
     .to\/4\/2 {
@@ -1783,7 +1779,7 @@
         width: 84%;
     }
     .navleft-chat{
-        right: -700px !important;
+        right: -430px !important;
     }
     /* .card-pub-actu img {
         width: 65vw;
@@ -1796,7 +1792,7 @@
     }
 
     #map {
-        margin-left: -12rem !important;
+        /* margin-left: -12rem !important; */
     }
 
     .ep {
@@ -1939,7 +1935,7 @@
     }
 
     .navleft-chat{
-        right: -703px !important;
+        right: -460px !important;
     }
 
     .apropos-tribu-g{
@@ -1959,7 +1955,7 @@
     } */
 
     #map {
-        margin-left: -16rem !important;
+        /* margin-left: -16rem !important; */
     }
 
     .to\/4\/2 {
