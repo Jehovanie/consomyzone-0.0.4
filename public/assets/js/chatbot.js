@@ -689,7 +689,9 @@ document.querySelector("#openChat").addEventListener("click", function(){
 
         runSpinner()
 
-        writeResponse("Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br><button class='ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100' type='button' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</button>")
+        writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
+        Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
+        <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
 
     }else{
 
