@@ -19,6 +19,8 @@ use App\Entity\PublicationG;
 use App\Form\FileUplaodType;
 use App\Service\MailService;
 
+use App\Service\Status;
+
 use App\Service\UserService;
 
 use App\Service\FilesUtils;
@@ -1895,12 +1897,15 @@ class TributTController extends AbstractController
     }
 
     #[Route("/user/tribu/my-tribu-t", name: "app_my_tribu_t")]
-    public function MyTribuT(Request $request,  
-    TributGService $tributGService,
-    SluggerInterface $slugger,
-    Filesystem $filesyst) : Response
+    public function MyTribuT(
+        Status $status,
+        Request $request,  
+        TributGService $tributGService,
+        SluggerInterface $slugger,
+        Filesystem $filesyst
+    ) : Response
     {
-        
+        $userConnected= $status->userProfilService($this->getUser());
 
         $defaultData = ['message' => 'Type your message here'];
         $form = $this->createFormBuilder($defaultData)
@@ -1996,6 +2001,7 @@ class TributTController extends AbstractController
 
         
         return $this->render('tribu_t/tribuT.html.twig',[
+            "userConnected" => $userConnected,
             "profil" => $profil,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
             "tibu_T_owned" => $tribu_t_owned,
