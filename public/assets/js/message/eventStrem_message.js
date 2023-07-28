@@ -53,6 +53,9 @@ if(document.querySelector(".content_entete_msg_jheo_js")){
 
 //// SHOW MESSAGE ABOVE THE INPUT MESSAGE FROM THE SSE
 function createDivMessage(id,isForMe,date, message,images){
+    
+    const userToFirstname= document.querySelector(".content_entete_msg_jheo_js").getAttribute('data-userToFirstname')
+    const userToLastname= document.querySelector(".content_entete_msg_jheo_js").getAttribute('data-userToLastname')
 
     const card_msg= document.createElement("div");
     card_msg.className= "qf";
@@ -67,7 +70,7 @@ function createDivMessage(id,isForMe,date, message,images){
 
     card_msg.innerHTML= `
         <p class="qb mn un">
-            firstName Lastname
+            ${userToFirstname} ${userToLastname}
         </p>
         <div class="qb vh hi vj yr el yl">
             <p>${message}</p>
