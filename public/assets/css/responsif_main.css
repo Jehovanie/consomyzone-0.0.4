@@ -44,7 +44,7 @@
     }
     
     #profilTribu{
-        height: 150px;
+        height: 100px;
         border-radius: 10px;
     }
 
@@ -853,9 +853,9 @@
         margin-left: 20px !important;
     }
 
-    /* .listTribu_t_mobile{
-            margin-left: -150px !important;
-        }*/
+    .listTribu_t_mobile{
+            margin-left: 0px !important;
+        }
 
     .table-list-membre {
         margin-left: 0px !important;
@@ -1143,13 +1143,16 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 110px !important;
+        margin-top: 0px !important;
     }
 }
 
 @media screen and (min-width:1260px) and (max-width: 1304px) {
     .width-content-t {
         width: 74%;
+    }
+    .apropos-tribu-t {
+        width: 16.5rem !important;
     }
 
     .navleft-chat{
@@ -1225,7 +1228,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 110px !important;
+        margin-top: 20px !important;
     }
 
     .content_list {
@@ -1251,7 +1254,7 @@
     }
 
     .apropos-tribu-t {
-        width: 385px !important;
+        width: 18.5rem !important;
     }
 
     .xn {
@@ -1318,7 +1321,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 110px !important;
+        margin-top: 0px !important;
     }
 
     .account-profils img{
@@ -1460,7 +1463,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 15px !important;
+        margin-top: 0px !important;
     }
 
     .nav-menu {
@@ -1669,7 +1672,7 @@
     } */
 
     .content_right_actualite .exprime-pub {
-        margin-top: 265px !important;
+        margin-top: 0px !important;
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
@@ -1754,7 +1757,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 80px !important;
+        margin-top: 0px !important;
     }
 
     .content_list {
@@ -1903,7 +1906,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 80px !important;
+        margin-top: 0px !important;
     }
 
     .content_list {
@@ -1981,7 +1984,7 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t{
-        margin-top: 95px !important;
+        margin-top: 0px !important;
     }
 
     .content_right_actualite .champ-pub {
@@ -2104,7 +2107,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: -95px !important;
+        margin-top: 0px !important;
     }
 
     .nav-menu {

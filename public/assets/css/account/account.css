@@ -1013,6 +1013,26 @@ thead > tr{
     border-radius: 15px 15px 0 0;
 }
 
+.card-couverture-pub-tribu-g {
+    width: inherit;
+    height: 28vh;
+    /* margin-top: 150px; */
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+.card-couverture-pub-tribu-g .hr-pub {
+    width: 50vw;
+}
+
+.card-couverture-pub-tribu-g .content-couverture {
+    width: inherit;
+    height: 20vh;
+    margin-top: 0;
+    background-color: #8888;
+    border-radius: 15px 15px 0 0;
+}
+
 .content_right_actualite .exprime-pub {
     margin-top: 10px;
     
@@ -1069,6 +1089,32 @@ thead > tr{
 .content_right_actualite .pub-tribu-t{
     background-color: #fff;
     border-radius: 15px;
+}
+
+.card-couverture-pub-tribu-g .content-couverture .avatar-tribu-pub {
+    margin: 30px;
+}
+
+.card-couverture-pub-tribu-g .content-couverture img {
+    height: 105px;
+    border-radius: 10px;
+    margin-left: 15px;
+    margin-top: 15px;
+}
+
+.card-couverture-pub-tribu-g .content-couverture nav {
+    width: 35vw;
+    border-radius: 3px;
+}
+
+.card-couverture-pub-tribu-g .nome-fontateur-tribu-t {
+    background-color: #1aba12;
+    margin-top: 12px;
+}
+
+.card-couverture-pub-tribu-g .nome-fontateur-tribu-t p {
+    color: #fff;
+    margin-left: 20px;
 }
 
 .content_right_actualite .pub-tribu-t .name-pub .mini-pdp{
