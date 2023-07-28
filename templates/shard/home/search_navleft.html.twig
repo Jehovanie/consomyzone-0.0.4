@@ -7,26 +7,34 @@
 						
 						{% if cles0 != "" %}
 							{% if otherResult == true %}
-								Désolé, nous n’avons pas de résultats pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span>
-								<br>Cependant ces résultats pourraient vous intéresser<br>
+								Désolé, nous n’avons pas de résultats pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span><br>
+								{% if results[1] >= 1 %}
+								Cependant ces résultats pourraient vous intéresser<br>
+								{% endif %}
 							{% else %}
 								Résultat(s) pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span><br>
 							{% endif %}
 						{% else %}
 							{% set rubrique = type == "resto"?"restaurant":type %}
 							{% if otherResult == true %}
-								Désolé, nous n’avons pas de <span id="cles0"><b>{{rubrique|upper}}</b></span> à <span id="cles1">{{cles1}}</span>
-								<br>Cependant ces résultats pourraient vous intéresser<br>
+								Désolé, nous n’avons pas de <span id="cles0"><b>{{rubrique|upper}}</b></span> à <span id="cles1">{{cles1}}</span><br>
+								{% if results[1] >= 1 %}
+									Cependant ces résultats pourraient vous intéresser<br>
+								{% endif %}
 							{% else %}
 								<b>{{rubrique|upper}}</b> à <span id="cles1">{{cles1}}</span><br>
 							{% endif %}
 						{% endif %}
                         
                         {% if results[1] > 0 %}
-                            <i class="total_number_js">({{results[1] > 1 ? results[1] ~ " resultats" : "1 resultat"  }})</i>
+							{% if results[1] > 1 %}
+                            	<i class="total_number_js">({{results[1] > 1 ? results[1] ~ " résultats" : "1 résultat"  }})</i>	
+							{% else %}
+								<i class="total_number_js">({{results[1]}} résultat)</i>
+							{% endif %}
                         {% else %}
-                            <i class="total_number_js">({{results[1]}} resultat)</i>
-                        {% endif %}
+							<i class="total_number_js">(Aucun résultat)</i>
+						{% endif %}
                     </h6>
 				</div>
 			</div>

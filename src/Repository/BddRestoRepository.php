@@ -266,6 +266,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     $qb = $qb->where("p.dep LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
+                    //dd("p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm");
                     $qb = $qb->where("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }

@@ -455,19 +455,18 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             }else{
                 $qb = $qb->where("p.adresse LIKE :cles1")
                             ->orWhere("p.departementName LIKE :cles1")
-                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("p.CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
                             ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
         }else{
 
-            if(strtolower($mot_cles0) == "station" || strtolower($mot_cles0) == "stations"){
+            if(strtolower($mot_cles0) == "station" || strtolower($mot_cles0) == "stations" || strtolower($mot_cles0) == "station service" || strtolower($mot_cles0) == "stations services"){
                 if( strlen($mot_cles1) <= 2 ){
                     $qb = $qb->where("p.departementCode LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
                     $qb = $qb->where("p.adresse LIKE :cles1")
-                            ->orWhere("p.departementName LIKE :cles1")
                             ->orWhere("p.departementName LIKE :cles1")
                             ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
                             ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")

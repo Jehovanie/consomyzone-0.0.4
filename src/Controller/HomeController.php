@@ -219,53 +219,96 @@ class HomeController extends AbstractController
                 $results = $station;
                 break;
             default:
-                $otherFerme = false;
-                $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
-                if(!count($ferme[0])>0){
-                    $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherFerme = true;
-                }
-
+                //dd($cles0);
                 $otherResto = false;
-                $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
-                if(!count($resto[0])>0){
-                    $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResto = true;
-                }
-
+                $otherFerme = false;
                 $otherStation = false;
-                $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
-                if(!count($station[0])>0){
-                    $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherStation = true;
-                }
+                if($cles0 == "RESTO" || $cles0 == "RESTOS" || $cles0 == "RESTAURANT" || $cles0 == "RESTAURANTS"){
+                    $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($resto[0])>0){
+                        $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherResto = true;
+                    }
 
-                if(!$otherFerme && !$otherResto && !$otherStation){
-                    $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
-                    $results[1] = $station[1] + $ferme[1] + $resto[1];
-                }elseif(!$otherFerme && $otherResto && $otherStation){
-                    $results[0] = array_merge($ferme[0]);
-                    $results[1] = $ferme[1];
-                }elseif($otherFerme && !$otherResto && $otherStation){
+                    if($otherResto){
+                        $otherResult = true;
+                    }
+
                     $results[0] = array_merge($resto[0]);
                     $results[1] = $resto[1];
-                }elseif($otherFerme && $otherResto && !$otherStation){
+                }elseif($cles0 == "FERME" || $cles0 == "FERMES"){
+                    $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($ferme[0])>0){
+                        $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherFerme = true;
+                    }
+
+                    if($otherFerme){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($ferme[0]);
+                    $results[1] = $ferme[1];
+                }elseif ($cles0 == "STATION" || $cles0 == "STATIONS" || $cles0 == "STATION SERVICE" || $cles0 == "STATIONS SERVICES") {
+                    $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($station[0])>0){
+                        $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherStation = true;
+                    }
+                    if($otherStation){
+                        $otherResult = true;
+                    }
                     $results[0] = array_merge($station[0]);
                     $results[1] = $station[1];
-                }elseif(!$otherFerme && !$otherResto && $otherStation){
-                    $results[0] = array_merge($ferme[0], $resto[0]);
-                    $results[1] = $ferme[1] + $resto[1];
-                }elseif(!$otherFerme && $otherResto && !$otherStation){
-                    $results[0] = array_merge($station[0] , $ferme[0]);
-                    $results[1] = $station[1] + $ferme[1];
-                }elseif($otherFerme && !$otherResto && !$otherStation){
-                    $results[0] = array_merge($station[0] , $resto[0]);
-                    $results[1] = $station[1] + $resto[1];
                 }else{
-                    $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
-                    $results[1] = $station[1] + $ferme[1] + $resto[1];
-                    $otherResult = true;
+
+                    $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($ferme[0])>0){
+                        $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherFerme = true;
+                    }
+    
+                    $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($resto[0])>0){
+                        $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherResto = true;
+                    }
+    
+                    $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($station[0])>0){
+                        $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherStation = true;
+                    }
+    
+                    if(!$otherFerme && !$otherResto && !$otherStation){
+                        $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                        $results[1] = $station[1] + $ferme[1] + $resto[1];
+                    }elseif(!$otherFerme && $otherResto && $otherStation){
+                        $results[0] = array_merge($ferme[0]);
+                        $results[1] = $ferme[1];
+                    }elseif($otherFerme && !$otherResto && $otherStation){
+                        $results[0] = array_merge($resto[0]);
+                        $results[1] = $resto[1];
+                    }elseif($otherFerme && $otherResto && !$otherStation){
+                        $results[0] = array_merge($station[0]);
+                        $results[1] = $station[1];
+                    }elseif(!$otherFerme && !$otherResto && $otherStation){
+                        $results[0] = array_merge($ferme[0], $resto[0]);
+                        $results[1] = $ferme[1] + $resto[1];
+                    }elseif(!$otherFerme && $otherResto && !$otherStation){
+                        $results[0] = array_merge($station[0] , $ferme[0]);
+                        $results[1] = $station[1] + $ferme[1];
+                    }elseif($otherFerme && !$otherResto && !$otherStation){
+                        $results[0] = array_merge($station[0] , $resto[0]);
+                        $results[1] = $station[1] + $resto[1];
+                    }else{
+                        $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                        $results[1] = $station[1] + $ferme[1] + $resto[1];
+                        $otherResult = true;
+                    }
+
                 }
+
                 $results[2] = "tous";
 
                 break;
