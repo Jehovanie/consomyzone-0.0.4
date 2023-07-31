@@ -11,7 +11,7 @@
 
 {% block javascripts %}
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 {% endblock %}
 
 {% block body %}
@@ -31,63 +31,147 @@
 					<p>Modifiez votre profil rapidement</p>
 
 					<div class="h qa ld yd tf th gb zb mdf-pdp">
-						<img src="/assets/image/img_avatar3.png" alt="profile"/>
-						<label for="profile" class="g -ud-bottom-3 aa/2 -ud-translate-x-1/2 lc nd ue cg mg pg th ni bj wr nj co wq">
+						{# <img src="/assets/image/img_avatar3.png" alt="profile" style="height:90px;"/> #}
+						<img src= {{ userConnected.photo_profil}} alt="profile" style="height:90px;"/>
+						<label for="fileInputProfil" class="g -ud-bottom-3 aa/2 -ud-translate-x-1/2 lc nd ue cg mg pg th ni bj wr nj co wq">
 							<svg class="hk" width="10" height="9" viewbox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M1 1H2.5L3.20711 0.292893C3.39464 0.105356 3.649 0 3.91421 0H6.08579C6.351 0 6.60536 0.105357 6.79289 0.292893L7.5 1H9C9.26522 1 9.51957 1.10536 9.70711 1.29289C9.89464 1.48043 10 1.73478 10 2V8C10 8.26522 9.89464 8.51957 9.70711 8.70711C9.51957 8.89464 9.26522 9 9 9H1C0.734784 9 0.48043 8.89464 0.292893 8.70711C0.105357 8.51957 0 8.26522 0 8V2C0 1.73478 0.105357 1.48043 0.292893 1.29289C0.48043 1.10536 0.734784 1 1 1ZM5 2.5C4.33696 2.5 3.70107 2.76339 3.23223 3.23223C2.76339 3.70107 2.5 4.33696 2.5 5C2.5 5.66304 2.76339 6.29893 3.23223 6.76777C3.70107 7.23661 4.33696 7.5 5 7.5C5.66304 7.5 6.29893 7.23661 6.76777 6.76777C7.23661 6.29893 7.5 5.66304 7.5 5C7.5 4.33696 7.23661 3.70107 6.76777 3.23223C6.29893 2.76339 5.66304 2.5 5 2.5ZM5 3.5C5.39782 3.5 5.77936 3.65804 6.06066 3.93934C6.34196 4.22064 6.5 4.60218 6.5 5C6.5 5.39782 6.34196 5.77936 6.06066 6.06066C5.77936 6.34196 5.39782 6.5 5 6.5C4.60218 6.5 4.22064 6.34196 3.93934 6.06066C3.65804 5.77936 3.5 5.39782 3.5 5C3.5 4.60218 3.65804 4.22064 3.93934 3.93934C4.22064 3.65804 4.60218 3.5 5 3.5Z" fill=""/>
 							</svg>
 
-							<input type="file" name="profile" id="profile" class="d"/>
+							<input type="file" name="profile" id="profil" class="d"/>
+							{# <input type="file" name="profile" id="fileInputProfil" class="d"/> #}
 						</label>
 					</div>
 
-					<form action="#">
-						<div class="db">
-							<label class="jc un zn gs fb" for="firstName">Prénom</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="firstName" id="firstName" placeholder="Prénom" value="Musharof"/>
-						</div>
+					{% if app.user.type == "consumer" %}
+						{{form_start(form)}}
+							<div class="db">
+								{{ form_label(form.firstname , "Prénom", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'nom'}}) }}
+								{{ form_widget(form.firstname, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="lastName">Nom</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="lastName" id="lastName" placeholder="Nom" value="Chy"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.lastname , "Nom", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'prenom'}}) }}
+								{{ form_widget(form.lastname, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="rue">N° de rue</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="rue" id="rue" placeholder="..." value="rue de france"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.numRue , "N° de rue", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'rue'}}) }}
+								{{ form_widget(form.numRue, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="tel">Téléphone mobile</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="tel" id="tel" placeholder="N° mobile" value="123456789"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.telephone , "Téléphone mobile", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'telephone'}}) }}
+								{{ form_widget(form.telephone, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="postal">Code postale</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="postal" id="postal" placeholder="code postale" value="01100"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.codePostal , "Code postale", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'cp'}}) }}
+								{{ form_widget(form.codePostal, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="pays">Pays</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="pays" id="pays" placeholder="Pays" value="France"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.pays , "Pays", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'pays'}}) }}
+								{{ form_widget(form.pays, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="fixe">Téléphone fixe</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="fixe" id="fixe" placeholder="Téléphone fixe" value="123456789"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.telFixe , "Téléphone fixe", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'phone_fixe'}}) }}
+								{{ form_widget(form.telFixe, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						<div class="db">
-							<label class="jc un zn gs fb" for="Commune">Commune</label>
-							<input class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" type="text" name="Commune" id="Commune" placeholder="comune" value="OYONNAX"/>
-						</div>
+							<div class="db">
+								{{ form_label(form.commune , "Commune", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'commune'}}) }}
+								{{ form_widget(form.commune, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
 
-						
+							{% if message != null %}
+								<div id="succesMessage" class="alert alert-success">
+									<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+									{{ message }}</div>
+							{% endif %}
 
-						<button class="yd lc pg qh un eo oj br dl" type="submit">
-							 Mettez à jour maintenant
-						</button>
-					</form>
+							<button class="yd lc pg qh un eo oj br dl" type="submit">
+								Mettez à jour maintenant
+							</button>
+						{{form_end(form)}}
+
+					{% else %}
+						{{form_start(form)}}
+
+							<div class="db">
+								{{ form_label(form.firstname , "Nom", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'nom'}}) }}
+								{{ form_widget(form.firstname, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+							<div class="db">
+								{{ form_label(form.lastname , "Prénom", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'prenom'}}) }}
+								{{ form_widget(form.lastname, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+
+							<div class="db">
+								{{ form_label(form.telephone , "Téléphone mobile", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'phone_mobile'}}) }}
+								{{ form_widget(form.telephone, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+
+							<div class="db">
+								{{ form_label(form.telFixe , "Téléphone fixe", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'phone_fixe'}}) }}
+								{{ form_widget(form.telFixe, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+
+							<div class="db">
+								{{ form_label(form.numRue , "N° de rue", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'rue'}}) }}
+								{{ form_widget(form.numRue, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+
+							<div class="db">
+								{{ form_label(form.codePostal , "Code postale", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'code_postale'}}) }}
+								{{ form_widget(form.codePostal, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+
+							<div class="db">
+								{{ form_label(form.commune , "Commune", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form.commune, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+							<div class="db">
+								{{ form_label(form.pays , "Pays", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'pays'}}) }}
+								{{ form_widget(form.pays, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}, 'required':false}) }}
+							</div>
+
+							<div class="db">
+								{{ form_label(form.commerce , "Commerce", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form.commerce, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+							<div class="db">
+								{{ form_label(form.codeape , "Code APE", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form.codeape, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+							<div class="db">
+								{{ form_label(form.website , "Site Web", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form.website, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+							<div class="db">
+								{{ form_label(form.facebook , "Facebook", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form.facebook, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+							<div class="db">
+								{{ form_label(form.twitter , "Twitter", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form.twitter, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
+							</div>
+
+							{% if message != null %}
+								<div id="succesMessage" class="alert alert-success">
+									<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+									{{ message }}</div>
+							{% endif %}
+
+							<button class="yd lc pg qh un eo oj br dl" type="submit" name="save_profil">
+								Mettez à jour maintenant
+							</button>
+
+						{{form_end(form)}}
+
+					{% endif %}
+
 				</div>
 				<!-- Setting Card One -->
 
@@ -97,39 +181,105 @@
 						Modifier le mot de passe
 					</h3>
 
-					<form action="#">
+					{% set message = app.request.get('message')%}
+					{% set isSuccess = app.request.get('isSuccess')%}
+					{% set is_pwd = app.request.get('is_pwd')%}
+
+					{{form_start(form_password)}}
+						<input name="reset" type="hidden" value="resetPassword">
 						<div class="db">
-							<label class="jc un zn gs fb" for="currentPassword">Mot de passe actuel</label>
-							<input class="yd nj qh ni bj jr fr ps il cm zr wr" type="password" name="currentPassword" id="currentPassword" placeholder="Entrer votre mot de passe actuel"/>
+							{{ form_label(form_password.old_password , "Mot de passe actuel", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_password.old_password, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer votre mot de passe actuel'}}) }}
 						</div>
 
 						<div class="db">
-							<label class="jc un zn gs fb" for="newPassword">nouveau mot de passe</label>
-							<input class="yd nj qh ni bj jr fr ps il cm zr wr" type="password" name="newPassword" id="newPassword" placeholder="Entrez votre nouveau mot de passe"/>
+							{{ form_label(form_password.new_password , "Nouveau mot de passe", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_password.new_password, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer le nouveau mot de passe'}}) }}
 						</div>
 
 						<div class="db">
-							<label class="jc un zn gs fb" for="reNewPassword">Re-taper le nouveau mot de passe</label>
-							<input class="yd nj qh ni bj jr fr ps il cm zr wr" type="password" name="reNewPassword" id="reNewPassword" placeholder="Retaper votre nouveau mot de passe"/>
+							{{ form_label(form_password.retap_new_password , "Re-taper le nouveau mot de passe", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_password.retap_new_password, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Retaper le nouveau mot de passe'}}) }}
 						</div>
 
-						<button class="yd lc pg qh un eo oj br dl" type="submit">
-							Save
+						{% if message and is_pwd == 1 %}
+
+							{% if isSuccess == 1 %}
+								<div id="succesMessage" class="alert alert-success">
+									{# <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg> #}
+									{{ message }}</div>
+							{% endif %}
+
+							{% if isSuccess == 0 %}
+								<div id="succesMessage" class="alert alert-danger">
+									{# <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg> #}
+									{{ message }}</div>
+							{% endif %}
+
+						{% endif %}
+
+						<button class="yd lc pg qh un eo oj br dl" type="submit" name="save_password">
+							Modifier maintenant
 						</button>
-					</form>
+
+					{{form_end(form_password)}}
 
 					<h3 class="tn jn zn gs zb mt-5">
 						Modifier l'adresse email et votre identifiant
 					</h3>
 
-					<form action="#">
+					{{form_start(form_email)}}
+						<input name="reset" type="hidden" value="resetEmail">
+						<div class="db">
+							{{ form_label(form_email.old_email , "Email actuel", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_email.old_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer votre mot de passe actuel'}}) }}
+						</div>
+
+						<div class="db">
+							{{ form_label(form_email.new_email , "Nouveau email", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_email.new_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer le nouveau mot de passe'}}) }}
+						</div>
+
+						<div class="db">
+							{{ form_label(form_email.confirm_email , "Re-taper le nouveau email", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_email.confirm_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer le nouveau mot de passe'}}) }}
+						</div>
+
+						<div class="db">
+							{{ form_label(form_email.password , "Mot de passe", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+							{{ form_widget(form_email.password, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Retaper le nouveau mot de passe'}}) }}
+						</div>
+
+						{% if message and is_pwd == 0 %}
+
+							{% if isSuccess == 1 %}
+								<div id="succesMessage" class="alert alert-success">
+									{# <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg> #}
+									{{ message }}</div>
+							{% endif %}
+
+							{% if isSuccess == 0 %}
+								<div id="succesMessage" class="alert alert-danger">
+									{# <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg> #}
+									{{ message }}</div>
+							{% endif %}
+
+						{% endif %}
+
+						<button class="yd lc pg qh un eo oj br dl" type="submit" name="save_email">
+							Modifier maintenant
+						</button>
+
+					{{form_end(form_password)}}
+
+					{# <form method='post'>
 						<div class="db">
 							<label class="jc un zn gs fb" for="currentEmai">Email actuel</label>
 							<input class="yd nj qh ni bj jr fr ps il cm zr wr" type="email" name="currentEmai" id="currentEmai" placeholder="Entrer votre email actuel" value="tommyramihoatrarivo@gmail.com"/>
 						</div>
 
 						<div class="db">
-							<label class="jc un zn gs fb" for="newMail">nouveau email</label>
+							<label class="jc un zn gs fb" for="newMail">Nouveau email</label>
 							<input class="yd nj qh ni bj jr fr ps il cm zr wr" type="email" name="newMail" id="newMail" placeholder="Entrez votre nouveau email"/>
 						</div>
 
@@ -138,9 +288,9 @@
 							<input class="yd nj qh ni bj jr fr ps il cm zr wr" type="email" name="reNewEmail" id="reNewEmail" placeholder="Retaper votre nouveau email"/>
 						</div>
 
-						<button class="yd lc pg qh un eo oj br dl" type="submit">
+						<button class="yd lc pg qh un eo oj br dl" type="submit" name="save_email">
 							Save
-						</button>
+						</button> #}
 					</form>
 				</div>
 				<!-- Setting Card Two -->

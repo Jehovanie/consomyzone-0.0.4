@@ -16,10 +16,7 @@ class SettingProfilConsumerType extends AbstractType
     {
         $builder
         ->add('firstname', TextType::class, 
-                ['label' => 'Prénom', 
-                'attr' => [
-                        'class' => 'form-control'
-        ]])
+                ['label' => 'Prénom'])
         ->add('lastname', TextType::class, ['label' => 'Nom'])
         ->add('numRue', TextType::class, ['label' => 'N° de rue'])
         ->add('telephone', TelType::class, ['label' => 'Téléphone mobile'])
@@ -28,10 +25,10 @@ class SettingProfilConsumerType extends AbstractType
         ->add('pays', TextType::class, ['label' => 'Pays'])
         ->add('telFixe', TelType::class, ['label' => 'Téléphone fixe'])
         ->add('commune', TextType::class, ['label' => 'Commune'])
-        ->add('submit', SubmitType::class, [
-            'label' => 'Modifier',
-            'attr' => ['class' => 'btn-block btn-primary btn-sm', 'lng-tag'=>"modifier"]
-        ])
+        // ->add('submit', SubmitType::class, [
+        //     'label' => 'Modifier',
+        //     'attr' => ['class' => 'btn-block btn-primary btn-sm', 'lng-tag'=>"modifier"]
+        // ])
         ;
     }
 

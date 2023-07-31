@@ -22,6 +22,8 @@ function openChat() {
  */
 function closeChat() {
 
+    document.querySelector("#closeChat").disabled = true
+
     let divs = document.querySelectorAll("#conversation > div")
 
     divs.forEach(qf=>{
@@ -54,6 +56,8 @@ function endChat() {
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML =""
 
+    document.querySelector("#closeChat").disabled = false
+
     document.querySelector("#chat_header").style ="display:none;"
     document.querySelector("#amis_list").style ="display:none;"
 
@@ -70,6 +74,8 @@ function endChat() {
  * @constructor
  */
 function escapeChat() {
+
+    document.querySelector("#closeChat").disabled = false
 
     let divs = document.querySelectorAll("#conversation > div")
 
