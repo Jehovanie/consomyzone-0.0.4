@@ -19,6 +19,8 @@ use App\Entity\PublicationG;
 use App\Form\FileUplaodType;
 use App\Service\MailService;
 
+use App\Service\Status;
+
 use App\Service\UserService;
 
 use App\Service\FilesUtils;
@@ -75,13 +77,17 @@ class TributTController extends AbstractController
  
     private $requesting;
 
+    private $filesyst;
+
     function __construct(MailService $mailService, 
 
     EntityManagerInterface $entityManager, 
 
     KernelInterface $appKernel, 
 
-    RequestingService $requesting)
+    RequestingService $requesting,
+
+    Filesystem $filesyst)
 
     {
 
@@ -92,6 +98,8 @@ class TributTController extends AbstractController
         $this->mailService = $mailService;
 
         $this->requesting = $requesting;
+
+        $this->filesyst = $filesyst;
 
     }
 
@@ -708,53 +716,9 @@ class TributTController extends AbstractController
 
         $formPub->handleRequest($request);
 
-
-
-        if ($formPub->isSubmitted() && $formPub->isValid()) {
-
-            $publication = $formPub['legend']->getData();
-
-            $confid = $formPub['confidentiality']->getData();
-
-            $photo = $formPub['photo']->getData();
-
-            $newFilename = "";
-
-
-
-            if ($photo) {
-
-                $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
-
-                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-
-                $newFilename = md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
-
-                $photo->move(
-
-                    $destination,
-
-                    $newFilename
-
-                );
-
-            }
-
-
-
-            $tribu_t->createOnePub($table, $user_id, $publication, $confid, $newFilename);
-
-        }
-
-
-
         $table_reaction = preg_replace($regex, "_reaction", $table);
 
-
-
         $publications = array();
-
-
 
         $pubs = $tribu_t->fetchAllPub($table);
 
@@ -787,6 +751,56 @@ class TributTController extends AbstractController
                 "reaction_number" => $tribu_t->getReactionNumber($table_reaction, $key["id"])
 
             ]);
+
+        }
+
+        if ($formPub->isSubmitted() && $formPub->isValid()) {
+
+            $publication = $formPub['legend']->getData();
+
+            $confid = $formPub['confidentiality']->getData();
+
+            $photo = $formPub['photo']->getData();
+
+            $newFilename = "";
+
+
+
+            if ($photo) {
+
+                $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table_tribu.'/';
+
+                $dir_exist = $this->filesyst->exists($destination);
+
+                if($dir_exist==false){
+        
+                    $this->filesyst->mkdir($destination, 0777);
+        
+                }
+
+                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $newFilename = md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+
+                $photo->move(
+
+                    $destination,
+
+                    $newFilename
+
+                );
+
+            }
+
+
+
+            $tribu_t->createOnePub($table, $user_id, $publication, $confid, $newFilename);
+
+            return $this->redirectToRoute('publication_tribu', [
+
+                "table" => $table
+            ]);
+            
 
         }
 
@@ -847,11 +861,23 @@ class TributTController extends AbstractController
 
         $newFilename = null;
 
+        $regex = "/\_publication+$/";
+
+        $table_tribu = preg_replace($regex, "", $tableName);
+
 
 
         if (isset($photo)) {
 
-            $destination = $this->getParameter('kernel.project_dir') . '/public/assets/publications/photos';
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table_tribu.'/';
+
+            $dir_exist = $this->filesyst->exists($destination);
+
+            if($dir_exist==false){
+    
+                $this->filesyst->mkdir($destination, 0777);
+    
+            }
 
             $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -925,7 +951,19 @@ class TributTController extends AbstractController
 
         $audioname = "";
 
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/audios/';
+        $regex = "/\_commentaire+$/";
+
+        $tribuTable = preg_replace($regex, "", $table_com);
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/audios/'.$tribuTable.'/';
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
 
         if ($audio != "") {
 
@@ -938,9 +976,6 @@ class TributTController extends AbstractController
             file_put_contents($path . $audioname, file_get_contents($audio));
         }
 
-        $regex = "/\_commentaire+$/";
-
-        $tribuTable = preg_replace($regex, "", $table_com);
 
         $tribut = new Tribu_T_Service();
 
@@ -1464,6 +1499,7 @@ class TributTController extends AbstractController
 
     }
 
+
     #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
 
     public function getRestoPastillesCommentaire($table_resto,$id): Response
@@ -1540,9 +1576,16 @@ class TributTController extends AbstractController
 
 
 
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribus/photos/';
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_t/photos/'.$table.'/';
 
 
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
 
         $tribu_t = new Tribu_T_Service();
 
@@ -1614,7 +1657,15 @@ class TributTController extends AbstractController
 
 
 
-        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_'.$userId."/";
+
+        $dir_exist = $this->filesyst->exists($path);
+
+        if($dir_exist==false){
+
+            $this->filesyst->mkdir($path, 0777);
+
+        }
 
 
 
@@ -1628,7 +1679,8 @@ class TributTController extends AbstractController
 
                 $extension = explode("/", $temp[0])[1];
 
-                $imagename = md5($userId). '-' . uniqid() . "." . $extension;
+                //$imagename = md5($userId). '-' . uniqid() . "." . $extension;
+                $imagename = time() . "." . $extension;
 
 
 
@@ -1845,12 +1897,15 @@ class TributTController extends AbstractController
     }
 
     #[Route("/user/tribu/my-tribu-t", name: "app_my_tribu_t")]
-    public function MyTribuT(Request $request,  
-    TributGService $tributGService,
-    SluggerInterface $slugger,
-    Filesystem $filesyst) : Response
+    public function MyTribuT(
+        Status $status,
+        Request $request,  
+        TributGService $tributGService,
+        SluggerInterface $slugger,
+        Filesystem $filesyst
+    ) : Response
     {
-        
+        $userConnected= $status->userProfilService($this->getUser());
 
         $defaultData = ['message' => 'Type your message here'];
         $form = $this->createFormBuilder($defaultData)
@@ -1946,6 +2001,7 @@ class TributTController extends AbstractController
 
         
         return $this->render('tribu_t/tribuT.html.twig',[
+            "userConnected" => $userConnected,
             "profil" => $profil,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
             "tibu_T_owned" => $tribu_t_owned,

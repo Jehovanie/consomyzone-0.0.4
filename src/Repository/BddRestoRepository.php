@@ -65,14 +65,20 @@ class BddRestoRepository extends ServiceEntityRepository
         }
     }
 
-    function getAccountRestauranting()
+    function getAccountRestauranting($idDep=null)
     {
-        return $this->createQueryBuilder("r")
-            ->select("count(r.id)")
+        $query= $this->createQueryBuilder("r")
+                ->select("count(r.id)");
             //->groupBy('r.denominationF, r.poiX, r.poiY')
             //->having('COUNT(r.denominationF)>1 and COUNT(r.poiX)>1 and COUNT(r.poiY)>1')
-            ->getQuery()
-            ->getSingleScalarResult();
+                         
+        if( $idDep ){
+            $query = $query->where("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        return $query->getQuery()
+                     ->getSingleScalarResult();
     }
     function getAccountSpecificRestauranting($dep)
     {
@@ -87,8 +93,57 @@ class BddRestoRepository extends ServiceEntityRepository
     {
     }
 
+    public function getAllRestoIdForSpecificDepartement($dep)
+    {
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                r.denominationF as nom,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep",$dep)
+            ->getQuery()
+            ->getResult();
+    }
+
+
     public function getCoordinateAndRestoIdForSpecific($dep)
     {
+        $dep= strlen($dep) === 1  ? "0" . $dep : $dep;
         return $this->createQueryBuilder("r")
             ->select("r.id,
                 r.denominationF,
@@ -131,7 +186,8 @@ class BddRestoRepository extends ServiceEntityRepository
             )
             ->where("r.dep =:dep")
             ->setParameter("dep",$dep)
-            ->orderBy("r.denominationF", 'ASC')
+            ->orderBy('RAND()')
+            ->setMaxResults(2000)
             ->getQuery()
             ->getResult();
     }
@@ -614,29 +670,43 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getOneRestaurant($dep, $id)
     {
         return $this->createQueryBuilder("r")
-            ->select("r.id,r.denominationF,
-                r.numvoie,r.typevoie,
-                r.nomvoie,r.compvoie,
-                r.codpost,r.villenorm,
-                r.commune,r.restaurant,
-                r.brasserie,r.creperie,
-                r.fastFood,r.pizzeria,
-                r.boulangerie,r.bar,
-                r.cuisineMonde,r.cafe,
-                r.salonThe,r.site1,
+            ->select("r.id,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
                 r.fonctionalite1,
-                r.fourchettePrix1,r.horaires1,
-                r.prestation1,r.regimeSpeciaux1,
-                r.repas1,r.typeCuisine1,
-                r.dep,r.depName,r.tel,r.codinsee,
-                r.poiX,r.poiY")
-            ->where("r.dep =:dep")
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.codinsee,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
             ->andWhere("r.id =:id")
-            //->groupBy("r.denominationF, r.poiX, r.poiY")
-            //->having('count(r.denominationF)=1')  
-            //->andHaving('count(r.poiX)=1')
-            //->andHaving('count(r.poiY) =1')
-            ->setParameter("dep", $dep)
             ->setParameter("id", $id)
             ->orderBy("r.id", 'ASC')
             ->getQuery()
@@ -830,8 +900,8 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
-        return $this->createQueryBuilder("r")
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+        $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
                         r.numvoie,
@@ -872,8 +942,14 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->setParameter("minx", $minx)
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
-                    ->setParameter("maxy", $maxy)
-                    ->orderBy("r.id", 'ASC')
+                    ->setParameter("maxy", $maxy);
+                    
+        if( $idDep ){
+            $query = $query->andWhere("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        return $query->orderBy('RAND()')
                     ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();

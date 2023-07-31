@@ -404,18 +404,11 @@ class TributGService extends PDOConnexionService{
 
     public function getStatus($table_name, $user_id){
 
-
-
         $statement = $this->getPDO()->prepare('SELECT roles FROM ' . $table_name . ' WHERE user_id = ' .$user_id. ' LIMIT 1');
-
         $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-        return $result[0]['roles'];
-
+        return $result['roles'];
     }
 
     /**
@@ -623,17 +616,11 @@ class TributGService extends PDOConnexionService{
 
     public function getProfilTributG($table_name, $user_id ){
 
-
-
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE user_id = $user_id LIMIT 1");
-
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-        return $result[0];
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
 
     }
 
@@ -737,23 +724,14 @@ class TributGService extends PDOConnexionService{
 
     }
 
-
-
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
-     * Get all publications in this table.
-
+     * Get all publications in this table (brutes: entity).
      * 
-
      * @param string $table_name: name of the table
-
      */
-
-    public function getAllPublications($table_name){
+    public function getAllPublicationBrutes($table_name){
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 6;");
 
@@ -761,9 +739,43 @@ class TributGService extends PDOConnexionService{
 
         $publications = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
 
+        return $publications;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Get apropos of the tribu G ( name, description,avatar)
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     */
+    public function getApropos($table_name){
+
+        $statement = $this->getPDO()->prepare("SELECT name, description, avatar FROM $table_name");
+        $statement->execute();
+        $apropos = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $apropos;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     */
+    public function getAllPublications($table_name){
+
+        $apropo_tribuG= $this->getApropos($table_name);
+        // dd($apropo_tribuG);
+
+        $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
         $resultats = [];
-
-
 
         foreach( $publications as $publication ){
 
@@ -799,6 +811,11 @@ class TributGService extends PDOConnexionService{
 
 
             $publication["reactions"] = $reactions; /// [ ...reactions ]
+
+            $publication["tribu"]["state"] = "Tribu G";
+            $publication["tribu"]["name"] = $apropo_tribuG['name'];
+            $publication["tribu"]["description"] = $apropo_tribuG['description'];
+            $publication["tribu"]["avatar"] = $apropo_tribuG['avatar'];
 
 
 

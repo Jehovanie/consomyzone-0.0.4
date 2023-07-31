@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Service\Status;
+use App\Service\TributGService;
+use App\Repository\UserRepository;
 use App\Service\SortResultService;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
 use App\Service\StringTraitementService;
 use App\Repository\DepartementRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -165,14 +169,54 @@ class HomeController extends AbstractController
     #[Route("/api/search/{type}" , name:"app_api_search" , methods: "GET")]
     #[Route("/search/{type}" , name:"app_search" , methods: "GET")]
     public function search(
+        $type = null,
         Request $request,
+        Status $status,
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
-        $type = null,
         SortResultService $sortResultService,
-        StringTraitementService $stringTraitementService
+        StringTraitementService $stringTraitementService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
     ){
+
+        ///current user connected
+        $user = $this->getUser();
+
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
 
         $cles0 = $request->query->get("cles0") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles0"))) : "";
         $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
@@ -191,6 +235,7 @@ class HomeController extends AbstractController
 
         $otherResult = false;
 
+        //dd($all["station"]);
 
         switch (strtolower($type)){
             case "ferme":
@@ -345,7 +390,8 @@ class HomeController extends AbstractController
             "type" => $type,
             "cles0" => $cles0,
             "cles1" => $cles1,
-            "page" => $page
+            "page" => $page,
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 

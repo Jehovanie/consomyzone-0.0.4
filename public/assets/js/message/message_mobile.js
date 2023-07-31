@@ -287,13 +287,13 @@ function handleMessageResponse(date, message,image_list=null,image,status){
     if( image_profil ){
         if( IS_DEV_MODE){
             console.log("on dev");
-            img.setAttribute("src","/uploads/users/photos/" +  image_profil );
+            img.setAttribute("src","/uploads/users/photos/photo_user_" +my_id+"/"+  image_profil );
         }else{
-            img.setAttribute("src","/public/uploads/users/photos/" +  image_profil );
+            img.setAttribute("src","/public/uploads/users/photos/photo_user_" +my_id+"/"+  image_profil );
         }
     }else{
-        if(IS_DEV_MODE){
-            console.log("on dev")
+        if( IS_DEV_MODE){
+            console.log("on dev");
             img.setAttribute("src", "/uploads/users/photos/img_avatar.png" );
         }else{
             img.setAttribute("src", "/public/uploads/users/photos/img_avatar.png" );

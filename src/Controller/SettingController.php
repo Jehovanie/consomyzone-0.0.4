@@ -39,6 +39,7 @@ class SettingController extends AbstractController
     #[Route('/user/setting/account', name: 'account_setting')]
     public function index(Request $request, Status $status): Response
     {
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
         $userId = $user->getId();
@@ -155,6 +156,7 @@ class SettingController extends AbstractController
         $statusProfile = $status->statusFondateur($this->getUser());
         
         return $this->render('setting/index.html.twig', [
+            "userConnected" => $userConnected,
             'profil' => $profil,
             "statusTribut" => $statusProfile["statusTribut"],
             'form' => $form->createView(),

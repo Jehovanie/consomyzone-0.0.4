@@ -20,7 +20,7 @@ class MarckerClusterSearch extends MapModule  {
 
             // this.map = await create_map_content(this.geos, this.id_dep, "search");
             const firstData= this.data.results[0][0]
-            await this.initMap(firstData.lat, firstData.long);
+            this.initMap(firstData.lat, firstData.long);
 
             this.bindAction();
 
@@ -225,7 +225,7 @@ class MarckerClusterSearch extends MapModule  {
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
                     iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],

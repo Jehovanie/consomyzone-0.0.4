@@ -2,43 +2,44 @@
 //scroll_to_bottom.scrollTop = scroll_to_bottom.scrollHeight;
 
 //// ON THE PAGE CHAT BOX
-if(screen.width > 1000){
+// if(screen.width > 1000){
 
-document.querySelector(".mode_mobile").remove()
+// document.querySelector(".mode_mobile").remove()
 
-}else{
-    document.querySelector(".mode_pc").remove()
-}
+// }else{
+//     document.querySelector(".mode_pc").remove()
+// }
 
 ///check btn send and input msg
-if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector(".input_message_js_jheo")){
+if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector(".input_message_jheo_js")){
+    
+    document.querySelector(".content_discussion_jheo_js").scrollTop= 9e9;
 
     //// input message
-    const message_input = document.querySelector(".input_message_js_jheo")
+    const message_input = document.querySelector(".input_message_jheo_js")
 
     ///btn send message
-    const btn_send_message = document.querySelector(".btn_send_message_js_jheo");
+    const btn_send_message = document.querySelector(".btn_send_message_jheo_js");
 
     ///input file
-    const icon_input_file= document.querySelector(".i_input_file");
+    const icon_input_file_show= document.querySelector(".input_file_show_jheo_js");
+    const icon_input_file_hidden= document.querySelector(".input_file_hidden_jheo_js");
 
     // EVENT CLICK
-    icon_input_file.onclick = () => {
-        icon_input_file.querySelector("input").click();
+    icon_input_file_show.onclick = () => {
+        icon_input_file_hidden.click();
     }
 
     ///input file inside the file before
-    if(document.querySelector(".i_input_file_under_image")){
-
-        document.querySelector(".i_input_file_under_image").onclick = ()  => {
-            icon_input_file.querySelector("input").click();
+    if(document.querySelector(".input_file_under_image_jheo_js")){
+        document.querySelector(".input_file_under_image_jheo_js").onclick = ()  => {
+            icon_input_file_hidden.click();
         }
-
     }
 
     ////Read image file. (message image)
     let image_list = [];
-    icon_input_file.querySelector("input").addEventListener("change", (e) => {
+    icon_input_file_hidden.addEventListener("change", (e) => {
 
         ///read file
         const reader = new FileReader();
@@ -52,20 +53,21 @@ if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector
             ///let get multiple images (files)
             image_list.push(reader.result);
 
-            //// for the content image above the input message
+            // for the content image above the input message
             const img = document.createElement("img")
-            img.src = uploaded_image
+            img.className="image_input_item image_input_item_jheo_js";
             img.setAttribute("alt","Image upload")
-            img.setAttribute("style", "width:100px; height:100px");
-            document.querySelector(".content_image_input_js_jheo").style.display= "flex"
+            img.src = uploaded_image
 
-            const parentImage = document.querySelector(".content_image_input_js_jheo")
+            const parentImage = document.querySelector(".content_image_input_jheo_js")
+            parentImage.style.display= "flex"
 
+            
             //// add in the first the new image upload
-            if(parentImage.querySelector("img")){
-                parentImage.insertBefore(img, parentImage.querySelector("img"))
+            if(parentImage.querySelector(".image_input_item_jheo_js")){
+                parentImage.insertBefore(img, parentImage.querySelector("image_input_item_jheo_js"))
             }else{
-                document.querySelector(".content_image_input_js_jheo").appendChild(img)
+                parentImage.appendChild(img)
             }
 
         });
@@ -78,35 +80,33 @@ if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector
 
     ///event on the keyup the user (message text)
     message_input.addEventListener("keyup" , (e) => {
-
         ///the user key entre ... 
         if (e.code === "Enter" || e.code === "NumpadEnter") {
-
+            
             ///check input content text
-            if(document.querySelector(".input_message_js_jheo").value.length > 1 || document.querySelectorAll(".content_image_input_js_jheo img").length > 0 ){
+            if(document.querySelector(".input_message_jheo_js").value.length > 1 || document.querySelectorAll(".content_image_input_js_jheo img").length > 0 ){
 
                 ///send message---------------------------------------------------
-                sendMessage(document.querySelector(".input_message_js_jheo").value, image_list)
+                sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)
 
-                if( document.querySelectorAll(".content_image_input_js_jheo img").length > 0 ){
+                if( document.querySelectorAll(".image_input_item_jheo_js").length > 0 ){
                     image_list = []
                 }
             }
 
             ///delete focus
-            document.querySelector(".input_message_js_jheo").blur()
+            document.querySelector(".input_message_jheo_js").blur()
 
             ///reset input
-            document.querySelector(".input_message_js_jheo").value= null
+            document.querySelector(".input_message_jheo_js").value= null
 
             ///delete content image above ...
-            if(document.querySelectorAll(".content_image_input img")){
+            if(document.querySelectorAll(".image_input_item_jheo_js")){
 
-                const image_sended = document.querySelectorAll(".content_image_input img");
-                image_sended.forEach(element => {
-                    element.parentElement.removeChild(element)
-                })
-                document.querySelector(".content_image_input").style.display= "none"
+                const image_sended = document.querySelectorAll(".image_input_item_jheo_js");
+                image_sended.forEach(element => element.remove())
+
+                document.querySelector(".content_image_input_jheo_js").style.display= "none"
             }
 
         }
@@ -121,30 +121,30 @@ if(document.querySelector(".btn_send_message_js_jheo") && document.querySelector
 
         //alert("ok")
         ///check input content text
-        if(document.querySelector(".input_message_js_jheo").value.length > 1 || image_list.length>0 ){
+        if(document.querySelector(".input_message_jheo_js").value.length > 1 || image_list.length>0 ){
 
             ///send message---------------------------------------------------
-            sendMessage(document.querySelector(".input_message_js_jheo").value, image_list)
+            sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)
 
-            if( document.querySelectorAll(".content_image_input_js_jheo img").length > 0 ){
+            if( document.querySelectorAll(".image_input_item_jheo_js").length > 0 ){
                 image_list = []
             }
 
         }
 
         ///delete focus
-        document.querySelector(".input_message_js_jheo").blur()
+        document.querySelector(".input_message_jheo_js").blur()
 
         ///reset input
-        document.querySelector(".input_message_js_jheo").value= null
+        document.querySelector(".input_message_jheo_js").value= null
 
-        if(document.querySelectorAll(".content_image_input img")){
+        if(document.querySelectorAll(".image_input_item_jheo_js")){
 
-            const image_sended = document.querySelectorAll(".content_image_input img");
+            const image_sended = document.querySelectorAll(".image_input_item_jheo_js");
             image_sended.forEach(element => {
-                element.parentElement.removeChild(element)
+                element.remove()
             })
-            document.querySelector(".content_image_input").style.display= "none"
+            document.querySelector(".content_image_input_jheo_js").style.display= "none"
         }
     })
 }
@@ -163,7 +163,7 @@ function sendMessage(message, image_list){
     ///handle message, show under the input champ
     handleMessageResponse(date ,message,image_list, "#",false)
 
-    ///send to the server
+    // ///send to the server
     fetch("/user/push/message", {
         method: "POST",
         headers: {
@@ -173,10 +173,10 @@ function sendMessage(message, image_list){
         body: JSON.stringify( {
 
             /// current connecter
-            from: document.querySelector(".content_input_message_js_jheo").getAttribute("data-toggle-userfrom-id"),
+            from: document.querySelector(".content_image_input_jheo_js").getAttribute("data-toggle-userfrom-id"),
             
             /// user to talk
-            to: document.querySelector(".content_input_message_js_jheo").getAttribute("data-toggle-userto-id"),
+            to: document.querySelector(".content_image_input_jheo_js").getAttribute("data-toggle-userto-id"),
 
             ///message content
             message: message.replace("\n", ""),
@@ -187,12 +187,12 @@ function sendMessage(message, image_list){
     .then(result => { 
 
         ///change status message
-        const content_loading = document.querySelector(".content_loading");
+        const content_loading = document.querySelector(".content_loading_jheo_js");
         content_loading.innerHTML = "<i class='fa-solid fa-check'></i>";
 
         //// change the id the last message.
-        const message_sent= document.querySelector("#message_id");
-        message_sent.setAttribute("id","message_" + result.id);
+        const message_sent= document.querySelector("#message_id_jheo_js");
+        message_sent.setAttribute("id",`message_${result.id}_jheo_js`);
 
         setTimeout(() => {
             content_loading.parentElement.removeChild(content_loading);
@@ -200,7 +200,7 @@ function sendMessage(message, image_list){
 
     }).catch((e) => {
 
-        const content_loading = document.querySelector(".content_loading");
+        const content_loading = document.querySelector(".content_loading_jheo_js");
         content_loading.innerHTML = "<i class='fa-solid fa-circle-exclamation error_message_status'></i>";
     })
 }
@@ -211,128 +211,81 @@ function sendMessage(message, image_list){
 
 function handleMessageResponse(date, message,image_list=null,image,status){
 
-    // <div class="message" id={{"message_" ~ msg.id}}>
-    const div_message = document.createElement("div")
-    div_message.classList.add("message");
-    div_message.setAttribute("id", "message_id"); ///id_message
+    const card_msg= document.createElement("div");
+    card_msg.className= "qf rb";
+    card_msg.setAttribute("id", "message_id_jheo_js");
 
-    //     <div class="avatar_message right_place">
-    const div_avatar_message = document.createElement("div")
-    div_avatar_message.className = "avatar_message right_place";
-
-    //         <div>
-    const div = document.createElement("div")
-
-    //            <span>{{msg.datetime}}</span>
-    const span_date = document.createElement("span");
-    span_date.innerText = date;
-
-    //             <div class="message_single">
-    const div_message_single = document.createElement("div");
-    div_message_single.className = "message_single";
-
-    //                   <p>{{msg.content ? msg.content.text : "" }}</p>
-    const p_content = document.createElement("p");
-    p_content.innerText = message;
-
-
-    // <div class="message_single"> >>> <p> , ... 
-    div_message_single.appendChild(p_content);
-
-    ///generate content_image is exit
-    if(image_list &&  image_list.length > 0 ){
-
-        // <div class="content_image_message image_right">
-        const div_content_message_image = document.createElement("div")
-        div_content_message_image.className = "content_image_message image_right"
-
-
-        image_list.forEach((element, index) => {
-            // <img src="{{asset('uploads/messages/'~ image )}}" alt="Message image">
-            const img = document.createElement("img");
-            img.setAttribute("id", "image_sended_"+ index );
-            img.setAttribute("alt", "Image sended");
-            img.setAttribute("class", "image_temp_js_jheo");
-           //img.setAttribute("style", "width:100px; height:100px");
-
-            /// on dev -----------------------------
-            console.log("on dev");
-            img.setAttribute("src", element );
-            /// --------------------------------
-
-            /// on prod -----------------------------
-            // img.setAttribute("src","/public/" +  element );
-            /// --------------------------------
-
-
-            // <div class="content_image_message image_right"> >>> img
-            div_content_message_image.appendChild(img);
+    let image_html_list= "";
+    if( image_list.length > 0 ){
+        image_list.forEach(image=> {
+            image_html_list += `<img class="message_image_item" src="${image}" alt="image">`
         });
-
-        // <div class="message_single"> >>> ... ,  <div class="content_image_message image_right">
-        div_message_single.appendChild(div_content_message_image);
     }
 
-    //<div> >>>  span , ... 
-    div.appendChild(span_date)
-
-    //<div> >>> ..., <div class="message_single">
-    div.appendChild(div_message_single)
-
-
+    card_msg.innerHTML= `
+        <div class="qb vh ii oj el yl">
+            <p class="eo">${message}</p>
+            <div class="content_image_msg">
+                ${image_html_list}
+            </div>
+        </div>
+        <p class="in nn">${date}</p>
+    `
 
 
     if(!status){
 
         const content_loading = document.createElement("div");
-
-        content_loading.classList.add("content_loading");
-
+        content_loading.className= "content_loading content_loading_jheo_js"
         content_loading.innerHTML= "<i class='fa-solid fa-spinner loading'></i>"
 
-        div.appendChild(content_loading);
+        card_msg.appendChild(content_loading);
 
     }
 
 
     // <img src={{ (profil[0].getPhotoProfil != null) ? asset('uploads/users/photos/') ~ profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ profil[0].getFirstname }}">
-    const img = document.createElement("img");
-    const image_profil = document.querySelector(".content_message").getAttribute("data-toggle-current-profil")
-
-    if( image_profil ){
-        if( IS_DEV_MODE){
-            console.log("on dev");
-            img.setAttribute("src","/uploads/users/photos/" +  image_profil );
-        }else{
-            img.setAttribute("src","/public/uploads/users/photos/" +  image_profil );
-        }
-
-    }else{
-        /// ------------------------
-        if( IS_DEV_MODE){
-            console.log("on dev");
-            img.setAttribute("src", "/uploads/users/photos/img_avatar.png" );
-        }else{
-            img.setAttribute("src", "/public/uploads/users/photos/img_avatar.png" );
-        }
-    }
-
-    img.setAttribute("alt" , "Avatar-Massage");
-
-    // <div class="avatar_message right_place"> >>> div , ...
-    div_avatar_message.appendChild(div);
-
-    // <div class="avatar_message right_place"> >>> ..., img
-    div_avatar_message.appendChild(img);
-
-    // <div class="message" id={{"message_" ~ msg.id}}>
-    div_message.appendChild(div_avatar_message);
-
     ////insert into block message
-    if(document.querySelector(".content_input_message_js_jheo")){
+    if(document.querySelector(".content_form_message_jheo_js")){
 
-        const block_message =document.querySelector(".content_input_message_js_jheo").parentElement;
-        block_message.insertBefore(div_message,document.querySelector(".content_input_message_js_jheo"))
+        if( document.querySelector(".start_discussion_jheo_js")){
+            document.querySelector(".start_discussion_jheo_js").remove();
+        }
+
+        document.querySelector(".content_discussion_jheo_js").appendChild(card_msg);
+        document.querySelector(".content_discussion_jheo_js").scrollTop= 9e9;
     }
 
 }
+
+document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
+    
+    let target = e.target.value.toLowerCase()
+
+    let divs = document.querySelectorAll("div.list_users > div.discussion")
+
+    if(divs.length > 0){
+        for (var i = 0; i < divs.length; i++) {
+            let a = divs[i].textContent.toLowerCase();
+        
+            if (a) {
+              if (a.indexOf(target) > -1) {
+                divs[i].style.display = "";
+              } else {
+                divs[i].style.display = "none";
+              }
+            }
+          }
+    }
+    
+})
+
+const imgs = document.querySelectorAll("section > div.messages-chat.mode_pc > div > div > div > img")
+const fullPage = document.querySelector('#fullpage');
+
+imgs.forEach(img => {
+  img.addEventListener('click', function() {
+    fullPage.style.backgroundImage = 'url(' + img.src + ')';
+    fullPage.style.display = 'block';
+  });
+});

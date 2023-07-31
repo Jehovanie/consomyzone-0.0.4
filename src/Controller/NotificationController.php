@@ -12,16 +12,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class NotificationController extends AbstractController
 {
     
-    #[Route('/notifications', name: 'app_event')]
+    #[Route('/user/show/notification', name: 'app_event')]
     public function event( Request $request,  NotificationService $notificationsService )
     {
-        $table = $request->query->get("table");
-        $notification = $notificationsService->fetchAllNotification($table);
-
+        $table = $this->getUser()->getTablenotification();
+        $notifications = $notificationsService->fetchAllNotification($table);
+        
         $response = new StreamedResponse();
-        $response->setCallback(function () use (&$notification) {
+        $response->setCallback(function () use (&$notifications) {
 
-            echo "data:" . json_encode($notification) .  "\n\n";
+            echo "data:" . json_encode($notifications) .  "\n\n";
             ob_end_flush();
             flush();
         });

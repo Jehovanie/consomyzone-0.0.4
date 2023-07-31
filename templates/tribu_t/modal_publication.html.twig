@@ -22,10 +22,12 @@
                         <option value="2">Moi uniquement</option>
                     </select>
                 </div>
-                <img src="" alt="" width="100" id="image-publication-tribu-t">
+                <img src="" alt="" width="100" id="image-publication-tribu-t" class="d-none">
                 <div class="mb-3">
                     <label for="formFileMultiple" class="form-label">Photo</label>
-                    <input type="file" id="publication_photo" name="photo" class="form-control">
+                    {# <input type="file" id="publication_photo" name="photo" class="form-control"> #}
+                    {% include 'shard/input/inputImageDragDrop.html.twig' with {'id': 'publication_photo', 'name':'photo'} %}
+
                 </div>
                     
             </div>
@@ -337,6 +339,20 @@ End Modal-->
 	</div>
 </div>
 
+
+
+<!-- Modal show photo-->
+<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+      <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+        <img id="img_modal" style="width:100%">
+      </div>
+      
+    </div>
+  </div>
+</div>
 
 
 <!-- end modal repas -->

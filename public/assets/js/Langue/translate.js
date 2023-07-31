@@ -44,7 +44,8 @@ let en = {
 	"amis" :"Friends",
 	"deconnexion" :"Logout",
 	"autre_action" :"Another action",
-	"nouvelle_notification" :"A new notification."
+	"nouvelle_notification" :"A new notification.",
+	"mon_agenda" : " My agenda"
 }
 
 let fr = {
@@ -92,7 +93,8 @@ let fr = {
 	"amis" :"Amis",
 	"deconnexion" :"Déconnexion",
 	"autre_action" :"Autres action",
-	"nouvelle_notification" :"Une nouvelle notification."
+	"nouvelle_notification" :"Une nouvelle notification.",
+	"mon_agenda" : " Mon agenda"
 }
 
 function traduire(lng){

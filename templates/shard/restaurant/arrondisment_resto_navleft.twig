@@ -29,7 +29,7 @@
         </div>
         
     </nav>
-    <div class="container-fluid list-depart">
+    <div class="container-fluid">
         <div class="head-left spec-dep">
 
             <div class="row">
@@ -71,6 +71,8 @@
                     </p>
                 </div>
             </div>
+
+            {# <select class="form-select mb-3 w-50 non_active" style="margin-left: 82px;" aria-label="selectRestoArrondismentParis" id="selectRestoArrondismentParis" disabled>
             {# <select class="form-select mb-3 w-50" style="margin-left: 82px;" aria-label="selectRestoArrondismentParis" id="selectRestoArrondismentParis">
                 <option selected value="tous">Tous</option>
                 {% for codinsee in codinsees %}
@@ -104,7 +106,7 @@
                                 <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
 
                                     <div class="col-md-9">
-                                        <p class="text-center fw-bold fs-6 id_departement_js_jheo">{{restaurant.denominationF}} </p>
+                                        <p class="text-center fw-bold fs-6 name_to_filter_js_jheo">{{restaurant.denominationF}} </p>
                                         <p>
                                             <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
                                             {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}

@@ -89,7 +89,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) NOT NULL,
+                    publication VARCHAR(250) NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
@@ -596,35 +596,18 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function fetchAllPub($table_pub)
-
-    {
-
-
+    function fetchAllPub($table_pub){
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_pub ORDER BY datetime DESC");
-
-
-
         $statement->execute();
 
-
-
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
         return $result;
-
     }
 
 
 
-    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo)
-
-    {
-
-
+    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo){
 
         $statement = $this->getPDO()->prepare("INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) values (:user_id, :publication, :confidentiality, :photo, :userfullname)");
 
@@ -656,7 +639,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("select * from (select concat(firstname, ' ', lastname) as fullname, user_id from consumer union select concat(firstname, ' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id = $userId");
+        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId ");
 
         $statement->execute();
 
@@ -1063,7 +1046,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT photo FROM $table WHERE photo <> ''");
+        $statement = $this->getPDO()->prepare("SELECT photo FROM $table WHERE photo <> '' order by id DESC");
 
         $statement->execute();
 
@@ -1339,19 +1322,24 @@ class Tribu_T_Service extends PDOConnexionService
         //ORDER BY datetime DESC 
         //$sql = "SELECT * FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id ";
 
-        $sql= "SELECT  * ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
+        /*$sql= "SELECT  * ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
                 FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
                 GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com 
                 FROM $tableResto  
                 as t1 LEFT JOIN $tableComment  
-                as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";
+                as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";*/
+        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
+        FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+        GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com 
+        FROM $tableResto  
+        as t1 LEFT JOIN $tableComment  
+        as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id) as tb INNER JOIN bdd_resto ON tb.id_resto=bdd_resto.id";
 
         $stmt = $this->getPDO()->prepare($sql);
          
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
-
 
 
     }

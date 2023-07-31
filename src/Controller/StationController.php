@@ -8,6 +8,11 @@ namespace App\Controller;
 
 use App\Entity\Avisstation;
 
+use App\Service\TributGService;
+use App\Repository\UserRepository;
+
+use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\StationServiceFrGeom;
 
 use App\Repository\AvisstationRepository;
@@ -36,11 +41,52 @@ class StationController extends AbstractController
      * @Route("/station", name="app_station", methods={"GET", "POST"})
      */
 
-    public function station(CodeapeRepository $codeApeRep, Status $status, DepartementRepository $departementRepository, StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request): Response
-
+    public function station(
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        DepartementRepository $departementRepository,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+    ): Response
     {
+        ///current user connected
+        $user = $this->getUser();
 
-        $statusProfile = $status->statusFondateur($this->getUser());
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
 
         return $this->render('station/index.html.twig', [
 
@@ -52,7 +98,9 @@ class StationController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
 
-            "codeApes" => $codeApeRep->getCode()
+            "codeApes" => $codeApeRep->getCode(),
+
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 
@@ -70,11 +118,54 @@ class StationController extends AbstractController
     /**
      * @Route("/station/departement/{depart_code}/{depart_name}" , name="specific_station_departement", methods={"GET"})
      */
-    public function specifiStationDepartement(CodeapeRepository $codeApeRep, Status $status, Request $request, StationServiceFrGeomRepository $stationServiceFrGeomRepository, $depart_code, $depart_name)
+    public function specifiStationDepartement(
+        $depart_code, $depart_name,
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        Request $request,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+    )
     {
-
         $depart_code = strlen($depart_code) === 1 ? "0" . $depart_code : $depart_code;
-        $statusProfile = $status->statusFondateur($this->getUser());
+
+        ///current user connected
+        $user = $this->getUser();
+
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
 
         return $this->render("station/specificStationDepartement.html.twig", [
 
@@ -93,7 +184,9 @@ class StationController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
 
-            "codeApes" => $codeApeRep->getCode()
+            "codeApes" => $codeApeRep->getCode(),
+            
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 

@@ -13,13 +13,13 @@ class MarckerClusterHome extends MapModule  {
         // const url = `/getLatitudeLongitudeForAll`;
         try {
             this.createMarkersCluster();
-
+            
             const response = await fetch("/dataHome");
-
+            
             this.default_data = await response.json();
             this.data = this.default_data;
-
-            await this.initMap();
+            
+            this.initMap();
 
             this.bindAction();
 
@@ -247,7 +247,7 @@ class MarckerClusterHome extends MapModule  {
 
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-R.png",
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
                     iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],

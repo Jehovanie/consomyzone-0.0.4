@@ -58,35 +58,57 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
 class UserController extends AbstractController
-
 {
-
-
 
     private $entityManager;
 
+    private $appKernel;
+
+    private $filesyst;
 
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    public function __construct(EntityManagerInterface $entityManager,KernelInterface $appKernel, Filesystem $filesyst){
 
         $this->entityManager = $entityManager;
+        $this->appKernel = $appKernel;
+        $this->filesyst = $filesyst;
+
     }
 
 
     #[Route("/user/actualite", name: "app_actualite")]
-    public function Actualite(): Response
+    public function Actualite(
+        Status $status,
+        TributGService $tribuGService,
+        Tribu_T_Service $tribuTService,
+    ): Response
     {
-        return $this->render("user/actualite.html.twig");
-    }
+        $userConnected= $status->userProfilService($this->getUser());
 
+        $publications = [];
+
+        $pub_tribuG= $tribuGService->getAllPublications($userConnected['tableTribuG']);
+        $publications= array_merge($publications, $pub_tribuG);
+        // dd($publications);
+        ///all publication on tribu T
+        $test= $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
+
+        return $this->render("user/actualite.html.twig", [
+            "userConnected" => $userConnected,
+            "publications" => $publications
+        ]);
+    }
 
 
  
     #[Route("/user/account", name: "app_account")]
 
     public function Account(
+
+        Status $status,
 
         Request $request,
 
@@ -98,6 +120,8 @@ class UserController extends AbstractController
 
     ): Response {
 
+        $userConnected= $status->userProfilService($this->getUser());
+        
         $user = $this->getUser();
 
         $userType = $user->getType();
@@ -140,7 +164,15 @@ class UserController extends AbstractController
 
             $newFilename = "";
 
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$profil[0]->getTributg().'/';
 
+            $dir_exist = $this->filesyst->exists($destination);
+
+            if($dir_exist==false){
+
+                $this->filesyst->mkdir($destination, 0777);
+
+            }
 
             if ($publication || $confid) {
 
@@ -174,10 +206,13 @@ class UserController extends AbstractController
 
         
         return $this->render("tribu_g/account.html.twig", [
+            "userConnected" => $userConnected,
 
             "profil" => $profil,
 
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "table_tribu" => $profil[0]->getTributg(),
+
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
 
             "tributG" => [
                 "table" => $profil[0]->getTributg(),
@@ -546,6 +581,7 @@ class UserController extends AbstractController
     #[Route("/user/setting", name: "setting_user_account")]
 
     public function settingAccount(
+        Status $status,
 
         Request $request,
 
@@ -555,21 +591,17 @@ class UserController extends AbstractController
 
     ): Response {
 
-        if ($this->getUser()) {
-
-            if ($this->getUser()->getType() === "consumer") {
-
-                $profil = $consumerRepository->findOneBy(["user" => $this->getUser()->getId()]);
-            } else {
-
-                $profil = $supplierRepository->findOneBy(["user" => $this->getUser()->getId()]);
-            }
-        } else {
-
+        if ( !$this->getUser()) {
             return $this->redirectToRoute("app_connexion");
         }
 
+        $userConnected= $status->userProfilService($this->getUser());
 
+        if ($this->getUser()->getType() === "consumer") {
+            $profil = $consumerRepository->findOneBy(["user" => $this->getUser()->getId()]);
+        } else {
+            $profil = $supplierRepository->findOneBy(["user" => $this->getUser()->getId()]);
+        }
 
         $form = $this->createForm(UserSettingType::class);
 
@@ -588,6 +620,8 @@ class UserController extends AbstractController
 
         return $this->render("user/settingAccount.html.twig", [
 
+            "userConnected" => $userConnected,
+
             "form_setting" => $form->createView(),
 
             "flash" => $flash,
@@ -599,145 +633,45 @@ class UserController extends AbstractController
         ]);
     }
 
-    // #[Route('/user/profil', name: 'user_profil')]
-
-    // public function index(): Response
-
-    // {
-
-    //     $user = $this->getUser(); /// user connected
-    //     $userId = $user->getId(); /// ID of the user connected
-    //     $myuserType = $user->getType(); /// type of user connected 
-    //     $myProfil = null; /// profile of user connected
-
-    //     if ($myuserType == "consumer") {
-    //         $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-    //     } elseif ($myuserType == "supplier") {
-    //         $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-    //     }
-
-
-    //     $tribu_t = new Tribu_T_Service();
-
-    //     $userType = $tribu_t->getTypeUser($user_id); /// type of the other user 
-
-    //     if( $userType === "unknown"){
-    //         throw new NotFoundHttpException();
-    //     }
-        
-    //     $profil = null; /// profil of the other user 
-
-    //     $type = "";
-    //     if ($userType === "consumer") {
-
-    //         $type = "Consommateur";
-    //         $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id); /// other user profil
-    //     } elseif ($userType === "supplier") {
-
-    //         $type = "Fournisseur";
-    //         $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id); /// other user profil
-    //     }
-
-    //     $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
-    //     $images = glob($path . "*.*");
-    //     $images_trie = [];
-
-    //     for ($i = count($images) - 1; $i >= 0; $i--) {
-    //         array_push($images_trie, $images[$i]);
-    //     }
-
-    //     ///nbr user for the other user 
-    //     $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-
-
-    //     return $this->render('user/profil.html.twig', [
-    //         "profil" => $myProfil,
-    //         "autre_profil" => $profil,
-    //         "type" => $type,
-    //         "images" => $images_trie,
-    //         "statusTribut" => $tributGService->getStatusAndIfValid(
-    //             $myProfil[0]->getTributg(),
-    //             $myProfil[0]->getIsVerifiedTributGAdmin(),
-    //             $userId
-    //         ),
-    //         "tributG" => [
-    //             "table" => $profil[0]->getTributg(),
-    //             "profil" => $tributGService->getProfilTributG(
-    //                 $profil[0]->getTributg(),
-    //                 $user_id
-    //             ),
-    //         ],
-    //         "nombre_partisant" => $nombre_partisant
-    //     ]);
-    // }
-
-
-
-
-
     #[Route('/user/profil/{user_id}', name: 'user_profil')]
-
-    public function index($user_id, EntityManagerInterface $entityManager, TributGService $tributGService): Response
-
-    {
-
-
+    public function index(
+        $user_id,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Status $status,
+    ){
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
-
         $userId = $user->getId();
-
         $myuserType = $user->getType();
 
         $myProfil = null;
 
-
-
         if ($myuserType == "consumer") {
-
             $myProfil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } elseif ($myuserType == "supplier") {
-
             $myProfil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-
-
-
-
-
         $tribu_t = new Tribu_T_Service();
-
-
-
         $userType = $tribu_t->getTypeUser($user_id);
-
-
 
         $profil = null;
 
-
-
         $type = "";
-
-
-
         if ($userType == "consumer") {
 
             $type = "Consommateur";
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
-        } elseif ($userType == "supplier") {
+        }elseif ($userType == "supplier") {
 
             $type = "Fournisseur";
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
         }
 
         $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
-
         $images = glob($path . "*.*");
-
         $images_trie = [];
 
         for ($i = count($images) - 1; $i >= 0; $i--) {
@@ -746,26 +680,17 @@ class UserController extends AbstractController
         }
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-
-
+        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
         return $this->render('user/profil.html.twig', [
-
+            "userConnected" => $userConnected,
             "profil" => $myProfil,
-
             "autre_profil" => $profil,
-
             "type" => $type,
-
             "images" => $images_trie,
-
             "statusTribut" => $tributGService->getStatusAndIfValid(
-
                 $profil[0]->getTributg(),
-
                 $profil[0]->getIsVerifiedTributGAdmin(),
-
                 $user_id
-
             ),
 
             "tributG" => [
@@ -777,8 +702,8 @@ class UserController extends AbstractController
                 ),
             ],
 
-            "nombre_partisant" => $nombre_partisant
-
+            "nombre_partisant" => $nombre_partisant,
+            "status_tribuT_autre_profil" =>$status_tribuT_autre_profil
         ]);
     }
 
@@ -787,8 +712,10 @@ class UserController extends AbstractController
     #[Route('/user/dashboard', name: 'app_dashboard')]
     public function Dashboard(
         EntityManagerInterface $entityManager,
-        TributGService $tributGService
+        TributGService $tributGService,
+        Status $status,
     ): Response {
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
         $userType = $user->getType();
@@ -802,7 +729,8 @@ class UserController extends AbstractController
         }
 
         return $this->render("user/dashboard_super_admin/dashboard.html.twig", [
-            "profil" => $profil,
+            "userConnected" => $userConnected,
+
             "statusTribut" => $tributGService->getStatusAndIfValid(
                 $profil[0]->getTributg(),
                 $profil[0]->getIsVerifiedTributGAdmin(),
@@ -824,6 +752,7 @@ class UserController extends AbstractController
     #[Route('/user/dashboard-membre', name: 'app_dashboardmembre')]
 
     public function DashboardMembre(
+        Status $status,
         Request $request,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
@@ -831,74 +760,48 @@ class UserController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository
     ): Response {
+
+        $userConnected= $status->userProfilService($this->getUser());
+
         $table_name = $request->query->get("table");
         // dd($table_name);
 
 
-
         $user = $this->getUser();
-
         $userType = $user->getType();
-
         $userId = $user->getId();
 
         $profil = "";
-
-
-
-
-
         if ($userType == "consumer") {
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
         $results = [];
 
         $under_tributG = $tributGService->getAllUserWithRoles($table_name);
-
         if ($under_tributG === 0) {
-
             goto quit;
         }
 
-
-
         foreach ($under_tributG as $tributG) {
 
-
-
             $user = $userRepository->find(intval($tributG["user_id"]));
-
             if ($user->getType() === "consumer") {
-
                 $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
             } else {
-
                 $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
             }
 
-
-
             $result = [
-
                 "id" => $tributG["user_id"],
-
                 "roles" => $tributG["roles"],
-
                 "email" => $user->getEmail(),
-
                 "firstname" => $user_profil->getFirstname(),
-
                 "lastname" => $user_profil->getLastname(),
-
                 "commune" => $user_profil->getCommune(),
-
                 "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
-
             ];
 
 
@@ -911,21 +814,14 @@ class UserController extends AbstractController
         quit:
 
         return $this->render("user/dashboard_super_admin/dashboard-membre.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $profil,
-
             "statusTribut" => $tributGService->getStatusAndIfValid(
-
                 $profil[0]->getTributg(),
-
                 $profil[0]->getIsVerifiedTributGAdmin(),
-
                 $userId
-
             ),
-
             "results" => $results
-
         ]);
     }
 
@@ -934,6 +830,7 @@ class UserController extends AbstractController
     #[Route("/user/dashboard-membre-apropos", name: "app_dashboardapropos")]
 
     public function DashboardMembreApropos(
+        Status $status,
 
         Request $request,
 
@@ -949,53 +846,34 @@ class UserController extends AbstractController
 
     ): Response {
 
+        $userConnected= $status->userProfilService($this->getUser());
+
         ///get param from the url
-
         ///user to validate.
-
         $user_id_to_control = intval($request->query->get("user_id"));
 
-
-
         /// current user connected: super admin
-
         $user = $this->getUser();
-
         $userType = $user->getType();
-
         $userId = $user->getId();
-
         $profil = "";
 
         if ($userType == "consumer") {
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-
-
         $user_to_control = $userRepository->find($user_id_to_control);
 
-
-
         if ($user_to_control->getType() === "consumer") {
-
             $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
         } else {
-
             $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
         }
 
-
-
         $table_tribut = $user_to_control_profil->getTributG();
-
         $tribut = $tributGService->getStatus($table_tribut, $user_id_to_control);
-
-
 
         $apropos = [
 
@@ -1038,6 +916,7 @@ class UserController extends AbstractController
 
 
         return $this->render("user/dashboard_super_admin/dashboard-apropos.html.twig", [
+            "userConnected" => $userConnected,
 
             "profil" => $profil,
 
@@ -1061,7 +940,6 @@ class UserController extends AbstractController
     #[Route("/admin/validate_tributG", name: "app_validate_by_super_admin")]
 
     public function validateBySuperAdmin(
-
         Request $request,
 
         ConsumerRepository $consumerRepository,
@@ -1075,7 +953,6 @@ class UserController extends AbstractController
         UserRepository $userRepository
 
     ) {
-
         ///pour plus de resultat dans le view.
 
         $categories = $request->query->get("categories");
@@ -1162,7 +1039,7 @@ class UserController extends AbstractController
     #[Route("/user/dashboard-fondateur", name: "app_dashboard_fondateur")]
 
     public function DashboardFondateur(
-
+        Status $status,
         UserRepository $userRepository,
 
         TributGService $tributGService,
@@ -1172,6 +1049,7 @@ class UserController extends AbstractController
         UserService $userService
 
     ): Response {
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
 
@@ -1246,7 +1124,7 @@ class UserController extends AbstractController
 
 
         return $this->render("user/dashboard_fondateur/dashboard.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $profil,
 
             "results" => $results,
@@ -1271,13 +1149,14 @@ class UserController extends AbstractController
     #[Route("/user/dashboard-membre-fondateur", name: "app_dashboardmembre_fondateur")]
 
     public function DashboardMembreFondateur(
+        Status $status,
 
         EntityManagerInterface $entityManager,
 
         TributGService $tributGService
 
     ): Response {
-
+        $userConnected= $status->userProfilService($this->getUser());
         $user = $this->getUser();
 
         $userType = $user->getType();
@@ -1295,11 +1174,9 @@ class UserController extends AbstractController
         }
 
         return $this->render("user/dashboard_Fondateur/dashboard-membre.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $profil,
-
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
-
         ]);
     }
 
@@ -1366,7 +1243,7 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ): Response {
+    ){
 
         $user_id_to_control = $request->request->get("id");
 
@@ -1394,6 +1271,7 @@ class UserController extends AbstractController
     #[Route("/user/dashboard-membre-apropos-fondateur", name: "app_dashboardapropos_fondateur")]
 
     public function DashboardMembreAproposFondateur(
+        Status $status,
 
         Request $request,
 
@@ -1408,6 +1286,7 @@ class UserController extends AbstractController
         SupplierRepository $supplierRepository,
 
     ): Response {
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user_id_to_control = intval($request->query->get("user_id"));
 
@@ -1480,7 +1359,7 @@ class UserController extends AbstractController
 
 
         return $this->render("user/dashboard_fondateur/dashboard-apropos.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $profil,
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
@@ -1567,7 +1446,7 @@ class UserController extends AbstractController
     #[Route("/user/administration/fournisseur", name: "app_administre_fournisseur")]
 
     public function adminFournisseur(
-
+        Status $status,
         EntityManagerInterface $entityManager,
 
         UserRepository $userRepository,
@@ -1575,11 +1454,8 @@ class UserController extends AbstractController
         SupplierRepository $supplierRepository,
 
         TributGService $tributGService
-
-
-
     ): Response {
-
+        $userConnected= $status->userProfilService($this->getUser());
         $user = $this->getUser();
 
         $userType = $user->getType();
@@ -1638,7 +1514,7 @@ class UserController extends AbstractController
 
 
         return $this->render("user/dashboard_super_admin/admin_fournisseur.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $profil,
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
@@ -1650,7 +1526,7 @@ class UserController extends AbstractController
                 $userId
 
             ),
-
+          
             "results" => $results
 
         ]);
@@ -1660,11 +1536,13 @@ class UserController extends AbstractController
 
     #[Route("/user/account/dashboard-fondateur/setting/validation", name: "app_setting_fondateur_setting")]
 
-    public function dashboardSettingValidation(Request $request)
+    public function dashboardSettingValidation(Request $request ,   Status $status)
 
     {
-
-        return $this->render("user/dashboard_fondateur/SettingAdminFondateur.html.twig");
+        $userConnected= $status->userProfilService($this->getUser());
+        return $this->render("user/dashboard_fondateur/SettingAdminFondateur.html.twig", [ 
+            "userConnected" => $userConnected,
+        ]);
     }
 
 
@@ -1672,7 +1550,7 @@ class UserController extends AbstractController
     #[Route("/user/account/dashboard-fondateur/list-publication", name: "app_fondateur_list_publication")]
 
     public function dashboardListPublication(
-
+        Status $status,
         EntityManagerInterface $entityManager,
 
         TributGService $tributGService,
@@ -1686,6 +1564,7 @@ class UserController extends AbstractController
         Request $request
 
     ): Response {
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
 
@@ -1698,36 +1577,20 @@ class UserController extends AbstractController
         $userIdP = $request->query->get("user_id");
 
         if ($userType == "consumer") {
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-
-
-
-
-        return $this->render(
-
-            "user/dashboard_fondateur/listDePublication.html.twig",
-            [
-
+        return $this->render("user/dashboard_fondateur/listDePublication.html.twig", [
+                "userConnected" => $userConnected,
                 "profil" => $profil,
-
                 "statusTribut" => $tributGService->getStatusAndIfValid(
-
                     $profil[0]->getTributg(),
-
                     $profil[0]->getIsVerifiedTributGAdmin(),
-
                     $userId
-
                 ),
-
                 'userIdP' =>  $userIdP
-
             ]
         );
     }
@@ -1739,7 +1602,7 @@ class UserController extends AbstractController
     public function administre_fournisseur_appropos(
 
         $id,
-
+        Status $status,
         EntityManagerInterface $entityManager,
 
         UserRepository $userRepository,
@@ -1749,7 +1612,7 @@ class UserController extends AbstractController
         TributGService $tributGService
 
     ): Response {
-
+        $userConnected= $status->userProfilService($this->getUser());
         $user_connected = $this->getUser();
 
         $userType = $user_connected->getType();
@@ -1773,7 +1636,7 @@ class UserController extends AbstractController
 
 
         return $this->render("user/dashboard_super_admin/apropos_fournisseur.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $profil,
 
             "statusTribut" => $tributGService->getStatusAndIfValid(
@@ -1833,6 +1696,7 @@ class UserController extends AbstractController
     #[Route("/user/list-de-mes-etablissement", name: "app_list_de_mes_etablissement")]
 
     public function ListDeMaisAtribut(
+        Status $status,
 
         EntityManagerInterface $entityManager,
 
@@ -1841,6 +1705,8 @@ class UserController extends AbstractController
         FermeGeomRepository $fermeGeomRepository
 
     ): Response {
+
+        $userConnected= $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
 
@@ -1862,7 +1728,7 @@ class UserController extends AbstractController
 
         return $this->render("user/listeDeMesEtablissement.html.twig", [
 
-
+            "userConnected" => $userConnected,
 
             "id_dep" => $fermeGeomRepository->findOneBy(["addBy" => $user->getId()])->getDepartement(),
 
@@ -2114,6 +1980,7 @@ class UserController extends AbstractController
 
     public function invitation(Status $status, RequestingService $requesting): Response
     {
+        $userConnected= $status->userProfilService($this->getUser());
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
@@ -2124,15 +1991,10 @@ class UserController extends AbstractController
 
 
         return $this->render("user/invitation/invitation.html.twig", [
-
+            "userConnected" => $userConnected,
             "profil" => $statusProfile["profil"],
-
             "statusTribut" => $statusProfile["statusTribut"],
-
             "invitations" => $invitations,
-
-
-
         ]);
     }
 
@@ -2174,9 +2036,10 @@ class UserController extends AbstractController
 
     #[Route('user/publication', name: 'publication_list')]
 
-    public function publication(Request $request, TributGService $tributGService): Response
+    public function publication(Status $status, Request $request, TributGService $tributGService): Response
 
     {
+        $userConnected= $status->userProfilService($this->getUser());
         $user = $this->getUser();
 
         $user_id = $user->getId();
@@ -2218,6 +2081,7 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/publication.html.twig', [
+            "userConnected" => $userConnected,
             "profil" => $profil,
             "publication" => $pubsFinale,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $user_id)
@@ -2366,11 +2230,13 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/reception', name: 'user_boit_reception')]
-
-    public function boiteReception(): Response
-
+    public function boiteReception(  Status $status,): Response
     {
-        return $this->render('user/boitDeReception/index.html.twig');
+
+        $userConnected= $status->userProfilService($this->getUser());
+        return $this->render('user/boitDeReception/index.html.twig', [
+            "userConnected" => $userConnected,
+        ]);
     }
 
   

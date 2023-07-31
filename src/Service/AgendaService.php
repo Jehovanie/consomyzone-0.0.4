@@ -433,7 +433,7 @@ class AgendaService extends PDOConnexionService
     public function getRestoAgenda($table_resto_pastille, $value){
 
         $membre = "SELECT id, 1 as isPelleted, denomination_f, '' as adresse from $table_resto_pastille where denomination_f like '%$value%' UNION 
-        SELECT clenum as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND clenum NOT IN (Select id_resto from $table_resto_pastille)";
+        SELECT id as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND id NOT IN (Select id_resto from $table_resto_pastille)";
 
         $stm = $this->getPDO()->prepare($membre);
 

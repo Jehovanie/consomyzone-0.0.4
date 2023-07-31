@@ -105,14 +105,16 @@
 					<i class="fa-solid fa-solid-nav fa-user  fa-lg"></i>
 					<span lng-tag="profil">Profil</span>
 				</a>
+				
 			</li>
+
 
 			<li
 				class="nav-item profil_js">
 				{# <a href="" class="nav-link link-dark not_autorised"> #}
 				<a href="{{ path('app_agenda')}}" class="nav-link link-dark">
 					<i class="bi bi-calendar2-event-fill "> </i>
-					<span lng-tag="profil"> Mon agenda</span>
+					<span lng-tag="mon_agenda">&nbsp;Mon agenda</span>
 				</a>
 			</li>
 
@@ -180,9 +182,11 @@
 
 <script>
 
-let fileInputProfil = document.querySelector("#fileInputProfil");
+let fileInputProfils = document.querySelectorAll("#fileInputProfil");
 
-fileInputProfil.addEventListener("change", (e) => {
+fileInputProfils.forEach(fileInputProfil=>{
+	
+	fileInputProfil.addEventListener("change", (e) => {
 
     ///read file
     const fileReader = new FileReader();
@@ -195,9 +199,13 @@ fileInputProfil.addEventListener("change", (e) => {
         //console.log(avatarPartisant);
 
         // Change profil
-		let profilPartisant = document.querySelector("#profilPartisant");
+		let profilPartisants = document.querySelectorAll("#profilPartisant");
 
-        profilPartisant.src = avatarPartisant
+		profilPartisants.forEach(profilPartisant=>{
+			profilPartisant.src = avatarPartisant
+		})
+
+        //profilPartisant.src = avatarPartisant
 
         if(document.querySelector("#roundedImg") != null){
             document.querySelector("#roundedImg").src = avatarPartisant
@@ -222,6 +230,9 @@ fileInputProfil.addEventListener("change", (e) => {
     fileReader.readAsDataURL(e.target.files[0]);
 
 })
+})
+
+
 /*
 let firstNameProfil = document.querySelector("#firstNameProfil")
 let lastNameProfil = document.querySelector("#lastNameProfil")

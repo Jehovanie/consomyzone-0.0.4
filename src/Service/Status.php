@@ -36,4 +36,32 @@ class Status {
             "statusTribut" => $this->tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
         ];
     }
+
+
+    public function userProfilService(
+        $user
+    ){
+        $userType = $user->getType();
+        $userId = $user->getId();
+        $profil = "";
+        if ($userType == "consumer") {
+            $profil = $this->entityManager->getRepository(Consumer::class)->findOneBy(['userId' => intval($userId)]);
+        } else {
+            $profil = $this->entityManager->getRepository(Supplier::class)->findOneBy(['userId' => intval($userId)]);
+        }
+        return [
+            "id" => $user->getId(),
+            "email" => $user->getEmail(),
+            "pseudo" => $user->getPseudo(),
+            "firstname" => $profil->getFirstname(),
+            "lastname" => $profil->getLastname(),
+            "photo_profil" => $profil->getPhotoProfil(),
+            "userType" => $userType,
+            "tableTribuG" => $profil->getTributG(),
+            "status_tribuG" => strtoupper($this->tributGService->getStatus($profil->getTributG(),$user->getId())),
+            "tableNotification" => $user->getTablenotification(),
+            "tableMessage" => $user->getTablemessage(),
+            "isSuperAdmin" => in_array("ROLE_GODMODE",$user->getRoles()),
+        ];
+    }
 }

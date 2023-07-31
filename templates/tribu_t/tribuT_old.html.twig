@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Mes Tribus T
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+	<style>
+		.content_right_actualite {
+			top: -50px;
+		}
+	</style>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+{% endblock %}
+
+{% block body %}
+
+	<main>
+
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+			<symbol id="check-circle-fill" fill="currentColor" viewbox="0 0 16 16">
+				<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+			</symbol>
+		</svg>
+
+		<div class="content_left_menu_account content_left_menu_account_tribu_t fixed-top mt-5 col responsif-none back-tribu-t " id="Scrollbar">
+			<div class="left_menu">
+				{% include "shard/account_navleft_tribuT.html.twig" %}
+			</div>
+		</div>
+		<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+			<div class="">
+				{% include "shard/account_navleft_tribuT_mobile.html.twig" %}
+			</div>
+		</div>
+		
+		<div class="navbar-mobile">
+			<div class="fixed-top col responsif-none bg-blanc">
+				{{ include('shard/account_navbar.html.twig') }}
+			</div>
+
+			<div class="fixed-top col responsif-none-mobile">
+				{{ include('shard/account_navbar_mobile_tribut.html.twig') }}
+			</div>
+		</div>
+
+		<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
+            <div id="content-pub-js">
+            </div>
+            
+           
+		</div>
+	</main>
+
+{% include "tribu_t/modal_publication.html.twig" %}
+{# {% include "agenda/script.agenda.html.twig" %} #}
+
+<!-- Modal Créer tribuT -->
+<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="creerTribuTModal">
+					 Créer un nouveau tribu-T</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+                <div class="mini-couvertur-tribu-t">
+                    <img src="{{asset('assets/image/mini-couverture.jpg')}}" alt="">
+                </div>
+
+                {# <form action="{{path('create_file')}}" class="form-tribu-t" method="post"> #}
+                    {{ form_start(form, {'method': 'POST'}) }}
+                        <label for="" class="label" id="uploadImage">
+                            {{ form_row(form.upload, {'attr': {'class': 'input'}}) }}
+                            <span class="label-uplaod-tribu-t"> </span>
+                        </label>
+                        {{ form_row(form.tribuTName, {'attr': {'class': 'nom-tribu-t', 'placeholder': "Entrer le nom de la tribu"}}) }}
+                        {{ form_row(form.description, {'attr': {'class': 'description-tribu-t', 'placeholder': "Entrer votre déscription"}}) }}
+                        {{ form_row(form.adresse, {'attr': {'class': 'adress-tripu-t', 'placeholder': "Entrer votre adresse"}}) }}
+                        <p class="text-choisir">Choisir une extension</p>
+                        <div class="form-check form-switch mt-4">
+                            {{ form_row(form.extension, {'attr': {'class': 'form-check-input', 'role': "switch"}}) }}
+                        </div> 
+                        <center class="mt-3">
+                            <button class="btn-creer"type="submit">Créer</button>
+                        </center>
+                    {{ form_end(form)}}
+                    
+                {# </form> #}
+            </div>
+			
+
+		</div>
+	</div>
+</div>
+{# {% include "tribu_t/script.html.twig" %} #}
+
+
+
+{% endblock %}
+
