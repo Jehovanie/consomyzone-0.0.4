@@ -60,7 +60,7 @@
 
 				{% if pub.photo  %}
 					<div style="max-heigth:100%; max-width: 100%;">
-						<img width="100%" src={{asset('uploads/tribu_g/photos/') ~ pub.photo }} class="" alt="image publication">
+						<img width="100%" src={{ pub.photo }} class="" alt="image publication">
 					</div>
 				{% endif %}
 
@@ -134,4 +134,18 @@
 
 		</div>
 	</div>
+{% endif %}
+
+{% if next_pubID != 0 %}
+	<div data-toggle-pub-id={{next_pubID}} class="content_chargement_publication content_chargement_publication_js_jheo mt-3">
+		<div class="spinner-border text-primary" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</div>
+{% else %}
+
+	<div class="content_chargement_publication reload_publication_js_jheo mt-3">
+		<button type="button" class="btn btn-outline-primary">Il n'y a plus de publication</button>
+	</div>
+
 {% endif %}

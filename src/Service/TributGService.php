@@ -143,7 +143,7 @@ class TributGService extends PDOConnexionService{
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) NOT NULL,
+                    publication VARCHAR(250) DEFAULT NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
@@ -404,18 +404,11 @@ class TributGService extends PDOConnexionService{
 
     public function getStatus($table_name, $user_id){
 
-
-
         $statement = $this->getPDO()->prepare('SELECT roles FROM ' . $table_name . ' WHERE user_id = ' .$user_id. ' LIMIT 1');
-
         $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-        return $result[0]['roles'];
-
+        return $result['roles'];
     }
 
     /**
@@ -575,8 +568,23 @@ class TributGService extends PDOConnexionService{
 
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param table_name: the name of the tributG
+     * @param user_id: user id
+     * 
+     * @return string : fondateur ou utilistateur
+     */
+    public function getCurrentStatus($table_name, $userID){
+        
+        $statement = $this->getPDO()->prepare("SELECT roles FROM $table_name WHERE user_id = $userID");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
+        return $result['roles'];
 
+    }
 
 
     /**
@@ -590,17 +598,10 @@ class TributGService extends PDOConnexionService{
      */
 
     public function getStatusAndIfValid($table_name, $isVerified,  $user_id){
+        
+        $status= $this->getCurrentStatus($table_name, $user_id);
 
-
-
-        $statement = $this->getPDO()->prepare("SELECT roles FROM $table_name WHERE user_id = $user_id LIMIT 1");
-
-        $statement->execute();
-
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        return ["status" => $result[0]['roles'] , "verified" => $isVerified ];
-
+        return ["status" => $status, "verified" => $isVerified ];
     }
 
 
@@ -615,17 +616,11 @@ class TributGService extends PDOConnexionService{
 
     public function getProfilTributG($table_name, $user_id ){
 
-
-
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE user_id = $user_id LIMIT 1");
-
         $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-        return $result[0];
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
 
     }
 
@@ -680,29 +675,15 @@ class TributGService extends PDOConnexionService{
 
 
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
-     * 
-
      * Persiste new publication in database
-
      * 
-
      * @param string $table_pub: Name of the table containing the publication
-
      * @param int $user_id: id of the user
-
      * @param string $publication_id: publication content
-
      * @param string $confid : confidential of the publication
-
      * @param string $photo: image in the publication
-
      * 
-
-     * 
-
      */
 
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){
@@ -743,33 +724,58 @@ class TributGService extends PDOConnexionService{
 
     }
 
-
-
     /**
-
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-
      * 
-
-     * Get all publications in this table.
-
+     * Get all publications in this table (brutes: entity).
      * 
-
      * @param string $table_name: name of the table
-
      */
+    public function getAllPublicationBrutes($table_name){
 
-    public function getAllPublications($table_name){
-
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 5;");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 6;");
 
         $statement->execute();
 
         $publications = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
 
+        return $publications;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Get apropos of the tribu G ( name, description,avatar)
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     */
+    public function getApropos($table_name){
+
+        $statement = $this->getPDO()->prepare("SELECT name, description, avatar FROM $table_name");
+        $statement->execute();
+        $apropos = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $apropos;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     */
+    public function getAllPublications($table_name){
+
+        $apropo_tribuG= $this->getApropos($table_name);
+        // dd($apropo_tribuG);
+
+        $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
         $resultats = [];
-
-
 
         foreach( $publications as $publication ){
 
@@ -780,9 +786,9 @@ class TributGService extends PDOConnexionService{
 
             $statement_photos->execute();
 
-            $photo_profil = $statement_photos->fetchAll(PDO::FETCH_ASSOC); /// [...photo_profil ]
+            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
 
-            $publication["photo_profil"] = $photo_profil[0]["photo_profil"];
+            $publication["photo_profil"] = $photo_profil["photo_profil"];
 
             $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
 
@@ -806,6 +812,11 @@ class TributGService extends PDOConnexionService{
 
             $publication["reactions"] = $reactions; /// [ ...reactions ]
 
+            $publication["tribu"]["state"] = "Tribu G";
+            $publication["tribu"]["name"] = $apropo_tribuG['name'];
+            $publication["tribu"]["description"] = $apropo_tribuG['description'];
+            $publication["tribu"]["avatar"] = $apropo_tribuG['avatar'];
+
 
 
             array_push($resultats, $publication);
@@ -814,6 +825,25 @@ class TributGService extends PDOConnexionService{
 
         return $resultats; /// [ [...publication, "comments" => ... , "reactions" => ... ], ...]
 
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get number all  publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return number : count of publications in this table
+     */
+    public function getCountAllPublications($table_name){
+
+        $statement = $this->getPDO()->prepare("SELECT COUNT(*) as count_publication FROM $table_name" ."_publication;");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC); // [ count_publication => ... ]
+        extract($result);  /// $count_publication
+
+        return $count_publication;
     }
 
 
@@ -1048,8 +1078,16 @@ class TributGService extends PDOConnexionService{
     }
 
 
-        
-    public function getCountPartisant($table){
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get count of the user in tribu G  
+     * 
+     * @param string $table: table name of the tribu G
+     * 
+     * @return int count
+     */ 
+    public function getCountPartisant( string $table){
         $sql = "select count(*) as num_total from $table";
 
         $stmt = $this->getPDO()->prepare($sql);
@@ -1267,6 +1305,23 @@ class TributGService extends PDOConnexionService{
 
         $pub[0]["reactions"] = $reactions; /// [ ...reactions ]
         return $pub;
+    }
+
+
+    public function getNextPubID($table_publication, $last_pubID){
+        $next_pubID=0;
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $table_publication ORDER BY id DESC");
+        $statement->execute();
+        $all_ID = $statement->fetchAll(PDO::FETCH_ASSOC);
+        for($i=0 ; $i < count($all_ID); $i++){
+            if( intval($all_ID[$i]["id"]) === intval($last_pubID) && $i+1 < count($all_ID) ){
+                $next_pubID= intval($all_ID[$i+1]["id"]);
+                break;
+            }
+        }
+
+        return $next_pubID;
     }
 
     /**

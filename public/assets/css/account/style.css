@@ -3482,7 +3482,8 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 
 .account-profil-conected .pdp img{
   border-radius: 50%;
-  width: 152px;
+  width:100%;
+  height:100%;
 }
 
 .disabled-link {

@@ -3,6 +3,13 @@ if( document.querySelector("#fetch_actialite_tribug_js_jheo")){
     
     btn_actualite.addEventListener("click",(e) => {
         e.preventDefault();
+
+        document.querySelector(".content_bloc_js_jheo div").innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+
         if(!btn_actualite.classList.contains("active")){
             btn_actualite.classList.add("active")
             btn_actualite.classList.add("text-white")
@@ -41,6 +48,8 @@ if( document.querySelector("#fetch_actialite_tribug_js_jheo")){
                     document.querySelector(".content_bloc_js_jheo").removeChild(
                         document.querySelector(".content_bloc_js_jheo div")
                     );
+
+                    document.querySelector("#showCreatePub").style.display="block";
 
                     document.querySelector(".content_bloc_js_jheo").innerHTML = response;
                 }

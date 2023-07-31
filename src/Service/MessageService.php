@@ -99,7 +99,7 @@ class MessageService extends PDOConnexionService{
     public function getNumberMessageNotShow(string $table_name ){
         $sql = "SELECT count(*) as not_show FROM ". $table_name. " WHERE isShow=0";
         $result = $this->getPDO()->query($sql);
-        return $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -164,5 +164,15 @@ class MessageService extends PDOConnexionService{
         $statement->execute();
     
         return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getLastMessage($myTableMessage,$otherID){
+
+        $sql = "SELECT id,user_id,user_post,JSON_VALUE(content, '$.text') as text ,message_type FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
+        $result = $this->getPDO()->query($sql);
+        $msg=  $result->fetch(PDO::FETCH_ASSOC);
+
+        return $msg;
     }
 }

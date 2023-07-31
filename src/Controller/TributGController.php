@@ -32,12 +32,15 @@ class TributGController extends AbstractController
 {
 
     private $appKernel;
+    private $filesyst;
 
-    function __construct(KernelInterface $appKernel)
+    function __construct(KernelInterface $appKernel,Filesystem $filesyst)
 
     {
 
         $this->appKernel = $appKernel;
+        $this->filesyst = $filesyst;
+
     }
 
     #[Route("/tributG/publications/reaction", name: "app_tribut_reaction")]
@@ -247,10 +250,12 @@ class TributGController extends AbstractController
         );
 
         $last_pub= $tributGService->getOnePublication($table_tributG_name, intval($publication_id) );
+        $next_pubID=  $tributGService->getNextPubID($table_tributG_name . "_publication", intval($last_pub[0]["id"]));
         if( count($last_pub) > 0 ){
             return $this->render("tribu_g/single_publication.html.twig", [
                 "pub" => $last_pub[0],
-                "profil" => $profil
+                "profil" => $profil,
+                "next_pubID" => $next_pubID
             ]);
         }
 
@@ -306,6 +311,8 @@ class TributGController extends AbstractController
 
                 "lastname" => $userService->getUserLastName($user->getId()),
 
+                "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId())
+
             ];
 
             array_push($memberTributG, $single_user);
@@ -353,6 +360,8 @@ class TributGController extends AbstractController
 
             "profil" => $profil,
 
+            "table_tribu" => $table_tributG_name,
+
             "tributG" => [
 
                 "profil" => $tributGService->getProfilTributG(
@@ -365,6 +374,7 @@ class TributGController extends AbstractController
 
                 "publications" => $tributGService->getAllPublications($table_tributG_name),
 
+                "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
             ],
 
         ]);
@@ -391,6 +401,8 @@ class TributGController extends AbstractController
 
 
         return $this->render("tribu_g/photos.html.twig", [
+
+            "table_tribu" => $table_tributG_name,
 
             "photos" => $tributGService->getAllPhotos($table_tributG_name),
 

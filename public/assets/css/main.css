@@ -96,7 +96,7 @@ body {
 
 .navleft .list-depart span{
     font-size: 10pt;
-    font-weight: 700;
+    /*font-weight: 700;*/
 }
 
 .navleft .list-depart-all{
@@ -107,14 +107,14 @@ body {
 
 .navleft .list-depart-all ul li{
     list-style: none;
-    background-color: #e7e7e7;
+    background-color: #ffffff;
     width: 18vw;
     height: 10vh;
-    margin-left: -10px;
+    margin-left: 0;
     margin-bottom: 20px;
     margin-top: 15px;
     border-radius: 30px;
-    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+    box-shadow: 0px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
 }
 
@@ -161,14 +161,14 @@ body {
 .navleft .list-depart-all-specific ul .card-list {
     list-style: none;
     background-color: #ffffff;
-    width: 18vw;
+    width: 24vw;
     height: auto;
     padding: 15px;
     /* margin-left: -40px; */
     margin-left: -10px;
     margin-bottom: 20px;
     border-radius: 40px;
-    box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
+    box-shadow: 0px 10px 15px rgba(49, 49, 49, 0.3);
     font-size: 11pt;
     overflow: hidden;
 }
@@ -176,9 +176,9 @@ body {
     transform: scale(1.009);
 }
 
-.navleft .list-depart-all-specific-station ul .card-list {
+/* .navleft .list-depart-all-specific-station ul .card-list {
     height: 40vh !important;
-}
+} */
 
 .navleft .list-depart-all-specific ul li h5 {
 
@@ -260,6 +260,18 @@ body {
     fill: #000;
 }
 
+#close-detail-resto{
+    position: absolute;
+    right: 23px;
+    z-index: 1000;
+    top: 10px;
+    font-size: 1.1rem;
+}
+
+#close-detail-resto:hover{
+    transform: scale(1.1);
+}
+
 #close-detail-ferme {
     position: absolute;
     right: 20px;
@@ -275,13 +287,16 @@ body {
 #close-detail-home, #close-detail-station{
     position: absolute;
     top: 15px;
-    fill: #1111FE;
-    right: 25px;
+    right: 20px;
     z-index: 10;
+    font-weight: bolder;
+    font-size: 1.2rem;
 }
 
+
+
 #close-detail-home:hover ,#close-detail-station:hover {
-    fill: #000;
+    font-size: 1.5rem;
 }
 /* ************NavBar************ */
 
@@ -567,12 +582,15 @@ body {
 #map {
     width: 100vw;
     height: 100vh;
-    margin-left: -3rem;
+    /* margin-left: -3rem; */
 }
 
 .leaflet-control-zoom.leaflet-bar.leaflet-control{
-    margin-top: 100px;
-    margin-left: 95vw;
+    /* margin-top: 100px; */
+    /* margin-left: 95vw; */
+    
+    margin-bottom: 100px;
+    margin-right: 2vw;
 }
 
 /* NAV account  */
@@ -715,7 +733,7 @@ li a .station {
     display: block;
     width: 95%;
     margin: 5px auto;
-    padding: 25px;
+    /* padding: 25px; */
     height: 98%;
     background: white;
     box-shadow: 0px 2px 7px 0px black;
@@ -1021,6 +1039,7 @@ li a .station {
     width: 100%;
     object-fit: cover;
     box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+
 }
 
 .left_menu{
@@ -1054,7 +1073,7 @@ li a .station {
 }
 
 .spec-dep{
-    margin-top: 50px;
+    margin-top: 35px;
 }
 
 .bg-blanc{
@@ -1093,6 +1112,7 @@ li a .station {
 } */
 .navbar-light-left .fa-x{
     margin-left: 140px;
+    margin-top: 15px;
 }
 
 input::-ms-reveal,
@@ -1158,6 +1178,64 @@ input::-ms-clear {
     background-color: var(--danger-l);
 }
 
+.container_error_page{
+    background: rgba(0,54,246,0);
+    background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    width: 100%;
+    z-index: 1;
+    height: 100vh;
+}
+
+.error_page{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    height: 30vh;
+    background: white;
+    border-radius: 15px;
+    text-align: center;
+    padding: 25px;
+
+    border: 1px solid red;
+}
+
+.ma_position{
+    font-size: 1.2rem;
+}
+
+.ma_position:hover{
+    transform: scale(1.2);
+    color:blue;
+}
+
+.alert_details_marker_position{
+    margin: 10px;
+    margin-top: 70%;
+    text-align: center;
+}
+
+.mini_chargement_content {
+    position: absolute;
+    top: 48%;
+    left: 42%;
+}
+
+.mini_chargement_content  .word{
+    display: inline-block;
+    padding: 5px;
+    color: white;
+    font-size: 15px;
+}
+.hiddenPage{
+    display: none !important;
+}
+
+.user_select_None{
+    user-select: none;
+}
 .ir {
     padding-top: 0 !important;
 }
@@ -1165,7 +1243,7 @@ input::-ms-clear {
 .to\/4\/2 {
     width: 43% !important;
     margin-left: -3rem;
-    margin-top: -1rem;
+    /* margin-top: -1rem; */
 }
 
 .vd-head{
@@ -1302,3 +1380,12 @@ input::-ms-clear {
 }
 
 /* ******************fin Input image all******************** */
+.rubrique-item{
+    padding-bottom: 25px !important;
+}
+
+.image_profil_navbar_msg{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

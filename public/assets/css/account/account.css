@@ -529,7 +529,7 @@ thead > tr{
 }
 
 .back_gray{
-    background-color: lightgray;
+    background-color: lightgray !important;
 }
 
 .border_gray{
@@ -1896,7 +1896,7 @@ a:focus {
 
 .card-appropos-g{
     width: 97%;
-    height: 150px;
+    /* height: 150px; */
     padding: 15px;
     background-color: #fff;
     border-radius: 15px;
@@ -1937,7 +1937,7 @@ a:focus {
 }
 
 .btn_actualise{
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -1957,8 +1957,8 @@ a:focus {
 }
 
 .spinner_custom{
-    width: 15px;
-    height: 15px;
+    width: 15px !important;
+    height: 15px !important;
     margin-right: 5px;
 }
 .text_mini{

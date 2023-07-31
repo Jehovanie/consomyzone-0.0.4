@@ -1,4 +1,4 @@
-const IS_DEV_MODE= true;
+const IS_DEV_MODE= false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -12,20 +12,58 @@ if( document.querySelector(".form_content_search_navbar_js")){
     }
 
     search_form.addEventListener("submit", (e) => {
-        const cles0 = document.querySelector(".input_search_type_js").value;
-        const cles1= document.querySelector(".input_mots_cle_js").value;
-        if( cles0=== "" && cles1 === "" ){
-            alert("Veuillez entre mots cles pour la recherche.")
-            e.preventDefault();
+        const cles0 = document.querySelector(".input_search_type_js").value.trim();
+        const cles1= document.querySelector(".input_mots_cle_js").value.trim();
+        
+        if(current_url.includes("/restaurant") || current_url.includes("/ferme") || current_url.includes("/station")){
+            
+            if( cles0=== "" && cles1 === "" ){
 
-            if( cles0=== "" ){
-                document.querySelector(".input_search_type_js").classList.add("border_red")
-            }
-
-            if( cles1=== "" ){
+                alert("Veuillez renseigner au moins l'adresse!")
+    
+                e.preventDefault();
+                // document.querySelector(".input_search_type_js").classList.add("border_red")
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+    
+            }else if(cles1 === ""){
+                alert("L'addresse est obligatoire!")
+                e.preventDefault();
                 document.querySelector(".input_mots_cle_js").classList.add("border_red")
             }
+        }else{
+
+            if( cles0=== "" && cles1 === "" ){
+    
+                alert("Veuillez renseigner les deux champs!")
+    
+                e.preventDefault();
+                document.querySelector(".input_search_type_js").classList.add("border_red")
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+    
+            }else if( cles0=== "" || cles1 === "" ){
+     
+                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+    
+                if( cles0=== "" ){
+                    if(getDataInLocalStorage("type") != "tous"){
+                        alert("Veuillez renseigner le nom de "+ getDataInLocalStorage("type"))
+                    }else{
+                        alert("Veuillez renseigner de quoi vous avez besoin !")
+                    }
+                    document.querySelector(".input_search_type_js").classList.add("border_red")
+                    e.preventDefault();
+                }
+    
+                if( cles1=== "" ){
+                    alert("Veuillez renseigner l'addresse!")
+                    document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    e.preventDefault();
+                }
+    
+            }
+
         }
+
     })
 
     const inputs=  [document.querySelector(".input_search_type_js"), document.querySelector(".input_mots_cle_js")];
@@ -641,6 +679,14 @@ function addMapFermeStation(nom_dep=null, id_dep=null){
 }
 
 
+function setDataInSessionStorage(type , value){
+    sessionStorage.setItem(type, value );
+}
+
+function getDataInSessionStorage(type){
+    return sessionStorage.getItem(type);
+}
+
 function setDataInLocalStorage(type , value){
     localStorage.setItem(type, value );
 }
@@ -830,26 +876,39 @@ if (document.querySelector(".tribu_t")) {
  * active navigation bar map
  */
 if (document.querySelector(".list-nav-bar")) {
-    const activPage = window.location.pathname
-    const links = document.querySelectorAll('.list-nav-bar');
-    const specFerm = document.querySelector('.result_container_ferme_spec_js')
-    const specReto = document.querySelector('.result_container_resto_spec_js')
-    const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
-    const specStation = document.querySelector('.result_container_station_spec_js')
+    const activPage = window.location.pathname;
     
-    if (links.length) {
-        links.forEach((link) => {
-            if (link.href.includes(`${activPage}`)) {
-                link.classList.add("active");
-            } else if (specFerm) {
-                document.querySelector("#ferme-page").classList.add("active");
-            } else if (specReto) {
-                document.querySelector("#resto-page").classList.add("active");
-            } else if (specRestoArrond) {
-                document.querySelector("#resto-page").classList.add("active");
-            } else if (specStation) {
-                document.querySelector("#station-page").classList.add("active");
-            }
-        });
+    if( activPage.includes("/ferme")){
+        document.querySelector("#ferme-page").classList.add("active");
+    }else if( activPage.includes("/restaurant")){
+        document.querySelector("#resto-page").classList.add("active");
+    }else if( activPage.includes("/station")){
+        document.querySelector("#station-page").classList.add("active");
+    }else if(activPage.length === 1 ){
+        document.querySelector("#tous-page").classList.add("active");
     }
+    // const links = document.querySelectorAll('.list-nav-bar');
+    // const specFerm = document.querySelector('.result_container_ferme_spec_js')
+    // const specReto = document.querySelector('.result_container_resto_spec_js')
+    // const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
+    // const specStation = document.querySelector('.result_container_station_spec_js')
+    // const tous = document.querySelector('.content_tous_js_jheo')
+    
+    // if (links.length) {
+    //     links.forEach((link) => {
+    //         if (link.href.includes(`${activPage}`)) {
+    //             link.classList.add("active");
+    //         } else if (specFerm) {
+    //             document.querySelector("#ferme-page").classList.add("active");
+    //         } else if (specReto) {
+    //             document.querySelector("#resto-page").classList.add("active");
+    //         } else if (specRestoArrond) {
+    //             document.querySelector("#resto-page").classList.add("active");
+    //         } else if (specStation) {
+    //             document.querySelector("#station-page").classList.add("active");
+    //         }else if(tous ){
+    //             document.querySelector("#station-page").classList.add("active");
+    //         }
+    //     });
+    // }
 }

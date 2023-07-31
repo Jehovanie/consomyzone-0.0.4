@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\BddResto;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Service\DicoRestoForSearchService;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<BddResto>
@@ -64,14 +65,20 @@ class BddRestoRepository extends ServiceEntityRepository
         }
     }
 
-    function getAccountRestauranting()
+    function getAccountRestauranting($idDep=null)
     {
-        return $this->createQueryBuilder("r")
-            ->select("count(r.id)")
+        $query= $this->createQueryBuilder("r")
+                ->select("count(r.id)");
             //->groupBy('r.denominationF, r.poiX, r.poiY')
             //->having('COUNT(r.denominationF)>1 and COUNT(r.poiX)>1 and COUNT(r.poiY)>1')
-            ->getQuery()
-            ->getSingleScalarResult();
+                         
+        if( $idDep ){
+            $query = $query->where("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        return $query->getQuery()
+                     ->getSingleScalarResult();
     }
     function getAccountSpecificRestauranting($dep)
     {
@@ -86,29 +93,101 @@ class BddRestoRepository extends ServiceEntityRepository
     {
     }
 
-    public function getCoordinateAndRestoIdForSpecific($dep)
+    public function getAllRestoIdForSpecificDepartement($dep)
     {
         return $this->createQueryBuilder("r")
-            ->select("r.id,r.denominationF,
-                r.numvoie,r.typevoie,
-                r.nomvoie,r.compvoie,
-                r.codpost,r.villenorm,
-                r.commune,r.restaurant,
-                r.brasserie,r.creperie,
-                r.fastFood,r.pizzeria,
-                r.boulangerie,r.bar,
-                r.cuisineMonde,r.cafe,
-                r.salonThe,r.site1,
+            ->select("r.id,
+                r.denominationF as nom,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
                 r.fonctionalite1,
-                r.fourchettePrix1,r.horaires1,
-                r.prestation1,r.regimeSpeciaux1,
-                r.repas1,r.typeCuisine1,
-                r.dep,r.depName,r.tel,
-                r.poiX,r.poiY"
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
             )
             ->where("r.dep =:dep")
             ->setParameter("dep",$dep)
-            ->orderBy("r.denominationF", 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    public function getCoordinateAndRestoIdForSpecific($dep)
+    {
+        $dep= strlen($dep) === 1  ? "0" . $dep : $dep;
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                r.denominationF,
+                r.denominationF as nom,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.restaurant as resto,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep",$dep)
+            ->orderBy('RAND()')
+            ->setMaxResults(2000)
             ->getQuery()
             ->getResult();
     }
@@ -144,11 +223,8 @@ class BddRestoRepository extends ServiceEntityRepository
 
     ///jheo : getByCles 
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
-
+        $dicoResto = new DicoRestoForSearchService();
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-        // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
-        //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
-        // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,
@@ -158,6 +234,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.commune,
                         p.villenorm,
                         p.codpost,
+                        p.denominationF,
                         p.denominationF as nom,
                         p.nomvoie,
                         p.compvoie,
@@ -182,66 +259,373 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.tel,
                         p.poiX as long,
                         p.poiY as lat,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie) as rue,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
+                        
         if( $mot_cles0 !== "" && $mot_cles1 === "" ){
-          
-            $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.typevoie) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.villenorm) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("MATCH_AGAINST(p.commune) AGAINST( :cles0 boolean) > 0")
-                ->orWhere("p.codpost LIKE :cles0")
-                // ->orWhere("p.denominationF LIKE :cles0")
-                ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' );
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.denominationF LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                if($dicoResto->isCafe($mot_cles0)){
+                    $qb = $qb->where('p.cafe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isThe($mot_cles0)){
+                    $qb = $qb->where('p.salonThe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCuisine($mot_cles0)){
+                    $qb = $qb->where('p.cuisineMonde = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBrasserie($mot_cles0)){
+                    $qb = $qb->where('p.brasserie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBar($mot_cles0)){
+                    $qb = $qb->where('p.bar = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCreperie($mot_cles0)){
+                    $qb = $qb->where('p.creperie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isFastFood($mot_cles0)){
+                    $qb = $qb->where('p.fastFood = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isPizzeria($mot_cles0)){
+                    $qb = $qb->where('p.pizzeria = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                    $qb = $qb->where('p.boulangerie = :identifier')
+                             ->setParameter('identifier', true);
+                }else{
+
+                    $qb = $qb->where("p.denominationF LIKE :cles0")
+                             ->setParameter('cles0', '%' . $mot_cles0. '%');
+                }
+            }
                 
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            if( strlen($mot_cles1) === 2 ){
+            
+            if( strlen($mot_cles1) <= 2 ){
                 
                 $qb = $qb->where("p.dep LIKE :cles1")
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
 
-                $qb = $qb->where("p.dep LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.nomvoie) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.depName LIKE :cles1")
-                    ->orWhere("p.typevoie LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.villenorm) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.codpost LIKE :cles1")
-                    ->orWhere("p.numvoie LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.denominationF) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("CONCAT(p.dep,' ',p.depName) LIKE :cles1")
-                    ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                $qb = $qb->where("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
         }else {
 
-            $qb = $qb->where("(p.dep LIKE :cles0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( MATCH_AGAINST(p.nomvoie) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.dep LIKE :cles0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(p.depName LIKE :cles0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.nomvoie) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.villenorm) AGAINST( :cles1 boolean) > 0 )")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( p.dep LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) AND ( MATCH_AGAINST(p.commune) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.depName LIKE :cles1)")
-                ->orWhere("(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles0 ) AND ( p.commune LIKE :cles1)")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if(strtolower($mot_cles0) == "resto" || strtolower($mot_cles0) == "restos" || strtolower($mot_cles0) == "restaurant" || strtolower($mot_cles0) == "restaurants"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCafe($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.cafe = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.cafe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );     
+                }
+            }elseif($dicoResto->isThe($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.salonThe = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.salonThe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCuisine($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.cuisineMonde = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.cuisineMonde = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBrasserie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.brasserie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.brasserie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBar($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.bar = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.bar = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCreperie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.creperie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.creperie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isFastFood($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.fastFood = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.fastFood = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isPizzeria($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.pizzeria = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.pizzeria = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.boulangerie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.boulangerie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
 
-        }
-        // $qb = $qb->setFirstResult($page_current)
-        //     ->setMaxResults($size)
-        //     ->orderBy('p.nomvoie', 'ASC')
-        //     ->getQuery();
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("p.denominationF LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+    
+                    $qb = $qb->where("(p.denominationF LIKE :cles0) AND (CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
 
-        $qb = $qb->orderBy('p.nomvoie', 'ASC')
-                 ->getQuery();
+                }
+
+            }
             
+        }
+
+        $qb = $qb->getQuery();
+
+        // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
+        $results = $qb->execute();
+        return [ $results , count($results) , "resto"];
+    }
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+        $dicoResto = new DicoRestoForSearchService();
+        $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
+        //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
+        // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+        $qb = $this->createQueryBuilder("p")
+                ->select("p.id,
+                        p.dep,
+                        p.depName,
+                        p.numvoie,
+                        p.typevoie,
+                        p.commune,
+                        p.villenorm,
+                        p.codpost,
+                        p.denominationF,
+                        p.denominationF as nom,
+                        p.nomvoie,
+                        p.compvoie,
+                        p.restaurant as resto,
+                        p.brasserie,
+                        p.creperie,
+                        p.fastFood,
+                        p.pizzeria,
+                        p.boulangerie,
+                        p.bar,
+                        p.cuisineMonde,
+                        p.cafe,
+                        p.salonThe,
+                        p.site1,
+                        p.fonctionalite1,
+                        p.fourchettePrix1,
+                        p.horaires1,
+                        p.prestation1,
+                        p.regimeSpeciaux1,
+                        p.repas1,
+                        p.typeCuisine1,
+                        p.tel,
+                        p.poiX as long,
+                        p.poiY as lat,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie) as rue,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
+                        
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.denominationF LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                if($dicoResto->isCafe($mot_cles0)){
+                    $qb = $qb->where('p.cafe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isThe($mot_cles0)){
+                    $qb = $qb->where('p.salonThe = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCuisine($mot_cles0)){
+                    $qb = $qb->where('p.cuisineMonde = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBrasserie($mot_cles0)){
+                    $qb = $qb->where('p.brasserie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBar($mot_cles0)){
+                    $qb = $qb->where('p.bar = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isCreperie($mot_cles0)){
+                    $qb = $qb->where('p.creperie = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isFastFood($mot_cles0)){
+                    $qb = $qb->where('p.fastFood = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isPizzeria($mot_cles0)){
+                    $qb = $qb->where('p.pizzeria = :identifier')
+                             ->setParameter('identifier', true);
+                }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                    $qb = $qb->where('p.boulangerie = :identifier')
+                             ->setParameter('identifier', true);
+                }else{
+
+                    $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
+                             ->orWhere("p.denominationF LIKE :cles0")
+                             ->setParameter('cles0', '%' . $mot_cles0. '%');
+                }
+            }
+                
+        }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            
+            if( strlen($mot_cles1) <= 2 ){
+                
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                         ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else {
+
+            if($dicoResto->isCafe($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.cafe = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.cafe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.cafe = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );     
+                }
+            }elseif($dicoResto->isThe($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.salonThe = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.salonThe = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.salonThe = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCuisine($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.cuisineMonde = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.cuisineMonde = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.cuisineMonde = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBrasserie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.brasserie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.brasserie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.brasserie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBar($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.bar = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.bar = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.bar = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isCreperie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.creperie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.creperie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.creperie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isFastFood($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.fastFood = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.fastFood = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.fastFood = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isPizzeria($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.pizzeria = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.pizzeria = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.pizzeria = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }elseif($dicoResto->isBoulangerie($mot_cles0)){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.boulangerie = 1 AND p.dep LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.boulangerie = 1 AND CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 ")
+                             ->orWhere("p.boulangerie = 1 AND MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0 AND p.dep LIKE :cles1")
+                             ->orWhere("p.denominationF LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+    
+                    $qb = $qb->where("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0)")
+                             ->orWhere("(p.denominationF LIKE :cles0) OR (CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+                }
+
+            }
+            
+        }
+
+        $qb = $qb->getQuery();
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();
@@ -285,29 +669,43 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getOneRestaurant($dep, $id)
     {
         return $this->createQueryBuilder("r")
-            ->select("r.id,r.denominationF,
-                r.numvoie,r.typevoie,
-                r.nomvoie,r.compvoie,
-                r.codpost,r.villenorm,
-                r.commune,r.restaurant,
-                r.brasserie,r.creperie,
-                r.fastFood,r.pizzeria,
-                r.boulangerie,r.bar,
-                r.cuisineMonde,r.cafe,
-                r.salonThe,r.site1,
+            ->select("r.id,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
                 r.fonctionalite1,
-                r.fourchettePrix1,r.horaires1,
-                r.prestation1,r.regimeSpeciaux1,
-                r.repas1,r.typeCuisine1,
-                r.dep,r.depName,r.tel,r.codinsee,
-                r.poiX,r.poiY")
-            ->where("r.dep =:dep")
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.codinsee,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
             ->andWhere("r.id =:id")
-            //->groupBy("r.denominationF, r.poiX, r.poiY")
-            //->having('count(r.denominationF)=1')  
-            //->andHaving('count(r.poiX)=1')
-            //->andHaving('count(r.poiY) =1')
-            ->setParameter("dep", $dep)
             ->setParameter("id", $id)
             ->orderBy("r.id", 'ASC')
             ->getQuery()
@@ -339,8 +737,8 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function getAllOpenedRestos()
-    {
+    public function getAllOpenedRestos(){
+        
         return $this->createQueryBuilder("r")
             ->select("r.id,
                     r.denominationF,
@@ -449,6 +847,136 @@ class BddRestoRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
         return $query->execute();
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Resto
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->select("r.id,
+                        r.denominationF,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+        $query =  $this->createQueryBuilder("r")
+                    ->select("r.id,
+                        r.denominationF,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->where("ABS(r.poiX) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.poiY) >=ABS(:miny)")
+                    ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy);
+                    
+        if( $idDep ){
+            $query = $query->andWhere("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        return $query->orderBy('RAND()')
+                    ->setMaxResults(200)
+                    ->getQuery()
+                    ->getResult();
+    }
+    //    /**
+    //     * @return BddResto[] Returns an array of BddResto objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('b')
+    //            ->andWhere('b.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('b.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?BddResto
+    //    {
+    //        return $this->createQueryBuilder('b')
+    //            ->andWhere('b.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
     public function getAllOpenedRestosV2($limits = 0){
         return $this->createQueryBuilder("r")
             ->select("r.id,
@@ -485,54 +1013,6 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.poiY")
         ->orderBy('RAND()')
         ->setMaxResults($limits)
-        ->getQuery()
-        ->getResult();
-    }
-    
-    public function getRestoBetweenAnd($minx,$miny,$maxx,$maxy){
-        return $this->createQueryBuilder("r")
-            ->select("r.id,
-                    r.denominationF,
-                    r.numvoie,
-                    r.typevoie,
-                    r.nomvoie,
-                    r.compvoie,
-                    r.codpost,
-                    r.villenorm,
-                    r.commune,
-                    r.restaurant,
-                    r.brasserie,
-                    r.creperie,
-                    r.fastFood,
-                    r.pizzeria,
-                    r.boulangerie,
-                    r.bar,
-                    r.cuisineMonde,
-                    r.cafe,
-                    r.salonThe,
-                    r.site1,
-                    r.fonctionalite1,
-                    r.fourchettePrix1,
-                    r.horaires1,
-                    r.prestation1,
-                    r.regimeSpeciaux1,
-                    r.repas1,
-                    r.typeCuisine1,
-                    r.dep,
-                    r.depName,
-                    r.tel,
-                    r.poiX,
-                    r.poiY")
-        ->where("ABS(r.poiX) >=ABS(:minx) ")
-        ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
-        ->andWhere("ABS(r.poiY) >=ABS(:miny)")
-        ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
-        ->setParameter("minx", $minx)
-        ->setParameter("maxx", $maxx)
-        ->setParameter("miny", $miny)
-        ->setParameter("maxy", $maxy)
-        ->orderBy("r.id", 'ASC')
-        ->setMaxResults(100)
         ->getQuery()
         ->getResult();
     }

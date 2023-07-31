@@ -1,11 +1,11 @@
 const urlParams = new URLSearchParams(window.location.search)
 
 if(urlParams.get("cles0")){
-    document.querySelector(".input_search_type_js").value= urlParams.get("cles0")
+    document.querySelector(".input_search_type_js").value= urlParams.get("cles0").trim()
 }
 
 if(urlParams.get("cles1")){
-    document.querySelector(".input_mots_cle_js").value= urlParams.get("cles1")
+    document.querySelector(".input_mots_cle_js").value= urlParams.get("cles1").trim()
 }
 
 

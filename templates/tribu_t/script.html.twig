@@ -9,6 +9,8 @@ let invitationsContainer = document.querySelector("#invitations");
 
 let photosContainer = document.querySelector("#photos");
 
+let partisantContainer = document.querySelector("#membres");
+
 let restoContainer = document.querySelector("#restaurants");
 
 let showCreatePub = document.querySelector("#showCreatePub");
@@ -18,6 +20,8 @@ let showCreatePub_mobile = document.querySelector("#showCreatePub_mobile");
 let showPub = document.querySelector(".showPubBlock");
 
 let table_com = tbl_pub.replace(/_publication$/, "_commentaire");
+
+let table_tribu = tbl_pub.replace(/_publication$/, "");
 
 let table_resto = tbl_pub.replace(/_publication$/, "_restaurant");
 
@@ -30,66 +34,6 @@ document.querySelector("#btnShowModalAddPub").addEventListener("click", () => {
     document.querySelector("#publication_confidentiality").value = "1";
 });
 
-/*function showInvitations(){
-
-    let table = tbl_pub.replace(/_publication$/, "")
-
-    let ul = document.createElement('ul');
-
-    ul.classList.add("list-group");
-
-    fetch(new Request("/user/tribu/show/invitations/" + table, {
-        method: "GET",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })).then(rqt => rqt.json()).then(data => {
-            console.log(data);
-            let li = "";
-            let status = "";
-            if(data.length > 0){
-                for (let invitation of data) {
-                    if(invitation.status == 0){
-                        status = "En attente"
-                    }else if(invitation.status == 1){
-                        status = "Acceptée"
-                    }else{
-                        status = "Rejetée"
-                    }
-                    li += `<li class="list-group-item">
-                                <a href="/user/profil/${invitation.user_id}">${invitation.fullname}</a>
-                                <button class="btn btn-sm btn-secondary float-end">
-                                    ${status}
-                                </button>
-                            </li>`;
-                }
-                ul.innerHTML = li;
-                invitationsContainer.appendChild(ul);
-            }else{
-                invitationsContainer.style.textAlign = "center"
-                invitationsContainer.innerHTML = "Aucune invitation pour le moment";
-                photosContainer.style.display = "none"
-                photosContainer.innerHTML = "";
-            }
-
-            if (invitationsContainer.style.display == "none") {
-                invitationsContainer.style.display = "block"
-                photosContainer.style.display = "none"
-                photosContainer.innerHTML = "";
-                showCreatePub.style.display = "none"
-                showPub.style.display = "none"
-            }else{
-                invitationsContainer.innerHTML = "";               
-                invitationsContainer.style.display = "none"
-                showCreatePub.style.display = "block"
-                showPub.style.display = "block"
-                photosContainer.style.display = "none"
-                photosContainer.innerHTML = "";
-            }
-
-        });
-}*/
 
 function sendInvitation(table){
     data = {"table": table}
@@ -107,6 +51,7 @@ function sendInvitation(table){
             //console.log(text);
             document.querySelector("#successMessageBlock").style.display = "block";
             document.querySelector("#successMessage").innerHTML = text;
+            //showInvitations();
             setTimeout(()=>{
                 document.querySelector("#successMessageBlock").style.display="none";
             }, 5000)
@@ -121,6 +66,21 @@ function showInvitations(){
 
     ul.classList.add("list-group");
 
+    invitationsContainer.style.display = "block"
+    photosContainer.style.display = "none"
+    photosContainer.innerHTML = "";
+    restoContainer.style.display = "none"
+    restoContainer.innerHTML = "";
+    showCreatePub.style.display = "none"
+    showCreatePub_mobile.style.display = "none"
+    showPub.style.display = "none"
+
+    invitationsContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+
     fetch(new Request("/user/tribu/show/invitations/" + table, {
         method: "GET",
         headers: {
@@ -129,6 +89,7 @@ function showInvitations(){
         }
     })).then(rqt => rqt.json()).then(data => {
             //console.log(data);
+        invitationsContainer.innerHTML = "";
         let li = `<div id="successMessageBlock" style="margin-left:10%;display:none;margin-bottom:5px;">
                 <svg color="green" class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/>
                 </svg>
@@ -165,64 +126,72 @@ function showInvitations(){
             }else{
                 ul.innerHTML = li;
                 invitationsContainer.appendChild(ul);
-                /*invitationsContainer.style.textAlign = "center"
-                invitationsContainer.innerHTML = "Aucune invitation pour le moment";
-                photosContainer.style.display = "none"
-                photosContainer.innerHTML = "";*/
+                
             }
-
-            invitationsContainer.style.display = "block"
-            photosContainer.style.display = "none"
-            photosContainer.innerHTML = "";
-            restoContainer.style.display = "none"
-            restoContainer.innerHTML = "";
-            showCreatePub.style.display = "none"
-            showCreatePub_mobile.style.display = "none"
-            showPub.style.display = "none"
-
-            /*if (invitationsContainer.style.display == "none") {
-                invitationsContainer.style.display = "block"
-                photosContainer.style.display = "none"
-                photosContainer.innerHTML = "";
-                restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
-                showCreatePub.style.display = "none"
-                showPub.style.display = "none"
-            }else{
-                invitationsContainer.innerHTML = "";               
-                invitationsContainer.style.display = "none"
-                showCreatePub.style.display = "block"
-                showPub.style.display = "block"
-                photosContainer.style.display = "none"
-                photosContainer.innerHTML = "";
-                restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
-            }*/
 
         });
 }
 
 function showActualites(){
-    invitationsContainer.innerHTML = "";               
+
+    //location.reload()
+
     invitationsContainer.style.display = "none"
-    showCreatePub.style.display = "block"
-     showCreatePub_mobile.style.display = "block"
-    showPub.style.display = "block"
     photosContainer.style.display = "none"
     photosContainer.innerHTML = "";
     restoContainer.style.display = "none"
     restoContainer.innerHTML = "";
+    showCreatePub.style.display = "block"
+    showCreatePub_mobile.style.display = "block"
+
+    showPub.style.display = "block"
+
+    showPub.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+
+
+    fetch("/tribu_t/publications/"+tbl_pub)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Not 404 response", {cause: response});
+            } else {
+                return response.text()
+            }
+        })
+        .catch(error => {
+            console.error(error)
+        })
+        .then( response => {
+
+            //alert("eto tsika szao")
+            
+            showPub.innerHTML = response;
+
+        }).catch(error => {
+            console.log(error)
+        })
+    
 }
 
 function showPhotos(table_pub){
-    /*
-    let icone = document.createElement('i');
-    icone.classList.add("bi");
-    icone.classList.add("bi-arrows-collapse");
-    icone.style.cursor = "pointer";
-    photosContainer.appendChild(icone);
-    */
-    photosContainer.innerHTML = "";
+
+    invitationsContainer.innerHTML = "";               
+    invitationsContainer.style.display = "none"
+    restoContainer.style.display = "none"
+    restoContainer.innerHTML += "";
+    photosContainer.style.display = "flex"
+    showCreatePub.style.display = "none"
+    showCreatePub_mobile.style.display = "none"
+    showPub.style.display = "none"
+
+    photosContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
 
     fetch(new Request("/user/tribu/photos/" + table_pub, {
         method: "GET",
@@ -232,78 +201,54 @@ function showPhotos(table_pub){
         }
     })).then(rqt => rqt.json()).then(data => {
             //console.log(data);
-            if(data.length > 0){
-                for (let photo of data) {
-                    let img = document.createElement('img');
-                    //img.classList.add("w-25");
-                    img.style.height = "150px"
-                    if(screen.width>1000){
-                        img.style.width = "24%"
-                    }else{
-                        img.style.width = "48%"
-                    }
+            photosContainer.innerHTML = `<div class="intro">
+                    <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
+                        Photo télechargé avec succès!
+                    </div>
+                    <div><span class="h2">Liste des photos</span> <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> <i class="bi bi-camera-fill"></i> Importer
+                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                    </label></div>
                     
-                    img.style.cursor = "pointer"
-                    img.style.marginBottom = "2px"
-                    img.style.marginLeft = "2px"
-                    img.style.borderRadius = "5px"
-                    //img.src = '/assets/publications/photos/'+photo.photo;
-		    img.src = "{{asset('assets/publications/photos/')}}"+photo.photo;
-                    photosContainer.appendChild(img);
+                </div>`;
+
+            if(data.length > 0){
+                let li_img =''
+
+                for (let photo of data) {
+
+                    let img = document.createElement('img');
+                    
+		            let img_src = "{{asset('uploads/tribu_t/photos/') }}"+"{{ table_tribu }}/"+photo.photo;
+                   
+                    li_img +=`<img src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    
                 }
+
+                photosContainer.innerHTML+=`<div class="gallery-container"><div id="gallery">${li_img}</div></div>`
+
+                setGallerie(document.querySelectorAll("#gallery img"))
+                
             }else{
                 photosContainer.style.textAlign = "center"
-                photosContainer.innerHTML = "Aucune photo pour le moment";
+                photosContainer.innerHTML += "Aucune photo pour le moment";
                 invitationsContainer.innerHTML = "";               
                 invitationsContainer.style.display = "none"
                 restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
+                restoContainer.innerHTML += "";
             }
-
-            invitationsContainer.innerHTML = "";               
-            invitationsContainer.style.display = "none"
-            restoContainer.style.display = "none"
-            restoContainer.innerHTML = "";
-            photosContainer.style.display = "block"
-            showCreatePub.style.display = "none"
-             showCreatePub_mobile.style.display = "none"
-            showPub.style.display = "none"
-
-            /*if (photosContainer.style.display == "none") {
-                invitationsContainer.innerHTML = "";               
-                invitationsContainer.style.display = "none"
-                restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
-                photosContainer.style.display = "block"
-                showCreatePub.style.display = "none"
-                showPub.style.display = "none"
-            }else{
-                photosContainer.innerHTML = "";               
-                photosContainer.style.display = "none"
-                restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
-                showCreatePub.style.display = "block"
-                showPub.style.display = "block"
-                invitationsContainer.innerHTML = "";               
-                invitationsContainer.style.display = "none"
-            }*/
 
         });
 
 }
 
 
-
-
-
-
 function showComment(id_restaurant){
 
     if(document.querySelectorAll(`#RestoModalComment${id_restaurant} > div > div > div.modal-body>div.card-comment`).length >0){
         const children=document.querySelectorAll(`#RestoModalComment${id_restaurant} > div > div > div.modal-body>div.card-comment`)
-        //const children=document.querySelector(`#RestoModalComment${id_restaurant} > div > div > div.modal-body`).children
         for(let child of children){
-            console.log(child)
+            //console.log(child)
             child.parentNode.removeChild(child)
         }
     }
@@ -364,38 +309,32 @@ function showComment(id_restaurant){
         }
 
     })
-
-
-   
-
-
 }
-
-
 
 function showResto(){
 
-    restoContainer.innerHTML = `<div id="form_past"></div><div class="g-3">
-                                    <label>Pastiller un restaurant</label>
-                                    
-                                    <div class="input-group">
-                                        <input type="text" id="resto-rech" class="form-control rounded" placeholder="Rechercher un restaurant" />
-                                        <button type="button" class="btn btn-outline-primary" onclick="FindResto(this)"><i class="fas fa-search"></i></button>
-                                    </div>
-                                    <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
-                                    </div>
-                                </div>`
+    restoContainer.style.display = "block"
+    invitationsContainer.innerHTML = "";               
+    invitationsContainer.style.display = "none"
+    photosContainer.innerHTML = "";
+    photosContainer.style.display = "none"
+    showCreatePub.style.display = "none"
+    showCreatePub_mobile.style.display = "none"
+    showPub.style.display = "none"
 
-    // restoContainer.innerHTML = ""
+    restoContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
 
+    
     if(document.getElementById('list_resto_pastilled')){
         let childreen=document.getElementById('list_resto_pastilled').children
         for(let child of childreen)
              document.getElementById('list_resto_pastilled').
                 removeChild(child)
     }
-       
-
 
     fetch(new Request("/user/tribu/restos-pastilles/" + table_resto, {
         method: "GET",
@@ -404,13 +343,26 @@ function showResto(){
             'Content-Type': 'application/json'
         }
     })).then(rqt => rqt.json()).then(restos => {
-            console.log(restos);
+            //console.log(restos);
+
+            restoContainer.innerHTML = `<div id="form_past"></div><div class="g-3">
+                                <label>Pastiller un restaurant</label>
+                                
+                                <div class="input-group">
+                                    <input type="text" id="resto-rech" class="form-control rounded" placeholder="Rechercher un restaurant" />
+                                    <button type="button" class="btn btn-outline-primary" onclick="FindResto(this)"><i class="fas fa-search"></i></button>
+                                </div>
+                                <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                </div>
+                            </div>`
+
+
             let imgSrc = "";
             let avatar = "{{avatar}}"
             if(avatar != null){
-                imgSrc = "/uploads/tribus/photos/"+avatar
+                imgSrc = "/uploads/tribu_t/photos/{{table_tribu}}/"+avatar
             }else{
-                imgSrc = "uploads/tribus/photos/avatar_tribu.jpg"
+                imgSrc = "/uploads/tribu_t/photos/avatar_tribu.jpg"
             }
 
             if(restos.length > 0){
@@ -431,9 +383,9 @@ function showResto(){
                 let text=""
                 let text1=""
                 let id_c_u = document.querySelector("#settingProfilId > div").dataset.tribuUsRank;
-                console.log(id_c_u)
+                //console.log(id_c_u)
                 for (let resto of restos) {
-                    //console.log(resto);
+                    console.log(resto);
 
                     //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
@@ -442,7 +394,7 @@ function showResto(){
                     let id_resto_comment = resto.All_id_r_com!=null ?  resto.All_id_r_com.split(",") :[]
                     
                     let id_user = resto.All_user!=null ? resto.All_user.split(",") :[]
-                    console.log(id_user)
+                    //console.log(id_user)
                     let denominationsF = resto.denomination_f
                     let nbrAvis= resto.nbrAvis
                     let key=0
@@ -451,22 +403,22 @@ function showResto(){
                             key=k
                     }
                     if(id_user.includes(id_c_u)){
-                        console.log("up "+denominationsF)
+                        //console.log("up "+denominationsF)
                         text=`<button type="button" class="btn btn-primary mt-3" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
 
                         text1="Modifiez votre avis"
                     }else{
-                        console.log("crt "+denominationsF)
+                        //console.log("crt "+denominationsF)
                         text=`<button type="button" class="btn btn-primary mt-3" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,{{app.user.id}},${id},${id_resto_comment[key]})">Notez</button>`
                         text1="Notez"
                     }
-                    li +=`<li style="list-style-type:none; " data-toggle-id="${id_resto}">
+                    li +=`<li style="list-style-type:none; " data-toggle-id="${id_resto}" class="list-group-item">
                             <div class="row">
                                 <div class="col-8">
                                     <div class="fw-bold">
-                                        <a target="_blank" href="/restaurant?id=${resto.id_unique}">
-                                            <img style="height: 30px; width:30px; border-radius:50%;margin-top: -10px; " src="{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}">
-                                            <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
+                                        <a target="_blank" href="/restaurant?id=${id_resto}">
+                                            <img style="height: 30px; width:30px; border-radius:50%;margin-top: -10px; " src="{% if avatar != null %} {{ asset("uploads/tribu_t/photos/") ~ table_tribu ~ "/" ~ avatar}} {% else %} {{ asset("uploads/tribu_t/photos/avatar_tribu.jpg") }} {% endif %}">
+                                            <span style="font-weight:700; font-size:16pt;">${denominationsF} </span> 
                                         </a>
                                     </div>
                                     <div id="etoile_${id_resto}">
@@ -477,11 +429,9 @@ function showResto(){
                                         <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
                                     </div>
                                 </div>
-                                <div class="col-2">
-                                    <button type="button" class="btn btn-outline-primary float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
-                                </div>
-                                <div class="col-2">
-                                    <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-1 mt-1" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_resto}','${resto.denomination_f}', '${resto.poi_y}','${resto.poi_x}')">Créer repas</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mt-1" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
                                 </div>
                             </div>
 
@@ -526,22 +476,6 @@ function showResto(){
                 restoContainer.appendChild(ul);
                 restos.forEach(resto=>{
 
-                    // let noteGlobales= 0.00
-                    // if(Array.isArray(resto.note)){
-                    //     let sum = 0.00;
-                    //     for (let i = 0; i < resto.note.length; i++) {
-                    //         sum += parseFloat(resto.note[i]);
-                    //     }
-                    //      noteGlobales = sum / resto.note.length
-                    // }else{
-                    //     noteGlobales=resto.note
-                    // }
-                    // let sum = 0.00;
-                    // for (let i = 0; i < note.length; i++) {
-                    //     sum += parseFloat(note[i]);
-                    // }
-                    // let noteGlobales = sum / note.length
-                    // console.log(noteGlobales)
                     let id_resto = resto.id_resto
                     let noteGlobales=resto.globalNote
                     printNodeGlobale(document.querySelectorAll("#etoile_"+id_resto+">i"),noteGlobales)
@@ -551,40 +485,13 @@ function showResto(){
 
             }else{
                 restoContainer.style.textAlign = "center"
-                restoContainer.innerHTML = "Aucun restaurant pastillé pour le moment";
+                restoContainer.innerHTML += "Aucun restaurant pastillé pour le moment";
                 invitationsContainer.innerHTML = "";               
                 invitationsContainer.style.display = "none"
                 photosContainer.style.display = "none"
                 photosContainer.innerHTML = "";
             }
 
-            restoContainer.style.display = "block"
-            invitationsContainer.innerHTML = "";               
-            invitationsContainer.style.display = "none"
-            photosContainer.innerHTML = "";
-            photosContainer.style.display = "none"
-            showCreatePub.style.display = "none"
-             showCreatePub_mobile.style.display = "none"
-            showPub.style.display = "none"
-
-            /*if (photosContainer.style.display == "none") {
-                invitationsContainer.innerHTML = "";               
-                invitationsContainer.style.display = "none"
-                restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
-                photosContainer.style.display = "block"
-                showCreatePub.style.display = "none"
-                showPub.style.display = "none"
-            }else{
-                photosContainer.innerHTML = "";               
-                photosContainer.style.display = "none"
-                restoContainer.style.display = "none"
-                restoContainer.innerHTML = "";
-                showCreatePub.style.display = "block"
-                showPub.style.display = "block"
-                invitationsContainer.innerHTML = "";               
-                invitationsContainer.style.display = "none"
-            }*/
 
     });
 
@@ -636,13 +543,6 @@ function printNodeGlobale(element,globalNote){
     }
 }
 
-
-
-
-
-    
-
-
 function getPub(pub_id, message, confid) {
     document.querySelector("#pub_id_modif").value = pub_id;
     document.querySelector("#option_modif").value = confid;
@@ -681,8 +581,6 @@ function setReaction(pub_id, reaction) {
         "table_reaction": table_reaction
     }
 
-    //console.log(data)
-
     fetch(new Request("/user/tribu/new_reaction", {
         method: "POST",
         headers: {
@@ -718,12 +616,6 @@ forms.forEach((bouton) => {
     
     bouton.addEventListener("submit", (e) => {
         e.preventDefault();
-        //let i = e.target.id.replace(/[^0-9]/g, "");
-
-        //console.log("i : " + i);
-
-        //console.log("table_com : " + table_com);
-
         let data = {
             "table_com": table_com,
             "pub_id": document.querySelector("#pub_id_" + i).value,
@@ -807,14 +699,12 @@ forms.forEach((bouton) => {
         const commentsEvent = JSON.parse(event.data)[0].comments;
 
         let newCommentsToShow = commentsEvent.filter(comment => document.querySelector("#comment"+comment.id))
-        //console.log("newCommentsToShow : ")
-        //console.log(newCommentsToShow)
 
         for (let result of JSON.parse(event.data)[0].comments) {
             
             let audio = "";
             if(result.audioname){
-                audio = `<audio controls class="mt-2" src="/uploads/users/audios/${result.audioname}"></audio>`;
+                audio = `<audio controls class="mt-2" src="/uploads/tribu_t/audios/{{table_tribu}}/${result.audioname}"></audio>`;
             }
             if(result.user_id != {{ app.user.id }}){
                 dropContent = "";
@@ -834,7 +724,6 @@ forms.forEach((bouton) => {
         document.querySelector("#comment" + pubId + " > div").innerHTML = comments;
     };
 
-    /* For sending media recorder */
 
     var mediaRecorder
     let record = bouton.querySelector("#start")
@@ -1135,7 +1024,7 @@ function FindResto(elem){
             let res =""
             //console.log(data)
             for(let resto of list){
-                let avtr = "{% if avatar != null %} {{ asset("uploads/tribus/photos/") ~ avatar}} {% else %} {{ asset("uploads/tribus/photos/avatar_tribu.jpg") }} {% endif %}"
+                let avtr = "{% if avatar != null %} {{ asset("uploads/tribu_t/photos/{{table_tribu}}/") ~ avatar}} {% else %} {{ asset("uploads/tribu_t/photos/avatar_tribu.jpg") }} {% endif %}"
                 if(resto.isPelleted == 1){
                     res += ""//"<li class='list-group-item list-group-item-action' style='list-style:none;'><img id='roundedImg' style='min-height: 40px; min-width:40px; max-width:40px; max-height: 40px;' class='rounded-circle border border-1' src="+avtr+"><a href='#' data-idresto='"+resto.id+"' data-isPelleted ='true'> "+resto.denomination_f.trim()+"</a><small class='float-end text-danger'><i>Déjà pastillé</i></small></li>"
                 
@@ -1203,7 +1092,11 @@ function pastillerPast(id,nom){
     
 }
 
+
 function createRepas(id_pastille, nom, lat, long){
+
+    console.log("id_pastille : "+id_pastille)
+    console.log("nom : "+nom)
 
     document.querySelector("#agenda-fetched").innerHTML= ""
     document.querySelector("#agenda-fetched-past").innerHTML=`
@@ -1313,6 +1206,76 @@ function openMapPast(){
     map.addLayer(osmLayer);
     L.marker([lat, long]).addTo(map)
 
+}
+
+function showPartisant(table_tribu){
+
+    invitationsContainer.innerHTML = "";               
+    invitationsContainer.style.display = "none"
+    restoContainer.style.display = "none"
+    restoContainer.innerHTML += "";
+    partisantContainer.style.display = "block"
+    showCreatePub.style.display = "none"
+    showCreatePub_mobile.style.display = "none"
+    showPub.style.display = "none"
+
+    partisantContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+
+    fetch(new Request("/user/tribu/fetch-member/" + table_tribu))
+    .then(rqt => rqt.text()).then(data => {
+            //console.log(data);
+            partisantContainer.innerHTML = data;
+
+        });
+
+}
+
+var loadFile = (event) => {
+
+    let new_photo = document.createElement("img")
+    new_photo.setAttribute("data-bs-toggle","modal")
+    new_photo.setAttribute("data-bs-target","#modal_show_photo")
+    new_photo.setAttribute("onclick","setPhotoTribu(this)")
+    new_photo.src = URL.createObjectURL(event.target.files[0]);
+    var div_photo = document.querySelector('#gallery');
+
+    let first_photo = document.querySelector("#gallery > img:nth-child(1)")
+
+    div_photo.insertBefore(new_photo, first_photo);
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+        const srcData = fileReader.result;
+
+        let data = {
+                publication : "",
+                image : srcData,
+                confidentiality : 1
+            }
+
+        fetch(new Request("/user/tribu/add_photo/"+tableTribu+"_publication", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })).then(x => x.json()).then(response => {
+            document.querySelector("#success_upload").style ="display:block;"
+            setTimeout(function(){
+                 document.querySelector("#success_upload").style ="display:none;"
+            }, 5000);
+            console.log(response)
+            }
+        ).catch(error=>{
+            console.log(error)
+        });
+    };
+    fileReader.readAsDataURL(event.target.files[0]);
 }
 
 </script>

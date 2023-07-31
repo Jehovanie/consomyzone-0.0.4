@@ -433,7 +433,7 @@ class AgendaService extends PDOConnexionService
     public function getRestoAgenda($table_resto_pastille, $value){
 
         $membre = "SELECT id, 1 as isPelleted, denomination_f, '' as adresse from $table_resto_pastille where denomination_f like '%$value%' UNION 
-        SELECT clenum as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND clenum NOT IN (Select id_resto from $table_resto_pastille)";
+        SELECT id as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND id NOT IN (Select id_resto from $table_resto_pastille)";
 
         $stm = $this->getPDO()->prepare($membre);
 
@@ -522,11 +522,28 @@ class AgendaService extends PDOConnexionService
     /**
      * @author Tommy
      */
-    public function getAgenda($nom_table_agenda){
+    public function getAgenda($nom_table_agenda, $agenda_partage_name){
+
+        $results = [];
+
         $sql="SELECT * FROM $nom_table_agenda  ORDER BY id ASC";
         $stmt = $this->getPDO()->prepare($sql);
-       $stmt->execute();
-       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute();
+        $all_agenda = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($all_agenda as $single_agenda) {
+            $agendaID= $single_agenda['id'];
+
+            $sql="SELECT count(*) as count_share FROM $agenda_partage_name WHERE agenda_id= $agendaID";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+           
+            $single_agenda["isAlreadyShare"] = intval($result["count_share"]) > 0 ? true : false;
+
+            array_push($results,$single_agenda);
+        }
+        return $results ;
     }
 
 
@@ -820,6 +837,29 @@ class AgendaService extends PDOConnexionService
 
         return (intval($agendaID_count) > 0 ) ? true : false;
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get single agenda by their ID.
+     * 
+     * @param string $table_agenda_name : name of the table agenda
+     * @param string $agendaID : ID of the agenda to partage
+     * 
+     * @return agenda entity
+     */
+    public function getAgendaById($table_agenda_name, $agendaID){
+
+        $sql="SELECT id, message, file_path, date, heure_debut, heure_fin, restaurant, JSON_VALUE(confidentialite, '$.confidentility') as organisateur, JSON_VALUE(type, '$.type') as goal  FROM $table_agenda_name WHERE id= $agendaID";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $tab_agenda=  $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $tab_agenda;
+    }
+
+
+
     /** 
      * @author tommy
      */
@@ -884,4 +924,5 @@ class AgendaService extends PDOConnexionService
         $stmt = $this->getPDO()->prepare($sql);
         return $stmt->execute();
     }
+
 }
