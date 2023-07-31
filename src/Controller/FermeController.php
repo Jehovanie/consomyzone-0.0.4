@@ -7,7 +7,7 @@ namespace App\Controller;
 
 
 use App\Entity\Avisferme;
-
+use App\Service\TributGService;
 use App\Repository\AvisfermeRepository;
 use App\Repository\CodeapeRepository;
 use App\Repository\DepartementRepository;
@@ -29,6 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Symfony\Component\Serializer\SerializerInterface;
 
 class FermeController extends AbstractController
@@ -50,31 +51,53 @@ class FermeController extends AbstractController
 
      */
 
-    public function getAllDepartement(CodeapeRepository $codeApeRep, Status $status, DepartementRepository $departementRepository, FermeGeomRepository $fermeGeomRepository, Request $request): Response
-
+    public function getAllDepartement(
+        CodeapeRepository $codeApeRep, 
+        Status $status, 
+        DepartementRepository $departementRepository, 
+        FermeGeomRepository $fermeGeomRepository, 
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        
+    ): Response
     {
+        ///current user connected
+        $user = $this->getUser();
 
-        $statusProfile = $status->statusFondateur($this->getUser());
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
 
+        $amis_in_tributG = [];
 
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
 
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
 
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
 
-        // if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                ];
 
-        //     return new JsonResponse(
-
-        //         $departementRepository->getDep(
-
-        //             intval($request->request->get("page"))
-
-        //         )
-
-        //     );
-
-        // }
-
-
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
 
         return $this->render("ferme/index.html.twig", [
 
@@ -86,7 +109,9 @@ class FermeController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
 
-            "codeApes" => $codeApeRep->getCode()
+            "codeApes" => $codeApeRep->getCode(),
+
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 
@@ -118,22 +143,62 @@ class FermeController extends AbstractController
 
 
     /**
-
      * @Route("/ferme/departement/{nom_dep}/{id_dep}" , name="specific_departement", methods={"GET"} )
-
      */
-
-    public function getSpecifiqueDep(CodeapeRepository $codeApeRep, Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
-
+    public function getSpecifiqueDep(
+        $nom_dep, $id_dep,
+        CodeapeRepository $codeApeRep,
+        Status $status, 
+        FermeGeomRepository $fermeGeomRepository,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+    )
     {
 
-        $statusProfile = $status->statusFondateur($this->getUser());
+        ///current user connected
+        $user = $this->getUser();
+
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
 
         return $this->render("ferme/specific_departement.html.twig", [
 
             "id_dep" => $id_dep,
 
             "nom_dep" => $nom_dep,
+
+            "type" => "ferme",
 
             "fermes" => $fermeGeomRepository->getFermByDep($nom_dep, $id_dep, 0),
 
@@ -143,7 +208,9 @@ class FermeController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
 
-            "codeApes" => $codeApeRep->getCode()
+            "codeApes" => $codeApeRep->getCode(),
+
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 
@@ -209,24 +276,16 @@ class FermeController extends AbstractController
     }
 
     /**
-
      * @Route("/ferme/departement/{nom_dep}/{id_dep}/allFerme" , name="getAllFermeInDepartement", methods={"GET"} )
-
      */
-
     public function getAllFermeInDepartement(Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
-
     {
-
+        $id_dep= strlen($id_dep) === 1 ? "0" . $id_dep : $id_dep;
         return $this->json(
-
             $fermeGeomRepository->getAllFermeInDepartement(
-
                 $nom_dep,
                 $id_dep
-
             )
-
         );
     }
 
@@ -281,31 +340,27 @@ class FermeController extends AbstractController
 
 
     /**
-
      * @Route("/getLatitudeLongitudeFerme" , name="getLatitudeLongitudeFerme" , methods={"GET"})
-
      */
+    public function getLatitudeLongitudeFerme(
+        Request $request,
+        FermeGeomRepository $fermeGeomRepository,
+        SerializerInterface $serialize
+    ){
 
-    public function getLatitudeLongitudeFerme(FermeGeomRepository $fermeGeomRepository, Request $request)
+        if($request->query->has("minx") && $request->query->has("miny") ){
 
-    {
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
 
-        if ($request->query->get("nom_dep") != null && $request->query->get("id_dep") != null) {
+            $datas= $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
-            return $this->json(
-
-                $fermeGeomRepository->getAllFermeInDepartement(
-
-                    $request->query->get("nom_dep"),
-
-                    $request->query->get("id_dep")
-
-                )
-
-            );
+            return $this->json($datas);
         }
 
-        return $this->json($fermeGeomRepository->getLatitudeLongitudeFerme());
+        return $this->json($fermeGeomRepository->getSomeDataShuffle(2000));
     }
 
     #[Route("/avis/ferme/{idFerme}", name: "avis_ferme", methods: ["POST"])]

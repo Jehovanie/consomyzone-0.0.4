@@ -3425,6 +3425,11 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 
 .card-pub-actu{
   padding: 20px;
+  width: 100%;
+}
+
+.card-pub-actu img {
+  width: inherit;
 }
 
 .card-reaction .text-comment{
@@ -3465,13 +3470,20 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   right: 0;
 }
 
+.apropos-tribu-t {
+  position: fixed;
+  top: 130px;
+  right: 0;
+}
+
 .account-message-conected img{
   border-radius: 50%;
 }
 
 .account-profil-conected .pdp img{
   border-radius: 50%;
-  width: 152px;
+  width:100%;
+  height:100%;
 }
 
 .disabled-link {

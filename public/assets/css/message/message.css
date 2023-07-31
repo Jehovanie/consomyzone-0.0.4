@@ -6,7 +6,7 @@
     
     position: absolute;
     right: 0;
-    top: 16vh;
+    top: 13vh;
 
     padding: 15px;
     background-color: white;
@@ -43,21 +43,7 @@
     text-align: center;
 }
 
-.content_img{
-    display: flex;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-}
 
-.content_img img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin: auto;
-
-}
 
 .content_entete h3{
     text-align: center;
@@ -175,7 +161,22 @@
     margin-bottom: 15px;
 }
 
+.content_image_msg{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 
+.message_image_item{
+    display: block;
+    width: 145px;;
+    height: 145px;
+    border-radius: 5px !important;
+}
+
+.cta_profil_message{
+    color: white !important
+}
 
 .content_image_input, content_image_input_mobile{
     display: none;
@@ -186,6 +187,7 @@
     background-color: lightgray;
     padding: 5px;
     border-radius: 5px 5px 0 0;
+    gap: 10px;
 }
 
 .content_image_input_mobile img{
@@ -194,7 +196,11 @@
     margin-right: 5px;
 }
 
-
+.image_input_item{
+    width: 100px;
+    height: 100px;
+    border-radius: 5px !important;
+}
 .content_amis{
     position: fixed;
     top: 135px;
@@ -234,6 +240,7 @@
 .content_loading{
     float: right;
     transform: translate(15px, -30px);
+    color: blue;
 }
 
 .loading{
@@ -264,6 +271,12 @@
 
 .error_message_status{
     color: red;
+}
+
+.content_warning{
+    display: block;
+    width:70%;
+    margin: auto; 
 }
 
 @keyframes rotation {

@@ -24,38 +24,105 @@
 
 {% block body %}
     
+    {# <main class="main_user_id" id='{{app.user.id}}' data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
+        <div class="test">
+            <div class="content_left_menu_account fixed-top mt-3 col responsif-none">
+                <div class="left_menu">
+                    {% include "shard/account_navleft.html.twig" %}
+                </div>
+            </div>
+            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+                <div class="left_menu">
+                    {% include "shard/account_navleft_mobile.html.twig" %}
+                </div>
+            </div>
+        </div>
+
+
+
+        
+        <div class="navbar-mobile">
+			<div class="fixed-top col responsif-none bg-blanc">
+				{{ include('shard/account_navbar.html.twig') }}
+			</div>
+
+			<div class="fixed-top col responsif-none-mobile">
+				{{ include('shard/account_navbar_mobile.html.twig') }}
+			</div>
+		</div>
+
+        <div class="content_right_actualite-g mobile-responsive" id="container-mobile">
+            <div class="row">
+                <div class="col">
+                    <div class="content_actualite">
+                        <div class="entente">
+                            <div class="container">
+                                <br>
+                                <div class="card-pub p-3 bgPersonnalisee">
+                                    {% include "tribu_g/head.html.twig" %}
+                                
+
+                                    <a class="btn btn-primary btn_actualise btn_actualise_js_jheo hidden_actualise" href={{ path("app_account")}}>
+                                        <div class="text_mini">
+                                            Nouvelle publication
+                                        </div>
+                                    </a>
+
+                                    <div class="row mt-3">
+                                        <div class="col-8">
+                                            <div class="content_bloc_js_jheo row">
+                                                {% include "tribu_g/publications.html.twig" %}
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="card-appropos-g need_position_fixed_js_jheo">
+                                                <div class="content_list_tribuT mt-3">
+                                                    <h4 > Liste de vos tribu T :</h4>
+
+                                                    {% if all_tribuT|length > 0  %}
+                                                        <ul>
+                                                            {% for item in all_tribuT %}
+                                                                <li> <a href="#"> {{item.table_name}} </a></li>
+                                                            {% endfor %}
+                                                        </ul>
+
+                                                    {% else %}
+                                                        <p> Vous n'avez pas encore créer un tribu T</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div> #}
 <div class="nh main_user_id" data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
 	{% include 'shard/account_navleft_new.html.twig' %}
 	{% include 'shard/account_navbar_new.html.twig' %}
 	<!-- ===== Main Content Start ===== -->
 	<main class="gv hm hv content-actualite-connected">
 		<div class="sk bu 2xl:ud-p-11">
-            
-                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
-                        <!-- ====== Chart pub One Start -->
-                        <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
-                            <div class="head-pub">
-                                <div class="pdp-content">
-                                    <img src="{{ asset('uploads/users/photos/img_avatar.png') }}" alt="">
-                                </div>
-                                <div class="name-content-h">
-                                    <div class="name-content">
-                                        {# <p id="btnShowModalAddPub" class="form-pub">Partagez ce que vous pensez, Tommy...</p> #}
-                                        <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill pub-g-input bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="icon-piece-join">
-                                <i class="fa-solid fa-camera"></i>
-                                <i class="fa-solid fa-paperclip"></i>
-                            </div>
-
+    
+            <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                <!-- ====== Chart pub One Start -->
+                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                    <div class="head-pub">
+                        <div class="pdp-content">
+                            <img src="{{ asset('uploads/users/photos/img_avatar.png') }}" alt="">
                         </div>
-                        <!-- ====== Chart pub One End -->
+                        <div class="name-content-h non_active">
+                            <div class="name-content ">
+                                {# <p id="btnShowModalAddPub" class="form-pub">Partagez ce que vous pensez, Tommy...</p> #}
+                                <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill pub-g-input bg-transparent text-white disabled-link" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="icon-piece-join">
+                        <i class="fa-solid fa-camera"></i>
+                        <i class="fa-solid fa-paperclip"></i>
                     </div>
 
-                
+                </div>
+                <!-- ====== Chart pub One End -->
+            </div>
+
             {% if tributG.publications is defined %}
                 {% set last_pub_id= 0 %}
                 {% for pub in tributG.publications %}

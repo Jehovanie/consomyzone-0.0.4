@@ -250,10 +250,12 @@ class TributGController extends AbstractController
         );
 
         $last_pub= $tributGService->getOnePublication($table_tributG_name, intval($publication_id) );
+        $next_pubID=  $tributGService->getNextPubID($table_tributG_name . "_publication", intval($last_pub[0]["id"]));
         if( count($last_pub) > 0 ){
             return $this->render("tribu_g/single_publication.html.twig", [
                 "pub" => $last_pub[0],
-                "profil" => $profil
+                "profil" => $profil,
+                "next_pubID" => $next_pubID
             ]);
         }
 
@@ -308,6 +310,8 @@ class TributGController extends AbstractController
                 "firstname" => $userService->getUserFirstName($user->getId()),
 
                 "lastname" => $userService->getUserLastName($user->getId()),
+
+                "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId())
 
             ];
 
@@ -370,6 +374,7 @@ class TributGController extends AbstractController
 
                 "publications" => $tributGService->getAllPublications($table_tributG_name),
 
+                "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
             ],
 
         ]);

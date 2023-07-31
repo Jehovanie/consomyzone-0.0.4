@@ -596,35 +596,18 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function fetchAllPub($table_pub)
-
-    {
-
-
+    function fetchAllPub($table_pub){
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_pub ORDER BY datetime DESC");
-
-
-
         $statement->execute();
 
-
-
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
         return $result;
-
     }
 
 
 
-    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo)
-
-    {
-
-
+    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo){
 
         $statement = $this->getPDO()->prepare("INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) values (:user_id, :publication, :confidentiality, :photo, :userfullname)");
 
@@ -860,27 +843,13 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-
     function getTypeUser($userId)
-
     {
-
-
-
         $statement = $this->getPDO()->prepare("SELECT type as result FROM user WHERE id  = $userId");
-
-
-
         $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-        return $result[0]["result"];
-
+        return $result ? $result["result"] : "unknown";
     }
 
 
@@ -1472,11 +1441,11 @@ class Tribu_T_Service extends PDOConnexionService
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
-     * Get all list of the table tribu T creat for this one persone
+     * Get all list of the table tribu T in the database
      * 
      * @param string $userID : ID of the agenda to partage
      * 
-     * @return array list of the table tribu T.
+     * @return array list of the table tribu T. [ [ "table_name" => ... ], ... ]
      */
     public function getAllTribuT($userID){
 

@@ -1,23 +1,21 @@
-class MarckerClusterFerme {
+class MarckerClusterFerme extends MapModule {
 
     constructor(nom_dep=null,id_dep=null){
-        this.nom_dep = nom_dep ? nom_dep : null;
-        this.id_dep = id_dep ? id_dep : null;
+        super(id_dep,nom_dep, "ferme")
     }
 
     async onInit(){
         this.ALREADY_INIT = false;
         try{
-            this.getGeos()
             this.createMarkersCluster();
+            this.initMap();
 
             const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
             const response= await fetch(link);
             this.default_data= await response.json();
+            this.data= this.default_data; 
             
-            this.map=await create_map_content(this.geos,this.id_dep, "ferme");
-            
-            this.data= this.default_data;
+
             this.bindAction()
         }catch(e){
             console.log(e)
@@ -36,58 +34,28 @@ class MarckerClusterFerme {
 
     bindAction(){
         this.addMarker(this.data);
-        this.addEventOnMap(this.map);
         this.setNumberOfMarker();
         // this.generateAllCard();
+        this.addEventOnMap(this.map);
     }
 
-    addEventOnMap(map){
-        map.on("resize zoomend dragend", (e) => {
-            const coordAndZoom = {
-                zoom: e.target._zoom,
-                coord:e.target._lastCenter
-            }
-            setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
-        })
-    }
-
-    getGeos(){
-        this.geos= [];
-        if (this.id_dep) {
-            if (this.id_dep == 20) {
-                for (let corse of ['2A', '2B'])
-                    this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
-            } else {
-                this.geos.push(franceGeo.features.find(element => element.properties.code == this.id_dep))
-            }
-        }else{
-            document.querySelectorAll("#list_departements .element").forEach(item => {
-                const dep = item.dataset.toggleDepartId
-                if (dep == 20) {
-                    for (let corse of ['2A', '2B'])
-                        this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
-                } else {
-                    this.geos.push(franceGeo.features.find(element => element.properties.code == dep))
-                }
-            })
-        }
-    }
-
+    
     setNumberOfMarker(){
-        /// change the number of result in div
-        if( document.querySelector(".content_nombre_result_js_jheo")){
-            document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
-        }
+        if( this.id_dep){
+            /// change the number of result in div
+            if( document.querySelector(".content_nombre_result_js_jheo")){
+                document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
+            }
 
-        /// change the number of result in div for the left translate
-        if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
-            document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            /// change the number of result in div for the left translate
+            if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
+                document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            }
         }
     }
 
     displayData() {
         console.log(this.data)
-        console.log(this.geos)
         console.log(this.map)
     }
 
@@ -131,48 +99,31 @@ class MarckerClusterFerme {
 
     addMarker(newData){
         newData.forEach(item => {
-            const departementName = item.departementName
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-            
-            let title = "<span class='fw-bolder'> Ferme:</span> <br> " + item.nomFerme + ".<span class='fw-bolder'>  Departement:</span> <br> " + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+            let title = "<span class='fw-bolder'> Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'><br>Departement: </span>" + item.departement +"." + adress;
+            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
-                const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
-                this.map.setView(latlng, 13);
+                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
-                let screemMax = window.matchMedia("(max-width: 1000px)")
-                let screemMin = window.matchMedia("(min-width: 1000px)")
-
-                // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
-                let pathDetails =`/ferme/departement/${departementName}/${item.departement}/details/${item.id}`
-                if (screemMax.matches) {
-                    getDetailsFermeForMobile(pathDetails);
-                } else if (screemMin.matches) {
-                    getDetailsFerme(pathDetails)
-                }
-
-                const url = new URL(window.location.href);
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
                         iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
-                        //shadowUrl: 'my-icon-shadow.png',
                         shadowSize: [68, 95],
                         shadowAnchor: [22, 94]
                     }
                 })
-
                 marker.setIcon(new icon_R);
 
                 if (this.marker_last_selected && this.marker_last_selected != marker ) {
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
                             iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],
@@ -186,12 +137,33 @@ class MarckerClusterFerme {
                 this.marker_last_selected = marker;
 
                 this.markers.refreshClusters();
+
+                
+                if (screen.width < 991) {
+                    let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+                    getDetailHomeForMobile(pathDetails)
+                } else {
+                    // getDetailsFerme(pathDetails, true)getDetailStation
+                    getDetailFerme(item.departement, item.departementName, item.id)
+                }
+
             })
 
             this.markers.addLayer(marker);
 
         })
         this.map.addLayer(this.markers);
+    }
+
+    addEventOnMap(map) {
+        map.on("resize moveend", () => { 
+            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+
+            const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+
+            this.addPeripheriqueMarker(new_size)
+        })
     }
 
     removeMarker(){
@@ -263,4 +235,27 @@ class MarckerClusterFerme {
             }
         });
     }
+
+    async addPeripheriqueMarker(new_size) {
+        try {
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+
+            const response = await fetch(`/getLatitudeLongitudeFerme${param}`);
+            let new_data = await response.json();
+            console.log(new_data);
+            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
+         
+            this.addMarker(this.checkeFilterType(new_data));
+            this.default_data= this.default_data.concat(new_data);
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    
+    checkeFilterType(data) {
+        return data;
+    }
+
 }

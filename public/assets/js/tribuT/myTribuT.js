@@ -265,7 +265,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 </div>
                                 <div class="col-lg-6 col-6">
                                     <label style="margin-left:10%;" for="fileInputModifTribuT">
-                                        <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                                        <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
                                 </div>
@@ -307,51 +307,37 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 
             </div>
             <div id="tribu_t_conteuneur" class="exprime-pub">
-                <center id="createPubBloc">
-                    <div class="row p-3 champ-pub">
-                        <div class=" col-1 rounded-circle">
-                            <img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src="/public/uploads/users/photos/img_avatar.png">
-                        </div>
-                        <div class="col-11">
-                            <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
-                        </div>
-                        <hr class=" hr-pub mt-3 mx-auto" >
-                        <div class="row mt-3">
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed" >
-                                <i class="bi bi-play-btn-fill"></i>
-                                Vidéo
+                <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+                    <!-- ====== Chart pub One Start -->
+                    <div class=" uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub-t">
+                        <div class="head-pub">
+                            <div class="pdp-content">
+                                <img src="/assets/image/img_avatar3.png" alt="">
                             </div>
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed"  onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
-                                <i class="bi bi-geo-alt-fill"></i>Localisation
+                            <div class="name-content-h">
+                                <div class="name-content">
+                                    <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Partagez ce que vous pensez, Tommy...</p>
+                                </div>
                             </div>
-                            <!--<div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" >
-                                <i class="bi bi-calendar2-event-fill"></i>
-                                Agenda
+                        </div>
+                        <hr>
+                        <div class="icon-piece-join">
+                            <i class="fa-solid fa-camera"></i>
+                            <i class="fa-solid fa-paperclip"></i>
+                        </div>
 
-                            </div>--!>
-                            <div class="col-3 col-lg-3 col-sm-3 col-md-3 col-xl-3 col-xll-3 text-center cursor-not-allowed" >
-                                <i class="bi bi-pencil-square"></i>
-                                Article
-                            </div>
-                        </div>
                     </div>
-                </center>
-                <div class="row">
-                    <div class="col-lg-8">
+                    <!-- ====== Chart pub One End -->
+                </div>
+                <div class="publication-content">
+                    <div class="list-pub-new">
                         <div id="list-publicatiotion-tribu-t">
                             
                         </div>
                         <div class="pub-tribu-t" id="showResto"></div>
                         <div class="invitation-tribu-t" id="blockInvitation"></div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="apropos-tribu-t ps-2 mt-3 responsif-none">
-                            <p class="fw-bold">A propos Tribu-t</p>
-                            <p >
-                            ${tribu_t[0].description}
-                            </p>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
             
@@ -377,55 +363,60 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 let confidentiality = parseInt(data[i].confidentiality,10);
                 let contentPublication=""
                 if (confidentiality === 1) {
-                    contentPublication = `<div class="pub-tribu-t mt-3">
-                        <div class="name-pub">
-                            <div class="row head-pub">
-                                <div class="col-lg-1 col-2">
-                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
-                                </div>
-                                <div class="col-lg-10 col-8 mt-3">
+                    contentPublication = `<div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                                            <!-- ====== Chart One Start -->
+                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                                <div class="head-pub">
+                                                    <div class="pdp-content">
+                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                    </div>
+                                                    <div class="name-content-h">
+                                                        <div class="name-content">
+                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
+                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                        </div>
+                                                        <div class="status-content d-flex">
+                                                            <p class="p-heure"> ${data[i].datetime}</p>
+                                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                                                
+                                                                <div class="btn-group" role="group">
+                                                                    
+                                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
+                                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                                        <a class="dropdown-item" href="#">Modifier le status</a>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                                    <a href="">${data[i].userfullname}</a>
-                                    <p class="card-text">
-                                        <i>
-                                            <small class="text-muted">Publié le
-                                                ${data[i].datetime}
-                                            </small>
-                                        </i>
-                                      
-                                    </p>
-                                </div>
-                                <div class="col-lg-1 col-2 mt-3">
-                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                </div>
-                            </div>
-                            <div class="pub-content">
-                                <p>
-                                    ${data[i].publication}
-                                </p>
-                            </div>
-                            <div class="pub-photo">
-                                <img src="${data[i].photo}" alt="">
-                            </div>
-                            <!--<div class="content-comant-reaction">
-                                <div class="row">
-                                    <div class="col-lg-2">
-                                        <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <p class="text-muted">10 commentaires</p>
-                                    </div>
-                                </div>
-                            </div>--!>
-                            <hr>
-                            <div class="btn-mention-partage">
-                                <div class="action-container">
-                                    <i class="bi-heart like"></i>
-                                    ${dataNbr}<i onclick="showCommentaireTribu_T(event,0,true)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="param-content">
+                                                        <i class="fa-solid fa-ellipsis"></i>
+                                                    </div>
+
+                                                    
+                                                </div>
+                                                    
+                                                <div class="card-pub-actu">
+                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <img src="${data[i].photo}" alt="">
+                                                </div>
+
+                                                <div class="card-reaction">
+                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
+                                                    <div class="reaction-icon d-flex">
+                                                        <i class="bi-heart like"></i>
+                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <!-- ====== Chart One End -->
+                                        </div>
+
+                    
 
                     <!-- Modal commentair -->
                     <div class="modal fade" id="modalCommentairTribuT${data[i].id}" tabindex="-1" aria-labelledby="modalCommentairTribuTLabel" aria-hidden="true">
@@ -453,54 +444,58 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     //moi uniquement 
                     console.log(id_c_u,data[i].user_id)
                     if (parseInt(id_c_u,10)===parseInt(data[i].user_id,10)) {
-                        contentPublication = `<div class="pub-tribu-t mt-3">
-                                            <div class="name-pub">
-                                                <div class="row head-pub">
-                                                    <div class="col-lg-1 col-2">
-                                                        <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
+                        contentPublication = `
+                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                                            <!-- ====== Chart One Start -->
+                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                                <div class="head-pub">
+                                                    <div class="pdp-content">
+                                                        <img src="/assets/image/img_avatar3.png" alt="">
                                                     </div>
-                                                    <div class="col-lg-10 col-8 mt-3">
+                                                    <div class="name-content-h">
+                                                        <div class="name-content">
+                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
+                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                        </div>
+                                                        <div class="status-content d-flex">
+                                                            <p class="p-heure"> ${data[i].datetime}</p>
+                                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                                                
+                                                                <div class="btn-group" role="group">
+                                                                    
+                                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
+                                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                                        <a class="dropdown-item" href="#">Modifier le status</a>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                                                        <a href="">${data[i].userfullname}</a>
-                                                        <p class="card-text">
-                                                            <i>
-                                                                <small class="text-muted">Publié le
-                                                                    ${data[i].datetime}
-                                                                </small>
-                                                            </i>
-                                                        
-                                                        </p>
+                                                            
+                                                        </div>
                                                     </div>
-                                                    <div class="col-lg-1 col-2 mt-3">
-                                                        <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                    <div class="param-content">
+                                                        <i class="fa-solid fa-ellipsis"></i>
                                                     </div>
+
+                                                    
                                                 </div>
-                                                <div class="pub-content">
-                                                    <p>
-                                                        ${data[i].publication}
-                                                    </p>
-                                                </div>
-                                                <div class="pub-photo">
+                                                    
+                                                <div class="card-pub-actu">
+                                                    <p class="text-pub"> ${data[i].publication}</p>
                                                     <img src="${data[i].photo}" alt="">
                                                 </div>
-                                                <!--<div class="content-comant-reaction">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
-                                                        </div>
-                                                        <div class="col">
-                                                            <p class="text-muted">10 commentaires</p>
-                                                        </div>
-                                                    </div>
-                                                </div>--!>
-                                                <hr>
-                                                <div class="btn-mention-partage">
-                                                    <div class="action-container">
+
+                                                <div class="card-reaction">
+                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
+                                                    <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like"></i>
-                                                        ${dataNbr}<i onclick="showCommentaireTribu_T(event,0,true)" class="fa-regular fa-comment comment" data-foo="kjjk_${data[i].id}xdjyfvfAAS"  data-bs-toggle="modal" data-bs-target="#modalCommentairTribuT${data[i].id}"></i>
+                                                        <i class="fa-regular fa-comment comment" ></i>
                                                     </div>
                                                 </div>
+                                                
                                             </div>
+                                            <!-- ====== Chart One End -->
                                         </div>
 
                                         <!-- Modal commentair -->
@@ -569,59 +564,59 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 data = gen.next().value
                                 console.log(data)
                                 if (data) {
-                                    const contentPublication = `<div class="pub-tribu-t mt-3">
-                                        <div class="name-pub">
-                                            <div class="row head-pub">
-                                                <div class="col-lg-1">
-                                                    <img class="mini-pdp" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">
-                                                </div>
-                                                <div class="col-lg-10 mt-3">
+                                    const contentPublication = `
+                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                                            <!-- ====== Chart One Start -->
+                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                                <div class="head-pub">
+                                                    <div class="pdp-content">
+                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                    </div>
+                                                    <div class="name-content-h">
+                                                        <div class="name-content">
+                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
+                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                        </div>
+                                                        <div class="status-content d-flex">
+                                                            <p class="p-heure"> ${data[i].datetime}</p>
+                                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                                                
+                                                                <div class="btn-group" role="group">
+                                                                    
+                                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
+                                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                                        <a class="dropdown-item" href="#">Modifier le status</a>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                                                    <a href=""> ${data.userfullname}</a>
-                                                    <p class="card-text">
-                                                        <i>
-                                                            <small class="text-muted">Publié le
-                                                                ${data.datetime}
-                                                            </small>
-                                                        </i>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="param-content">
+                                                        <i class="fa-solid fa-ellipsis"></i>
+                                                    </div>
+
                                                     
-                                                    </p>
                                                 </div>
-                                                <div class="col-lg-1 mt-3">
-                                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                    
+                                                <div class="card-pub-actu">
+                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <img src="${data[i].photo}" alt="">
                                                 </div>
-                                            </div>
-                                            <div class="pub-content">
-                                                <p>
-                                                    ${data.publication}
-                                                </p>
-                                            </div>
-                                            <div class="pub-photo">
-                                                <img src="${data.photo}" alt="">
-                                            </div>
-                                            <div class="content-comant-reaction">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <i class="bi-heart-fill ms-3" style="cursor: pointer;"></i><span class="text-muted"> 12</span>
-                                                    </div>
-                                                    <div class="col">
-                                                        <p class="text-muted">10 commentaires</p>
+
+                                                <div class="card-reaction">
+                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
+                                                    <div class="reaction-icon d-flex">
+                                                        <i class="bi-heart like"></i>
+                                                        <i class="fa-regular fa-comment comment" ></i>
                                                     </div>
                                                 </div>
+                                                
                                             </div>
-                                            <hr>
-                                            <div class="btn-mention-partage">
-                                                <div class="row text-center">
-                                                    <div class="col">
-                                                        <i class="bi-heart"></i>
-                                                    </div>
-                                                    <div class="col">
-                                                        <i class="bi bi-chat-square"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <!-- ====== Chart One End -->
                                         </div>
-                                    </div>
                                     `
                                     document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
                                 }

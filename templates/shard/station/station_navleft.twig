@@ -1,53 +1,4 @@
 <div class="navleft result_container_station">
-	{# <nav class="navbar navbar-light navbar-light-left fixed-top">
-		<div class="container-fluid">
-
-			<div class="row">
-				<div class="col-md-10">
-					<a class="logo" href="{{path("app_home")}}">
-						<img src="{{asset('assets/image/logo.png')}}" alt="">
-					</a>
-				</div>
-				<div class="col-md-2 mt-4 me-auto" id="close-navleft">
-					<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="5vw" height="5vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-
-						<g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
-							<path d="M634 986 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M857 994 c-4 -4 -7 -22 -7 -40 0 -37 21 -49 76 -42 27 3 29 6 29 43
-								                                    l0 40 -45 3 c-25 2 -49 0 -53 -4z"/>
-							<path d="M534 886 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M754 886 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M414 776 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M634 776 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M304 676 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M532 682 c-8 -6 -12 -23 -10 -43 3 -34 3 -34 53 -34 l50 0 0 40 c0
-								                                    40 0 40 -40 43 -22 1 -46 -2 -53 -6z"/>
-							<path d="M414 556 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M642 562 c-8 -6 -12 -23 -10 -43 3 -34 3 -34 53 -34 l50 0 0 40 c0
-								                                    40 0 40 -40 43 -22 1 -46 -2 -53 -6z"/>
-							<path d="M524 466 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M752 471 c-8 -5 -12 -22 -10 -42 3 -34 3 -34 53 -34 50 0 50 0 53 34
-								                                    4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
-							<path d="M644 356 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-								                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-							<path d="M872 361 c-8 -5 -12 -22 -10 -42 3 -34 3 -34 53 -34 50 0 50 0 53 34
-							                                4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
-						</g>
-					</svg>
-				</div>
-			</div>
-			<hr>
-		</div>
-
-	</nav> #}
 	<div class="container-fluid list-depart">
 		<div class="head-left">
 			<div class="row">
@@ -70,7 +21,7 @@
 				</div>
 				<div class="col-md-8">
 					<p>
-						Station-service dans tous les départements. <br>
+						Station-service dans tous les départements.
 						<span class="content_nombre_result_js_jheo">{{total_number_station}}</span>
 						résultats
 					</p>
@@ -83,7 +34,7 @@
                 </div> #}
 			</div>
 			<div class="container list-depart-all" id="Scrollbar">
-				<div id="list_departements">
+				<div class="content_container_list" id="list_departements">
 					<ul>
 						{% for departement in departements %}
 

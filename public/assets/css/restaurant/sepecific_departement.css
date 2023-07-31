@@ -3,9 +3,13 @@ main {
     top: unset !important;
 }
 
-.element {
-    height: 160px;
+#map {
+    margin-left: 0rem !important;
 }
+
+/* .element {
+    height: 160px;
+} */
 
 /* filtre alphabet */
 .pagination ul {

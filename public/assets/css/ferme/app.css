@@ -26,3 +26,12 @@
 .content_description{
     padding: 0 !important;
 }
+
+
+
+.content_container_list{
+    display: flex;
+    justify-content: center;
+    /* text-align: center; */
+    padding-bottom: 20px;
+}

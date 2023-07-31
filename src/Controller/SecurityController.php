@@ -243,22 +243,33 @@ class SecurityController extends AbstractController
                 ['id' => $user->getId()] /// param id
             );
 
-            //// send the mail
-            $mailService->sendEmail(
-                "geoinfography@infostat.fr", /// mail where from
-                "ConsoMyZone",  //// name the senders
+            // //// send the mail
+            // $mailService->sendEmail(
+            //     $user->getEmail(), /// mail destionation
+            //     trim($user->getPseudo()), /// name destionation
+            //     "Confirmation de réinitialiser mon mot de passe", //// title of email
+            //     "Cliquez ici pour modifier votre mot de passe " . $signatureComponents->getSignedUrl() /// content: link
+            // );
+
+              
+            $mailService->sendLinkOnEmailAboutAuthenticator(
                 $user->getEmail(), /// mail destionation
                 trim($user->getPseudo()), /// name destionation
-                "Confirmation de réinitialiser mon mot de passe", //// title of email
-                "Cliquez ici pour modifier votre mot de passe " . $signatureComponents->getSignedUrl() /// content: link
+                [
+                    "object" => "Confirmation de réinitialiser Mot de passe",
+                    "template" => "emails/mail_reset_password.html.twig",
+                    "link" => $signatureComponents->getSignedUrl() /// link
+                ]
             );
 
             $flash = [
                 "titre" => "SUCCESS",
-                "content" => "Nous avons envoyé un lien dans votre adresse e-mail pour modifier votre mot de passe."
+                "content" => "Nous avons envoyé un e-mail pour confirmer votre changement de mots de passe."
             ];
             ///On quitte
             goto quit;
+
+            // return $this->redirect($request->getUri());
         }
 
         quit:
@@ -502,6 +513,13 @@ class SecurityController extends AbstractController
         */
 
 
+        /// IN DEVELOPMENT----- delete this when PROD ------------///
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
+        ///-------------------------------------------------------///
+
+
 
         //// prepare email which we wish send
         $signatureComponents = $verifyEmailHelper->generateSignature(
@@ -513,22 +531,15 @@ class SecurityController extends AbstractController
 
 
 
-        /// IN DEVELOPMENT----- delete this when PROD ------------///
-        if( strtolower($_ENV["APP_ENV"]) === "dev"){
-            return $this->redirect($signatureComponents->getSignedUrl());
-        }
-        ///-------------------------------------------------------///
-
-
-
-        //// send the mail
-        $mailService->sendEmail(
-            "geoinfography@infostat.fr", /// mail where from
-            "ConsoMyZone",  //// name the senders
-            $user->getEmail(), /// mail destionation
-            trim($user->getPseudo()), /// name destionation
-            "EMAIL CONFIRMATION", //// title of email
-            "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
+       
+        $mailService->sendLinkOnEmailAboutAuthenticator(
+            $user->getEmail(), /// mail destination
+            trim($user->getPseudo()), /// name destination
+            [
+                "object" => "Confirmation d'inscription sur ConsoMyZone", //// object of the email
+                "link" => $signatureComponents->getSignedUrl(), /// link
+                "template" => "emails/mail_confirm_inscription.html.twig"
+            ]
         );
 
         ///don't change this, it used to handle error from user like : email exist, mdp don't match, ... 
@@ -579,19 +590,10 @@ class SecurityController extends AbstractController
         ///send email
 
         $mailService->sendEmail(
-
-            "geoinfography@infostat.fr", /// mail where from
-
-            "ConsoMyZone",  //// name the senders
-
             $user->getEmail(), /// mail destionation
-
             trim($user->getPseudo()), /// name destionation
-
             "EMAIL CONFIRMATION", //// title of email
-
             "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
-
         );
 
 
@@ -611,14 +613,14 @@ class SecurityController extends AbstractController
         UserAuthenticator $loginAuth,
         VerifyEmailHelperInterface $verifyEmailHelper
     ) {
+        ///to get info
+        ///id de l'utilisateur.
+        $userToVerifie = $userRepository->find($request->query->get('id'));
 
         if ($this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
 
-        ///to get info
-        ///id de l'utilisateur.
-        $userToVerifie = $userRepository->find($request->query->get('id'));
 
         if (!$userToVerifie) {
             throw $this->createNotFoundException();
@@ -690,18 +692,23 @@ class SecurityController extends AbstractController
             ////set profil
             if( $profil){
                 ///path file folder
-                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userToVerifie->getId() . "/";
+                $dir_exist = $filesyst->exists($path);
+
+                if ($dir_exist == false) {
+                    $filesyst->mkdir($path, 0777);
+                }
+
                 $temp = explode(";", $profil );
                 $extension = explode("/", $temp[0])[1];
                 $image_name = "profil_". $nom . "." . $extension;
+
                 ///save image in public/uploader folder
                 file_put_contents($path ."/". $image_name, file_get_contents($profil));
                 
                 ///set use profile
-                $user_profil->setPhotoProfil($image_name);
+                $user_profil->setPhotoProfil( $path . $image_name);
             }
-
-
 
             // $user_profil->setPhotoCouverture("photo de couverture");
 

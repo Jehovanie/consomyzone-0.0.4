@@ -54,6 +54,8 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select('p.id',
                      'p.nom',
+                     'p.departementName',
+                     'p.departementCode',
                      'p.prixE85',
                      'p.prixGplc',
                      'p.prixSp95',
@@ -81,8 +83,11 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             ->select('p.id',
                      'p.nom',
                      'p.latitude',
+                     'p.latitude as lat',
                      'p.longitude',
+                     'p.longitude as long',
                      'p.adresse',
+                     'p.adresse as add',
                      'p.prixE85',
                      'p.prixGplc',
                      'p.prixSp95',
@@ -90,7 +95,9 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.prixSp98',
                      'p.prixGasoil',
                      'p.departementName',
-                     'p.departementCode')
+                     'p.departementName depName',
+                     'p.departementCode',
+                     'p.departementCode as dep')
                      ->orderBy("p.nom", 'ASC');
         if( $code === "20"){
             $qb->where('p.departementCode = :q')
@@ -148,7 +155,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
     ///jheo : getLatitudeLongitude
     public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null)
     {
-
+        $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
 
         ////filter with min and max
         if( $min || $max){
@@ -406,6 +413,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select('p.id',
                     'p.adresse as add',
+                    'p.adresse as commune',
                     'p.departementCode as dep',
                     'p.departementName as depName',
                     'p.prixE85',
@@ -421,48 +429,72 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     'p.services');
 
         if( $mot_cles0 !== "" && $mot_cles1 === ""){
-            // ->where('MATCH_AGAINST(a.clasificacion, a.expediente, a.fecha, a.observaciones, a.signatura) AGAINST(:searchterm boolean)>0')
-            $qb = $qb->where("MATCH_AGAINST(p.adresse) AGAINST( :cles0 boolean)>0")
-                ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean)>0")
-                ->orWhere("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0")
-                ->orWhere("MATCH_AGAINST(p.services) AGAINST( :cles0 boolean)>0")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            
+            if( strlen($mot_cles0) <= 2 ){
+            
+                $qb = $qb->where("p.nom LIKE :cles0")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+
+                $qb = $qb->where("p.nom LIKE :cles0")
+                         ->orWhere("p.services LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }
 
         }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
-            if( strlen($mot_cles1) === 2 ){
-                if($mot_cles1 === "20" ){
+            if( strlen($mot_cles1) <= 2 ){
+                if($mot_cles1 === "20"){
                     $qb = $qb->where("p.departementCode LIKE :a")
                             ->orWhere("p.departementCode LIKE :b")
                             ->setParameter('a',  "%2A%" )
                             ->setParameter('b',  "%2B%");
                 }else{
-                    $qb = $qb->where("p.departementCode LIKE :cles1")
-                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                    $qb =  $qb->where("p.departementCode LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }else{
                 $qb = $qb->where("p.adresse LIKE :cles1")
-                    ->orWhere("p.departementCode LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean)>0")
-                    ->orWhere("MATCH_AGAINST(p.nom) AGAINST( :cles1 boolean)>0")
-                    ->orWhere("MATCH_AGAINST(p.services) AGAINST( :cles1 boolean)>0")
-                    ->orWhere("CONCAT(p.departementCode,'',p.departementName) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
         }else{
-            $qb = $qb->where("(MATCH_AGAINST(p.adresse) AGAINST( :cles0 boolean)>0) AND ( p.departementCode LIKE :cles1 )")
-                ->orWhere("(MATCH_AGAINST(p.adresse) AGAINST( :cles0 boolean)>0) AND ( MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean)>0)")
-                ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0) AND ( p.departementCode LIKE :cles1 )")
-                ->orWhere("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0) AND ( MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean)>0)")
-                ->orWhere("(MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean)>0) AND ( MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean)>0 )")
-                ->orWhere("(MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean)>0) AND ( p.departementCode LIKE :cles1 )")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
-        }
 
-        // $qb = $qb->setFirstResult($page_current)
-        //     ->setMaxResults($size)
-        //     ->orderBy('p.nom', 'ASC')
-        //     ->getQuery();
+            if(strtolower($mot_cles0) == "station" || strtolower($mot_cles0) == "stations"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.departementCode LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.adresse LIKE :cles1")
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("p.nom LIKE :cles0 AND p.departementCode LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+
+                    $qb = $qb->where("p.nom LIKE :cles0 AND p.adresse LIKE :cles1")
+                            ->orWhere("p.services LIKE :cles0 AND p.adresse LIKE :cles1")
+                            ->orWhere("p.nom LIKE :cles0 AND p.departementName LIKE :cles1")
+                            ->orWhere("p.nom LIKE :cles0 AND CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("p.nom LIKE :cles0 AND CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+
+
+            }
+            
+        }
 
         $qb = $qb->orderBy('p.nom', 'ASC')
                  ->getQuery();
@@ -470,6 +502,163 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
 
         $results =$qb->execute();
         return [ $results , count($results) , "station"];
+    }
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1 , int $page = 1, $size = 20 )
+    {
+        // $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // const { adresse:add, departementName: depName, departementCode: dep, nom } = item;
+        // // showResultSearchNavBar("station", nom, add, dep, depName, id);
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.id',
+                    'p.adresse as add',
+                    'p.adresse as commune',
+                    'p.departementCode as dep',
+                    'p.departementName as depName',
+                    'p.prixE85',
+                    'p.prixGplc',
+                    'p.prixSp95',
+                    'p.prixSp95E10',
+                    'p.prixSp98',
+                    'p.prixGasoil',
+                    'p.prixGasoil as station',
+                    'p.nom',
+                    'p.latitude as lat',
+                    'p.longitude as long',
+                    'p.services');
+
+        if( $mot_cles0 !== "" && $mot_cles1 === ""){
+            
+            if( strlen($mot_cles0) <= 2 ){
+            
+                $qb = $qb->where("p.nom LIKE :cles0")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+
+                $qb = $qb->where("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean)>0")
+                         ->orWhere("p.services LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }
+
+        }else if( $mot_cles0 === "" && $mot_cles1 !== ""){
+            if( strlen($mot_cles1) <= 2 ){
+                if($mot_cles1 === "20" ){
+                    $qb = $qb->where("p.departementCode LIKE :a")
+                            ->orWhere("p.departementCode LIKE :b")
+                            ->setParameter('a',  "%2A%" )
+                            ->setParameter('b',  "%2B%");
+                }else{
+                    $qb =  $qb->where("p.departementCode LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+                $qb = $qb->where("MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0")
+                            ->orWhere("p.adresse LIKE :cles1")
+                            ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+        }else{
+
+            if( strlen($mot_cles1) <= 2 ){
+                
+                $qb = $qb->where("MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0 AND p.departementCode LIKE :cles1")
+                         ->orWhere("p.nom LIKE :cles0 AND p.departementCode LIKE :cles1")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("(MATCH_AGAINST(p.nom) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0)")
+                        ->orWhere("(p.nom LIKE :cles0) OR (p.adresse LIKE :cles1 )")
+                        ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
+                        ->orWhere("p.departementName LIKE :cles1")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+            }
+            
+        }
+
+        $qb = $qb->orderBy('p.nom', 'ASC')
+                 ->getQuery();
+            
+
+        $results =$qb->execute();
+        return [ $results , count($results) , "station"];
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Station
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+
+    
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy('RAND()')
+                    ->setMaxResults(200)
+                    ->getQuery()
+                    ->getResult();
     }
 //    /**
 //     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects

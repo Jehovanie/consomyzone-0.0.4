@@ -2,9 +2,13 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{asset('assets/css/chatBot/style_chatBot.css')}}">
 {% endblock %}
+
+
 {% block javascripts %}
-    <script src="{{asset('assets/js/chatBot.js')}}" defer></script>
+    <script src="{{asset('assets/js/chatHome.js')}}" defer></script>
 {% endblock %}
+
+
 <div class="navleft-chat vc-chat tv-chat nj-chat xr-chat" style="height:70px; position: fixed;bottom: 0; right: -320px; z-index:1003;background-color:transparent;" id="chat_container">
 	<div class="text-center" id="openChat" style="background-color: #0d6efd;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
 		<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;"></i>

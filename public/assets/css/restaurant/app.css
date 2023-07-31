@@ -1,3 +1,7 @@
+#map {
+    margin-left: 1.5rem !important;
+}
+
 .kidje3{
     width: 115px;
 }
@@ -7,9 +11,9 @@
     font-size: 12pt;
 }
 
-.container-depart{
+/* .container-depart{
     pointer-events: none;
-}
+} */
 
 .navleft .list-depart {
     margin-top: 0 !important;
@@ -17,4 +21,14 @@
 
 .choix_list_cart {
     text-align: center;
+}
+
+.content_description {
+    height: 600px;
+}
+
+.content_container_list{
+    display: flex;
+    justify-content: center;
+    /* text-align: center; */
 }

@@ -58,9 +58,19 @@ class FermeGeomRepository extends ServiceEntityRepository
             ->select(
                 'p.id',
                 'p.nomFerme',
+                'p.nomFerme as nom',
+                'p.departement',
+                'p.departement as dep',
+                'p.departementName',
+                'p.departementName as depName',
+                'p.genre',
+                'p.email',
                 'p.adresseFerme',
+                'p.adresseFerme as add',
                 'p.latitude',
+                'p.latitude as lat',
                 'p.longitude',
+                'p.longitude as long',
                 'p.addBy'
             )
             // ->setMaxResults(10)
@@ -90,7 +100,9 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.departement',
                 'p.departementName',
                 'p.latitude',
-                'p.longitude'
+                'p.longitude',
+                'p.latitude as lat',
+                'p.longitude as long'
             )
             ->where('p.departement = :k')
             ->andWhere("p.disabled = :disabled")
@@ -170,11 +182,10 @@ class FermeGeomRepository extends ServiceEntityRepository
     }
 
     ///jheo : getLatitudeLongitude
-    public function getLatitudeLongitudeFerme()
+    public function getLatitudeLongitudeFerme($limits= 1000)
     {
-
         // Remarque : $id_ferme dans la base peut parfois combinaison des lettres et des chiffres.
-        $qb = $this->createQueryBuilder('p')
+        return $this->createQueryBuilder('p')
             ->select(
                 'p.id',
                 'p.nomFerme',
@@ -183,10 +194,11 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.departementName',
                 'p.latitude',
                 'p.longitude'
-            );
-
-        $query = $qb->getQuery();
-        return $query->execute();
+            )
+            ->orderBy('RAND()')
+            ->setMaxResults($limits)
+            ->getQuery()
+            ->getResult();
     }
 
     public function getAllFilterByLatLong($data){
@@ -404,8 +416,14 @@ class FermeGeomRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->select(
                 'p.id',
+                'p.nomFerme',
                 'p.nomFerme as nom',
+                'p.adresseFerme',
                 'p.adresseFerme as add',
+                'p.email',
+                'p.genre',
+                'p.departement',
+                'p.departementName',
                 'p.departement as dep',
                 'p.departementName as depName',
                 'p.produitFerme as ferme',
@@ -418,52 +436,61 @@ class FermeGeomRepository extends ServiceEntityRepository
             );
 
         if( $mot_cles0 !=="" && $mot_cles1 === "" ){
-            // ->where('MATCH_AGAINST(a.clasificacion, a.expediente, a.fecha, a.observaciones, a.signatura) AGAINST(:searchterm boolean)>0')
-            $qb =  $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
-                    ->orWhere("p.departement LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0")
-                    // ->orWhere("p.nomFerme LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
-                    ->orWhere("p.codePostal LIKE :cles0")
-                    // ->orWhere("p.motDuFermier LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.motDuFermier) AGAINST( :cles0 boolean) > 0")
-                    // ->orWhere("p.nomProprietaire LIKE :cles0")
-                    ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
-                    ->setParameter('cles0', '%'.$mot_cles0.'%');
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.nomFerme LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                $qb =  $qb->where("p.nomFerme LIKE :cles0")
+                          ->orWhere("p.nomProprietaire LIKE :cles0")
+                          ->setParameter('cles0', '%'.$mot_cles0.'%');
+            }
+            
 
         }else if ( $mot_cles0 === "" && $mot_cles1 !== "" ){
-            if( strlen($mot_cles1) === 2 ){
+            if( strlen($mot_cles1) <= 2 ){
                 $qb =  $qb->where("p.departement LIKE :cles1")
                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
-                $qb =  $qb->where("MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.departement LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("p.codePostal LIKE :cles1")
-                    ->orWhere("MATCH_AGAINST(p.nomFerme) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("MATCH_AGAINST(p.motDuFermier) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles1 boolean) > 0")
-                    ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
-                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                $qb =  $qb->where("p.adresseFerme LIKE :cles1")
+                          ->orWhere("p.departementName LIKE :cles1")
+                          ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                          ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
         }else{
-            $qb =  $qb->where("(MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0) AND (p.departement LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (p.departement LIKE :cles1)")
-                ->orWhere("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) AND (MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles1 boolean) > 0)")
-                ->orWhere("(MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0) AND (p.departement LIKE :cles1)")
-                ->orWhere("(p.departementName LIKE :cles0) OR (p.departementName LIKE :cles1)")
-                ->setParameter('cles0', '%'. $mot_cles0. '%' )
-                ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            if(strtolower($mot_cles0) == "ferme" || strtolower($mot_cles0) == "fermes"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.departement LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("p.adresseFerme LIKE :cles1")
+                            ->orWhere("p.departementName LIKE :cles1")
+                            ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                            ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            } else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.nomFerme LIKE :cles0 AND p.departement LIKE :cles1")
+                                 ->orWhere("p.nomProprietaire LIKE :cles0 AND p.departement LIKE :cles1")
+                                 ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                                 ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+
+                    $qb = $qb->where("(p.nomFerme LIKE :cles0) AND (p.adresseFerme LIKE :cles1)")
+                        ->orWhere("p.nomFerme LIKE :cles0 AND p.departementName LIKE :cles1")
+                        ->orWhere("p.nomFerme LIKE :cles0 AND CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                        ->orWhere("p.nomFerme LIKE :cles0 AND CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+
+
+            }
         }
-        
-        // $qb = $qb->setFirstResult($page_current)
-        //         ->setMaxResults($size)
-        //         ->orderBy('p.nomFerme', 'ASC')
-        //         ->getQuery();
 
         $qb = $qb->orderBy('p.nomFerme', 'ASC')
                  ->getQuery();
@@ -473,6 +500,200 @@ class FermeGeomRepository extends ServiceEntityRepository
         return [ $results , count($results) , "ferme"];
     }
 
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 1, $size= 20 )
+    {
+        $page_current =$page > 1 ? $page * 10 +1  : 0;
+        // const { adresseFerme: add , departement: dep , departementName: depName, nomFerme: nom } = item ;
+        // // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nomFerme',
+                'p.nomFerme as nom',
+                'p.adresseFerme',
+                'p.adresseFerme as add',
+                'p.email',
+                'p.genre',
+                'p.departement',
+                'p.departementName',
+                'p.departement as dep',
+                'p.departementName as depName',
+                'p.produitFerme as ferme',
+                'p.codePostal',
+                'p.nomProprietaire',
+                'p.motDuFermier',
+                'p.ville',
+                'p.latitude as lat',
+                'p.longitude as long',
+            );
+
+        if( $mot_cles0 !=="" && $mot_cles1 === "" ){
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.nomFerme LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                $qb =  $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0")
+                          ->orWhere("p.nomFerme LIKE :cles0")
+                          ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles0 boolean) > 0")
+                          ->orWhere("p.nomProprietaire LIKE :cles0")
+                          ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
+                          ->setParameter('cles0', '%'.$mot_cles0.'%');
+            }
+            
+
+        }else if ( $mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb =  $qb->where("p.departement LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $qb =  $qb->where("MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0")
+                          ->orWhere("p.adresseFerme LIKE :cles1")
+                          ->orWhere("MATCH_AGAINST(p.departementName) AGAINST( :cles1 boolean) > 0")
+                          ->orWhere("p.departementName LIKE :cles1")
+                          ->orWhere("p.nomProprietaire LIKE :cles1")
+                          ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles1 boolean) > 0")
+                          ->orWhere("CONCAT(p.departement,' ',p.departementName) LIKE :cles1")
+                          ->orWhere("CONCAT(p.departementName,' ',p.departement) LIKE :cles1")
+                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else{
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0 AND p.departement LIKE :cles1")
+                             ->orWhere("p.nomFerme LIKE :cles0 AND p.departement LIKE :cles1")
+                             ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0 AND p.departement LIKE :cles1")
+                             ->orWhere("p.nomProprietaire LIKE :cles0 AND p.departement LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+
+                $qb = $qb->where("(MATCH_AGAINST(p.nomFerme) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adresseFerme) AGAINST( :cles1 boolean) > 0)")
+                    ->orWhere("(p.nomFerme LIKE :cles0) OR (p.adresseFerme LIKE :cles1 )")
+                    ->orWhere("MATCH_AGAINST(p.nomProprietaire) AGAINST( :cles0 boolean) > 0")
+                    ->orWhere("p.nomProprietaire LIKE :cles0")
+                    ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                    ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+            }
+        }
+
+        $qb = $qb->orderBy('p.nomFerme', 'ASC')
+                 ->getQuery();
+                
+
+        $results = $qb->execute();
+        return [ $results , count($results) , "ferme"];
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Ferme
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme',
+                        'r.adresseFerme',
+                        'r.departement',
+                        'r.departementName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme as nom',
+                        'r.adresseFerme as add',
+                        'r.departement as dep',
+                        'r.departementName as depName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy)
+                    ->orderBy('RAND()')
+                    ->setMaxResults(200)
+                    ->getQuery()
+                    ->getResult();
+    }
 
     //    /**
     //     * @return FermeGeom[] Returns an array of FermeGeom objects

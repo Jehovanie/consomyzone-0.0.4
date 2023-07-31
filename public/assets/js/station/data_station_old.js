@@ -1,6 +1,5 @@
 checkScreen();
 window.addEventListener('load', () => {
-    setDataInLocalStorage("type", "station");
     
     if( document.querySelector(".content_info_js")){
         const parsedUrl = new URL(window.location.href);

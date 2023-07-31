@@ -1,4 +1,5 @@
 window.addEventListener('load', () => {
+
     const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div") ? document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id") : null;
     let currentUserId = 0
     if(document.querySelector(".FtBjOlVf"))
@@ -44,6 +45,7 @@ window.addEventListener('load', () => {
             })
         }, 5000)   
     }
+
     document.querySelector("#Submit-Avis-resto-tom-js").onclick = () => {
        
         let note = document.querySelector("#text-note").value
@@ -84,6 +86,7 @@ window.addEventListener('load', () => {
         
         
     }
+
     if(document.querySelector("#see-tom-js")){
         document.querySelector("#see-tom-js").onclick = () => {
             const d=document.querySelectorAll(".fIQYlf")
@@ -211,6 +214,8 @@ function createNombreAvisContainer(parent,nombre) {
     //parent.insertBefore(, parent.firstChild)
 
 }
+
+
 function mustBeInferior4(value,target, isThrowException) {
     regex=/[^0-9,\.]+/
     if (parseFloat(value) > 4.00) {
@@ -408,6 +413,8 @@ function createShowAvisAreas(json,currentUserId) {
     divContentAvis.appendChild(divComment)
     document.querySelector("#staticBackdrop > div > div > div.list-avis-ferme > div").appendChild(divContentAvis)
 }
+
+
 function _kidMo(event) {
     const v=event.target.parentNode.parentNode.querySelector(".tnEmMeco").textContent
     const stars=event.target.parentNode.querySelectorAll(".lioTe >i.checked").length
@@ -418,4 +425,3 @@ function _kidMo(event) {
    document.querySelector("#text-note-modif").value=stars
    
 }
-
