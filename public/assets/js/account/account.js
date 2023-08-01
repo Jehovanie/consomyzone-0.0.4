@@ -711,3 +711,36 @@ fileInputProfils.forEach(fileInputProfil=>{
         fileReader.readAsDataURL(e.target.files[0]);
     })
 })
+
+let icons_eye = document.querySelectorAll("i.pwd-eye")
+
+icons_eye.forEach(icon_eye=>{
+
+    icon_eye.addEventListener("click",function(){
+
+        let input_pass = icon_eye.previousElementSibling
+
+        if( icon_eye.classList.contains("fa-eye-slash")){
+
+            icon_eye.classList.remove("fa-eye-slash");
+        
+            icon_eye.classList.add("fa-eye");
+        
+            ///show password
+        
+            icon_eye.previousElementSibling.type="text";
+        
+        }else{
+        
+            icon_eye.classList.remove("fa-eye");
+        
+            icon_eye.classList.add("fa-eye-slash");
+        
+            ///hide password
+        
+            icon_eye.previousElementSibling.type="password";
+        
+        }
+    })
+    
+})

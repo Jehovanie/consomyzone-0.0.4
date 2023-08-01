@@ -13,6 +13,7 @@ function openChat() {
     document.querySelector("#chat_header").style ="display:;"
     document.querySelector("#amis_list").style ="display:;"
 
+    document.querySelector("#openFlottant").style ="display:none;"
     
 }
 
@@ -66,6 +67,8 @@ function endChat() {
         document.querySelector("#amis_list").setAttribute("data-my-id","0")
         
     }
+
+    document.querySelector("#openFlottant").style ="display:flex;"
 
 }
 
@@ -415,8 +418,6 @@ function sendChat(message, images =[], user_id) {
         images : images
     }
 
-    console.log(data);
-
     fetch("/user/push/message", {
         headers: {
         'Accept': 'application/json',
@@ -426,8 +427,9 @@ function sendChat(message, images =[], user_id) {
         body: JSON.stringify(data)
     }).then(response => {
         if(response.status == 200){
-            //writeRequest(message)
-            console.log("message sended...");
+
+            // check the new message
+            checkNewMessage(user_id)
 
             if(document.querySelectorAll("div.content_image_input_js_jheo > img").length > 0){
                 document.querySelectorAll("div.content_image_input_js_jheo > img").forEach(img=>{
@@ -687,36 +689,100 @@ let main_suggestion = {
 
 //const user_id = document.querySelector("div.user-chat-display").getAttribute("data-user-id")
 
-document.querySelector("#openChat").addEventListener("click", function(){
+if(document.querySelector("#openMessage")){
 
-    openChat()
+    // document.querySelector("#openMessage").addEventListener("click", function(){
 
-    if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
+    //     openChat()
 
-        runSpinner()
+    //     document.querySelector("#assist_virt").style="display:none;"
+    //     document.querySelector(".btn-input-file").style="display:;cursor:pointer;"
 
-        writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
-        Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
-        <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
+    //     document.querySelectorAll("div.user_friends").forEach(user=>{
+    //         user.style="display:";
+    //     })
 
-    }else{
+    //     let first_user = document.querySelectorAll("#amis_list > div > div > div.cg-chat.lc-chat.mg-chat.sh-chat.ol-chat.rl-chat.tq-chat.is-chat.user_friends")[0]
 
-        if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
+    //     let user_id = first_user.getAttribute("data-toggle-user-id")
+
+    //     let user_name = first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
+
+    //     let user_photo = first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
+
+    //     document.querySelector("div#user_head").innerHTML = `
+    //                         <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
+    //                             <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
+    //                                 <img src="${user_photo}" alt="profile" id="profile-user" class="vc-chat yd-chat qk-chat rk-chat"/>
+    //                                 <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
+    //                             </div>
+    //                         </div>
+    //                         <div class="user-chat-display" data-user-id="${user_id}">
+    //                             <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
+    //                                 ${user_name}
+    //                             </h5>
+    //                         </div>
+    //                         `
+    //     getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+
+    // })
+}
+
+if(document.querySelector("#openChat")){
+
+    document.querySelector("#openChat").addEventListener("click", function(){
+
+        openChat()
+
+        document.querySelector("#assist_virt").style="display:;"
+        document.querySelector(".btn-input-file").style="display:none;"
+
+        document.querySelectorAll("div.user_friends").forEach(user=>{
+            user.style="display:none";
+        })
+
+        document.querySelector("div#user_head").innerHTML = `
+                            <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
+                                <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
+                                    <img src="https://www.iconpacks.net/icons/1/free-help-icon-1160-thumb.png" alt="profile" id="profile-user" class="vc-chat yd-chat qk-chat rk-chat"/>
+                                    <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
+                                </div>
+                            </div>
+                            <div class="user-chat-display" data-user-id="0">
+                                <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
+                                    Assistant Virtuel
+                                </h5>
+                                <p class="mn-chat">Reponse automatique</p>
+                            </div>
+                            `
+
+        if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
 
             runSpinner()
 
-            writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-    
-            runSuggestion()
-            
-        }else{
-            
-            getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-        
-        }
-    }
+            writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
+            Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
+            <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
 
-})
+        }else{
+
+            if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
+
+                runSpinner()
+
+                writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+        
+                runSuggestion()
+                
+            }else{
+                
+                getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+            
+            }
+        }
+
+    })
+}
 
 document.querySelector("#closeChat").addEventListener("click", function(){
 

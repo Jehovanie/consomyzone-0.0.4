@@ -653,7 +653,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
   }
 
   .j\/2-chat {
-      top: 50%;
+      top: 30%;
   }
 
   .k-chat {
@@ -673,7 +673,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
   }
 
   .o-chat {
-      right: 1.25rem;
+      right: 0.25rem;
   }
 
   .p-chat {
@@ -2312,7 +2312,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
   }
 
   .qm-chat {
-      padding-right: 4.75rem;
+      padding-right: 3.75rem;
   }
 
   .rm-chat {

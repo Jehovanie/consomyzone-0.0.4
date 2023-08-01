@@ -1389,3 +1389,22 @@ input::-ms-clear {
     height: 50px;
     border-radius: 50%;
 }
+
+i.fa-eye-slash, i.fa-eye{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    /* height: 790px; */
+    right: 75px;
+    /* padding-right: 1px; */
+    margin-top: -35px;
+    cursor: pointer;
+}
+
+.unselectable {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
