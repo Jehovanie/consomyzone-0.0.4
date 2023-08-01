@@ -1,0 +1,76 @@
+<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+    <div class="head-pub content_header_pub">
+        <div class="content_pub_info">
+            <div class="pdp-content">
+                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil|replace({"/public": ""}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+            </div>
+            <div class="name-content-h">
+                <div class="name-content">
+                    <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
+                    <div class="">
+                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{tribu.name}}</span></p>
+                        {# <div class="dropdown-menu" aria-labelledby="btnGroupDrop0">
+                            <p class="dropdown-item" >{{tribu.name}}</p>
+                            <p class="dropdown-item" >{{tribu.description}}</p>
+                        </div> #}
+                    </div>
+                </div>
+                <div class="status-content d-flex">
+                    <p class="p-heure">{{ publication.createdAt }}</p>
+                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                        
+                        <div class="btn-group" role="group">
+                            
+                            <button id="btnGroupDrop1" class="{{ (userOwnPub.id is same as( app.user.id)) ? 'dropdown-toggle' : '' }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% if publication.confidentiality is same as(2) %}
+                                    <i class="fa-solid fa-user-group"></i>
+                                {% elseif publication.confidentiality is same as(1) %}
+                                    <i class="fa-solid fa-earth-oceania"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-lock"></i>
+                                {% endif %}
+                            </button>
+
+                            {% if userOwnPub.id is same as( app.user.id) %}
+                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                    <a class="dropdown-item" href="#">Modifier le status</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if userOwnPub.id is same as( app.user.id) %}
+            <div class="param-content">
+                <div class="cta_mod_del_pub">
+                    <button id="btnGroupDrop2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                    <div class="dropdown-menu px-2" aria-labelledby="btnGroupDrop2">
+                        <p class="text-center"><a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Modifier</a></p>
+                        <hr>
+                        <p class="text-center"><a href="#" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Supprimer</a></p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+        
+    <div class="card-pub-actu">
+        <p class="text-pub mb-3">{{publication.description}}</p>
+        {% if publication.image is defined and publication.image is not same as("") %}
+            <img class="image_publication"  src="{{publication.image|replace({"/public": ""})}}" alt="image publication">
+        {% endif %}
+    </div>
+
+    <div class="card-reaction">
+        <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p>
+        <div class="reaction-icon d-flex">
+            <i class="bi-heart like"></i>
+            <i class="fa-regular fa-comment comment" ></i>
+        </div>
+    </div>
+    
+</div>

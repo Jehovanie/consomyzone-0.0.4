@@ -2262,6 +2262,8 @@ function removeUpload() {
   $('.image-upload-input').replaceWith($('.image-upload-input').clone());
   $('.image-upload-content').hide();
   $('.image-upload-wrap').show();
+
+  document.querySelector(".image_upload_input_jheo_js").value = null
 }
 $('.image-upload-wrap').bind('dragover', function () {
     $('.image-upload-wrap').addClass('image-dropping');
@@ -2269,3 +2271,4 @@ $('.image-upload-wrap').bind('dragover', function () {
   $('.image-upload-wrap').bind('dragleave', function () {
     $('.image-upload-wrap').removeClass('image-dropping');
 });
+ 

@@ -9,9 +9,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
         ///number message not show in the database
         const new_nbr_message= JSON.parse(event.data);
 
-        console.log("new_nbr_message");
-        console.log(new_nbr_message);
-
         /// check if different 0  
         if(parseInt(new_nbr_message) !== 0){
             
@@ -75,8 +72,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
             //// filter new message from server and show the message don't show
             const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            console.log("new message after filtering")
-            console.log(new_msg)
 
             if( new_msg.length > 0 ) {
                 /// for each rest message let's show
@@ -303,8 +298,6 @@ if (document.querySelectorAll(".radio-publi").length > 0){
 
         item.addEventListener("change", (e) => {
 
-            console.log(e)
-
             if (e.target.checked && e.target.id=="man-valid") { 
 
                 //TODO something
@@ -328,8 +321,6 @@ if (document.querySelectorAll(".radio-publi").length > 0){
 if (document.querySelector(".banished")) {
 
     document.querySelector(".banished").onclick = (e) => {
-
-        // console.log(e)
 
         const request = new Request("/set/banished", {
 
@@ -361,8 +352,6 @@ if (document.querySelector(".retablir")) {
 
     document.querySelector(".retablir").onclick = (e) => {
 
-        // console.log(e)
-
         const request = new Request("/undo/banished", {
 
             method: "POST",
@@ -391,9 +380,7 @@ if (document.querySelector("#send-request")) {
 
     document.getElementById("send-request").onclick = (e) => {
 
-        const idReceiver = new URL(location.href).searchParams.get('user_id')
-
-        // console.log("idReceiver : " +  encodeURIComponent(parseInt(idReceiver,10)))
+        const idReceiver = new URL(location.href).searchParams.get('user_id');
 
         const request = new Request("/send/notification/ask", {
 
@@ -678,7 +665,6 @@ fileInputProfils.forEach(fileInputProfil=>{
 
             let avatarPartisant = fileReader.result;
 
-            //console.log(avatarPartisant);
             // Change profil
             let profilPartisants = document.querySelectorAll("#profilPartisant");
 

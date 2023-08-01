@@ -30,6 +30,7 @@
 
 ###< symfony/phpunit-bridge ###
 /.env.local
+/deleteWhenProd.md
 /BDD
 /.env.local.php
 /.env.*.local

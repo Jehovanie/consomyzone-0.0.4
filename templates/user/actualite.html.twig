@@ -6,11 +6,13 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
 
 {% endblock %}
 
 {% block javascripts %}
-    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>.js
+    <script  src="{{ asset('assets/js/account/actualiter_new_publication.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -21,16 +23,16 @@
     <!-- ===== Main Content Start ===== -->
     <main class="gv hm hv content-actualite-connected">
         <div class="sk bu 2xl:ud-p-11">
-            {# <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+            <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                 <!-- ====== Chart pub One Start -->
                 <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                     <div class="head-pub">
                         <div class="pdp-content">
-                            <img src="/assets/image/img_avatar3.png" alt="">
+                            <img class="profil_publication" src="{{(userConnected.photo_profil) ? userConnected.photo_profil|replace({"/public": ""}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userConnected.firstname }}">
                         </div>
                         <div class="name-content-h">
-                            <div class="name-content" >
-                                <p class="form-pub">Partagez ce que vous pensez, Tommy...</p>
+                            <div class="name-content" data-bs-toggle="modal" data-bs-target="#newPublication">
+                                <p class="form-pub">Partagez ce que vous pensez, {{userConnected.firstname ~ " " ~ userConnected.lastname }} ...</p>
                             </div>
                         </div>
                     </div>
@@ -42,62 +44,14 @@
                     
                 </div>
                 <!-- ====== Chart pub One End -->
-            </div> #}
+            </div>
              
-            <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
-                <!-- ====== Chart One Start -->
-                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
-                    <div class="head-pub">
-                        <div class="pdp-content">
-                            <img src="/assets/image/img_avatar3.png" alt="">
-                        </div>
-                        <div class="name-content-h">
-                            {# <div class="name-content">
-                                <h5> &ensp;Tommy RAMIHOATRARIVO &ensp;</h5>
-                                <p  class="p-title"> a publié sur <span>tribu T</span></p>
-                            </div>
-                            <div class="status-content d-flex">
-                                <p class="p-heure"> Il y a 1 heure</p>
-                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                    
-                                    <div class="btn-group" role="group">
-                                        
-                                        <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
-                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                            <a class="dropdown-item" href="#">Modifier le status</a>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                            </div> #}
-                        </div>
-                        {# <div class="param-content">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </div> #}
-
-                        
-                    </div>
-                        
-                    <div class="card-pub-actu">
-                        <p class="text-pub">Cette partie du site est encore en maintenance, à cause du récent changement de l'API qui gère les interfaces.</br>
-                            Ceci a été réalisé pour améliorer votre expérience sur le site. </p>
-                        <img src="https://img.freepik.com/free-vector/hand-drawn-construction-background_23-2147734520.jpg?w=826&t=st=1690549555~exp=1690550155~hmac=2698b80fb2fe3a111bcc1490ffa658455016f45743ed84e64cc546f12b831c0f" alt="">
-                    </div>
-
-                    {# <div class="card-reaction">
-                        <p class="text-comment"> 12 commentaire</p>
-                        <div class="reaction-icon d-flex">
-                            <i class="bi-heart like"></i>
-                            <i class="fa-regular fa-comment comment" ></i>
-                        </div>
-                    </div> #}
-                    
-                </div>
-                <!-- ====== Chart One End -->
-                
-
+            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                {% for item in publications %}
+                    <!-- ====== Chart One Start -->
+                    {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+                    <!-- ====== Chart One End -->
+                {% endfor %}
             </div>
 
             <!-- ====== Chart Two Start -->
@@ -106,7 +60,6 @@
                     <div class="kb qs">
                         <h4 class="tn kn zn gs">C'est quoi un tribu-G?</h4>
                     </div>
-                    
                 </div>
 
                 <div>
@@ -123,4 +76,7 @@
     <!-- ===== Main Content End ===== -->
 
 </div>
+
+{% include 'shard/modal/new_publication.html.twig' with {'formPub' : formPub, 'modalId' : 'newPublication', 'parent': 'allTribut' } %}
+
 {% endblock %}

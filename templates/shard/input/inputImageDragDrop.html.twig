@@ -1,8 +1,7 @@
 <div class="image-upload">
-	
 	<div class="image-upload-wrap">
 		{% if InputDropDown is defined %}
-			{{ form_row(InputDropDown, {'attr': {'class': 'image-upload-input', 'accept': 'image/png, image/jpeg, image/gif', 'onchange':'readURL(this);'}}) }}
+			{{ form_row(InputDropDown, {'attr': {'class': 'image-upload-input image_upload_input_jheo_js', 'accept': 'image/png, image/jpeg, image/gif', 'onchange':'readURL(this);'}}) }}
 		{% else %}
 			<input class="image-upload-input" id="{{id}}" name="{{name}}" type="file" onchange="readURL(this);" accept="image/png, image/jpeg, image/gif"/>
 		{% endif %}
