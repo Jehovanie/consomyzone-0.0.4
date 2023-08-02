@@ -2366,4 +2366,32 @@ class UserController extends AbstractController
         return $this->json("Visibilité bien à jour");
 
     }
+
+
+    #[Route('/user/publication/tribu/delete', name: 'delete_publication', methods: ["POST"])]
+    public function deletePublication(Request $request, Tribu_T_Service $tribut): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $tablePub = $data["tablePub"];
+        $pub_id = $data["pub_id"];
+
+        $publication= $tribut->getOnePublication($tablePub, $pub_id);
+
+        if( !$publication ||  $publication['user_id'] !== $this->getUser()->getId()){
+            return $this->json(["success" => false, 
+                "message" => "Vous n'avez pas le droit de supprimée cette publication."
+            ], 403 );
+        }
+
+        if( $publication["photo"] !== null){
+            $filesystem = new Filesystem();
+            $filesystem->remove($this->getParameter('kernel.project_dir') . $publication['photo']);
+        }
+        $tribut->removePublicationOrCommentaire($tablePub, $pub_id);
+
+        return $this->json([
+            "success" => true,
+            "message" => "Publication supprimée!"
+        ], 200);
+    }
 }

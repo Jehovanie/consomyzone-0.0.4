@@ -1,4 +1,4 @@
-<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" >
     <div class="head-pub content_header_pub">
         <div class="content_pub_info">
             <div class="pdp-content">
@@ -41,16 +41,25 @@
 
         {% if userOwnPub.id is same as( app.user.id) %}
             <div class="param-content">
-                <div class="cta_mod_del_pub">
-                    <button id="btnGroupDrop2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
-                    <div class="dropdown-menu px-2" aria-labelledby="btnGroupDrop2">
-                        <p class="text-center"><a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Modifier</a></p>
-                        <hr>
-                        <p class="text-center"><a href="#" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Supprimer</a></p>
-                    </div>
-                </div>
+                <span class="float-end dropstart">
+                    <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                    </span>
+                    <ul class="dropdown-menu">
+                        <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" >
+                            <button class="text-primary dropdown-item">
+                                <i class="fas fa-edit"></i>
+                                Modifier
+                            </button>
+                        </li>
+                        <li  data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" onclick="removePublication('{{publication.id}}', '{{tribu.table}}')">
+                            <button class="text-danger dropdown-item">
+                                <i class="fas fa-trash" aria-hidden="true"></i>
+                                Supprimer
+                            </button>
+                        </li>
+                    </ul>
+                </span>
             </div>
         {% endif %}
     </div>

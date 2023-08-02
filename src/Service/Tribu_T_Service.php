@@ -1509,6 +1509,24 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
+     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get On publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     * @param int $id:  publication id
+     */
+    public function getOnePublication($table_name, $pubID){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE id= $pubID;");
+        $statement->execute();
+
+        $publication = $statement->fetch(PDO::FETCH_ASSOC); // publications
+
+        return $publication;
+    }
+
 
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>

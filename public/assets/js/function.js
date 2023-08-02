@@ -2386,3 +2386,35 @@ function checkTailleImage(maxOctetAccepted, file_base64){
     console.log("sizeInBytes : ", sizeInBytes)
     return (sizeInBytes < maxOctetAccepted ) ? true : false;
 }
+
+
+function removePublication(pubId, tablePub){
+
+    document.querySelector('.confirm_delete_pub_jheo_js').addEventListener('click',() => {
+        deletePublication(pubId, tablePub);
+    })
+}
+
+function deletePublication(pubId, tablePub){
+    const param = {
+        tablePub : tablePub + "_publication",
+        pub_id : pubId,
+    }
+    const request = new Request('/user/publication/tribu/delete', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(param)
+    })
+
+    fetch(request)
+    .then(response=>response.json())
+    .then(response =>{
+        alert(response.message)
+        if(response.success){
+           document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`).remove();
+        }
+    })
+}
