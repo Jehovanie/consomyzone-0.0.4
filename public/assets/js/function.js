@@ -2272,3 +2272,49 @@ $('.image-upload-wrap').bind('dragover', function () {
     $('.image-upload-wrap').removeClass('image-dropping');
 });
  
+
+function updateVisibility(element){
+    let pub_id = element.dataset.id
+    let tablePub = element.dataset.name + "_publication"
+    let confidentialite = element.previousElementSibling ? 2 : 1
+
+    if(!element.classList.contains("active")){
+        const param = {
+            tablePub : tablePub,
+            pub_id : pub_id,
+            confidentialite : confidentialite
+        }
+
+        if(element.previousElementSibling){
+            if(element.previousElementSibling.classList.contains("active")){
+                element.previousElementSibling.classList.remove("active")
+            }
+        }else{
+            if(element.nextElementSibling.classList.contains("active")){
+                element.nextElementSibling.classList.remove("active")
+            }
+        }
+
+        element.classList.add("active")
+    
+        const request = new Request("/user/publication/tribu/update/visibility", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(param)
+        })
+    
+        fetch(request)
+        .then(response=>response.json())
+        .then(message=>{
+            if(confidentialite == 1){
+                element.parentElement.previousElementSibling.innerHTML = `<i class="fa-solid fa-earth-oceania"></i>`
+            }else if(confidentialite == 2){
+                element.parentElement.previousElementSibling.innerHTML = `<i class="bi bi-lock-fill"></i>`
+            }
+            alert(message)
+        })
+    }
+}

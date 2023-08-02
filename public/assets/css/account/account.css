@@ -1031,7 +1031,7 @@ thead > tr{
 }
 
 .head-pub .name-content {
-    width: 450px !important;
+    /* width: 450px !important; */
 }
 
 .content_right_actualite .champ-pub {

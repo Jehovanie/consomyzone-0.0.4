@@ -258,27 +258,29 @@ function handleMessageResponse(date, message,image_list=null,image,status){
 
 }
 
-document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
-    
-    let target = e.target.value.toLowerCase()
-
-    let divs = document.querySelectorAll("div.list_users > div.discussion")
-
-    if(divs.length > 0){
-        for (var i = 0; i < divs.length; i++) {
-            let a = divs[i].textContent.toLowerCase();
+if( document.querySelector("#search_friend_input") ){
+    document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
         
-            if (a) {
-              if (a.indexOf(target) > -1) {
-                divs[i].style.display = "";
-              } else {
-                divs[i].style.display = "none";
-              }
-            }
-          }
-    }
+        let target = e.target.value.toLowerCase()
     
-})
+        let divs = document.querySelectorAll("div.list_users > div.discussion")
+    
+        if(divs.length > 0){
+            for (var i = 0; i < divs.length; i++) {
+                let a = divs[i].textContent.toLowerCase();
+            
+                if (a) {
+                  if (a.indexOf(target) > -1) {
+                    divs[i].style.display = "";
+                  } else {
+                    divs[i].style.display = "none";
+                  }
+                }
+              }
+        }
+        
+    })
+}
 
 const imgs = document.querySelectorAll("section > div.messages-chat.mode_pc > div > div > div > img")
 const fullPage = document.querySelector('#fullpage');

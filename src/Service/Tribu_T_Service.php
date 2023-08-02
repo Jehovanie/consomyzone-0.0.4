@@ -1588,7 +1588,8 @@ class Tribu_T_Service extends PDOConnexionService
                     "type" => "Tribu T",
                     "name" => $apropo_tribuT['name'],
                     "description" => $apropo_tribuT['description'],
-                    "avatar" =>  $apropo_tribuT['avatar']
+                    "avatar" =>  $apropo_tribuT['avatar'],
+                    "table" => $table_name
                 ]
             ];
 
@@ -1596,6 +1597,15 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
         return $resultats; 
+    }
+
+    public function updateVisibility($tablePub, int $pub_id, int $confidentiality){
+
+        $query = "UPDATE $tablePub set confidentiality = $confidentiality WHERE id = '$pub_id'";
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute();
     }
 
 }

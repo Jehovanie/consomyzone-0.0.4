@@ -113,10 +113,10 @@ class UserController extends AbstractController
                 $temp_pub= $tribuTService->getAllPublicationsUpdate($tribuT['table_name']);
                 $all_pub_tribuT= array_merge($all_pub_tribuT, $temp_pub);
             }
+            $publications= array_merge($publications, $all_pub_tribuT);
         }
-        // dd($all_pub_tribuT);
+        // dd($publications);
 
-        $publications= array_merge($publications, $all_pub_tribuT);
         
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
@@ -315,11 +315,8 @@ class UserController extends AbstractController
                     $userId
 
                 ),
-
-                "publications" => $tributGService->getAllPublications($profil[0]->getTributg()),
-
+                "publications" => $tributGService->getAllPublicationsUpdate($profil[0]->getTributg()),
                 "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
-
             ],
 
             "new_publication" => $new_publication->createView(),
@@ -2355,4 +2352,18 @@ class UserController extends AbstractController
         //return $this->json(["url"=>$url]);
         return $this->json($user->getId());
     }*/
+
+    #[Route('/user/publication/tribu/update/visibility', name: 'update_visibility')]
+    public function updateVisibility(Request $request, Tribu_T_Service $tribut): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $tablePub = $data["tablePub"];
+        $pub_id = $data["pub_id"];
+        $confidentialite = $data["confidentialite"];
+        
+        $tribut->updateVisibility($tablePub, $pub_id, $confidentialite);
+
+        return $this->json("Visibilité bien à jour");
+
+    }
 }

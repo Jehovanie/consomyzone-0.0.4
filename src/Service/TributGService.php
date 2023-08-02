@@ -888,7 +888,8 @@ class TributGService extends PDOConnexionService{
                     "type" => "Tribu G",
                     "name" => $apropo_tribuG['name'],
                     "description" => $apropo_tribuG['description'],
-                    "avatar" =>  $apropo_tribuG['avatar']
+                    "avatar" =>  $apropo_tribuG['avatar'],
+                    "table" => $table_name
                 ]
             ];
 
