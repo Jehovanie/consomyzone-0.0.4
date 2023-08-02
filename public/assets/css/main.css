@@ -1339,7 +1339,8 @@ input::-ms-clear {
 }
 
 .drag-text img {
-    width: 150px;
+    /* width: 150px; */
+    width: 80px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -1388,4 +1389,10 @@ input::-ms-clear {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+}
+
+.center_flex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

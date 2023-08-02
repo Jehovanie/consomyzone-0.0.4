@@ -2233,25 +2233,36 @@ function openMenu(){
  * @parm inputImage.html.twig
  */
 function readURL(input) {
-  if (input.files && input.files[0]) {
 
-    var reader = new FileReader();
-
-      reader.onload = function (e) {
+    // document.querySelector('.image_upload_jheo_js')
+    if (input.files && input.files[0]) {
         
-      $('.image-upload-wrap').hide();
+        const listExt= ['jpg', 'jpeg', 'png'];
+        const octetMax= 4096e+3;
+        var reader = new FileReader();
+        reader.onload = function (e) {
 
-      $('.image-upload-image').attr('src', e.target.result);
-      $('.image-upload-content').show();
+            if( !checkFileExtension(listExt,e.target.result)  || !checkTailleImage(octetMax, e.target.result)){
+                // $('.image-upload-wrap').hide();
+                $(".image-upload-wrap").css("border","2px dashed red");
+                $(".drag_text_jheo_js").html("<p class='text-danger erreur_type_jheo_js'>Le format de fichier ou la taille n'est pas pris en charge.</p>");
+                $('.image_upload_image_jheo_js').hide();
+                $(".remove_image_upload_jheo_js").text("Supprimer et changer ?");
+            }else{
+                $('.image-upload-wrap').hide();
+                $('.image-upload-image').attr('src', e.target.result);
+                $('.image_upload_image_jheo_js').show();
+            }
 
-      $('.image-title').html(input.files[0].name);
-    };
+            $('.image-upload-content').show();
 
-    reader.readAsDataURL(input.files[0]);
+        //   $('.image-title').html(input.files[0].name);
+        };
 
-  } else {
-    removeUpload();
-  }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        removeUpload();
+    }
 }
 
 /**
@@ -2259,16 +2270,29 @@ function readURL(input) {
  * @parm inputImage.html.twig
  */
 function removeUpload() {
-  $('.image-upload-input').replaceWith($('.image-upload-input').clone());
-  $('.image-upload-content').hide();
-  $('.image-upload-wrap').show();
+    $('.image-upload-input').replaceWith($('.image-upload-input').clone());
+    $('.image-upload-content').hide();
+    $('.image-upload-wrap').show();
 
-  document.querySelector(".image_upload_input_jheo_js").value = null
+    $(".image-upload-wrap").css("border","2px dashed #878787");
+
+    $(".drag_text_jheo_js").html(`
+        <img src="/assets/image/uplaodIcon.png" alt="background upload file">
+        <h3 class="text_upload_image_jheo_js">Faites glisser et déposez un fichier ou sélectionnez ajouter une image</h3>
+    `);
+    $(".remove_image_upload_jheo_js").text("Change l'image");
+
+    document.querySelector(".image_upload_input_jheo_js").value = null
+    
+    $('.image_upload_input_jheo_js').click();
 }
+
+
 $('.image-upload-wrap').bind('dragover', function () {
     $('.image-upload-wrap').addClass('image-dropping');
-  });
-  $('.image-upload-wrap').bind('dragleave', function () {
+});
+
+$('.image-upload-wrap').bind('dragleave', function () {
     $('.image-upload-wrap').removeClass('image-dropping');
 });
  
@@ -2317,4 +2341,48 @@ function updateVisibility(element){
             alert(message)
         })
     }
+}
+
+/**
+ * @Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
+ * 
+ * verifier l'extension de fichier par un tableux de type accepter
+ * 
+ * @param {*} array_ext_Accepcted : Tabeaux list des extension de fichier accepter
+ * @param {*} file_base64 : string base 64
+ * 
+ * @returns : true: si l'extension est parmit les accepter, false sinon 
+ */
+function checkFileExtension(array_ext_Accepcted, file_base64 ){
+
+    // const error_file= file_base64.error;
+    // const dataType=(file_base64.result !== null && file_base64.result !== "") ? file_base64.result.split(';')[0] : null;
+    const dataType=(file_base64 !== null && file_base64 !== "") ? file_base64.split(';')[0] : null;
+
+    if( dataType === null ){
+        return false
+    }
+
+    const typeFile= dataType.split('/')[dataType.split('/').length -1 ];
+    return array_ext_Accepcted.some(item => item.trim().toLowerCase() === typeFile.trim().toLowerCase());
+}
+
+/**
+ * @Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
+ * 
+ * Veirifier la taille de fichier 
+ * 
+ * @param {*} maxOctetAccepted  max taille en octet accepted
+ * @param {*} file_base64  string base 64
+ * @returns : true: si la taille est ok, false sinon 
+ */
+function checkTailleImage(maxOctetAccepted, file_base64){
+    // const dataType= file_base64.result;
+    const base64Data = file_base64.split(',')[1];
+
+    // Calculer la taille en octets
+    const padding = (base64Data.length % 4 === 0) ? 0 : (4 - base64Data.length % 4);
+    const sizeInBytes = ((base64Data.length + padding) * 3 / 4);
+    console.log("sizeInBytes : ", sizeInBytes)
+    return (sizeInBytes < maxOctetAccepted ) ? true : false;
 }
