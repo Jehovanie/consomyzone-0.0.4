@@ -60,6 +60,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Constraints\Uuid;
 
 class TributTController extends AbstractController
 
@@ -220,7 +221,8 @@ class TributTController extends AbstractController
     }
 
     #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
-    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep){
+    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
+        
         $user = $this->getUser();
         $userId = $user->getId();
         $userTribu_T=json_decode($user->getTribuT(),true);
@@ -238,6 +240,7 @@ class TributTController extends AbstractController
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
 
+
         
         foreach ($userTribu_T["tribu_t"] as $k =>$v) {
             if(is_array($v)){
@@ -253,11 +256,38 @@ class TributTController extends AbstractController
             }
             
         }
+
+        $membre = $tribu_T_Service->showMember($tribu_t_name);
         
         $response = new Response();
+
         try{
-            $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+            foreach ($membre as $key) {
+                if($key["roles"] == "Fondateur"){
+                    $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+                }else{
+                    $user = $userRep->findOneBy(["id"=>$key["user_id"]]);
+                    $userTribu_T = json_decode($user->getTribuTJoined(),true);
+                    foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+                        if(is_array($v)){
+                            if (in_array($tribu_t_name, $v)) {
+                                $v["logo_path"]=str_replace("/public","",$path.$imageName);
+                                $userTribu_T["tribu_t"][$k]= $v;
+                            }
+                        }else{
+                            if($k== "logo_path"){
+                                $v=str_replace("/public","",$path.$imageName);
+                                $userTribu_T["tribu_t"][$k]= $v;
+                            }
+                        }
+                        
+                    }
+                    $userRep->updatePdpTribu_T_Joined(json_encode($userTribu_T), $user);
+                }
+            }
+
             $response->setStatusCode(200);
+
             return $response;
         }catch(\Exception $e){
             $response->setStatusCode(500);
@@ -623,7 +653,7 @@ class TributTController extends AbstractController
 
     }
 
-    #[Route('user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
+    #[Route('/user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
     public function showTribu_T_specifique($name_tribu_t,
     Tribu_T_Service $tribu_t_serv,
     SerializerInterface $serializer){
@@ -1188,37 +1218,57 @@ class TributTController extends AbstractController
 
      */
 
-    public function updatePublication($table, Request $request)
+    public function updatePublication($table, Request $request, 
+    Tribu_T_Service $tribuTService,
+    Filesystem $filesyst)
 
     {
 
-
-
         $user = $this->getUser();
+
+        $userId = $user->getId();
 
         $requestContent = json_decode($request->getContent(), true);
 
+        $file = $requestContent["base64"];
 
+        $oldSrc = $requestContent["oldSrc"];
 
         $pub_id = $requestContent["pub_id"];
 
-
-
         $confid = $requestContent["confidentiality"];
-
-
 
         $new_message = $requestContent["message"];
 
+        $path = '/public/uploads/tribu_t/photo/' .  $table . "/";
 
+        $imageName = "";
 
-        $tribut = new Tribu_T_Service();
+        if($file != null){
 
+            $temp = explode(";", $file );
 
+            $extension = explode("/", $temp[0])[1];
 
-        $tribut->updatePublication($table, $pub_id, $new_message, $confid);
+            $imageName = time(). '-' . uniqid() . "." . $extension;
 
+            ///save image in public/uploader folder
 
+            if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+            $projectDir = $this->getParameter('kernel.project_dir') . $path;
+            file_put_contents($projectDir . $imageName, file_get_contents($file));
+
+            $tribuTService->updatePublication($table, $pub_id, $new_message, $confid, $path . $imageName);
+
+        }else{
+            if($oldSrc != ""){
+                $tribuTService->updatePublication($table, $pub_id, $new_message, $confid, $oldSrc);
+            }else{
+                $tribuTService->updatePublication($table, $pub_id, $new_message, $confid);
+            }
+            
+        }
 
         return $this->json("Bien à jour !");
 
@@ -1966,8 +2016,6 @@ class TributTController extends AbstractController
       
         }
 
-       
-
         $user = $this->getUser();
        
         $userId = $user->getId();
@@ -1993,19 +2041,13 @@ class TributTController extends AbstractController
 
         $tribu_t_owned=!is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined=!is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
-        
 
-
-
-       
-
-        
         return $this->render('tribu_t/tribuT.html.twig',[
             "userConnected" => $userConnected,
             "profil" => $profil,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "tibu_T_owned" => $tribu_t_owned,
-            "tibu_T_joined" => $tribu_t_joined,
+            "tribu_T_owned" => $tribu_t_owned,
+            "tribu_T_joined" => $tribu_t_joined,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
             "form" => $form->createView(),
         ]);
@@ -2025,7 +2067,7 @@ class TributTController extends AbstractController
         $publication= $jsonParsed["contenu"];
         $confid=$jsonParsed["confidentialite"];
         $image= $jsonParsed["base64"];
-        $imageName= $jsonParsed["photoName"];
+        $imageName= time()."_".$jsonParsed["photoName"];
         $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
                 $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
@@ -2240,9 +2282,7 @@ class TributTController extends AbstractController
 
         return $this->json($users);
 
-    }
-
-    
+    }   
 
 }
 

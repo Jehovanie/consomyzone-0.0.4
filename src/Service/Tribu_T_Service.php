@@ -405,7 +405,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table WHERE status = 1");
+        $statement = $this->getPDO()->prepare("SELECT user_id, roles FROM $table WHERE status = 1");
 
         $statement->execute();
 
@@ -950,21 +950,15 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    public function updatePublication($table, $id, $publication, $confidentiality)
+    public function updatePublication($table, $id, $publication, $confidentiality, $photo="")
 
     {
 
-
-
-        $sql = "UPDATE $table set publication = ?, confidentiality = ?  WHERE id = ?";
-
-
+        $sql = "UPDATE $table set publication = ?, confidentiality = ?, photo = ?  WHERE id = ?";
 
         $stmt = $this->getPDO()->prepare($sql);
 
-
-
-        $stmt->execute([$publication, $confidentiality, $id]);
+        $stmt->execute([$publication, $confidentiality, $photo, $id]);
 
     }
 
@@ -1470,6 +1464,15 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    public function updateVisibility($tablePub, int $pub_id, int $confidentiality){
+
+        $query = "UPDATE $tablePub set confidentiality = $confidentiality WHERE id = '$pub_id'";
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute();
     }
 
 }

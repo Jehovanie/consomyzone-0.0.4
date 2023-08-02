@@ -2269,3 +2269,87 @@ $('.image-upload-wrap').bind('dragover', function () {
   $('.image-upload-wrap').bind('dragleave', function () {
     $('.image-upload-wrap').removeClass('image-dropping');
 });
+
+function updateVisibility(element){
+    let pub_id = element.dataset.id
+    let tablePub = element.dataset.name + "_publication"
+    let confidentialite = element.previousElementSibling ? 2 : 1
+
+    if(!element.classList.contains("active")){
+        const param = {
+            tablePub : tablePub,
+            pub_id : pub_id,
+            confidentialite : confidentialite
+        }
+
+        if(element.previousElementSibling){
+            if(element.previousElementSibling.classList.contains("active")){
+                element.previousElementSibling.classList.remove("active")
+            }
+        }else{
+            if(element.nextElementSibling.classList.contains("active")){
+                element.nextElementSibling.classList.remove("active")
+            }
+        }
+
+        element.classList.add("active")
+    
+        const request = new Request("/user/publication/tribu/update/visibility", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(param)
+        })
+    
+        fetch(request).then(response=>response.json())
+                      .then(message=>{
+                        if(confidentialite == 1){
+                            element.parentElement.previousElementSibling.innerHTML = `<i class="fa-solid fa-earth-oceania"></i>`
+                        }else if(confidentialite == 2){
+                            element.parentElement.previousElementSibling.innerHTML = `<i class="bi bi-lock-fill"></i>`
+                        }
+                        alert(message)
+                    })
+    }
+}
+
+/**
+@Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
+verifier l'extension de fichier par un tableux de type accepter
+@param {*} array_ext_Accepcted : Tabeaux list des extension de fichier accepter
+@param {*} file_base64 : string base 64
+@returns : true: si l'extension est parmit les accepter, false sinon
+*/
+function checkFileExtension(array_ext_Accepcted, file_base64 ){
+
+    // const error_file= file_base64.error;
+    // const dataType=(file_base64.result !== null && file_base64.result !== "") ? file_base64.result.split(';')[0] : null;
+    const dataType=(file_base64 !== null && file_base64 !== "") ? file_base64.split(';')[0] : null;
+
+    if( dataType === null ){
+        return false
+    }
+
+    const typeFile= dataType.split('/')[dataType.split('/').length -1 ];
+    return array_ext_Accepcted.some(item => item.trim().toLowerCase() === typeFile.trim().toLowerCase());
+}
+
+/**
+@Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
+Veirifier la taille de fichier
+@param {*} maxOctetAccepted  max taille en octet accepted
+@param {*} file_base64  string base 64
+@returns : true: si la taille est ok, false sinon
+*/
+function checkTailleImage(maxOctetAccepted, file_base64){
+    // const dataType= file_base64.result;
+    const base64Data = file_base64.split(',')[1];
+
+    // Calculer la taille en octets
+    const padding = (base64Data.length % 4 === 0) ? 0 : (4 - base64Data.length % 4);
+    const sizeInBytes = ((base64Data.length + padding) * 3 / 4);
+    console.log("sizeInBytes : ", sizeInBytes)
+    return (sizeInBytes < maxOctetAccepted ) ? true : false;
+}

@@ -1389,3 +1389,24 @@ input::-ms-clear {
     height: 50px;
     border-radius: 50%;
 }
+
+li.listNavBarTribu > a.active{
+    background-color: #0D6EFD !important;
+    color:white !important;
+}
+
+.card-pub-actu > img{
+    width: 300px !important;
+    height: 300px !important;
+}
+
+#contentUpdateOrDelete{
+    margin-left: 250px;
+}
+
+#editPictureLabel > button {
+    padding: 5px 10px 5px 10px;
+    background-color: #198754;
+    color: white;
+    border-radius: 15px;
+} 

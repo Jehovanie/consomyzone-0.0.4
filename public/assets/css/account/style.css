@@ -83,7 +83,7 @@ abbr:where([title]) {
 Remove the default font size and weight for headings.
 */
 
-h1,
+/* h1,
 h2,
 h3,
 h4,
@@ -91,7 +91,7 @@ h5,
 h6 {
   font-size: inherit;
   font-weight: inherit;
-}
+} */
 
 /*
 Reset links to optimize for opt-in styling instead of opt-out.
@@ -198,14 +198,14 @@ select {
 2. Remove default button styles.
 */
 
-button,
+/* button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-  -webkit-appearance: button; /* 1 */
-  background-color: transparent; /* 2 */
-  background-image: none; /* 2 */
-}
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+} */
 
 /*
 Use the modern Firefox focus style for all focusable elements.
@@ -3403,7 +3403,7 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 }
 
 .head-pub .status-content{
-  margin-top: -15px;
+  margin-top: 0px;
   margin-left: 10px;
 }
 

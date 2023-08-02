@@ -81,6 +81,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    public function updatePdpTribu_T_Joined($data,$user){
+        $user->setTribuTJoined($data);
+        $this->getEntityManager()->merge($user);
+        $this->getEntityManager()->flush();
+    }
+
 
     public function getListTableTribuT_owned( ){
 

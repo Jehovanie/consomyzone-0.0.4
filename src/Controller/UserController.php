@@ -2239,6 +2239,26 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/user/publication/tribu/update/visibility', name: 'update_visibility')]
+
+    public function updateVisibility(Request $request, Tribu_T_Service $tribut): Response
+
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        $tablePub = $data["tablePub"];
+
+        $pub_id = $data["pub_id"];
+
+        $confidentialite = $data["confidentialite"];
+
+        $tribut->updateVisibility($tablePub, $pub_id, $confidentialite);
+
+        return $this->json("Visibilité bien à jour");
+
+    }
+
   
     /** UPDATE PASSWORD */
     /*
