@@ -2394,4 +2394,21 @@ class UserController extends AbstractController
             "message" => "Publication supprimée!"
         ], 200);
     }
+
+
+    #[Route('/user/publication/tribu/comment', name: 'all_comment_publication', methods: ["POST"])]
+    public function getCommentPublication(Request $request, Tribu_T_Service $tribut): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $tablePub = $data["tablePub"];
+        $pub_id = $data["pub_id"];
+        $comments= [];
+        
+        $comments= $tribut->getCommentsPublication($tablePub, $pub_id);
+
+        return $this->json([
+            "success" => true,
+            "comments" => $comments
+        ], 200);
+    }
 }

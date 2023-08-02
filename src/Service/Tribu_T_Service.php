@@ -1509,7 +1509,7 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
-     /**
+    /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      * Get On publications in this table (brutes: entity).
@@ -1526,6 +1526,46 @@ class Tribu_T_Service extends PDOConnexionService
 
         return $publication;
     }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get On publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     * @param int $id:  publication id
+     */
+    public function getCommentsPublication($table_name, $pubID){
+        $results= [];
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" . "_commentaire " . "WHERE pub_id= $pubID;");
+        $statement->execute();
+
+        $comments = $statement->fetchAll(PDO::FETCH_ASSOC); // publications
+
+        foreach ($comments as $comment){
+            $user_id= $comment["user_id"];
+
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id");
+            $statement_photos->execute();
+            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+
+            $temp= [
+                "pub_id" => $comment["pub_id"],
+                "dateTime" => $comment["datetime"],
+                "text_comment" => $comment["commentaire"],
+                "user" => [
+                    "fullname" => $comment["userfullname"],
+                    "photo" => $photo_profil["photo_profil"],
+                ]
+            ];
+
+            array_push($results, $temp);
+        }
+
+        return $results;
+    }
+
 
 
     /**

@@ -49,7 +49,17 @@
             <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                 {% for item in publications %}
                     <!-- ====== Chart One Start -->
-                    {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+                    {% if item.publication.confidentiality is same as(1) %}
+
+                        {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+                    
+                    {% elseif item.publication.confidentiality is same as(2) %}
+                        
+                        {% if item.userOwnPub.id is same as(app.user.id) %}
+                            {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+                        {% endif %}
+
+                    {% endif %}
                     <!-- ====== Chart One End -->
                 {% endfor %}
             </div>

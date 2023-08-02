@@ -2418,3 +2418,62 @@ function deletePublication(pubId, tablePub){
         }
     })
 }
+
+
+function getAllComment(pubId, tablePub){
+
+    const param = {
+        tablePub : tablePub,
+        pub_id : pubId,
+    }
+    const request = new Request('/user/publication/tribu/comment', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(param)
+    })
+
+    fetch(request)
+    .then(response=>response.json())
+    .then(response =>{
+        console.log(response.comments)
+        const content_comments = document.querySelector('.content_all_comment_jheo_js')
+        if( response.comments.length > 0 ){
+            let listLIcomment = "";
+            const comments = response.comments;
+
+            comments.forEach(comment => {
+                const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
+                listLIcomment += `
+                    <li id='45' class="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
+                        <div class="h sa wf uk th ni ej">
+                            <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
+                            <span class="g l m xe qd th pi jj sj ra"></span>
+                        </div>
+
+                        <div>
+                            <h6 class="un zn gs">
+                               ${comment.user.fullname}
+                            </h6>
+                            <p class="mn hc">
+                               ${comment.text_comment}
+                            </p>
+                        </div>
+                    </li>
+                `
+            });
+
+            content_comments.innerHTML = listLIcomment;
+
+
+        }else{
+            content_comments.innerHTML = `
+                <li id='45' class="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
+                    <p> Il n'y pas encore de commentaire sur cette publication </p
+                </li>
+            `
+        }
+    })
+}
