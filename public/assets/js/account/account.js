@@ -718,8 +718,6 @@ icons_eye.forEach(icon_eye=>{
 
     icon_eye.addEventListener("click",function(){
 
-        let input_pass = icon_eye.previousElementSibling
-
         if( icon_eye.classList.contains("fa-eye-slash")){
 
             icon_eye.classList.remove("fa-eye-slash");
@@ -744,3 +742,12 @@ icons_eye.forEach(icon_eye=>{
     })
     
 })
+
+
+function toggleClass(element) {
+    if(element.classList == "fas fa-plus-circle"){
+        element.classList = "fas fa-minus-circle";
+    }else{
+        element.classList = "fas fa-plus-circle";
+    }
+}

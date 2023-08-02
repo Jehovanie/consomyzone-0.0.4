@@ -1401,10 +1401,17 @@ i.fa-eye-slash, i.fa-eye{
     cursor: pointer;
 }
 
-.unselectable {
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
+#succesMessage {
+    -webkit-animation: cssAnimation 5s forwards; 
+    animation: cssAnimation 5s forwards;
+}
+@keyframes cssAnimation {
+    0%   {display: block;}
+    90%  {display: block;}
+    100% {display: none;}
+}
+@-webkit-keyframes cssAnimation {
+    0%   {display: block;}
+    90%  {display: block;}
+    100% {display: none;}
+}

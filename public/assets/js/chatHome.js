@@ -9,7 +9,7 @@
  */
 function openChat() {
     document.querySelector("#chat_container").style="width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px !important; z-index:1003;"
-    document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
+    document.querySelector("#openChat").style="background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     document.querySelector("#chat_header").style ="display:;"
     document.querySelector("#amis_list").style ="display:;"
 
@@ -30,21 +30,23 @@ function closeChat() {
     divs.forEach(qf=>{
         qf.style="display:none;"
     })
+    
 
-    document.querySelector("#conversation").innerHTML += `
-                    <div class="qf-chat text-center popup_exit">
-                        <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                        <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
-                        <div class="p-4">
-                            <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
-                            <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat ks-chat w-100 mb-1 p-1 h-100" onclick="escapeChat()">Pas maintenant</button>
-                        </div>
-                        </div>
+    // document.querySelector("#conversation").innerHTML += `
+    //                 <div class="qf-chat text-center popup_exit">
+    //                     <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+    //                     <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
+    //                     <div class="p-4">
+    //                         <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
+    //                         <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat ks-chat w-100 mb-1 p-1 h-100" onclick="escapeChat()">Pas maintenant</button>
+    //                     </div>
+    //                     </div>
                         
-                    </div>`
+    //                 </div>`
 
-    document.querySelector(".popup_exit").scrollIntoView();
+    // document.querySelector(".popup_exit").scrollIntoView();
 
+    endChat()
 
 }
 
@@ -54,7 +56,7 @@ function closeChat() {
  */
 function endChat() {
     document.querySelector("#chat_container").style="height:70px; position: fixed;bottom: 0; right: -320px !important; z-index:1003;background-color:transparent;"
-    document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
+    document.querySelector("#openChat").style="background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML =""
 
     document.querySelector("#closeChat").disabled = false
@@ -698,6 +700,10 @@ if(document.querySelector("#openMessage")){
     //     document.querySelector("#assist_virt").style="display:none;"
     //     document.querySelector(".btn-input-file").style="display:;cursor:pointer;"
 
+    //     document.querySelector("#amis_list").style="display:block;"
+
+    //     document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
+
     //     document.querySelectorAll("div.user_friends").forEach(user=>{
     //         user.style="display:";
     //     })
@@ -736,6 +742,10 @@ if(document.querySelector("#openChat")){
 
         document.querySelector("#assist_virt").style="display:;"
         document.querySelector(".btn-input-file").style="display:none;"
+
+        document.querySelector("#amis_list").style="display:none;"
+
+        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -450px !important;"
 
         document.querySelectorAll("div.user_friends").forEach(user=>{
             user.style="display:none";

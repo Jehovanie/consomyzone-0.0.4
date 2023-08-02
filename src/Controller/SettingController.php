@@ -40,7 +40,7 @@ class SettingController extends AbstractController
     }
 
     #[Route('/user/setting/account', name: 'account_setting')]
-    public function index(Request $request, Status $status): Response
+    public function index(Request $request, Status $status, TributGService $tbg_serv): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
 
@@ -50,6 +50,11 @@ class SettingController extends AbstractController
         $profil = null;
         $flushMessage = null;
         $form = null;
+
+        $tribugexists = $tbg_serv->getAllTribuGExists();
+
+        //dd($tribugexists);
+
         if ($userType == "consumer") {
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
             $form = $this->createForm(SettingProfilConsumerType::class, $profil[0]);
@@ -72,6 +77,8 @@ class SettingController extends AbstractController
 
                 $telFixe = $form->get('telFixe')->getData();
 
+                $quartier = $form->get('quartier')->getData();
+
                 $profil[0]->setFirstname($fname);
 
                 $profil[0]->setLastname($lname);
@@ -87,6 +94,34 @@ class SettingController extends AbstractController
                 $profil[0]->setPays($pays);
 
                 $profil[0]->setTelFixe($telFixe);
+
+                $profil[0]->setQuartier($quartier);
+
+                // $tribug_name = str_replace(" ","_", $quartier);
+
+                // $is_exist = false;
+
+                // foreach ($tribugexists as $tribu) {
+
+                //     if(str_contains($tribu['tributg'], $tribug_name)){
+
+                //         $is_exist = true;
+
+                //     }else{
+
+                //         $is_exist = false;
+
+                //     }
+                // }
+
+                // $tribug_table_name = "tribug_".str_pad($userId,2,'0',STR_PAD_LEFT)."_".$tribug_name;
+
+                // $profil[0]->setTributG($tribug_table_name);
+
+                // if($is_exist == false){
+
+                //     $tbg_serv->createTableTributG($tribug_table_name, $userId);
+                // }
 
                 $this->entityManager->flush();
 
@@ -125,6 +160,8 @@ class SettingController extends AbstractController
 
                 $twitter = $form->get('twitter')->getData();
 
+                $quartier = $form->get('quartier')->getData();
+
                 $profil[0]->setFirstname($fname);
 
                 $profil[0]->setLastname($lname);
@@ -150,6 +187,8 @@ class SettingController extends AbstractController
                 $profil[0]->setFacebook($facebook);
 
                 $profil[0]->setTwitter($twitter);
+
+                $profil[0]->setQuartier($quartier);
 
                 $this->entityManager->flush();
 
@@ -249,7 +288,7 @@ class SettingController extends AbstractController
     } 
 
     #[Route('/user/setting/security', name: 'security_setting')]
-    public function updatePassword(Request $request, UserPasswordHasherInterface $passwordEncoder): Response
+    public function updatePassword(Request $request, UserPasswordHasherInterface $passwordEncoder, MailService $mailService): Response
     {
         $user = $this->getUser();
 
@@ -311,7 +350,6 @@ class SettingController extends AbstractController
 
                     $isSuccess = true;
 
-                    //// prepare email which we wish send
                     $signatureComponents = $this->verifyEmailHelper->generateSignature(
                         "validate_email", /// lien de revenir
                         $user->getId(), /// id for user
@@ -319,17 +357,14 @@ class SettingController extends AbstractController
                         ['id' => $user->getId()] /// param id
                     );
 
-                    $url = $this->generateUrl("validate_email", array("id" => $user->getId()), UrlGeneratorInterface::ABSOLUTE_URL);
-
-                    $param = $passwordEncoder->hashPassword($user, $user->getId());
-
-                    $this->mailService->sendEmail(
-                        "geoinfography@infostat.fr", /// mail where from
-                        "ConsoMyZone",  //// name the senders
-                        $new_email, /// mail destionation
-                        $user->getPseudo(), /// name destionation
-                        "EMAIL DE CONFIRMATION", //// title of email
-                        "Pour confirmer votre modification de l'adresse email. Clickez-ici: " . $signatureComponents->getSignedUrl() . "&id=" . $user->getId() /// content: link
+                    $mailService->sendLinkOnEmailAboutAuthenticator(
+                        $new_email, /// mail destination
+                        trim($user->getPseudo()), /// name destination
+                        [
+                            "object" => "Validation e-mail sur ConsoMyZone", //// object of the email
+                            "link" => $signatureComponents->getSignedUrl(), /// link
+                            "template" => "emails/mail_validate_update_email.html.twig"
+                        ]
                     );
 
                 } else {
@@ -348,7 +383,7 @@ class SettingController extends AbstractController
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-        //dd($is_pwd);
+        //dd($profil);
 
         return $this->redirectToRoute("account_setting", [
             "message" => $flushMessage,

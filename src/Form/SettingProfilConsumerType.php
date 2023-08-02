@@ -25,6 +25,7 @@ class SettingProfilConsumerType extends AbstractType
         ->add('pays', TextType::class, ['label' => 'Pays'])
         ->add('telFixe', TelType::class, ['label' => 'Téléphone fixe'])
         ->add('commune', TextType::class, ['label' => 'Commune'])
+        ->add('quartier', TextType::class, ['label' => 'Quartier'])
         // ->add('submit', SubmitType::class, [
         //     'label' => 'Modifier',
         //     'attr' => ['class' => 'btn-block btn-primary btn-sm', 'lng-tag'=>"modifier"]
