@@ -784,15 +784,12 @@ thead > tr{
 
 .container-invitation{
     margin-left: 320px;
-    /* margin-left: 350px; */
     margin-top: 130px;
-
-    /* background: lightgrey; */
     background: transparent;
     font-family: tahoma;
     font-size: 12pt;
     color: #333;
-    height: 80vh;
+    /* height: 80vh; */
     width: 77%;
 }
 #profileImage {
@@ -833,9 +830,10 @@ thead > tr{
 #panneau #contenus li {
     /*Je défini les propriétés communes 
 à ts les contenus*/
-    background: white;
-    width: 920px;
+    width: 260px;
     padding: 20px;
+    margin-top: 30px;
+    margin-right: 20px;
 
     /*et je les masque*/
     display: none;
@@ -2033,4 +2031,74 @@ a:focus {
     color: #ccc;
 }
 
+.profile {
+    margin: 20px 0;
+}
 
+/* Profile sidebar */
+.profile-sidebar {
+    padding: 20px 0 10px 0;
+    background: #fff;
+    width: inherit;
+}
+
+.profile-userpic img {
+    float: none;
+    margin: 0 auto;
+    width: 50%;
+    height: 50%;
+    
+    clip-path: circle(30%);
+}
+
+.profile-usertitle {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.profile-usertitle-name {
+    color: #5a7391;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.profile-usertitle-job {
+    color: #5b9bd1;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.profile-userbuttons {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.profile-userbuttons .btn {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 15px;
+    margin-right: 5px;
+}
+
+.profile-userbuttons .btn:last-child {
+    margin-right: 0px;
+}
+
+.profile-usermenu {
+    margin-top: 30px;
+}
+
+
+/* Profile Content */
+.profile-content {
+    padding: 20px;
+    background: #fff;
+    min-height: 460px;
+}
+
+.profile-sidebar #annule_invitation_js{
+    margin-left: 35px;
+}

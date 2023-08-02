@@ -1389,3 +1389,23 @@ input::-ms-clear {
     height: 50px;
     border-radius: 50%;
 }
+
+.user-profy {
+    float: left;
+    width: 100%;
+    background-color: #fff;
+    text-align: center;
+    border-left: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    border-right: 1px solid #ececec;
+    -webkit-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -moz-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -ms-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -o-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    padding: 20px 0 0 0;
+}
+
+.followw {
+    background-color: #53d690;
+}

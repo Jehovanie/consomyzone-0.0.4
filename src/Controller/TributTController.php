@@ -1354,7 +1354,7 @@ class TributTController extends AbstractController
         //$tribu_name = $tribu_t->showRightTributName($table);
 
         // $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]) . "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
-        $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
+        $contentForDestinator = " vous a envoyé une invitation de rejoindre la tribu " . $table;
         
         $type = "invitation";
 
