@@ -757,6 +757,7 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("SELECT name, description, avatar FROM $table_name");
         $statement->execute();
         $apropos = $statement->fetch(PDO::FETCH_ASSOC);
+        $apropos['name'] = 'Tribu G ' . $apropos['name'];
 
         return $apropos;
     }
@@ -777,50 +778,52 @@ class TributGService extends PDOConnexionService{
         $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
         $resultats = [];
 
-        foreach( $publications as $publication ){
+        if( count($publications) > 0 ){
+            foreach( $publications as $publication ){
 
-            $publication_id = $publication["id"];
-            $publication_user_id= $publication["user_id"];
-
-            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
-
-            $statement_photos->execute();
-
-            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
-
-            $publication["photo_profil"] = $photo_profil["photo_profil"];
-
-            $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
-
-            $statement->execute();
-
-            $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
-
- 
-
-            $publication["comments"] = $comments;
-
-
-
-            $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
-
-            $statement->execute();
-
-            $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-            $publication["reactions"] = $reactions; /// [ ...reactions ]
-
-            $publication["tribu"]["state"] = "Tribu G";
-            $publication["tribu"]["name"] = $apropo_tribuG['name'];
-            $publication["tribu"]["description"] = $apropo_tribuG['description'];
-            $publication["tribu"]["avatar"] = $apropo_tribuG['avatar'];
-
-
-
-            array_push($resultats, $publication);
-
+                $publication_id = $publication["id"];
+                $publication_user_id= $publication["user_id"];
+    
+                $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+    
+                $statement_photos->execute();
+    
+                $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+    
+                $publication["photo_profil"] = $photo_profil["photo_profil"];
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
+    
+                $statement->execute();
+    
+                $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
+    
+     
+    
+                $publication["comments"] = $comments;
+    
+    
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
+    
+                $statement->execute();
+    
+                $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+    
+    
+                $publication["reactions"] = $reactions; /// [ ...reactions ]
+    
+                $publication["tribu"]["state"] = "Tribu G";
+                $publication["tribu"]["name"] = $apropo_tribuG['name'];
+                $publication["tribu"]["description"] = $apropo_tribuG['description'];
+                $publication["tribu"]["avatar"] = $apropo_tribuG['avatar'];
+    
+    
+    
+                array_push($resultats, $publication);
+    
+            }
         }
 
         return $resultats; /// [ [...publication, "comments" => ... , "reactions" => ... ], ...]

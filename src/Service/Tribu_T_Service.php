@@ -10,7 +10,6 @@ use PDO;
 use PDOException;
 
 class Tribu_T_Service extends PDOConnexionService
-
 {
 
 
@@ -1483,20 +1482,34 @@ class Tribu_T_Service extends PDOConnexionService
         $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
         $statement->execute();
         $t_owned = $statement->fetch(PDO::FETCH_ASSOC);
+
         $tribu_t_owned = $t_owned['tribu_t_owned'];
+
         $object= json_decode($tribu_t_owned, true);
 
-        foreach ($object['tribu_t'] as $trib){
-            if( $trib['name'] === $table_name){
+        if( !array_key_exists("name", $object['tribu_t']) ){
+            foreach ($object['tribu_t'] as $trib){
+                if( $trib['name'] === $table_name){
+                    $apropos = [
+                        'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
+                        'description' => $trib['description'],
+                        'avatar' => $trib['logo_path'],
+                    ];
+    
+                    break;
+                }
+            }
+        }else{
+            if( $object['tribu_t']['name'] === $table_name){
                 $apropos = [
                     'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
                     'description' => $trib['description'],
                     'avatar' => $trib['logo_path'],
                 ];
-
-                break;
             }
         }
+
+       
         return $apropos;
     }
 

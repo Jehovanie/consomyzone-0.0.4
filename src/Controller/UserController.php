@@ -101,11 +101,10 @@ class UserController extends AbstractController
         //// ALL PUBLICATION TRIBU G /////
         $pub_tribuG= $tribuGService->getAllPublicationsUpdate($tribuG);
         $publications= array_merge($publications, $pub_tribuG);
-        // dd($publications);
 
         //// ALL PUBLICATION FOR ALL TRIBU T /////
         $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
-        // dd($all_tribuT);
+      
 
         if(count($all_tribuT) > 0 ){
             $all_pub_tribuT= [];
@@ -115,8 +114,6 @@ class UserController extends AbstractController
             }
             $publications= array_merge($publications, $all_pub_tribuT);
         }
-        // dd($publications);
-
         
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
