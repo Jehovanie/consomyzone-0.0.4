@@ -2338,7 +2338,7 @@ function updateVisibility(element){
             }else if(confidentialite == 2){
                 element.parentElement.previousElementSibling.innerHTML = `<i class="bi bi-lock-fill"></i>`
             }
-            alert(message)
+            // showAlertMessageFlash(message);
         })
     }
 }
@@ -2410,13 +2410,15 @@ function deletePublication(pubId, tablePub){
     })
 
     fetch(request)
-    .then(response=>response.json())
-    .then(response =>{
-        alert(response.message)
-        if(response.success){
-           document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`).remove();
-        }
-    })
+        .then(response=>response.json())
+        .then(response =>{
+            let status= "danger";
+            if(response.success){
+                document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`).remove();
+                status= "success";
+            }
+            showAlertMessageFlash(response.message, status);
+        })
 }
 
 
@@ -2476,4 +2478,21 @@ function getAllComment(pubId, tablePub){
             `
         }
     })
+}
+
+function showAlertMessageFlash(text, status="success"){
+
+    const body= document.querySelector('.content_modal_alert_jheo_js');
+    const className= (status === "success" ) ? "alert-primary" : "alert-danger";
+
+    body.classList.add(className);
+    body.innerText= text;
+
+    document.querySelector('.alert_flash_jheo_js').click();
+
+    setTimeout(() => {
+        document.querySelector('.close_alertFlashModal_jheo_js').click();
+        body.classList.remove(className);
+        body.innerText = "";
+    },1500)
 }
