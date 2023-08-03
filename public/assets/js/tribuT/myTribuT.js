@@ -255,35 +255,31 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
         image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
     document.querySelector("#content-pub-js").innerHTML = `
-            <div class="card-couverture-pub-tribu-t ">
-                <div class="content-couverture">
-                    <div class="row content-tribu-t">
-                        <div class="col-lg-3 col-4">
-                            <div class="row">
-                                <div class="col-lg-6 col-6">
-                                    ${image_tribu_t}
-                                </div>
-                                <div class="col-lg-6 col-6">
-                                    <label style="margin-left:10%;" for="fileInputModifTribuT">
-                                        <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
-                                    </label>
-                                    <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
-                                </div>
-                            </div>
+            <div class="rounded-3 bg-secondary bg-gradient text-light" >
+                <div class="mt-4 p-5">
+                    <div class="row">
+                        <div class="col-lg-2 col-2 tribu-t-img">
+                            ${image_tribu_t}
                         </div>
-                        <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1  id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_", "")}</h1>
-                            <p class="responsif-none-mobile p-mobile">
-                            ${tribu_t[0].description}
+                        <div class="col-lg-2 col-2">
+                            <label style="margin-left:10%;" for="fileInputModifTribuT">
+                                <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                            </label>
+                            <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
+                        </div>
+                        <div class=" col-lg-6 col-6">
+                            <h1  id="tribu_t_name_main_head" class="text-light" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_", "")}</h1>
+                            <p class="p-mobile">
+                                ${tribu_t[0].description}
                             </p>
                         </div>
                     </div>
                     
-                    <div class="nome-fontateur-tribu-t">
-                        <p>Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
-                    </div>
                 </div>
-                <nav class="responsif-none mx-auto">
+                <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
+                     <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
+                </div>
+                <nav class=" mx-auto">
                     <ul id="navBarTribu" class="navBarTribu-t">
                         <li class="listNavBarTribu">
                             <a id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
@@ -304,12 +300,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
                     </ul>
                 </nav>
-                
             </div>
+
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
-                    <div class=" uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub-t">
+                    <div class=" 2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
                                 <img src="/assets/image/img_avatar3.png" alt="">
@@ -365,7 +361,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 if (confidentiality === 1) {
                     contentPublication = `<div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
-                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                            <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
                                                         <img src="/assets/image/img_avatar3.png" alt="">
@@ -1276,14 +1272,12 @@ function showPhotos(){
     })
     fetch(requete).then(rqt => rqt.json()).then(data => {
             //console.log(data);
-            photosContainer.innerHTML = `<div class="intro">
+        photosContainer.innerHTML = `
+                <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
                         Photo télechargé avec succès!
                     </div>
-                    <div><span class="h2">Liste des photos</span> <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> <i class="bi bi-camera-fill"></i> Importer
-                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
-                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
-                    </label></div>
+                    
                     
                 </div>`;
 
@@ -1292,10 +1286,28 @@ function showPhotos(){
 
                 for (let photo of data) {
                     let img_src =photo.photo; //replaceAll("/public","");
-                    li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    // li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    li_img +=`
+                                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                                        <img
+                                        src="${img_src}"
+                                        class="w-100 shadow-1-strong  mb-4"
+                                        alt="Boat on Calm Water"
+                                        />
+                                    </div>
+                                    `
                 }
                 setGallerie(document.querySelectorAll(".img_gal"))
-                photosContainer.innerHTML+=`<div class="gallery-container"><div id="gallery">${li_img}</div></div>`
+                photosContainer.innerHTML += `<div class="gallery-container">
+                <div>
+                        <span class="h2">Album photo</span> 
+                        <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                            <i class="bi bi-camera-fill"></i> Importer
+                            <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                            <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                        </label>
+                    </div>
+                <div id="gallery"><div class="row">${li_img}</div></div></div>`
 
                 setGallerie(document.querySelectorAll("#gallery img"))
                 
@@ -1665,4 +1677,12 @@ function verifieEmailValid(email) {
 function ondeleteUser(e) {
     const email = e.parentElement
     email.parentElement.removeChild(email);
+}
+
+
+if (document.querySelector("#apropos-tribu-t")) {
+    let openClose = document.querySelector("#apropos-tribu-t")
+    openClose.addEventListener("click", () => {
+        
+    })
 }

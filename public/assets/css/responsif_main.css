@@ -26,10 +26,10 @@
         background-color: #fff;
         border-radius: 3px;
     }
-
+/* 
     ul.navBarTribu-t {
         border-radius: 15px !important;
-    }
+    } */
 
     .bgPersonnalisee {
         border: none !important;
@@ -94,7 +94,7 @@
     }
 
     
-
+    
     /* .card-pub-actu img {
         width: 62vw;
     } */
@@ -126,6 +126,11 @@
         transition: all 2s ease-in-out !important;
         background-color: #fff;
         /* z-index: 407 !important; */
+    }
+
+    .apropos-tribu-t {
+        height: 100% !important;
+        max-width: 26.5rem !important;
     }
 
     .responsif-none {
@@ -558,7 +563,7 @@
     }
 
     .content_list_menu {
-        width: 60px !important;
+        width: 340px !important;
     }
 
     .account-profils {
@@ -647,10 +652,10 @@
         width: 100vw !important;
     }
 
-    /* #onglets {
-        margin-left: 70px;
-        margin-top: 110px !important;
-    } */
+    #onglets {
+        margin-left: 0px;
+        margin-top: 75px !important;
+    }
 
     .demande,
     .invitation-conf,
@@ -752,7 +757,7 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
-        /*overflow: hidden;*/
+        overflow: hidden;
         background-color: white;
     }
 
@@ -961,9 +966,12 @@
         width: 140vw;
     }
 
+    
+
     .content_right_actualite {
-        width: 100vw !important;
+        width: 95vw !important;
     }
+
 
     .content_right_actualite_menu {
         width: 83vw !important;
@@ -1083,9 +1091,9 @@
         margin-left: 20px !important;
     }
 
-    .uf {
+    /* .uf {
         max-width: 44.75rem !important;
-    }
+    } */
 
     /* .card-pub-actu img {
             width: 52vw;
@@ -1172,9 +1180,9 @@
         margin-left: 20px !important;
     }
 
-    .uf {
+    /* .uf {
         max-width: 44.75rem !important;
-    }
+    } */
     /* .card-pub-actu img {
             width: 52vw;
         } */
@@ -1265,9 +1273,9 @@
         margin-left: 140px !important;
     }
 
-    .uf {
+    /* .uf {
         max-width: 44.75rem !important;
-    }
+    } */
     .card-pub {
         margin-left: 0px !important;
     }
@@ -1785,7 +1793,7 @@
 
 @media screen and (min-width: 1800px) and (max-width: 1899px) {
     .width-content-t {
-        width: 84%;
+        width: 77%;
     }
     .navleft-chat{
         right: -430px !important;
@@ -1798,6 +1806,10 @@
     }
     .apropos-tribu-t {
         width: 385px !important;
+    }
+
+    .\32xl\:ud-max-w-230-tribu-t {
+        max-width: 70.5rem !important;
     }
 
     #map {
@@ -1819,13 +1831,6 @@
         margin-left: 355px !important;
     }
 
-    /* .content_right_actualite .card-couverture-pub-tribu-t {
-        margin-top: -220px !important;
-    } */
-
-    .content_right_actualite .exprime-pub {
-        margin-top: 265px !important;
-    }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
         height: 100px !important;
