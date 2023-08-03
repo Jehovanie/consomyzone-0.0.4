@@ -26,12 +26,6 @@
             <div class="vc tv nj xr">
                 <div class="pc sv vv/4">
                     <!-- ====== Chat List Start -->
-                    {# <div class="vi bj wr ql sl">
-                        <h3 class="kn 2xl:ud-text-xl un zn gs">
-                            Actif 
-                            <span class="lb qh oi bj wr wj yr tl kl ln un zn gs">7</span>
-                        </h3>
-                    </div> #}
                     <div class="vc xk">
                         <form class="h ib">
                             <input type="text" class="yd sh ni bj wr wj yr nl mm pm mn vo fr" placeholder="Search..."/>
@@ -52,7 +46,7 @@
                                         <div class="cg lc mg sh ol rl tq is">
                                             <div class="h mb sc yd of th">
                                                 {# /// photo de profil #}
-                                                <img src="{{(item.photo) ? item.photo : asset('/uploads/users/photos/default_pdp.png')}}" alt="{{item.firstname}}" class="vc yd qk rk"/>
+                                                <img src="{{(item.photo) ? item.photo|replace({"/public": ""})  : asset('/uploads/users/photos/default_pdp.png')|replace({"/public": ""}) }}" alt="{{item.firstname}}" class="vc yd qk rk"/>
                                                 
                                                 {# //// state blue if in contact  #}
                                                 {# <span class="g l m jc wc ce th pi ij xj"></span> #}
@@ -95,7 +89,7 @@
                     <div class="lc mg qg vi bj wr ql vl">
                         <div class="lc mg content_entete_msg_jheo_js" data-userToFirstname={{userToProfil.firstname}} data-userToLastname={{userToProfil.lastname}}  data-toggle-id-user-to={{userToProfil.id}}>
                             <div class="ob xc yd pf nh th">
-                                <img src="{{(userToProfil.photo_profile) ? userToProfil.photo_profile : asset('/uploads/users/photos/default_pdp.png')}}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
+                                <img src="{{(userToProfil.photo_profile) ? userToProfil.photo_profile|replace({"/public": ""})  : asset('/uploads/users/photos/default_pdp.png')|replace({"/public": ""}) }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
                             </div>
                             <div>
                                 <h5 class="un zn gs">
@@ -135,8 +129,9 @@
 
                     {# ================== CONTENCT DISCUSSION ================== #}
                     <div class="vd mh ip fh ql wl content_discussion_jheo_js">
-
                         {% if userToProfil.messages|length > 0  %}
+
+                            {% set defaultFile = "/assets/image/type_file.png" %}
 
                             {% for message in userToProfil.messages %}
 
@@ -150,18 +145,36 @@
                                             
                                             {% if message.message_type is same as('text') %}
                                                 <p>{{message.content.text}}</p>
-                                            {% elseif (message.message_type is same as('image'))  %}
+                                            {# {% elseif (message.message_type is same as('image'))  %}
                                                 <div class="content_image_msg">
                                                     {% for image in message.content.images %}
                                                         <img class="message_image_item" src="{{image}}" alt="image">
                                                     {% endfor %}
-                                                </div>
-                                            {% elseif (message.message_type is same as('text_image'))  %}
+                                                </div> #}
+                                            {% else  %}
                                                 <p>{{message.content.text}}</p>
                                                 <div class="content_image_msg">
-                                                    {% for image in message.content.images %}
-                                                        <img class="message_image_item" src="{{image}}" alt="image">
-                                                    {% endfor %}
+                                                    {% if message.content.images|length > 0 %}
+                                                        {% for image in message.content.images %}
+                                                            <div class="file_item">
+                                                                <img class="message_image_item" src="{{image|replace({"/public": ""})}}" alt="image">
+                                                                <a class="icon_download_file" href="{{image}}" download>
+                                                                    <i class="fa-solid fa-download"></i>
+                                                                </a>
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+
+                                                    {% if message.content.files is defined and  message.content.files|length > 0 %}
+                                                        {% for file in message.content.files %}
+                                                            <div class="file_item">
+                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                <a class="icon_download_file" href="{{file}}" download>
+                                                                    <i class="fa-solid fa-download"></i>
+                                                                </a>
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -174,18 +187,30 @@
                                         <div class="qb vh ii oj el yl">
                                             {% if message.message_type is same as('text') %}
                                                 <p class="eo">{{message.content.text}}</p>
-                                            {% elseif (message.message_type is same as('image')) %}
-                                                <div class="content_image_msg">
-                                                    {% for image in message.content.images %}
-                                                        <img class="message_image_item" src="{{image}}" alt="image">
-                                                    {% endfor %}
-                                                </div>
-                                            {% elseif (message.message_type is same as('text_image'))  %}
+                                            {% else %}
                                                 <p class="eo">{{message.content.text}}</p>
                                                 <div class="content_image_msg">
-                                                    {% for image in message.content.images %}
-                                                        <img class="message_image_item" src="{{image}}" alt="image">
-                                                    {% endfor %}
+                                                    {% if message.content.images|length > 0 %}
+                                                        {% for image in message.content.images %}
+                                                            <div class="file_item">
+                                                                <img class="message_image_item" src="{{image|replace({"/public": ""})}}" alt="image">
+                                                                <a class="icon_download_file" href="{{image}}" download>
+                                                                    <i class="fa-solid fa-download"></i>
+                                                                </a>
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    {% if message.content.files is defined and  message.content.files|length > 0 %}
+                                                        {% for file in message.content.files %}
+                                                            <div class="file_item">
+                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                <a class="icon_download_file" href="{{file}}" download>
+                                                                    <i class="fa-solid fa-download"></i>
+                                                                </a>
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+
                                                 </div>
                                             {% endif %}
                                         </div>

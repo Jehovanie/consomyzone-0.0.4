@@ -724,3 +724,21 @@
   #search_friend_input{
     outline-color: #75f8a1;
   }
+
+
+.file_item{
+  position: relative;
+}
+.icon_download_file{
+  position: absolute;
+  right: 20px;
+  bottom: 25px;
+  cursor: pointer;
+  color: white !important;
+  font-size: 1.6rem;
+
+}
+
+.icon_download_file:hover{
+  transform: scale(1.5);
+}
