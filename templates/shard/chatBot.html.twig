@@ -12,12 +12,13 @@
 
 	<div id="openFlottant" style="display:flex;">
 		<div class="text-center" id="openChat" style="background-color: #69BC45;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
-			<i class="fas fa-quote-left" style="margin-top: 13%;font-size:28px;"></i>
+			{# <i class="fas fa-quote-left" style="margin-top: 13%;font-size:28px;"></i> #}
+			<img src="/public/assets/icon/icon_cmz.jpg" alt="CMZ" class="vc-chat yd-chat qk-chat rk-chat" style="margin-top: 5%;width: 36px;height: 36px;margin-left: 5%;border-radius: 20%;" />
 
 		</div>
 
 		{% if app.user %}
-			<div class="text-center ms-2" id="openMessage" style="background-color: #0d6efd;width:40px; height:40px;color:white;border-radius:8px;cursor:not-allowed;">
+			<div class="text-center ms-2" id="openMessage" style="background-color: #0d6efd;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
 				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;"></i>
 
 			</div>
@@ -47,7 +48,7 @@
 			<div>
 				<div x-data="{openDropDown: false}" class="h-chat">
 					<button @click="openDropDown = !openDropDown" class="lc-chat yc-chat zd-chat mg-chat pg-chat sh-chat ni-chat bj-chat wr-chat wj-chat yr-chat" id="closeChat">
-						<i class="fas fa-close"></i>
+						<i class="fas fa-close fa-2x text-danger"></i>
 					</button>
 
 				</div>
@@ -120,25 +121,35 @@
 
 				{% if app.user %}
 
-					{% for amis in amisTributG %}
+					{% if amisTributG|length > 1 %}
 
-						{% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+						{% for amis in amisTributG %}
 
-							<div class="cg-chat lc-chat mg-chat sh-chat ol-chat rl-chat tq-chat is-chat user_friends" data-toggle-user-id={{amis.id}} tooltip={{amis.email}}>
-								<div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
-									<img src="{{ ( amis.photo != null) ? amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="profile" class="vc-chat yd-chat qk-chat rk-chat"/>
-									<span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
+							{% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+
+								<div class="cg-chat lc-chat mg-chat sh-chat ol-chat rl-chat tq-chat is-chat user_friends" data-toggle-user-id={{amis.id}} tooltip={{amis.email}}>
+									<div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
+										<img src="{{ ( amis.photo != null) ? amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="profile" class="vc-chat yd-chat qk-chat rk-chat"/>
+										<span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
+									</div>
+									<div class="yd-chat">
+										<h5 class="mn-chat un-chat zn-chat gs-chat">
+											{{amis.firstname ~ " " ~ amis.lastname }}
+										</h5>
+									</div>
 								</div>
-								<div class="yd-chat">
-									<h5 class="mn-chat un-chat zn-chat gs-chat">
-										{{amis.firstname ~ " " ~ amis.lastname }}
-									</h5>
-								</div>
-							</div>
 
-						{% endif %}
+							{% endif %}
 
-					{% endfor %}
+						{% endfor %}
+
+					{% else %}
+
+						<h5 class="mn-chat un-chat zn-chat gs-chat">
+							Aucun connecté pour le moment. Vous pouvez parler avec l'assistant virtuel.
+						</h5>
+
+					{% endif %}
 
 				{% endif %}
 
