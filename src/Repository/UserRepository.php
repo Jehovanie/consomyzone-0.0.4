@@ -94,10 +94,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $json_tribuT_owned= $this->sec->getUser()->getTribuT();
         if( $json_tribuT_owned ){
             $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
-            foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
-                extract($tribuT);  /// $name
+            if(!array_key_exists("name", $decode_tribuT_owned["tribu_t"])){
+                foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
+                    extract($tribuT);  /// $name
+                    array_push($results,["table_name" => $name ] );
+                }
+            }else{
+                $name = $decode_tribuT_owned["tribu_t"]["name"];
                 array_push($results,["table_name" => $name ] );
             }
+            
         }
 
         return $results;
@@ -110,10 +116,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $json_tribuT_joined = $this->sec->getUser()->getTribuTJoined();
         if( $json_tribuT_joined ){
             $decode_tribuT_joined = json_decode($json_tribuT_joined , true);
-            foreach($decode_tribuT_joined["tribu_t"] as $tribuT){
-                extract($tribuT);  /// $name
-                array_push($results, ["table_name" => $name ] );
+
+            if(!array_key_exists("name", $decode_tribuT_joined["tribu_t"])){
+                foreach($decode_tribuT_joined["tribu_t"] as $tribuT){
+                    extract($tribuT);  /// $name
+                    array_push($results,["table_name" => $name ] );
+                }
+            }else{
+                $name = $decode_tribuT_joined["tribu_t"]["name"];
+                array_push($results,["table_name" => $name ] );
             }
+
         }
 
         return $results;
@@ -122,7 +135,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getListTableTribuT(){
         $tab_owned= $this->getListTableTribuT_owned();
         $tab_joined= $this->getListTalbeTribuT_joined();
-
-        return $tab_owned + $tab_joined;
+        $tab = array_merge($tab_joined, $tab_owned);
+        return $tab;
     }
 }

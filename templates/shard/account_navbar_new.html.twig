@@ -310,7 +310,8 @@
 					</span>
 
 					<span class="th ni vj bj wr uk userProfil">
-						<img src="{{(userConnected.photo_profil) ? userConnected.photo_profil|replace({'/public':''}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="Photo profil">
+						<img src="{{(userConnected.photo_profil) ? userConnected.photo_profil : asset('/uploads/users/photos/default_pdp.png') }}" alt="Photo profil">
+						{# <img src="{{(userConnected.photo_profil) ? userConnected.photo_profil|replace({'/public':''}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="Photo profil"> #}
 					</span>
 
 					<svg :class="dropdownOpen && 'ag'" class="mk fs pc rs hp ep" width="12" height="8" viewbox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">

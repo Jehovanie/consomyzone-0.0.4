@@ -1952,7 +1952,9 @@ class TributTController extends AbstractController
         Request $request,  
         TributGService $tributGService,
         SluggerInterface $slugger,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service
     ) : Response
     {
         $userConnected= $status->userProfilService($this->getUser());
@@ -2042,7 +2044,30 @@ class TributTController extends AbstractController
         $tribu_t_owned=!is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined=!is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
 
+        /**
+         * CONTAINER LIST PUBLICATION
+         */
+
+        //// ALL PUBLICATION FOR ALL TRIBU T /////
+        $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
+        // dd($all_tribuT);
+
+        if(count($all_tribuT) > 0 ){
+            $publications= [];
+            $all_pub_tribuT= [];
+            foreach($all_tribuT as $tribuT){
+                $temp_pub= $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name']);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
+
+        /**
+         * END LIST PUBLICATION
+         */
+
         return $this->render('tribu_t/tribuT.html.twig',[
+            "publications" => $publications,
             "userConnected" => $userConnected,
             "profil" => $profil,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
@@ -2281,6 +2306,41 @@ class TributTController extends AbstractController
         }
 
         return $this->json($users);
+
+    }
+    
+    #[Route('/user/pub/tribu_t', name: 'all_pub_tribu_t')]
+
+    public function fetchAllPubTribuT(UserRepository $userRepository, Tribu_T_Service $tribu_T_Service): Response
+
+    {
+
+        //// ALL PUBLICATION FOR ALL TRIBU T /////
+        $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
+        // dd($all_tribuT);
+
+        if(count($all_tribuT) > 0 ){
+            $publications= [];
+            $all_pub_tribuT= [];
+            foreach($all_tribuT as $tribuT){
+                $temp_pub= $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name']);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
+        dd($publications);
+
+        return $this->json($publications);
+
+        // return $this->render('tribu_t/tribuT.html.twig',[
+        //     "userConnected" => $userConnected,
+        //     "profil" => $profil,
+        //     "kernels_dir" => $this->getParameter('kernel.project_dir'), 
+        //     "tribu_T_owned" => $tribu_t_owned,
+        //     "tribu_T_joined" => $tribu_t_joined,
+        //     "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+        //     "form" => $form->createView(),
+        // ]);
 
     }   
 

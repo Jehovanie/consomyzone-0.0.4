@@ -15,6 +15,7 @@
 		}
 	</style>
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/Tribu_T/publication.css')}}">
 
 {% endblock %}
 
@@ -58,6 +59,9 @@
 
 			<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
 				<div id="content-pub-js">
+					{% for item in publications %}
+						{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+					{% endfor %}
 				</div>
 			</div>
 

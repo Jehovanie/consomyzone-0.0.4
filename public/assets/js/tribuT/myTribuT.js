@@ -159,7 +159,7 @@ function showPartisan() {
                     document.querySelector("#tribu_t_conteuneur").innerHTML += `
                         <div class="card-partisons row">
                             <div class="partisons-pdp col-lg-6">
-                                <img src="${profil.replace("/public","")}" alt="">
+                                <img src="${profil/*.replace("/public","")*/}" alt="">
                             </div>
                             <div class="partisons-text col-lg-6">
                                 <h4>${lastName} <span> ${firstName}</span></h4>
@@ -272,10 +272,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
     }
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
-        //image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
-        image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
+        image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
+        // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
     } else {
-        image_tribu_t = `<img id="avatarTribuT" src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
+        image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
 
     let canChangeTribuPicture = "";
@@ -349,12 +349,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <div class="icon-piece-join">
-                            <i class="fa-solid fa-camera"></i>
-                            <i class="fa-solid fa-paperclip"></i>
-                        </div>
-
                     </div>
                     <!-- ====== Chart pub One End -->
                 </div>
@@ -390,7 +384,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     dataNbr = data[i].nbr + " "
                 }
 
-                let pub_photo = data[i].photo ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${data[i].photo.replace("/public","")}" alt="">` :
+                let pub_photo = data[i].photo ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${data[i].photo/*.replace("/public","")*/}" alt="">` :
                  `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`
 
                 let confidentiality = parseInt(data[i].confidentiality,10);
@@ -410,17 +404,17 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                         </div>
                                     </div>` : ""
                     let canUpdateOrDeletePub = parseInt(id_c_u,10)===parseInt(data[i].user_id,10) ? `<div id="contentUpdateOrDelete">
-                                        <span class="dropend">
-                                            <span style="cursor:pointer" data-bs-toggle="dropdown">
+                                        <span class="float-end dropstart">
+                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
                                                 <i class="bi bi-three-dots" style="cursor:pointer"></i>
                                             </span>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
                                                 </li>
                                                 <li>
 
-                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item">
+                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
                                                         <i class="bi bi-trash3" aria-hidden="true"></i>
                                                         Supprimer
                                                     </button>
@@ -435,12 +429,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                        <img src="/assetss/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -503,12 +497,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                        <img src="/assetss/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -529,17 +523,17 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                         </div>
                                                     </div>
                                                     <div id="contentUpdateOrDelete">
-                                                        <span class="dropend">
-                                                            <span style="cursor:pointer" data-bs-toggle="dropdown">
+                                                        <span class="float-end dropstart">
+                                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
                                                                 <i class="bi bi-three-dots" style="cursor:pointer"></i>
                                                             </span>
                                                             <ul class="dropdown-menu">
                                                                 <li>
-                                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
                                                                 </li>
                                                                 <li>
 
-                                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item">
+                                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
                                                                         <i class="bi bi-trash3" aria-hidden="true"></i>
                                                                         Supprimer
                                                                     </button>
@@ -609,7 +603,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 const gen = genDataPubOfAllPartisans(data, 5)
                 const gen_length = (data.length - 5)
                 //const gen_length = (data.length)
-                console.log(gen_length)
+                console.log("gen_length : "+gen_length)
 
             
                 let lastId = 0;
@@ -634,18 +628,20 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 data = gen.next().value
                                 console.log(data)
                                 if (data) {
+                                    console.log("data N°: " + i)
+                                    console.log(data[i])
                                     const contentPublication = `
                                     <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                        <img src="/assetss/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -1169,7 +1165,7 @@ function sendNote(event, _idUser, _idResto,_idRestoComment) {
     })
     fetch(request).then(response => {
         if (response.ok && response.status === 200) {
-           alert("nety")
+           console.log("nety")
        }
     } )
 }
@@ -1193,7 +1189,7 @@ function updateNote(event, _idRestoComment) {
     })
     fetch(request).then(response => {
         if (response.ok && response.status === 200) {
-           alert("nety")
+           console.log("nety")
        }
     } )
 }
@@ -1457,7 +1453,8 @@ function showActualites(){
 if( document.querySelector("#submit-publication-tribu-t")){
     document.querySelector("#submit-publication-tribu-t").addEventListener("click" , () => {
         document.querySelector("#form-publication-tribu-t > div > div > div.modal-header > button").click();
-        showActualites();
+        setTimeout(showActualites, 5000);
+        //showActualites();
     })
 }
 
@@ -1593,7 +1590,7 @@ function showInvitations() {
         let status = false;
 
         if (input_principal.value === "") {
-            alert("Entre au moin une destination.")
+            console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
         }
 
@@ -1606,7 +1603,7 @@ function showInvitations() {
 
         ///object
         if (object.value === "") {
-            alert("Veillez entre un Object.")
+            console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
         } else {
             data = { ...data, "object": object.value }
@@ -1847,6 +1844,8 @@ function updatePublication() {
         "message": message
         }
 
+    console.log(data);
+
     fetch(new Request("/user/tribu/update_publication/"+dataName+"_publication", {
     method: "POST",
     headers: {
@@ -1855,6 +1854,6 @@ function updatePublication() {
     },
     body: JSON.stringify(data)
     })).then(response=>response.json())
-       .then(message=>alert(message));
+       .then(message=>console.log(message));
 
 }

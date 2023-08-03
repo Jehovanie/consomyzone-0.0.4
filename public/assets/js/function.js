@@ -414,7 +414,7 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
 
             },
             onClick: () => {
-                alert("toto")
+                console.log("toto")
             },
             onDragend: () => {
 
@@ -2244,7 +2244,7 @@ function readURL(input) {
       $('.image-upload-image').attr('src', e.target.result);
       $('.image-upload-content').show();
 
-      $('.image-title').html(input.files[0].name);
+    //   $('.image-title').html(input.files[0].name);
     };
 
     reader.readAsDataURL(input.files[0]);
@@ -2310,7 +2310,7 @@ function updateVisibility(element){
                         }else if(confidentialite == 2){
                             element.parentElement.previousElementSibling.innerHTML = `<i class="bi bi-lock-fill"></i>`
                         }
-                        alert(message)
+                        console.log(message)
                     })
     }
 }
