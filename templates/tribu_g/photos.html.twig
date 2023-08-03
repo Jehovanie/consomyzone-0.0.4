@@ -1,4 +1,4 @@
-<div class="content_photos_js_jheo">
+<div class="content_photos content_photos_js_jheo">
 	<div class="card p-3">
 		<!-- Gallery -->
 		<div>
@@ -6,23 +6,21 @@
 				Photo télechargé avec succès!
 			</div>
 
-			<span class="h4">Liste des photos</span>
+			<span class="h4">Album des photos</span>
 
-			<label class="input-file text-center float-end" style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;">
+			{# <label class="input-file text-center float-end" style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;">
 				<i class="bi bi-camera-fill"></i>
 				Importer
 				<input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
 				<img src="" alt="" id="photo-file" class="w-100" style="display:none;">
-			</label>
+			</label> #}
 		</div>
 
 		<div class="gallery-container">
-			{# <div class="row gallery-container"> #}
-			{# {% for double_photo  in photos|batch(2)  %} #}
-			<div class="" id="gallery" style="width:100%"> {# <div class="col-lg-4 col-md-12 mb-4 mb-lg-0" id="gallery"> #}
+			<div class="" id="gallery" style="width:100%"> 
 				{% for single_photo in photos %}
 					{% if single_photo.photo %}
-						<img src={{ asset('uploads/tribu_g/photos/') ~ single_photo.photo }} {# src={{asset("uploads/tribu_t/photos/" ~ single_photo.photo)}} #} class="" alt="Boat on Calm Water"/>
+						<img src={{ single_photo.photo|replace({"/public": ""}) }} class="" alt="Boat on Calm Water"/>
 					{% endif %}
 				{% endfor %}
 			</div>

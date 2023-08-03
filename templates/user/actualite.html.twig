@@ -46,22 +46,8 @@
                 <!-- ====== Chart pub One End -->
             </div>
              
-            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
-                {% for item in publications %}
-                    <!-- ====== Chart One Start -->
-                    {% if item.publication.confidentiality is same as(1) %}
-
-                        {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
-                    
-                    {% elseif item.publication.confidentiality is same as(2) %}
-                        
-                        {% if item.userOwnPub.id is same as(app.user.id) %}
-                            {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
-                        {% endif %}
-
-                    {% endif %}
-                    <!-- ====== Chart One End -->
-                {% endfor %}
+            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+                {% include 'shard/publications/all_publication.html.twig' with { 'publications': publications } %}
             </div>
 
             <!-- ====== Chart Two Start -->

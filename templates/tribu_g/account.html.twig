@@ -13,7 +13,7 @@
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" ></script>
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
-    <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+    {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
     <script  src="{{ asset('assets/js/account/profil_tribuG.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script>
     
@@ -125,114 +125,9 @@
                 <!-- ====== Chart pub One End -->
             </div>
 
-            {% if tributG.publications is defined %}
-                {% set last_pub_id= 0 %}
-                <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
-                {% for item in tributG.publications %}
-                    <!-- ====== Chart One Start -->
-                    {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
-                    <!-- ====== Chart One End -->
-                    {# <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 content_publication_js_jheo ">
-                        {% if pub.confidentiality == 1 or pub.user_id == app.user.id %}
-                            <!-- ====== Chart One Start -->
-                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub publication_js_jheo" id={{"pubication_js_" ~ pub.id ~ "_jheo" }} data-toggle-pub-id={{pub.id}} data-toggle-pub-user-id={{pub.user_id}}>
-                                <div class="head-pub">
-                                    <div class="pdp-content">
-                                        <img src="{{ (pub.photo_profil != null) ? pub.photo_profil : asset('uploads/users/photos/img_avatar.png') }}" alt="">
-                                    </div>
-                                    <div class="name-content-h">
-                                        <div class="name-content-g">
-                                            <h5>
-                                                <a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
-                                                    &ensp;{{pub.userfullname}} &ensp;
-                                                </a>
-                                            </h5>
-                                            <p class="p-title">
-                                                a publié sur
-                                                <span>{{tributG.profil.name}}</span>
-                                            </p>
-                                        </div>
-                                        <div class="status-content d-flex">
-                                            <p class="p-heure">
-                                                Publié le
-                                                {{pub.datetime}}
-                                            </p>
-                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-
-                                                <div class="btn-group" role="group">
-
-                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="fa-solid fa-earth-oceania"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                        <a class="dropdown-item" href="#">Modifier le status</a>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                    <div class="param-content-g">
-                                        {% if pub.user_id == app.user.id %}
-                                        <span class="float-end dropstart">
-                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                            </span>
-                                            <ul class="dropdown-menu" style="transform: translate(25.906px, 24px) !important; ">
-                                                <li>
-                                                    <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
-                                                        <i class="fas fa-edit"></i>
-                                                        Modifier
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
-                                                        <i class="fas fa-trash" aria-hidden="true"></i>
-                                                        Supprimer
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </span>
-                                    {% endif %}
-                                    </div>
-
-
-                                </div>
-
-                                <div class="card-pub-actu">
-                                    <p class="text-pub">
-                                        {{pub.publication}}
-                                    </p>
-                                    <img src="{{asset('uploads/tribu_g/photos/') ~ pub.photo }}" alt="">
-                                </div>
-
-                                <div class="card-reaction">
-                                    <p class="text-comment">
-                                        12 commentaire</p>
-                                    <div class="reaction-icon d-flex">
-                                        <i class="bi-heart like"></i>
-                                        <i class="fa-regular fa-comment comment"></i>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <!-- ====== Chart One End -->
-                        {% endif %}
-                    </div>
-                    {% set last_pub_id= pub.id %} #}
-                {% endfor %}
-                </div>
-                {# {% if last_pub_id != 0 and  last_pub_id != 1  %}
-                    <div class="content_chargement_publication content_chargement_publication_js_jheo mt-3" data-toggle-pub-id={{last_pub_id}} >
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                {% endif %} #}
-            {% endif %}
-
+            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 content_bloc_jheo_js">
+                {% include 'shard/publications/all_publication.html.twig' with { 'publications': tributG.publications } %}
+            </div>
 			
 			<!-- ====== Chart Two Start -->
 			<div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none">
@@ -269,14 +164,14 @@
                     <nav class="nav-tribu-g">
                         <ul id="navBarTribu">
                             <li class="listNavBarTribu tribu_active">
-                                <a href="#" id="fetch_actialite_tribug_js_jheo" class="active text-white" lng-tag="actualite">Actualité</a>
+                                <a href="#" id="fetch_actialite_tribug_jheo_js" class="active text-white" lng-tag="actualite">Actualité</a>
                             </li>
                             <li class="listNavBarTribu">
-                                <a style="cursor:pointer;" href="#" id="fetch_member_tribug_js_jheo">Partisans</a>
+                                <a style="cursor:pointer;" href="#" id="fetch_member_tribug_jheo_js">Partisans</a>
                             </li>
 
                             <li class="listNavBarTribu">
-                                <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_js_jheo">Photos</a>
+                                <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
                             </li>
                         </ul>
                     </nav>
