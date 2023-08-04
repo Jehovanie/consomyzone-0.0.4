@@ -1449,4 +1449,22 @@ class TributGService extends PDOConnexionService{
         return $results;
     }
 
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of tribu G exists
+     */
+
+     public function getAllTribuGExists(){
+
+        $sql = "SELECT tributg FROM `consumer` UNION SELECT tributg FROM `supplier`";
+
+        $statement = $this->getPDO()->prepare($sql);
+        
+        $statement->execute();
+
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+     }
+
 }

@@ -1438,3 +1438,30 @@ li.listNavBarTribu > a.active{
 .followw {
     background-color: #53d690;
 }
+
+
+i.fa-eye-slash, i.fa-eye{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    /* height: 790px; */
+    right: 75px;
+    /* padding-right: 1px; */
+    margin-top: -35px;
+    cursor: pointer;
+}
+
+#succesMessage {
+    -webkit-animation: cssAnimation 5s forwards; 
+    animation: cssAnimation 5s forwards;
+}
+@keyframes cssAnimation {
+    0%   {display: block;}
+    90%  {display: block;}
+    100% {display: none;}
+}
+@-webkit-keyframes cssAnimation {
+    0%   {display: block;}
+    90%  {display: block;}
+    100% {display: none;}
+}

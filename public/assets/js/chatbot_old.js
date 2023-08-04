@@ -9,11 +9,9 @@
  */
 function openChat() {
     document.querySelector("#chat_container").style="width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px !important; z-index:1003;"
-    document.querySelector("#openChat").style="background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
+    document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     document.querySelector("#chat_header").style ="display:;"
     document.querySelector("#amis_list").style ="display:;"
-
-    document.querySelector("#openFlottant").style ="display:none;"
 
     
 }
@@ -24,30 +22,26 @@ function openChat() {
  */
 function closeChat() {
 
-    document.querySelector("#closeChat").disabled = true
-
     let divs = document.querySelectorAll("#conversation > div")
 
     divs.forEach(qf=>{
         qf.style="display:none;"
     })
-    
 
-    // document.querySelector("#conversation").innerHTML += `
-    //                 <div class="qf-chat text-center popup_exit">
-    //                     <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-    //                     <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
-    //                     <div class="p-4">
-    //                         <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
-    //                         <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat ks-chat w-100 mb-1 p-1 h-100" onclick="escapeChat()">Pas maintenant</button>
-    //                     </div>
-    //                     </div>
+    document.querySelector("#conversation").innerHTML += `
+                    <div class="qf-chat text-center popup_exit">
+                        <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                        <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
+                        <div class="p-4">
+                            <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
+                            <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat ks-chat w-100 mb-1 p-1 h-100" onclick="escapeChat()">Pas maintenant</button>
+                        </div>
+                        </div>
                         
-    //                 </div>`
+                    </div>`
 
-    // document.querySelector(".popup_exit").scrollIntoView();
+    document.querySelector(".popup_exit").scrollIntoView();
 
-    endChat()
 
 }
 
@@ -57,10 +51,8 @@ function closeChat() {
  */
 function endChat() {
     document.querySelector("#chat_container").style="height:70px; position: fixed;bottom: 0; right: -320px !important; z-index:1003;background-color:transparent;"
-    document.querySelector("#openChat").style="background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
+    document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML =""
-
-    document.querySelector("#closeChat").disabled = false
 
     document.querySelector("#chat_header").style ="display:none;"
     document.querySelector("#amis_list").style ="display:none;"
@@ -71,8 +63,6 @@ function endChat() {
         
     }
 
-    document.querySelector("#openFlottant").style ="display:flex;"
-
 }
 
 /**
@@ -80,8 +70,6 @@ function endChat() {
  * @constructor
  */
 function escapeChat() {
-
-    document.querySelector("#closeChat").disabled = false
 
     let divs = document.querySelectorAll("#conversation > div")
 
@@ -421,6 +409,8 @@ function sendChat(message, images =[], user_id) {
         images : images
     }
 
+    console.log(data);
+
     fetch("/user/push/message", {
         headers: {
         'Accept': 'application/json',
@@ -429,10 +419,9 @@ function sendChat(message, images =[], user_id) {
         method: "POST",
         body: JSON.stringify(data)
     }).then(response => {
-
         if(response.status == 200){
-
-            getChat(user_id)
+            //writeRequest(message)
+            console.log("message sended...");
 
             if(document.querySelectorAll("div.content_image_input_js_jheo > img").length > 0){
                 document.querySelectorAll("div.content_image_input_js_jheo > img").forEach(img=>{
@@ -458,115 +447,52 @@ function getChat(user_id) {
 
         let i = 0;
 
-        document.querySelector("#conversation").innerHTML = ""
+        for(let message of messages){
 
-        if(messages.length > 0){
+            let img_doc = ""
 
-            for(let message of messages){
+            let content = JSON.parse(message.content)
 
-                let img_doc = ""
-    
-                let content = JSON.parse(message.content)
-    
-                if(content.images.length > 0){
-    
-                    for(let img of content.images){
-    
-                        img_doc += `<img src="${img}" class="mb-1" alt="photo" style="height:100px;border-radius:5px;">`
-    
-                    }
-                    
+            if(content.images.length > 0){
+
+                for(let img of content.images){
+
+                    img_doc += `<img src="${img}" class="mb-1" alt="photo" style="height:100px;border-radius:5px;">`
+
                 }
                 
-                if(message.isForMe == 0){
-    
-                    document.querySelector("#conversation").innerHTML += `<div class="qf-chat rb-chat disc_${i}">
-                        <div class="qb-chat vh-chat ii-chat oj-chat el-chat yl-chat">
-                        <p class="eo-chat">${content.text}</p>
+            }
+            
+            if(message.isForMe == 0){
+
+                document.querySelector("#conversation").innerHTML += `<div class="qf-chat rb-chat disc_${i}">
+                    <div class="qb-chat vh-chat ii-chat oj-chat el-chat yl-chat">
+                    <p class="eo-chat">${content.text}</p>
+                        ${img_doc}
+                    </div>
+                    <p class="in-chat nn-chat">${message.datetime}</p>
+                </div>`
+
+            }else{
+
+                document.querySelector("#conversation").innerHTML += `<div class="qf disc_${i}">
+                        <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                        <p>${content.text}</p>
                             ${img_doc}
                         </div>
-                        <p class="in-chat nn-chat">${message.datetime}</p>
+                        <p class="nn-chat">${message.datetime}</p>
                     </div>`
-    
-                }else{
-    
-                    document.querySelector("#conversation").innerHTML += `<div class="qf disc_${i}">
-                            <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                            <p>${content.text}</p>
-                                ${img_doc}
-                            </div>
-                            <p class="nn-chat">${message.datetime}</p>
-                        </div>`
-    
-                }
-                i++;
-                //console.log(message);
+
             }
-    
-            if(messages.length > 0){
-                document.querySelector(".disc_"+ (messages.length -1)).scrollIntoView();
-            }
-
-            //checkNewMessage(user_id)
-
-            let interval = setInterval(function(){
-                fetch("/user/message/"+user_id)
-                    .then(response=> response.json())
-                    .then(messages_2=>{
-                        
-                        if(messages_2.length > messages.length){
-
-                            let message_new  = messages_2[messages_2.length-1]
-
-                            let img_doc = ""
-
-                            let content_2 = JSON.parse(message_new.content)
-
-                            if(content_2.images.length > 0){
-
-                                for(let img of content_2.images){
-                
-                                    img_doc += `<img src="${img}" class="mb-1" alt="photo" style="height:100px;border-radius:5px;">`
-                                }
-                            }
-
-                            if(!document.querySelector(".disc_"+ (messages_2.length -1))){
-                                if(message_new.isForMe == 0){
-
-                                    document.querySelector("#conversation").innerHTML += `<div class="qf-chat rb-chat disc_${messages_2.length-1}">
-                                        <div class="qb-chat vh-chat ii-chat oj-chat el-chat yl-chat">
-                                        <p class="eo-chat">${content_2.text}</p>
-                                            ${img_doc}
-                                        </div>
-                                        <p class="in-chat nn-chat">${message_new.datetime}</p>
-                                    </div>`
-                    
-                                }else{
-                    
-                                    document.querySelector("#conversation").innerHTML += `<div class="qf disc_${messages_2.length-1}">
-                                            <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                                            <p>${content_2.text}</p>
-                                                ${img_doc}
-                                            </div>
-                                            <p class="nn-chat">${message_new.datetime}</p>
-                                        </div>`
-                    
-                                }
-                            }
-
-                            clearInterval(interval)
-                            document.querySelector(".disc_"+ (messages_2.length -1)).scrollIntoView();
-                        }
-                    })
-            },1000)
-
-        }else{
-
-            document.querySelector("#conversation").innerHTML ="<p class='text-center'>Aucun message.</p>"
-
+            i++;
+            //console.log(message);
         }
+
+        document.querySelector("#amis_list").setAttribute("data-chat-length", messages.length)
         
+        document.querySelector(".disc_"+ (messages.length -1)).scrollIntoView();
     })
+
 
 }
 
@@ -578,16 +504,13 @@ function getChat(user_id) {
  */
 function checkNewMessage(user_id) {
 
-    //console.log("user_tsy_id : "+ user_id);
-
     setInterval(() => {
 
         fetch("/user/message/"+user_id)
         .then(response=>response.json())
         .then(data=>{
 
-            //let len_actif = document.querySelector("#amis_list").getAttribute("data-chat-length")
-
+            let len_actif = document.querySelector("#amis_list").getAttribute("data-chat-length")
             let new_len = data.length
 
             if(new_len > len_actif){
@@ -632,6 +555,7 @@ function checkNewMessage(user_id) {
 
                 document.querySelector(".disc_"+ (new_len -1)).scrollIntoView();
 
+                document.querySelector("#amis_list").setAttribute("data-chat-length",new_len)
             }
         })
         
@@ -757,120 +681,36 @@ let main_suggestion = {
 
 //const user_id = document.querySelector("div.user-chat-display").getAttribute("data-user-id")
 
-if(document.querySelector("#openMessage")){
+document.querySelector("#openChat").addEventListener("click", function(){
 
-    document.querySelector("#openMessage").addEventListener("click", function(){
+    openChat()
 
-        openChat()
+    if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
 
-        document.querySelector("#assist_virt").style="display:none;"
-        document.querySelector(".btn-input-file").style="display:;cursor:pointer;"
+        runSpinner()
 
-        document.querySelector("#amis_list").style="display:block;"
+        writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
+        Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
+        <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
 
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
+    }else{
 
-        document.querySelectorAll("div.user_friends").forEach(user=>{
-            user.style="display:";
-        })
+        if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
 
-        let first_user = document.querySelectorAll("#amis_list > div > div > div.cg-chat.lc-chat.mg-chat.sh-chat.ol-chat.rl-chat.tq-chat.is-chat.user_friends")[0]
-
-        // let user_id = first_user.getAttribute("data-toggle-user-id")?first_user.getAttribute("data-toggle-user-id") : 0
-        let user_id = 0;
-        
-        if(first_user){
-            user_id = first_user.getAttribute("data-toggle-user-id")
-        }else{
-            user_id = 0;
             runSpinner()
 
             writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-            
+    
             runSuggestion()
-        }
-
-        let user_name = first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
-
-        let user_photo = first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
-
-        document.querySelector("div#user_head").innerHTML = `
-                            <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
-                                <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
-                                    <img src="${user_photo}" alt="profile" id="profile-user" class="vc-chat yd-chat qk-chat rk-chat"/>
-                                    <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
-                                </div>
-                            </div>
-                            <div class="user-chat-display" data-user-id="${user_id}">
-                                <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
-                                    ${user_name}
-                                </h5>
-                            </div>
-                            `
-        getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-
-    })
-}
-
-if(document.querySelector("#openChat")){
-
-    document.querySelector("#openChat").addEventListener("click", function(){
-
-        openChat()
-
-        document.querySelector("#assist_virt").style="display:;"
-        document.querySelector(".btn-input-file").style="display:none;"
-
-        document.querySelector("#amis_list").style="display:none;"
-
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -450px !important;"
-
-        document.querySelectorAll("div.user_friends").forEach(user=>{
-            user.style="display:none";
-        })
-
-        document.querySelector("div#user_head").innerHTML = `
-                            <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
-                                <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
-                                    <img src="https://www.iconpacks.net/icons/1/free-help-icon-1160-thumb.png" alt="profile" id="profile-user" class="vc-chat yd-chat qk-chat rk-chat"/>
-                                    <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
-                                </div>
-                            </div>
-                            <div class="user-chat-display" data-user-id="0">
-                                <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
-                                    Assistant Virtuel
-                                </h5>
-                                <p class="mn-chat">Reponse automatique</p>
-                            </div>
-                            `
-
-        if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
-
-            runSpinner()
-
-            writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
-            Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
-            <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
-
-        }else{
-
-            if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
-
-                runSpinner()
-
-                writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-        
-                runSuggestion()
-                
-            }else{
-                
-                getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
             
-            }
+        }else{
+            
+            getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+        
         }
+    }
 
-    })
-}
+})
 
 document.querySelector("#closeChat").addEventListener("click", function(){
 
@@ -960,7 +800,7 @@ document.querySelectorAll("div.cg-chat").forEach(amis=>{
 
         let user_name = e.target.textContent.trim()
 
-        //let user_id = amis.getAttribute("data-toggle-user-id")
+        let user_id = amis.getAttribute("data-toggle-user-id")
 
         document.querySelector("#user_name_chat").innerText = user_name
 
@@ -969,11 +809,14 @@ document.querySelectorAll("div.cg-chat").forEach(amis=>{
             document.querySelector("#profile-user").src = amis.querySelector("img").src
             document.querySelector(".mn-chat").style.display ="none"
 
-            document.querySelector("div.user-chat-display").setAttribute("data-user-id",amis.getAttribute("data-toggle-user-id"))
+            document.querySelector("div.user-chat-display").setAttribute("data-user-id",user_id)
 
             // get message from other user
-            
-            getChat(amis.getAttribute("data-toggle-user-id"))
+
+            getChat(user_id)
+
+            // check the new message
+            checkNewMessage(user_id)
 
             document.querySelector(".btn-input-file").style="cursor:pointer;"
 
@@ -1037,6 +880,7 @@ document.querySelector("#input-file").addEventListener("change", (e) => {
         }
 
     });
+
 
     ///run event load in file reader.
     reader.readAsDataURL(e.target.files[0]);

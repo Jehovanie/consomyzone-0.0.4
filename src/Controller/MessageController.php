@@ -178,7 +178,7 @@ class MessageController extends AbstractController
         if(count($files) > 0 ){
             
             $path_image = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/';
-            $path_files = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/files';
+            $path_files = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/files/';
             
             $dir_image_exist = $filesyst->exists($path_image);
             $dir_files_exist = $filesyst->exists($path_files);
