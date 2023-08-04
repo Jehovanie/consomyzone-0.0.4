@@ -66,7 +66,8 @@ function showBlockPub(){
             e.target.classList.add("active")//p-2 list-nav-left active
             const id_c_u=e.target.dataset.tribuRank
             const type = e.target.classList[1];
-            const tribu_t_name=e.target.textContent
+            // const tribu_t_name=e.target.textContent  data-table-name
+            const tribu_t_name=e.target.dataset.tableName; ///  data-table-name
             let data = await showdData(tribu_t_name)
             showdDataContent(data,type,tribu_t_name,id_c_u)
             
@@ -308,11 +309,11 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </div>
                     </div>
                     
-                    <div class="nome-fontateur-tribu-t">
-                        <p>Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
-                    </div>
                 </div>
-                <nav class="responsif-none mx-auto">
+                <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
+                     <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
+                </div>
+                <nav class=" mx-auto">
                     <ul id="navBarTribu" class="navBarTribu-t">
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
@@ -333,12 +334,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
                     </ul>
                 </nav>
-                
             </div>
+
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
-                    <div class=" uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub-t">
+                    <div class=" 2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
@@ -426,7 +427,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
                     contentPublication = `<div id="${tribu_t_name_0+"_"+data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
-                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                            <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
                                                         <img src="/assetss/image/img_avatar3.png" alt="">
@@ -1357,14 +1358,12 @@ function showPhotos(){
     })
     fetch(requete).then(rqt => rqt.json()).then(data => {
             //console.log(data);
-            photosContainer.innerHTML = `<div class="intro">
+        photosContainer.innerHTML = `
+                <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
                         Photo télechargé avec succès!
                     </div>
-                    <div><span class="h2">Liste des photos</span> <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> <i class="bi bi-camera-fill"></i> Importer
-                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
-                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
-                    </label></div>
+                    
                     
                 </div>`;
 
@@ -1373,10 +1372,28 @@ function showPhotos(){
 
                 for (let photo of data) {
                     let img_src =photo.photo; //replaceAll("/public","");
-                    li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    // li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    li_img +=`
+                                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                                        <img
+                                        src="${img_src}"
+                                        class="w-100 shadow-1-strong  mb-4"
+                                        alt="Boat on Calm Water"
+                                        />
+                                    </div>
+                                    `
                 }
                 setGallerie(document.querySelectorAll(".img_gal"))
-                photosContainer.innerHTML+=`<div class="gallery-container"><div id="gallery">${li_img}</div></div>`
+                photosContainer.innerHTML += `<div class="gallery-container">
+                <div>
+                        <span class="h2">Album photo</span> 
+                        <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                            <i class="bi bi-camera-fill"></i> Importer
+                            <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                            <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                        </label>
+                    </div>
+                <div id="gallery"><div class="row">${li_img}</div></div></div>`
 
                 setGallerie(document.querySelectorAll("#gallery img"))
                 
@@ -1855,5 +1872,11 @@ function updatePublication() {
     body: JSON.stringify(data)
     })).then(response=>response.json())
        .then(message=>console.log(message));
+}
 
+if (document.querySelector("#apropos-tribu-t")) {
+    let openClose = document.querySelector("#apropos-tribu-t")
+    openClose.addEventListener("click", () => {
+        
+    })
 }

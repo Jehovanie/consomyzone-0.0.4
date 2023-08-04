@@ -27,6 +27,8 @@
     }
 
     /* ul.navBarTribu-t {
+/* 
+    ul.navBarTribu-t {
         border-radius: 15px !important;
     } */
 
@@ -41,7 +43,7 @@
     }
     
     #profilTribu{
-        height: 150px;
+        height: 100px;
         border-radius: 10px;
     }
 
@@ -93,7 +95,7 @@
     }
 
     
-
+    
     /* .card-pub-actu img {
         width: 62vw;
     } */
@@ -101,6 +103,10 @@
     .content_box {
         height: 12%;
         width: 20%;
+    }
+
+    .content-nav-left{
+        margin-top: 15px ;
     }
 
     #list-depart-mobile {
@@ -121,6 +127,11 @@
         transition: all 2s ease-in-out !important;
         background-color: #fff;
         /* z-index: 407 !important; */
+    }
+
+    .apropos-tribu-t {
+        height: 100% !important;
+        max-width: 26.5rem !important;
     }
 
     .responsif-none {
@@ -553,7 +564,7 @@
     }
 
     .content_list_menu {
-        width: 60px !important;
+        width: 340px !important;
     }
 
     .account-profils {
@@ -627,8 +638,8 @@
     }
 
     .container-invitation {
-        margin-left: 30px !important;
-        margin-top: 30px !important;
+        margin-left: 120px !important;
+        margin-top: 115px !important;
         /* width: 100vw !important; */
 
     }
@@ -643,13 +654,15 @@
     }
 
     #onglets {
-        margin-top: 70px !important;
+        margin-left: 0px;
+        margin-top: 75px !important;
     }
 
     .demande,
     .invitation-conf,
     #contenus {
-        width: 95vw !important;
+        /* width: 90vw !important; */
+        margin: 20px;
     }
 
     .content_left_menu_account_mobile {
@@ -745,7 +758,7 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
-        /*overflow: hidden;*/
+        overflow: hidden;
         background-color: white;
     }
 
@@ -846,9 +859,9 @@
         margin-left: 20px !important;
     }
 
-    /* .listTribu_t_mobile{
-            margin-left: -150px !important;
-        }*/
+    .listTribu_t_mobile{
+            margin-left: 0px !important;
+        }
 
     .table-list-membre {
         margin-left: 0px !important;
@@ -954,9 +967,12 @@
         width: 140vw;
     }
 
+    
+
     .content_right_actualite {
-        width: 100vw !important;
+        width: 95vw !important;
     }
+
 
     .content_right_actualite_menu {
         width: 83vw !important;
@@ -1076,9 +1092,9 @@
         margin-left: 20px !important;
     }
 
-    .uf {
+    /* .uf {
         max-width: 44.75rem !important;
-    }
+    } */
 
     /* .card-pub-actu img {
             width: 52vw;
@@ -1136,13 +1152,16 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 110px !important;
+        margin-top: 0px !important;
     }
 }
 
 @media screen and (min-width:1260px) and (max-width: 1304px) {
     .width-content-t {
         width: 74%;
+    }
+    .apropos-tribu-t {
+        width: 16.5rem !important;
     }
 
     .navleft-chat{
@@ -1162,9 +1181,9 @@
         margin-left: 20px !important;
     }
 
-    .uf {
+    /* .uf {
         max-width: 44.75rem !important;
-    }
+    } */
     /* .card-pub-actu img {
             width: 52vw;
         } */
@@ -1218,7 +1237,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 110px !important;
+        margin-top: 20px !important;
     }
 
     .content_list {
@@ -1244,7 +1263,7 @@
     }
 
     .apropos-tribu-t {
-        width: 385px !important;
+        width: 18.5rem !important;
     }
 
     .xn {
@@ -1255,9 +1274,9 @@
         margin-left: 140px !important;
     }
 
-    .uf {
+    /* .uf {
         max-width: 44.75rem !important;
-    }
+    } */
     .card-pub {
         margin-left: 0px !important;
     }
@@ -1311,7 +1330,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 110px !important;
+        margin-top: 0px !important;
     }
 
     .account-profils img{
@@ -1366,7 +1385,7 @@
     }
 
     .container-invitation {
-        margin-left: 430px !important;
+        margin-left: 290px !important;
     }
 
     /* .content_right_actualite .card-couverture-pub-tribu-t {
@@ -1374,7 +1393,7 @@
     } */
 
     .content_right_actualite .exprime-pub {
-        margin-top: 10px !important;
+        margin-top: 45px !important;
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
@@ -1453,7 +1472,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 15px !important;
+        margin-top: 0px !important;
     }
 
     .nav-menu {
@@ -1775,7 +1794,7 @@
 
 @media screen and (min-width: 1800px) and (max-width: 1899px) {
     .width-content-t {
-        width: 84%;
+        width: 77%;
     }
     .navleft-chat{
         right: -430px !important;
@@ -1788,6 +1807,10 @@
     }
     .apropos-tribu-t {
         width: 385px !important;
+    }
+
+    .\32xl\:ud-max-w-230-tribu-t {
+        max-width: 70.5rem !important;
     }
 
     #map {
@@ -1809,13 +1832,6 @@
         margin-left: 355px !important;
     }
 
-    /* .content_right_actualite .card-couverture-pub-tribu-t {
-        margin-top: -220px !important;
-    } */
-
-    .content_right_actualite .exprime-pub {
-        margin-top: 265px !important;
-    }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
         height: 100px !important;
@@ -1896,7 +1912,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 80px !important;
+        margin-top: 0px !important;
     }
 
     .content_list {
@@ -1974,7 +1990,7 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t{
-        margin-top: 95px !important;
+        margin-top: 0px !important;
     }
 
     .content_right_actualite .champ-pub {
@@ -2097,7 +2113,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: -95px !important;
+        margin-top: 0px !important;
     }
 
     .nav-menu {

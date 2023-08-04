@@ -680,10 +680,12 @@ class AgendaController extends AbstractController
     #[Route("/user/tribu/agenda", name: "app_agenda")]
     public function agenda(Status $status)
     {
+        $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
         ]);
     }
 

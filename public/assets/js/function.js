@@ -2417,6 +2417,7 @@ function deletePublication(pubId, tablePub){
                 document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`).remove();
                 status= "success";
             }
+            closeModal();
             showAlertMessageFlash(response.message, status);
         })
 }
@@ -2495,4 +2496,8 @@ function showAlertMessageFlash(text, status="success"){
         body.classList.remove(className);
         body.innerText = "";
     },1500)
+}
+
+function closeModal(){
+    document.querySelector(".close_modal_jheo_js").click();
 }

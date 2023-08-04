@@ -648,6 +648,19 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+    public function getPdp($userId)
+
+    {
+
+        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(photo_profil) as pdp, user_id from consumer union SELECT concat(photo_profil) as pdp, user_id from supplier) as tab where tab.user_id=$userId ");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result["pdp"];
+    }
+
 
 
     public function createComent($table_comment, $user_id, $pub_id, $commentaire, $audioname)

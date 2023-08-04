@@ -1021,23 +1021,25 @@ li a .station {
     margin-left: auto;
     max-width: 1200px;
     height: 100%;
+    background-color: #fff;
+    padding: 25px;
 }
 
 #gallery {
     padding: 20px;
-    display: grid;
+    /* display: grid;
     width: auto;
     grid-template-columns: repeat(auto-fill, 10rem);
     grid-auto-rows: 10rem;
     grid-auto-flow: dense;
-    gap: 10px;
+    gap: 10px; */
 }
 
 #gallery img {
-    cursor: pointer;
+    /* cursor: pointer;
     height: 100%;
     width: 100%;
-    object-fit: cover;
+    object-fit: cover; */
     box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 
 }
@@ -1417,3 +1419,22 @@ li.listNavBarTribu > a.active{
     color: white;
     border-radius: 15px;
 } 
+.user-profy {
+    float: left;
+    width: 100%;
+    background-color: #fff;
+    text-align: center;
+    border-left: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    border-right: 1px solid #ececec;
+    -webkit-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -moz-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -ms-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -o-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    padding: 20px 0 0 0;
+}
+
+.followw {
+    background-color: #53d690;
+}
