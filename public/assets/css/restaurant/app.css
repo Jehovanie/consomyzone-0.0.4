@@ -32,3 +32,7 @@
     justify-content: center;
     /* text-align: center; */
 }
+
+.leaflet-control-zoom.leaflet-bar.leaflet-control {
+    margin-right: 4vw;
+}

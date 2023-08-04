@@ -342,7 +342,7 @@ class MarckerClusterHome extends MapModule  {
         const content_filter = document.createElement("div");
         content_filter.className = "content_filter content_filter_js_jheo";
 
-        this.generate_checkout_option(content_filter)
+        // this.generate_checkout_option(content_filter)
 
         const content_filter_dep = document.createElement("div");
         content_filter_dep.className = "content_filter_dep";
@@ -473,7 +473,7 @@ class MarckerClusterHome extends MapModule  {
             results = this.handleOnlyStateCheckbox(result_temp, item)
             result_temp = results;
         }
-        if (results.every(item => item.state === 1)) {
+        if (results.length > 0 && results.every(item => item.state === 1)) {
             document.querySelector("#filterTous").checked = true;
         } else {
             document.querySelector("#filterTous").checked = false;
@@ -536,10 +536,14 @@ class MarckerClusterHome extends MapModule  {
         let result = []
         let state = { "type": document.querySelector(`#${item}`).getAttribute("name") };
 
-        if (document.querySelector(`#${item}`).checked) {
+        if(document.querySelector(`#${item}`)){
+            if (document.querySelector(`#${item}`).checked) {
+                state = { ...state, "state": 1 }
+            } else {
+                state = { ...state, "state": 0 }
+            }
+        }else{
             state = { ...state, "state": 1 }
-        } else {
-            state = { ...state, "state": 0 }
         }
 
         if (tab.length === 0) {

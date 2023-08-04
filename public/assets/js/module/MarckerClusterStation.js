@@ -67,33 +67,6 @@ class MarckerClusterStation extends MapModule  {
         // this.generateAllCard();
     }
 
-    // addEventOnMap(map,) {
-    //     // map.on('moveend zoomend dragend', function (e) {
-    //         // var bounds = map.getBounds();
-    //         // var zoom = map.getZoom();
-    //         // var markersDisplayed = false;
-
-    //         // if (zoom > 8) {
-    //         //     markers.eachLayer(function (layer) {
-    //         //         if (bounds.contains(layer.getLatLng())) {
-    //         //             markersDisplayed = true;
-    //         //             layer.openPopup();
-    //         //             layer.unbindTooltip()
-    //         //         }
-    //         //     });
-    //         // } else if (markersDisplayed) {
-    //         //     markersDisplayed = false;
-    //         //     markers.eachLayer(function (layer) {
-    //         //         if (bounds.contains(layer.getLatLng())) {
-    //         //             layer.closePopup();
-    //         //         }
-    //         //     });
-    //         // }
-
-    //         // this.markers.refreshClusters();
-    //     // });
-    // }
-
     setNumberOfMarker() {
         /// change the number of result in div
         if (document.querySelector(".content_nombre_result_js_jheo")) {
@@ -156,11 +129,12 @@ class MarckerClusterStation extends MapModule  {
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
             let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
 
-            marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
+            ////================ POPUP WHEN OPEN =================================================================
+            // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 
-            marker.on('add', function () {
-                marker.openPopup();
-            });
+            // marker.on('add', function () {
+            //     marker.openPopup();
+            // });
             
             marker.on('click', (e) => {
                 this.updateCenter( parseFloat(item.latitude ), parseFloat(item.longitude ), this.zoomDetails);
