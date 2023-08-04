@@ -434,7 +434,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p></div>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -502,7 +502,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p></div>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -641,7 +641,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p></div>
+                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
