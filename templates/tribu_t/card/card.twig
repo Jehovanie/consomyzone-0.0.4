@@ -1,0 +1,82 @@
+<div id="{{tribu.table ~ '_' ~ publication.id}}" data-name = "{{tribu.table}}" data-id="{{publication.id}}" data-confid="{{publication.confidentiality}}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+    <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" >
+        <div class="head-pub content_header_pub">
+            <div class="content_pub_info">
+                <div class="pdp-content">
+                    {# <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil|replace({"/public": ""}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}"> DEV #}
+                    <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+                </div>
+                <div class="name-content-h">
+                    <div class="name-content">
+                        <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
+                        <div class="publiate_on">
+                            <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{tribu.name}}</span></p>
+                        </div>
+                    </div>
+                    <div class="status-content d-flex">
+                        <p class="p-heure">{{ publication.createdAt }}</p>
+                        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                            
+                            {% if userOwnPub.id is same as( app.user.id) %}
+                                <div class="btn-group" role="group">
+                                    <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {% if publication.confidentiality is same as(1) %}
+                                            <i class="fa-solid fa-earth-oceania"></i>
+                                        {% else %}
+                                            <i class="bi bi-lock-fill"></i>
+                                        {% endif %}
+                                    </span>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        <a data-id="{{publication.id}}" data-name="{{tribu.table}}" class="{{ (publication.confidentiality is same as(1)) ? "dropdown-item active" : "dropdown-item"}}" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                        <a data-id="{{publication.id}}" data-name="{{tribu.table}}" class="{{ (publication.confidentiality is same as(1)) ? "dropdown-item" : "dropdown-item active"}}" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if userOwnPub.id is same as( app.user.id) %}
+                <div class="param-content">
+                    <span class="float-end dropstart">
+                        <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                        </span>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item">
+                                    <i class="fas fa-edit"></i>
+                                    Modifier
+                                </button>
+                            </li>
+                            <li>
+                                <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                    Supprimer
+                                </button>
+                            </li>
+                        </ul>
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+            
+        <div class="card-pub-actu">
+            <p class="text-pub mb-3">{{publication.description}}</p>
+            {% if publication.image is defined and publication.image is not same as("") %}
+                {# <img class="image_publication"  src="{{publication.image|replace({"/public": ""})}}" alt="image publication"> ON DEV #}
+                <img class="publication-picture"  src="{{publication.image}}" alt="image publication">
+            {% endif %}
+        </div>
+
+        <div class="card-reaction">
+            <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p>
+            <div class="reaction-icon d-flex">
+                <i class="bi-heart like"></i>
+                <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i>
+            </div>
+        </div>
+        
+    </div>
+</div>

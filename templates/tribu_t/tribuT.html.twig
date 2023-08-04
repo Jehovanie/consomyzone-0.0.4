@@ -15,12 +15,13 @@
 		}
 	</style>
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/Tribu_T/publication.css')}}">
 
 {% endblock %}
 
 {% block javascripts %}
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 {% endblock %}
@@ -58,10 +59,12 @@
 
 			<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
 				<div id="content-pub-js">
+					{% for item in publications %}
+						{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+					{% endfor %}
 				</div>
 			</div>
 
-			
 			<!-- ====== Chart Two Start -->
 			<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none back-tribu-t">
 				{% include "shard/account_navleft_tribuT.html.twig" %}
@@ -73,8 +76,6 @@
 
 </div>
 {% include "tribu_t/modal_publication.html.twig" %}
-
-
 
 <!-- Modal Créer tribuT -->
 <div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
@@ -115,8 +116,6 @@
 		</div>
 	</div>
 </div>
-
-
 
 {% endblock %}
 

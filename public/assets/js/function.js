@@ -414,7 +414,7 @@ async function create_map_content(geos, id_dep = null, map_for_type = "home") {
 
             },
             onClick: () => {
-                alert("toto")
+                console.log("toto")
             },
             onDragend: () => {
 

@@ -38,7 +38,7 @@ class StringTraitementService{
      */
     public function normalizedString($str){
         $str = iconv('UTF-8','ASCII//TRANSLIT',$str);
-        $str = preg_replace('/[^a-z0-9_ ]/i', '', $str);
+        $str = preg_replace('/[^a-z0-9 ]/i', '', $str);
         $str = strtoupper($str);
         return $str;
     }

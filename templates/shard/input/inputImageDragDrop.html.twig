@@ -1,4 +1,5 @@
-<div class="image-upload image_upload_jheo_js">
+<div class="image-upload image_upload_jheo_js" id="imageUploadTribu">
+	
 	<div class="image-upload-wrap">
 		{% if InputDropDown is defined %}
 			{{ form_row(InputDropDown, {'attr': {'class': 'image-upload-input image_upload_input_jheo_js', 'accept': 'image/png, image/jpeg, image/gif', 'onchange':'readURL(this);'}}) }}

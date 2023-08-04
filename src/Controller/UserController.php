@@ -81,7 +81,10 @@ class UserController extends AbstractController
         $this->filesyst = $filesyst;
 
     }
-
+    #[Route("/user", name: "home")]
+    public function home(){
+        return $this->redirectToRoute('app_actualite');
+    }
 
     #[Route("/user/actualite", name: "app_actualite")]
     public function Actualite(

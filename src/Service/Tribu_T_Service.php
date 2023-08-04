@@ -404,7 +404,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table WHERE status = 1");
+        $statement = $this->getPDO()->prepare("SELECT user_id, roles FROM $table WHERE status = 1");
 
         $statement->execute();
 
@@ -949,21 +949,15 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    public function updatePublication($table, $id, $publication, $confidentiality)
+    public function updatePublication($table, $id, $publication, $confidentiality, $photo="")
 
     {
 
-
-
-        $sql = "UPDATE $table set publication = ?, confidentiality = ?  WHERE id = ?";
-
-
+        $sql = "UPDATE $table set publication = ?, confidentiality = ?, photo = ?  WHERE id = ?";
 
         $stmt = $this->getPDO()->prepare($sql);
 
-
-
-        $stmt->execute([$publication, $confidentiality, $id]);
+        $stmt->execute([$publication, $confidentiality, $photo, $id]);
 
     }
 
@@ -1502,9 +1496,9 @@ class Tribu_T_Service extends PDOConnexionService
         }else{
             if( $object['tribu_t']['name'] === $table_name){
                 $apropos = [
-                    'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
-                    'description' => $trib['description'],
-                    'avatar' => $trib['logo_path'],
+                    'name' => "Tribu T " . ucfirst(explode("_",$object['tribu_t']['name'])[count(explode("_",$object['tribu_t']['name']))-1]),
+                    'description' => $object['tribu_t']['description'],
+                    'avatar' => $object['tribu_t']['logo_path'],
                 ];
             }
         }
@@ -1580,6 +1574,15 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
+
+    public function updateVisibility($tablePub, int $pub_id, int $confidentiality){
+
+        $query = "UPDATE $tablePub set confidentiality = $confidentiality WHERE id = '$pub_id'";
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute();
+    }
 
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
@@ -1670,15 +1673,6 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
         return $resultats; 
-    }
-
-    public function updateVisibility($tablePub, int $pub_id, int $confidentiality){
-
-        $query = "UPDATE $tablePub set confidentiality = $confidentiality WHERE id = '$pub_id'";
-
-        $stmt = $this->getPDO()->prepare($query);
-
-        $stmt->execute();
     }
 
 }

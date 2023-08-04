@@ -81,6 +81,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    public function updatePdpTribu_T_Joined($data,$user){
+        $user->setTribuTJoined($data);
+        $this->getEntityManager()->merge($user);
+        $this->getEntityManager()->flush();
+    }
+
 
     public function getListTableTribuT_owned( ){
 
@@ -96,6 +102,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             }else{
                 array_push($results, ["table_name" => $decode_tribuT_owned['tribu_t']['name'] ] );
             }
+            
         }
 
         return $results;
@@ -118,6 +125,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             }else{
                 array_push($results, ["table_name" => $decode_tribuT_joined['tribu_t']['name'] ] );
             }
+
         }
 
         return $results;
