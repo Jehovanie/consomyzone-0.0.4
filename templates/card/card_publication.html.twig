@@ -2,7 +2,7 @@
     <div class="head-pub content_header_pub">
         <div class="content_pub_info">
             <div class="pdp-content">
-                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil|replace({"/public": ""}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil: asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
             </div>
             <div class="name-content-h">
                 <div class="name-content">
@@ -46,8 +46,8 @@
                         <i class="bi bi-three-dots" style="cursor:pointer"></i>
                     </span>
                     <ul class="dropdown-menu">
-                        <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" >
-                            <button class="text-primary dropdown-item">
+                        <li  data-bs-toggle="modal" data-bs-target="#modal_publication_modif" >
+                            <button class="non_active text-primary dropdown-item">
                                 <i class="fas fa-edit"></i>
                                 Modifier
                             </button>
@@ -67,15 +67,16 @@
     <div class="card-pub-actu">
         <p class="text-pub mb-3">{{publication.description}}</p>
         {% if publication.image is defined and publication.image is not same as("") %}
-            <img class="image_publication"  src="{{publication.image|replace({"/public": ""})}}" alt="image publication">
+            <img class="image_publication"  src="{{publication.image}}" alt="image publication">
         {% endif %}
     </div>
 
     <div class="card-reaction">
         <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p>
         <div class="reaction-icon d-flex">
-            <i class="bi-heart like"></i>
-            <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i>
+            <i class="non_active bi-heart like"></i>
+            {# <i class=" fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i> #}
+            <i class="non_active fa-regular fa-comment comment"></i>
         </div>
     </div>
     

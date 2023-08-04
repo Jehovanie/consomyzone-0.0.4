@@ -28,7 +28,7 @@
                     <!-- ====== Chat List Start -->
                     <div class="vc xk">
                         <form class="h ib">
-                            <input type="text" class="yd sh ni bj wr wj yr nl mm pm mn vo fr" placeholder="Search..."/>
+                            <input type="text" class="yd sh ni bj wr wj yr nl mm pm mn vo fr non_active" placeholder="Search..." disabled />
                             <button class="g j/2 i -ud-translate-y-1/2">
                                 <svg width="18" height="18" viewbox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M8.25 3C5.3505 3 3 5.3505 3 8.25C3 11.1495 5.3505 13.5 8.25 13.5C11.1495 13.5 13.5 11.1495 13.5 8.25C13.5 5.3505 11.1495 3 8.25 3ZM1.5 8.25C1.5 4.52208 4.52208 1.5 8.25 1.5C11.9779 1.5 15 4.52208 15 8.25C15 11.9779 11.9779 15 8.25 15C4.52208 15 1.5 11.9779 1.5 8.25Z" fill="#637381"/>
@@ -46,7 +46,7 @@
                                         <div class="cg lc mg sh ol rl tq is">
                                             <div class="h mb sc yd of th">
                                                 {# /// photo de profil #}
-                                                <img src="{{(item.photo) ? item.photo|replace({"/public": ""})  : asset('/uploads/users/photos/default_pdp.png')|replace({"/public": ""}) }}" alt="{{item.firstname}}" class="vc yd qk rk"/>
+                                                <img src="{{(item.photo) ? item.photo  : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{item.firstname}}" class="vc yd qk rk"/>
                                                 
                                                 {# //// state blue if in contact  #}
                                                 {# <span class="g l m jc wc ce th pi ij xj"></span> #}
@@ -89,7 +89,7 @@
                     <div class="lc mg qg vi bj wr ql vl">
                         <div class="lc mg content_entete_msg_jheo_js" data-userToFirstname={{userToProfil.firstname}} data-userToLastname={{userToProfil.lastname}}  data-toggle-id-user-to={{userToProfil.id}}>
                             <div class="ob xc yd pf nh th">
-                                <img src="{{(userToProfil.photo_profile) ? userToProfil.photo_profile|replace({"/public": ""})  : asset('/uploads/users/photos/default_pdp.png')|replace({"/public": ""}) }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
+                                <img src="{{(userToProfil.photo_profile) ? userToProfil.photo_profile  : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
                             </div>
                             <div>
                                 <h5 class="un zn gs">
@@ -157,7 +157,7 @@
                                                     {% if message.content.images|length > 0 %}
                                                         {% for image in message.content.images %}
                                                             <div class="file_item">
-                                                                <img class="message_image_item" src="{{image|replace({"/public": ""})}}" alt="image">
+                                                                <img class="message_image_item" src="{{image}}" alt="image">
                                                                 <a class="icon_download_file" href="{{image}}" download>
                                                                     <i class="fa-solid fa-download"></i>
                                                                 </a>
@@ -193,7 +193,7 @@
                                                     {% if message.content.images|length > 0 %}
                                                         {% for image in message.content.images %}
                                                             <div class="file_item">
-                                                                <img class="message_image_item" src="{{image|replace({"/public": ""})}}" alt="image">
+                                                                <img class="message_image_item" src="{{image}}" alt="image">
                                                                 <a class="icon_download_file" href="{{image}}" download>
                                                                     <i class="fa-solid fa-download"></i>
                                                                 </a>
@@ -285,11 +285,11 @@
                             </h5>
                             <p class="mn">{{userToProfil.status}}</p>
 
-                            <p class="mn sb rl gu 2xl:ud-px-15">
+                            {# <p class="mn sb rl gu 2xl:ud-px-15">
                                 Lorem ipsum dolor sit amet, consectetur solium adipiscing
                                 elit Pellentesque so ferme.
-                            </p>
-                            <a href="#" class="tb lc mg pg un mn zn gs zq ns">
+                            </p> #}
+                            <a href="#" class="tb lc mg pg un mn zn gs zq ns mt-5">
                                 <span class="lm">
                                     <svg width="18" height="18" viewbox="0 0 18 18" class="hk">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2.25C5.27208 2.25 2.25 5.27208 2.25 9C2.25 12.7279 5.27208 15.75 9 15.75C12.7279 15.75 15.75 12.7279 15.75 9C15.75 5.27208 12.7279 2.25 9 2.25ZM0.75 9C0.75 4.44365 4.44365 0.75 9 0.75C13.5564 0.75 17.25 4.44365 17.25 9C17.25 13.5564 13.5564 17.25 9 17.25C4.44365 17.25 0.75 13.5564 0.75 9Z"/>
