@@ -943,21 +943,10 @@ class Tribu_T_Service extends PDOConnexionService
 
 
     public function removePublicationOrCommentaire($table, $id)
-
     {
-
-
-
         $sql = "DELETE FROM $table WHERE id = ?";
-
-
-
         $stmt = $this->getPDO()->prepare($sql);
-
-
-
         $stmt->execute([$id]);
-
     }
 
 

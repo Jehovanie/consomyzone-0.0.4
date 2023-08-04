@@ -56,3 +56,7 @@
 .content_photos{
     width: 75%;
 }
+
+.image_item_gallery{
+    max-width: 350px !important;
+}

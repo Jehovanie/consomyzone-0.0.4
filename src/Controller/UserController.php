@@ -2368,14 +2368,18 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/user/publication/tribu/delete', name: 'delete_publication', methods: ["POST"])]
+    #[Route('/user/publication/tribu/delete', name: 'delete_publication', methods: ['POST'])]
     public function deletePublication(Request $request, Tribu_T_Service $tribut): Response
     {
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true); 
         $tablePub = $data["tablePub"];
         $pub_id = $data["pub_id"];
 
+        // $tablePub = "tribug_01_centre_et_est_belley_publication";
+        // $pub_id = 31;
+
         $publication= $tribut->getOnePublication($tablePub, $pub_id);
+        // dd($publication);
 
         if( !$publication ||  $publication['user_id'] !== $this->getUser()->getId()){
             return $this->json(["success" => false, 
@@ -2383,10 +2387,13 @@ class UserController extends AbstractController
             ], 403 );
         }
 
-        if( $publication["photo"] !== null){
+        if( $publication["photo"] !== null &&  $publication["photo"] !== "" ){
             $filesystem = new Filesystem();
-            $filesystem->remove($this->getParameter('kernel.project_dir') . $publication['photo']);
+            if($filesystem->exists($this->getParameter('kernel.project_dir') . $publication['photo'])){
+                $filesystem->remove($this->getParameter('kernel.project_dir') . $publication['photo']);
+            }
         }
+
         $tribut->removePublicationOrCommentaire($tablePub, $pub_id);
 
         return $this->json([

@@ -20,7 +20,7 @@
 			<div class="" id="gallery" style="width:100%"> 
 				{% for single_photo in photos %}
 					{% if single_photo.photo %}
-						<img src={{ single_photo.photo|replace({"/public": ""}) }} class="" alt="Boat on Calm Water"/>
+						<img src={{ single_photo.photo|replace({"/public": ""}) }} class="image_item_gallery" alt="Boat on Calm Water"/>
 					{% endif %}
 				{% endfor %}
 			</div>

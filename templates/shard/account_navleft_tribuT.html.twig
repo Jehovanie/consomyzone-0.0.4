@@ -73,6 +73,8 @@
 			{% for  tribus in tribu_T_joined %}
 				{# {{dump(tribus,tribus|length)}}   #}
 				{% if tribus.logo_path  is defined %}
+						{% set nameTribu = tribus.name|split('_') %}
+						{% set index = nameTribu|length -1  %}
 						<li class="mb-2">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
@@ -81,13 +83,16 @@
 								</div>
 								<div class="col-9">
 									<p>
-											<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}">{{tribus.name}}</a> 
+											<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">{{ "Tribu T " ~ nameTribu[index] }}</a> 
 									</p>
 								</div>
 							</div>
 						</li>
 				{% else %}
 					{% for tribu in tribus %}
+					
+						{% set nameTribu = tribu.name|split('_') %}
+						{% set index = nameTribu|length -1  %}
 						<li class="mb-2">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
@@ -96,7 +101,7 @@
 								</div>
 								<div class="col-9">
 									<p>
-										<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}">{{tribu.name}}</a>
+										<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">{{ "Tribu T " ~ nameTribu[index] | capitalize }}</a>
 									</p>
 								</div>
 							</div>
