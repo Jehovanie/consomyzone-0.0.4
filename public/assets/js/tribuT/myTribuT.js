@@ -1857,3 +1857,16 @@ function updatePublication() {
        .then(message=>console.log(message));
 
 }
+
+
+function checkExtension(element) {
+    return element.checked;
+}
+
+function openModalForExtension(element){
+    if(checkExtension(element)){
+        $("#modal_publication").modal("show")
+    }else{
+        alert("Unchecked")
+    }
+}
