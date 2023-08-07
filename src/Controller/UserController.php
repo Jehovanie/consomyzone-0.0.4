@@ -714,6 +714,9 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
         Status $status,
+        UserRepository $userRepository,
+
+        SupplierRepository $supplierRepository,
     ): Response {
         $userConnected= $status->userProfilService($this->getUser());
 
@@ -728,6 +731,46 @@ class UserController extends AbstractController
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
+
+
+        $all_user_supplier = $userRepository->findBy(["type" => "supplier"]);
+
+
+
+        $results = [];
+
+
+
+        foreach ($all_user_supplier as $user_supplier) {
+
+            $supplier = $supplierRepository->findOneBy(["userId" => $user_supplier->getId()]);
+
+
+
+            $result = [
+
+                "id" => $user_supplier->getId(),
+
+                "email" => $user_supplier->getEmail(),
+
+                "type" => $user_supplier->getType(),
+
+                "isLabled" => $user_supplier->getIsLabled(),
+
+
+
+                "firstname" => $supplier->getFirstname(),
+
+                "lastname" => $supplier->getLastname(),
+
+            ];
+
+
+
+            array_push($results, $result);
+        }
+
+
         return $this->render("user/dashboard_super_admin/dashboard.html.twig", [
             "userConnected" => $userConnected,
 
@@ -735,7 +778,9 @@ class UserController extends AbstractController
                 $profil[0]->getTributg(),
                 $profil[0]->getIsVerifiedTributGAdmin(),
                 $userId
-            )
+            ),
+
+            "results" => $results
         ]);
     }
 

@@ -711,3 +711,34 @@ fileInputProfils.forEach(fileInputProfil=>{
         fileReader.readAsDataURL(e.target.files[0]);
     })
 })
+
+
+//SPA dashboard Super admin
+if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
+    const navLinks = document.querySelectorAll('#navbarSuperAdmin > ul > li > a');
+    const pages = document.querySelectorAll('.content-super-admin');
+    console.log(pages)
+
+    function showPage(pageId) {
+        pages.forEach(page => {
+            if (page.id === pageId) {
+                page.style.display = 'block';
+                
+            } else {
+                page.style.display = 'none';
+            }
+        });
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', event => {
+            event.preventDefault();
+            const pageId = event.target.dataset.target;
+            console.log(pageId)
+            showPage(pageId);
+        });
+    });
+
+    showPage('list-tribu-g');
+}
+
