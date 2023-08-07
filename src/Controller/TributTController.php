@@ -2014,7 +2014,9 @@ class TributTController extends AbstractController
                 "extension"=>$data["extension"]);
           
             $this->createTribu_T($body);
-            return $this->redirectToRoute("app_my_tribu_t");
+            $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
+            
+            return $this->redirectToRoute("app_my_tribu_t",["message" => $message]);
       
         }
 

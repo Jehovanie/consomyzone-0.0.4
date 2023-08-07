@@ -97,6 +97,8 @@ class RequestingService extends PDOConnexionService
         $statement->execute();
         $ts = $statement->fetchAll(PDO::FETCH_ASSOC);
         $result = [];
+        dd($ts);
+
         foreach ($ts as $t) {
             $uPoster = $this->u->find($t["user_post"]);
             $uReceiver = $this->u->find($t["user_received"]);

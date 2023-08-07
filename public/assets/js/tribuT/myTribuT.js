@@ -455,8 +455,8 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 <div class="card-reaction">
                                                     <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -554,8 +554,8 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 <div class="card-reaction">
                                                     <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -691,8 +691,8 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 <div class="card-reaction">
                                                     <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -1714,7 +1714,7 @@ function fetchAllTribuGMember() {
                         ancorOrbutton = `<button data-id="${item.id}" type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
                     }
                     tbody.innerHTML += `<tr>
-                            <td><a style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
+                            <td class="non_active"><a class="disabled-link" style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
                             <td>${item.email}</td>
                             <td>${item.tribug}</td>
                             <td class="text-center">${ancorOrbutton}</td>
@@ -1879,4 +1879,11 @@ if (document.querySelector("#apropos-tribu-t")) {
     openClose.addEventListener("click", () => {
         
     })
+}
+
+const searchParams = new URLSearchParams(window.location.search);
+if(searchParams.has('message')){
+    showAlertMessageFlash(searchParams.get('message'))
+    const url = new URL(window.location.href);
+    window.location.replace(url.pathname)
 }

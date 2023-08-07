@@ -418,7 +418,7 @@ function sendChat(message, images =[], user_id) {
         from : document.querySelector("#amis_list").getAttribute("data-my-id"),
         to : user_id,
         message : message,
-        images : images
+        files : images
     }
 
     fetch("/user/push/message", {
