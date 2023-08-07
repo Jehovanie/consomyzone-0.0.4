@@ -2418,4 +2418,40 @@ class UserController extends AbstractController
             "comments" => $comments
         ], 200);
     }
+    
+    #[Route('/user/publication/tribu/push_comment', name: 'push_comment', methods: ["POST"])]
+    public function pushComment(
+        Request $request,
+        TributGService $tribut,
+        NotificationService $notificationService
+    ): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $tablePub, $pubID, $authorID, $comment, $audioname
+
+        $tribut->handlePublicationCommentUpdate(
+            $tablePub,
+            $this->getUser()->getId(),
+            $pubID,
+            $comment,
+            $audioname
+        );
+
+
+        $full_name = $tribut->getFullName($this->getUser()->getId());
+
+        if (intval($this->getUser()->getId()) != intval($authorID)) {
+
+            $notificationService->sendNotificationForOne(
+                $this->getUser()->getId(),
+                $authorID,
+                "Comment publication.",
+                $full_name . " a commenté votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#publication_" . $pubID . "_jheo_js'>Voir la publication</a>"
+            );
+        }
+
+        return $this->json([
+            "success" => true,
+        ], 200);
+    }
 }
