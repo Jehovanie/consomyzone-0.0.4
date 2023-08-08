@@ -512,15 +512,6 @@ class SecurityController extends AbstractController
         * @end Nantenaina     
         */
 
-
-        /// IN DEVELOPMENT----- delete this when PROD ------------///
-        if( strtolower($_ENV["APP_ENV"]) === "dev"){
-            return $this->redirect($signatureComponents->getSignedUrl());
-        }
-        ///-------------------------------------------------------///
-
-
-
         //// prepare email which we wish send
         $signatureComponents = $verifyEmailHelper->generateSignature(
             "verification_email", /// lien de revenir
@@ -529,6 +520,12 @@ class SecurityController extends AbstractController
             ['id' => $user->getId()] /// param id
         );
 
+
+        /// IN DEVELOPMENT----- delete this when PROD ------------///
+        if( strtolower($_ENV["APP_ENV"]) === "dev"){
+            return $this->redirect($signatureComponents->getSignedUrl());
+        }
+        ///-------------------------------------------------------///
 
 
        
