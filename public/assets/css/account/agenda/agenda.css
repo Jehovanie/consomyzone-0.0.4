@@ -10,3 +10,11 @@
   box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2);
 }
 
+.td_day{
+  cursor: pointer!important;
+}
+
+.td_day::hover{
+  background: rgb(2,0,36);
+  background: linear-gradient(196deg, rgba(2,0,36,1) 1%, rgba(210,220,240,0.10407913165266103) 4%, rgba(0,212,255,1) 100%);
+}

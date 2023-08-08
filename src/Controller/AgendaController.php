@@ -135,43 +135,24 @@ class AgendaController extends AbstractController
 
      */
 
-    public function createAgenda($tribut_name, Request $request)
-
-    {
-
-
-
+    public function createAgenda(
+        $tribut_name,
+        Request $request
+    ){
         $user = $this->getUser();
-
-
-
         $user_id = $user->getId();
-
-
 
         $requestContent = json_decode($request->getContent(), true);
 
-
-
         $title = $requestContent["title"];
-
         $type = $requestContent["type"];
-
         $from = $requestContent["from"];
-
         $to = $requestContent["to"];
-
         $lat = $requestContent["lat"];
-
-        $lng = $requestContent["lng"];
-
+        $lng = $requestContent["lat"];
         $resto = $requestContent["resto"];
-
         $participant = $requestContent["participant"];
-
         $description = $requestContent["desc"];
-
-
 
         $id_agenda = $this->agendaService->createAgenda($tribut_name, $title, $type, $resto, $participant, $from, $to, $lat, $lng, $user_id, $description);
 
@@ -183,7 +164,6 @@ class AgendaController extends AbstractController
         $tribu_t_service =  new Tribu_T_Service();
 
         $regex = "/\_agenda+$/";
-
         $table_tribu = preg_replace($regex, "", $tribut_name);
 
         $membre = $tribu_t_service -> getUserIdInTribu($table_tribu , $user_id);
@@ -194,7 +174,6 @@ class AgendaController extends AbstractController
         si vous avez interéssé. <a href='/user/tribut/get-detail-agenda/" .$tribut_name. "/" .$id_agenda. "'>Voir plus...</a>";
 
         $notif_service -> sendNotificationForMany($user_id,$membre,"Agenda", $content);
-
 
         return  $this->json($type." enregistré avec succès");
     }
@@ -682,6 +661,8 @@ class AgendaController extends AbstractController
     {
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
+
+
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],

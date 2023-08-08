@@ -1,0 +1,54 @@
+<div class="modal fade" id="showAgenda" tabindex="-1" aria-labelledby="modalShowEvent" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalShowEvent">Evenement</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+            <div class="mb-3">
+                <label for="typeEvent" class="form-label">Type de l'événement</label>
+                <input type="text" class="form-control" id="typeEvent">
+            </div>
+            <div class="mb-3">
+                <label for="lieuEvent" class="form-label">Lieu</label>
+                <input type="text" class="form-control" id="lieuEvent">
+            </div>
+            <div class="mb-3">
+                <label for="eventDesc" class="form-label">Description</label>
+                <textarea class="form-control" id="eventDesc" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="nbrParticipant" class="form-label">Nombre de participants</label>
+                <input type="number" min=1 class="form-control" id="nbrParticipant">
+            </div>
+            <div class="d-flex mb-3">
+                <div class="flex-fill me-2">
+                    <label for="eventStart" class="form-label">Date de début</label>
+                    <input type="date" class="form-control" id="eventStart" required>
+                </div>
+                <div class="flex-fill ms-2">
+                    <label for="typeEvent" class="form-label">Date de fin</label>
+                    <input type="date" class="form-control" id="typeEvent" required>
+                </div>
+            </div>
+            <div class="d-flex mb-3">
+                <div class="flex-fill me-2">
+                    <label for="timeStart" class="form-label">Heure de début</label>
+                    <input type="time" class="form-control" id="timeStart" required>
+                </div>
+                <div class="flex-fill ms-2">
+                    <label for="timeEnd" class="form-label">Heure de fin</label>
+                    <input type="time" class="form-control" id="timeEnd" required>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary">Modifier</button>
+      </div>
+    </div>
+  </div>
+</div>
