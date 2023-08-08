@@ -13,6 +13,10 @@
 		.content_right_actualite {
 			top: -50px;
 		}
+		#form_extension{
+			pointer-events: none;
+    		cursor: not-allowed !important;
+		}
 	</style>
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/Tribu_T/publication.css')}}">
@@ -138,6 +142,6 @@
 		</div>
 	</div>
 </div>
-
+{% include 'shard/modal/alert_flash.html.twig' %}
 {% endblock %}
 

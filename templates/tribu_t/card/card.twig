@@ -71,10 +71,11 @@
         </div>
 
         <div class="card-reaction">
-            <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p>
+            {# <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p> #}
             <div class="reaction-icon d-flex">
-                <i class="bi-heart like"></i>
-                <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i>
+                <i class="bi-heart like non_active"></i>
+                {# <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i> #}
+                <i class="fa-regular fa-comment comment non_active"></i>
             </div>
         </div>
         

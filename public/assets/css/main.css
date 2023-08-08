@@ -698,6 +698,12 @@ li a .station {
 .non_active{
     cursor: not-allowed !important;
 }
+/*
+* a supprimer en temps voulu
+*/
+.fc-bg{
+    cursor: not-allowed !important;
+}
 
 .cursor_active {
     cursor: pointer !important;
@@ -1445,16 +1451,31 @@ i.fa-eye-slash, i.fa-eye{
     align-items: center;
     position: absolute;
     /* height: 790px; */
-    right: 75px;
+    right: 95px;
     /* padding-right: 1px; */
     margin-top: -35px;
     cursor: pointer;
+}
+
+.content_input_pass i.fa-eye-slash{
+    right: 0px !important;
+    margin-top: 7px !important;
+}
+
+.userProfil {
+    clip-path: circle(40%) !important;
 }
 
 #succesMessage {
     -webkit-animation: cssAnimation 5s forwards; 
     animation: cssAnimation 5s forwards;
 }
+
+.cta_connexion_navbar{
+    background-color: white;
+    clip-path: circle(33%);
+}
+
 @keyframes cssAnimation {
     0%   {display: block;}
     90%  {display: block;}
