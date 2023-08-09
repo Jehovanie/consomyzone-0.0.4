@@ -494,6 +494,16 @@ class AgendaService extends PDOConnexionService
 
     }
 
+
+
+    public function deleteAgendaUpdate($tableName, $id){
+
+        $query = "DELETE FROM $tableName WHERE id = ?";
+
+        $stmt = $this->getPDO()->prepare($query);
+        $stmt->execute([$id]);
+    }
+
     /**
      * @author Tommy
      */

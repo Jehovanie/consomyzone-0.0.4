@@ -190,6 +190,8 @@ function setAndShowModal(agenda){
     content_view_agenda.querySelector(".timeEnd_jheo_js").value= agenda.heure_fin;
 
 
+    document.querySelector(".cta_delete_agenda_jheo_js").setAttribute("data-agenda-id" , agenda.id);
+
     document.querySelector('.show_modal_showAgenda_jheo_js').click();
 }
 
@@ -249,9 +251,22 @@ function updateAgenda(){
             cta_cancel_edit.classList.add("d-none");
         }
     })
+
+
+    document.querySelector(".cta_delete_agenda_jheo_js").addEventListener("click",() => {
+        const agendaID= document.querySelector(".cta_delete_agenda_jheo_js").getAttribute("data-agenda-id");
+        if(!agendaID){
+            showAlertMessageFlash("Impossible de supprimer cette agenda parce que ce n'est pas vous qu'il a crée.", "danger");
+        }else{
+            document.querySelector(".confirm_delete_agenda_jheo_js").addEventListener("click", () => {
+                deleteAgenda(parseInt(agendaID))
+            })
+        }
+    })
 }
 
 function sendNewAgenda(agenda){
+    
     const param = {
         "name" : agenda.title,
         "description": agenda.desc,
@@ -275,6 +290,26 @@ function sendNewAgenda(agenda){
             'Content-Type': 'application/json'  
         },
         body: JSON.stringify(param)
+    })
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            console.log(response);
+            showAlertMessageFlash(response.message, "success");
+        })
+}
+
+
+function deleteAgenda(id){
+
+    const request = new Request('/user/tribu/delete-agenda', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify({ agendaID: id})
     })
 
     fetch(request)

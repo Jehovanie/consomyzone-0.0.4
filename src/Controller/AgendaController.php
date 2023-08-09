@@ -138,13 +138,28 @@ class AgendaController extends AbstractController
         ], 200);
     }
 
+    
+    #[Route('/user/tribu/delete-agenda', name: 'api_delete_agenda', methods: ["POST"])]
+    public function deleteAgenda(
+        Request $request,
+        AgendaService $agendaService
+    ){
+        $user = $this->getUser();
+        $table_agenda= $user->getNomTableAgenda();
+
+        // $user_id = $user->getId();
+        $requestContent = json_decode($request->getContent(), true);
+        $agendaID = intval($requestContent["agendaID"]);
+        $agendaService->deleteAgendaUpdate($table_agenda,$agendaID);
+
+        return $this->json([
+            "success" => true,
+            "message" => 'Suppression avec succès'
+        ], 201);
+     }
+ 
 
 
-    /**
-
-     * @Route("user/new_agenda/{tribut_name}" , name="new_agenda")
-
-     */
     #[Route('/api_old/user/agenda/{id}', name: 'api_one_agenda', methods: ["GET"])]
     public function createAgenda(
         $tribut_name,
@@ -463,39 +478,6 @@ class AgendaController extends AbstractController
     }
 
 
-
-    /**
-
-     * @Route("user/tribut/delete/{table_name}/{id}" , name="delete_agenda", methods={"POST"})
-
-     */
-
-    public function deleteAgenda($table_name, $id, Request $request)
-
-    {
-
-        $user = $this->getUser();
-
-
-
-        $user_id = $user->getId();
-
-
-
-        $requestContent = json_decode($request->getContent(), true);
-
-
-
-        $val = $requestContent["isActive"];
-
-
-
-        $this->agendaService->deleteAgenda($table_name, $val, $user_id, $id);
-
-
-
-        return $this->json('Suppression avec succès');
-    }
 
     /**
 

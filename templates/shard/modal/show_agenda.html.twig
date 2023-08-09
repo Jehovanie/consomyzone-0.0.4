@@ -58,7 +58,12 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary d-none cta_cancel_edit_agenda_jheo_js">Annuler la modification</button>
         <button type="button" class="btn btn-primary cta_update_agenda_jheo_js">Voulez-vous modifier?</button>
+        <button type="button" class="btn btn-outline-danger cta_delete_agenda_jheo_js" data-bs-toggle="modal" data-bs-target="#deleteAgendaConfir"><i class="fa-solid fa-trash-can"></i></button>
       </div>
     </div>
   </div>
 </div>
+
+
+
+{% include 'shard/modal/delete_agenda.html.twig' %}
