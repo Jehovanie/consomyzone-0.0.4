@@ -10,7 +10,6 @@ use PDO;
 use PDOException;
 
 class Tribu_T_Service extends PDOConnexionService
-
 {
 
 
@@ -649,6 +648,19 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+    public function getPdp($userId)
+
+    {
+
+        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(photo_profil) as pdp, user_id from consumer union SELECT concat(photo_profil) as pdp, user_id from supplier) as tab where tab.user_id=$userId ");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result["pdp"];
+    }
+
 
 
     public function createComent($table_comment, $user_id, $pub_id, $commentaire, $audioname)
@@ -931,21 +943,10 @@ class Tribu_T_Service extends PDOConnexionService
 
 
     public function removePublicationOrCommentaire($table, $id)
-
     {
-
-
-
         $sql = "DELETE FROM $table WHERE id = ?";
-
-
-
         $stmt = $this->getPDO()->prepare($sql);
-
-
-
         $stmt->execute([$id]);
-
     }
 
 
@@ -1457,6 +1458,57 @@ class Tribu_T_Service extends PDOConnexionService
         return $all_tables;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Get apropos of the tribu T ( name, description,avatar)
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     */
+    public function getApropos($table_name){
+        $apropos= [ "name" => "", "description"=> "", "avatar" => "" ];
+
+        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
+        $statement->execute();
+        $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+        $id= $userID_fondateurTribuT['user_id'];
+
+        $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
+        $statement->execute();
+        $t_owned = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $tribu_t_owned = $t_owned['tribu_t_owned'];
+
+        $object= json_decode($tribu_t_owned, true);
+
+        if( !array_key_exists("name", $object['tribu_t']) ){
+            foreach ($object['tribu_t'] as $trib){
+                if( $trib['name'] === $table_name){
+                    $apropos = [
+                        'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
+                        'description' => $trib['description'],
+                        'avatar' => $trib['logo_path'],
+                    ];
+    
+                    break;
+                }
+            }
+        }else{
+            if( $object['tribu_t']['name'] === $table_name){
+                $apropos = [
+                    'name' => "Tribu T " . ucfirst(explode("_",$object['tribu_t']['name'])[count(explode("_",$object['tribu_t']['name']))-1]),
+                    'description' => $object['tribu_t']['description'],
+                    'avatar' => $object['tribu_t']['logo_path'],
+                ];
+            }
+        }
+
+       
+        return $apropos;
+    }
+
     
     public function getAllTribuTJoinedAndOwned($id){
         $sql= "SELECT tribu_t_joined,tribu_t_owned FROM `user` WHERE id=$id";
@@ -1465,6 +1517,65 @@ class Tribu_T_Service extends PDOConnexionService
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get On publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     * @param int $id:  publication id
+     */
+    public function getOnePublication($table_name, $pubID){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE id= $pubID;");
+        $statement->execute();
+
+        $publication = $statement->fetch(PDO::FETCH_ASSOC); // publications
+
+        return $publication;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get On publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     * @param int $id:  publication id
+     */
+    public function getCommentsPublication($table_name, $pubID){
+        $results= [];
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" . "_commentaire " . "WHERE pub_id= $pubID;");
+        $statement->execute();
+
+        $comments = $statement->fetchAll(PDO::FETCH_ASSOC); // publications
+
+        foreach ($comments as $comment){
+            $user_id= $comment["user_id"];
+
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id");
+            $statement_photos->execute();
+            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+
+            $temp= [
+                "pub_id" => $comment["pub_id"],
+                "dateTime" => $comment["datetime"],
+                "text_comment" => $comment["commentaire"],
+                "user" => [
+                    "fullname" => $comment["userfullname"],
+                    "photo" => $photo_profil["photo_profil"],
+                ]
+            ];
+
+            array_push($results, $temp);
+        }
+
+        return $results;
+    }
+
+
 
     public function updateVisibility($tablePub, int $pub_id, int $confidentiality){
 
@@ -1516,99 +1627,102 @@ class Tribu_T_Service extends PDOConnexionService
 
         $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
         $resultats = [];
-
-        foreach( $publications as $d_pub ){
-
-            $publication_id = $d_pub["id"];
-            $publication_user_id= $d_pub["user_id"];
-
-            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
-            $statement_photos->execute();
-            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
-
-            $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
-            $statement->execute();
-            $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
-
-            $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
-            $statement->execute();
-            $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-            $data= [
-                "userOwnPub" => [
-                    "id" => $d_pub["user_id"],
-                    "profil" => $photo_profil["photo_profil"],
-                    "fullName" => $d_pub["userfullname"],
-                ],
-                "publication" => [
-                    "id" => $d_pub["id"],
-                    "confidentiality" => $d_pub['confidentiality'],
-                    "description" => $d_pub['publication'],
-                    "image" => $d_pub['photo'],
-                    "createdAt" => $d_pub["datetime"],
-                    "comments" => $comments,
-                    "reactions" => $reactions,
-                ],
-                "tribu" => [
-                    "type" => "Tribu T",
-                    "name" => $apropo_tribuT['name'],
-                    "description" => $apropo_tribuT['description'],
-                    "avatar" =>  $apropo_tribuT['avatar'],
-                    "table" => $table_name
-                ]
-            ];
-
-            array_push($resultats, $data);
+        
+        if( count($publications) > 0 ){
+            foreach( $publications as $d_pub ){
+    
+                $publication_id = $d_pub["id"];
+                $publication_user_id= $d_pub["user_id"];
+    
+                $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+                $statement_photos->execute();
+                $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
+                $statement->execute();
+                $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
+                $statement->execute();
+                $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+                $data= [
+                    "userOwnPub" => [
+                        "id" => $d_pub["user_id"],
+                        "profil" => $photo_profil["photo_profil"],
+                        "fullName" => $d_pub["userfullname"],
+                    ],
+                    "publication" => [
+                        "id" => $d_pub["id"],
+                        "confidentiality" => $d_pub['confidentiality'],
+                        "description" => $d_pub['publication'],
+                        "image" => $d_pub['photo'],
+                        "createdAt" => $d_pub["datetime"],
+                        "comments" => $comments,
+                        "reactions" => $reactions,
+                    ],
+                    "tribu" => [
+                        "type" => "Tribu T",
+                        "name" => $apropo_tribuT['name'],
+                        "description" => $apropo_tribuT['description'],
+                        "avatar" =>  $apropo_tribuT['avatar'],
+                        "table" => $table_name
+                    ]
+                ];
+    
+                array_push($resultats, $data);
+            }
         }
 
         return $resultats; 
     }
 
     /**
-     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
      * 
-     *  Get apropos of the tribu T ( name, description,avatar)
+     * @param string $tableName: le nom de la table tribu
      * 
-     * @param string $table_name: name of the table
-     * 
-     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     * @param string $extension: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
      */
-    public function getApropos($table_name){
-        $apropos= [ "name" => "", "description"=> "", "avatar" => "" ];
+    public function checkExtension($tableName, $extension){
 
-        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
+        //$query = "SHOW TABLES FROM $db like 'tribu_t_" . $user_id . "_" . $tableName . "'";
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like '" . $tableName.$extension."'";
+
+        $sql = $this->getPDO()->query($query);
+
+        $result = $sql->rowCount();
+
+        return $result;
+
+    }
+
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableNameExtension: le nom de la table extension
+     * 
+     * @param int $idResto: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtensionId($tableNameExtension, int $idResto){
+
+        
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
+
         $statement->execute();
-        $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
-        $id= $userID_fondateurTribuT['user_id'];
 
-        $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
-        $statement->execute();
-        $t_owned = $statement->fetch(PDO::FETCH_ASSOC);
-        $tribu_t_owned = $t_owned['tribu_t_owned'];
-        $object= json_decode($tribu_t_owned, true);
+        $result = $statement->fetch();
 
-        if(!array_key_exists("name", $object['tribu_t'])){
-            foreach ($object['tribu_t'] as $trib){
-                if( $trib['name'] === $table_name){
-                    $apropos = [
-                        'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
-                        'description' => $trib['description'],
-                        'avatar' => $trib['logo_path'],
-                    ];
-    
-                    break;
-                }
-            }
+        if(is_array($result)){
+            return true;
         }else{
-            if( $object['tribu_t']['name'] === $table_name){
-                $apropos = [
-                    'name' => "Tribu T " . ucfirst(explode("_",$object['tribu_t']['name'])[count(explode("_",$object['tribu_t']['name']))-1]),
-                    'description' => $object['tribu_t']['description'],
-                    'avatar' => $object['tribu_t']['logo_path'],
-                ];
-            }
+            return false;
         }
-        return $apropos;
+
     }
 
 }

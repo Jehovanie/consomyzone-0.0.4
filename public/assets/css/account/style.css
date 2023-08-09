@@ -193,10 +193,6 @@ select {
   text-transform: none;
 }
 
-/*
-1. Correct the inability to style clickable types in iOS and Safari.
-2. Remove default button styles.
-*/
 
 /* button,
 [type='button'],
@@ -3353,9 +3349,14 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   text-decoration: none;
 }
 
+.th-p {
+  clip-path: circle(40%);
+}
+
 .content-nav-bar .avatar-account-connected img{
   width: 50px;
-  border-radius: 50%;
+  /* border-radius: 50%; */
+  clip-path: circle(40%);
 }
 
 .content-nav-bar .logo-cmz-connected{
@@ -3526,3 +3527,12 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   border: none !important;
   width: 50vw !important;
 }
+
+.tribu-t-img {
+  width: 200px;
+}
+
+.tribu-t-img img {
+  width: inherit;
+} 
+

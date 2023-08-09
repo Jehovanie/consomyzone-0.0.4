@@ -60,3 +60,14 @@
     min-width: 500px;
     padding-left: 5px;
 }
+
+#modalForExtension .modal-content{
+    /* border-color: grey; */
+    max-width: 480px;
+    margin-left: 10px;
+    background-color: #E2E1EF;
+}
+
+#modalForExtension .footer-result, #modalForExtension .header-result {
+    padding-bottom: 5px;
+}

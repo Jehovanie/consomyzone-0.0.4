@@ -1021,23 +1021,25 @@ li a .station {
     margin-left: auto;
     max-width: 1200px;
     height: 100%;
+    background-color: #fff;
+    padding: 25px;
 }
 
 #gallery {
     padding: 20px;
-    display: grid;
+    /* display: grid;
     width: auto;
     grid-template-columns: repeat(auto-fill, 10rem);
     grid-auto-rows: 10rem;
     grid-auto-flow: dense;
-    gap: 10px;
+    gap: 10px; */
 }
 
 #gallery img {
-    cursor: pointer;
+    /* cursor: pointer;
     height: 100%;
     width: 100%;
-    object-fit: cover;
+    object-fit: cover; */
     box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 
 }
@@ -1339,7 +1341,8 @@ input::-ms-clear {
 }
 
 .drag-text img {
-    width: 150px;
+    /* width: 150px; */
+    width: 80px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -1390,15 +1393,21 @@ input::-ms-clear {
     border-radius: 50%;
 }
 
+.center_flex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 li.listNavBarTribu > a.active{
     background-color: #0D6EFD !important;
     color:white !important;
 }
 
-.card-pub-actu > img{
+/* .card-pub-actu > img{
     width: 300px !important;
     height: 300px !important;
-}
+} */
 
 #contentUpdateOrDelete{
     margin-left: 250px;
@@ -1410,3 +1419,49 @@ li.listNavBarTribu > a.active{
     color: white;
     border-radius: 15px;
 } 
+.user-profy {
+    float: left;
+    width: 100%;
+    background-color: #fff;
+    text-align: center;
+    border-left: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    border-right: 1px solid #ececec;
+    -webkit-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -moz-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -ms-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    -o-box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0px 0.5px 0.2px rgba(0, 0, 0, 0.24);
+    padding: 20px 0 0 0;
+}
+
+.followw {
+    background-color: #53d690;
+}
+
+
+i.fa-eye-slash, i.fa-eye{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    /* height: 790px; */
+    right: 75px;
+    /* padding-right: 1px; */
+    margin-top: -35px;
+    cursor: pointer;
+}
+
+#succesMessage {
+    -webkit-animation: cssAnimation 5s forwards; 
+    animation: cssAnimation 5s forwards;
+}
+@keyframes cssAnimation {
+    0%   {display: block;}
+    90%  {display: block;}
+    100% {display: none;}
+}
+@-webkit-keyframes cssAnimation {
+    0%   {display: block;}
+    90%  {display: block;}
+    100% {display: none;}
+}

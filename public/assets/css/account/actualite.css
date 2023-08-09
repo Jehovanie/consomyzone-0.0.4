@@ -1,0 +1,62 @@
+.content_header_pub {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.head-pub .name-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content_pub_info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.head-pub .status-content{
+    margin-top: 0 !important;
+    margin-left: 10px;
+}
+
+.head-pub .param-content i {
+    margin-left: 0 !important;
+}
+
+.remove-image-uplaod {
+    width: 100%;
+}
+
+.param-content{
+    display: block;
+}
+
+.cta_mod_del_pub{
+    float: right;
+}
+
+.image_publication{
+    width: 80%;
+    height: 100%;
+    /* max-height: 550px; */
+    margin: auto;
+}
+
+.profil_publication{
+    width: 55px !important;
+    height: 55px !important;
+    border-radius: 50% ;
+}
+
+.content_list_p_tG{
+    width : 74%;
+}
+
+.content_photos{
+    width: 75%;
+}
+
+.image_item_gallery{
+    max-width: 350px !important;
+}

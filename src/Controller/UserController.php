@@ -18,11 +18,15 @@ use App\Service\UserService;
 
 use App\Form\PublicationType;
 
+use App\Form\MixtePublicationType;
+
 use App\Form\UserSettingType;
 
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
+
+use App\Service\SortResultService;
 
 use App\Repository\UserRepository;
 
@@ -77,28 +81,116 @@ class UserController extends AbstractController
         $this->filesyst = $filesyst;
 
     }
-
+    #[Route("/user", name: "home")]
+    public function home(){
+        return $this->redirectToRoute('app_actualite');
+    }
 
     #[Route("/user/actualite", name: "app_actualite")]
     public function Actualite(
         Status $status,
+        Request $request,
         TributGService $tribuGService,
         Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        SortResultService $sortResultService
     ): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
-
+        //dd($userConnected);
+        $userId= $this->getUser()->getId();
+        $tribuG= $userConnected['tableTribuG'];
         $publications = [];
 
-        $pub_tribuG= $tribuGService->getAllPublications($userConnected['tableTribuG']);
+        //// ALL PUBLICATION TRIBU G /////
+        $pub_tribuG= $tribuGService->getAllPublicationsUpdate($tribuG);
         $publications= array_merge($publications, $pub_tribuG);
-        // dd($publications);
-        ///all publication on tribu T
-        $test= $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
 
+        //// ALL PUBLICATION FOR ALL TRIBU T /////
+        $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
+      
+
+        if(count($all_tribuT) > 0 ){
+            $all_pub_tribuT= [];
+            foreach($all_tribuT as $tribuT){
+                $temp_pub= $tribuTService->getAllPublicationsUpdate($tribuT['table_name']);
+                $all_pub_tribuT= array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
+        
+
+        //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
+        $publicationSorted= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
+        // dd($publicationSorted);
+
+        ///all publication on tribu T use for new publications
+        $choiceTribuT= [];
+        if(count($all_tribuT) > 0 ){
+            foreach($all_tribuT as $key => $tribuT){
+                $n= "Tribu T " . ucfirst(explode("_",$tribuT["table_name"])[count(explode("_",$tribuT["table_name"]))-1]);
+                $choiceTribuT[$n] = $tribuT["table_name"];
+            }
+        }
+
+        // dd($choiceTribuT);
+        $new_publication = $this->createForm(MixtePublicationType::class,[ "tribuTList" => $choiceTribuT ],[]);
+        
+        $flash = [];
+        
+        $new_publication->handleRequest($request);
+        if ($new_publication->isSubmitted() && $new_publication->isValid()) {
+            
+            // dd($new_publication->getData());
+            $type_tribu = $new_publication['type']->getData();
+
+            $newFilename = "";
+
+            $legend = $new_publication['legend']->getData();
+            $confid = $new_publication['confidentiality']->getData();
+            $photo = $new_publication['photo']->getData();
+            // dd($photo);
+            if( $photo ){
+                $destination = $this->getParameter('kernel.project_dir'). "/public/uploads";
+                $newFilename = "/public/uploads";
+
+                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+
+                if( $type_tribu === "Tribu G"){
+                    $destination .= '/tribu_g/photos/'.$tribuG.'/';
+                    $newFilename .= '/tribu_g/photos/' . $tribuG. "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+
+                }else{
+                    $tribu = $new_publication['tribu']->getData();
+                    $destination .= '/tribu_t/photos/'.$tribu.'/';
+                    $newFilename .= '/tribu_t/photos/' . $tribu . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+                }
+
+                $dir_exist = $this->filesyst->exists($destination);
+                if($dir_exist===false){
+                    $this->filesyst->mkdir($destination, 0777);
+                }
+                
+                $photo->move($destination,$newFilename);
+            }
+
+            if ($legend || $photo) {
+                if( $type_tribu === "Tribu G"){
+                    $tribuGService->createOnePub($tribuG. "_publication", $userId, $legend, intval($confid), $newFilename);
+                }else{
+                    $tribu = $new_publication['tribu']->getData();
+                    $tribuTService->createOnePub($tribu . '_publication', $userId, $legend, intval($confid), $newFilename);
+                }
+            }
+            return $this->redirect($request->getUri());
+        }
+
+
+        $test= $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
         return $this->render("user/actualite.html.twig", [
             "userConnected" => $userConnected,
-            "publications" => $publications
+            "publications" => $publicationSorted,
+            "formPub" => $new_publication->createView(),
         ]);
     }
 
@@ -140,7 +232,7 @@ class UserController extends AbstractController
         
         $all_TribuT= $userRepository->getListTableTribuT();
 
-        $new_publication = $this->createForm(PublicationType::class);
+        $new_publication = $this->createForm(PublicationType::class, [], []);
 
 
 
@@ -224,11 +316,8 @@ class UserController extends AbstractController
                     $userId
 
                 ),
-
-                "publications" => $tributGService->getAllPublications($profil[0]->getTributg()),
-
+                "publications" => $tributGService->getAllPublicationsUpdate($profil[0]->getTributg()),
                 "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
-
             ],
 
             "new_publication" => $new_publication->createView(),
@@ -289,10 +378,6 @@ class UserController extends AbstractController
 
         return $response;
     }
-
-
-
-
 
     #[Route("/send/notifications/etbasCreate", name: "send_notifications_etbasCreate")]
 
@@ -2239,26 +2324,6 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/publication/tribu/update/visibility', name: 'update_visibility')]
-
-    public function updateVisibility(Request $request, Tribu_T_Service $tribut): Response
-
-    {
-
-        $data = json_decode($request->getContent(), true);
-
-        $tablePub = $data["tablePub"];
-
-        $pub_id = $data["pub_id"];
-
-        $confidentialite = $data["confidentialite"];
-
-        $tribut->updateVisibility($tablePub, $pub_id, $confidentialite);
-
-        return $this->json("Visibilité bien à jour");
-
-    }
-
   
     /** UPDATE PASSWORD */
     /*
@@ -2288,4 +2353,70 @@ class UserController extends AbstractController
         //return $this->json(["url"=>$url]);
         return $this->json($user->getId());
     }*/
+
+    #[Route('/user/publication/tribu/update/visibility', name: 'update_visibility')]
+    public function updateVisibility(Request $request, Tribu_T_Service $tribut): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $tablePub = $data["tablePub"];
+        $pub_id = $data["pub_id"];
+        $confidentialite = $data["confidentialite"];
+        
+        $tribut->updateVisibility($tablePub, $pub_id, $confidentialite);
+
+        return $this->json("Visibilité bien à jour");
+
+    }
+
+
+    #[Route('/user/publication/tribu/delete', name: 'delete_publication', methods: ['POST'])]
+    public function deletePublication(Request $request, Tribu_T_Service $tribut): Response
+    {
+        $data = json_decode($request->getContent(), true); 
+        $tablePub = $data["tablePub"];
+        $pub_id = $data["pub_id"];
+
+        // $tablePub = "tribug_01_centre_et_est_belley_publication";
+        // $pub_id = 31;
+
+        $publication= $tribut->getOnePublication($tablePub, $pub_id);
+        // dd($publication);
+
+        if( !$publication ||  $publication['user_id'] !== $this->getUser()->getId()){
+            return $this->json(["success" => false, 
+                "message" => "Vous n'avez pas le droit de supprimée cette publication."
+            ], 403 );
+        }
+
+        if( $publication["photo"] !== null &&  $publication["photo"] !== "" ){
+            $filesystem = new Filesystem();
+            if($filesystem->exists($this->getParameter('kernel.project_dir') . $publication['photo'])){
+                $filesystem->remove($this->getParameter('kernel.project_dir') . $publication['photo']);
+            }
+        }
+
+        $tribut->removePublicationOrCommentaire($tablePub, $pub_id);
+
+        return $this->json([
+            "success" => true,
+            "message" => "Publication supprimée!"
+        ], 200);
+    }
+
+
+    #[Route('/user/publication/tribu/comment', name: 'all_comment_publication', methods: ["POST"])]
+    public function getCommentPublication(Request $request, Tribu_T_Service $tribut): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $tablePub = $data["tablePub"];
+        $pub_id = $data["pub_id"];
+        $comments= [];
+        
+        $comments= $tribut->getCommentsPublication($tablePub, $pub_id);
+
+        return $this->json([
+            "success" => true,
+            "comments" => $comments
+        ], 200);
+    }
 }

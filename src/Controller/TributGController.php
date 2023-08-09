@@ -336,76 +336,29 @@ class TributGController extends AbstractController
         EntityManagerInterface $entityManager,
     ) {
 
-        $table_tributG_name = $tributGService->getTableNameTributG(
-
-            $this->getUser()->getId()
-
-        );
-
-        
-        $profil = "";
-        $user = $this->getUser();
-        $userType = $user->getType();
-        $userId = $user->getId();
-
-        if ($userType == "consumer") {
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        } else {
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        if(!$this->getUser()){
+            return $this->render("tribu_g/publications.html.twig", [
+                "publications" => [],
+            ]); 
         }
 
-
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $publications = $tributGService->getAllPublicationsUpdate($table_tributG_name);
 
         return $this->render("tribu_g/publications.html.twig", [
-
-            "profil" => $profil,
-
-            "table_tribu" => $table_tributG_name,
-
-            "tributG" => [
-
-                "profil" => $tributGService->getProfilTributG(
-
-                    $table_tributG_name,
-
-                    $this->getUser()->getId()
-
-                ),
-
-                "publications" => $tributGService->getAllPublications($table_tributG_name),
-
-                "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
-            ],
-
+            "publications" => $publications,
         ]);
     }
-
-
-
-
 
     #[Route("/tributG/photos", name: "app_photos_tributG")]
 
     public function fetchAllPhotosTributG(
-
         TributGService $tributGService,
-
-    ) {
-
-        $table_tributG_name = $tributGService->getTableNameTributG(
-
-            $this->getUser()->getId()
-
-        );
-
-
+    ){
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
 
         return $this->render("tribu_g/photos.html.twig", [
-
-            "table_tribu" => $table_tributG_name,
-
             "photos" => $tributGService->getAllPhotos($table_tributG_name),
-
         ]);
     }
 

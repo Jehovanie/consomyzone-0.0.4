@@ -607,7 +607,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.automate2424',
                         'r.horaies',
                         'r.services',
-                        'r.note',
+                        // 'r.note',
                         'r.prixE85',
                         'r.prixGplc',
                         'r.prixSp95',

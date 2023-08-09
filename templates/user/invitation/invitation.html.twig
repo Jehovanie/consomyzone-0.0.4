@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block javascripts %}
-	{# <script src="{{ asset('assets/js/account/invitation.js') }}" defer type="module"></script> #}
+	{# // <script src="{{ asset('assets/js/account/invitation.js') }}" defer type="module"></script> #}
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
 {% endblock %}
@@ -73,7 +73,6 @@
 		</div>
 	</div> #}
 
-	{# {% include "user/invitation/script.invitation.html.twig" %} #}
 
 <div class="nh">
 	{% include 'shard/account_navleft_new.html.twig' %}
@@ -101,11 +100,13 @@
 			<li class="invit-r nav-item" lng-tag="invitation_recu">Invitation reçu</li>
 			<li class="invit-d nav-item" lng-tag="invitation_envoye">Invitation envoyé</li>
 		</ul>
-		<ul id="contenus" class="remove_invitation"></ul>
+		<ul id="contenus" class="remove_invitation row" data-invit-full=""></ul>
+		
 	</div>
 </div>
 
 </div>
+	{% include "user/invitation/script.invitation.html.twig" %}
 
 
 {% endblock %}

@@ -2233,25 +2233,36 @@ function openMenu(){
  * @parm inputImage.html.twig
  */
 function readURL(input) {
-  if (input.files && input.files[0]) {
 
-    var reader = new FileReader();
-
-      reader.onload = function (e) {
+    // document.querySelector('.image_upload_jheo_js')
+    if (input.files && input.files[0]) {
         
-      $('.image-upload-wrap').hide();
+        const listExt= ['jpg', 'jpeg', 'png'];
+        const octetMax= 4096e+3;
+        var reader = new FileReader();
+        reader.onload = function (e) {
 
-      $('.image-upload-image').attr('src', e.target.result);
-      $('.image-upload-content').show();
+            if( !checkFileExtension(listExt,e.target.result)  || !checkTailleImage(octetMax, e.target.result)){
+                // $('.image-upload-wrap').hide();
+                $(".image-upload-wrap").css("border","2px dashed red");
+                $(".drag_text_jheo_js").html("<p class='text-danger erreur_type_jheo_js'>Le format de fichier ou la taille n'est pas pris en charge.</p>");
+                $('.image_upload_image_jheo_js').hide();
+                $(".remove_image_upload_jheo_js").text("Supprimer et changer ?");
+            }else{
+                $('.image-upload-wrap').hide();
+                $('.image-upload-image').attr('src', e.target.result);
+                $('.image_upload_image_jheo_js').show();
+            }
 
-    //   $('.image-title').html(input.files[0].name);
-    };
+            $('.image-upload-content').show();
 
-    reader.readAsDataURL(input.files[0]);
+        //   $('.image-title').html(input.files[0].name);
+        };
 
-  } else {
-    removeUpload();
-  }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        removeUpload();
+    }
 }
 
 /**
@@ -2259,16 +2270,32 @@ function readURL(input) {
  * @parm inputImage.html.twig
  */
 function removeUpload() {
-  $('.image-upload-input').replaceWith($('.image-upload-input').clone());
-  $('.image-upload-content').hide();
-  $('.image-upload-wrap').show();
+    $('.image-upload-input').replaceWith($('.image-upload-input').clone());
+    $('.image-upload-content').hide();
+    $('.image-upload-wrap').show();
+
+    $(".image-upload-wrap").css("border","2px dashed #878787");
+
+    $(".drag_text_jheo_js").html(`
+        <img src="/assets/image/uplaodIcon.png" alt="background upload file">
+        <h3 class="text_upload_image_jheo_js">Faites glisser et déposez un fichier ou sélectionnez ajouter une image</h3>
+    `);
+    $(".remove_image_upload_jheo_js").text("Change l'image");
+
+    document.querySelector(".image_upload_input_jheo_js").value = null
+    
+    $('.image_upload_input_jheo_js').click();
 }
+
+
 $('.image-upload-wrap').bind('dragover', function () {
     $('.image-upload-wrap').addClass('image-dropping');
-  });
-  $('.image-upload-wrap').bind('dragleave', function () {
+});
+
+$('.image-upload-wrap').bind('dragleave', function () {
     $('.image-upload-wrap').removeClass('image-dropping');
 });
+ 
 
 function updateVisibility(element){
     let pub_id = element.dataset.id
@@ -2303,25 +2330,29 @@ function updateVisibility(element){
             body: JSON.stringify(param)
         })
     
-        fetch(request).then(response=>response.json())
-                      .then(message=>{
-                        if(confidentialite == 1){
-                            element.parentElement.previousElementSibling.innerHTML = `<i class="fa-solid fa-earth-oceania"></i>`
-                        }else if(confidentialite == 2){
-                            element.parentElement.previousElementSibling.innerHTML = `<i class="bi bi-lock-fill"></i>`
-                        }
-                        console.log(message)
-                    })
+        fetch(request)
+        .then(response=>response.json())
+        .then(message=>{
+            if(confidentialite == 1){
+                element.parentElement.previousElementSibling.innerHTML = `<i class="fa-solid fa-earth-oceania"></i>`
+            }else if(confidentialite == 2){
+                element.parentElement.previousElementSibling.innerHTML = `<i class="bi bi-lock-fill"></i>`
+            }
+            // showAlertMessageFlash(message);
+        })
     }
 }
 
 /**
-@Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
-verifier l'extension de fichier par un tableux de type accepter
-@param {*} array_ext_Accepcted : Tabeaux list des extension de fichier accepter
-@param {*} file_base64 : string base 64
-@returns : true: si l'extension est parmit les accepter, false sinon
-*/
+ * @Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
+ * 
+ * verifier l'extension de fichier par un tableux de type accepter
+ * 
+ * @param {*} array_ext_Accepcted : Tabeaux list des extension de fichier accepter
+ * @param {*} file_base64 : string base 64
+ * 
+ * @returns : true: si l'extension est parmit les accepter, false sinon 
+ */
 function checkFileExtension(array_ext_Accepcted, file_base64 ){
 
     // const error_file= file_base64.error;
@@ -2337,12 +2368,14 @@ function checkFileExtension(array_ext_Accepcted, file_base64 ){
 }
 
 /**
-@Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
-Veirifier la taille de fichier
-@param {*} maxOctetAccepted  max taille en octet accepted
-@param {*} file_base64  string base 64
-@returns : true: si la taille est ok, false sinon
-*/
+ * @Authord <Jehovanie RAMANDRIOJEL <jehovanieram@gmail.com>
+ * 
+ * Veirifier la taille de fichier 
+ * 
+ * @param {*} maxOctetAccepted  max taille en octet accepted
+ * @param {*} file_base64  string base 64
+ * @returns : true: si la taille est ok, false sinon 
+ */
 function checkTailleImage(maxOctetAccepted, file_base64){
     // const dataType= file_base64.result;
     const base64Data = file_base64.split(',')[1];
@@ -2352,4 +2385,185 @@ function checkTailleImage(maxOctetAccepted, file_base64){
     const sizeInBytes = ((base64Data.length + padding) * 3 / 4);
     console.log("sizeInBytes : ", sizeInBytes)
     return (sizeInBytes < maxOctetAccepted ) ? true : false;
+}
+
+
+function removePublication(pubId, tablePub){
+
+    document.querySelector('.confirm_delete_pub_jheo_js').addEventListener('click',() => {
+        deletePublication(pubId, tablePub);
+    })
+}
+
+function deletePublication(pubId, tablePub){
+    const param = {
+        tablePub : tablePub + "_publication",
+        pub_id : pubId,
+    }
+    const request = new Request('/user/publication/tribu/delete', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(param)
+    })
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            let status= "danger";
+            if(response.success){
+                document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`).remove();
+                status= "success";
+            }
+            closeModal();
+            showAlertMessageFlash(response.message, status);
+        })
+}
+
+
+function getAllComment(pubId, tablePub){
+
+    const param = {
+        tablePub : tablePub,
+        pub_id : pubId,
+    }
+    const request = new Request('/user/publication/tribu/comment', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(param)
+    })
+
+    fetch(request)
+    .then(response=>response.json())
+    .then(response =>{
+        console.log(response.comments)
+        const content_comments = document.querySelector('.content_all_comment_jheo_js')
+        if( response.comments.length > 0 ){
+            let listLIcomment = "";
+            const comments = response.comments;
+
+            comments.forEach(comment => {
+                const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
+                listLIcomment += `
+                    <li id='45' class="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
+                        <div class="h sa wf uk th ni ej">
+                            <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
+                            <span class="g l m xe qd th pi jj sj ra"></span>
+                        </div>
+
+                        <div>
+                            <h6 class="un zn gs">
+                               ${comment.user.fullname}
+                            </h6>
+                            <p class="mn hc">
+                               ${comment.text_comment}
+                            </p>
+                        </div>
+                    </li>
+                `
+            });
+
+            content_comments.innerHTML = listLIcomment;
+
+
+        }else{
+            content_comments.innerHTML = `
+                <li id='45' class="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
+                    <p> Il n'y pas encore de commentaire sur cette publication </p
+                </li>
+            `
+        }
+    })
+}
+
+function showAlertMessageFlash(text, status="success"){
+
+    const body= document.querySelector('.content_modal_alert_jheo_js');
+    const className= (status === "success" ) ? "alert-primary" : "alert-danger";
+
+    body.classList.add(className);
+    body.innerText= text;
+
+    document.querySelector('.alert_flash_jheo_js').click();
+
+    setTimeout(() => {
+        document.querySelector('.close_alertFlashModal_jheo_js').click();
+        body.classList.remove(className);
+        body.innerText = "";
+    },1500)
+}
+
+function closeModal(){
+    document.querySelector(".close_modal_jheo_js").click();
+}
+
+function showTribuTForRestoPast(element){
+    element.parentElement.style.display = "none"
+    document.querySelector("#containerPastilleResto").style.display = "block"
+    let container = document.querySelector("#content_detail_resto_js_jheo") ? document.querySelector("#content_detail_resto_js_jheo") : document.querySelector("#content_details_home_js_jheo")
+    scrollBottom(container)
+}
+
+function annulePastille() {
+    document.querySelector("#containerPastilleResto").style.display = "none"
+    document.querySelector("#btnPastilleCarte").parentElement.style.display = "block"
+    if (document.querySelector(".confirmPast").hasAttribute("data-tbname")) {
+        document.querySelector(".confirmPast").removeAttribute("data-tbname");
+    }
+    document.querySelector(".selectTribuForPast").value = "0"
+}
+
+function selectTribuForPast(e) {
+    let index = e.target.selectedIndex
+    let btn = document.querySelector(".confirmPast")
+    if(index != 0){
+        btn.disabled = false
+        btn.dataset.tbname = e.target.value
+    }else{
+        btn.disabled = true
+        if (btn.hasAttribute("data-tbname")) {
+            btn.removeAttribute("data-tbname");
+        }
+    }
+}
+
+function scrollBottom(element) {
+    element.scrollTop = element.scrollHeight;
+}
+
+function pastilleRestoForTribuT(e){
+    let id = e.target.dataset.id
+    let name = e.target.dataset.name
+    let tbl = e.target.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+    const request = new Request("/user/tribu_t/pastille/resto", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                document.querySelector("#containerPastilleResto").style.display = "none"
+                let successElem = document.querySelector(".successPastille")
+                successElem.style.display = "block"
+                successElem.textContent = message
+                setTimeout(function () {
+                    successElem.style.display = "none"
+                    successElem.innerHTML = ""
+                }, 5000)
+            })
+            .catch(error=>console.log(error))
 }

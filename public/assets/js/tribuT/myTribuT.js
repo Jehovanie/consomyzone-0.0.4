@@ -4,6 +4,7 @@
 var tribu_t_name_0 = ""; 
 var id_c_u //id du user courant
 let image_list = [];
+let dataExtension = [];
 var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') :  new Worker('/public/assets/js/tribuT/worker.js');
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT= IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
@@ -66,7 +67,8 @@ function showBlockPub(){
             e.target.classList.add("active")//p-2 list-nav-left active
             const id_c_u=e.target.dataset.tribuRank
             const type = e.target.classList[1];
-            const tribu_t_name=e.target.textContent
+            // const tribu_t_name=e.target.textContent  data-table-name
+            const tribu_t_name=e.target.dataset.tableName; ///  data-table-name
             let data = await showdData(tribu_t_name)
             showdDataContent(data,type,tribu_t_name,id_c_u)
             
@@ -308,11 +310,11 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </div>
                     </div>
                     
-                    <div class="nome-fontateur-tribu-t">
-                        <p>Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
-                    </div>
                 </div>
-                <nav class="responsif-none mx-auto">
+                <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
+                     <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
+                </div>
+                <nav class=" mx-auto">
                     <ul id="navBarTribu" class="navBarTribu-t">
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
@@ -333,12 +335,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
                     </ul>
                 </nav>
-                
             </div>
+
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
-                    <div class=" uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub-t">
+                    <div class=" 2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
@@ -426,7 +428,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
 
                     contentPublication = `<div id="${tribu_t_name_0+"_"+data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
-                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                            <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
                                                         <img src="/assetss/image/img_avatar3.png" alt="">
@@ -887,7 +889,7 @@ function showResto(table_rst_pastilled,id_c_u){
                                         <div class="g-3">
                                             <div class="input-group mb-3">
                                                 <input type="text" class="form-control  rounded" placeholder="Pastiller un restaurant" id="resto-rech">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="findResto"><i class="fas fa-search"></i></button>
+                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
                                             </div>
                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
                                             </div>
@@ -1101,7 +1103,7 @@ function showResto(table_rst_pastilled,id_c_u){
             const q = event.target.value.toLowerCase();
 
             if (event.keyCode === 13) {
-                findResto(q)
+                listResto()
             }else{
                 document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
                     if(elem.textContent.toLowerCase().includes(q)){
@@ -1201,68 +1203,75 @@ function findResto(val){
    }) 
     fetch(request).then(response => response.json()).then(jsons => {
         console.log(jsons)
-        for (let json of jsons) { 
-            const name = json.denominationF;
-            const dep = json.dep;
-            const depName = json.depName;
-            const commune = json.commune;
-            const codePost = json.codpost;
-            const nomvoie = json.nomvoie;
-            const numvoie = json.numvoie;
-            const typevoie = json.typevoie;
-            const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-            const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
-            const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
-            const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
-            const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
-            const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
-            const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
-            const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
-            const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
-            const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
 
-            
+        if(jsons.length > 0){
 
-            document.querySelector("#result_resto_chr").innerHTML += `
+            for (let json of jsons) { 
+                const name = json.denominationF;
+                const dep = json.dep;
+                const depName = json.depName;
+                const commune = json.commune;
+                const codePost = json.codpost;
+                const nomvoie = json.nomvoie;
+                const numvoie = json.numvoie;
+                const typevoie = json.typevoie;
+                const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+                const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
+                const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
+                const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
+                const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
+                const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
+                const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
+                const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
+                const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
+                const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
+    
                 
-                <div class="card-result-chr items">
-                    <div class="header-result">
-                        <h5>${name}</h5>
-
-                    </div>
-                    <div class="body-result">
-                       
-                        <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
-                         <div class="type-resto-ico row">
-                            <div class="col-lg-5">${boulangerie}</div>
-                            <div class="col-lg-5">${bar}</div>
-                            <div class="col-lg-5">${brasserie}</div>
-                            <div class="col-lg-5">${cafe}</div>
-                            <div class="col-lg-5">${cuisineMonde}</div>
-                            <div class="col-lg-5">${fastFood}</div>
-                            <div class="col-lg-5">${creperie}</div>
-                            <div class="col-lg-5">${salonThe}</div>
-                            <div class="col-lg-5">${pizzeria}</div>
+    
+                document.querySelector("#result_resto_chr").innerHTML += `
+                    
+                    <div class="card-result-chr items">
+                        <div class="header-result">
+                            <h5>${name}</h5>
+    
                         </div>
-                        <div>
-                            <h5>Adresse: </h5>
-                            <p>${adresse}</p>
+                        <div class="body-result">
+                           
+                            <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
+                             <div class="type-resto-ico row">
+                                <div class="col-lg-5">${boulangerie}</div>
+                                <div class="col-lg-5">${bar}</div>
+                                <div class="col-lg-5">${brasserie}</div>
+                                <div class="col-lg-5">${cafe}</div>
+                                <div class="col-lg-5">${cuisineMonde}</div>
+                                <div class="col-lg-5">${fastFood}</div>
+                                <div class="col-lg-5">${creperie}</div>
+                                <div class="col-lg-5">${salonThe}</div>
+                                <div class="col-lg-5">${pizzeria}</div>
+                            </div>
+                            <div>
+                                <h5>Adresse: </h5>
+                                <p>${adresse}</p>
+                            </div>
+                            
                         </div>
-                        
+                        <div class="footer-result">
+                            <button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
+                        </div>
                     </div>
-                    <div class="footer-result">
-                        <button class="btn btn-primary" onclick="pastillerPast(${json.id},'${name}')">Pastillez</button>
-                    </div>
-                </div>
-            `
-            $(document).ready(function(){
-                $(".owl-carousel").owlCarousel({
-                    autoPlay: 3000,
-                    items: 5
+                `
+                $(document).ready(function(){
+                    $(".owl-carousel").owlCarousel({
+                        autoPlay: 3000,
+                        items: 5
+                    });
                 });
-            });
-
-            
+    
+                
+            }
+        }else{
+            document.querySelector("#result_resto_chr").style.display = "block"
+            document.querySelector("#result_resto_chr").innerHTML = "Aucun restaurant qui correspond à " + document.querySelector("#resto-rech").value
         }
     })
     
@@ -1284,12 +1293,37 @@ function showTypeResto(event) {
    
 }
 
-function pastillerPast(id, nom) {
-   
-    saveRestaurantPast(id, nom);
+function pastillerPast(element, id, nom) {
+    let modal = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+    if(modal.id == "modalForExtension"){
+        setRestoForPast(id, nom)
+        element.disabled = true;
+        document.querySelector("#successPastille").style.display = ""
+        document.querySelector("#successPastille").textContent = "Le restaurant " + nom + " a été pastillé avec succès !";
 
-    
-    
+        setTimeout(function() {
+            document.querySelector("#successPastille").style.display = "none"
+        }, 5000)
+
+    }else{
+        saveRestaurantPast(id, nom);
+    }
+ 
+}
+
+function setRestoForPast(id, nom) {
+
+    if(nom != "" && id != null){
+
+        let item = {
+            denomination_f : nom,
+            id_resto : id
+        }
+        dataExtension.push(item)
+        document.querySelector("#form_extensionData").value = JSON.stringify(dataExtension)
+        // document.querySelector("#form_extensionData").dataset.jsonValue = JSON.stringify(dataExtension)
+    }
+
 }
 
 /**save resto pastilled */
@@ -1357,14 +1391,12 @@ function showPhotos(){
     })
     fetch(requete).then(rqt => rqt.json()).then(data => {
             //console.log(data);
-            photosContainer.innerHTML = `<div class="intro">
+        photosContainer.innerHTML = `
+                <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
                         Photo télechargé avec succès!
                     </div>
-                    <div><span class="h2">Liste des photos</span> <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> <i class="bi bi-camera-fill"></i> Importer
-                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
-                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
-                    </label></div>
+                    
                     
                 </div>`;
 
@@ -1373,10 +1405,28 @@ function showPhotos(){
 
                 for (let photo of data) {
                     let img_src =photo.photo; //replaceAll("/public","");
-                    li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    // li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                    li_img +=`
+                                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                                        <img
+                                        src="${img_src}"
+                                        class="w-100 shadow-1-strong  mb-4"
+                                        alt="Boat on Calm Water"
+                                        />
+                                    </div>
+                                    `
                 }
                 setGallerie(document.querySelectorAll(".img_gal"))
-                photosContainer.innerHTML+=`<div class="gallery-container"><div id="gallery">${li_img}</div></div>`
+                photosContainer.innerHTML += `<div class="gallery-container">
+                <div>
+                        <span class="h2">Album photo</span> 
+                        <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                            <i class="bi bi-camera-fill"></i> Importer
+                            <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                            <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                        </label>
+                    </div>
+                <div id="gallery"><div class="row">${li_img}</div></div></div>`
 
                 setGallerie(document.querySelectorAll("#gallery img"))
                 
@@ -1855,8 +1905,8 @@ function updatePublication() {
     body: JSON.stringify(data)
     })).then(response=>response.json())
        .then(message=>console.log(message));
-
 }
+
 
 
 function checkExtension(element) {
@@ -1865,8 +1915,25 @@ function checkExtension(element) {
 
 function openModalForExtension(element){
     if(checkExtension(element)){
-        $("#modal_publication").modal("show")
+        $("#modalForExtension").modal("show")
     }else{
-        alert("Unchecked")
+        console.log("Unchecked")
+    }
+}
+
+if (document.querySelector("#apropos-tribu-t")) {
+    let openClose = document.querySelector("#apropos-tribu-t")
+    openClose.addEventListener("click", () => {
+        
+    })
+}
+
+function listResto(){
+    document.querySelector("#result_resto_chr").innerHTML = ""
+    let inputName = document.querySelector("#resto-rech").value;
+    if(inputName.trim() != ""){
+        findResto(inputName)
+    }else{
+        alert("Veuillez saisir le nom du restaurant");
     }
 }

@@ -7,15 +7,18 @@ use PDO;
 use PDOException;
 use DateTimeImmutable;
 use App\Service\PDOConnexionService;
+use App\Service\Tribu_T_Service;
 use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
 
 class RequestingService extends PDOConnexionService
 {
 
     private $u;
-    public function __construct(UserRepository $u)
+    private $tribuT;
+    public function __construct(UserRepository $u, Tribu_T_Service $tribuT)
     {
         $this->u = $u;
+        $this->tribuT = $tribuT;
     }
     public function createTable($table_name)
     {
@@ -98,9 +101,17 @@ class RequestingService extends PDOConnexionService
             $uPoster = $this->u->find($t["user_post"]);
             $uReceiver = $this->u->find($t["user_received"]);
 
+            // $tmp["requesting"] = $t;
+            // $tmp["userReceiving"] = (array)$uReceiver;
+            // $tmp["uPoster"] = (array)$uPoster;
             $tmp["requesting"] = $t;
             $tmp["userReceiving"] = (array)$uReceiver;
+            $tmp["fN_userReceiving"] = $this->tribuT->getFullName($t["user_received"]);
+            $tmp["pdp_userReceiving"] = $this->tribuT->getPdp($t["user_received"]);
             $tmp["uPoster"] = (array)$uPoster;
+            $tmp["fN_uPoster"] = $this->tribuT->getFullName($t["user_post"]);
+            $tmp["pdp_uPoster"] = $this->tribuT->getPdp($t["user_post"]);
+            
             array_push($result, $tmp);
         }
         return $result;

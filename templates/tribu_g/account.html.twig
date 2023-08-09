@@ -7,14 +7,16 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
 {% endblock %}
 
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" ></script>
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
-    <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+    {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
     <script  src="{{ asset('assets/js/account/profil_tribuG.js') }}" defer></script>
-    <script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script>
+    {# <script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script> #}
+    
     <script  src="{{ asset('assets/js/account/fetchMemberTributG.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/fetchActualiteTributG.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/fetchPhotosTributG.js') }}" defer></script>
@@ -24,74 +26,6 @@
 
 {% block body %}
     
-    {# <main class="main_user_id" id='{{app.user.id}}' data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
-        <div class="test">
-            <div class="content_left_menu_account fixed-top mt-3 col responsif-none">
-                <div class="left_menu">
-                    {% include "shard/account_navleft.html.twig" %}
-                </div>
-            </div>
-            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
-                <div class="left_menu">
-                    {% include "shard/account_navleft_mobile.html.twig" %}
-                </div>
-            </div>
-        </div>
-
-
-
-        
-        <div class="navbar-mobile">
-			<div class="fixed-top col responsif-none bg-blanc">
-				{{ include('shard/account_navbar.html.twig') }}
-			</div>
-
-			<div class="fixed-top col responsif-none-mobile">
-				{{ include('shard/account_navbar_mobile.html.twig') }}
-			</div>
-		</div>
-
-        <div class="content_right_actualite-g mobile-responsive" id="container-mobile">
-            <div class="row">
-                <div class="col">
-                    <div class="content_actualite">
-                        <div class="entente">
-                            <div class="container">
-                                <br>
-                                <div class="card-pub p-3 bgPersonnalisee">
-                                    {% include "tribu_g/head.html.twig" %}
-                                
-
-                                    <a class="btn btn-primary btn_actualise btn_actualise_js_jheo hidden_actualise" href={{ path("app_account")}}>
-                                        <div class="text_mini">
-                                            Nouvelle publication
-                                        </div>
-                                    </a>
-
-                                    <div class="row mt-3">
-                                        <div class="col-8">
-                                            <div class="content_bloc_js_jheo row">
-                                                {% include "tribu_g/publications.html.twig" %}
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="card-appropos-g need_position_fixed_js_jheo">
-                                                <div class="content_list_tribuT mt-3">
-                                                    <h4 > Liste de vos tribu T :</h4>
-
-                                                    {% if all_tribuT|length > 0  %}
-                                                        <ul>
-                                                            {% for item in all_tribuT %}
-                                                                <li> <a href="#"> {{item.table_name}} </a></li>
-                                                            {% endfor %}
-                                                        </ul>
-
-                                                    {% else %}
-                                                        <p> Vous n'avez pas encore créer un tribu T</p>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div> #}
 <div class="nh main_user_id" data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
 	{% include 'shard/account_navleft_new.html.twig' %}
 	{% include 'shard/account_navbar_new.html.twig' %}
@@ -106,127 +40,20 @@
                         <div class="pdp-content">
                             <img src="{{ asset('uploads/users/photos/img_avatar.png') }}" alt="">
                         </div>
-                        <div class="name-content-h non_active">
+                        <div class="name-content-h">
                             <div class="name-content ">
                                 {# <p id="btnShowModalAddPub" class="form-pub">Partagez ce que vous pensez, Tommy...</p> #}
-                                <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill pub-g-input bg-transparent text-white disabled-link" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+                                <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill pub-g-input bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <div class="icon-piece-join">
-                        <i class="fa-solid fa-camera"></i>
-                        <i class="fa-solid fa-paperclip"></i>
-                    </div>
-
                 </div>
                 <!-- ====== Chart pub One End -->
             </div>
 
-            {% if tributG.publications is defined %}
-                {% set last_pub_id= 0 %}
-                {% for pub in tributG.publications %}
-                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 content_publication_js_jheo ">
-                    
-                        {% if pub.confidentiality == 1 or pub.user_id == app.user.id %}
-                            <!-- ====== Chart One Start -->
-                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub publication_js_jheo" id={{"pubication_js_" ~ pub.id ~ "_jheo" }} data-toggle-pub-id={{pub.id}} data-toggle-pub-user-id={{pub.user_id}}>
-                                <div class="head-pub">
-                                    <div class="pdp-content">
-                                        <img src="{{ (pub.photo_profil != null) ? pub.photo_profil : asset('uploads/users/photos/img_avatar.png') }}" alt="">
-                                    </div>
-                                    <div class="name-content-h">
-                                        <div class="name-content-g">
-                                            <h5>
-                                                <a href="{{ path("user_profil", {"user_id":pub.user_id }) }}" style="text-decoration:none;">
-                                                    &ensp;{{pub.userfullname}} &ensp;
-                                                </a>
-                                            </h5>
-                                            <p class="p-title">
-                                                a publié sur
-                                                <span>{{tributG.profil.name}}</span>
-                                            </p>
-                                        </div>
-                                        <div class="status-content d-flex">
-                                            <p class="p-heure">
-                                                Publié le
-                                                {{pub.datetime}}
-                                            </p>
-                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-
-                                                <div class="btn-group" role="group">
-
-                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="fa-solid fa-earth-oceania"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                        <a class="dropdown-item" href="#">Modifier le status</a>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                    <div class="param-content-g">
-                                        {% if pub.user_id == app.user.id %}
-                                        <span class="float-end dropstart">
-                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                            </span>
-                                            {# <ul class="dropdown-menu" style="transform: translate(25.906px, 24px) !important; ">
-                                                <li>
-                                                    <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item" onclick='getPub("{{pub.id}}", "{{pub.publication}}".replace(/\n/gi,"<br>"), "{{pub.confidentiality}}")'>
-                                                        <i class="fas fa-edit"></i>
-                                                        Modifier
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item" onclick="confirm({{pub.id}})">
-                                                        <i class="fas fa-trash" aria-hidden="true"></i>
-                                                        Supprimer
-                                                    </button>
-                                                </li>
-                                            </ul> #}
-                                        </span>
-                                    {% endif %}
-                                    </div>
-
-
-                                </div>
-
-                                <div class="card-pub-actu">
-                                    <p class="text-pub">
-                                        {{pub.publication}}
-                                    </p>
-                                    <img src="{{asset('uploads/tribu_g/photos/') ~ pub.photo }}" alt="">
-                                </div>
-
-                                <div class="card-reaction">
-                                    <p class="text-comment">
-                                        12 commentaire</p>
-                                    <div class="reaction-icon d-flex">
-                                        <i class="bi-heart like"></i>
-                                        <i class="fa-regular fa-comment comment"></i>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <!-- ====== Chart One End -->
-                        {% endif %}
-                    </div>
-                    {% set last_pub_id= pub.id %}
-                {% endfor %}
-                {% if last_pub_id != 0 and  last_pub_id != 1  %}
-                    <div class="content_chargement_publication content_chargement_publication_js_jheo mt-3" data-toggle-pub-id={{last_pub_id}} >
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endif %}
-
+            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 content_bloc_jheo_js">
+                {% include 'shard/publications/all_publication.html.twig' with { 'publications': tributG.publications } %}
+            </div>
 			
 			<!-- ====== Chart Two Start -->
 			<div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none">
@@ -263,14 +90,14 @@
                     <nav class="nav-tribu-g">
                         <ul id="navBarTribu">
                             <li class="listNavBarTribu tribu_active">
-                                <a href="#" id="fetch_actialite_tribug_js_jheo" class="active text-white" lng-tag="actualite">Actualité</a>
+                                <a href="#" id="fetch_actialite_tribug_jheo_js" class="active text-white" lng-tag="actualite">Actualité</a>
                             </li>
                             <li class="listNavBarTribu">
-                                <a style="cursor:pointer;" href="#" id="fetch_member_tribug_js_jheo">Partisans</a>
+                                <a style="cursor:pointer;" href="#" id="fetch_member_tribug_jheo_js">Partisans</a>
                             </li>
 
                             <li class="listNavBarTribu">
-                                <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_js_jheo">Photos</a>
+                                <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
                             </li>
                         </ul>
                     </nav>

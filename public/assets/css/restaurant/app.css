@@ -32,3 +32,15 @@
     justify-content: center;
     /* text-align: center; */
 }
+
+.leaflet-control-zoom.leaflet-bar.leaflet-control {
+    margin-right: 4vw;
+}
+
+#btnPastilleCarte, .confirmPast{
+    background-color: #0D6EFD !important;
+}
+
+.annulPast{
+    background-color: #DC3545 !important;
+}

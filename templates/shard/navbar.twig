@@ -1,10 +1,12 @@
 
 <header class="g s r vd vd-head ya cj" :class="{ 'hh sm _k dj bl ll' : stickyMenu }" @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
 	<div class="bb ze ki xn 2xl:ud-px-0 oo wf yf i">
+
+        {# =================== CONTENT LOGO AND FORM SEARCH =================== #}
 		<div class="vd to/4 to/4/2 tc wf yf">
 			<div class="content-logo-shearch row">
                 <div class="col-2">
-                    <a class="navbar-brand" href="{{path("app_home")}}"><img src="/public/assets/image/logo.png" alt="logo"></a>
+                    <a class="navbar-brand" href="{{path("app_home")}}"><img src="{{asset('assets/image/logo.png')}}" alt="logo"></a>
                 </div>
                 <div class="recherche-navbar col-9 ">
                     <form action="/search" method="get" class="bar-de-recherche form_content_search_navbar_js">
@@ -18,182 +20,11 @@
                     </button>
                 </div>
             </div>
-
-			{# <button class="po rc" @click="navigationOpen = !navigationOpen">
-				<span class="rc i pf re pd">
-					<span class="du-block h q vd yc">
-						<span class="rc i r s eh um tg te rd eb ml jl dl" :class="{ 'ue el': !navigationOpen }"></span>
-						<span class="rc i r s eh um tg te rd eb ml jl fl" :class="{ 'ue qr': !navigationOpen }"></span>
-						<span class="rc i r s eh um tg te rd eb ml jl gl" :class="{ 'ue hl': !navigationOpen }"></span>
-					</span>
-					<span class="du-block h q vd yc lf">
-						<span class="rc eh um tg ml jl el h na r ve yc" :class="{ 'sd dl': !navigationOpen }"></span>
-						<span class="rc eh um tg ml jl qr h s pa vd rd" :class="{ 'sd rr': !navigationOpen }"></span>
-					</span>
-				</span>
-			</button> #}
-
-                {# <li class="nav-item ms-4 icon-tous">
-                    <a class="nav-link active" aria-current="page" href="{{path('app_home')}}">
-                        <svg class="d-block" version="1.0" xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
-
-                            <g  transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
-                                stroke="none">
-                                <path d="M2260 4855 c-489 -64 -935 -276 -1294 -616 -418 -396 -688 -970 -712
-                                    -1514 -8 -181 4 -165 -118 -165 -87 0 -105 -3 -119 -18 -38 -42 -26 -72 154
-                                    -361 94 -152 182 -286 196 -298 13 -13 35 -23 48 -23 13 0 35 10 49 23 33 29
-                                    366 562 372 596 4 18 -2 35 -16 54 -21 26 -24 27 -126 27 l-104 0 0 64 c0 161
-                                    52 429 117 606 245 664 810 1139 1513 1273 97 18 151 21 340 21 189 0 243 -3
-                                    340 -21 353 -67 659 -212 929 -438 77 -65 94 -75 128 -75 35 0 46 8 121 83 75
-                                    75 82 86 82 122 0 34 -6 45 -52 88 -75 69 -228 183 -338 252 -270 167 -607
-                                    284 -940 325 -112 13 -451 11 -570 -5z"/>
-                                <path d="M2450 3848 c-500 -34 -946 -380 -1113 -863 -92 -267 -92 -583 0 -850
-                                    154 -444 534 -768 998 -850 119 -21 327 -21 452 1 574 97 1016 583 1061 1165
-                                    27 337 -67 651 -273 914 -193 247 -486 421 -791 469 -126 20 -203 23 -334 14z
-                                    m-378 -906 c10 -10 77 -174 149 -365 120 -318 130 -350 119 -377 -16 -38 -57
-                                    -55 -93 -39 -19 9 -35 32 -56 83 l-30 71 -149 3 -149 3 -27 -70 c-31 -79 -45
-                                    -94 -86 -94 -39 0 -70 29 -70 65 0 35 245 685 269 712 34 39 88 42 123 8z
-                                    m571 0 c15 -14 17 -43 17 -329 l0 -313 94 0 c76 0 98 -3 117 -18 30 -25 30
-                                    -75 0 -105 -20 -21 -31 -22 -165 -22 -128 0 -146 2 -165 19 -21 19 -21 26 -21
-                                    386 0 337 1 368 18 382 34 31 70 31 105 0z m550 -4 c15 -18 17 -49 17 -329 l0
-                                    -309 95 0 c109 0 135 -14 135 -72 0 -62 -15 -68 -185 -68 -142 0 -153 1 -171
-                                    21 -18 20 -19 41 -19 379 0 381 0 380 50 400 27 11 56 3 78 -22z"/>
-                                <path d="M1972 2608 c-64 -166 -68 -148 37 -148 65 0 91 4 91 12 0 11 -79 228
-                                    -85 236 -2 2 -21 -43 -43 -100z"/>
-                                <path d="M4656 3238 c-27 -25 -352 -542 -369 -588 -10 -25 -8 -34 9 -57 21
-                                -27 24 -28 129 -31 l108 -3 -6 -112 c-21 -384 -157 -754 -395 -1074 -85 -113
-                                -272 -300 -385 -385 -259 -192 -561 -322 -872 -375 -164 -27 -498 -25 -655 5
-                                -368 69 -642 202 -970 470 -40 32 -60 42 -89 42 -32 0 -45 -9 -119 -83 -74
-                                -75 -82 -86 -82 -121 0 -34 7 -45 53 -88 138 -129 341 -266 532 -358 230 -112
-                                433 -173 692 -211 197 -29 530 -24 723 11 1061 188 1856 1082 1909 2145 l6
-                                130 105 3 c120 3 140 13 140 70 0 27 -37 93 -181 323 -99 159 -189 294 -199
-                                299 -30 16 -57 12 -84 -12z"/>
-                            </g>
-                        </svg>
-                        <p class="nav-tous">Tous</p>
-                    </a>
-				</li>
-
-                <li class="nav-item ms-4 icon-resto">
-                    <a class="nav-link" href="{{path('restaurant_all_dep')}}">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
-                            stroke="none">
-                                <path d="M520 1047 c-20 -7 -36 -20 -38 -31 -3 -16 0 -18 25 -11 15 4 76 9
-                                136 12 79 4 107 8 107 18 0 7 -7 16 -16 19 -27 10 -177 5 -214 -7z"/>
-                                <path d="M372 948 c-8 -8 -12 -48 -12 -105 0 -92 0 -93 34 -131 l34 -38 -10
-                                -188 c-7 -133 -7 -196 1 -212 20 -44 102 -44 122 0 8 16 8 79 1 212 l-10 188
-                                34 38 c34 38 34 39 34 132 0 66 -4 97 -13 105 -23 18 -27 2 -27 -96 0 -92 0
-                                -93 -35 -131 l-34 -38 10 -188 c6 -103 8 -194 5 -202 -7 -18 -45 -18 -52 0 -3
-                                8 -1 99 5 202 l10 188 -34 38 c-35 38 -35 39 -35 132 0 95 -6 116 -28 94z"/>
-                                <path d="M437 954 c-4 -4 -7 -52 -7 -106 0 -89 2 -99 18 -96 15 3 17 16 17
-                                102 0 92 -8 120 -28 100z"/>
-                                <path d="M495 948 c-3 -8 -5 -55 -3 -104 3 -76 6 -89 21 -92 16 -3 17 5 15 99
-                                                                            -2 71 -7 104 -15 107 -7 2 -15 -3 -18 -10z"/>
-                                <path d="M765 951 c-75 -32 -106 -203 -49 -271 l27 -31 -7 -184 c-7 -177 -7
-                                -184 13 -204 27 -27 75 -27 102 0 20 20 20 27 13 204 l-7 184 27 31 c25 31 31
-                                59 26 135 -2 37 -31 106 -52 122 -20 17 -69 24 -93 14z m74 -52 c41 -45 44
-                                -160 4 -201 l-26 -27 4 -193 4 -193 -25 0 -25 0 4 193 4 193 -26 27 c-56 58
-                                -24 222 43 222 11 0 28 -10 39 -21z"/>
-                                <path d="M935 910 c-4 -6 8 -33 25 -60 87 -136 81 -321 -15 -442 -36 -44 -42
-                                -62 -26 -73 12 -7 55 38 87 91 78 131 72 327 -14 448 -29 43 -46 53 -57 36z"/>
-                                <path d="M276 858 c-45 -79 -59 -139 -54 -241 5 -101 26 -161 81 -234 31 -40
-                                67 -57 67 -30 0 6 -16 32 -35 55 -90 115 -103 292 -28 420 23 41 25 72 4 72
-                                -6 0 -21 -19 -35 -42z"/>
-                                <path d="M580 245 c-16 -19 -1 -25 61 -25 56 0 84 14 59 30 -20 12 -108 9-120 -5z"/>
-                            </g>
-                        </svg>
-                        <p class="nav-resto">Restaurant</p>
-                    </a>
-				</li>
-
-				<li class="nav-item ms-4 icon-ferme">
-                    <a class="nav-link active" aria-current="page" href="{{path('all_departement')}}">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
-                                stroke="none">
-                                <path d="M820 965 c-14 -7 -38 -16 -53 -20 -20 -4 -33 -16 -43 -40 -7 -18 -18
-                                -36 -24 -40 -13 -8 -13 -51 0 -75 5 -10 21 -20 34 -24 20 -5 26 -14 31 -50 8
-                                -52 -13 -101 -50 -118 -14 -6 -25 -17 -25 -25 0 -23 31 -14 65 20 44 44 53 91
-                                31 170 -16 58 -16 62 2 86 26 35 67 39 99 9 20 -19 24 -29 19 -59 -5 -31 -2
-                                -39 19 -53 33 -21 76 -98 90 -158 6 -27 15 -48 20 -46 17 5 8 83 -14 126 -12
-                                23 -17 42 -12 42 15 0 32 36 25 55 -4 8 -18 22 -33 29 l-26 14 28 13 c15 7 26
-                                17 24 23 -6 17 -49 36 -85 36 -29 0 -32 2 -26 24 4 19 -1 32 -20 50 -29 30
-                                -41 31 -76 11z m145 -125 c-3 -5 -10 -10 -16 -10 -5 0 -9 5 -9 10 0 6 7 10 16
-                                10 8 0 12 -4 9 -10z"/>
-                                <path d="M855 831 c-7 -12 12 -24 25 -16 11 7 4 25 -10 25 -5 0 -11 -4 -15 -9z"/>
-                                <path d="M246 778 c-69 -40 -109 -153 -72 -204 8 -10 16 -17 18 -14 2 3 12 18
-                                22 33 9 15 28 33 42 39 13 6 24 18 24 26 0 10 4 12 13 5 6 -6 32 -13 56 -16
-                                62 -8 71 -23 13 -23 -142 0 -218 -164 -126 -274 33 -38 74 -60 114 -60 35 0
-                                37 8 10 52 -40 65 -16 159 49 193 44 22 48 20 53 -33 9 -96 91 -205 174 -232
-                                25 -8 34 -18 34 -33 0 -12 7 -30 15 -41 12 -16 12 -20 -1 -33 -7 -8 -14 -21
-                                -14 -29 0 -19 26 -18 34 2 5 14 7 14 22 0 17 -18 50 -21 59 -6 3 6 -5 14 -19
-                                20 -55 21 -9 84 81 110 92 28 189 138 196 224 4 51 -20 40 -37 -17 -55 -189
-                                -300 -252 -439 -113 -47 47 -67 85 -74 144 l-5 47 67 -3 c77 -4 118 4 112 21
-                                -2 8 -24 11 -70 9 -95 -5 -103 -1 -99 52 5 54 -24 115 -70 147 -47 34 -131 37
-                                -182 7z m494 -539 c0 -11 -27 -29 -33 -22 -14 14 -6 32 13 30 11 -1 20 -4 20
-                                -8z"/>
-                                <path d="M865 590 c-4 -6 10 -26 32 -45 21 -19 33 -34 27 -35 -6 0 -17 7 -24
-                                15 -17 20 -54 19 -98 -4 -100 -51 -121 -60 -175 -74 -33 -9 -62 -19 -65 -22
-                                -11 -11 49 -53 97 -70 59 -20 170 -19 221 1 75 30 107 109 72 174 -22 40 -76
-                                77 -87 60z"/>
-                            </g>
-                        </svg>
-                        <p class="nav-ferme">Ferme</p>
-                    </a>
-				</li>
-
-                <li class="nav-item ms-4 icon-station">
-                    <a class="nav-link" href="{{path('app_station')}}">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                        width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
-                        preserveAspectRatio="xMidYMid meet">
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                            stroke="none">
-                                <path d="M397 942 c-13 -15 -17 -39 -17 -112 0 -79 3 -97 19 -114 15 -16 24
-                                -51 35 -141 20 -148 20 -179 1 -195 -8 -7 -15 -28 -15 -46 l0 -34 184 0 c119
-                                0 187 4 191 11 9 14 -2 55 -21 73 -12 13 -14 29 -8 86 6 64 9 70 29 70 38 0
-                                55 -30 55 -98 0 -74 20 -102 73 -102 65 0 67 9 67 271 l0 235 -38 37 c-36 35
-                                -62 47 -62 29 0 -5 11 -19 25 -32 14 -13 25 -27 25 -31 0 -5 -11 -25 -25 -45
-                                -42 -62 -25 -144 31 -144 l24 0 0 -130 c0 -117 -2 -132 -20 -150 -24 -24 -30
-                                -24 -55 -6 -15 11 -20 30 -23 84 -5 78 -19 100 -66 104 l-27 2 7 66 c5 47 13
-                                73 30 93 21 25 24 39 24 106 0 64 -4 83 -21 105 l-20 26 -193 0 c-174 0 -195
-                                -2 -209 -18z m368 -112 l0 -55 -157 -3 -158 -3 0 61 0 61 158 -3 157 -3 0 -55z
-                                m195 -81 c0 -52 -2 -60 -17 -57 -26 5 -30 74 -7 99 9 10 19 19 21 19 1 0 3
-                                -27 3 -61z"/>
-                            </g>
-                        </svg>
-                        <p class="nav-station">Station service</p>
-                    </a>
-				</li>
-
-                <li class="nav-item ms-4 icon-recherche">
-                    <a class="nav-link" type="button" data-bs-toggle="modal" data-bs-target="#recherche">
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                        width="50" height="50" viewBox="0 0 128.000000 128.000000"
-                        preserveAspectRatio="xMidYMid meet">
-
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                            stroke="none">
-                                <path d="M403 985 c-80 -39 -119 -81 -158 -169 -30 -69 -32 -127 -5 -200 59
-                                -155 226 -238 377 -187 34 12 74 21 88 21 35 0 85 50 85 85 0 14 9 54 21 88
-                                51 151 -32 318 -187 377 -81 30 -136 26 -221 -15z m226 -31 c124 -52 189 -196
-                                146 -325 -37 -111 -155 -188 -271 -176 -220 23 -318 283 -166 440 79 82 186
-                                105 291 61z"/>
-                                <path d="M789 451 l-35 -36 89 -97 c87 -95 91 -98 133 -98 l44 0 0 44 c0 42
-                                -3 46 -97 133 l-98 89 -36 -35z"/>
-                            </g>
-                        </svg>
-                    <p class="nav-recherche">Recherche</p>
-                    </a>
-				</li>
-			</ul> #}
-            
 		</div>
-        <div class="vd wo/4 wo/4/1 sd qo f ho oo wf yf" :class="{ 'd hh rm sr td ud qg ug jc yh': navigationOpen }">
+        {# =================== END CONTENT LOGO AND FORM SEARCH =================== #}
 
+        <div class="vd wo/4 wo/4/1 sd qo f ho oo wf yf" :class="{ 'd hh rm sr td ud qg ug jc yh': navigationOpen }">
+            {# ======================== CONTENT LINK MENU =========================== #}
 			<nav>
 				<ul class="tc _o sf yo cg ep ep-nav">
                     <li class="nav-item ms-4 icon-tous">
@@ -269,7 +100,6 @@
                            &ensp; Restaurant
                         </a>
                     </li>
-
                     <li class="nav-item ms-4 icon-ferme">
                         <a id="ferme-page"  class="nav-link list-nav-bar" aria-current="page" href="{{path('all_departement')}}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
@@ -306,7 +136,6 @@
                             &ensp;Ferme
                         </a>
                     </li>
-
                     <li class="nav-item ms-4 icon-station">
                         <a id="station-page"  class="nav-link list-nav-bar" href="{{path('app_station')}}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -332,22 +161,16 @@
                     </li> 
                 </ul>
 			</nav>
+
+            {# ======================== END CONTENT LINK MENU =========================== #}
+
 			<div class="tc wf ig pb no non_active">
-				{# <div class="pc h io pa ra" :class="navigationOpen ? '!-ud-visible' : 'd'">
-					<label class="rc ab i">
-						<input type="checkbox" :value="darkMode" @change="darkMode = !darkMode" class="pf vd yc uk h r za ab"/>
 
-						<svg :class="{ 'wn' : page === 'home', 'xh' : page === 'home' && stickyMenu }" class="th om" width="25" height="25" viewbox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M12.0908 18.6363C10.3549 18.6363 8.69 17.9467 7.46249 16.7192C6.23497 15.4916 5.54537 13.8268 5.54537 12.0908C5.54537 10.3549 6.23497 8.69 7.46249 7.46249C8.69 6.23497 10.3549 5.54537 12.0908 5.54537C13.8268 5.54537 15.4916 6.23497 16.7192 7.46249C17.9467 8.69 18.6363 10.3549 18.6363 12.0908C18.6363 13.8268 17.9467 15.4916 16.7192 16.7192C15.4916 17.9467 13.8268 18.6363 12.0908 18.6363ZM12.0908 16.4545C13.2481 16.4545 14.358 15.9947 15.1764 15.1764C15.9947 14.358 16.4545 13.2481 16.4545 12.0908C16.4545 10.9335 15.9947 9.8236 15.1764 9.00526C14.358 8.18692 13.2481 7.72718 12.0908 7.72718C10.9335 7.72718 9.8236 8.18692 9.00526 9.00526C8.18692 9.8236 7.72718 10.9335 7.72718 12.0908C7.72718 13.2481 8.18692 14.358 9.00526 15.1764C9.8236 15.9947 10.9335 16.4545 12.0908 16.4545ZM10.9999 0.0908203H13.1817V3.36355H10.9999V0.0908203ZM10.9999 20.8181H13.1817V24.0908H10.9999V20.8181ZM2.83446 4.377L4.377 2.83446L6.69082 5.14828L5.14828 6.69082L2.83446 4.37809V4.377ZM17.4908 19.0334L19.0334 17.4908L21.3472 19.8046L19.8046 21.3472L17.4908 19.0334ZM19.8046 2.83337L21.3472 4.377L19.0334 6.69082L17.4908 5.14828L19.8046 2.83446V2.83337ZM5.14828 17.4908L6.69082 19.0334L4.377 21.3472L2.83446 19.8046L5.14828 17.4908ZM24.0908 10.9999V13.1817H20.8181V10.9999H24.0908ZM3.36355 10.9999V13.1817H0.0908203V10.9999H3.36355Z" fill=""/>
-						</svg>
-
-						<img class="xc nm" src="images/icon-moon.svg" alt="Moon"/>
-					</label>
-				</div> #}
+                {# ======================== CONTENT CONNEXION/ACTUALITY =========================== #}
 				<div class="d-flex icon-connexion">
                     {% if app.user %}
                         <a href="{{path('app_actualite')}}">
-                            <svg class="svg-2" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
+                            <svg fill="#1111FE" class="svg-2" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
                                 <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"  stroke="none">
                                     <path d="M2158 4700 c-97 -24 -184 -64 -271 -123 -37 -26 -71 -47 -75 -47 -18
                                         0 -152 -149 -199 -222 -108 -164 -156 -331 -155 -533 2 -566 251 -1070 615
@@ -421,6 +244,7 @@
                         </a>
                     {% endif %}
                 </div>
+                {# ======================== END CONTENT CONNEXION/ACTUALITY =========================== #}
 			</div>
 		</div>
 	</div>

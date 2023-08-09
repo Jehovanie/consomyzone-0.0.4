@@ -21,7 +21,7 @@
 
 {% block javascripts %}
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 {% endblock %}
@@ -59,14 +59,36 @@
 
 			<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
 				<div id="content-pub-js">
-					{% for item in publications %}
-						{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
-					{% endfor %}
+					{% if publications|length > 0 %}
+						{% for item in publications %}
+							{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+						{% endfor %}
+					{% else %}
+						<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr mt-3" >
+							<div class="head-pub content_header_pub">
+								<div class="card">
+									<h6  class="text-center alert alert-info"> Information </h6>
+									<div class="card-body">
+										<p class="mx-auto">
+											Nous tenons à vous informer qu'actuellement, <br>
+											Il n'y a pas encore de publication disponible sur notre plateforme.  <br>
+											Si vous avez une histoire intéressante à raconter, des connaissances à partager ou des idées à proposer, 
+											n'hésitez pas à créer votre propre publication dès maintenant. <br>
+											Votre contribution peut inspirer et enrichir la communauté. <br>
+											Cordialement, <br><br><br>
+											CMZ <br>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
 				</div>
 			</div>
 
 			<!-- ====== Chart Two Start -->
-			<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none back-tribu-t">
+			
+			<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none back-tribu-t" id="apropos-tribu-t">
 				{% include "shard/account_navleft_tribuT.html.twig" %}
 			</div>
 			<!-- ====== Chart Two End -->
@@ -98,6 +120,7 @@
 					<span class="label-uplaod-tribu-t"></span>
 				</label>
 				{{ form_row(form.tribuTName, {'attr': {'class': 'nom-tribu-t', 'placeholder': "Entrer le nom de la tribu"}}) }}
+				{{ form_row(form.extensionData, {'attr': {'class': 'extensionData'}}) }}
 				{{ form_row(form.description, {'attr': {'class': 'description-tribu-t', 'placeholder': "Entrer votre déscription"}}) }}
 				{{ form_row(form.adresse, {'attr': {'class': 'adress-tripu-t', 'placeholder': "Entrer votre adresse"}}) }}
 				<p class="text-choisir">Choisir une extension</p>
@@ -116,6 +139,30 @@
 		</div>
 	</div>
 </div>
+<!-- End Modal -->
+
+<!-- Modal For Extension -->
+<div class="modal fade" id="modalForExtension" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Pastiller un restaurant</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+	  	<span id="successPastille" style="display:none;color:green;margin-bottom: 20px;"></span>
+        <div class="input-group mb-3">
+			<input type="text" class="form-control  rounded" placeholder="Saisir le nom du restaurant" id="resto-rech">
+			<button class="btn btn-light" type="button" id="button-addon2" onclick="listResto()"><i class="fas fa-search"></i></button>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <div id="result_resto_chr" class="result_resto_chr owl-carousel owl-theme"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
 
 {% endblock %}
 

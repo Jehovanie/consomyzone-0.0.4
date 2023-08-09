@@ -10,6 +10,9 @@
 //     document.querySelector(".mode_pc").remove()
 // }
 
+
+const imageType= ["jpg", "png", "gif", "jpeg"];
+const fileDefaults = "/assets/image/type_file.png";
 ///check btn send and input msg
 if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector(".input_message_jheo_js")){
     
@@ -51,13 +54,15 @@ if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector
             const uploaded_image = reader.result;
 
             ///let get multiple images (files)
-            image_list.push(reader.result);
+
+            const type= checkFileExtension(imageType, reader.result ) ? "image" : "file";
+            image_list.push({type :type, name: reader.result});
 
             // for the content image above the input message
             const img = document.createElement("img")
             img.className="image_input_item image_input_item_jheo_js";
             img.setAttribute("alt","Image upload")
-            img.src = uploaded_image
+            img.src = ( type === "image") ?  uploaded_image : fileDefaults;
 
             const parentImage = document.querySelector(".content_image_input_jheo_js")
             parentImage.style.display= "flex"
@@ -155,13 +160,15 @@ if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector
 
 /// THIS FUNCTION SHOW AND SEND MESSAGE TO THE SERVER ////////////////
 
-function sendMessage(message, image_list){
+function sendMessage(message, file_list){
 
     //// format date now 
     const date =new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11,19);
 
+    console.log(file_list)
+
     ///handle message, show under the input champ
-    handleMessageResponse(date ,message,image_list, "#",false)
+    handleMessageResponse(date ,message,file_list, "#",false)
 
     // ///send to the server
     fetch("/user/push/message", {
@@ -180,7 +187,7 @@ function sendMessage(message, image_list){
 
             ///message content
             message: message.replace("\n", ""),
-            images: image_list
+            files: file_list
         })
     })
     .then(response => response.json())
@@ -209,16 +216,24 @@ function sendMessage(message, image_list){
 
 //// SHOW MESSAGE ABOVE THE INPUT MESSAGE IN THE FIRST TIME 
 
-function handleMessageResponse(date, message,image_list=null,image,status){
+function handleMessageResponse(date, message,file_list=null,image,status){
 
     const card_msg= document.createElement("div");
     card_msg.className= "qf rb";
     card_msg.setAttribute("id", "message_id_jheo_js");
 
     let image_html_list= "";
-    if( image_list.length > 0 ){
-        image_list.forEach(image=> {
-            image_html_list += `<img class="message_image_item" src="${image}" alt="image">`
+    if( file_list.length > 0 ){
+        file_list.forEach(({ type, name })=> {
+            const file = ( type === "image") ? name: fileDefaults;
+            image_html_list += `
+                <div class="file_item">
+                    <img class="message_image_item" src="${file}" alt="image">
+                    <a class="icon_download_file" href="${name}" download>
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                </div>
+            `
         });
     }
 
@@ -258,27 +273,29 @@ function handleMessageResponse(date, message,image_list=null,image,status){
 
 }
 
-document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
-    
-    let target = e.target.value.toLowerCase()
-
-    let divs = document.querySelectorAll("div.list_users > div.discussion")
-
-    if(divs.length > 0){
-        for (var i = 0; i < divs.length; i++) {
-            let a = divs[i].textContent.toLowerCase();
+if( document.querySelector("#search_friend_input") ){
+    document.querySelector("#search_friend_input").addEventListener("keyup", function (e){
         
-            if (a) {
-              if (a.indexOf(target) > -1) {
-                divs[i].style.display = "";
-              } else {
-                divs[i].style.display = "none";
-              }
-            }
-          }
-    }
+        let target = e.target.value.toLowerCase()
     
-})
+        let divs = document.querySelectorAll("div.list_users > div.discussion")
+    
+        if(divs.length > 0){
+            for (var i = 0; i < divs.length; i++) {
+                let a = divs[i].textContent.toLowerCase();
+            
+                if (a) {
+                  if (a.indexOf(target) > -1) {
+                    divs[i].style.display = "";
+                  } else {
+                    divs[i].style.display = "none";
+                  }
+                }
+              }
+        }
+        
+    })
+}
 
 const imgs = document.querySelectorAll("section > div.messages-chat.mode_pc > div > div > div > img")
 const fullPage = document.querySelector('#fullpage');

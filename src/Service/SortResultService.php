@@ -210,4 +210,24 @@ class SortResultService extends StringTraitementService
         $word[$j] = $temp; 
         return implode(" ", $word);
     }
+
+
+    function sortTapByKey($array, $firstKey, $secondKey=null){
+        $length = count($array);
+
+        for($i=0; $i<$length; $i++){
+            $firstValue=($secondKey !== null) ? strtotime($array[$i][$firstKey][$secondKey]) : strtotime($array[$i][$firstKey]);
+
+            for($j=$i; $j< $length; $j++ ){
+                $secondValue=($secondKey !== null) ? strtotime($array[$j][$firstKey][$secondKey]) :strtotime($array[$j][$firstKey]);
+
+                if ( intval($firstValue) < intval($secondValue)){
+                    $tmp = $array[$i];
+                    $array[$i] = $array[$j];
+                    $array[$j] = $tmp;
+                }
+            }
+        }
+        return $array;
+    }
 }

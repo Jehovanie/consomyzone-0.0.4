@@ -12,6 +12,7 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
+use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -440,7 +441,9 @@ class RestaurantController extends AbstractController
         Status $status,
         $nom_dep,
         $id_dep,
-        $id_restaurant
+        $id_restaurant,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
@@ -454,16 +457,32 @@ class RestaurantController extends AbstractController
         }
 
 
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+        $arrayTribu = [];
+
+        foreach ($tribu_t_owned as $key) {
+            $tableTribu = $key["table_name"];
+            $tableExtension = $tableTribu . "_restaurant";
+            if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
+                if(!$tribu_T_Service->checkExtensionId($tableExtension, $details["id"])){
+                    array_push($arrayTribu, ["table_name" => $tableTribu]);
+                }
+            }
+        }
+
         return $this->render("restaurant/detail_resto.html.twig", [
             "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
-            "codeApes" => $codeApeRep->getCode()
-
+            "codeApes" => $codeApeRep->getCode(),
+            "tribu_t_can_pastille" => $arrayTribu
         ]);
     }
+
+
 
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 

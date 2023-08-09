@@ -1,0 +1,54 @@
+<div class="modal fade" id="{{modalId}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {{form_start(formPub, {'attr': {'id': 'form-publication-tribu-t'}})}}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle publication</h1>
+                    <button type="button" class="btn-close btn_close_pub_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    {% if formPub.type %}
+                        <div class="mb-3">
+                            {{ form_label(formPub.type , "Sur Tribu") }}
+                            {{ form_widget(formPub.type, { 'attr' : { 'class': 'publication_type_jheo_js'}}) }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3 d-none content_tribuT_select_jheo_js">
+                        {{ form_label(formPub.tribu , "Tribu T") }}
+                        {{ form_widget(formPub.tribu, { 'attr' : { 'class': 'select_tribuT_jheo_js'}}) }}
+                    </div>
+
+                    <div class="mb-3 d-none content_infoTribuT_jheo_js">
+                        {{ form_widget(formPub.infoTribuT, { 'attr' : { 'class': 'text-danger is-invalid'}}) }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form_label(formPub.legend , "Message", {'label_attr': {'class': 'form_label'}}) }}
+                        {{ form_widget(formPub.legend, {'attr': {'class': 'form-control text-color-blanc message_textarea_jheo_js'}}) }}
+                        {# <label for="message-text" class="col-form-label">Message</label>
+                        <textarea id="publication_legend" name="contenu" class="form-control"></textarea> #}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(formPub.confidentiality , "Confidentialité") }}
+                        {{ form_widget(formPub.confidentiality, { 'attr' : { 'id' : 'publication_confidentiality'}}) }}
+                    </div>
+
+                    <img src="" alt="" width="100" id="image-publication-tribu-t" class="d-none">
+
+                    <div class="mb-3">
+                        <label for="formFileMultiple" class="form-label">Photo</label>
+                        {# <input type="file" id="publication_photo" name="photo" class="form-control"> #}
+                        {% include 'shard/input/inputImageDragDrop.html.twig' with { 'InputDropDown': formPub.photo, 'id': 'publication_photo', 'name':'photo'} %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger annulation_pub_actualite_js_jheo" data-bs-dismiss="modal">Annuler</button>
+                    <input type="submit" class="btn btn-primary submit_new_publication_jheo_js" value="Envoyer" id="submit-publication-tribu-t">
+                </div>
+            </div>
+        </div>
+    {{ form_end(formPub) }}
+    
+</div>

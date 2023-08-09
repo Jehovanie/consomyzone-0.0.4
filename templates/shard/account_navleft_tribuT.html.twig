@@ -1,7 +1,7 @@
 <div class="d-flex flex-column align-items-stretch flex-shrink-0 position-sticky" id="page-top">
 	<div class="content_list_menu">
 		<div class="choix_list_cart mx-auto">
-			<input class="input-grey-rounded" id="recherche-input-tribut" type="text" placeholder="Recherche tribu-T">
+			<input class="input-grey-rounded non_active" id="recherche-input-tribut" type="text" placeholder="Recherche tribu-T" disabled>
 		</div>
 		<div class="mt-3">
 			<a href="{{path("app_account")}}" class="nav-link link-dark not_autorised ms-3">
@@ -23,6 +23,8 @@
 			{% for  tribus in tribu_T_owned %}
 			  		{# {{dump(tribus,tribus|length)}}   #}
 					{% if tribus.logo_path  is defined %}
+							{% set nameTribu = tribus.name|split('_') %}
+							{% set index = nameTribu|length -1  %}
 							<li class="mb-2">
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
@@ -31,13 +33,16 @@
 									</div>
 									<div class="col-9">
 										<p>
-											 <a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}">{{tribus.name}}</a> 
+											 <a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">{{ "Tribu T " ~ nameTribu[index] }}</a> 
 										</p>
 									</div>
 								</div>
 							</li>
 					{% else %}
 						{% for tribu in tribus %}
+
+							{% set nameTribu = tribu.name|split('_') %}
+							{% set index = nameTribu|length -1  %}
 							<li class="mb-2">
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
@@ -47,7 +52,7 @@
 									</div>
 									<div class="col-9">
 										<p>
-											<a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}">{{tribu.name}}</a>
+											<a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">{{ "Tribu T " ~ nameTribu[index] | capitalize }}</a>
 										</p>
 									</div>
 								</div>
@@ -68,6 +73,8 @@
 			{% for  tribus in tribu_T_joined %}
 				{# {{dump(tribus,tribus|length)}}   #}
 				{% if tribus.logo_path  is defined %}
+						{% set nameTribu = tribus.name|split('_') %}
+						{% set index = nameTribu|length -1  %}
 						<li class="mb-2">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
@@ -76,13 +83,16 @@
 								</div>
 								<div class="col-9">
 									<p>
-											<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}">{{tribus.name}}</a> 
+											<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">{{ "Tribu T " ~ nameTribu[index] }}</a> 
 									</p>
 								</div>
 							</div>
 						</li>
 				{% else %}
 					{% for tribu in tribus %}
+					
+						{% set nameTribu = tribu.name|split('_') %}
+						{% set index = nameTribu|length -1  %}
 						<li class="mb-2">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
@@ -91,7 +101,7 @@
 								</div>
 								<div class="col-9">
 									<p>
-										<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}">{{tribu.name}}</a>
+										<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">{{ "Tribu T " ~ nameTribu[index] | capitalize }}</a>
 									</p>
 								</div>
 							</div>
