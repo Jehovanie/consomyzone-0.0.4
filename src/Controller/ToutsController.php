@@ -111,6 +111,8 @@ class ToutsController extends AbstractController
             }
         }
 
+        // dd($statusProfile["profil"]);
+
         return $this->render("home/index.html.twig", [
 
             "toutsdepartements" => $departementRepository->getDep(),

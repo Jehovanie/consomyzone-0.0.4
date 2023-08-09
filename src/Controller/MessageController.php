@@ -64,7 +64,6 @@ class MessageController extends AbstractController
             ///check their type consumer of supplier
             $user_amis = $userRepository->find(intval($id_amis["user_id"]));
             $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-
             ///single profil
             $amis = [
                 "id" => $id_amis["user_id"],
@@ -79,6 +78,7 @@ class MessageController extends AbstractController
             ///get it
             array_push($amis_in_tributG, $amis);
         }
+        // dd($amis_in_tributG);
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
 
 
