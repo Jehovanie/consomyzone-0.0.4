@@ -2515,6 +2515,7 @@ function annulePastille() {
     if (document.querySelector(".confirmPast").hasAttribute("data-tbname")) {
         document.querySelector(".confirmPast").removeAttribute("data-tbname");
     }
+    document.querySelector(".confirmPast").disabled = true
     document.querySelector(".selectTribuForPast").value = "0"
 }
 
