@@ -13,7 +13,11 @@
             </div>
             <div class="mb-3">
                 <label for="typeEvent" class="form-label">Type de l'événement</label>
-                <input type="text" name="typeEvent" class="form-control typeEvent_jheo_js" id="typeEvent">
+                <input type="text" name="typeEvent" class="form-control typeEvent_jheo_js" id="typeEvent"  list="typeEventList" >
+                <datalist id="typeEventList">
+                    <option value="Repas déjeuné">
+                    <option value="Repas dîné">
+                </datalist>
             </div>
             <div class="mb-3">
                 <label for="lieuEvent" class="form-label">Lieu</label>
@@ -50,6 +54,11 @@
             <div class="mb-3">
                 <label for="nbrParticipant" class="form-label">Si vous avez des fichier</label>
                 {% include 'shard/input/inputImageDragDrop.html.twig' %}
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input confidEvent_jheo_js" type="checkbox" id="confid" >
+              <label class="form-check-label" for="confid" >Tout le monde peut voir votre agenda?</label>
             </div>
 
         </div>

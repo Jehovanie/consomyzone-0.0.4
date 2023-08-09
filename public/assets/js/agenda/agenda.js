@@ -1,72 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      plugins: [ 'interaction', 'dayGrid' ],
-      themeSystem: 'bootstrap5',
-      defaultDate: '2023-02-12',
-      editable: true,
-      eventLimit: true, // allow "more" link when too many events
-      events: [
-        {
-          title: 'All Day Event',
-          start: '2023-02-01'
+    const request = new Request('/api/user/all_agenda', {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
         },
-        {
-          title: 'Long Event',
-          start: '2023-02-07',
-          end: '2023-02-10'
-        },
-        {
-          groupId: 999,
-          title: 'Repeating Event',
-          start: '2023-02-09T16:00:00'
-        },
-        {
-          groupId: 999,
-          title: 'Repeating Event',
-          start: '2023-02-16T16:00:00'
-        },
-        {
-          title: 'Conference',
-          start: '2023-02-11',
-          end: '2023-02-13'
-        },
-        {
-          title: 'Meeting',
-          start: '2023-02-12T10:30:00',
-          end: '2023-02-12T12:30:00'
-        },
-        {
-          title: 'Lunch',
-          start: '2023-02-12T12:00:00'
-        },
-        {
-          title: 'Meeting',
-          start: '2023-02-12T14:30:00'
-        },
-        {
-          title: 'Happy Hour',
-          start: '2023-02-12T17:30:00'
-        },
-        {
-          title: 'Dinner',
-          start: '2023-02-12T20:00:00'
-        },
-        {
-          title: 'Birthday Party',
-          start: '2023-02-13T07:00:00'
-        },
-        {
-          title: 'Click for Google',
-          url: 'http://google.com/',
-          start: '2023-02-28'
-        }
-      ]
-    });
+    })
 
-    calendar.render();
-    bindActionAgenda();
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            const allAgenda= response.allAgenda;
+            const agendaTab= [];
+
+            allAgenda.forEach(agenda => {
+                const {id, title, dateStart:start, dateEnd: end } = agenda;
+                agendaTab.push({id, title, start, end})
+            })
+
+            rendreCalendarWithEvents(agendaTab)
+        })
+
 });
 	  
 
@@ -105,7 +60,7 @@ if ('WebSocket' in window) {
 }
 
 
-///// CANTCEL CREATE AGENDA ------------------------------------------------------
+///// CANCEL CREATE AGENDA ------------------------------------------------------
 if( document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.querySelector(".btn_close_create_agenda_jheo_js")){
     const cta_cancel_create_agenda = [document.querySelector(".cta_cancel_create_agenda_jheo_js"), document.querySelector(".btn_close_create_agenda_jheo_js")];
     
@@ -122,58 +77,210 @@ if( document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
     })
 }
 
+
+//// PUSH NEW AGENT -----------------------------------------------------------
 if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
     document.querySelector(".cta_confirm_create_agenda_jheo_js").addEventListener("click", (e) => {
         
         let state= true;
 
-        const agenda= [
-            {"title" : document.querySelector(".nameEvent_jheo_js").value},
-            {"type" : document.querySelector(".typeEvent_jheo_js").value},
-            {"address" : document.querySelector(".lieuEvent_jheo_js").value},
-            {"desc" : document.querySelector(".eventDesc_jheo_js").value},
-            {"participant" : document.querySelector(".nbrParticipant_jheo_js").value},
-            {"dateStart" : document.querySelector(".eventStart_jheo_js").value},
-            {"dateEnd" : document.querySelector(".eventEnd_jheo_js").value},
-            {"timeStart" : document.querySelector(".timeStart_jheo_js").value},
-            {"timeEnd" : document.querySelector(".timeEnd_jheo_js").value},
-            {"file" : document.querySelector('.image_upload_input_jheo_js').value},
-            {"resto" : "resto"},
-        ];
+        const agenda= {
+            "title" : document.querySelector(".nameEvent_jheo_js").value,
+            "type" : document.querySelector(".typeEvent_jheo_js").value,
+            "address" : document.querySelector(".lieuEvent_jheo_js").value,
+            "desc" : document.querySelector(".eventDesc_jheo_js").value,
+            "participant" : document.querySelector(".nbrParticipant_jheo_js").value,
+            "dateStart" : document.querySelector(".eventStart_jheo_js").value,
+            "dateEnd" : document.querySelector(".eventEnd_jheo_js").value,
+            "timeStart" : document.querySelector(".timeStart_jheo_js").value,
+            "timeEnd" : document.querySelector(".timeEnd_jheo_js").value,
+            "confidentiality" : document.querySelector(".confidEvent_jheo_js").value,
+            // {"file" : document.querySelector('.image_upload_input_jheo_js').value},
+            "file" : "file",
+            "resto" : "resto"
+        }
 
-        agenda.forEach(item => {
-            const key= Object.keys(item)[0];
-            if( item[key] === ''){
+        const agenda_keys= Object.keys(agenda);
+        agenda_keys.forEach(key => {
+            if( agenda[key] === ''){
                 state= false;
             }
         })
 
         if( !state ){
             e.preventDefault()
-
         }else{
             console.log(agenda)
-            alert("Gooooo")
+            sendNewAgenda(agenda)
         }
-
     })
 }
 
 
-function bindActionAgenda(){
-    if( document.querySelector('.td_day_jheo_js')){
-        const all_td = document.querySelectorAll('.td_day_jheo_js');
+function rendreCalendarWithEvents(events){
+    
+    var calendarEl = document.getElementById('calendar');
 
-        all_td.forEach(index => {
-            index.addEventListener('click',() => {
-                if( index.classList.contains("fc-event-container")){
-                    document.querySelector('.show_modal_showAgenda_jheo_js').click();
-                }else{
-                    document.querySelector('.show_modal_createAgenda_jheo_js').click();
-                }
-            })
-        })
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: [ 'interaction', 'dayGrid' ],
+        themeSystem: 'bootstrap5',
+        defaultDate: '2023-06-12',
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: events,
+        dateClick: function(info) {
+            bindEventForAllDay()
+        },
+        eventClick: function(info) {
+            console.log(info.event.id)
+            const id = info.event.id ? parseInt(info.event.id) : 0
+            bindEventForAnEvent(id)
+        },
+    });
+
+    calendar.render();
+}
+
+function bindEventForAllDay(){
+    document.querySelector('.show_modal_createAgenda_jheo_js').click()
+}
+
+function bindEventForAnEvent(id){
+    if(id===0){
+        showAlertMessageFlash('Evenement non trouvée!', 'danger')
+        return 0;
     }
+    
+
+    const request = new Request(`/api/user/agenda/${id}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+    })
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            const agenda= response.agenda;
+            setAndShowModal(agenda)
+            updateAgenda()
+        })
+}
+
+function setAndShowModal(agenda){
+    console.log(agenda)
+    if( !document.querySelector('.content_input_view_agenda_jheo_js')){
+        console.log("Selector not found");
+        return 0;
+    }
+
+    const agendaType= JSON.parse(agenda.type)
+    const content_view_agenda= document.querySelector('.content_input_view_agenda_jheo_js')
+    
+    content_view_agenda.querySelector(".nameEvent_jheo_js").value= agenda.title !== null ? agenda.title.toUpperCase() : agenda.message;
+    content_view_agenda.querySelector(".typeEvent_jheo_js").value= agendaType.type.toUpperCase();
+    content_view_agenda.querySelector(".lieuEvent_jheo_js").value= agenda.adresse;
+    content_view_agenda.querySelector(".eventDesc_jheo_js").value= agenda.message;
+    content_view_agenda.querySelector(".nbrParticipantMax_jheo_js").value= agenda.max_participant;
+    content_view_agenda.querySelector(".dateStart_jheo_js").value= agenda.dateStart;
+    content_view_agenda.querySelector(".dateEnd_jheo_js").value= agenda.dateEnd;
+    content_view_agenda.querySelector(".timeStart_jheo_js").value= agenda.heure_debut;
+    content_view_agenda.querySelector(".timeEnd_jheo_js").value= agenda.heure_fin;
+
+
+    document.querySelector('.show_modal_showAgenda_jheo_js').click();
 }
 
 
+function updateAgenda(){
+    const array= [
+        document.querySelector('.cta_update_agenda_jheo_js'),
+        document.querySelector('.cta_cancel_edit_agenda_jheo_js'),
+        document.querySelector('.content_input_view_agenda_jheo_js')
+    ];
+
+    if(array.some(item => item === null )){
+        console.log("Selector not found")
+        return 0
+    }
+
+    const content_view_agenda= document.querySelector('.content_input_view_agenda_jheo_js')
+    document.querySelector(".cta_update_agenda_jheo_js").addEventListener("click",() => {
+        content_view_agenda.querySelectorAll("input").forEach(input => {
+            if( input.hasAttribute("disabled")){
+                input.removeAttribute("disabled")
+            }
+        })
+
+        const textArea= content_view_agenda.querySelector("textarea");
+        if( textArea.hasAttribute("disabled")){
+            textArea.removeAttribute("disabled")
+        }
+
+        document.querySelector(".modal_title_event_jheo_js").innerText= "Modification d'une évenement"
+
+        document.querySelector(".cta_update_agenda_jheo_js").innerText= 'Confirme la modification';
+
+        const cta_cancel_edit= document.querySelector(".cta_cancel_edit_agenda_jheo_js");
+        if( cta_cancel_edit.classList.contains("d-none")){
+            cta_cancel_edit.classList.remove("d-none");
+        }
+    })
+
+    document.querySelector(".cta_cancel_edit_agenda_jheo_js").addEventListener("click",() => {
+        content_view_agenda.querySelectorAll("input").forEach(input => {
+            if( !input.hasAttribute("disabled")){
+                input.setAttribute("disabled", "")
+            }
+        })
+
+        const textArea= content_view_agenda.querySelector("textarea");
+        if( !textArea.hasAttribute("disabled")){
+            textArea.setAttribute("disabled", "")
+        }
+
+        document.querySelector(".modal_title_event_jheo_js").innerText= "Evenement"
+        document.querySelector(".cta_update_agenda_jheo_js").innerText= 'Voulez-vous modifier?';
+        
+        const cta_cancel_edit= document.querySelector(".cta_cancel_edit_agenda_jheo_js");
+        if( !cta_cancel_edit.classList.contains("d-none")){
+            cta_cancel_edit.classList.add("d-none");
+        }
+    })
+}
+
+function sendNewAgenda(agenda){
+    const param = {
+        "name" : agenda.title,
+        "description": agenda.desc,
+        "type": JSON.stringify({ "type": agenda.type, "code" : 1 }),
+        "confidentiality": agenda.confidentiality,
+        "dateStart": agenda.dateStart,
+        "dateEnd": agenda.dateEnd,
+        "hourStart": agenda.timeStart,
+        "hourEnd": agenda.timeEnd,
+        "adresse": agenda.address,
+        "participant": agenda.participant,
+        "resto": agenda.resto,
+        "fileType": null,
+        "fileName": null,
+    };
+    
+    const request = new Request('/user/tribu/new-agenda', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(param)
+    })
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            console.log(response);
+            showAlertMessageFlash(response.message, "success");
+        })
+}

@@ -685,40 +685,22 @@ class TributGService extends PDOConnexionService{
      * @param string $photo: image in the publication
      * 
      */
-
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){
 
-
-
         $statement = $this->getPDO()->prepare(
-
             "INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) 
-
             values (:user_id, :publication, :confidentiality, :photo, :userfullname)"
-
         );
-
-        
 
         $userfullname = $this->getFullName($user_id);
 
-
-
         $statement->bindParam(':user_id', $user_id);
-
         $statement->bindParam(':publication', $publication);
-
         $statement->bindParam(':confidentiality', $confid);
-
         $statement->bindParam(':photo', $photo);
-
         $statement->bindParam(':userfullname', $userfullname);
 
-
-
         $result = $statement->execute();
-
-
 
         return $result;
 

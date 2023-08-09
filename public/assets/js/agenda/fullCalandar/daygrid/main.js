@@ -346,11 +346,9 @@ Docs & License: https://fullcalendar.io/
                     td = (loneCellMatrix[i - 1] || [])[col];
                     if (td) {
                         td.rowSpan = (td.rowSpan || 1) + 1;
-                        td.className= "td_day_jheo_js";
                     }
                     else {
                         td = document.createElement('td');
-                        td.className= "td_day_jheo_js";
                         tr.appendChild(td);
                     }
                     cellMatrix[i][col] = td;
@@ -374,7 +372,7 @@ Docs & License: https://fullcalendar.io/
                         var rightCol = isRtl ? (colCnt - 1 - seg.firstCol) : seg.lastCol;
                         emptyCellsUntil(leftCol);
                         // create a container that occupies or more columns. append the event element.
-                        td = core.createElement('td', { className: 'fc-event-container td_day_jheo_js' }, seg.el);
+                        td = core.createElement('td', { className: 'fc-event-container' }, seg.el);
                         if (leftCol !== rightCol) {
                             td.colSpan = rightCol - leftCol + 1;
                         }
@@ -705,7 +703,7 @@ Docs & License: https://fullcalendar.io/
         var isDateValid = core.rangeContainsMarker(dateProfile.activeRange, date); // TODO: called too frequently. cache somehow.
         var classes = core.getDayClasses(date, dateProfile, context);
         classes.unshift('fc-day', theme.getClass('widgetContent'));
-        return '<td class="' + classes.join(' ') + ' td_day td_day_jheo_js"' +
+        return '<td class="' + classes.join(' ') +
             (isDateValid ?
                 ' data-date="' + dateEnv.formatIso(date, { omitTime: true }) + '"' :
                 '') +
@@ -855,7 +853,7 @@ Docs & License: https://fullcalendar.io/
         DayGrid.prototype.renderNumberTrHtml = function (row) {
             var intro = this.renderProps.renderNumberIntroHtml(row, this);
             return '' +
-                '<tr class="day_number td_day_jheo_js">' +
+                '<tr class="day_number">' +
                 (this.isRtl ? '' : intro) +
                 this.renderNumberCellsHtml(row) +
                 (this.isRtl ? intro : '') +
@@ -885,14 +883,14 @@ Docs & License: https://fullcalendar.io/
             var weekCalcFirstDow;
             if (!isDayNumberVisible && !this.renderProps.cellWeekNumbersVisible) {
                 // no numbers in day cell (week number must be along the side)
-                return '<td class="td_day_jheo_js"></td>'; //  will create an empty space above events :(
+                return '<td></td>'; //  will create an empty space above events :(
             }
             classes = core.getDayClasses(date, this.props.dateProfile, this.context);
             classes.unshift('fc-day-top');
             if (this.renderProps.cellWeekNumbersVisible) {
                 weekCalcFirstDow = dateEnv.weekDow;
             }
-            html += '<td class="' + classes.join(' ') + ' td_day_jheo_js"' +
+            html += '<td class="' + classes.join(' ') +
                 (isDateValid ?
                     ' data-date="' + dateEnv.formatIso(date, { omitTime: true }) + '"' :
                     '') +
