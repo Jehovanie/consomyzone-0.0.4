@@ -1,6 +1,6 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/chatBot/style_chatBot.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/chatBot/visio.css')}}">
+	{# <link rel="stylesheet" href="{{asset('assets/css/chatBot/visio.css')}}"> #}
 {% endblock %}
 
 
@@ -8,6 +8,7 @@
 	<script src="{{asset('assets/js/chatHome.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/visio/visio_external_api.js')}}" defer></script> #}
 	<script src='https://meet.jit.si/external_api.js'></script>
+
 {% endblock %}
 
 
@@ -21,24 +22,24 @@
 		</div>
 
 		{% if app.user %}
-			<div class="text-center ms-2" id="openMessage" style="background-color: #0d6efd;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
-				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;"></i>
+			<div class="text-center ms-2" id="openMessage" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
+				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
 
 			</div>
 
-			<div class="text-center ms-2" id="openVisio" style="background-color: #58BB5C;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
-				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:white;"></i>
+			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
+				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
 
 			</div>
 
 		{% else %}
-			<div class="text-center ms-2" id="openMessage" style="background-color: #0d6efd;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;pointer-events: none;opacity: 0.6">
-				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;"></i>
+			<div class="text-center ms-2" id="openMessage" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;pointer-events: none;opacity: 0.6">
+				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
 
 			</div>
 
-			<div class="text-center ms-2" id="openVisio" style="background-color: #58BB5C;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;pointer-events: none;opacity: 0.6">
-				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:white;"></i>
+			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;pointer-events: none;opacity: 0.6">
+				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
 
 			</div>
 		{% endif %}
@@ -74,10 +75,16 @@
 						<i class="fas fa-close fa-2x text-danger"></i>
 					</button>
 
+					<button @click="openDropDown = !openDropDown" class="lc-chat yc-chat zd-chat mg-chat pg-chat sh-chat ni-chat bj-chat wr-chat wj-chat yr-chat" id="closevisio" style="display:none">
+						<i class="fas fa-close fa-2x text-danger"></i>
+					</button>
+
 				</div>
 			</div>
 		</div>
+		{# <div class="vd-chat mh-chat ip-chat fh-chat ql-chat wl-chat h-100" id="assistant"></div> #}
 		<div class="vd-chat mh-chat ip-chat fh-chat ql-chat wl-chat h-100" id="conversation"></div>
+		<div class="vd-chat mh-chat ip-chat fh-chat h-100" id="visio"></div>
 
 		<div class=" nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
 			<div class="content_image_input_js_jheo"></div>

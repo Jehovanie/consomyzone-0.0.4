@@ -424,4 +424,35 @@ class MessageController extends AbstractController
         return $this->json($messages);
     }
 
+    #[Route('/create/visio', name: 'app_new_visio')]
+    public function createVisio(Request $request, MessageService $messageService): Response
+    {
+        $user = $this->getUser();
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        $messageService->createVisio($user->getId(), $to, $roomName, $status);
+
+        return $this->json([
+            "success" => true
+        ]);
+
+    }
+
+    #[Route('/get/visio/by/{user_id}', name: 'app_get_visio')]
+    public function getVisio($user_id): Response
+    {
+        $sql = "SELECT * FROM visio_story WHERE user_id = $user_id";
+
+        $stm = $this->getPDO()->prepare($sql);
+
+        $stm->execute();
+
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
 }

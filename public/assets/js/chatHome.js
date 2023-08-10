@@ -14,6 +14,8 @@ function openChat() {
     document.querySelector("#amis_list").style = "display:;"
 
     document.querySelector("#openFlottant").style = "display:none;"
+    document.querySelector("#visio").style = "display:none;"
+    document.querySelector("#conversation").style = "display:;"
 
 
 }
@@ -62,12 +64,22 @@ function endChat() {
 
     document.querySelector("#closeChat").disabled = false
 
+    document.querySelector('#closeChat').style ="display:"
+    document.querySelector('#closevisio').style ="display:none"
+
     document.querySelector("#chat_header").style = "display:none;"
     document.querySelector("#amis_list").style = "display:none;"
 
     if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0" && document.querySelector("#amis_list").getAttribute("data-my-id") == "0") {
 
         document.querySelector("#amis_list").setAttribute("data-my-id", "0")
+
+    }
+
+    if(document.querySelector("#chat_container").getAttribute("data-type") == "visio"){
+
+        // document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -20px !important; z-index:1003;background-color:transparent;"
+        // document.querySelector("#chat_container").style = "width: 75vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
 
     }
 
@@ -492,9 +504,10 @@ function getChat(user_id) {
 
                     if (content.files.length > 0) {
 
-                        let ext = getExtension(file.split(".")[file.split(".").length -1])
-
+                        
                         for (let file of content.files) {
+                            
+                            let ext = getExtension(file.split(".")[file.split(".").length -1])
 
                             file_doc += `<div class="mt-2 mb-2" style="display:flex;flex-direction: row;justify-content: space-between">
                                             <a href="${file}" download class="icon_download_file" alt="photo" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-file-text"></i></a>
@@ -670,48 +683,88 @@ function getExtension(params) {
     //let key = Object.keys(file_extension)
 }
 
-function runVisio(room) {
+function generateUID() {
 
-    let room_name = room.previousElementSibling.querySelector("input").value.trim()
+    var firstPart = (Math.random() * 46656) | 0;
+    var secondPart = (Math.random() * 46656) | 0;
+    firstPart = ("000" + firstPart.toString(36)).slice(-3);
+    secondPart = ("000" + secondPart.toString(36)).slice(-3);
+    return firstPart + secondPart;
+}
+
+function runVisio(user_id) {
+
+    //let room_name = room.previousElementSibling.querySelector("input").value.trim()
     
-    document.querySelector('#conversation').innerHTML = ""
-
-    // document.querySelector('#conversation').classList.remove("wl-chat")
-    // document.querySelector('#conversation').classList.remove("ql-chat")
-
     let user_name = document.querySelector("#my_full_name").textContent.trim()
     
-    const domain = 'meet.jit.si';
-
-    const options = {
-        roomName: room_name,
-        // // defaultLogoUrl : "/assets/icon/icon_cmz.jpg",
-        // configOverwrite: {defaultLogoUrl: '/assets/icon/icon_cmz.jpg'},
-        // interfaceConfigOverwrite: {SHOW_JITSI_WATERMARK:false},
-        width: 700,
-        height: 480,
-        parentNode: document.querySelector('#conversation')
-    };
-    const api = new JitsiMeetExternalAPI(domain, options);
-
-    api.executeCommand('roomName', user_name);
+    let my_tribu_g = document.querySelector("#my_tribu_g").textContent.trim()
     
-    api.executeCommand('displayName', user_name);
+    // let list_user = []
+    
+    // document.querySelectorAll("#visio > div > ul > li").forEach(user=>{
+    //     list_user.push({
+    //         user_id : user.getAttribute("user_id_visio"),
+    //         status : "wait"
+    //     })
+    // })
+    
+    let roomRandom = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+    // console.log(roomRandom);
+    let data = {
+        roomName : roomRandom,
+        to : user_id,
+        status : "wait"
+    }
 
-    const iframe = api.getIFrame();
+    console.log(data);
+    const request = new Request('/create/visio', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
 
-    let dom_visio = iframe.contentDocument;
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            // console.log(response.success == true)
+            if(response.success == true){
 
-    api.addListener('readyToClose', () => {console.log('call hung up fron add Listener Event');});
+                document.querySelector('#visio').innerHTML = ""
 
-    api.addEventListener('readyToClose',  function(){
-        console.log('call hung up fron add Event Listener Event');
-        alert('call hung up fron add Event Listener Event');
-        });
+                const domain = 'meet.jit.si';
+            
+                const options = {
+                    roomName: roomRandom,
+                    width: "100%",
+                    height: 700,
+                    parentNode: document.querySelector('#visio'),
+                };
+                const api = new JitsiMeetExternalAPI(domain, options);
+                
+                api.executeCommand('displayName', user_name);
 
-    //alert(dom_visio)
+            }
+        })
 
-    console.log(dom_visio);
+    
+    
+
+    // api.executeCommand('hangup')
+
+    // api.addListener('videoConferenceJoined', () => {
+
+    //     const iframe = api.getIFrame();
+
+    //     const doc = iframe.contentWindow.document.querySelector("#videospace");
+
+    //     console.log(doc);
+
+       
+    //   });
 
 
 }
@@ -828,6 +881,13 @@ let file_extension = {
 
 let image_list = [];
 
+if(document.querySelector("#closevisio")){
+
+    document.querySelector("#closevisio").addEventListener("click", function () {
+        endChat()
+        document.querySelector("#chat_container").setAttribute("data-type","")
+    })
+}
 
 if (document.querySelector("#openMessage")) {
 
@@ -837,6 +897,7 @@ if (document.querySelector("#openMessage")) {
 
         document.querySelector("#assist_virt").style = "display:none;"
         document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
+        document.querySelector('#visio').style="display:none"
 
         document.querySelector("#amis_list").style = "display:block;"
 
@@ -892,6 +953,7 @@ if (document.querySelector("#openChat")) {
 
         document.querySelector("#assist_virt").style = "display:;"
         document.querySelector(".btn-input-file").style = "display:none;"
+        document.querySelector('#visio').style="display:none"
 
         document.querySelector("#amis_list").style = "display:none;"
 
@@ -959,6 +1021,7 @@ if (document.querySelector("#openChat")) {
 }
 
 if (document.querySelector("#openVisio")) {
+    
 
     document.querySelector("#openVisio").addEventListener("click", function () {
 
@@ -967,20 +1030,17 @@ if (document.querySelector("#openVisio")) {
         document.querySelector("#assist_virt").style = "display:none;"
         document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
 
-        document.querySelector("#amis_list").style = "display:block;"
+        document.querySelector('#conversation').style ="display:none"
 
-        document.querySelector("#chat_container").style = "width: 75vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
+        document.querySelector('#closeChat').style ="display:none"
+        document.querySelector('#closevisio').style ="display:"
 
-        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat").style="width:75%"
-        
         document.querySelector("#chat_container").setAttribute("data-type","visio")
 
         document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style ="display:none;"
 
-        // document.querySelector(".leftwatermark").style = "display: none"
-
         document.querySelectorAll("div.user_friends").forEach(user => {
-            user.style = "display:none";
+            user.style = "display:";
         })
 
         document.querySelector("div#user_head").innerHTML = `
@@ -996,26 +1056,27 @@ if (document.querySelector("#openVisio")) {
                                 </h5>
                             </div>
                             `;
+        // document.querySelector('#conversation').innerHTML = ""
 
-        document.querySelector('#conversation').innerHTML = `
+        document.querySelector('#visio').style="display:block"
 
-        <div class="container text-center">
-            <h1 class="m-4">ConsoMyZone</h1>
-            <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
-        </div>
-        <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
-            <div class="lc-chat mg-chat qg-chat hh-chat">
-                <div class="h-chat yd-chat">
-                    <input type="text" placeholder="Ecrire un message" id="text-search" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat mm-chat qm-chat zn-chat gs-chat no-chat vo-chat fr-chat">
-                </div>
-                <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
-                    Démarrer la conférence
-                </button>
-            </div>
-        </div>
+        // document.querySelector('#visio').innerHTML = `
+        // <div class="container">
+        //     <h3 class="m-3">Inviter des amis</h3>
+        //     <ul class="list-group m-2">
+        //         <li class="list-group-item d-flex justify-content-between align-items-center" user_id_visio ="${document.querySelector("#amis_list").getAttribute("data-my-id")}">
+        //             ${document.querySelector("#my_full_name").textContent.trim()}
+        //             <span class="badge bg-danger rounded-pill cursor-pointer" onclick="removeToList(this)"><i class="fas fa-trash"></i></span>
+        //         </li>
+        //     </ul>
+        //     <div class="w-100">
+        //         <button class="m-2 btn btn-outline-primary" style="width: 95%;" onclick="runVisio(this)">
+        //             Démarrer la conférence
+        //         </button>
+        //     </div>
+            
+        // </div>`
 
-        `
-        
 
     })
 }
@@ -1072,37 +1133,15 @@ document.querySelector("#btn-send").addEventListener("click", function (e) {
 })
 
 
-
-
-// var controller = new ScrollMagic.Controller();
-
-// 		// build tween
-// 		var tween = TweenMax.to("#animate", 0.5, {scale: 3, ease: Linear.easeNone});
-
-// 		// build scene
-// 		var scene = new ScrollMagic.Scene({triggerElement: "#multiDirect", duration: 400, offset: 250})
-// 						.setTween(tween)
-// 						.setPin("#animate")
-// 						.addIndicators({name: "resize"}) // add indicators (requires plugin)
-// 						.addTo(controller);
-
-// 		// init controller horizontal
-// 		var controller_h = new ScrollMagic.Controller({vertical: false});
-
-// 		// build tween horizontal
-// 		var tween_h = TweenMax.to("#animate", 0.5, {rotation: 360, ease: Linear.easeNone});
-
-// 		// build scene
-// 		var scene_h = new ScrollMagic.Scene({duration: 700})
-// 						.setTween(tween_h)
-// 						.setPin("#animate")
-// 						.addIndicators({name: "rotate"}) // add indicators (requires plugin)
-// 						.addTo(controller_h);
-
+function removeToList(params) {
+    params.parentElement.remove()
+}
 
 document.querySelectorAll("div.cg-chat").forEach(amis => {
 
     amis.addEventListener("click", function (e) {
+
+        //Assistant virtuel and messagerie container
 
         if(document.querySelector("#chat_container").getAttribute("data-type") != "visio"){
 
@@ -1157,8 +1196,63 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
     
             }
 
+        // Visio conference container
+
         }else{
-            console.log("lancement de visio conference");
+
+            runVisio(amis.getAttribute("data-toggle-user-id"))
+
+        //     document.querySelector('#visio').innerHTML = `
+
+        //     <div class="container text-center">
+        //         <h1 class="m-4">ConsoMyZone</h1>
+        //         <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
+        //     </div>
+        //     <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
+        //         <div class="lc-chat mg-chat qg-chat hh-chat">
+        //             <div class="h-chat yd-chat">
+        //                 <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
+        //             </div>
+        //             <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
+        //                 Démarrer la conférence
+        //             </button>
+        //         </div>
+        //     </div>
+        // `
+
+        // let user_name = e.target.textContent.trim()
+
+        // let user_id = amis.getAttribute("data-toggle-user-id")
+
+        // let doc_user = document.createElement("li")
+        // doc_user.classList = "list-group-item d-flex justify-content-between align-items-center"
+        // doc_user.setAttribute("user_id_visio",user_id)
+
+        // doc_user.innerHTML =`
+        //     ${user_name}
+        //     <span class="badge bg-danger rounded-pill cursor-pointer" onclick="removeToList(this)"><i class="fas fa-trash"></i></span>`
+
+
+        // document.querySelector('#visio > div > ul').appendChild(doc_user)
+
+        // document.querySelector('#visio').innerHTML = `
+
+        //     <div class="container text-center">
+        //         <h1 class="m-4">ConsoMyZone</h1>
+        //         <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
+        //     </div>
+        //     <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
+        //         <div class="lc-chat mg-chat qg-chat hh-chat">
+        //             <div class="h-chat yd-chat">
+        //                 <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
+        //             </div>
+        //             <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
+        //                 Démarrer la conférence
+        //             </button>
+        //         </div>
+        //     </div>
+        // `
+
         }
 
     })

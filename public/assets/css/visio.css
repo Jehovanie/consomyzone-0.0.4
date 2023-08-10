@@ -1617,6 +1617,7 @@ form {
     z-index: 2;
 }
 .leftwatermark {
+    display: none;
     left: 32px;
     top: 32px;
     background-position: center left;
