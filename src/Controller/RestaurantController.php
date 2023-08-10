@@ -457,18 +457,41 @@ class RestaurantController extends AbstractController
         }
 
 
-        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
         $arrayTribu = [];
+        $arrayTribuRestoPast = [];
+        $arrayTribuRestoJoinedPast = [];
+        
+        if($this->getUser()){
 
-        foreach ($tribu_t_owned as $key) {
-            $tableTribu = $key["table_name"];
-            $tableExtension = $tableTribu . "_restaurant";
-            if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                if(!$tribu_T_Service->checkExtensionId($tableExtension, $details["id"])){
-                    array_push($arrayTribu, ["table_name" => $tableTribu]);
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            // dd($tribu_t_owned);
+    
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $tableExtension = $tableTribu . "_restaurant";
+                if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
+                    if(!$tribu_T_Service->checkExtensionId($tableExtension, $details["id"])){
+                        array_push($arrayTribu, ["table_name" => $tableTribu]);
+                    }else{
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu]);
+                    }
                 }
             }
+
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            // dd($tribu_t_joined);
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
+                if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
+                    if($tribu_T_Service->checkExtensionId($tableExtensionTbtJoined, $details["id"])){
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined]);
+                    }
+                }
+            }
+
         }
 
         return $this->render("restaurant/detail_resto.html.twig", [
@@ -478,7 +501,9 @@ class RestaurantController extends AbstractController
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
-            "tribu_t_can_pastille" => $arrayTribu
+            "tribu_t_can_pastille" => $arrayTribu,
+            "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast
         ]);
     }
 

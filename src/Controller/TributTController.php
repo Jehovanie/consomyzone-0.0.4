@@ -2073,7 +2073,7 @@ class TributTController extends AbstractController
         /**
          * END LIST PUBLICATION
          */
-
+        // dd($tribu_t_owned);
         return $this->render('tribu_t/tribuT.html.twig',[
             "publications" => $publications,
             "userConnected" => $userConnected,

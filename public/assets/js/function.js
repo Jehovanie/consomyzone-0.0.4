@@ -2537,7 +2537,7 @@ function scrollBottom(element) {
     element.scrollTop = element.scrollHeight;
 }
 
-function pastilleRestoForTribuT(e){
+/*function pastilleRestoForTribuT(e){
     let id = e.target.dataset.id
     let name = e.target.dataset.name
     let tbl = e.target.dataset.tbname
@@ -2567,4 +2567,42 @@ function pastilleRestoForTribuT(e){
                 }, 5000)
             })
             .catch(error=>console.log(error))
+}*/
+function pastilleRestoForTribuT(element){
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+    
+    const request = new Request("/user/tribu_t/pastille/resto", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                let html = `<span class="nom"><b>Tribu ${tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</b></span>
+                            <span class="lioTe col-6 non_active">
+                                <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
+                                <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
+                                <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
+                                <i class="fa-solid fa-star" style="color: rgb(233 231 223);"></i>
+                            </span>
+                            <a href="#" class="avis non_active" style="text-decoration:none;color:#19a8d8;">0 avis</a>`
+                slideToRight(element, html)
+            })
+            .catch(error=>console.log(error))
+}
+
+function slideToRight(elem, html) {
+        elem.parentElement.style.display = "none"
+        elem.parentElement.parentElement.innerHTML = html
 }
