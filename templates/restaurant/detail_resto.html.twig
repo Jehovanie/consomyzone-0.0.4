@@ -5,15 +5,37 @@
                
                 {# /// nom et propriété #}
                 <div class="titre text-center">
-                    <h4>
-                        {{details.denominationF | raw}}
-                        <br>
-                        {{details.numvoie  | raw}}
-                        {{details.typevoie | raw}}
-                        {{details.nomvoie | raw}}
-                        {{details.codpost | raw}}
-                        {{details.villenorm | raw}}
-                    </h4>
+                    <div class="mb-2 restoNameWithLogoTribu" style="display:flex;">
+                        <span class="mt-2 ms-3 me-1"><b>{{details.denominationF | raw}}</b></span>
+                        {% if (app.user) %}
+                            {% if tribu_t_resto_pastille|length > 0 %}
+                                {% for item in tribu_t_resto_pastille %}
+                                    {% if item["logo_path"] != "" %}
+                                        <img class="ms-1" width="20" src="{{asset(item["logo_path"])}}" alt="">
+                                    {% else %}
+                                        <img  width="20" src="{{asset('/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            {% if tribu_t_resto_joined_pastille|length > 0 %}
+                                    {% for item in tribu_t_resto_joined_pastille %}
+                                        {% if item["logo_path"] != "" %}
+                                            <img class="ms-1" width="20" src="{{asset(item["logo_path"])}}" alt="">
+                                        {% else %}
+                                            <img class="ms-1" width="20" src="{{asset('/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <p class="card-text cmz-adresse">
+                        <a href="#" class="small">  {{details.numvoie|lower}}
+                                                    {{details.typevoie|lower}}
+                                                    {{details.nomvoie|lower}}
+                                                    {{details.codpost|lower}}
+                                                    {{details.villenorm|lower}}
+                        </a>
+                    </p>
                     <span>
                         <a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
                     </span>

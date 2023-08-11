@@ -470,12 +470,13 @@ class RestaurantController extends AbstractController
     
             foreach ($tribu_t_owned as $key) {
                 $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
                     if(!$tribu_T_Service->checkExtensionId($tableExtension, $details["id"])){
-                        array_push($arrayTribu, ["table_name" => $tableTribu]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path]);
                     }else{
-                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu]);
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path]);
                     }
                 }
             }
@@ -484,10 +485,11 @@ class RestaurantController extends AbstractController
             // dd($tribu_t_joined);
             foreach ($tribu_t_joined as $key) {
                 $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
                 $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
                     if($tribu_T_Service->checkExtensionId($tableExtensionTbtJoined, $details["id"])){
-                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined]);
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path]);
                     }
                 }
             }

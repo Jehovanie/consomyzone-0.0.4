@@ -1500,3 +1500,9 @@ i.fa-eye-slash, i.fa-eye{
 .lioTe > b{
     font-size: 1.1rem;
 } 
+
+.restoNameWithLogoTribu img {
+    max-height: 20px;
+    max-width: 20px;
+    margin-top: 10px;
+}
