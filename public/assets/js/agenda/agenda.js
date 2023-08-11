@@ -510,7 +510,7 @@ function deleteAgenda(id){
         .then(response=>response.json())
         .then(response =>{
             console.log(response);
-            showAlertMessageFlash(response.message, "success");
+            showAlertMessageFlash(response.message, "success", true);
         })
 }
 
