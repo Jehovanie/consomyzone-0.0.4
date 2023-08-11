@@ -454,7 +454,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment non_active" ></i>
@@ -553,7 +552,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment non_active" ></i>
@@ -690,7 +688,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment non_active" ></i>

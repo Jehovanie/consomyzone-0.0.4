@@ -960,7 +960,7 @@ if (document.querySelector("#openChat")) {
 
         document.querySelector("#amis_list").style = "display:none;"
 
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -450px !important;"
+        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -33% !important;"
 
         document.querySelectorAll("div.user_friends").forEach(user => {
             user.style = "display:none";
@@ -1019,6 +1019,31 @@ if (document.querySelector("#openChat")) {
             getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
 
         }
+
+        // if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
+
+        //     runSpinner()
+
+        //     writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
+        //     Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
+        //     <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
+
+        // }else{
+
+        //     if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
+
+        //         runSpinner()
+
+        //         writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+        
+        //         runSuggestion()
+                
+        //     }else{
+                
+        //         getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+            
+        //     }
+        // }
 
     })
 }

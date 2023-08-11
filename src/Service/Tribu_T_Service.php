@@ -641,7 +641,7 @@ class Tribu_T_Service extends PDOConnexionService
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        dd($result);
+        // dd($result);
         return $result["fullname"];
 
     }

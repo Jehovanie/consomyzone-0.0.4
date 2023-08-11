@@ -1945,6 +1945,9 @@
 
 @media screen and (min-width: 1900px){
 
+    .content-pub{
+        max-width: 73.75rem !important;
+    } 
     .width-content-t {
         width: 77%;
     }

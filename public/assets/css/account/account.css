@@ -2050,7 +2050,7 @@ a:focus {
     width: 50%;
     height: 50%;
     
-    clip-path: circle(30%);
+    /* clip-path: circle(30%); */
 }
 
 .profile-usertitle {
