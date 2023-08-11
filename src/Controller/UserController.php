@@ -955,11 +955,6 @@ class UserController extends AbstractController
         ];
 
 
-
-
-
-
-
         return $this->render("user/dashboard_super_admin/dashboard-apropos.html.twig", [
             "userConnected" => $userConnected,
 
@@ -1645,17 +1640,12 @@ class UserController extends AbstractController
     #[Route("/user/administration/fournisseur/{id}", name: "app_administre_fournisseur_apropos")]
 
     public function administre_fournisseur_appropos(
-
         $id,
         Status $status,
         EntityManagerInterface $entityManager,
-
         UserRepository $userRepository,
-
         SupplierRepository $supplierRepository,
-
         TributGService $tributGService
-
     ): Response {
         $userConnected= $status->userProfilService($this->getUser());
         $user_connected = $this->getUser();
@@ -1673,37 +1663,20 @@ class UserController extends AbstractController
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-
         $user = $userRepository->find(intval($id));
-
         $supplier = $supplierRepository->findOneBy(["userId" => $id]);
-
-
-
         return $this->render("user/dashboard_super_admin/apropos_fournisseur.html.twig", [
             "userConnected" => $userConnected,
             "profil" => $profil,
-
             "statusTribut" => $tributGService->getStatusAndIfValid(
-
                 $profil[0]->getTributg(),
-
                 $profil[0]->getIsVerifiedTributGAdmin(),
-
                 $userId
-
             ),
-
             "user" => $user,
-
             "supplier" => $supplier
-
         ]);
     }
-
-
-
-
 
     #[Route("/user/validate/fournisseur", name: "app_administre_fournisseur_validate")]
 

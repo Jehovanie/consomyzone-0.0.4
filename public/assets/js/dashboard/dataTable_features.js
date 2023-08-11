@@ -33,7 +33,7 @@ window.addEventListener('load', () => {
 
             $('#myTable').DataTable({
                 data: dataSet,
-                order: [[5, 'asc']],
+                order: [[5, 'desc']],
                 // columns: [
                 //     { title: '#' },
                 //     { title: 'Code' },

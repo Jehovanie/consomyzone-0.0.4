@@ -9,9 +9,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
         ///number message not show in the database
         const new_nbr_message= JSON.parse(event.data);
 
-        console.log("new_nbr_message");
-        console.log(new_nbr_message);
-
         /// check if different 0  
         if(parseInt(new_nbr_message) !== 0){
             
@@ -712,33 +709,64 @@ fileInputProfils.forEach(fileInputProfil=>{
     })
 })
 
+// active nav left
+if (document.querySelector(".list-nav-left")) {
+    const activPage = window.location.pathname
+    const links = document.querySelectorAll('.list-nav-left');
+    const superAdmin = document.querySelector(".dashbord-super-admin")
+
+    if (links.length) {
+        links.forEach((link) => {
+            if (link.href.includes(`${activPage}`)) {
+                link.classList.add("active");
+            } else if (superAdmin) {
+                document.querySelector("#link-super-admin").classList.add("active");
+            }
+        });
+    }
+}
+
 
 //SPA dashboard Super admin
 if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
     const navLinks = document.querySelectorAll('#navbarSuperAdmin > ul > li > a');
     const pages = document.querySelectorAll('.content-super-admin');
-    console.log(pages)
-
+    
+    
+    let pageStyle = null
     function showPage(pageId) {
         pages.forEach(page => {
+            pageStyle = page.getAttribute('style')
+            
             if (page.id === pageId) {
                 page.style.display = 'block';
-                
             } else {
                 page.style.display = 'none';
             }
         });
     }
 
+
     navLinks.forEach(link => {
         link.addEventListener('click', event => {
+            const dataLink = link.getAttribute('data-target')
+            
             event.preventDefault();
             const pageId = event.target.dataset.target;
-            console.log(pageId)
-            showPage(pageId);
+                if (dataLink === 'list-tribu-g') {
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.add('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.remove('text-primary')
+                } else if (dataLink === 'list-fournisseur') {
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.add('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
+                }
+                showPage(pageId);
         });
     });
+    
 
     showPage('list-tribu-g');
-}
+} 
+
+
 

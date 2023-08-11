@@ -320,16 +320,5 @@
 })();
 
 
-if (document.querySelector(".list-nav-left")) {
-    const activPage = window.location.pathname
-    const links = document.querySelectorAll('.list-nav-left');
-   
-    if (links.length) {
-        links.forEach((link) => {
-            if (link.href.includes(`${activPage}`)) {
-                link.classList.add("active");
-            }
-        });
-    }
-}
+
 
