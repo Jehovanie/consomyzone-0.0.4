@@ -2589,14 +2589,17 @@ function pastilleRestoForTribuT(element){
     fetch(request)
             .then(response=>response.json())
             .then(message=>{
-                let html = `<span class="nom"><b>Tribu ${tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</b></span>
-                            <span class="lioTe col-6 non_active">
-                                <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                <i class="fa-solid fa-star" style="color: rgb(233 231 223);"></i>
-                            </span>
-                            <a href="#" class="avis non_active" style="text-decoration:none;color:#19a8d8;">0 avis</a>`
+                tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+                tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
+                let html = `<div class="nomTribuTPastilleResto col-6">
+                                <b>Tribu T ${tbl}</b>
+                            </div>
+                            <div class="me-auto col-6 non_active">
+                                <span class="lioTe">
+                                    <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
+                                </span>
+                                <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                            </div>`
                 slideToRight(element, html)
             })
             .catch(error=>console.log(error))

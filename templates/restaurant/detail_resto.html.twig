@@ -195,54 +195,63 @@
                 <hr>
 
                 {% if (app.user) %}
-                    <div class="content_one_cta text-center mt-3" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+                    <div class="content_one_cta text-center mt-3 mb-3" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
                         {# <button class="btn btn-success " id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button> #}
                         <button class="btn btn-success" id="givs-avis-resto-tom-js" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
                     </div>
 
                     {% if tribu_t_resto_pastille|length > 0 %}
-                        <div class="mt-3" style="font-size: 13px;">
+                        <div class="containerPastilleResto">
                             {% for item in tribu_t_resto_pastille %}
-                               <div>
-                                <span class="nom"><b>Tribu {{ item["table_name"]|split('_', 4)|last|replace({'_':' '}) }}</b></span>
-                                <span class="lioTe col-6 non_active">
-                                    <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                    <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                    <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                    <i class="fa-solid fa-star" style="color: rgb(233 231 223);"></i>
-                                </span>
-                                <a href="#" class="avis non_active" style="text-decoration:none;color:#19a8d8;">&nbsp;&nbsp;0 avis</a></div>
+                               <div class="row">
+                                    <div class="nomTribuTPastilleResto col-6">
+                                        <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
+                                    </div>
+                                    <div class="me-auto col-6 non_active">
+                                        <span class="lioTe">
+                                            <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
+                                        </span>
+                                        <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                                    </div>
+                                </div>
                             {% endfor %}
                         </div>
                     {% endif %}
 
                     {% if tribu_t_resto_joined_pastille|length > 0 %}
-                        <div class="mt-3" style="font-size: 13px;">
+                        <div class="containerPastilleResto">
                             {% for item in tribu_t_resto_joined_pastille %}
-                               <div>
-                                <span class="nom"><b>Tribu {{ item["table_name"]|split('_', 4)|last|replace({'_':' '}) }}</b></span>
-                                <span class="lioTe col-6 non_active">
-                                    <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                    <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                    <i class="fa-solid fa-star checked" style="color: rgb(233 231 223);"></i>
-                                    <i class="fa-solid fa-star" style="color: rgb(233 231 223);"></i>
-                                </span>
-                                <a href="#" class="avis non_active" style="text-decoration:none;color:#19a8d8;">&nbsp;&nbsp;0 avis</a></div>
+                                <div class="row">
+                                    <div class="nomTribuTPastilleResto col-6">
+                                        <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
+                                    </div>
+                                    <div class="me-auto col-6 non_active">
+                                        <span class="lioTe">
+                                            <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
+                                        </span>
+                                        <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                                    </div>
+                                </div>
                             {% endfor %}
                         </div>
                     {% endif %}
 
                     {% if tribu_t_can_pastille|length > 0 %}
-                        <div class="mt-3" style="font-size: 13px;">
+                        <div class="containerPastilleResto">
                             {% for item in tribu_t_can_pastille %}
                                {# <span><b>{{ item["table_name"] }}</b> Voulez-vous pastiller ce restaurant? <button id="btnPastilleCarte" class="btn btn-primary" onclick="showTribuTForRestoPast(this)" type="button">Oui</button></span> #}
-                               <div><div><b>Tribu {{ item["table_name"]|split('_', 4)|last|replace({'_':' '}) }}</b> Voulez-vous pastiller ce restaurant? <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" id="btnPastilleCarte" class="btn btn-primary" onclick="pastilleRestoForTribuT(this)" type="button">Oui</button></div></div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b> Voulez-vous pastiller ce restaurant? 
+                                        <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" id="btnPastilleCarte" class="btn btn-primary" onclick="pastilleRestoForTribuT(this)" type="button">Oui</button>
+                                    </div>
+                                </div>
                             {% endfor %}
                         </div>
                         {# <div class="mt-3">
                                 Voulez-vous pastiller ce restaurant? <button id="btnPastilleCarte" class="btn btn-primary" onclick="showTribuTForRestoPast(this)" type="button">Oui</button>
                         </div> #}
-                        <div style="display:none;" class="alert alert-success mt-3 mb-3 successPastille" role="alert">
+                        {# <div style="display:none;" class="alert alert-success mt-3 mb-3 successPastille" role="alert">
                         </div>
                         <div class="mb-4 mt-4" id="containerPastilleResto" style="display:none;height:100px;">
                             <div class="mb-3">
@@ -260,7 +269,7 @@
                                 <button type="button" class="btn btn-danger annulPast" onclick="annulePastille()">Annuler</button>
                                 <button onclick="pastilleRestoForTribuT(event)" data-id="{{details.id}}" data-name="{{details.denominationF  | raw}}" type="button" class="btn btn-primary confirmPast" disabled>Pastillez</button>
                             </div>
-                        </div>
+                        </div> #}
                        {# <div class="modal fade" id="modalForPastilleResto" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
