@@ -557,12 +557,12 @@ class AgendaService extends PDOConnexionService
         $statement->execute();
 
         $all_agenda= $statement->fetchAll(PDO::FETCH_ASSOC);
-        // dd($all_agenda);
         foreach($all_agenda as $agenda){
             $temps= [
                 "id" => $agenda['id'],
                 "title" =>($agenda["title"]) ? $agenda["title"] : substr($agenda["message"], 0, 15) . "...",
                 "dateStart" => $agenda["dateStart"],
+                "type" => json_decode($agenda["type"], true)['type'],
                 "dateEnd" => $agenda["dateEnd"],
                 "timeStart" => $agenda["heure_debut"],
                 "timeEnd" => $agenda["heure_fin"],

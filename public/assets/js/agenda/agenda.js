@@ -13,13 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response =>{
             const allAgenda= response.allAgenda;
             const agendaTab= [];
-
+            
+            const repasType= [ 'repas', 'dîné', 'déjeuné'];
 
             allAgenda.forEach(agenda => { 
-                const {id, title, dateStart:start, dateEnd: end, } = agenda;
-                agendaTab.push({id, title, start, end ,  color: 'orange',  textColor: 'black'})
-            })
+                const {id, title, dateStart:start, dateEnd: end, type } = agenda;
+                // const className=  repasType.some(item => item.includes(type.toLowerCase())) ? "repas": 'other_event';
 
+                agendaTab.push({id, title, start, end, textColor: 'black'})
+            })
+            console.log(agendaTab)
             rendreCalendarWithEvents(agendaTab)
         })
 
