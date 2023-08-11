@@ -8,7 +8,7 @@
  * @constructor
  */
 function openChat() {
-    document.querySelector("#chat_container").style = "width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px !important; z-index:1003;"
+    document.querySelector("#chat_container").style = "width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px; z-index:1003;"
     document.querySelector("#openChat").style = "background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     document.querySelector("#chat_header").style = "display:;"
     document.querySelector("#amis_list").style = "display:;"
@@ -16,6 +16,7 @@ function openChat() {
     document.querySelector("#openFlottant").style = "display:none;"
     document.querySelector("#visio").style = "display:none;"
     document.querySelector("#conversation").style = "display:;"
+    document.querySelector("#footer_chat").style.display = ""
 
 
 }
@@ -59,8 +60,13 @@ function closeChat() {
  */
 function endChat() {
     document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -320px !important; z-index:1003;background-color:transparent;"
+    document.querySelector("#chat_container").classList.add("right_full")
     document.querySelector("#openChat").style = "background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML = ""
+
+    document.querySelector("#conversation").style.display = "none"
+    document.querySelector("#footer_chat").style.display = "none"
+
 
     document.querySelector("#closeChat").disabled = false
 
@@ -689,28 +695,51 @@ function generateUID() {
     var secondPart = (Math.random() * 46656) | 0;
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
-    return firstPart + secondPart;
+    // return firstPart + secondPart;
+
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
+function joinMeet(id, room) {
+
+    let user_name = document.querySelector("#my_full_name").textContent.trim()
+
+    const domain = 'meet.jit.si';
+            
+    const options = {
+        roomName: room,
+        width: "100%",
+        height: 700,
+        lang: 'fr',
+        configOverwrite: { prejoinPageEnabled: false },
+        // interfaceConfigOverwrite: { DISABLE_JOIN_LEAVE_NOTIFICATIONS: false },
+        parentNode: document.querySelector('#visio'),
+    };
+    const api = new JitsiMeetExternalAPI(domain, options);
+
+    api.executeCommand('displayName', user_name);
+
+    fetch("/update/visio/"+id+"/finished", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: "POST",
+    })
+
+    // api.dispose();
+    
 }
 
 function runVisio(user_id) {
 
-    //let room_name = room.previousElementSibling.querySelector("input").value.trim()
-    
     let user_name = document.querySelector("#my_full_name").textContent.trim()
     
-    let my_tribu_g = document.querySelector("#my_tribu_g").textContent.trim()
-    
-    // let list_user = []
-    
-    // document.querySelectorAll("#visio > div > ul > li").forEach(user=>{
-    //     list_user.push({
-    //         user_id : user.getAttribute("user_id_visio"),
-    //         status : "wait"
-    //     })
-    // })
-    
+    // let my_tribu_g = document.querySelector("#my_tribu_g").textContent.trim()
+
     let roomRandom = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-    // console.log(roomRandom);
     let data = {
         roomName : roomRandom,
         to : user_id,
@@ -741,31 +770,19 @@ function runVisio(user_id) {
                     roomName: roomRandom,
                     width: "100%",
                     height: 700,
+                    lang: 'fr',
+                    configOverwrite: { prejoinPageEnabled: false },
+                    // interfaceConfigOverwrite: { DISABLE_JOIN_LEAVE_NOTIFICATIONS: false },
                     parentNode: document.querySelector('#visio'),
                 };
                 const api = new JitsiMeetExternalAPI(domain, options);
                 
                 api.executeCommand('displayName', user_name);
 
+                // api.dispose();
+
             }
         })
-
-    
-    
-
-    // api.executeCommand('hangup')
-
-    // api.addListener('videoConferenceJoined', () => {
-
-    //     const iframe = api.getIFrame();
-
-    //     const doc = iframe.contentWindow.document.querySelector("#videospace");
-
-    //     console.log(doc);
-
-       
-    //   });
-
 
 }
 /***********************Action*************** */
@@ -901,7 +918,7 @@ if (document.querySelector("#openMessage")) {
 
         document.querySelector("#amis_list").style = "display:block;"
 
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
+        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px;"
 
         document.querySelectorAll("div.user_friends").forEach(user => {
             user.style = "display:";
@@ -1077,6 +1094,80 @@ if (document.querySelector("#openVisio")) {
             
         // </div>`
 
+        const evtSource_meet = new EventSource("/get/myvisio");
+
+        //// event onmessage
+        evtSource_meet.onmessage = function (event) {
+
+            const all_meet = JSON.parse(event.data);
+
+            all_meet.forEach(meet => {
+
+                if(!document.querySelector('.meet_'+meet.id)){
+
+                    // ${meet.status=='wait'?"<span onclick='joinMeet('+meet.nom+')' class='float-end badge text-bg-info cursor-pointer'>Accepter</span>":""}
+                    
+                    let stat = "manqué"
+                    let color = ""
+                    let btn_join = ""
+                    switch(meet.status) {
+                        case 'wait':
+                            stat = `en cours`
+                            color = 'info'
+                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer'>Joindre</span>`
+                          break;
+                        case 'finished':
+                            stat = `términé`
+                            color = 'success'
+                          break;
+                        case 'missed':
+                            stat = `manqué`
+                            color = 'danger'
+                          break;
+                        default:
+                            stat = "manqué"
+                      }
+
+                    // document.querySelector('#visio').innerHTML +=`<div class="m-2 card text-center mb-3 meet_${meet.id}" style="width: 95%;">
+                    //     <div class="card-body">
+                    //     <h5 class="card-title">${meet.nom}</h5>
+                    //     <p class="card-text">${meet.date}</p>
+                    //         ${stat}
+                    //     </div>
+                    // </div>`
+
+                    document.querySelector('#visio').innerHTML +=`<div class="col-12 m-2 meet_${meet.id}" style="width: 95%;">
+                    <div class="card order-card">
+                        <div class="card-block">
+                            <h2 class="text-right text-${color}"><i class="fas fa-video-camera f-left me-2 ms-1"></i><span>Appel ${stat} de ${meet.username}</span></h2>
+                            <p class="ms-2 me-2 text-body-tertiary">${meet.date} ${btn_join}</p>
+                        </div>
+                    </div>
+                </div>`
+                }
+            })
+        }
+
+        // fetch('/get/myvisio')
+        //     .then(response=>response.json())
+        //     .then(data=>{
+        //         console.log(data);
+
+        //         if(data.length>0){
+        //             for(let meet of data){
+
+        //                 if(!document.querySelector('.meet_'+meet.id)){
+        //                     document.querySelector('#visio').innerHTML +=`<div class="card text-center mb-3 meet_${meet.id}" style="width: 18rem;">
+        //                         <div class="card-body">
+        //                         <h5 class="card-title">${meet.nom}</h5>
+        //                         <p class="card-text">${meet.date}</p>
+        //                         <a href="#" class="btn btn-primary">Démarrer</a>
+        //                         </div>
+        //                     </div>`
+        //                 }
+        //             }
+        //         }
+        //     })
 
     })
 }
@@ -1200,6 +1291,7 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
 
         }else{
 
+            
             runVisio(amis.getAttribute("data-toggle-user-id"))
 
         //     document.querySelector('#visio').innerHTML = `

@@ -176,9 +176,9 @@ class MessageService extends PDOConnexionService{
         return $msg;
     }
 
-    public function createVisio($from, $to, $nom, $status){
+    public function createVisio($from, $to, $username, $nom, $status){
 
-        $sql = "INSERT INTO visio_story (`from`,`to`, `nom`, `status`) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO visio_story (`from`,`to`,`username`, `nom`, `status`) VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -186,10 +186,49 @@ class MessageService extends PDOConnexionService{
 
         $stmt->bindParam(2, $to);
 
-        $stmt->bindParam(3, $nom);
+        $stmt->bindParam(3, $username);
 
-        $stmt->bindParam(4, $status);
+        $stmt->bindParam(4, $nom);
+
+        $stmt->bindParam(5, $status);
 
         $stmt->execute();
+    }
+
+    public function getVisio($my_id){
+
+        $sql = "SELECT * FROM visio_story WHERE visio_story.from = $my_id or visio_story.to = $my_id";
+
+        $stm = $this->getPDO()->prepare($sql);
+
+        $stm->execute();
+
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    public function updateVisio($id, $status)
+
+    {
+
+        $sql = "UPDATE visio_story set status = ? WHERE id = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute([$status, $id]);
+
+    }
+
+    public function deleteAllVisio($my_id)
+
+    {
+
+        $sql = "UPDATE visio_story set status = ? WHERE id = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute([$status, $id]);
+
     }
 }
