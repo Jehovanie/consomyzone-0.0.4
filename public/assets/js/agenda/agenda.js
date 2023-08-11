@@ -73,6 +73,10 @@ if( document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
                 }
             })
             document.querySelector('.eventDesc_jheo_js').value = null
+
+            document.querySelector(".typeEventSelect_jheo_js").checked = false
+            document.querySelector(".typeEventSelect_jheo_js option").checked = false;
+            document.querySelector(".typeEventSelect_jheo_js option").checked = false;
         })
     })
 }
@@ -80,6 +84,82 @@ if( document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
 
 //// PUSH NEW AGENT -----------------------------------------------------------
 if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
+
+    //// CHECK INPUT TYPE EVENT : IF 'REPAS' SHOW INPUT SEARCH RESTO
+    const handleTypeEvent= [document.querySelector(".inputOther_radio_jheo_js"), document.querySelector(".inputRepas_radio_jheo_js") ];
+
+    handleTypeEvent.forEach(typeEvent => {
+
+        const content_inputTypeSelect= document.querySelector(".content_typeEventSelect_jheo_js");
+        const content_inputType= document.querySelector(".content_typeEvent_jheo_js");
+
+        typeEvent.addEventListener("change", () => {
+            if( typeEvent.classList.contains("inputOther_radio_jheo_js")){
+                if(content_inputType.classList.contains("d-none")){
+                    content_inputType.classList.remove("d-none")
+
+                    document.querySelector(".typeEvent_jheo_js").value=null;
+                }
+    
+                if(!content_inputTypeSelect.classList.contains("d-none")){
+                    content_inputTypeSelect.classList.add("d-none")
+                }
+
+                if(!document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')){
+                    document.querySelector(".content_searchResto_jheo_js").classList.add('d-none');
+                }
+
+                if(!document.querySelector(".content_restoEvent_jheo_js").classList.contains('d-none')){
+                    document.querySelector(".content_restoEvent_jheo_js").classList.add('d-none');
+                    document.querySelector(".restoEvent_jheo_js").value = null
+                }
+    
+                if(document.querySelector(".lieuEvent_jheo_js").hasAttribute('disabled')){
+                    document.querySelector(".lieuEvent_jheo_js").removeAttribute('disabled');
+                    document.querySelector(".lieuEvent_jheo_js").value= null;
+                }
+    
+            }else{
+                if(!content_inputType.classList.contains("d-none")){
+                    content_inputType.classList.add("d-none")
+                }
+    
+                if(content_inputTypeSelect.classList.contains("d-none")){
+                    content_inputTypeSelect.classList.remove("d-none")
+                }
+
+                if(document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')){
+                    document.querySelector(".content_searchResto_jheo_js").classList.remove('d-none')
+                }
+
+                document.querySelector(".typeEvent_jheo_js").value="Repas déjeuné"
+            }
+        })
+    })
+
+    document.querySelector(".typeEventSelect_jheo_js").addEventListener("change", (e) => {
+        document.querySelector(".typeEvent_jheo_js").value = e.target.value
+    })
+
+
+    //// CHANGE EVENT FOR SEARCH RESTO
+    document.querySelector(".searchResto_jheo_js").addEventListener("keyup",(e) => {
+        if(parseInt(e.keyCode) === 13 ){
+            if( document.querySelector(".searchResto_jheo_js").value != "" ){
+
+                /// afficher la liste des restos trouver
+                bindActionSearchResto(document.querySelector(".searchResto_jheo_js").value);
+            }
+        }
+    })
+
+    ///// AFFICHER UNE LISTE DES RESTO
+    document.querySelector(".chose_pastil_resto_jheo_js").addEventListener("click",() => {
+
+        /// afficher la liste des restos pastiller
+        bindActionSearchResto("RESTO_PASTILLE");
+    })
+
     document.querySelector(".cta_confirm_create_agenda_jheo_js").addEventListener("click", (e) => {
         
         let state= true;
@@ -94,10 +174,6 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
             "dateEnd" : document.querySelector(".eventEnd_jheo_js").value,
             "timeStart" : document.querySelector(".timeStart_jheo_js").value,
             "timeEnd" : document.querySelector(".timeEnd_jheo_js").value,
-            "confidentiality" : document.querySelector(".confidEvent_jheo_js").value,
-            // {"file" : document.querySelector('.image_upload_input_jheo_js').value},
-            "file" : "file",
-            "resto" : "resto"
         }
 
         const agenda_keys= Object.keys(agenda);
@@ -108,11 +184,18 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
         })
 
         if( !state ){
+            console.log(agenda)
             e.preventDefault()
         }else{
-            console.log(agenda)
             sendNewAgenda(agenda)
         }
+    })
+
+
+    document.querySelectorAll(".cta_close_list_resto_jheo_js").forEach(close => {
+        close.addEventListener("click",() => {
+            document.querySelectorAll(".list_tr_resto_jheo_js tr").forEach(tr => tr.remove())
+        })
     })
 }
 
@@ -124,15 +207,14 @@ function rendreCalendarWithEvents(events){
     var calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: [ 'interaction', 'dayGrid' ],
         themeSystem: 'bootstrap5',
-        defaultDate: '2023-06-12',
+        defaultDate: new Date(),
         editable: true,
         eventLimit: true, // allow "more" link when too many events
         events: events,
         dateClick: function(info) {
-            bindEventForAllDay()
+            bindEventForAllDay(info)
         },
         eventClick: function(info) {
-            console.log(info.event.id)
             const id = info.event.id ? parseInt(info.event.id) : 0
             bindEventForAnEvent(id)
         },
@@ -141,7 +223,20 @@ function rendreCalendarWithEvents(events){
     calendar.render();
 }
 
-function bindEventForAllDay(){
+function bindEventForAllDay(info){
+    const info_date = new Date(info.dateStr);
+    const today = new Date();
+
+    // if( info_date.getTime() >=  today.getTime()){
+    // }
+
+    document.querySelector(".eventStart_jheo_js").value= info.dateStr;
+    document.querySelector(".eventEnd_jheo_js").value= info.dateStr;
+
+    document.querySelector(".timeStart_jheo_js").value= '00:00';
+    document.querySelector(".timeEnd_jheo_js").value= '23:00';
+
+    ///show modal
     document.querySelector('.show_modal_createAgenda_jheo_js').click()
 }
 
@@ -189,6 +284,18 @@ function setAndShowModal(agenda){
     content_view_agenda.querySelector(".timeStart_jheo_js").value= agenda.heure_debut;
     content_view_agenda.querySelector(".timeEnd_jheo_js").value= agenda.heure_fin;
 
+    if(agenda.restaurant !== null &&  agenda.restaurant !== ""){
+        content_view_agenda.querySelector(".restoEvent_jheo_js").value= agenda.restaurant;
+
+        if( content_view_agenda.querySelector(".content_restoEvent_jheo_js").classList.contains("d-none")){
+            content_view_agenda.querySelector(".content_restoEvent_jheo_js").classList.remove("d-none");
+        }
+    }else{
+        if( !content_view_agenda.querySelector(".content_restoEvent_jheo_js").classList.contains("d-none")){
+            content_view_agenda.querySelector(".content_restoEvent_jheo_js").classList.add("d-none");
+        }
+    }
+
 
     document.querySelector(".cta_delete_agenda_jheo_js").setAttribute("data-agenda-id" , agenda.id);
 
@@ -211,7 +318,7 @@ function updateAgenda(){
     const content_view_agenda= document.querySelector('.content_input_view_agenda_jheo_js')
     document.querySelector(".cta_update_agenda_jheo_js").addEventListener("click",() => {
         content_view_agenda.querySelectorAll("input").forEach(input => {
-            if( input.hasAttribute("disabled")){
+            if( input.hasAttribute("disabled") && !input.classList.contains("nbrParticipantCur_jheo_js")){
                 input.removeAttribute("disabled")
             }
         })
@@ -279,10 +386,13 @@ function sendNewAgenda(agenda){
         "adresse": agenda.address,
         "participant": agenda.participant,
         "resto": agenda.resto,
+        "resto" : (document.querySelector(".restoEvent_jheo_js").value !== "" ) ? document.querySelector(".restoEvent_jheo_js").value : null,
+        "confidentiality" : 1,
         "fileType": null,
         "fileName": null,
     };
-    
+
+    // alert(JSON.stringify(param))
     const request = new Request('/user/tribu/new-agenda', {
         method: "POST",
         headers: {
@@ -296,8 +406,92 @@ function sendNewAgenda(agenda){
         .then(response=>response.json())
         .then(response =>{
             console.log(response);
-            showAlertMessageFlash(response.message, "success");
+            showAlertMessageFlash(response.message, "success" ,isReload=true);
         })
+}
+
+
+function setRestoAgenda(resto, element){
+
+    const classSuccess= "btn-info";
+    const classDefault= "btn-outline-info";
+
+    if( document.querySelector(".resto_pastiled_jheo_js")){
+        const pastiled = document.querySelector(".resto_pastiled_jheo_js");
+        pastiled.classList.remove("resto_pastiled_jheo_js");
+
+        pastiled.classList.remove(classSuccess);
+        pastiled.classList.add(classDefault);
+        pastiled.innerText = "Pastillé"
+    }
+
+    if( element.classList.contains(classDefault)){
+        element.classList.remove(classDefault);
+        element.classList.add(classSuccess);
+        element.classList.add("resto_pastiled_jheo_js");
+
+        element.innerText = 'Resto pastillé';
+    }
+    document.querySelector(".restoEvent_jheo_js").value = resto.name;
+    document.querySelector(".lieuEvent_jheo_js").value = resto.adress;
+    document.querySelector(".lieuEvent_jheo_js").setAttribute("disabled", "");
+    
+    if( document.querySelector(".content_restoEvent_jheo_js").classList.contains("d-none")){
+        document.querySelector(".content_restoEvent_jheo_js").classList.remove("d-none")
+    }
+}
+
+
+function bindActionSearchResto(motCles){
+    document.querySelector(".listRestoModal_jheo_js").click();
+
+    createChargement(document.querySelector(".content_chargement_jheo_js"),c="chargement_content chargment_content_js_jheo")
+    if( !document.querySelector(".content_list_resto_js").classList.contains("opacity_03")){
+        document.querySelector(".content_list_resto_js").classList.add("opacity_03")
+    }
+
+    // setTimeout(function(){
+    //     deleteChargement("chargement_content")
+    // },2000)
+
+    let titleModal= ( motCles === "RESTO_PASTILLE" ) ? "Liste des restaurants pastillés dans vos tribu Tribu T." : "Résultat de restaurant trouver"
+    document.querySelector(".listResto_title_jheo_js").innerText= titleModal
+
+    if( motCles === "RESTO_PASTILLE"){
+        const request = new Request('/api/user/agenda/resto-pastille', {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+        })
+    
+        fetch(request)
+            .then(response=>response.json())
+            .then(response =>{
+                if(!response.success){ 
+                    throw  new Error(response.message); 
+                }
+
+                const { results } = response;
+                results.forEach((resto, index) => {
+                    createLinkRestoPastile( index,{ id: resto.id_resto,  name: resto.name, adress: resto.adress })
+                });
+
+                if(document.querySelector(".content_list_resto_js").classList.contains("opacity_03")){
+                    document.querySelector(".content_list_resto_js").classList.remove("opacity_03")
+                }
+                deleteChargement("chargement_content");
+
+            })
+            .catch(error=> {
+                console.log(error)
+            })
+    }
+
+    // ///open modal
+    // document.querySelector(".listRestoModal_jheo_js").click();
+
 }
 
 
@@ -318,4 +512,18 @@ function deleteAgenda(id){
             console.log(response);
             showAlertMessageFlash(response.message, "success");
         })
+}
+
+
+function createLinkRestoPastile(index, resto){
+
+    const tr= document.createElement('tr');
+
+    tr.innerHTML = `
+      <th>${index+1}</th>
+      <td>${resto.name}</td>
+      <td>${resto.adress.toLowerCase()}</td>
+      <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'${resto.name}',adress:'${resto.adress.toLowerCase()}'} ,this)">Pastillé</button></td>
+    `
+    document.querySelector(".list_tr_resto_jheo_js").appendChild(tr)
 }

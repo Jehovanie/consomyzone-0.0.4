@@ -4,16 +4,14 @@
 
 namespace App\Service;
 
-use ArgumentCountError;
-use Exception;
 use PDO;
+use Exception;
 use PDOException;
+use ArgumentCountError;
+use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
 {
-
-
-
     public function createTribuTable($tableName, $user_id, $name, $description)
 
     {
@@ -352,17 +350,17 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    public function showTribuT($user_id)
+    public function showTribuT($user_id, $option= null)
 
     {
 
-
+        $option = ($option === null) ? null : "_" .$option;
 
         $db = $_ENV["DATABASENAME"];
 
 
 
-        $query = "SHOW TABLES FROM $db like '%tribu_t_" . $user_id . "_%'";
+        $query = "SHOW TABLES FROM $db like '%tribu_t_" . $user_id . "_%" . $option ."'";
 
 
 
@@ -1307,6 +1305,26 @@ class Tribu_T_Service extends PDOConnexionService
         }else{
             return false;
         }
+    }
+
+    public function getAllRestoPastiledForAllTable($id){
+        $results = [];
+        /// all tribu T
+        $all_tribuT= $this->showTribuT($id, "_restaurant");
+
+        
+
+        foreach($all_tribuT as $trib){
+            if( $this->hasTableResto($trib[0])){
+                $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $trib[0];");
+                $statement->execute();
+                $restos = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+                
+                $results= array_merge($results, $restos);
+            }
+        }
+        return $results;
     }
 
     public function getRestoPastilles($tableResto, $tableComment){

@@ -561,7 +561,7 @@ class AgendaService extends PDOConnexionService
         foreach($all_agenda as $agenda){
             $temps= [
                 "id" => $agenda['id'],
-                "title" => $agenda["message"],
+                "title" =>($agenda["title"]) ? $agenda["title"] : substr($agenda["message"], 0, 15) . "...",
                 "dateStart" => $agenda["dateStart"],
                 "dateEnd" => $agenda["dateEnd"],
                 "timeStart" => $agenda["heure_debut"],

@@ -1796,7 +1796,7 @@ function handleNewComment(userInformations, comment){
     document.querySelector(".content_all_comment_jheo_js").scrollTop=0;
 }
 
-function showAlertMessageFlash(text, status="success"){
+function showAlertMessageFlash(text, status="success", isReload=false){
 
     const body= document.querySelector('.content_modal_alert_jheo_js');
     const className= (status === "success" ) ? "alert-primary" : "alert-danger";
@@ -1810,6 +1810,10 @@ function showAlertMessageFlash(text, status="success"){
         document.querySelector('.close_alertFlashModal_jheo_js').click();
         body.classList.remove(className);
         body.innerText = "";
+
+        if( isReload){
+            window.location.reload();
+        }
     },1500)
 }
 

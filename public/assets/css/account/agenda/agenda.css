@@ -18,3 +18,22 @@
   background: rgb(2,0,36);
   background: linear-gradient(196deg, rgba(2,0,36,1) 1%, rgba(210,220,240,0.10407913165266103) 4%, rgba(0,212,255,1) 100%);
 }
+
+.content_chargement{
+  position: absolute;
+  top: 60%;
+  width: 100%;
+}
+
+.custom_modal{
+  overflow-x: hidden !important;
+}
+
+.chargement_content {
+  width: auto !important;
+  height: auto !important;
+}
+
+.opacity_03{
+  opacity: 0.3 !important;
+}

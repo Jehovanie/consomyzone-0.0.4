@@ -16,6 +16,7 @@ use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Service\NotificationService;
 
+use App\Repository\BddRestoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,6 +120,33 @@ class AgendaController extends AbstractController
         ], 200);
     }
 
+    #[Route('/api/user/agenda/resto-pastille', name: 'api_resto_pastille_agenda', methods: ["GET"])]
+    public function getAllRestoPastiled(
+        Tribu_T_Service $tribuTService,
+        BddRestoRepository $bddRestoRepository
+    ){
+        $results= [ ];
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "User not Connecter"]);
+        }
+
+        $allresto = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+
+        //// add adress
+        foreach($allresto as $result){
+            $resto = $bddRestoRepository->find(intval($result['id_resto']));
+
+            $result["adress"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+            array_push($results, $result);
+        }
+
+        return $this->json([
+                "success" => true,
+                "results" => $results
+            ],200);
+    }
+
+
 
     #[Route('/api/user/agenda/{id}', name: 'api_get_one_agenda', methods: ["GET"])]
     public function getOneAgenda(
@@ -150,6 +178,16 @@ class AgendaController extends AbstractController
         // $user_id = $user->getId();
         $requestContent = json_decode($request->getContent(), true);
         $agendaID = intval($requestContent["agendaID"]);
+
+        $agenda= $agendaService->getOneAgenda($table_agenda, $agendaID);
+
+        if( !$agenda){
+            return $this->json([
+                "success" => true,
+                "message" => 'Agenda non trouvé, il est deja supprimer.'
+            ], 201);
+        }
+
         $agendaService->deleteAgendaUpdate($table_agenda,$agendaID);
 
         return $this->json([
@@ -203,7 +241,6 @@ class AgendaController extends AbstractController
 
         return  $this->json($type." enregistré avec succès");
     }
-
 
 
     /**
