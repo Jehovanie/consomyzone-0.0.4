@@ -88,7 +88,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
-    public function getListTableTribuT_owned( ){
+    public function getListTableTribuT_owned(){
 
         $results= [ ];
         $json_tribuT_owned= $this->sec->getUser()->getTribuT();
@@ -97,10 +97,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             if( !array_key_exists("name", $decode_tribuT_owned['tribu_t']) ){
                 foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
                     extract($tribuT);  /// $name
-                    array_push($results,["table_name" => $name ] );
+                    array_push($results,["table_name" => $name, "logo_path" => $logo_path] );
                 }
             }else{
-                array_push($results, ["table_name" => $decode_tribuT_owned['tribu_t']['name'] ] );
+                array_push($results, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'] ] );
             }
             
         }
@@ -120,10 +120,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             if( !array_key_exists("name", $decode_tribuT_joined['tribu_t']) ){
                 foreach($decode_tribuT_joined["tribu_t"] as $tribuT){
                     extract($tribuT);  /// $name
-                    array_push($results, ["table_name" => $name ] );
+                    array_push($results, ["table_name" => $name , "logo_path" => $logo_path] );
                 }
             }else{
-                array_push($results, ["table_name" => $decode_tribuT_joined['tribu_t']['name'] ] );
+                array_push($results, ["table_name" => $decode_tribuT_joined['tribu_t']['name'], "logo_path" => $decode_tribuT_joined['tribu_t']['logo_path'] ] );
             }
 
         }

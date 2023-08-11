@@ -1828,3 +1828,111 @@ function checkIfExist(classSelector){
         return false;
     }
 }
+
+function showTribuTForRestoPast(element){
+    element.parentElement.style.display = "none"
+    document.querySelector("#containerPastilleResto").style.display = "block"
+    let container = document.querySelector("#content_detail_resto_js_jheo") ? document.querySelector("#content_detail_resto_js_jheo") : document.querySelector("#content_details_home_js_jheo")
+    scrollBottom(container)
+}
+
+function annulePastille() {
+    document.querySelector("#containerPastilleResto").style.display = "none"
+    document.querySelector("#btnPastilleCarte").parentElement.style.display = "block"
+    if (document.querySelector(".confirmPast").hasAttribute("data-tbname")) {
+        document.querySelector(".confirmPast").removeAttribute("data-tbname");
+    }
+    document.querySelector(".confirmPast").disabled = true
+    document.querySelector(".selectTribuForPast").value = "0"
+}
+
+function selectTribuForPast(e) {
+    let index = e.target.selectedIndex
+    let btn = document.querySelector(".confirmPast")
+    if(index != 0){
+        btn.disabled = false
+        btn.dataset.tbname = e.target.value
+    }else{
+        btn.disabled = true
+        if (btn.hasAttribute("data-tbname")) {
+            btn.removeAttribute("data-tbname");
+        }
+    }
+}
+
+function scrollBottom(element) {
+    element.scrollTop = element.scrollHeight;
+}
+
+/*function pastilleRestoForTribuT(e){
+    let id = e.target.dataset.id
+    let name = e.target.dataset.name
+    let tbl = e.target.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+    const request = new Request("/user/tribu_t/pastille/resto", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                document.querySelector("#containerPastilleResto").style.display = "none"
+                let successElem = document.querySelector(".successPastille")
+                successElem.style.display = "block"
+                successElem.textContent = message
+                setTimeout(function () {
+                    successElem.style.display = "none"
+                    successElem.innerHTML = ""
+                }, 5000)
+            })
+            .catch(error=>console.log(error))
+}*/
+function pastilleRestoForTribuT(element){
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+    
+    const request = new Request("/user/tribu_t/pastille/resto", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+                tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
+                let html = `<div class="nomTribuTPastilleResto col-6">
+                                <b>Tribu T ${tbl}</b>
+                            </div>
+                            <div class="me-auto col-6 non_active">
+                                <span class="lioTe">
+                                    <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
+                                </span>
+                                <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                            </div>`
+                slideToRight(element, html)
+            })
+            .catch(error=>console.log(error))
+}
+
+function slideToRight(elem, html) {
+        elem.parentElement.style.display = "none"
+        elem.parentElement.parentElement.innerHTML = html
+}

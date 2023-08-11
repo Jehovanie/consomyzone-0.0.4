@@ -1695,5 +1695,53 @@ class Tribu_T_Service extends PDOConnexionService
         return $resultats; 
     }
 
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableName: le nom de la table tribu
+     * 
+     * @param string $extension: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtension($tableName, $extension){
+
+        //$query = "SHOW TABLES FROM $db like 'tribu_t_" . $user_id . "_" . $tableName . "'";
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like '" . $tableName.$extension."'";
+
+        $sql = $this->getPDO()->query($query);
+
+        $result = $sql->rowCount();
+
+        return $result;
+
+    }
+
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableNameExtension: le nom de la table extension
+     * 
+     * @param int $idResto: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtensionId($tableNameExtension, int $idResto){
+
+        
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if(is_array($result)){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
 }
 

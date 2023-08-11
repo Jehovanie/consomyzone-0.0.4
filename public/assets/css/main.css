@@ -1477,3 +1477,26 @@ i.fa-eye-slash, i.fa-eye{
         transform: rotate(360deg);
         }
 }
+
+
+.starNote{
+    display:inline-block;font-size:1rem;color:#a09896;margin-right:0.4rem;
+}
+
+.avisRestoTribu{
+    text-decoration:none;color:#19a8d8;
+}
+
+.containerPastilleResto{
+    font-size: 13px;
+}
+
+.nomTribuTPastilleResto{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lioTe > b{
+    font-size: 1.1rem;
+} 

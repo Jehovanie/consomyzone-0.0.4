@@ -97,6 +97,7 @@ class UserController extends AbstractController
     ): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
+        //dd($userConnected);
         $userId= $this->getUser()->getId();
         $tribuG= $userConnected['tableTribuG'];
         $publications = [];
