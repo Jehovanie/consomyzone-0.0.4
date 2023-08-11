@@ -7,6 +7,7 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/list_membre_tribuG_sp_respons.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 {% endblock %}
 
 {% block javascripts %}
@@ -14,88 +15,86 @@
 {% endblock %}
 
 {% block body %}
-	<main>
-		<div class="content_left_menu_account fixed-top mt-5 col">
-			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
-                <div class="left_menu">
-                    {% include "shard/account_navleft.html.twig" %}
-                </div>
-            </div>
-            <div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
-                <div class="left_menu">
-                    {% include "shard/account_navleft_mobile.html.twig" %}
-                </div>
-            </div>
-		</div>
+<div class="nh">
+	{% include 'shard/account_navleft_new.html.twig' %}
+	{% include 'shard/account_navbar_new.html.twig' %}
+	<!-- ===== Main Content Start ===== -->
+	<main class="gv hm hv dashbord-super-admin">
+		<div class="sk bu 2xl:ud-p-11">
+			<a href="{{ path("app_dashboard") }}">
+				<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
 
-		<div class="fixed-top col responsif-none bg-blanc">
-			{{ include('shard/account_navbar.html.twig') }}
-		</div>
+					<g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+						<path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+						17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+						9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+						92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"></path>
+					</g>
+				</svg>
+			</a>
 
-		<div class="fixed-top col responsif-none-mobile">
-			{{ include('shard/account_navbar_mobile.html.twig') }}
-		</div>
+			<div class="row content_right_actualite">
+				<center>
+					<h1>
+						<i class="fa-solid fa-users"></i>
+						Liste des membres tribus G
+					</h1>
+				</center>
 
-		<div class="row content_right_actualite">
-			<center>
-				<h1>
-					<i class="fa-solid fa-users"></i>
-					Liste des membres tribus G
-				</h1>
-			</center>
-
-			<div class="container content_global_super_admin ">
-				{% if results|length is same as(0) %}
-					<div class="text-center">
-						<p class="mx-auto"> Pas encore de membre dans cette tribu G. </p>
-						<hr />
-						<p class="mx-auto">
-							<a href="{{path("app_dashboard")}}">Retour à la liste des Tribus.</a>
-						</p>
-					</div>
-				{% else %}
-					<div class="table-responsive">
-						<table class="table table-striped">
-							<thead class="thead-dark">
-								<tr>
-									<th>Nom </th>
-									<th>Prénom</th>
-									<th>Email</th>
-									<th>Adresse</th>
-									<th>Roles</th>
-									<th> </th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for result in results %}
+				<div class="container content_global_super_admin ">
+					{% if results|length is same as(0) %}
+						<div class="text-center">
+							<p class="mx-auto"> Pas encore de membre dans cette tribu G. </p>
+							<hr />
+							<p class="mx-auto">
+								<a href="{{path("app_dashboard")}}">Retour à la liste des Tribus.</a>
+							</p>
+						</div>
+					{% else %}
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead class="thead-dark">
 									<tr>
-										<td>{{result.firstname}}</td>
-										<td>{{result.lastname}}</td>
-										<td>{{result.email}}</td>
-										<td>{{result.commune}}</td>
-										<td>
-											{{result.roles|upper }}
-
-											{{(result.roles is same as("fondateur") and result.isVerified is same as(false)) ? "<i class='fa-solid fa-triangle-exclamation text-danger'></i>" : "" }}
-											{{(result.roles is same as("fondateur") and result.isVerified is same as(true)) ? "<i class='fa-solid fa-thumbs-up text-success'></i>" : ""}}
-										
-										</td>
-										<td>
-											<a href="{{path('app_dashboardapropos') ~ '?user_id=' ~ result.id }}" class="btn btn-primary">
-												{{(result.roles is same as("fondateur")) ? "Administré": "A propos" }}
-											</a>
-										</td>
+										<th>Nom </th>
+										<th>Prénom</th>
+										<th>Email</th>
+										<th>Adresse</th>
+										<th>Roles</th>
+										<th> </th>
 									</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
-				{% endif %}
+								</thead>
+								<tbody>
+									{% for result in results %}
+										<tr>
+											<td>{{result.firstname}}</td>
+											<td>{{result.lastname}}</td>
+											<td>{{result.email}}</td>
+											<td>{{result.commune}}</td>
+											<td>
+												{{result.roles|upper }}
+
+												{{(result.roles is same as("fondateur") and result.isVerified is same as(false)) ? "<i class='fa-solid fa-triangle-exclamation text-danger'></i>" : "" }}
+												{{(result.roles is same as("fondateur") and result.isVerified is same as(true)) ? "<i class='fa-solid fa-thumbs-up text-success'></i>" : ""}}
+											
+											</td>
+											<td>
+												<a href="{{path('app_dashboardapropos') ~ '?user_id=' ~ result.id }}" class="btn btn-primary">
+													{{(result.roles is same as("fondateur")) ? "Administré": "A propos" }}
+												</a>
+											</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% endif %}
+				</div>
 			</div>
+
 		</div>
-
-
 	</main>
+		<!-- ===== Main Content End ===== -->
+</div>
 
 
 {% endblock %}
