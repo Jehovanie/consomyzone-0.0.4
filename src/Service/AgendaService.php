@@ -630,18 +630,19 @@ class AgendaService extends PDOConnexionService
     public function createTableAgenda($table_agenda_name){
         $sql= "CREATE TABLE $table_agenda_name (".
             "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
-            "`title` varchar(255) NULL,".
-            "`message` text DEFAULT NULL,".
+            "`title` varchar(255) NOT NULL,".
+            "`message` text NOT NULL,".
             "`type` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`type`)),".
+            "`adresse` varchar(255) NOT NULL,".
+            "`restaurant` varchar(255) DEFAULT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
-            "`file_path` varchar(500) DEFAULT NULL,".
-            "`date` date NOT NULL,".
+            "`dateStart` date NOT NULL DEFAULT current_timestamp(),".
+            "`dateEnd` date NOT NULL DEFAULT current_timestamp(),".
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
-            "`file_type` varchar(40) NOT NULL,".
-            " `status` tinyint(1) DEFAULT 0,".
-            "`restaurant` varchar(500) DEFAULT NULL,".
-            "`adresse` varchar(500) DEFAULT NULL,".
+            "`file_type` varchar(40) DEFAULT NULL,".
+            "`file_path` varchar(500) DEFAULT NULL,".
+            "`status` tinyint(1) NOT NULL DEFAULT 0,".
             "`max_participant` int(11) NOT NULL DEFAULT 0".
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
