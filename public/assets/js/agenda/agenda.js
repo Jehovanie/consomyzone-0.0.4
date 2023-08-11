@@ -14,9 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const allAgenda= response.allAgenda;
             const agendaTab= [];
 
-            allAgenda.forEach(agenda => {
-                const {id, title, dateStart:start, dateEnd: end } = agenda;
-                agendaTab.push({id, title, start, end})
+
+            allAgenda.forEach(agenda => { 
+                const {id, title, dateStart:start, dateEnd: end, } = agenda;
+                agendaTab.push({id, title, start, end ,  color: 'orange',  textColor: 'black'})
             })
 
             rendreCalendarWithEvents(agendaTab)
