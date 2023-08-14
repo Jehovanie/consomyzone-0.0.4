@@ -45,3 +45,19 @@
 .other_event{
   background-color: cadetblue;
 }
+
+.text_black{
+  font-weight: 500;
+  color: black;
+}
+
+.input_black{
+  border: 1.9px solid black;
+}
+
+.image-upload-wrap, .input_block{
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+
+}
