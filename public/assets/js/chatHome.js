@@ -695,11 +695,11 @@ function generateUID() {
     var secondPart = (Math.random() * 46656) | 0;
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
-    // return firstPart + secondPart;
+    return firstPart + secondPart;
 
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  );
+    // return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    // (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    //   );5e2f1338-9d4b-45f4-9f10-845ec628d3c73
 }
 
 function joinMeet(id, room) {
