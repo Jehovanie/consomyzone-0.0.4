@@ -766,7 +766,6 @@ class UserController extends AbstractController
             ];
 
 
-
             array_push($results, $result);
         }
 
@@ -790,6 +789,18 @@ class UserController extends AbstractController
     ){
         return $this->json(
             ["allTribuG" => $tributGService->getAllTableTribuG()]
+        );
+    }
+
+    #[Route("/user/dashboard/tribut_json", name: "app_dashboard_tribut_json")]
+    public function app_dashboard_tribut_json(
+        Tribu_T_Service $tributTService
+    ) {
+        $user = $this->getUser();
+        $userId = $user->getId();
+
+        return $this->json(
+            ["allTribuT" => $tributTService->getAllTribuT($userId)]
         );
     }
 
