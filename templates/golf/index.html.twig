@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Golf ConsoMyZone{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/golf/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script src="{{asset('assets/js/golf/data_golf.js')}}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterGolf.js') }}" defer></script>
+
+	<script type="text/javascript" src="{{ asset('assets/js/golf/marckerClusterGolf_all_dep.js') }}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/golf/golf.js') }}" defer></script>
+    {# // <script type="text/javascript" src="{{ asset('assets/js/golf/chercher.js') }}" defer></script> #}
+{% endblock %}
+
+{% block body %}
+    
+    <div class="">
+
+        {# //// NAV LEFT #}
+        <div class="responsif-none" id="tous">
+            {% include 'shard/golf/golf_navleft.twig' %}
+        </div>
+       
+        {# //// NAV BAR  #}
+        <div class="responsif-none">
+            {% include 'shard/navbar.twig' %}
+        </div>
+        
+        {# //// CONTENT CART #}
+        <div class="golf-mobile">
+            <div class="content_cart_map">
+                <div class="cart_map cart_map_js">
+                    {# content chargement  #}
+                    <div class="chargement_content" id="toggle_chargement">
+                        <div class="containt">
+                            <div class="word word-1">C</div>
+                            <div class="word word-2">M</div>
+                            <div class="word word-3">Z</div>
+                        </div>
+                    </div>
+
+                    <div id="list-depart-mobile"></div>
+                    {# <div id="map" class="map"></div> #}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    {% include 'shard/chatBot.html.twig' %}
+    {% include 'shard/golf/detail_golf_navleft.twig' %}
+    {% include 'shard/golf/modalDetailMobil.html.twig' %}
+{% endblock %}

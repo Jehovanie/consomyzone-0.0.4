@@ -67,7 +67,9 @@ body {
     z-index: 1030;
 }
 
-
+/* .ep-nav .nav-item{
+    width: 146px;
+} */
 
 .navbar-light-left {
     /* background-color: #fff !important; */
@@ -493,6 +495,31 @@ body {
     fill: #B40404;
 }
 
+.icon-golf a:hover svg {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #fff !important;
+    border-radius: 8px;
+    fill: #fff;
+}
+
+.icon-golf a svg {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #0D6EFD !important;
+    border-radius: 8px;
+    fill: #0D6EFD;
+}
+
+.icon-golf .list-nav-bar:hover {
+    background-color: #0D6EFD;
+    color: #fff;
+}
+.icon-golf .list-nav-bar:hover {
+    background-color: #0D6EFD;
+    color: #fff;
+}
+
  .icon-recherche a svg:hover {
     width: 25px;
     height: 25px;
@@ -629,7 +656,8 @@ li.nav-item.avatar-account-pdp > a > img{
 
 .nav-link{
     display: flex;
-    align-items: center
+    align-items: center;
+    justify-content: center;
 }
 
 .content_entete_for_mobile{
