@@ -59,7 +59,7 @@ function closeChat() {
  * @constructor
  */
 function endChat() {
-    document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -320px !important; z-index:1003;background-color:transparent;"
+    document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -320px; z-index:1003;background-color:transparent;"
     document.querySelector("#chat_container").classList.add("right_full")
     document.querySelector("#openChat").style = "background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML = ""
@@ -517,7 +517,7 @@ function getChat(user_id) {
 
                             file_doc += `<div class="mt-2 mb-2" style="display:flex;flex-direction: row;justify-content: space-between">
                                             <a href="${file}" download class="icon_download_file" alt="photo" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-file-text"></i></a>
-                                            <div class="text-center" style="width:85%; display:block; overflow:auto;">document${ext}</div>
+                                            <div class="text-center" style="width:85%; display:block; overflow:auto;">document.${ext}</div>
                                             <a href="${file}" download class="icon_download_file" alt="photo" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-download"></i></a>
                                             </div>`
 
@@ -713,7 +713,8 @@ function joinMeet(id, room) {
         width: "100%",
         height: 700,
         lang: 'fr',
-        configOverwrite: { prejoinPageEnabled: false },
+        configOverwrite: { prejoinPageEnabled: false},
+        // configOverwrite: { prejoinPageEnabled: false , enableClosePage: false, toolbarButtons : ['microphone', 'camera','tileview','fullscreen', 'desktop', 'closedcaptions','participants-pane','hangup']},
         // interfaceConfigOverwrite: { DISABLE_JOIN_LEAVE_NOTIFICATIONS: false },
         parentNode: document.querySelector('#visio'),
     };
@@ -721,13 +722,23 @@ function joinMeet(id, room) {
 
     api.executeCommand('displayName', user_name);
 
-    fetch("/update/visio/"+id+"/finished", {
+    fetch("/update/visio/"+id+"/progress", {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         method: "POST",
     })
+
+    // api.executeCommand('toolbarButtonClicked',{
+    //     key: hangup, // the pressed button's key. The key is as defined in `toolbarButtons` config,
+    //     participantId: string, // the id of the participant for which the button was clicked,
+    //     preventExecution: boolean // whether the execution of the button click was prevented or not
+    // })
+
+    api.addListener('toolbarButtonClicked', function(){
+        alert("jsahkjshaksaksak")
+    });
 
     // api.dispose();
     
@@ -771,10 +782,12 @@ function runVisio(user_id) {
                     width: "100%",
                     height: 700,
                     lang: 'fr',
-                    configOverwrite: { prejoinPageEnabled: false },
+                    configOverwrite: { prejoinPageEnabled: false , toolbarButtons : ['microphone', 'camera', 'tileview','fullscreen','hangup', 'raisehand', 'select-background', 'desktop', 'closedcaptions']},
+                    // configOverwrite: { prejoinPageEnabled: false },
                     // interfaceConfigOverwrite: { DISABLE_JOIN_LEAVE_NOTIFICATIONS: false },
                     parentNode: document.querySelector('#visio'),
                 };
+
                 const api = new JitsiMeetExternalAPI(domain, options);
                 
                 api.executeCommand('displayName', user_name);
@@ -920,8 +933,7 @@ if (document.querySelector("#openMessage")) {
 
         document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:block;"
 
-
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
+        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px;"
 
         document.querySelectorAll("div.user_friends").forEach(user => {
             user.style = "display:";
@@ -1133,16 +1145,19 @@ if (document.querySelector("#openVisio")) {
 
                 if(!document.querySelector('.meet_'+meet.id)){
 
-                    // ${meet.status=='wait'?"<span onclick='joinMeet('+meet.nom+')' class='float-end badge text-bg-info cursor-pointer'>Accepter</span>":""}
-                    
                     let stat = "manqué"
                     let color = ""
                     let btn_join = ""
                     switch(meet.status) {
                         case 'wait':
-                            stat = `en cours`
+                            stat = `en attente...`
                             color = 'info'
-                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer'>Joindre</span>`
+                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
+                          break;
+                        case 'progress':
+                            stat = `en cours`
+                            color = 'warning'
+                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
                           break;
                         case 'finished':
                             stat = `términé`
@@ -1156,46 +1171,23 @@ if (document.querySelector("#openVisio")) {
                             stat = "manqué"
                       }
 
-                    // document.querySelector('#visio').innerHTML +=`<div class="m-2 card text-center mb-3 meet_${meet.id}" style="width: 95%;">
-                    //     <div class="card-body">
-                    //     <h5 class="card-title">${meet.nom}</h5>
-                    //     <p class="card-text">${meet.date}</p>
-                    //         ${stat}
-                    //     </div>
-                    // </div>`
+                    document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
+                            <p class="qb-chat mn un mt-4">
+                                ${meet.username}
+                            </p>
+                            <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                            <p class="text-${color} mb-2">
+                                <i class="fas fa-video-camera me-2 ms-1"></i>
+                                Appel ${stat}
+                                ${btn_join}
+                            </p> 
+                            </div>
+                            <p class="nn-chat float-end">${meet.date}</p>
+                        </div>`
 
-                    document.querySelector('#visio').innerHTML +=`<div class="col-12 m-2 meet_${meet.id}" style="width: 95%;">
-                    <div class="card order-card">
-                        <div class="card-block">
-                            <h2 class="text-right text-${color}"><i class="fas fa-video-camera f-left me-2 ms-1"></i><span>Appel ${stat} de ${meet.username}</span></h2>
-                            <p class="ms-2 me-2 text-body-tertiary">${meet.date} ${btn_join}</p>
-                        </div>
-                    </div>
-                </div>`
                 }
             })
         }
-
-        // fetch('/get/myvisio')
-        //     .then(response=>response.json())
-        //     .then(data=>{
-        //         console.log(data);
-
-        //         if(data.length>0){
-        //             for(let meet of data){
-
-        //                 if(!document.querySelector('.meet_'+meet.id)){
-        //                     document.querySelector('#visio').innerHTML +=`<div class="card text-center mb-3 meet_${meet.id}" style="width: 18rem;">
-        //                         <div class="card-body">
-        //                         <h5 class="card-title">${meet.nom}</h5>
-        //                         <p class="card-text">${meet.date}</p>
-        //                         <a href="#" class="btn btn-primary">Démarrer</a>
-        //                         </div>
-        //                     </div>`
-        //                 }
-        //             }
-        //         }
-        //     })
 
     })
 }
