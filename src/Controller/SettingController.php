@@ -2,25 +2,28 @@
 
 namespace App\Controller;
 
-use App\Form\SettingProfilConsumerType;
-use App\Form\SettingProfilSupplierType;
-use App\Form\ConfidentialityType;
+use App\Entity\User;
+use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
-use App\Entity\User;
+use App\Service\MailService;
 use App\Entity\Confidentiality;
+use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
+use App\Form\ConfidentialityType;
+use App\Form\SettingProfilConsumerType;
+use App\Form\SettingProfilSupplierType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
-use App\Service\MailService;
-use App\Service\Status;
-use App\Service\TributGService;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SettingController extends AbstractController
 {
@@ -37,7 +40,7 @@ class SettingController extends AbstractController
     }
 
     #[Route('/user/setting/account', name: 'account_setting')]
-    public function index(Request $request, Status $status): Response
+    public function index(Request $request, Status $status, TributGService $tbg_serv): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
 
@@ -47,6 +50,11 @@ class SettingController extends AbstractController
         $profil = null;
         $flushMessage = null;
         $form = null;
+
+        $tribugexists = $tbg_serv->getAllTribuGExists();
+
+        //dd($tribugexists);
+
         if ($userType == "consumer") {
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
             $form = $this->createForm(SettingProfilConsumerType::class, $profil[0]);
@@ -69,6 +77,8 @@ class SettingController extends AbstractController
 
                 $telFixe = $form->get('telFixe')->getData();
 
+                $quartier = $form->get('quartier')->getData();
+
                 $profil[0]->setFirstname($fname);
 
                 $profil[0]->setLastname($lname);
@@ -84,6 +94,34 @@ class SettingController extends AbstractController
                 $profil[0]->setPays($pays);
 
                 $profil[0]->setTelFixe($telFixe);
+
+                $profil[0]->setQuartier($quartier);
+
+                // $tribug_name = str_replace(" ","_", $quartier);
+
+                // $is_exist = false;
+
+                // foreach ($tribugexists as $tribu) {
+
+                //     if(str_contains($tribu['tributg'], $tribug_name)){
+
+                //         $is_exist = true;
+
+                //     }else{
+
+                //         $is_exist = false;
+
+                //     }
+                // }
+
+                // $tribug_table_name = "tribug_".str_pad($userId,2,'0',STR_PAD_LEFT)."_".$tribug_name;
+
+                // $profil[0]->setTributG($tribug_table_name);
+
+                // if($is_exist == false){
+
+                //     $tbg_serv->createTableTributG($tribug_table_name, $userId);
+                // }
 
                 $this->entityManager->flush();
 
@@ -122,6 +160,8 @@ class SettingController extends AbstractController
 
                 $twitter = $form->get('twitter')->getData();
 
+                $quartier = $form->get('quartier')->getData();
+
                 $profil[0]->setFirstname($fname);
 
                 $profil[0]->setLastname($lname);
@@ -148,19 +188,43 @@ class SettingController extends AbstractController
 
                 $profil[0]->setTwitter($twitter);
 
+                $profil[0]->setQuartier($quartier);
+
                 $this->entityManager->flush();
 
                 $flushMessage = "Votre profil a été bien à jour !";
             }
         }
         $statusProfile = $status->statusFondateur($this->getUser());
+
+
+        /** Update password and email */
+
+        $form_password = $this->createFormBuilder()
+            ->setAction($this->generateUrl('security_setting'))
+            ->setMethod('POST')
+            ->add('old_password', PasswordType::class)
+            ->add('new_password', PasswordType::class)
+            ->add('retap_new_password', PasswordType::class)
+            ->getForm();
+
+        $form_email = $this->createFormBuilder()
+            ->setAction($this->generateUrl('security_setting'))
+            ->setMethod('POST')
+            ->add('old_email', EmailType::class)
+            ->add('new_email', EmailType::class)
+            ->add('confirm_email', EmailType::class)
+            ->add('password', PasswordType::class)
+            ->getForm();
         
         return $this->render('setting/index.html.twig', [
             "userConnected" => $userConnected,
             'profil' => $profil,
             "statusTribut" => $statusProfile["statusTribut"],
             'form' => $form->createView(),
-            "message" => $flushMessage
+            "message" => $flushMessage,
+            "form_password" =>  $form_password->createView(),
+            "form_email" =>$form_email->createView()
         ]);
     }
 
@@ -224,7 +288,7 @@ class SettingController extends AbstractController
     } 
 
     #[Route('/user/setting/security', name: 'security_setting')]
-    public function updatePassword(Request $request, UserPasswordHasherInterface $passwordEncoder): Response
+    public function updatePassword(Request $request, UserPasswordHasherInterface $passwordEncoder, MailService $mailService): Response
     {
         $user = $this->getUser();
 
@@ -232,13 +296,23 @@ class SettingController extends AbstractController
 
         $isSuccess = false;
 
+        $data = $request->request->all()["form"];
+
+        extract($data);
+        //dd($data);
+
+        $is_pwd = 0;
+
         if ($request->isMethod("POST")) {
 
+            /** Mise à jour mot de passe */
+
             if ($request->request->get('reset') == "resetPassword") {
-                $old_password = $request->request->get('old_password');
+
+                $is_pwd = 1;
+
                 if ($passwordEncoder->isPasswordValid($user, $old_password)) {
-                    $new_password = $request->request->get('new_password');
-                    $retap_new_password = $request->request->get('retap_new_password');
+
                     if ($new_password == $retap_new_password) {
 
                         $password = $passwordEncoder->hashPassword($user, $new_password);
@@ -259,10 +333,12 @@ class SettingController extends AbstractController
                     $isSuccess = false;
                 }
             } else {
-                $password = $request->request->get('password');
-                if ($passwordEncoder->isPasswordValid($user, $password)) {
 
-                    $new_email = $request->request->get('new_email');
+                /** Mise à jour email */
+
+                $is_pwd = 0;
+
+                if ($passwordEncoder->isPasswordValid($user, $password) && $new_email== $confirm_email) {
 
                     $user->setEmailTemp($new_email);
 
@@ -274,7 +350,6 @@ class SettingController extends AbstractController
 
                     $isSuccess = true;
 
-                    //// prepare email which we wish send
                     $signatureComponents = $this->verifyEmailHelper->generateSignature(
                         "validate_email", /// lien de revenir
                         $user->getId(), /// id for user
@@ -282,22 +357,16 @@ class SettingController extends AbstractController
                         ['id' => $user->getId()] /// param id
                     );
 
-                    $url = $this->generateUrl("validate_email", array("id" => $user->getId()), UrlGeneratorInterface::ABSOLUTE_URL);
-
-                    //dd($url);
-
-                    $param = $passwordEncoder->hashPassword($user, $user->getId());
-
-                    //dd($signatureComponents->getSignedUrl() . "&id=" . $user->getId());
-
-                    $this->mailService->sendEmail(
-                        "geoinfography@infostat.fr", /// mail where from
-                        "ConsoMyZone",  //// name the senders
-                        $new_email, /// mail destionation
-                        $user->getPseudo(), /// name destionation
-                        "EMAIL DE CONFIRMATION", //// title of email
-                        "Pour confirmer votre modification de l'adresse email. Clickez-ici: " . $signatureComponents->getSignedUrl() . "&id=" . $user->getId() /// content: link
+                    $mailService->sendLinkOnEmailAboutAuthenticator(
+                        $new_email, /// mail destination
+                        trim($user->getPseudo()), /// name destination
+                        [
+                            "object" => "Validation e-mail sur ConsoMyZone", //// object of the email
+                            "link" => $signatureComponents->getSignedUrl(), /// link
+                            "template" => "emails/mail_validate_update_email.html.twig"
+                        ]
                     );
+
                 } else {
                     $flushMessage = "Le mot de passe actuel n'est pas le bon !";
                     $isSuccess = false;
@@ -314,12 +383,22 @@ class SettingController extends AbstractController
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-        return $this->render('setting/password.html.twig', [
+        //dd($profil);
+
+        return $this->redirectToRoute("account_setting", [
             "message" => $flushMessage,
             "isSuccess" => $isSuccess,
             "profil"=>$profil,
             'statusTribut' => ["status" => "", "verified" => ""],
+            "is_pwd" => $is_pwd
         ]);
+
+        // return $this->render('setting/password.html.twig', [
+        //     "message" => $flushMessage,
+        //     "isSuccess" => $isSuccess,
+        //     "profil"=>$profil,
+        //     'statusTribut' => ["status" => "", "verified" => ""],
+        // ]);
     }
 
     #[Route('/security-validate-email', name: 'validate_email')]

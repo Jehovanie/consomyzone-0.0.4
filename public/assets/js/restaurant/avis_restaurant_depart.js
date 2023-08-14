@@ -1,5 +1,6 @@
 window.addEventListener('load', () => {
-    const idRestaurant = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+    // const idRestaurant = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+    const idRestaurant = document.querySelector("#details-coord") ? document.querySelector("#details-coord").getAttribute("data-toggle-id-resto") : null
     let currentUserId = 0
     if(document.querySelector(".FtBjOlVf"))
         currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
@@ -10,6 +11,8 @@ window.addEventListener('load', () => {
     //     showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
     //     showNoteGlobale(idRestaurant)
     // }
+    if(document.querySelector(".content_one_cta"))
+        currentUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
 
     document.querySelector("#text-note").onkeyup = (e) => { 
         if (document.querySelector(".flash-msg-ERREUR")) {
@@ -45,7 +48,9 @@ window.addEventListener('load', () => {
         }, 5000)   
     }
     document.querySelector("#Submit-Avis-resto-tom-js").onclick = () => {
-       
+
+        let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+        let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
         let note = document.querySelector("#text-note").value
         note=note.replace(/,/g,".")
         const avis = document.querySelector("#message-text").value
@@ -55,8 +60,8 @@ window.addEventListener('load', () => {
                 note: parseFloat(note),
                 avis:avis
             }
-            //const idRestaurant=location.href.toString().split("/")[8]
-            const request = new Request(`/avis/restaurant/${idRestaurant}`, {
+
+            const request = new Request(`/avis/restaurant/${newIdResto}`, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
@@ -66,10 +71,10 @@ window.addEventListener('load', () => {
             })
             fetch(request).then(r => {
                 if (r.ok && r.status === 200) {
-                    showModifArea(idRestaurant, currentUserId)
+                    showModifArea(newIdResto, newUserId)
                     if (document.querySelector("#see-tom-js")) {
-                        showNemberOfAvis(idRestaurant, document.querySelector("#see-tom-js"))
-                        showNoteGlobale(idRestaurant)
+                        showNemberOfAvis(newIdResto, document.querySelector("#see-tom-js"))
+                        showNoteGlobale(newIdResto)
                     }
                 }
             })
@@ -98,6 +103,8 @@ window.addEventListener('load', () => {
     if (document.querySelector("#UpDate-Avis-tom-js")) {
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 
             // alert("Updating")
+            let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+            let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
             let note = document.querySelector("#text-note-modif").value
             note = note.replace(/,/g, ".")
             console.log(note)
@@ -111,7 +118,7 @@ window.addEventListener('load', () => {
                     }
                     
                     //const idRestaurant=location.href.toString().split("/")[8]
-                    const request = new Request(`/change/restaurant/${idRestaurant}`, {
+                    const request = new Request(`/change/restaurant/${newIdResto}`, {
                         method: "POST",
                         headers: {
                             'Accept': 'application/json',
@@ -122,11 +129,11 @@ window.addEventListener('load', () => {
                     fetch(request).then(r => {
                         if (r.ok && r.status === 200) {
                             // alert("Restaurants updated successfully")
-                            console.log(currentUserId)
-                            showModifArea(idRestaurant, currentUserId)
+                            console.log(newUserId)
+                            showModifArea(newIdResto, newUserId)
                             if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
-                                showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
-                                showNoteGlobale(idRestaurant)
+                                showNemberOfAvis(newIdResto, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
+                                showNoteGlobale(newIdResto)
                             }
                         }
                     })
@@ -254,8 +261,11 @@ function showModifArea(idRestaurant,currentUserId) {
         .then(jsons => {
             if (jsons) {
                 console.log(jsons)
+                console.log("currentUserId : " + currentUserId)
                 for (let json of jsons) { 
+                    console.log("jsonUserId : " + json["user"]["id"])
                     const b = (currentUserId == json["user"]["id"])
+                    console.log("b : " + b)
                     if (b) {
                         if (document.querySelector("#givs-avis-resto-tom-js").style.display != "none") {
                             document.querySelector("#givs-avis-resto-tom-js").style.display = "none"
@@ -267,6 +277,8 @@ function showModifArea(idRestaurant,currentUserId) {
                             }
                         }
                         break;
+                    }else{
+                        console.log("Oooopssssssssssssssss vous n'êtes pas autorisé !")
                     } 
                 }
                 
@@ -410,9 +422,10 @@ function _kidMo(event) {
     const stars=event.target.parentNode.querySelectorAll(".lioTe >i.checked").length
    
     const targertTextArea=document.querySelector("#message-text-kidje3")
+
     targertTextArea.value=v
 
-   document.querySelector("#text-note-modif").value=stars
+    document.querySelector("#text-note-modif").value=stars
    
 }
 

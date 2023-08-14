@@ -167,43 +167,58 @@ class MessageController extends AbstractController
     ): Response
     {
         /// get data from front on json format
-        $data = json_decode($request->getContent(), true); /// ["from" => ... , "to" => ... ,"message" => ... , "images" => [] ]
+        $data = json_decode($request->getContent(), true); /// ["from" => ... , "to" => ... ,"message" => ... , "files" => [ ["name" => ..., "type" => ...], ... ] ]
         ///define variables from the key in the array
         extract($data); /// $from , $to , $message, $images
         
-        $image_lists = [];
+        $file_list = [];
+        $image_list = [];
+        
         ///save all image
-        if(count($images) > 0 ){
+        if(count($files) > 0 ){
             
-            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/';
+            $path_image = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/';
+            $path_files = $this->getParameter('kernel.project_dir') . '/public/uploads/messages/files/';
             
-            $dir_exist = $filesyst->exists($path);
-            if ($dir_exist == false) {
-                $filesyst->mkdir($path, 0777);
+            $dir_image_exist = $filesyst->exists($path_image);
+            $dir_files_exist = $filesyst->exists($path_files);
+
+            if ($dir_image_exist == false) {
+                $filesyst->mkdir($path_image, 0777);
             }
 
-            foreach( $images as $image ){
+            if ($dir_files_exist == false) {
+                $filesyst->mkdir($path_files, 0777);
+            }
+
+            foreach( $files as $file ){
+                extract($file); /// $type, $name
+
                 // Function to write image into file
-                $temp = explode(";", $image );
+                $temp = explode(";", $name );
                 $extension = explode("/", $temp[0])[1];
-                $image_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $from . "_to_" . $to . "." . $extension;
+                $file_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $from . "_to_" . $to . "." . $extension;
+
+                if( $file['type'] === 'image'){
+                    file_put_contents($path_image . $file_name, file_get_contents($name));
+                    array_push($image_list, "/public/uploads/messages/". $file_name);
+
+                }else if( $file['type'] === 'file'){
+                    file_put_contents($path_files . $file_name, file_get_contents($name));
+                    array_push($file_list, "/public/uploads/messages/files/". $file_name);
+                }
                 ///save image in public/uploader folder
-                file_put_contents($path . $image_name, file_get_contents($image));
-                
-                array_push($image_lists, "/public/uploads/messages/". $image_name);
             }
         }
 
-        if(count($image_lists) > 0  && $message === ""){
-            $type= "image";
-        }else if( count($image_lists) > 0 && $message !== "" ){
-            $type= "text_image";
+        if(count($file_list) > 0 || count($image_list) > 0 ){
+            $type= "object";
         }else{
             $type= "text";
         }
 
         ///persist message data and return the last id form their table
-        $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_lists ]),$type); /// [ ["last_id_message" => .. ] ]
+        $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type); /// [ ["last_id_message" => .. ] ]
 
         return $this->json([
            "id" => $result[0]["last_id_message"]
@@ -407,6 +422,37 @@ class MessageController extends AbstractController
         $messages = $messageService->getAllOldMessage($user_id, $table_message);
 
         return $this->json($messages);
+    }
+
+    #[Route('/create/visio', name: 'app_new_visio')]
+    public function createVisio(Request $request, MessageService $messageService): Response
+    {
+        $user = $this->getUser();
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        $messageService->createVisio($user->getId(), $to, $roomName, $status);
+
+        return $this->json([
+            "success" => true
+        ]);
+
+    }
+
+    #[Route('/get/visio/by/{user_id}', name: 'app_get_visio')]
+    public function getVisio($user_id): Response
+    {
+        $sql = "SELECT * FROM visio_story WHERE user_id = $user_id";
+
+        $stm = $this->getPDO()->prepare($sql);
+
+        $stm->execute();
+
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
 
 }

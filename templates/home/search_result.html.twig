@@ -19,6 +19,7 @@
 	<script type="text/javascript" src="{{ asset('assets/js/home/marckerClusterSearch.js') }}" defer></script>
     
     <script type="text/javascript" src="{{asset('assets/js/home/detail_search.js')}}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
 
 {% endblock %}
 
@@ -64,5 +65,8 @@
     {{ include('shard/chatBot.html.twig') }}
     {% include 'shard/home/detail_home_navleft.twig' %}
     {% include 'shard/home/modal_detail_home_mobile.html.twig' %}
+    {{ include('shard/restaurant/list_avis.html.twig') }}
+    {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
+    {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
 
 {% endblock %}

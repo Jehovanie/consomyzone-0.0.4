@@ -1,5 +1,5 @@
-if( document.querySelector("#fetch_photo_tribug_js_jheo")){
-    const btn_photos = document.querySelector("#fetch_photo_tribug_js_jheo");
+if( document.querySelector("#fetch_photo_tribug_jheo_js")){
+    const btn_photos = document.querySelector("#fetch_photo_tribug_jheo_js");
 
     btn_photos.addEventListener("click",(e) => {
         e.preventDefault();
@@ -7,28 +7,26 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
             btn_photos.classList.add("active")
             btn_photos.classList.add("text-white")
             btn_photos.classList.remove("text-primary")
-            document.querySelector("#showCreatePub").style.display="none";
-            
         }
 
-        document.querySelector(".content_bloc_js_jheo div").innerHTML = `<div class="mt-3 d-flex justify-content-center">
+        document.querySelector(".content_bloc_jheo_js").innerHTML = `<div class="mt-3 d-flex justify-content-center">
             <div class="spinner-border" role="status">
             <span class="sr-only">Loading...</span>
             </div>
         </div>`;
 
-        if(document.querySelector("#fetch_actialite_tribug_js_jheo").classList.contains("active")){
-            document.querySelector("#fetch_actialite_tribug_js_jheo").classList.remove("active")
-            document.querySelector("#fetch_actialite_tribug_js_jheo").classList.remove("text-white")
-            document.querySelector("#fetch_actialite_tribug_js_jheo").classList.add("text-primary")
+        if(document.querySelector("#fetch_actialite_tribug_jheo_js").classList.contains("active")){
+            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("active")
+            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("text-white")
+            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.add("text-primary")
         }
-        if(document.querySelector("#fetch_member_tribug_js_jheo").classList.contains("active")){
-            document.querySelector("#fetch_member_tribug_js_jheo").classList.remove("active")
-            document.querySelector("#fetch_member_tribug_js_jheo").classList.remove("text-white")
-            document.querySelector("#fetch_member_tribug_js_jheo").classList.add("text-primary")
+        if(document.querySelector("#fetch_member_tribug_jheo_js").classList.contains("active")){
+            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("active")
+            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("text-white")
+            document.querySelector("#fetch_member_tribug_jheo_js").classList.add("text-primary")
         }
 
-        document.querySelector(".content_bloc_js_jheo").innerHTML = `
+        document.querySelector(".content_bloc_jheo_js").innerHTML = `
             <div class="spinner-grow text-info d-block mx-auto" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
@@ -47,18 +45,10 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
                 console.error(error)
             })
             .then( response => {
-                if( document.querySelector(".content_bloc_js_jheo")){
-                    document.querySelector(".content_bloc_js_jheo").removeChild(
-                        document.querySelector(".content_bloc_js_jheo div")
-                    );
-
-                    document.querySelector(".content_bloc_js_jheo").innerHTML = response;
+                if( document.querySelector(".content_bloc_jheo_js")){
+                    document.querySelector(".content_bloc_jheo_js").innerHTML = response;
 
                     setGallerie(document.querySelectorAll("#gallery > img"))
-<<<<<<< HEAD
-=======
-
->>>>>>> main
                 }
             }).catch(error => {
                 console.log(error)
@@ -66,18 +56,10 @@ if( document.querySelector("#fetch_photo_tribug_js_jheo")){
     })
 }
 
-<<<<<<< HEAD
 /**
 * Upload photos
 */
 var loadFile = (event) => {
-=======
-
-/**
-* Upload photos
-*/
-function loadFile (event){
->>>>>>> main
 
     let new_photo = document.createElement("img")
     new_photo.setAttribute("data-bs-toggle","modal")

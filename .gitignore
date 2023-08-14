@@ -12,6 +12,7 @@
 /public/uploads/tribu_t/photo/
 /public/uploads/tribu_t/photos/
 /public/uploads/tribus/photos/
+/public/uploads/tribus/
 /public/uploads/messages/
 /public/users/audios/
 /public/users/photos/
@@ -30,6 +31,7 @@
 
 ###< symfony/phpunit-bridge ###
 /.env.local
+/deleteWhenProd.md
 /BDD
 /.env.local.php
 /.env.*.local

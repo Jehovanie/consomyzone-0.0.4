@@ -25,17 +25,6 @@ class PublicationType extends AbstractType
             ->add('legend', TextareaType::class, ['label' => false, 'required' => false])
             ->add('photo', FileType::class, [
                 'label' => false, 'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '5024k',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/jpg',
-                            'image/png'
-                        ],
-                        'mimeTypesMessage' => 'Choisir un fichier image !',
-                    ])
-                ],
                 ])
             ->add('confidentiality', ChoiceType::class, 
             [

@@ -12,18 +12,19 @@ use Normalizer;
 
 use App\Entity\User;
 
-use App\Entity\Consumer;
-
-use App\Entity\Supplier;
-use App\Entity\PublicationG;
-use App\Form\FileUplaodType;
-use App\Service\MailService;
-
 use App\Service\Status;
 
-use App\Service\UserService;
-
+use App\Entity\Consumer;
+use App\Entity\Supplier;
 use App\Service\FilesUtils;
+use App\Entity\PublicationG;
+
+use App\Form\FileUplaodType;
+
+use App\Service\MailService;
+
+use App\Service\UserService;
+use App\Service\StringTraitementService;
 use App\Form\PublicationType;
 use App\Service\TributGService;
 
@@ -34,7 +35,7 @@ use App\Repository\UserRepository;
 use App\Service\RequestingService;
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
-
+use App\Service\AgendaService;
 use Doctrine\ORM\EntityManagerInterface;
 
 use function PHPUnit\Framework\assertFalse;
@@ -47,6 +48,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Validator\Constraints\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -55,9 +57,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -220,7 +223,8 @@ class TributTController extends AbstractController
     }
 
     #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
-    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep){
+    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
+        
         $user = $this->getUser();
         $userId = $user->getId();
         $userTribu_T=json_decode($user->getTribuT(),true);
@@ -238,6 +242,7 @@ class TributTController extends AbstractController
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
 
+
         
         foreach ($userTribu_T["tribu_t"] as $k =>$v) {
             if(is_array($v)){
@@ -253,11 +258,38 @@ class TributTController extends AbstractController
             }
             
         }
+
+        $membre = $tribu_T_Service->showMember($tribu_t_name);
         
         $response = new Response();
+
         try{
-            $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+            foreach ($membre as $key) {
+                if($key["roles"] == "Fondateur"){
+                    $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+                }else{
+                    $user = $userRep->findOneBy(["id"=>$key["user_id"]]);
+                    $userTribu_T = json_decode($user->getTribuTJoined(),true);
+                    foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+                        if(is_array($v)){
+                            if (in_array($tribu_t_name, $v)) {
+                                $v["logo_path"]=str_replace("/public","",$path.$imageName);
+                                $userTribu_T["tribu_t"][$k]= $v;
+                            }
+                        }else{
+                            if($k== "logo_path"){
+                                $v=str_replace("/public","",$path.$imageName);
+                                $userTribu_T["tribu_t"][$k]= $v;
+                            }
+                        }
+                        
+                    }
+                    $userRep->updatePdpTribu_T_Joined(json_encode($userTribu_T), $user);
+                }
+            }
+
             $response->setStatusCode(200);
+
             return $response;
         }catch(\Exception $e){
             $response->setStatusCode(500);
@@ -623,7 +655,7 @@ class TributTController extends AbstractController
 
     }
 
-    #[Route('user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
+    #[Route('/user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
     public function showTribu_T_specifique($name_tribu_t,
     Tribu_T_Service $tribu_t_serv,
     SerializerInterface $serializer){
@@ -1188,37 +1220,57 @@ class TributTController extends AbstractController
 
      */
 
-    public function updatePublication($table, Request $request)
+    public function updatePublication($table, Request $request, 
+    Tribu_T_Service $tribuTService,
+    Filesystem $filesyst)
 
     {
 
-
-
         $user = $this->getUser();
+
+        $userId = $user->getId();
 
         $requestContent = json_decode($request->getContent(), true);
 
+        $file = $requestContent["base64"];
 
+        $oldSrc = $requestContent["oldSrc"];
 
         $pub_id = $requestContent["pub_id"];
 
-
-
         $confid = $requestContent["confidentiality"];
-
-
 
         $new_message = $requestContent["message"];
 
+        $path = '/public/uploads/tribu_t/photo/' .  $table . "/";
 
+        $imageName = "";
 
-        $tribut = new Tribu_T_Service();
+        if($file != null){
 
+            $temp = explode(";", $file );
 
+            $extension = explode("/", $temp[0])[1];
 
-        $tribut->updatePublication($table, $pub_id, $new_message, $confid);
+            $imageName = time(). '-' . uniqid() . "." . $extension;
 
+            ///save image in public/uploader folder
 
+            if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+            $projectDir = $this->getParameter('kernel.project_dir') . $path;
+            file_put_contents($projectDir . $imageName, file_get_contents($file));
+
+            $tribuTService->updatePublication($table, $pub_id, $new_message, $confid, $path . $imageName);
+
+        }else{
+            if($oldSrc != ""){
+                $tribuTService->updatePublication($table, $pub_id, $new_message, $confid, $oldSrc);
+            }else{
+                $tribuTService->updatePublication($table, $pub_id, $new_message, $confid);
+            }
+            
+        }
 
         return $this->json("Bien à jour !");
 
@@ -1481,7 +1533,7 @@ class TributTController extends AbstractController
 
     #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
 
-    public function getRestoPastilles($table_resto): Response
+    public function getRestoPastilles($table_resto,SerializerInterface $serialize): Response
 
     {
 
@@ -1494,8 +1546,14 @@ class TributTController extends AbstractController
 
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
+			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
-        return $this->json($restos);
+		
+		//dd($restos);
+		$r=$serialize->serialize($restos,'json');
+		
+		//return $this->json($restos);
+		return new JsonResponse($r, Response::HTTP_OK, [], true);
 
     }
 
@@ -1902,7 +1960,10 @@ class TributTController extends AbstractController
         Request $request,  
         TributGService $tributGService,
         SluggerInterface $slugger,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        StringTraitementService $stringTraitementService
     ) : Response
     {
         $userConnected= $status->userProfilService($this->getUser());
@@ -1915,6 +1976,10 @@ class TributTController extends AbstractController
             ])
             ->add('tribuTName', TextType::class, [
                 'label' => false 
+            ])
+            ->add('extensionData', HiddenType::class, [
+                'label' => false ,
+                'required' => false
             ])
             ->add('description', TextareaType::class, [
                 'label' => false ,
@@ -1937,9 +2002,11 @@ class TributTController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
            
             $data = $form->getData();
-            $tribuName= str_replace(" ","_", strtolower($data["tribuTName"]));
-            $tmp=Normalizer::normalize($tribuName,Normalizer::NFD);
-            $tribuTNameFinal=preg_replace('/[[:^print:]]/', '', $tmp);
+            $tribuName= $data["tribuTName"];
+            $tribuTNameFinal = $stringTraitementService->normalizedString($tribuName);
+            $tribuTNameFinal = str_replace(" ","_", strtolower($tribuTNameFinal));
+            $tribuTNameFinal = strlen($tribuTNameFinal) > 30 ? substr($tribuTNameFinal,0,30) : $tribuTNameFinal;
+            
             $path = '/public/uploads/tribu_t/photo/tribu_t_'.$user->getId()."_".$tribuTNameFinal."/";
             if( !($filesyst->exists($this->getParameter('kernel.project_dir').$path)))
                     $filesyst->mkdir($this->getParameter('kernel.project_dir').$path,0777);
@@ -1952,21 +2019,22 @@ class TributTController extends AbstractController
                 $path= $path . $filename;
             
             //TODO create tribu-t
-            
-            
+
             $body=array(
                 "path" => str_replace("/public","",$path),
-                "tribu_t_name"=>$tribuTNameFinal,
+                "tribu_t_name"=>$tribuName,
                 "description"=>$data["description"],
                 "adresse"=>$data["adresse"], 
-                "extension"=>$data["extension"]);
+                "extension"=>$data["extension"],
+                "extensionData"=>$data["extensionData"]
+            );
           
-            $this->createTribu_T($body);
-            return $this->redirectToRoute("app_my_tribu_t");
+            $this->createTribu_T($body, $stringTraitementService);
+            $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
+            
+            return $this->redirectToRoute("app_my_tribu_t" ,["message" => $message]);
       
         }
-
-       
 
         $user = $this->getUser();
        
@@ -1987,25 +2055,39 @@ class TributTController extends AbstractController
         
         $tibu_T_data_owned=json_decode($user->getTribuT(),true);
         $tibu_T_data_joined=json_decode($user->getTribuTJoined(),true);
-         
-        if($_ENV['APP_ENV'] == 'dev') 
-            dump($tibu_T_data_owned);
 
         $tribu_t_owned=!is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined=!is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
-        
 
+        /**
+         * CONTAINER LIST PUBLICATION
+         */
 
+        //// ALL PUBLICATION FOR ALL TRIBU T /////
+        $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
+        // dd($all_tribuT);
 
-       
+        $publications= [];
+        if(count($all_tribuT) > 0 ){
+            $all_pub_tribuT= [];
+            foreach($all_tribuT as $tribuT){
+                $temp_pub= $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name']);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
 
-        
+        /**
+         * END LIST PUBLICATION
+         */
+        // dd($tribu_t_owned);
         return $this->render('tribu_t/tribuT.html.twig',[
+            "publications" => $publications,
             "userConnected" => $userConnected,
             "profil" => $profil,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "tibu_T_owned" => $tribu_t_owned,
-            "tibu_T_joined" => $tribu_t_joined,
+            "tribu_T_owned" => $tribu_t_owned,
+            "tribu_T_joined" => $tribu_t_joined,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
             "form" => $form->createView(),
         ]);
@@ -2025,7 +2107,7 @@ class TributTController extends AbstractController
         $publication= $jsonParsed["contenu"];
         $confid=$jsonParsed["confidentialite"];
         $image= $jsonParsed["base64"];
-        $imageName= $jsonParsed["photoName"];
+        $imageName= time()."_".$jsonParsed["photoName"];
         $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
                 $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
@@ -2075,7 +2157,7 @@ class TributTController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
     //,  TributGService $tributGService
-    public function createTribu_T($body)
+    public function createTribu_T($body, $stringTraitementService)
 
     {
 
@@ -2083,15 +2165,6 @@ class TributTController extends AbstractController
 
         $userId = $user->getId();
 
-
-
-        // $userType = $user->getType();
-
-        // $profil = "";
-
-        // $flushMessage = null;
-
-        // $isSuccess = false;
         if (!is_null($body)) {
            
                 $resto = $body['extension'];
@@ -2100,62 +2173,74 @@ class TributTController extends AbstractController
                 $nom = str_replace("'", "$", $nom);
                 $description = str_replace("'", "$", $body["description"]);
 
-
-                $nameNormalized =Normalizer::normalize($nom, Normalizer::NFD);
-                $nameNormalized2 = preg_replace('/[[:^print:]]/', '', $nameNormalized);
-                $tableName = strtolower($nameNormalized2);
-                $tableName = str_replace(" ", "_", $tableName);
-
-                setlocale(LC_CTYPE, 'cs_CZ');
-
-                $tableName = iconv('UTF-8', 'ASCII//TRANSLIT', $tableName);
-
-                $tableName = preg_replace('/[^a-z0-9_]/i', '', $tableName);
+                $tableName = $stringTraitementService->normalizedString($nom);
+                $tableName = str_replace(" ","_", strtolower($tableName));
+                $tableName = strlen($tableName) > 30 ? substr($tableName,0,30) : $tableName;
 
                 $tribut = new Tribu_T_Service();
+
                 $output = $tribut->createTribuTable($tableName, $userId, $nom, $description);
+
                 $nom = str_replace("$", "'", $nom);
+
                 if ($output != 0) {
+
                     $restoExtension = ($resto == "on") ? "restaurant" : null;
+
                     $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned");
+
                     $isSuccess = true;
+
                     $flushMessage = "Félicitation ! Vous avez réussi à créer la tribu " .$nom;
+
                     $tableTribu = "tribu_t_" . $userId . "_" . $tableName;
+
                     if ($resto == "on") {
+
                         $tribut->createExtensionDynamicTable($tableTribu, "restaurant");
+
                         $tribut->createTableComment($tableTribu, "restaurant_commentaire");
+
+                        $extensionData = json_decode($body["extensionData"]);
+
+                        if (count($extensionData) > 0) {
+                            $agendaService = new AgendaService ();
+                            for($i = 0; $i < count($extensionData); $i++){
+                                $agendaService->saveRestaurant($tableTribu."_restaurant", $extensionData[$i]->denomination_f, $extensionData[$i]->id_resto);
+                            }
+
+                        }
+
                     }
 
-                    return $this->redirectToRoute('publication_tribu', [
-                        "message" => $flushMessage,
-                        "table" => $tableTribu . "_publication"
-                    ]);
+                    return true;
+
                 } else {
                     $isSuccess = false;
                     $flushMessage = "Vous avez déjà créé la tribu " .$nom;
+                    return false;
                 }
             
         }
 
+    }
 
+    #[Route("/user/tribu_t/pastille/resto", name:"tribu_t_pastille_resto", methods:["POST"])]
+    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest){
 
-        // if ($userType == "consumer") {
+        $jsonParsed=json_decode($resquest->getContent(),true);
 
-        //     $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        // } else {
+        $resto_name =  $jsonParsed["name"];
 
-        //     $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
-        // }
+        $resto_id = $jsonParsed["id"];
 
+        $tribu_t = $jsonParsed["tbl"];
 
+        $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
 
-        // return $this->render('tribu_t/index.html.twig', [
-
-        //     "message" => $flushMessage, "isSuccess" => $isSuccess, "profil" => $profil, "tzone" => date_default_timezone_get(),
-
-        //     "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
-
-        // ]);
+        $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
+        
+        return $this->json($message);
     }
 
     #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]
@@ -2241,8 +2326,31 @@ class TributTController extends AbstractController
         return $this->json($users);
 
     }
-
     
+    #[Route('/user/pub/tribu_t', name: 'all_pub_tribu_t')]
+
+    public function fetchAllPubTribuT(UserRepository $userRepository, Tribu_T_Service $tribu_T_Service): Response
+
+    {
+
+        //// ALL PUBLICATION FOR ALL TRIBU T /////
+        $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
+        // dd($all_tribuT);
+
+        if(count($all_tribuT) > 0 ){
+            $publications= [];
+            $all_pub_tribuT= [];
+            foreach($all_tribuT as $tribuT){
+                $temp_pub= $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name']);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
+        dd($publications);
+
+        return $this->json($publications);
+
+    }   
 
 }
 

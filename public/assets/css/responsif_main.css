@@ -24,8 +24,9 @@
         padding: 0;
         overflow: hidden;
         background-color: #fff;
-        border-radius: 3px;
     }
+
+    /* ul.navBarTribu-t {
 /* 
     ul.navBarTribu-t {
         border-radius: 15px !important;
@@ -1392,7 +1393,7 @@
     } */
 
     .content_right_actualite .exprime-pub {
-        margin-top: 10px !important;
+        margin-top: 45px !important;
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
@@ -1535,7 +1536,7 @@
     } */
 
     .content_right_actualite .exprime-pub {
-        margin-top: 0 !important;
+        margin-top: 10 !important;
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
@@ -1680,7 +1681,7 @@
     } */
 
     .content_right_actualite .exprime-pub {
-        margin-top: 0px !important;
+        /* margin-top: 265px !important; */
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
@@ -1765,7 +1766,7 @@
     }
 
     .listTribu_t_mobile {
-        margin-top: 0px !important;
+        /* margin-top: 80px !important; */
     }
 
     .content_list {
@@ -1787,7 +1788,7 @@
     }
 
     .content_right_actualite {
-        top: 79px !important;
+        /* top: 79px !important; */
     }
 }
 
@@ -1944,6 +1945,13 @@
 
 @media screen and (min-width: 1900px){
 
+   .right_full{
+           right: -445px !important;
+   }
+
+    .content-pub{
+        max-width: 73.75rem !important;
+    } 
     .width-content-t {
         width: 77%;
     }

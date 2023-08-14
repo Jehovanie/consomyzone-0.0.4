@@ -4,17 +4,14 @@
 
 namespace App\Service;
 
-use ArgumentCountError;
-use Exception;
 use PDO;
+use Exception;
 use PDOException;
+use ArgumentCountError;
+use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
-
 {
-
-
-
     public function createTribuTable($tableName, $user_id, $name, $description)
 
     {
@@ -353,17 +350,17 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    public function showTribuT($user_id)
+    public function showTribuT($user_id, $option= null)
 
     {
 
-
+        $option = ($option === null) ? null : "_" .$option;
 
         $db = $_ENV["DATABASENAME"];
 
 
 
-        $query = "SHOW TABLES FROM $db like '%tribu_t_" . $user_id . "_%'";
+        $query = "SHOW TABLES FROM $db like '%tribu_t_" . $user_id . "_%" . $option ."'";
 
 
 
@@ -405,7 +402,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table WHERE status = 1");
+        $statement = $this->getPDO()->prepare("SELECT user_id, roles FROM $table WHERE status = 1");
 
         $statement->execute();
 
@@ -639,12 +636,12 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId ");
+        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId");
 
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-
+        // dd($result);
         return $result["fullname"];
 
     }
@@ -944,40 +941,23 @@ class Tribu_T_Service extends PDOConnexionService
 
 
     public function removePublicationOrCommentaire($table, $id)
-
     {
-
-
-
         $sql = "DELETE FROM $table WHERE id = ?";
-
-
-
         $stmt = $this->getPDO()->prepare($sql);
-
-
-
         $stmt->execute([$id]);
-
     }
 
 
 
-    public function updatePublication($table, $id, $publication, $confidentiality)
+    public function updatePublication($table, $id, $publication, $confidentiality, $photo="")
 
     {
 
-
-
-        $sql = "UPDATE $table set publication = ?, confidentiality = ?  WHERE id = ?";
-
-
+        $sql = "UPDATE $table set publication = ?, confidentiality = ?, photo = ?  WHERE id = ?";
 
         $stmt = $this->getPDO()->prepare($sql);
 
-
-
-        $stmt->execute([$publication, $confidentiality, $id]);
+        $stmt->execute([$publication, $confidentiality, $photo, $id]);
 
     }
 
@@ -1327,6 +1307,26 @@ class Tribu_T_Service extends PDOConnexionService
         }
     }
 
+    public function getAllRestoPastiledForAllTable($id){
+        $results = [];
+        /// all tribu T
+        $all_tribuT= $this->showTribuT($id, "_restaurant");
+
+        
+
+        foreach($all_tribuT as $trib){
+            if( $this->hasTableResto($trib[0])){
+                $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $trib[0];");
+                $statement->execute();
+                $restos = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+                
+                $results= array_merge($results, $restos);
+            }
+        }
+        return $results;
+    }
+
     public function getRestoPastilles($tableResto, $tableComment){
     
         // $sql = "SELECT * from (SELECT $tableResto.id as id_pastille, $tableResto.id_resto, $tableResto.denomination_f, bdd_resto.id as id_unique, bdd_resto.dep as id_dep, bdd_resto.poi_y as latitude, bdd_resto.poi_x as longitude,  concat(bdd_resto.numvoie,' ',bdd_resto.typevoie,' ',bdd_resto.nomvoie,' ',bdd_resto.codpost,' ',bdd_resto.commune) as adresse FROM `tribu_t_2_data_engineer_restaurant` inner JOIN bdd_resto on $tableResto.id_resto = bdd_resto.clenum ORDER BY $tableResto.datetime DESC) as resto_pastille INNER JOIN departement ON resto_pastille.id_dep=departement.id";
@@ -1341,12 +1341,10 @@ class Tribu_T_Service extends PDOConnexionService
                 FROM $tableResto  
                 as t1 LEFT JOIN $tableComment  
                 as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";*/
-        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
-        FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-        GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com 
-        FROM $tableResto  
-        as t1 LEFT JOIN $tableComment  
-        as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id) as tb INNER JOIN bdd_resto ON tb.id_resto=bdd_resto.id";
+        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,
+								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id ) 
+				as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
 
         $stmt = $this->getPDO()->prepare($sql);
          
@@ -1476,6 +1474,57 @@ class Tribu_T_Service extends PDOConnexionService
         return $all_tables;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Get apropos of the tribu T ( name, description,avatar)
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     */
+    public function getApropos($table_name){
+        $apropos= [ "name" => "", "description"=> "", "avatar" => "" ];
+
+        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
+        $statement->execute();
+        $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+        $id= $userID_fondateurTribuT['user_id'];
+
+        $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
+        $statement->execute();
+        $t_owned = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $tribu_t_owned = $t_owned['tribu_t_owned'];
+
+        $object= json_decode($tribu_t_owned, true);
+
+        if( !array_key_exists("name", $object['tribu_t']) ){
+            foreach ($object['tribu_t'] as $trib){
+                if( $trib['name'] === $table_name){
+                    $apropos = [
+                        'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
+                        'description' => $trib['description'],
+                        'avatar' => $trib['logo_path'],
+                    ];
+    
+                    break;
+                }
+            }
+        }else{
+            if( $object['tribu_t']['name'] === $table_name){
+                $apropos = [
+                    'name' => "Tribu T " . ucfirst(explode("_",$object['tribu_t']['name'])[count(explode("_",$object['tribu_t']['name']))-1]),
+                    'description' => $object['tribu_t']['description'],
+                    'avatar' => $object['tribu_t']['logo_path'],
+                ];
+            }
+        }
+
+       
+        return $apropos;
+    }
+
     
     public function getAllTribuTJoinedAndOwned($id){
         $sql= "SELECT tribu_t_joined,tribu_t_owned FROM `user` WHERE id=$id";
@@ -1483,6 +1532,213 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get On publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     * @param int $id:  publication id
+     */
+    public function getOnePublication($table_name, $pubID){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE id= $pubID;");
+        $statement->execute();
+
+        $publication = $statement->fetch(PDO::FETCH_ASSOC); // publications
+
+        return $publication;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get On publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     * @param int $id:  publication id
+     */
+    public function getCommentsPublication($table_name, $pubID){
+        $results= [];
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" . "_commentaire " . "WHERE pub_id= $pubID;");
+        $statement->execute();
+
+        $comments = $statement->fetchAll(PDO::FETCH_ASSOC); // publications
+
+        foreach ($comments as $comment){
+            $user_id= $comment["user_id"];
+
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id");
+            $statement_photos->execute();
+            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+
+            $temp= [
+                "pub_id" => $comment["pub_id"],
+                "dateTime" => $comment["datetime"],
+                "text_comment" => $comment["commentaire"],
+                "user" => [
+                    "fullname" => $comment["userfullname"],
+                    "photo" => $photo_profil["photo_profil"],
+                ]
+            ];
+
+            array_push($results, $temp);
+        }
+
+        return $results;
+    }
+
+
+
+    public function updateVisibility($tablePub, int $pub_id, int $confidentiality){
+
+        $query = "UPDATE $tablePub set confidentiality = $confidentiality WHERE id = '$pub_id'";
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     */
+    public function getAllPublicationBrutes($table_name){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication ORDER BY datetime DESC LIMIT 6;");
+
+        $statement->execute();
+
+        $publications = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
+
+        return $publications;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array [[associative]]: [ 
+     *                              [ 
+     *                                "userOwnPub" => [ id => ..., profil => ..., fullName => ... ], 
+     *                                "publication" => [ id => ..., description => ..., image => ..., createdAt => ..., comments => ..., reactions => ... ], 
+     *                                "tribu" => [ type => ..., name => ..., description => ...,avatar => ... ],
+     *                              ],
+     *                              ...
+     *                            ]
+     */
+    public function getAllPublicationsUpdate($table_name){
+        
+        $apropo_tribuT = $this->getApropos($table_name);
+
+        $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
+        $resultats = [];
+        
+        if( count($publications) > 0 ){
+            foreach( $publications as $d_pub ){
+    
+                $publication_id = $d_pub["id"];
+                $publication_user_id= $d_pub["user_id"];
+    
+                $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+                $statement_photos->execute();
+                $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
+                $statement->execute();
+                $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
+                $statement->execute();
+                $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+                $data= [
+                    "userOwnPub" => [
+                        "id" => $d_pub["user_id"],
+                        "profil" => $photo_profil["photo_profil"],
+                        "fullName" => $d_pub["userfullname"],
+                    ],
+                    "publication" => [
+                        "id" => $d_pub["id"],
+                        "confidentiality" => $d_pub['confidentiality'],
+                        "description" => $d_pub['publication'],
+                        "image" => $d_pub['photo'],
+                        "createdAt" => $d_pub["datetime"],
+                        "comments" => $comments,
+                        "reactions" => $reactions,
+                    ],
+                    "tribu" => [
+                        "type" => "Tribu T",
+                        "name" => $apropo_tribuT['name'],
+                        "description" => $apropo_tribuT['description'],
+                        "avatar" =>  $apropo_tribuT['avatar'],
+                        "table" => $table_name
+                    ]
+                ];
+    
+                array_push($resultats, $data);
+            }
+        }
+
+        return $resultats; 
+    }
+
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableName: le nom de la table tribu
+     * 
+     * @param string $extension: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtension($tableName, $extension){
+
+        //$query = "SHOW TABLES FROM $db like 'tribu_t_" . $user_id . "_" . $tableName . "'";
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like '" . $tableName.$extension."'";
+
+        $sql = $this->getPDO()->query($query);
+
+        $result = $sql->rowCount();
+
+        return $result;
+
+    }
+
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableNameExtension: le nom de la table extension
+     * 
+     * @param int $idResto: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtensionId($tableNameExtension, int $idResto){
+
+        
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if(is_array($result)){
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
 }

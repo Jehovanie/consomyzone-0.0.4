@@ -4,6 +4,7 @@
 var tribu_t_name_0 = ""; 
 var id_c_u //id du user courant
 let image_list = [];
+let dataExtension = [];
 var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') :  new Worker('/public/assets/js/tribuT/worker.js');
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT= IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
@@ -12,7 +13,6 @@ var descriptionTribuT=""
 /**
  * create tribu_t section
  */
-
 document.getElementById("form_upload").onchange = (e) => {
     const reader = new FileReader();
 
@@ -54,24 +54,44 @@ function showBlockPub(){
     for (let array of arrays) {
         array.onclick = (async (e) => {
             e.preventDefault();
+
+            if(document.querySelector("#activeTribu")){
+                document.querySelector("#activeTribu").classList.remove("p-2")
+                document.querySelector("#activeTribu").classList.remove("list-nav-left")
+                document.querySelector("#activeTribu").classList.remove("active")
+                document.querySelector("#activeTribu").removeAttribute("id")
+            }
+            e.target.id = "activeTribu"
+            e.target.classList.add("p-2")
+            e.target.classList.add("list-nav-left")
+            e.target.classList.add("active")//p-2 list-nav-left active
             const id_c_u=e.target.dataset.tribuRank
             const type = e.target.classList[1];
-            const tribu_t_name=e.target.textContent
+            // const tribu_t_name=e.target.textContent  data-table-name
+            const tribu_t_name=e.target.dataset.tableName; ///  data-table-name
             let data = await showdData(tribu_t_name)
             showdDataContent(data,type,tribu_t_name,id_c_u)
             
             /**render pastiled resto */
             if(document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
-                document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => { 
+                document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => {
                     e.preventDefault();
+                    if(document.querySelector("li.listNavBarTribu > a.active")){
+                        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+                    }
+                    document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").classList.add("active")
                     document.querySelector("#tribu_t_conteuneur").innerHTML=""
                     showResto(tribu_t_name+"_restaurant",id_c_u)
                 })
             /**end */
 
             /**render photo gallery*/
-            document.querySelector("#seer-gallery").onclick = (e => { 
+            document.querySelector("#see-gallery").onclick = (e => { 
                 e.preventDefault();
+                if(document.querySelector("li.listNavBarTribu > a.active")){
+                    document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+                }
+                document.querySelector("#see-gallery").classList.add("active")
                 document.querySelector("#tribu_t_conteuneur").innerHTML=""
                 showPhotos()
 
@@ -88,6 +108,10 @@ function showBlockPub(){
 
             /**render partisant*/
             document.querySelector(".partisantT").onclick = (e) => {
+                if(document.querySelector("li.listNavBarTribu > a.active")){
+                    document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+                }
+                document.querySelector(".partisantT > a").classList.add("active")
                 document.querySelector("#tribu_t_conteuneur").innerHTML=""
                 showPartisan()  
             }
@@ -137,7 +161,7 @@ function showPartisan() {
                     document.querySelector("#tribu_t_conteuneur").innerHTML += `
                         <div class="card-partisons row">
                             <div class="partisons-pdp col-lg-6">
-                                <img src="${profil.replace("/public","")}" alt="">
+                                <img src="${profil/*.replace("/public","")*/}" alt="">
                             </div>
                             <div class="partisons-text col-lg-6">
                                 <h4>${lastName} <span> ${firstName}</span></h4>
@@ -181,13 +205,14 @@ function updatePdpTribu_T(files) {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'  
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(param)
         })
         fetch(request).then(responses=>{
             if(responses.ok && responses.status === 200){
-                document.querySelector("#content-pub-js > div.card-couverture-pub-tribu-t > div > div.row > div.col-3 > div > div:nth-child(1) > img").src=evt.target.result
+                document.querySelector("#avatarTribuT").src=evt.target.result
+                document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
             }
         })
        
@@ -217,8 +242,7 @@ function sendPublication(formData) {
             },
             body: JSON.stringify(param)
         })
-        fetch(request)
-       
+        fetch(request) 
     })
     fR.readAsDataURL(formData.get('photo'));
 }
@@ -250,27 +274,38 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
     }
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
-        image_tribu_t = `<img src="/public${tribu_t[0].logo_path}" alt="123">` 
+        image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
+        // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
     } else {
-        image_tribu_t = `<img src="/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
+        image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
     }
+
+    let canChangeTribuPicture = "";
+    if(document.querySelector("#activeTribu")){
+        canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other")? `<div class="col-lg-6 col-6" style="height:100px;">
+                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT">
+                                        <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+                                    </label>
+                                    <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
+                                </div>` : ""
+    }
+
     document.querySelector("#content-pub-js").innerHTML = `
-            <div class="rounded-3 bg-secondary bg-gradient text-light" >
-                <div class="mt-4 p-5">
-                    <div class="row">
-                        <div class="col-lg-2 col-2 tribu-t-img">
-                            ${image_tribu_t}
+            <div class="card-couverture-pub-tribu-t ">
+                <div class="content-couverture mt-3">
+                    <div class="row content-tribu-t">
+                        <div class="col-lg-3 col-4">
+                            <div class="row">
+                                <div class="col-lg-6 col-6">
+                                    ${image_tribu_t}
+                                </div>
+                                ${canChangeTribuPicture}
+                            </div>
                         </div>
-                        <div class="col-lg-2 col-2">
-                            <label style="margin-left:10%;" for="fileInputModifTribuT">
-                                <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
-                            </label>
-                            <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
-                        </div>
-                        <div class=" col-lg-6 col-6">
-                            <h1  id="tribu_t_name_main_head" class="text-light" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replaceAll("tribu_t_1_", "")}</h1>
-                            <p class="p-mobile">
-                                ${tribu_t[0].description}
+                        <div class="col-lg-8 col-8 content-tribu-t-name">
+                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+                            <p class="ms-2 text-white">
+                            ${tribu_t[0].description}
                             </p>
                         </div>
                     </div>
@@ -282,20 +317,20 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 <nav class=" mx-auto">
                     <ul id="navBarTribu" class="navBarTribu-t">
                         <li class="listNavBarTribu">
-                            <a id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
+                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
 
 
                         ${restExtension}
 
-                        <li class="listNavBarTribu">
+                        <li class="listNavBarTribu invitation">
                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
                         </li>
                         <li class="listNavBarTribu partisantT">
                             <a style="cursor:pointer;">Partisans</a>
                         </li>
                         <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" id="seer-gallery">Photos</a>
+                            <a style="cursor:pointer;" id="see-gallery">Photos</a>
                         </li>
 
                     </ul>
@@ -308,20 +343,14 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     <div class=" 2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
-                                <img src="/assets/image/img_avatar3.png" alt="">
+                                <img src="${document.querySelector(".userProfil > img").src}" alt="">
                             </div>
                             <div class="name-content-h">
                                 <div class="name-content">
-                                    <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Partagez ce que vous pensez, Tommy...</p>
+                                    <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Exprimez-vous...</p>
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <div class="icon-piece-join">
-                            <i class="fa-solid fa-camera"></i>
-                            <i class="fa-solid fa-paperclip"></i>
-                        </div>
-
                     </div>
                     <!-- ====== Chart pub One End -->
                 </div>
@@ -356,55 +385,78 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 } else {
                     dataNbr = data[i].nbr + " "
                 }
+
+                let pub_photo = data[i].photo ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${data[i].photo/*.replace("/public","")*/}" alt="">` :
+                 `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`
+
                 let confidentiality = parseInt(data[i].confidentiality,10);
                 let contentPublication=""
                 if (confidentiality === 1) {
-                    contentPublication = `<div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+
+                    let changeVisibility = parseInt(id_c_u,10)===parseInt(data[i].user_id,10) ? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                        <div class="btn-group" role="group">
+                                            
+                                            <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fa-solid fa-earth-oceania"></i>
+                                            </span>
+                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+                                            </div>
+                                        </div>
+                                    </div>` : ""
+                    let canUpdateOrDeletePub = parseInt(id_c_u,10)===parseInt(data[i].user_id,10) ? `<div id="contentUpdateOrDelete">
+                                        <span class="float-end dropstart">
+                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                            </span>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                </li>
+                                                <li>
+
+                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
+                                                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                                                        Supprimer
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    </div>` : ""
+                    
+
+                    contentPublication = `<div id="${tribu_t_name_0+"_"+data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                        <img src="/assetss/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
-                                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                                                
-                                                                <div class="btn-group" role="group">
-                                                                    
-                                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
-                                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                                        <a class="dropdown-item" href="#">Modifier le status</a>
-                                                                        
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
+                                                            ${changeVisibility}
                                                             
                                                         </div>
                                                     </div>
-                                                    <div class="param-content">
-                                                        <i class="fa-solid fa-ellipsis"></i>
-                                                    </div>
-
+                                                    ${canUpdateOrDeletePub}
                                                     
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
                                                     <p class="text-pub"> ${data[i].publication}</p>
-                                                    <img src="${data[i].photo}" alt="">
+                                                    ${pub_photo}
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -441,17 +493,17 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     console.log(id_c_u,data[i].user_id)
                     if (parseInt(id_c_u,10)===parseInt(data[i].user_id,10)) {
                         contentPublication = `
-                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                                        <div id="${tribu_t_name_0+"_"+data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                        <img src="/assetss/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -459,19 +511,36 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                                 
                                                                 <div class="btn-group" role="group">
                                                                     
-                                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
+                                                                    <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <i class="bi bi-lock-fill"></i>
+                                                                    </span>
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                                        <a class="dropdown-item" href="#">Modifier le status</a>
-                                                                        
+                                                                        <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                                        <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
                                                             
                                                         </div>
                                                     </div>
-                                                    <div class="param-content">
-                                                        <i class="fa-solid fa-ellipsis"></i>
+                                                    <div id="contentUpdateOrDelete">
+                                                        <span class="float-end dropstart">
+                                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+                                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                            </span>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                                </li>
+                                                                <li>
+
+                                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
+                                                                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                                                                        Supprimer
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </span>
                                                     </div>
 
                                                     
@@ -479,14 +548,13 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                     
                                                 <div class="card-pub-actu">
                                                     <p class="text-pub"> ${data[i].publication}</p>
-                                                    <img src="${data[i].photo}" alt="">
+                                                    ${pub_photo}
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -527,7 +595,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                     document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
                 }
 
-                showCommentss();
+                showComment();
             
         
             
@@ -535,7 +603,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                 const gen = genDataPubOfAllPartisans(data, 5)
                 const gen_length = (data.length - 5)
                 //const gen_length = (data.length)
-                console.log(gen_length)
+                console.log("gen_length : "+gen_length)
 
             
                 let lastId = 0;
@@ -560,18 +628,20 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                 data = gen.next().value
                                 console.log(data)
                                 if (data) {
+                                    console.log("data N°: " + i)
+                                    console.log(data[i])
                                     const contentPublication = `
                                     <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assets/image/img_avatar3.png" alt="">
+                                                        <img src="/assetss/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <p  class="p-title"> a publié sur <span>${tribu_t[0].name}</span></p>
+                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -579,10 +649,10 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                                 
                                                                 <div class="btn-group" role="group">
                                                                     
-                                                                    <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </button>
+                                                                    <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </span>
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                                        <a class="dropdown-item" href="#">Modifier le status</a>
-                                                                        
+                                                                        <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                                        <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -590,23 +660,37 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                             
                                                         </div>
                                                     </div>
-                                                    <div class="param-content">
-                                                        <i class="fa-solid fa-ellipsis"></i>
+                                                    <div id="contentUpdateOrDelete">
+                                                        <span class="dropend">
+                                                            <span style="cursor:pointer" data-bs-toggle="dropdown">
+                                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                            </span>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                                </li>
+                                                                <li>
+
+                                                                    <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item">
+                                                                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                                                                        Supprimer
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </span>
                                                     </div>
 
-                                                    
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
                                                     <p class="text-pub"> ${data[i].publication}</p>
-                                                    <img src="${data[i].photo}" alt="">
+                                                    ${pub_photo}
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -626,7 +710,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
             }
         
     }
-    //showCommentss();
+    //showComment();
 }
 
 
@@ -649,7 +733,7 @@ function showCommentaireTribu_T(event, idmin=0,b ) {
     workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
 }
     
-function showCommentss() {
+function showComment() {
     
     workerGetCommentaireTribuT.onmessage = (e) => {
         console.log(e.data)
@@ -802,7 +886,7 @@ function showResto(table_rst_pastilled,id_c_u){
                                         <div class="g-3">
                                             <div class="input-group mb-3">
                                                 <input type="text" class="form-control  rounded" placeholder="Pastiller un restaurant" id="resto-rech">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="findResto"><i class="fas fa-search"></i></button>
+                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
                                             </div>
                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
                                             </div>
@@ -883,7 +967,7 @@ function showResto(table_rst_pastilled,id_c_u){
                     }
                     if(id_user.includes(id_c_u)){
                         console.log("up "+denominationsF)
-                        text=`<button type="button" class="btn btn-primary " id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
+                        text=`<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
 
                         text1="Modifiez votre avis"
                     }else{
@@ -905,19 +989,19 @@ function showResto(table_rst_pastilled,id_c_u){
                                                     <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
                                                 </a>
                                             </div>
-                                            <div id="etoile_${id_resto}">
+                                            <div id="etoile_${id_resto}" class="non_active">
                                                 <i class="fa-solid fa-star" data-rank="1"></i>
                                                 <i class="fa-solid fa-star" data-rank="2"></i>
                                                 <i class="fa-solid fa-star" data-rank="3"></i>
                                                 <i class="fa-solid fa-star" data-rank="4"> </i>
-                                                <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
+                                                <a class="text-secondary disabled-link" style="cursor: none;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
                                             </div>
                                             <div class="row mt-3 ">
-                                                <div class="col-lg-4">
-                                                    <button type="button" class="btn btn-outline-primary  float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                                <div class="col-lg-4 non_active">
+                                                    <button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                                                 </div>
-                                                <div class="col-lg-4">
-                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                                <div class="col-lg-4 non_active">
+                                                    <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -1016,7 +1100,7 @@ function showResto(table_rst_pastilled,id_c_u){
             const q = event.target.value.toLowerCase();
 
             if (event.keyCode === 13) {
-                findResto(q)
+                listResto()
             }else{
                 document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
                     if(elem.textContent.toLowerCase().includes(q)){
@@ -1080,7 +1164,7 @@ function sendNote(event, _idUser, _idResto,_idRestoComment) {
     })
     fetch(request).then(response => {
         if (response.ok && response.status === 200) {
-           alert("nety")
+           console.log("nety")
        }
     } )
 }
@@ -1104,7 +1188,7 @@ function updateNote(event, _idRestoComment) {
     })
     fetch(request).then(response => {
         if (response.ok && response.status === 200) {
-           alert("nety")
+           console.log("nety")
        }
     } )
 }
@@ -1116,68 +1200,75 @@ function findResto(val){
    }) 
     fetch(request).then(response => response.json()).then(jsons => {
         console.log(jsons)
-        for (let json of jsons) { 
-            const name = json.denominationF;
-            const dep = json.dep;
-            const depName = json.depName;
-            const commune = json.commune;
-            const codePost = json.codpost;
-            const nomvoie = json.nomvoie;
-            const numvoie = json.numvoie;
-            const typevoie = json.typevoie;
-            const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-            const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
-            const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
-            const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
-            const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
-            const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
-            const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
-            const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
-            const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
-            const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
 
-            
+        if(jsons.length > 0){
 
-            document.querySelector("#result_resto_chr").innerHTML += `
+            for (let json of jsons) { 
+                const name = json.denominationF;
+                const dep = json.dep;
+                const depName = json.depName;
+                const commune = json.commune;
+                const codePost = json.codpost;
+                const nomvoie = json.nomvoie;
+                const numvoie = json.numvoie;
+                const typevoie = json.typevoie;
+                const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+                const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
+                const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
+                const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
+                const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
+                const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
+                const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
+                const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
+                const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
+                const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
+    
                 
-                <div class="card-result-chr items">
-                    <div class="header-result">
-                        <h5>${name}</h5>
-
-                    </div>
-                    <div class="body-result">
-                       
-                        <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
-                         <div class="type-resto-ico row">
-                            <div class="col-lg-5">${boulangerie}</div>
-                            <div class="col-lg-5">${bar}</div>
-                            <div class="col-lg-5">${brasserie}</div>
-                            <div class="col-lg-5">${cafe}</div>
-                            <div class="col-lg-5">${cuisineMonde}</div>
-                            <div class="col-lg-5">${fastFood}</div>
-                            <div class="col-lg-5">${creperie}</div>
-                            <div class="col-lg-5">${salonThe}</div>
-                            <div class="col-lg-5">${pizzeria}</div>
+    
+                document.querySelector("#result_resto_chr").innerHTML += `
+                    
+                    <div class="card-result-chr items">
+                        <div class="header-result">
+                            <h5>${name}</h5>
+    
                         </div>
-                        <div>
-                            <h5>Adresse: </h5>
-                            <p>${adresse}</p>
+                        <div class="body-result">
+                           
+                            <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
+                             <div class="type-resto-ico row">
+                                <div class="col-lg-5">${boulangerie}</div>
+                                <div class="col-lg-5">${bar}</div>
+                                <div class="col-lg-5">${brasserie}</div>
+                                <div class="col-lg-5">${cafe}</div>
+                                <div class="col-lg-5">${cuisineMonde}</div>
+                                <div class="col-lg-5">${fastFood}</div>
+                                <div class="col-lg-5">${creperie}</div>
+                                <div class="col-lg-5">${salonThe}</div>
+                                <div class="col-lg-5">${pizzeria}</div>
+                            </div>
+                            <div>
+                                <h5>Adresse: </h5>
+                                <p>${adresse}</p>
+                            </div>
+                            
                         </div>
-                        
+                        <div class="footer-result">
+                            <button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
+                        </div>
                     </div>
-                    <div class="footer-result">
-                        <button class="btn btn-primary" onclick="pastillerPast(${json.id},'${name}')">Pastillez</button>
-                    </div>
-                </div>
-            `
-            $(document).ready(function(){
-                $(".owl-carousel").owlCarousel({
-                    autoPlay: 3000,
-                    items: 5
+                `
+                $(document).ready(function(){
+                    $(".owl-carousel").owlCarousel({
+                        autoPlay: 3000,
+                        items: 5
+                    });
                 });
-            });
-
-            
+    
+                
+            }
+        }else{
+            document.querySelector("#result_resto_chr").style.display = "block"
+            document.querySelector("#result_resto_chr").innerHTML = "Aucun restaurant qui correspond à " + document.querySelector("#resto-rech").value
         }
     })
     
@@ -1199,12 +1290,37 @@ function showTypeResto(event) {
    
 }
 
-function pastillerPast(id, nom) {
-   
-    saveRestaurantPast(id, nom);
+function pastillerPast(element, id, nom) {
+    let modal = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+    if(modal.id == "modalForExtension"){
+        setRestoForPast(id, nom)
+        element.disabled = true;
+        document.querySelector("#successPastille").style.display = ""
+        document.querySelector("#successPastille").textContent = "Le restaurant " + nom + " a été pastillé avec succès !";
 
-    
-    
+        setTimeout(function() {
+            document.querySelector("#successPastille").style.display = "none"
+        }, 5000)
+
+    }else{
+        saveRestaurantPast(id, nom);
+    }
+ 
+}
+
+function setRestoForPast(id, nom) {
+
+    if(nom != "" && id != null){
+
+        let item = {
+            denomination_f : nom,
+            id_resto : id
+        }
+        dataExtension.push(item)
+        document.querySelector("#form_extensionData").value = JSON.stringify(dataExtension)
+        // document.querySelector("#form_extensionData").dataset.jsonValue = JSON.stringify(dataExtension)
+    }
+
 }
 
 /**save resto pastilled */
@@ -1377,18 +1493,24 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites(){
-    document.querySelector("#page-top > div > ul:nth-child(6) > li:nth-child(1) > div > div.col-lg-9 > p > a").click();
+    document.querySelector("#activeTribu").click();
 }
 
 
 if( document.querySelector("#submit-publication-tribu-t")){
     document.querySelector("#submit-publication-tribu-t").addEventListener("click" , () => {
         document.querySelector("#form-publication-tribu-t > div > div > div.modal-header > button").click();
-        showActualites();
+        setTimeout(showActualites, 5000);
+        //showActualites();
     })
 }
 
 function showInvitations() {
+
+    if(document.querySelector("li.listNavBarTribu > a.active")){
+        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    }
+    document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
     // document.querySelector("#list-publicatiotion-tribu-t").innerHTML = ""
     // document.querySelector("#createPubBloc").style.display = "none";
     document.querySelector("#tribu_t_conteuneur").innerHTML = `
@@ -1515,7 +1637,7 @@ function showInvitations() {
         let status = false;
 
         if (input_principal.value === "") {
-            alert("Entre au moin une destination.")
+            console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
         }
 
@@ -1528,7 +1650,7 @@ function showInvitations() {
 
         ///object
         if (object.value === "") {
-            alert("Veillez entre un Object.")
+            console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
         } else {
             data = { ...data, "object": object.value }
@@ -1622,7 +1744,7 @@ function fetchAllTribuGMember() {
                         ancorOrbutton = `<button data-id="${item.id}" type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
                     }
                     tbody.innerHTML += `<tr>
-                            <td><a style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
+                            <td class="non_active"><a class="disabled-link" style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
                             <td>${item.email}</td>
                             <td>${item.tribug}</td>
                             <td class="text-center">${ancorOrbutton}</td>
@@ -1679,10 +1801,144 @@ function ondeleteUser(e) {
     email.parentElement.removeChild(email);
 }
 
+function removePublication(){
+    let hiddenElement = document.querySelector("#hiddenElement")
+    let id = hiddenElement.value;
+    let dataId = hiddenElement.dataset.id;
+    let dataName = hiddenElement.dataset.name;
+    document.querySelector("#"+dataId).remove();
+    fetch(new Request("/user/tribu/publication/remove/"+dataName+"_publication/" + id, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })).then(rqt => rqt.json()).then(data => console.log(data));
+
+}
+
+function setHiddenValue(element,update=""){
+    if(update != ""){
+        document.querySelector("#publication_update_confidentiality").value = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.confid
+        document.getElementById("publication_update_legend").value = element.parentElement.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText
+    }
+    let hiddenElement = document.querySelector("#hiddenElement"+update)
+    hiddenElement.dataset.id = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.id
+    hiddenElement.dataset.name = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.name
+    hiddenElement.value = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.id
+}
+
+function updatePublication() {
+
+    let hiddenElement = document.querySelector("#hiddenElementUpdate")
+    let id = hiddenElement.value;
+    let dataId = hiddenElement.dataset.id;
+    let dataName = hiddenElement.dataset.name;
+    let confidentiality = document.querySelector("#publication_update_confidentiality").value;
+    let message = document.querySelector("#publication_update_legend").value
+
+    document.querySelector("#"+dataId).querySelector(".text-pub").innerHTML = message
+
+    let publicVisibilityElement = document.querySelector("#"+dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[0];
+    let privateVisibilityElement = document.querySelector("#"+dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[1];
+    let btnGroupDropElement = document.querySelector("#"+dataId).querySelector("#btnGroupDrop1")
+    let publicIcone = `<i class="fa-solid fa-earth-oceania"></i>`
+    let privateIcone = `<i class="bi bi-lock-fill"></i>`
+
+    if(parseInt(confidentiality) == 1){
+        if(!publicVisibilityElement.classList.contains("active")){
+            btnGroupDropElement.innerHTML = publicIcone
+            privateVisibilityElement.classList.remove("active")
+            publicVisibilityElement.classList.add("active")
+        }
+    }else if(parseInt(confidentiality) == 2){
+        if(!privateVisibilityElement.classList.contains("active")){
+            btnGroupDropElement.innerHTML = privateIcone
+            publicVisibilityElement.classList.remove("active")
+            privateVisibilityElement.classList.add("active")
+        }
+    }
+
+    //document.querySelector("#modal_publication_modif img.image-upload-image")
+    let imgSrc = null
+    let oldSrc = ""
+    if(document.querySelector("#modal_publication_modif .image-upload-content").style.display == "block"){
+        imgSrc = document.querySelector("#modal_publication_modif img.image-upload-image").src
+        if(document.querySelector("#"+dataId+" .publication-picture").style.display == "none"){
+            document.querySelector("#"+dataId).querySelector(".publication-picture").style="cursor:pointer"
+            document.querySelector("#"+dataId).querySelector(".publication-picture").src = imgSrc
+        }else{
+            document.querySelector("#"+dataId+" .publication-picture").src = imgSrc
+        }
+    }else{
+        if(document.querySelector("#"+dataId+" .publication-picture").style.display == "none"){
+            console.log("Ok");
+        }else{
+            if(document.querySelector("#"+dataId+" .publication-picture").src.includes("data:image/")){
+                imgSrc = document.querySelector("#"+dataId+" .publication-picture").src
+            }else{
+                oldSrc = document.querySelector("#"+dataId+" .publication-picture").src
+            }
+            
+        }
+    }
+
+    let data = {
+        "oldSrc": oldSrc,
+        "base64": imgSrc,
+        "pub_id": id,
+        "confidentiality": confidentiality,
+        "message": message
+        }
+
+    console.log(data);
+
+    fetch(new Request("/user/tribu/update_publication/"+dataName+"_publication", {
+    method: "POST",
+    headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+    })).then(response=>response.json())
+       .then(message=>console.log(message));
+}
+
+
+
+function checkExtension(element) {
+    return element.checked;
+}
+
+function openModalForExtension(element){
+    if(checkExtension(element)){
+        $("#modalForExtension").modal("show")
+    }else{
+        console.log("Unchecked")
+    }
+}
 
 if (document.querySelector("#apropos-tribu-t")) {
     let openClose = document.querySelector("#apropos-tribu-t")
     openClose.addEventListener("click", () => {
         
     })
+}
+
+const searchParams = new URLSearchParams(window.location.search);
+if(searchParams.has('message')){
+    showAlertMessageFlash(searchParams.get('message'))
+    const url = new URL(window.location.href);
+    window.location.replace(url.pathname)
+}
+
+
+function listResto(){
+    document.querySelector("#result_resto_chr").innerHTML = ""
+    let inputName = document.querySelector("#resto-rech").value;
+    if(inputName.trim() != ""){
+        findResto(inputName)
+    }else{
+        alert("Veuillez saisir le nom du restaurant");
+    }
 }

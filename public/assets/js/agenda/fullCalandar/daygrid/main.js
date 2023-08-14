@@ -703,7 +703,7 @@ Docs & License: https://fullcalendar.io/
         var isDateValid = core.rangeContainsMarker(dateProfile.activeRange, date); // TODO: called too frequently. cache somehow.
         var classes = core.getDayClasses(date, dateProfile, context);
         classes.unshift('fc-day', theme.getClass('widgetContent'));
-        return '<td class="' + classes.join(' ') + '"' +
+        return '<td class="' + classes.join(' ') +
             (isDateValid ?
                 ' data-date="' + dateEnv.formatIso(date, { omitTime: true }) + '"' :
                 '') +
@@ -853,7 +853,7 @@ Docs & License: https://fullcalendar.io/
         DayGrid.prototype.renderNumberTrHtml = function (row) {
             var intro = this.renderProps.renderNumberIntroHtml(row, this);
             return '' +
-                '<tr>' +
+                '<tr class="day_number">' +
                 (this.isRtl ? '' : intro) +
                 this.renderNumberCellsHtml(row) +
                 (this.isRtl ? intro : '') +
@@ -890,7 +890,7 @@ Docs & License: https://fullcalendar.io/
             if (this.renderProps.cellWeekNumbersVisible) {
                 weekCalcFirstDow = dateEnv.weekDow;
             }
-            html += '<td class="' + classes.join(' ') + '"' +
+            html += '<td class="' + classes.join(' ') +
                 (isDateValid ?
                     ' data-date="' + dateEnv.formatIso(date, { omitTime: true }) + '"' :
                     '') +

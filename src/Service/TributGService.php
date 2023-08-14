@@ -685,40 +685,22 @@ class TributGService extends PDOConnexionService{
      * @param string $photo: image in the publication
      * 
      */
-
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){
 
-
-
         $statement = $this->getPDO()->prepare(
-
             "INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) 
-
             values (:user_id, :publication, :confidentiality, :photo, :userfullname)"
-
         );
-
-        
 
         $userfullname = $this->getFullName($user_id);
 
-
-
         $statement->bindParam(':user_id', $user_id);
-
         $statement->bindParam(':publication', $publication);
-
         $statement->bindParam(':confidentiality', $confid);
-
         $statement->bindParam(':photo', $photo);
-
         $statement->bindParam(':userfullname', $userfullname);
 
-
-
         $result = $statement->execute();
-
-
 
         return $result;
 
@@ -757,6 +739,7 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("SELECT name, description, avatar FROM $table_name");
         $statement->execute();
         $apropos = $statement->fetch(PDO::FETCH_ASSOC);
+        $apropos['name'] = 'Tribu G ' . $apropos['name'];
 
         return $apropos;
     }
@@ -777,53 +760,131 @@ class TributGService extends PDOConnexionService{
         $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
         $resultats = [];
 
-        foreach( $publications as $publication ){
+        if( count($publications) > 0 ){
+            foreach( $publications as $publication ){
 
-            $publication_id = $publication["id"];
-            $publication_user_id= $publication["user_id"];
-
-            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
-
-            $statement_photos->execute();
-
-            $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
-
-            $publication["photo_profil"] = $photo_profil["photo_profil"];
-
-            $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
-
-            $statement->execute();
-
-            $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
-
- 
-
-            $publication["comments"] = $comments;
-
-
-
-            $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
-
-            $statement->execute();
-
-            $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-            $publication["reactions"] = $reactions; /// [ ...reactions ]
-
-            $publication["tribu"]["state"] = "Tribu G";
-            $publication["tribu"]["name"] = $apropo_tribuG['name'];
-            $publication["tribu"]["description"] = $apropo_tribuG['description'];
-            $publication["tribu"]["avatar"] = $apropo_tribuG['avatar'];
-
-
-
-            array_push($resultats, $publication);
-
+                $publication_id = $publication["id"];
+                $publication_user_id= $publication["user_id"];
+    
+                $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+    
+                $statement_photos->execute();
+    
+                $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+    
+                $publication["photo_profil"] = $photo_profil["photo_profil"];
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
+    
+                $statement->execute();
+    
+                $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
+    
+     
+    
+                $publication["comments"] = $comments;
+    
+    
+    
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
+    
+                $statement->execute();
+    
+                $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+    
+    
+                $publication["reactions"] = $reactions; /// [ ...reactions ]
+    
+                $publication["tribu"]["state"] = "Tribu G";
+                $publication["tribu"]["name"] = $apropo_tribuG['name'];
+                $publication["tribu"]["description"] = $apropo_tribuG['description'];
+                $publication["tribu"]["avatar"] = $apropo_tribuG['avatar'];
+    
+    
+    
+                array_push($resultats, $publication);
+    
+            }
         }
 
         return $resultats; /// [ [...publication, "comments" => ... , "reactions" => ... ], ...]
+
+    }
+
+
+        /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array [[associative]]: [ 
+     *                              [ 
+     *                                "userOwnPub" => [ id => ..., profil => ..., fullName => ... ], 
+     *                                "publication" => [ id => ..., description => ..., image => ..., createdAt => ..., comments => ..., reactions => ... ], 
+     *                                "tribu" => [ type => ..., name => ..., description => ...,avatar => ... ],
+     *                              ],
+     *                              ...
+     *                            ]
+     */
+    public function getAllPublicationsUpdate($table_name){
+
+        $apropo_tribuG= $this->getApropos($table_name);
+        // dd($apropo_tribuG);
+
+        $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
+        $resultats = [];
+
+        if( count($publications) > 0 ){
+            foreach( $publications as $d_pub ){
+
+                $publication_id = $d_pub["id"];
+                $publication_user_id= $d_pub["user_id"];
+
+                $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+                $statement_photos->execute();
+                $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_commentaire WHERE pub_id = '" .$publication_id . "'");
+                $statement->execute();
+                $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
+
+                $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
+                $statement->execute();
+                $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+                $data= [
+                    "userOwnPub" => [
+                        "id" => $d_pub["user_id"],
+                        "profil" => $photo_profil["photo_profil"],
+                        "fullName" => $d_pub["userfullname"],
+                    ],
+                    "publication" => [
+                        "id" => $d_pub["id"],
+                        "confidentiality" => $d_pub['confidentiality'],
+                        "description" => $d_pub['publication'],
+                        "image" => $d_pub['photo'],
+                        "createdAt" => $d_pub["datetime"],
+                        "comments" => $comments,
+                        "reactions" => $reactions,
+                    ],
+                    "tribu" => [
+                        "type" => "Tribu G",
+                        "name" => $apropo_tribuG['name'],
+                        "description" => $apropo_tribuG['description'],
+                        "avatar" =>  $apropo_tribuG['avatar'],
+                        "table" => $table_name
+                    ]
+                ];
+
+                array_push($resultats, $data);
+
+            }
+        }
+
+        return $resultats; 
 
     }
 
@@ -1010,6 +1071,34 @@ class TributGService extends PDOConnexionService{
 
         return $statement->execute();
 
+    }
+
+
+     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $table_name: name of the table origin
+     * @param int $userID: id of the user comment currently logged
+     * @param int publication_id: id of the publication
+     * @param string $comment: text comment
+     * @param string $audioname: name of the audio comment
+     */
+
+     public function handlePublicationCommentUpdate($table_name,$userID, $publication_id, $comment, $audioname ){
+
+        $table_comment = $table_name. "_commentaire";
+
+        $userfullname = $this->getFullName($userID);
+
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
+
+        $statement->bindParam(':user_id', $userID);
+        $statement->bindParam(':pub_id', $publication_id);
+        $statement->bindParam(':commentaire', $comment);
+        $statement->bindParam(':userfullname', $userfullname);
+        $statement->bindParam(':audioname', $audioname);
+
+        return $statement->execute();
     }
 
 
@@ -1369,5 +1458,23 @@ class TributGService extends PDOConnexionService{
         
         return $results;
     }
+
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of tribu G exists
+     */
+
+     public function getAllTribuGExists(){
+
+        $sql = "SELECT tributg FROM `consumer` UNION SELECT tributg FROM `supplier`";
+
+        $statement = $this->getPDO()->prepare($sql);
+        
+        $statement->execute();
+
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+     }
 
 }

@@ -175,4 +175,21 @@ class MessageService extends PDOConnexionService{
 
         return $msg;
     }
+
+    public function createVisio($from, $to, $nom, $status){
+
+        $sql = "INSERT INTO visio_story (`from`,`to`, `nom`, `status`) VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $from);
+
+        $stmt->bindParam(2, $to);
+
+        $stmt->bindParam(3, $nom);
+
+        $stmt->bindParam(4, $status);
+
+        $stmt->execute();
+    }
 }

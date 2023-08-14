@@ -436,8 +436,8 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                             ->setParameter('cles0', '%'. $mot_cles0. '%' );
             }else{
 
-                $qb = $qb->where("p.nom LIKE :cles0")
-                         ->orWhere("p.services LIKE :cles0")
+                $qb = $qb->where("REPLACE(p.nom) LIKE :cles0")
+                         ->orWhere("REPLACE(p.services) LIKE :cles0")
                          ->setParameter('cles0', '%'. $mot_cles0. '%' );
             }
 
@@ -453,40 +453,39 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }else{
-                $qb = $qb->where("p.adresse LIKE :cles1")
-                            ->orWhere("p.departementName LIKE :cles1")
-                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
-                            ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                $qb = $qb->where("REPLACE(p.adresse) LIKE :cles1")
+                            ->orWhere("REPLACE(p.departementName) LIKE :cles1")
+                            ->orWhere("REPLACE(CONCAT(p.departementCode,' ',p.departementName)) LIKE :cles1")
+                            ->orWhere("REPLACE(CONCAT(p.departementName,' ',p.departementCode)) LIKE :cles1")
                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
         }else{
 
-            if(strtolower($mot_cles0) == "station" || strtolower($mot_cles0) == "stations"){
+            if(strtolower($mot_cles0) == "station" || strtolower($mot_cles0) == "stations" || strtolower($mot_cles0) == "station service" || strtolower($mot_cles0) == "stations services"){
                 if( strlen($mot_cles1) <= 2 ){
                     $qb = $qb->where("p.departementCode LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
-                    $qb = $qb->where("p.adresse LIKE :cles1")
-                            ->orWhere("p.departementName LIKE :cles1")
-                            ->orWhere("p.departementName LIKE :cles1")
-                            ->orWhere("CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
-                            ->orWhere("CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                    $qb = $qb->where("REPLACE(p.adresse) LIKE :cles1")
+                            ->orWhere("REPLACE(p.departementName) LIKE :cles1")
+                            ->orWhere("REPLACE(CONCAT(p.departementCode,' ',p.departementName)) LIKE :cles1")
+                            ->orWhere("REPLACE(CONCAT(p.departementName,' ',p.departementCode)) LIKE :cles1")
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
             }else{
 
                 if( strlen($mot_cles1) <= 2 ){
                 
-                    $qb = $qb->where("p.nom LIKE :cles0 AND p.departementCode LIKE :cles1")
+                    $qb = $qb->where("REPLACE(p.nom) LIKE :cles0 AND p.departementCode LIKE :cles1")
                              ->setParameter('cles0', '%'. $mot_cles0. '%' )
                              ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }else{
 
-                    $qb = $qb->where("p.nom LIKE :cles0 AND p.adresse LIKE :cles1")
-                            ->orWhere("p.services LIKE :cles0 AND p.adresse LIKE :cles1")
-                            ->orWhere("p.nom LIKE :cles0 AND p.departementName LIKE :cles1")
-                            ->orWhere("p.nom LIKE :cles0 AND CONCAT(p.departementCode,' ',p.departementName) LIKE :cles1")
-                            ->orWhere("p.nom LIKE :cles0 AND CONCAT(p.departementName,' ',p.departementCode) LIKE :cles1")
+                    $qb = $qb->where("REPLACE(p.nom) LIKE :cles0 AND REPLACE(p.adresse) LIKE :cles1")
+                            ->orWhere("REPLACE(p.services) LIKE :cles0 AND REPLACE(p.adresse) LIKE :cles1")
+                            ->orWhere("REPLACE(p.nom) LIKE :cles0 AND REPLACE(p.departementName) LIKE :cles1")
+                            ->orWhere("REPLACE(p.nom) LIKE :cles0 AND REPLACE(CONCAT(p.departementCode,' ',p.departementName)) LIKE :cles1")
+                            ->orWhere("REPLACE(p.nom) LIKE :cles0 AND REPLACE(CONCAT(p.departementName,' ',p.departementCode)) LIKE :cles1")
                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
                 }
@@ -608,7 +607,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.automate2424',
                         'r.horaies',
                         'r.services',
-                        'r.note',
+                        // 'r.note',
                         'r.prixE85',
                         'r.prixGplc',
                         'r.prixSp95',

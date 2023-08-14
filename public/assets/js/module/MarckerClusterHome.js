@@ -342,7 +342,7 @@ class MarckerClusterHome extends MapModule  {
         const content_filter = document.createElement("div");
         content_filter.className = "content_filter content_filter_js_jheo";
 
-        this.generate_checkout_option(content_filter)
+        // this.generate_checkout_option(content_filter)
 
         const content_filter_dep = document.createElement("div");
         content_filter_dep.className = "content_filter_dep";
@@ -433,6 +433,7 @@ class MarckerClusterHome extends MapModule  {
 
     eventManagement() {
 
+        ///// EVENT CHECK TYPE 
         if (document.querySelector(".content_filter_js_jheo")) {
             const alltype = document.querySelectorAll(".content_filter input");
             alltype.forEach(item => {
@@ -440,6 +441,8 @@ class MarckerClusterHome extends MapModule  {
             })
         }
 
+
+        //// EVENT SELECT DEPARTEMENT
         if (document.querySelector(".input_select_dep_js_jheo")) {
             document.querySelector(".input_select_dep_js_jheo").addEventListener("change", (e) => this.checkStateSelectedDep(e))
         } else {
@@ -473,7 +476,7 @@ class MarckerClusterHome extends MapModule  {
             results = this.handleOnlyStateCheckbox(result_temp, item)
             result_temp = results;
         }
-        if (results.every(item => item.state === 1)) {
+        if (results.length > 0 && results.every(item => item.state === 1)) {
             document.querySelector("#filterTous").checked = true;
         } else {
             document.querySelector("#filterTous").checked = false;
@@ -523,12 +526,12 @@ class MarckerClusterHome extends MapModule  {
     }
 
     checkStateSelectedDep(e) {
+     
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
             this.updateCenter(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng, centers[parseInt(code_dep)].zoom)
-            setDataInLocalStorage("memoryCenter", JSON.stringify({ zoom:  centers[parseInt(code_dep)].zoom ,coord: { lat:enters[parseInt(code_dep)].lat , lng: enters[parseInt(code_dep)].lng }}))
+            setDataInLocalStorage("memoryCenter", JSON.stringify({ zoom:  centers[parseInt(code_dep)].zoom ,coord: { lat:centers[parseInt(code_dep)].lat , lng: centers[parseInt(code_dep)].lng }}))
         }
-
         this.filterDataByDep();
     }
 
@@ -536,10 +539,14 @@ class MarckerClusterHome extends MapModule  {
         let result = []
         let state = { "type": document.querySelector(`#${item}`).getAttribute("name") };
 
-        if (document.querySelector(`#${item}`).checked) {
+        if(document.querySelector(`#${item}`)){
+            if (document.querySelector(`#${item}`).checked) {
+                state = { ...state, "state": 1 }
+            } else {
+                state = { ...state, "state": 0 }
+            }
+        }else{
             state = { ...state, "state": 1 }
-        } else {
-            state = { ...state, "state": 0 }
         }
 
         if (tab.length === 0) {
@@ -551,7 +558,11 @@ class MarckerClusterHome extends MapModule  {
     }
 
     filterDataByDep() {
+       
         const data_filtered = this.checkeFilterType(this.default_data);
+        
+        console.log("data_filtered");
+        console.log(data_filtered);
 
         this.removeMarker();
 

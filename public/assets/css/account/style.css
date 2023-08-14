@@ -194,6 +194,14 @@ select {
 }
 
 
+/* button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+} */
 
 /*
 Use the modern Firefox focus style for all focusable elements.
@@ -3396,7 +3404,7 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 }
 
 .head-pub .status-content{
-  margin-top: -15px;
+  margin-top: 0px;
   margin-left: 10px;
 }
 
@@ -3412,8 +3420,8 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 }
 
 .head-pub img{
-  width: 40px;
-  border-radius: 50%;
+  width: 60px;
+  clip-path: circle(40%);
 }
 
 .card-pub-actu{
@@ -3470,7 +3478,7 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 }
 
 .account-message-conected img{
-  border-radius: 50%;
+      clip-path: circle(30%);
 }
 
 .account-profil-conected .pdp img{

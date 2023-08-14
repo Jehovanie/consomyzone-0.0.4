@@ -26,6 +26,7 @@ class SettingProfilSupplierType extends AbstractType
             // ->add('num_rue', TextType::class, ['label' => 'N° de rue'])
             // ->add('code_postal', TextType::class, ['label' => 'Code postale'])
             ->add('commune', TextType::class, ['label' => 'Ville'])
+            ->add('quartier', TextType::class, ['label' => 'Quartier'])
             // ->add('pays', TextType::class, ['label' => 'Pays'])
             ->add('commerce', TextType::class, ['label' => 'Commerce'])
             ->add('codeape', TextType::class, ['label' => 'Code APE'])
