@@ -29,19 +29,22 @@
 
 			</div>
 
-			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
-				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
+			<div class="text-center ms-2 non_active " id="" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;cursor:pointer;">
+			{# <div class="text-center ms-2 non_active " id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;cursor:pointer;"> #}
+				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#808080;"></i>
 
 			</div>
 
 		{% else %}
-			<div class="text-center ms-2" id="openMessage" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;pointer-events: none;opacity: 0.6">
-				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
+			<div class="text-center ms-2 non_active " id="" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;">
+			{# <div class="text-center ms-2 non_active " id="openMessage" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;"> #}
+				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;color:#808080;"></i>
 
 			</div>
 
-			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;pointer-events: none;opacity: 0.6">
-				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
+			<div class="text-center ms-2 non_active " id="" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;">
+			{# <div class="text-center ms-2 non_active " id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;"> #}
+				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#808080;"></i>
 
 			</div>
 		{% endif %}
@@ -88,7 +91,7 @@
 		<div class="vd-chat mh-chat ip-chat fh-chat ql-chat wl-chat h-100" id="conversation"></div>
 		<div class="vd-chat mh-chat ip-chat fh-chat h-100" id="visio"></div>
 
-		<div class=" nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
+		<div class=" nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat" id="footer_chat">
 			<div class="content_image_input_js_jheo"></div>
 			<ul class="content_image_input_js_jheo_file_name"></ul>
 			<div class="lc-chat mg-chat qg-chat hh-chat">

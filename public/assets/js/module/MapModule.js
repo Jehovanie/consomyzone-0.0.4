@@ -12,7 +12,7 @@ class MapModule{
         this.longitude= 1.8896484375000002;
 
         this.defaultZoom= 6;
-        this.zoomDetails= 15;
+        this.zoomDetails= 20;
         this.geos= [];
 
         this.mapForType=map_for_type;

@@ -1533,7 +1533,7 @@ class TributTController extends AbstractController
 
     #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
 
-    public function getRestoPastilles($table_resto): Response
+    public function getRestoPastilles($table_resto,SerializerInterface $serialize): Response
 
     {
 
@@ -1546,8 +1546,14 @@ class TributTController extends AbstractController
 
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
+			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
-        return $this->json($restos);
+		
+		//dd($restos);
+		$r=$serialize->serialize($restos,'json');
+		
+		//return $this->json($restos);
+		return new JsonResponse($r, Response::HTTP_OK, [], true);
 
     }
 

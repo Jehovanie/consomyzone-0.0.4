@@ -16,6 +16,7 @@ function openChat() {
     document.querySelector("#openFlottant").style = "display:none;"
     document.querySelector("#visio").style = "display:none;"
     document.querySelector("#conversation").style = "display:;"
+    document.querySelector("#footer_chat").style.display = ""
 
 
 }
@@ -58,9 +59,13 @@ function closeChat() {
  * @constructor
  */
 function endChat() {
-    document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -320px !important; z-index:1003;background-color:transparent;"
+    document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -320px; z-index:1003;background-color:transparent;"
     document.querySelector("#openChat").style = "background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML = ""
+
+    document.querySelector("#conversation").style.display = "none"
+    document.querySelector("#footer_chat").style.display = "none"
+
 
     document.querySelector("#closeChat").disabled = false
 

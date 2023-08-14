@@ -1945,6 +1945,10 @@
 
 @media screen and (min-width: 1900px){
 
+   .right_full{
+           right: -445px !important;
+   }
+
     .content-pub{
         max-width: 73.75rem !important;
     } 

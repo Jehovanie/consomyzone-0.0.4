@@ -702,7 +702,7 @@ li a .station {
 * a supprimer en temps voulu
 */
 .fc-bg{
-    cursor: not-allowed !important;
+    /* cursor: not-allowed !important; */
 }
 
 .cursor_active {
@@ -1505,7 +1505,9 @@ i.fa-eye-slash, i.fa-eye{
 }
 
 .avisRestoTribu{
-    text-decoration:none;color:#19a8d8;
+    text-decoration:none;/*color:#19a8d8;*/
+    cursor: none;
+    /* pointer-events: none; */
 }
 
 .containerPastilleResto{
@@ -1526,4 +1528,9 @@ i.fa-eye-slash, i.fa-eye{
     max-height: 20px;
     max-width: 20px;
     margin-top: 10px;
+}
+
+#givs-avis-resto-tom-js, #see-tom-js{
+    cursor: none;
+    /* pointer-events: none; */
 }

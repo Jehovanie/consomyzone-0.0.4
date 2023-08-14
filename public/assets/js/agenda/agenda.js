@@ -19,8 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
             allAgenda.forEach(agenda => { 
                 const {id, title, dateStart:start, dateEnd: end, type } = agenda;
                 // const className=  repasType.some(item => item.includes(type.toLowerCase())) ? "repas": 'other_event';
-
-                agendaTab.push({id, title, start, end, textColor: 'black'})
+                // var tomorrow = new Date(end);
+                // tomorrow.setDate(tomorrow.getDate()+1)
+                // console.log(tomorrow)
+                agendaTab.push({id, title, start : new Date(start), end: new Date(end), textColor: 'black'})
             })
             console.log(agendaTab)
             rendreCalendarWithEvents(agendaTab)
@@ -188,8 +190,13 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
         })
 
         if( !state ){
-            console.log(agenda)
             e.preventDefault()
+            console.log(agenda)
+            document.querySelector(".invalid_agenda_jheo_js").click();
+
+            setTimeout(() => {
+                document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
+            }, 1500);
         }else{
             sendNewAgenda(agenda)
         }
@@ -214,6 +221,7 @@ function rendreCalendarWithEvents(events){
         defaultDate: new Date(),
         editable: true,
         eventLimit: true, // allow "more" link when too many events
+        displayEventTime: false,
         events: events,
         dateClick: function(info) {
             bindEventForAllDay(info)
@@ -426,7 +434,7 @@ function setRestoAgenda(resto, element){
 
         pastiled.classList.remove(classSuccess);
         pastiled.classList.add(classDefault);
-        pastiled.innerText = "Pastillé"
+        pastiled.innerText = "Choisir"
     }
 
     if( element.classList.contains(classDefault)){
@@ -434,7 +442,7 @@ function setRestoAgenda(resto, element){
         element.classList.add(classSuccess);
         element.classList.add("resto_pastiled_jheo_js");
 
-        element.innerText = 'Resto pastillé';
+        element.innerText = 'Sélectionnée';
     }
     document.querySelector(".restoEvent_jheo_js").value = resto.name;
     document.querySelector(".lieuEvent_jheo_js").value = resto.adress;
@@ -478,9 +486,14 @@ function bindActionSearchResto(motCles){
                 }
 
                 const { results } = response;
-                results.forEach((resto, index) => {
-                    createLinkRestoPastile( index,{ id: resto.id_resto,  name: resto.name, adress: resto.adress })
-                });
+                if( results.length > 0 ){
+                    results.forEach((resto, index) => {
+                        createLinkRestoPastile( index,{ id: resto.id_resto,  name: resto.name, adress: resto.adress },true)
+                    });
+    
+                }else{
+                    createLinkRestoPastile( 0,{ id:"",  name:"", adress:""}, false)
+                }
 
                 if(document.querySelector(".content_list_resto_js").classList.contains("opacity_03")){
                     document.querySelector(".content_list_resto_js").classList.remove("opacity_03")
@@ -488,9 +501,9 @@ function bindActionSearchResto(motCles){
                 deleteChargement("chargement_content");
 
             })
-            .catch(error=> {
-                console.log(error)
-            })
+            // .catch(error=> {
+            //     console.log(error)
+            // })
     }
 
     // ///open modal
@@ -519,15 +532,23 @@ function deleteAgenda(id){
 }
 
 
-function createLinkRestoPastile(index, resto){
+function createLinkRestoPastile(index, resto , isValid=true){
 
-    const tr= document.createElement('tr');
+    if( isValid){
+        const tr= document.createElement('tr');
 
-    tr.innerHTML = `
-      <th>${index+1}</th>
-      <td>${resto.name}</td>
-      <td>${resto.adress.toLowerCase()}</td>
-      <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'${resto.name}',adress:'${resto.adress.toLowerCase()}'} ,this)">Pastillé</button></td>
-    `
-    document.querySelector(".list_tr_resto_jheo_js").appendChild(tr)
+        tr.innerHTML = `
+          <th>${index+1}</th>
+          <td>${resto.name}</td>
+          <td>${resto.adress.toLowerCase()}</td>
+          <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'${resto.name}',adress:'${resto.adress.toLowerCase()}'} ,this)">Choisissez</button></td>
+        `
+        document.querySelector(".list_tr_resto_jheo_js").appendChild(tr)
+    }else{
+        document.querySelector(".list_tr_resto_jheo_js").innerHTML= `
+            <div class="alert alert-secondary" role="alert">
+                Vous n'avez pas encore des restaurants pastillées.
+            </div>
+        `
+    }
 }

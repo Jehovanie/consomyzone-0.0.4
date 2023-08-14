@@ -1921,12 +1921,16 @@ function pastilleRestoForTribuT(element){
                 let html = `<div class="nomTribuTPastilleResto col-6">
                                 <b>Tribu T ${tbl}</b>
                             </div>
-                            <div class="me-auto col-6 non_active">
-                                <span class="lioTe">
+                            <div class="me-auto col-6">
+                                <span class="lioTe non_active">
                                     <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
                                 </span>
-                                <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                                <a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
                             </div>`
+                let img = document.createElement("img")
+                img.src = element.dataset.velona
+                img.classList.add("ms-1")
+                document.querySelector(".restoNameWithLogoTribu").appendChild(img);
                 slideToRight(element, html)
             })
             .catch(error=>console.log(error))
