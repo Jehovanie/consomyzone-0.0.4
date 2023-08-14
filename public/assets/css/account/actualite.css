@@ -60,3 +60,19 @@
 .image_item_gallery{
     max-width: 350px !important;
 }
+
+.content_loading{
+    float: right;
+    transform: translate(195px, 30px);
+    color: blue;
+}
+
+.loading{
+    animation: rotation 2s linear infinite;
+}
+
+.all_comment{
+    max-height: 345px;
+    overflow: scroll;
+    overflow-x: hidden;
+}

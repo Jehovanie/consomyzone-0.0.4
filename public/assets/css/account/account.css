@@ -2050,7 +2050,7 @@ a:focus {
     width: 50%;
     height: 50%;
     
-    clip-path: circle(30%);
+    /* clip-path: circle(30%); */
 }
 
 .profile-usertitle {
@@ -2103,4 +2103,9 @@ a:focus {
 
 .profile-sidebar #annule_invitation_js{
     margin-left: 35px;
+}
+
+
+.content-super-admin {
+    width: 100% !important;
 }

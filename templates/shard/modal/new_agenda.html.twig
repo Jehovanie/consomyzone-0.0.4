@@ -1,0 +1,168 @@
+{# ///// MODAL FOR CREATE AGENDA #}
+<div class="modal fade" id="createAgenda" tabindex="-1" aria-labelledby="modalCreateAgendaTitles" aria-hidden="true">
+  <div class="modal-dialog custom_modal_dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCreateAgendaTitles">Création d'un événement</h5>
+        <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body custom_modal">
+        <div class="container content_input_create_agenda_jheo_js">
+            <div class="mb-3">
+              <label for="nameEvent" class="form-label text_black">Nom attribuér à votre événement</label>
+              <input type="text" name="nameEvent" class="form-control input_black nameEvent_jheo_js" id="typeEvent">
+            </div>
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <label for="typeEvent" class="form-label text_black">Type de l'événement</label>
+                </div>
+                <div>
+                   <div class="form-check form-check-inline">
+                    <input class="form-check-input inputRepas_radio_jheo_js" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                    <label class="form-check-label text_black" for="inlineRadio1">Repas</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input inputOther_radio_jheo_js" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                    <label class="form-check-label text_black" for="inlineRadio2">Autre</label>
+                  </div>
+                </div>
+            </div>
+
+            <div class="mb-3 d-none content_typeEventSelect_jheo_js">
+                 <select class="form-select form-select-sm input_black typeEventSelect_jheo_js" aria-label=".form-select-sm example">
+                    <option value="Repas déjeuné" selected> Déjeuné</option>
+                    <option value="Repas dîné">Dinné</option>
+                </select>
+            </div>
+
+            <div class="mb-3 d-none content_typeEvent_jheo_js">
+                <input type="text" name="typeEvent" class="form-control input_black typeEvent_jheo_js" id="typeEvent"  list="typeEventList" placeholder="Tapez votre type...">
+            </div>
+            <div class="d-flex justify-content-center align-items-center mb-3 d-none content_searchResto_jheo_js">
+                <div class="flex-fill me-2">
+                  <label for="searchResto" class="form-label non_active">Recherche</label>
+                  <input type="search" name="searchResto" class="form-control input_block searchResto_jheo_js" id="searchResto"  list="searchRestoList" placeholder="Tapez et Entre." disabled>
+                </div>
+                <div class="flex-fill ms-2">
+                    <button type="button" class="btn btn-info chose_pastil_resto_jheo_js">
+                      Choisir parmit vos restaurants pastillés
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3 d-none content_restoEvent_jheo_js">
+              <label for="restoEvent" class="form-label text_black">Restaurant</label>
+              <input type="text" name="restoEvent" class="form-control input_black restoEvent_jheo_js" id="restoEvent" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="lieuEvent" class="form-label text_black">Lieu</label>
+                <input type="text" class="form-control input_black lieuEvent_jheo_js" id="lieuEvent">
+            </div>
+            <div class="mb-3">
+                <label for="eventDesc" class="form-label text_black">Description</label>
+                <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="nbrParticipant" class="form-label text_black">Nombre de participants</label>
+                <input type="number" min=1 class="form-control input_black nbrParticipant_jheo_js" id="nbrParticipant">
+            </div>
+            <div class="d-flex mb-3">
+                <div class="flex-fill me-2">
+                    <label for="eventStart" class="form-label text_black">Date de début</label>
+                    <input type="date" class="form-control input_black eventStart_jheo_js" id="eventStart" required>
+                </div>
+                <div class="flex-fill ms-2">
+                    <label for="eventEnd" class="form-label text_black">Date de fin</label>
+                    <input type="date" class="form-control input_black eventEnd_jheo_js" id="eventEnd" required>
+                </div>
+            </div>
+            <div class="d-flex mb-3">
+                <div class="flex-fill me-2">
+                    <label for="timeStart" class="form-label text_black">Heure de début</label>
+                    <input type="time" class="form-control input_black timeStart_jheo_js" id="timeStart" required>
+                </div>
+                <div class="flex-fill ms-2">
+                    <label for="timeEnd" class="form-label text_black">Heure de fin</label>
+                    <input type="time" class="form-control input_black timeEnd_jheo_js" id="timeEnd" required>
+                </div>
+            </div>
+            <div class="mb-3 non_active">
+                <label class="form-label non_active">Si vous avez des fichier</label>
+                {% include 'shard/input/inputImageDragDrop.html.twig' %}
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input confidEvent_jheo_js" type="checkbox" id="confid" disabled>
+              <label class="form-check-label non_active" for="confid" >Tout le monde peut voir votre agenda?</label>
+            </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary cta_confirm_create_agenda_jheo_js">Créer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ///// END MODAL FOR CREATE AGENDA #}
+
+{# ///// MODAL FOR LIST RESTO #}
+<button class="d-none listRestoModal_jheo_js" data-bs-target="#listRestoModal" data-bs-toggle="modal" data-bs-dismiss="modal"></button>
+
+
+<div class="modal fade" id="listRestoModal" aria-hidden="true" aria-labelledby="listRestoModal_label" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title listResto_title_jheo_js" id="listRestoModa_label">Résultat de restaurant trouver</h5>
+        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body custom_modal">
+        <div class="content_list_resto content_list_resto_js">
+          <div class="list_resto">
+            <table class="table table-striped ">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Nom</th>
+                  <th scope="col">Adress</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody class="list_tr_resto_jheo_js">
+                {# <tr>
+                  <th>1</th>
+                  <td>La debotte</td>
+                  <td>Otto</td>
+                  <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'La debotte',adress: 'adresse resto la debotte'} ,this)">Pastillé</button></td>
+                </tr> #}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="content_chargement content_chargement_jheo_js">
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-info cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Terminer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ///// END MODAL FOR LIST RESTO #}
+
+{# ///// MODAL FOR ERROR ANGENDA CREATE #}
+<button class="d-none invalid_agenda_jheo_js" data-bs-target="#popup_invalid_agenda_jheo_js" data-bs-toggle="modal" data-bs-dismiss="modal"></button>
+
+<div class="modal fade" id="popup_invalid_agenda_jheo_js" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="alert alert-danger text-center" role="alert">
+      Veuillez complète tous les nécessaires.
+    </div>
+    <button type="button" class="d-none close_modal_invalid_agenda_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">></button>
+</div>

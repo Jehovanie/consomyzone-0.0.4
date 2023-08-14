@@ -33,7 +33,7 @@ window.addEventListener('load', () => {
 
             $('#myTable').DataTable({
                 data: dataSet,
-                order: [[5, 'asc']],
+                order: [[5, 'desc']],
                 // columns: [
                 //     { title: '#' },
                 //     { title: 'Code' },
@@ -54,7 +54,6 @@ window.addEventListener('load', () => {
                         .columns()
                         .every(function () {
                             var that = this;
-                            console.log(this)
                             $('.input_column_js_jheo', this.header()).on('keyup change clear', function () {
                                 if (that.search() !== this.value) {
                                     that.search(this.value).draw();

@@ -467,16 +467,41 @@ class AgendaService extends PDOConnexionService
      * @author Tommy
      */
 
-    public function createEvent($nom_table_agenda,$a) {
+    public function createEvent($nom_table_agenda,$agenda) {
+        extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
-        $sql="INSERT INTO $nom_table_agenda(message,type,confidentialite".
-        ",file_path,date,heure_debut,heure_fin,file_type,status,restaurant,adresse,max_participant) VALUES(".
-        ":message,:type,:confidentialite,:file_path,:date,:heure_debut,".
-        ":heure_fin,:file_type,:status,:restaurant,:adresse,:max_participant)";
-        $stmt = $this->getPDO()->prepare($sql);
-        return  $stmt->execute($a);
-       
+        $statement = $this->getPDO()->prepare(
+            "INSERT INTO $nom_table_agenda (title, message, type, status, restaurant, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
+            values (:title, :message, :type, :status, :restaurant, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
+        );
+        $statement->bindParam(':title', $title);
+        $statement->bindParam(':message', $message);
+        $statement->bindParam(':type', $type);
+        $statement->bindParam(':status', $status);
+        $statement->bindParam(':restaurant', $restaurant);
+        $statement->bindParam(':adresse', $adresse);
+        $statement->bindParam(':file_type', $file_type);
+        $statement->bindParam(':file_path', $file_path);
+        $statement->bindParam(':dateStart', $dateStart);
+        $statement->bindParam(':dateEnd', $dateEnd);
+        $statement->bindParam(':heure_debut', $heureStart);
+        $statement->bindParam(':heure_fin', $heureEnd);
+        $statement->bindParam(':max_participant', $participant);
 
+        $result = $statement->execute();
+
+        return $result;
+
+    }
+
+
+
+    public function deleteAgendaUpdate($tableName, $id){
+
+        $query = "DELETE FROM $tableName WHERE id = ?";
+
+        $stmt = $this->getPDO()->prepare($query);
+        $stmt->execute([$id]);
     }
 
     /**
@@ -518,6 +543,58 @@ class AgendaService extends PDOConnexionService
         return  $stmt->execute($a);
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $table_agenda : name of the table agenda
+     * 
+     * @return array // [ [ "title" => ... , "dateStart" => ... , "timeStart" => ...,"timeEnd" => ... ], ... ];
+     */
+    public function getAllAgenda($table_agenda){
+        $results = [ ];
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_agenda;");
+        $statement->execute();
+
+        $all_agenda= $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach($all_agenda as $agenda){
+            $temps= [
+                "id" => $agenda['id'],
+                "title" =>($agenda["title"]) ? $agenda["title"] : substr($agenda["message"], 0, 15) . "...",
+                "dateStart" => $agenda["dateStart"],
+                "type" => json_decode($agenda["type"], true)['type'],
+                "dateEnd" => $agenda["dateEnd"],
+                "timeStart" => $agenda["heure_debut"],
+                "timeEnd" => $agenda["heure_fin"],
+            ];
+
+            array_push($results,$temps);
+        }
+
+        return $results ; // [ [ "title" => ... , "dateStart" => ... , "timeStart" => ...,"timeEnd" => ... ], ... ];
+    }
+
+    
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $table_agenda : name of the table agenda
+     * @param int $id : id of the agenda
+     * 
+     * @return array 
+     */
+    public function getOneAgenda($table_agenda, $id){
+        $results = [ ];
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_agenda where id= $id;");
+        $statement->execute();
+
+        $agenda= $statement->fetch(PDO::FETCH_ASSOC);
+        
+        return $agenda ;
+    }
+
+
 
     /**
      * @author Tommy
@@ -553,17 +630,19 @@ class AgendaService extends PDOConnexionService
     public function createTableAgenda($table_agenda_name){
         $sql= "CREATE TABLE $table_agenda_name (".
             "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
-            "`message` text DEFAULT NULL,".
+            "`title` varchar(255) NOT NULL,".
+            "`message` text NOT NULL,".
             "`type` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`type`)),".
+            "`adresse` varchar(255) NOT NULL,".
+            "`restaurant` varchar(255) DEFAULT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
-            "`file_path` varchar(500) DEFAULT NULL,".
-            "`date` date NOT NULL,".
+            "`dateStart` date NOT NULL DEFAULT current_timestamp(),".
+            "`dateEnd` date NOT NULL DEFAULT current_timestamp(),".
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
-            "`file_type` varchar(40) NOT NULL,".
-            " `status` tinyint(1) DEFAULT 0,".
-            "`restaurant` varchar(500) DEFAULT NULL,".
-            "`adresse` varchar(500) DEFAULT NULL,".
+            "`file_type` varchar(40) DEFAULT NULL,".
+            "`file_path` varchar(500) DEFAULT NULL,".
+            "`status` tinyint(1) NOT NULL DEFAULT 0,".
             "`max_participant` int(11) NOT NULL DEFAULT 0".
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);

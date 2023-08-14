@@ -4,16 +4,14 @@
 
 namespace App\Service;
 
-use ArgumentCountError;
-use Exception;
 use PDO;
+use Exception;
 use PDOException;
+use ArgumentCountError;
+use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
 {
-
-
-
     public function createTribuTable($tableName, $user_id, $name, $description)
 
     {
@@ -352,17 +350,17 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    public function showTribuT($user_id)
+    public function showTribuT($user_id, $option= null)
 
     {
 
-
+        $option = ($option === null) ? null : "_" .$option;
 
         $db = $_ENV["DATABASENAME"];
 
 
 
-        $query = "SHOW TABLES FROM $db like '%tribu_t_" . $user_id . "_%'";
+        $query = "SHOW TABLES FROM $db like '%tribu_t_" . $user_id . "_%" . $option ."'";
 
 
 
@@ -638,12 +636,12 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId ");
+        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId");
 
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-
+        // dd($result);
         return $result["fullname"];
 
     }
@@ -1309,6 +1307,26 @@ class Tribu_T_Service extends PDOConnexionService
         }
     }
 
+    public function getAllRestoPastiledForAllTable($id){
+        $results = [];
+        /// all tribu T
+        $all_tribuT= $this->showTribuT($id, "_restaurant");
+
+        
+
+        foreach($all_tribuT as $trib){
+            if( $this->hasTableResto($trib[0])){
+                $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $trib[0];");
+                $statement->execute();
+                $restos = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+                
+                $results= array_merge($results, $restos);
+            }
+        }
+        return $results;
+    }
+
     public function getRestoPastilles($tableResto, $tableComment){
     
         // $sql = "SELECT * from (SELECT $tableResto.id as id_pastille, $tableResto.id_resto, $tableResto.denomination_f, bdd_resto.id as id_unique, bdd_resto.dep as id_dep, bdd_resto.poi_y as latitude, bdd_resto.poi_x as longitude,  concat(bdd_resto.numvoie,' ',bdd_resto.typevoie,' ',bdd_resto.nomvoie,' ',bdd_resto.codpost,' ',bdd_resto.commune) as adresse FROM `tribu_t_2_data_engineer_restaurant` inner JOIN bdd_resto on $tableResto.id_resto = bdd_resto.clenum ORDER BY $tableResto.datetime DESC) as resto_pastille INNER JOIN departement ON resto_pastille.id_dep=departement.id";
@@ -1323,12 +1341,10 @@ class Tribu_T_Service extends PDOConnexionService
                 FROM $tableResto  
                 as t1 LEFT JOIN $tableComment  
                 as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";*/
-        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
-        FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-        GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com 
-        FROM $tableResto  
-        as t1 LEFT JOIN $tableComment  
-        as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id) as tb INNER JOIN bdd_resto ON tb.id_resto=bdd_resto.id";
+        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,
+								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id ) 
+				as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
 
         $stmt = $this->getPDO()->prepare($sql);
          
@@ -1675,6 +1691,54 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
         return $resultats; 
+    }
+
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableName: le nom de la table tribu
+     * 
+     * @param string $extension: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtension($tableName, $extension){
+
+        //$query = "SHOW TABLES FROM $db like 'tribu_t_" . $user_id . "_" . $tableName . "'";
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like '" . $tableName.$extension."'";
+
+        $sql = $this->getPDO()->query($query);
+
+        $result = $sql->rowCount();
+
+        return $result;
+
+    }
+
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * 
+     * @param string $tableNameExtension: le nom de la table extension
+     * 
+     * @param int $idResto: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkExtensionId($tableNameExtension, int $idResto){
+
+        
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if(is_array($result)){
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
 }

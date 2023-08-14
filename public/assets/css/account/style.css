@@ -3420,8 +3420,8 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 }
 
 .head-pub img{
-  width: 40px;
-  border-radius: 50%;
+  width: 60px;
+  clip-path: circle(40%);
 }
 
 .card-pub-actu{
@@ -3478,7 +3478,7 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 }
 
 .account-message-conected img{
-  border-radius: 50%;
+      clip-path: circle(30%);
 }
 
 .account-profil-conected .pdp img{

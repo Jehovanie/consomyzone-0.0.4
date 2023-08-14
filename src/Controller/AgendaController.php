@@ -16,6 +16,7 @@ use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Service\NotificationService;
 
+use App\Repository\BddRestoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,86 +93,132 @@ class AgendaController extends AbstractController
         }
     }
 
-
-
-
-    /**
-
-     * @Route("user/get_agenda_by_date/{table}/{datetime}" , name="get_agenda_by_date", methods={"POST", "GET"})
-
-     */
-
-    public function getAgendaByDate($table, $datetime)
-
-    {
-
-
-
+    #[Route('/user/get_agenda_by_date/{table}/{datetime}', name: 'get_agenda_by_date', methods: ["GET","POST"])]
+    public function getAgendaByDate($table, $datetime){
         return  $this->json($this->agendaService->getAgendaByDate($table, $datetime));
     }
 
-
-
-    /**
-
-     * @Route("user/get_agenda_by_type/{tribut_name}/{type}" , name="get_agenda_by_type", methods={"POST", "GET"})
-
-     */
-
-    public function getAgendaByType($tribut_name, $type)
-
-    {
-
-
-
+    #[Route('/user/get_agenda_by_type/{tribut_name}/{type}', name: 'get_agenda_by_type', methods: ["GET","POST"])]
+    public function getAgendaByType($tribut_name, $type){
         return  $this->json($this->agendaService->getAgendaByType($tribut_name, $type));
+    }
+
+    #[Route('/api/user/all_agenda', name: 'api_get_all_agenda', methods: ["GET"])]
+    public function getAllAgenda(
+        AgendaService $agendaService
+    ){
+        if( !$this->getUser()){
+            return $this->json([], 403);
+        }
+        $user= $this->getUser();
+        $table_agenda= $user->getNomTableAgenda();
+
+        $all_agenda= $agendaService->getAllAgenda($table_agenda);
+
+        return $this->json([
+            "allAgenda" => $all_agenda,
+        ], 200);
+    }
+
+    #[Route('/api/user/agenda/resto-pastille', name: 'api_resto_pastille_agenda', methods: ["GET"])]
+    public function getAllRestoPastiled(
+        Tribu_T_Service $tribuTService,
+        BddRestoRepository $bddRestoRepository
+    ){
+        $results= [ ];
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "User not Connecter"]);
+        }
+
+        $allresto = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+
+        //// add adress
+        foreach($allresto as $result){
+            $resto = $bddRestoRepository->find(intval($result['id_resto']));
+            
+            if( $resto ){
+                $result["adress"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                array_push($results, $result);
+            }
+        }
+
+        return $this->json([
+                "success" => true,
+                "results" => $results
+            ],200);
     }
 
 
 
-    /**
+    #[Route('/api/user/agenda/{id}', name: 'api_get_one_agenda', methods: ["GET"])]
+    public function getOneAgenda(
+        $id, 
+        AgendaService $agendaService
+    ){
+        if( !$this->getUser()){
+            return $this->json([], 403);
+        }
+        $user= $this->getUser();
+        $table_agenda= $user->getNomTableAgenda();
 
-     * @Route("user/new_agenda/{tribut_name}" , name="new_agenda")
+        $agenda= $agendaService->getOneAgenda($table_agenda, $id);
 
-     */
+        return $this->json([
+            "agenda" => $agenda,
+        ], 200);
+    }
 
-    public function createAgenda($tribut_name, Request $request)
-
-    {
-
-
-
+    
+    #[Route('/user/tribu/delete-agenda', name: 'api_delete_agenda', methods: ["POST"])]
+    public function deleteAgenda(
+        Request $request,
+        AgendaService $agendaService
+    ){
         $user = $this->getUser();
+        $table_agenda= $user->getNomTableAgenda();
+
+        // $user_id = $user->getId();
+        $requestContent = json_decode($request->getContent(), true);
+        $agendaID = intval($requestContent["agendaID"]);
+
+        $agenda= $agendaService->getOneAgenda($table_agenda, $agendaID);
+
+        if( !$agenda){
+            return $this->json([
+                "success" => true,
+                "message" => 'Agenda non trouvé, il est deja supprimer.'
+            ], 201);
+        }
+
+        $agendaService->deleteAgendaUpdate($table_agenda,$agendaID);
+
+        return $this->json([
+            "success" => true,
+            "message" => 'Suppression avec succès'
+        ], 201);
+     }
+ 
 
 
-
+    #[Route('/api_old/user/agenda/{id}', name: 'api_one_agenda', methods: ["GET"])]
+    public function createAgenda(
+        $tribut_name,
+        Request $request
+    ){
+        $user = $this->getUser();
         $user_id = $user->getId();
-
-
 
         $requestContent = json_decode($request->getContent(), true);
 
-
-
         $title = $requestContent["title"];
-
         $type = $requestContent["type"];
-
         $from = $requestContent["from"];
-
         $to = $requestContent["to"];
-
         $lat = $requestContent["lat"];
-
-        $lng = $requestContent["lng"];
-
+        $lng = $requestContent["lat"];
         $resto = $requestContent["resto"];
-
         $participant = $requestContent["participant"];
-
         $description = $requestContent["desc"];
-
-
 
         $id_agenda = $this->agendaService->createAgenda($tribut_name, $title, $type, $resto, $participant, $from, $to, $lat, $lng, $user_id, $description);
 
@@ -183,7 +230,6 @@ class AgendaController extends AbstractController
         $tribu_t_service =  new Tribu_T_Service();
 
         $regex = "/\_agenda+$/";
-
         $table_tribu = preg_replace($regex, "", $tribut_name);
 
         $membre = $tribu_t_service -> getUserIdInTribu($table_tribu , $user_id);
@@ -195,10 +241,8 @@ class AgendaController extends AbstractController
 
         $notif_service -> sendNotificationForMany($user_id,$membre,"Agenda", $content);
 
-
         return  $this->json($type." enregistré avec succès");
     }
-
 
 
     /**
@@ -476,39 +520,6 @@ class AgendaController extends AbstractController
 
     /**
 
-     * @Route("user/tribut/delete/{table_name}/{id}" , name="delete_agenda", methods={"POST"})
-
-     */
-
-    public function deleteAgenda($table_name, $id, Request $request)
-
-    {
-
-        $user = $this->getUser();
-
-
-
-        $user_id = $user->getId();
-
-
-
-        $requestContent = json_decode($request->getContent(), true);
-
-
-
-        $val = $requestContent["isActive"];
-
-
-
-        $this->agendaService->deleteAgenda($table_name, $val, $user_id, $id);
-
-
-
-        return $this->json('Suppression avec succès');
-    }
-
-    /**
-
      * @Route("user/tribut/modify_agenda/{table_name}/{id}" , name="modify_agenda", methods={"POST"})
 
      */
@@ -682,11 +693,81 @@ class AgendaController extends AbstractController
     {
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
+
+
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "userConnected" => $userConnected,
         ]);
+    }
+
+    #[Route("/user/tribu/new-agenda", name: "app_new_agenda", methods: ["GET", "POST"] )]
+    public function createEventUpdate(
+        Request $request,
+        AgendaService $agendaService, 
+        Filesystem $fs
+    ){
+
+        $data=json_decode($request->getContent(),true);
+        extract($data); //// $name, $description, $type, $status, $resto, $adresse, $fileName, $fileType, $dateStart, $dateEnd, $hourStart, $hourEnd, $participant
+
+        if( $fileName && $fileType ){
+            $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
+            $path .= (str_contains($req["fileType"], "application")) ? "document/" : "img/";
+        
+            if(!$fs->exists($path)){
+                $fs->mkdir($path,0777);
+            }
+            $fileUtils = new FilesUtils();
+            $fileUtils->uploadImageAjax($path, $req["fileBTOA"], $req["fileName"]);
+        }
+
+        $newAgenda= [
+            "title" => $name,
+            "message" => $description,
+            "type" => $type,
+            "adresse" => $adresse,
+            "dateStart" => $dateStart,
+            "dateEnd" => $dateEnd,
+            "heureStart" => $hourStart,
+            "heureEnd" => $hourEnd,
+            "participant" => $participant,
+            "restaurant" => $resto ? $resto : null,
+            "file_type" => $fileType ? $fileType : null,
+            "file_path" => $fileName ? $fileName : null,
+            "status" => 0
+        ];
+
+        $agendaTableName=$this->getUser()->getNomTableAgenda();
+
+        $agendaService->createEvent($agendaTableName,$newAgenda);
+        
+        // $fileUtils = new FilesUtils();
+        // $response = new Response();
+        // try{
+        //     if($req["fileSize"]>0)
+        //         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $req["fileBTOA"], $req["fileName"]);
+        //     else
+        //         $fs->touch($this->getParameter('kernel.project_dir') . $path. $req["fileName"]);
+        // }catch(\Exception $e){
+        //     $response->setStatusCode(500);
+        //     return $response;
+        // }
+        // $requestResponse=$agendaService->createEvent($agendaTableName,$param);
+       
+        // if($requestResponse){
+        //     $response->setStatusCode(200);
+        //     return $response;
+        // }else{
+        //     $response->setStatusCode(500);
+        //     return $response;
+        // }
+
+        return $this->json([
+            "success" => true,
+            "message" => "Agenda Créer"
+        ], 201);
     }
 
 

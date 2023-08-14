@@ -4,6 +4,7 @@
 var tribu_t_name_0 = ""; 
 var id_c_u //id du user courant
 let image_list = [];
+let dataExtension = [];
 var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') :  new Worker('/public/assets/js/tribuT/worker.js');
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT= IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
@@ -453,10 +454,9 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -552,10 +552,9 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -689,10 +688,9 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like"></i>
-                                                        <i class="fa-regular fa-comment comment" ></i>
+                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="fa-regular fa-comment comment non_active" ></i>
                                                     </div>
                                                 </div>
                                                 
@@ -888,7 +886,7 @@ function showResto(table_rst_pastilled,id_c_u){
                                         <div class="g-3">
                                             <div class="input-group mb-3">
                                                 <input type="text" class="form-control  rounded" placeholder="Pastiller un restaurant" id="resto-rech">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="findResto"><i class="fas fa-search"></i></button>
+                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
                                             </div>
                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
                                             </div>
@@ -969,7 +967,7 @@ function showResto(table_rst_pastilled,id_c_u){
                     }
                     if(id_user.includes(id_c_u)){
                         console.log("up "+denominationsF)
-                        text=`<button type="button" class="btn btn-primary " id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
+                        text=`<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
 
                         text1="Modifiez votre avis"
                     }else{
@@ -991,19 +989,19 @@ function showResto(table_rst_pastilled,id_c_u){
                                                     <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
                                                 </a>
                                             </div>
-                                            <div id="etoile_${id_resto}">
+                                            <div id="etoile_${id_resto}" class="non_active">
                                                 <i class="fa-solid fa-star" data-rank="1"></i>
                                                 <i class="fa-solid fa-star" data-rank="2"></i>
                                                 <i class="fa-solid fa-star" data-rank="3"></i>
                                                 <i class="fa-solid fa-star" data-rank="4"> </i>
-                                                <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
+                                                <a class="text-secondary disabled-link" style="cursor: none;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
                                             </div>
                                             <div class="row mt-3 ">
-                                                <div class="col-lg-4">
-                                                    <button type="button" class="btn btn-outline-primary  float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                                <div class="col-lg-4 non_active">
+                                                    <button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                                                 </div>
-                                                <div class="col-lg-4">
-                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                                <div class="col-lg-4 non_active">
+                                                    <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -1102,7 +1100,7 @@ function showResto(table_rst_pastilled,id_c_u){
             const q = event.target.value.toLowerCase();
 
             if (event.keyCode === 13) {
-                findResto(q)
+                listResto()
             }else{
                 document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
                     if(elem.textContent.toLowerCase().includes(q)){
@@ -1202,68 +1200,75 @@ function findResto(val){
    }) 
     fetch(request).then(response => response.json()).then(jsons => {
         console.log(jsons)
-        for (let json of jsons) { 
-            const name = json.denominationF;
-            const dep = json.dep;
-            const depName = json.depName;
-            const commune = json.commune;
-            const codePost = json.codpost;
-            const nomvoie = json.nomvoie;
-            const numvoie = json.numvoie;
-            const typevoie = json.typevoie;
-            const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-            const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
-            const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
-            const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
-            const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
-            const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
-            const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
-            const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
-            const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
-            const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
 
-            
+        if(jsons.length > 0){
 
-            document.querySelector("#result_resto_chr").innerHTML += `
+            for (let json of jsons) { 
+                const name = json.denominationF;
+                const dep = json.dep;
+                const depName = json.depName;
+                const commune = json.commune;
+                const codePost = json.codpost;
+                const nomvoie = json.nomvoie;
+                const numvoie = json.numvoie;
+                const typevoie = json.typevoie;
+                const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+                const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
+                const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
+                const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
+                const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
+                const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
+                const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
+                const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
+                const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
+                const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
+    
                 
-                <div class="card-result-chr items">
-                    <div class="header-result">
-                        <h5>${name}</h5>
-
-                    </div>
-                    <div class="body-result">
-                       
-                        <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
-                         <div class="type-resto-ico row">
-                            <div class="col-lg-5">${boulangerie}</div>
-                            <div class="col-lg-5">${bar}</div>
-                            <div class="col-lg-5">${brasserie}</div>
-                            <div class="col-lg-5">${cafe}</div>
-                            <div class="col-lg-5">${cuisineMonde}</div>
-                            <div class="col-lg-5">${fastFood}</div>
-                            <div class="col-lg-5">${creperie}</div>
-                            <div class="col-lg-5">${salonThe}</div>
-                            <div class="col-lg-5">${pizzeria}</div>
+    
+                document.querySelector("#result_resto_chr").innerHTML += `
+                    
+                    <div class="card-result-chr items">
+                        <div class="header-result">
+                            <h5>${name}</h5>
+    
                         </div>
-                        <div>
-                            <h5>Adresse: </h5>
-                            <p>${adresse}</p>
+                        <div class="body-result">
+                           
+                            <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
+                             <div class="type-resto-ico row">
+                                <div class="col-lg-5">${boulangerie}</div>
+                                <div class="col-lg-5">${bar}</div>
+                                <div class="col-lg-5">${brasserie}</div>
+                                <div class="col-lg-5">${cafe}</div>
+                                <div class="col-lg-5">${cuisineMonde}</div>
+                                <div class="col-lg-5">${fastFood}</div>
+                                <div class="col-lg-5">${creperie}</div>
+                                <div class="col-lg-5">${salonThe}</div>
+                                <div class="col-lg-5">${pizzeria}</div>
+                            </div>
+                            <div>
+                                <h5>Adresse: </h5>
+                                <p>${adresse}</p>
+                            </div>
+                            
                         </div>
-                        
+                        <div class="footer-result">
+                            <button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
+                        </div>
                     </div>
-                    <div class="footer-result">
-                        <button class="btn btn-primary" onclick="pastillerPast(${json.id},'${name}')">Pastillez</button>
-                    </div>
-                </div>
-            `
-            $(document).ready(function(){
-                $(".owl-carousel").owlCarousel({
-                    autoPlay: 3000,
-                    items: 5
+                `
+                $(document).ready(function(){
+                    $(".owl-carousel").owlCarousel({
+                        autoPlay: 3000,
+                        items: 5
+                    });
                 });
-            });
-
-            
+    
+                
+            }
+        }else{
+            document.querySelector("#result_resto_chr").style.display = "block"
+            document.querySelector("#result_resto_chr").innerHTML = "Aucun restaurant qui correspond à " + document.querySelector("#resto-rech").value
         }
     })
     
@@ -1285,12 +1290,37 @@ function showTypeResto(event) {
    
 }
 
-function pastillerPast(id, nom) {
-   
-    saveRestaurantPast(id, nom);
+function pastillerPast(element, id, nom) {
+    let modal = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+    if(modal.id == "modalForExtension"){
+        setRestoForPast(id, nom)
+        element.disabled = true;
+        document.querySelector("#successPastille").style.display = ""
+        document.querySelector("#successPastille").textContent = "Le restaurant " + nom + " a été pastillé avec succès !";
 
-    
-    
+        setTimeout(function() {
+            document.querySelector("#successPastille").style.display = "none"
+        }, 5000)
+
+    }else{
+        saveRestaurantPast(id, nom);
+    }
+ 
+}
+
+function setRestoForPast(id, nom) {
+
+    if(nom != "" && id != null){
+
+        let item = {
+            denomination_f : nom,
+            id_resto : id
+        }
+        dataExtension.push(item)
+        document.querySelector("#form_extensionData").value = JSON.stringify(dataExtension)
+        // document.querySelector("#form_extensionData").dataset.jsonValue = JSON.stringify(dataExtension)
+    }
+
 }
 
 /**save resto pastilled */
@@ -1714,7 +1744,7 @@ function fetchAllTribuGMember() {
                         ancorOrbutton = `<button data-id="${item.id}" type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
                     }
                     tbody.innerHTML += `<tr>
-                            <td><a style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
+                            <td class="non_active"><a class="disabled-link" style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
                             <td>${item.email}</td>
                             <td>${item.tribug}</td>
                             <td class="text-center">${ancorOrbutton}</td>
@@ -1874,9 +1904,41 @@ function updatePublication() {
        .then(message=>console.log(message));
 }
 
+
+
+function checkExtension(element) {
+    return element.checked;
+}
+
+function openModalForExtension(element){
+    if(checkExtension(element)){
+        $("#modalForExtension").modal("show")
+    }else{
+        console.log("Unchecked")
+    }
+}
+
 if (document.querySelector("#apropos-tribu-t")) {
     let openClose = document.querySelector("#apropos-tribu-t")
     openClose.addEventListener("click", () => {
         
     })
+}
+
+const searchParams = new URLSearchParams(window.location.search);
+if(searchParams.has('message')){
+    showAlertMessageFlash(searchParams.get('message'))
+    const url = new URL(window.location.href);
+    window.location.replace(url.pathname)
+}
+
+
+function listResto(){
+    document.querySelector("#result_resto_chr").innerHTML = ""
+    let inputName = document.querySelector("#resto-rech").value;
+    if(inputName.trim() != ""){
+        findResto(inputName)
+    }else{
+        alert("Veuillez saisir le nom du restaurant");
+    }
 }

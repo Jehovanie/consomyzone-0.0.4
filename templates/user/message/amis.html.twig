@@ -42,7 +42,7 @@
 
                                 <!-- Chat List Item -->
                                 {% for item in amisTributG %}
-                                    {% if item.id is not same as(app.user.id) %}
+                                    {% if item.id != app.user.id %}
                                         <div class="cg lc mg sh ol rl tq is">
                                             <div class="h mb sc yd of th">
                                                 {# /// photo de profil #}
@@ -56,7 +56,7 @@
                                                 <h5 class="mn un zn gs">
                                                     {{item.firstname ~ " " ~ item.lastname }}
                                                 </h5>
-                                                {% if item.last_message is defined and item.last_message is not same as(false) %}
+                                                {% if item.last_message is defined and item.last_message != false %}
 
                                                     {% if item.last_message.message_type is same as("text") %}
                                                         <p class="mn">{{item.last_message.text}}</p>
@@ -135,7 +135,7 @@
 
                             {% for message in userToProfil.messages %}
 
-                                {% if message.isForMe is same as(1) %}
+                                {% if message.isForMe is same as("1") %}
 
                                     <div class="qf" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
                                         <p class="qb mn un">

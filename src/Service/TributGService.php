@@ -685,40 +685,22 @@ class TributGService extends PDOConnexionService{
      * @param string $photo: image in the publication
      * 
      */
-
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){
 
-
-
         $statement = $this->getPDO()->prepare(
-
             "INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) 
-
             values (:user_id, :publication, :confidentiality, :photo, :userfullname)"
-
         );
-
-        
 
         $userfullname = $this->getFullName($user_id);
 
-
-
         $statement->bindParam(':user_id', $user_id);
-
         $statement->bindParam(':publication', $publication);
-
         $statement->bindParam(':confidentiality', $confid);
-
         $statement->bindParam(':photo', $photo);
-
         $statement->bindParam(':userfullname', $userfullname);
 
-
-
         $result = $statement->execute();
-
-
 
         return $result;
 
@@ -1089,6 +1071,34 @@ class TributGService extends PDOConnexionService{
 
         return $statement->execute();
 
+    }
+
+
+     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param string $table_name: name of the table origin
+     * @param int $userID: id of the user comment currently logged
+     * @param int publication_id: id of the publication
+     * @param string $comment: text comment
+     * @param string $audioname: name of the audio comment
+     */
+
+     public function handlePublicationCommentUpdate($table_name,$userID, $publication_id, $comment, $audioname ){
+
+        $table_comment = $table_name. "_commentaire";
+
+        $userfullname = $this->getFullName($userID);
+
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
+
+        $statement->bindParam(':user_id', $userID);
+        $statement->bindParam(':pub_id', $publication_id);
+        $statement->bindParam(':commentaire', $comment);
+        $statement->bindParam(':userfullname', $userfullname);
+        $statement->bindParam(':audioname', $audioname);
+
+        return $statement->execute();
     }
 
 

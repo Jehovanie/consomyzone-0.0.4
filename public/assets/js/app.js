@@ -717,21 +717,14 @@ function addControlPlaceholdersferme(map) {
     createCorner('horizontalmiddle', 'center');
   
 }
-// function cloneResultDepResto() {
-//     const restDep = document.querySelector(".result_container")
-//     if (restDep) {
-//         const clone = restDep.cloneNode(true)
-//         restDep.parentNode.removeChild(restDep)
-//         console.log(clone)
-       
-//         document.body.appendChild(clone)
-//         clone.style.display="block"
-//     }
-// }
+
+
 function iconsChange() {
     document.querySelector(".open-navleft-resto > i").classList.toggle("fa-bars")
     document.querySelector(".open-navleft-resto > i").classList.toggle("fa-minuss")
 }
+
+
 if (document.querySelector("#close-list-depart-resto")) {
     document.querySelector("#close-list-depart-resto").addEventListener("click", () => {
         document.querySelector(".result_container_resto").style.display = "none"
@@ -739,17 +732,6 @@ if (document.querySelector("#close-list-depart-resto")) {
     })
 }
 
-// if (document.querySelector(".btn-recher-nav")) {
-//     document.querySelector(".btn-recher-nav").onclick = () => {
-//         document.querySelector(".result_container_resto").style.display = "none"
-//         document.querySelector(".btn-recher-nav").classList.toggle("open-navleft-resto")
-//         document.querySelector(".btn-recher-nav").classList.toggle("close-navleft-resto")
-//         document.querySelector(".open-navleft-resto").addEventListener("click", () => {
-//             document.querySelector(".result_container_resto").style.display = "block"
-//         })
-//         iconsChange()
-//     }
-// }
 
 if (document.querySelector(".open-navleft-resto")) {
     document.querySelector(".open-navleft-resto").addEventListener("click", () => {
@@ -911,4 +893,15 @@ if (document.querySelector(".list-nav-bar")) {
     //         }
     //     });
     // }
+}
+
+
+if( document.querySelector('.btn_close_comment_jheo_js') || document.querySelector('.btn_cancel_comment_jheo_js')){
+    const cta= [ document.querySelector('.btn_close_comment_jheo_js'),document.querySelector('.btn_cancel_comment_jheo_js') ];
+
+    cta.forEach(item  => {
+        item.addEventListener("click", () => {
+            document.querySelector('.content_all_comment_jheo_js').innerHTML="";
+        })
+    })
 }

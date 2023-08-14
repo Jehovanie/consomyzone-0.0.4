@@ -433,6 +433,7 @@ class MarckerClusterHome extends MapModule  {
 
     eventManagement() {
 
+        ///// EVENT CHECK TYPE 
         if (document.querySelector(".content_filter_js_jheo")) {
             const alltype = document.querySelectorAll(".content_filter input");
             alltype.forEach(item => {
@@ -440,6 +441,8 @@ class MarckerClusterHome extends MapModule  {
             })
         }
 
+
+        //// EVENT SELECT DEPARTEMENT
         if (document.querySelector(".input_select_dep_js_jheo")) {
             document.querySelector(".input_select_dep_js_jheo").addEventListener("change", (e) => this.checkStateSelectedDep(e))
         } else {
@@ -523,12 +526,12 @@ class MarckerClusterHome extends MapModule  {
     }
 
     checkStateSelectedDep(e) {
+     
         const code_dep = e.target.value.length < 3 ? e.target.value : null;
         if (code_dep) {
             this.updateCenter(centers[parseInt(code_dep)].lat, centers[parseInt(code_dep)].lng, centers[parseInt(code_dep)].zoom)
-            setDataInLocalStorage("memoryCenter", JSON.stringify({ zoom:  centers[parseInt(code_dep)].zoom ,coord: { lat:enters[parseInt(code_dep)].lat , lng: enters[parseInt(code_dep)].lng }}))
+            setDataInLocalStorage("memoryCenter", JSON.stringify({ zoom:  centers[parseInt(code_dep)].zoom ,coord: { lat:centers[parseInt(code_dep)].lat , lng: centers[parseInt(code_dep)].lng }}))
         }
-
         this.filterDataByDep();
     }
 
@@ -555,7 +558,11 @@ class MarckerClusterHome extends MapModule  {
     }
 
     filterDataByDep() {
+       
         const data_filtered = this.checkeFilterType(this.default_data);
+        
+        console.log("data_filtered");
+        console.log(data_filtered);
 
         this.removeMarker();
 
