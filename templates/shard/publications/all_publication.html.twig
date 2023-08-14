@@ -1,7 +1,7 @@
 {% if publications|length > 0 %}
     {% for item in publications %}
         <!-- ====== Chart One Start -->
-        {% if ( item.publication.confidentiality is same as(1)) or ( item.publication.confidentiality is same as(2) and item.userOwnPub.id is same as(app.user.id) ) %}
+        {% if ( item.publication.confidentiality is same as("1")) or ( item.userOwnPub.id is same as(app.user.id) ) %}
             {% include 'card/card_publication.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
         {% endif %}
         <!-- ====== Chart One End -->

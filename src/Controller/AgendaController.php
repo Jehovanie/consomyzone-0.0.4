@@ -135,6 +135,7 @@ class AgendaController extends AbstractController
         //// add adress
         foreach($allresto as $result){
             $resto = $bddRestoRepository->find(intval($result['id_resto']));
+            
             if( $resto ){
                 $result["adress"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
                 array_push($results, $result);

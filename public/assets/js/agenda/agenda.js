@@ -488,11 +488,11 @@ function bindActionSearchResto(motCles){
                 const { results } = response;
                 if( results.length > 0 ){
                     results.forEach((resto, index) => {
-                        createLinkRestoPastile( index,{ id: resto.id_resto,  name: resto.name, adress: resto.adress })
+                        createLinkRestoPastile( index,{ id: resto.id_resto,  name: resto.name, adress: resto.adress },true)
                     });
     
                 }else{
-                    createLinkRestoPastile( 0,{ id:"",  name:"", adress:""}, isValid=false)
+                    createLinkRestoPastile( 0,{ id:"",  name:"", adress:""}, false)
                 }
 
                 if(document.querySelector(".content_list_resto_js").classList.contains("opacity_03")){
@@ -501,9 +501,9 @@ function bindActionSearchResto(motCles){
                 deleteChargement("chargement_content");
 
             })
-            .catch(error=> {
-                console.log(error)
-            })
+            // .catch(error=> {
+            //     console.log(error)
+            // })
     }
 
     // ///open modal

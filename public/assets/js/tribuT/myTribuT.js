@@ -454,7 +454,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment non_active" ></i>
@@ -553,7 +552,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment non_active" ></i>
@@ -690,7 +688,6 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment"> ${dataNbr} commentaire</p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment non_active" ></i>
@@ -970,7 +967,7 @@ function showResto(table_rst_pastilled,id_c_u){
                     }
                     if(id_user.includes(id_c_u)){
                         console.log("up "+denominationsF)
-                        text=`<button type="button" class="btn btn-primary " id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
+                        text=`<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
 
                         text1="Modifiez votre avis"
                     }else{
@@ -992,19 +989,19 @@ function showResto(table_rst_pastilled,id_c_u){
                                                     <span style="font-weight:700; font-size:18pt;">${denominationsF} </span> 
                                                 </a>
                                             </div>
-                                            <div id="etoile_${id_resto}">
+                                            <div id="etoile_${id_resto}" class="non_active">
                                                 <i class="fa-solid fa-star" data-rank="1"></i>
                                                 <i class="fa-solid fa-star" data-rank="2"></i>
                                                 <i class="fa-solid fa-star" data-rank="3"></i>
                                                 <i class="fa-solid fa-star" data-rank="4"> </i>
-                                                <a class="text-primary text-decoration-underline" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
+                                                <a class="text-secondary disabled-link" style="cursor: none;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
                                             </div>
                                             <div class="row mt-3 ">
-                                                <div class="col-lg-4">
-                                                    <button type="button" class="btn btn-outline-primary  float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                                <div class="col-lg-4 non_active">
+                                                    <button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                                                 </div>
-                                                <div class="col-lg-4">
-                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
+                                                <div class="col-lg-4 non_active">
+                                                    <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>
                                                 </div>
                                             </div>
                                         </div>

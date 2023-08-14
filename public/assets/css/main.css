@@ -698,6 +698,12 @@ li a .station {
 .non_active{
     cursor: not-allowed !important;
 }
+/*
+* a supprimer en temps voulu
+*/
+.fc-bg{
+    /* cursor: not-allowed !important; */
+}
 
 .cursor_active {
     cursor: pointer !important;
@@ -1454,10 +1460,25 @@ i.fa-eye-slash, i.fa-eye{
     margin-top: 6px;
 }
 
+.content_input_pass i.fa-eye-slash{
+    right: 0px !important;
+    margin-top: 7px !important;
+}
+
+.userProfil {
+    clip-path: circle(40%) !important;
+}
+
 #succesMessage {
     -webkit-animation: cssAnimation 5s forwards; 
     animation: cssAnimation 5s forwards;
 }
+
+.cta_connexion_navbar{
+    background-color: white;
+    clip-path: circle(33%);
+}
+
 @keyframes cssAnimation {
     0%   {display: block;}
     90%  {display: block;}
@@ -1484,7 +1505,9 @@ i.fa-eye-slash, i.fa-eye{
 }
 
 .avisRestoTribu{
-    text-decoration:none;color:#19a8d8;
+    text-decoration:none;/*color:#19a8d8;*/
+    cursor: none;
+    /* pointer-events: none; */
 }
 
 .containerPastilleResto{
@@ -1505,4 +1528,9 @@ i.fa-eye-slash, i.fa-eye{
     max-height: 20px;
     max-width: 20px;
     margin-top: 10px;
+}
+
+#givs-avis-resto-tom-js, #see-tom-js{
+    cursor: none;
+    /* pointer-events: none; */
 }

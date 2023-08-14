@@ -92,29 +92,31 @@ class RequestingService extends PDOConnexionService
 
     public function getAllRequest($tableName)
     {
-        $sql = "SELECT * FROM $tableName t ";
+        $sql = "SELECT * FROM $tableName t WHERE is_wait = 1";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $ts = $statement->fetchAll(PDO::FETCH_ASSOC);
         $result = [];
-        dd($ts);
+        // dd($ts);
 
         foreach ($ts as $t) {
             $uPoster = $this->u->find($t["user_post"]);
             $uReceiver = $this->u->find($t["user_received"]);
 
-            // $tmp["requesting"] = $t;
-            // $tmp["userReceiving"] = (array)$uReceiver;
-            // $tmp["uPoster"] = (array)$uPoster;
-            $tmp["requesting"] = $t;
-            $tmp["userReceiving"] = (array)$uReceiver;
-            $tmp["fN_userReceiving"] = $this->tribuT->getFullName($t["user_received"]);
-            $tmp["pdp_userReceiving"] = $this->tribuT->getPdp($t["user_received"]);
-            $tmp["uPoster"] = (array)$uPoster;
-            $tmp["fN_uPoster"] = $this->tribuT->getFullName($t["user_post"]);
-            $tmp["pdp_uPoster"] = $this->tribuT->getPdp($t["user_post"]);
-            
-            array_push($result, $tmp);
+            if($uPoster && $uReceiver ){
+                // $tmp["requesting"] = $t;
+                // $tmp["userReceiving"] = (array)$uReceiver;
+                // $tmp["uPoster"] = (array)$uPoster;
+                $tmp["requesting"] = $t;
+                $tmp["userReceiving"] = (array)$uReceiver;
+                $tmp["fN_userReceiving"] = $this->tribuT->getFullName($t["user_received"]);
+                $tmp["pdp_userReceiving"] = $this->tribuT->getPdp($t["user_received"]);
+                $tmp["uPoster"] = (array)$uPoster;
+                $tmp["fN_uPoster"] = $this->tribuT->getFullName($t["user_post"]);
+                $tmp["pdp_uPoster"] = $this->tribuT->getPdp($t["user_post"]);
+                
+                array_push($result, $tmp);
+            }
         }
         return $result;
     }

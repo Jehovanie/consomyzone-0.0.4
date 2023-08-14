@@ -13,7 +13,7 @@
                                     {% if item["logo_path"] != "" %}
                                         <img class="ms-1" width="20" src="{{asset(item["logo_path"])}}" alt="">
                                     {% else %}
-                                        <img  width="20" src="{{asset('/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                        <img  width="20" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}
@@ -22,7 +22,7 @@
                                         {% if item["logo_path"] != "" %}
                                             <img class="ms-1" width="20" src="{{asset(item["logo_path"])}}" alt="">
                                         {% else %}
-                                            <img class="ms-1" width="20" src="{{asset('/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                            <img class="ms-1" width="20" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
                                         {% endif %}
                                     {% endfor %}
                             {% endif %}
@@ -37,7 +37,7 @@
                         </a>
                     </p>
                     <span>
-                        <a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
+                        <a id="see-tom-js" class="see-avis non_active" data-bs-toggle="modalNone" data-bs-target="#staticBackdropNone">avis</a>
                     </span>
                 </div>
             </div>
@@ -219,7 +219,7 @@
                 {% if (app.user) %}
                     <div class="content_one_cta text-center mt-3 mb-3" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
                         {# <button class="btn btn-success " id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button> #}
-                        <button class="btn btn-success" id="givs-avis-resto-tom-js" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
+                        <button class="btn btn-secondary non_active" id="givs-avis-resto-tom-js" data-bs-toggle="modalNone" data-bs-target="#modalAvisRestaurantNone">Donné votre avis</button>
                     </div>
 
                     {% if tribu_t_resto_pastille|length > 0 %}
@@ -229,11 +229,11 @@
                                     <div class="nomTribuTPastilleResto col-6">
                                         <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
                                     </div>
-                                    <div class="me-auto col-6 non_active">
-                                        <span class="lioTe">
+                                    <div class="me-auto col-6">
+                                        <span class="lioTe non_active">
                                             <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
                                         </span>
-                                        <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                                        <a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -247,11 +247,11 @@
                                     <div class="nomTribuTPastilleResto col-6">
                                         <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
                                     </div>
-                                    <div class="me-auto col-6 non_active">
-                                        <span class="lioTe">
+                                    <div class="me-auto col-6">
+                                        <span class="lioTe non_active">
                                             <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
                                         </span>
-                                        <a href="#" class="avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+                                        <a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -265,7 +265,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b> Voulez-vous pastiller ce restaurant? 
-                                        <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" id="btnPastilleCarte" class="btn btn-primary" onclick="pastilleRestoForTribuT(this)" type="button">Oui</button>
+                                        <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" id="btnPastilleCarte" class="btn btn-primary" onclick="pastilleRestoForTribuT(this)" type="button" data-velona="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}">Oui</button>
                                     </div>
                                 </div>
                             {% endfor %}
