@@ -476,15 +476,47 @@ class MessageController extends AbstractController
         return $response;
     }
 
-    #[Route('/update/visio/{id}/{status}', name: 'app_update_visio')]
-    public function updateVisio($id,$status, MessageService $messageService): Response
+    #[Route('/update/visio_by_id/{id}/{status}', name: 'app_update_by_id_visio')]
+    public function updateVisioById($id, $status, MessageService $messageService): Response
     {
 
-        $messageService->updateVisio($id, $status);
+        $messageService->updateVisioById($id, $status);
 
         return $this->json([
             "success" => true
         ]);
+       
+    }
+
+    #[Route('/update/visio_by_name/{name}/{status}', name: 'app_update_by_name_visio')]
+    public function updateVisioByName($name, $status, MessageService $messageService): Response
+    {
+
+        $messageService->updateVisioByName($name, $status);
+
+        return $this->json([
+            "success" => true
+        ]);
+       
+    }
+
+    #[Route('/getVisioById/{id}', name: 'app_getVisioById')]
+    public function getVisioById($id,MessageService $messageService): Response
+    {
+
+        $visio = $messageService->getVisioById($id);
+
+        return $this->json($visio);
+       
+    }
+
+    #[Route('/getVisioByName/{name}', name: 'app_getVisioByName')]
+    public function getVisioByName($name,MessageService $messageService): Response
+    {
+
+        $visio = $messageService->getVisioByName($id);
+
+        return $this->json($visio);
        
     }
 

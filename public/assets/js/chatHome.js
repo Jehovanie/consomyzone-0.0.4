@@ -674,6 +674,13 @@ function lanceChat() {
 
 }
 
+
+/**
+ * Function to get a extension file js
+ * @constructor
+ * @param {string} params 
+ * @returns string : extension
+ */
 function getExtension(params) {
 
     let final_ext = params
@@ -682,11 +689,42 @@ function getExtension(params) {
             final_ext = value;
         }
     })
-    //console.log(value));
 
     return final_ext;
+}
 
-    //let key = Object.keys(file_extension)
+/**
+ * Function updating a status of visio
+ * @constructor
+ * @param {integer} id 
+ * @param {string} status 
+ */
+function setStatusMeetById(id, status) {
+
+    fetch("/update/visio_by_id/"+id+"/"+status, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: "POST",
+    })
+}
+
+/**
+ * Function updating a status of visio
+ * @constructor
+ * @param {integer} id 
+ * @param {string} status 
+ */
+function setStatusMeetByName(name, status) {
+
+    fetch("/update/visio_by_name/"+name+"/"+status, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: "POST",
+    })
 }
 
 function generateUID() {
@@ -702,48 +740,58 @@ function generateUID() {
     //   );5e2f1338-9d4b-45f4-9f10-845ec628d3c73
 }
 
+/**
+ * Function joining a meeting jitsi
+ * @constructor
+ * @param {integer} id 
+ * @param {string} room 
+ */
 function joinMeet(id, room) {
 
     let user_name = document.querySelector("#my_full_name").textContent.trim()
 
-    const domain = 'meet.jit.si';
+    const domain = '8x8.vc';
+
+    room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'+room;
             
     const options = {
         roomName: room,
         width: "100%",
         height: 700,
         lang: 'fr',
+        jwt : jwt_key,
         configOverwrite: { prejoinPageEnabled: false},
         // configOverwrite: { prejoinPageEnabled: false , enableClosePage: false, toolbarButtons : ['microphone', 'camera','tileview','fullscreen', 'desktop', 'closedcaptions','participants-pane','hangup']},
-        // interfaceConfigOverwrite: { DISABLE_JOIN_LEAVE_NOTIFICATIONS: false },
         parentNode: document.querySelector('#visio'),
     };
-    const api = new JitsiMeetExternalAPI(domain, options);
+    let api = new JitsiMeetExternalAPI(domain, options);
 
     api.executeCommand('displayName', user_name);
 
-    fetch("/update/visio/"+id+"/progress", {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        method: "POST",
-    })
+    setStatusMeetById(id, "progress")
 
-    // api.executeCommand('toolbarButtonClicked',{
-    //     key: hangup, // the pressed button's key. The key is as defined in `toolbarButtons` config,
-    //     participantId: string, // the id of the participant for which the button was clicked,
-    //     preventExecution: boolean // whether the execution of the button click was prevented or not
-    // })
+    api.on('readyToClose', () => {
 
-    api.addListener('toolbarButtonClicked', function(){
-        alert("jsahkjshaksaksak")
-    });
-
-    // api.dispose();
+        fetch("/getVisioById/"+id)
+        .then(response=>response.json())
+        .then(visio=>{
+            
+            if(visio.from == document.querySelector("#amis_list").getAttribute("data-my-id")){
+                setStatusMeetById(id,"finished")
+            }
+        })
+        
+        document.querySelector('#visio').innerHTML =""
+	})
     
 }
 
+
+/**
+ * Function creating a meeting jitsi
+ * @constructor
+ * @param {integer} user_id 
+ */
 function runVisio(user_id) {
 
     let user_name = document.querySelector("#my_full_name").textContent.trim()
@@ -757,7 +805,6 @@ function runVisio(user_id) {
         status : "wait"
     }
 
-    console.log(data);
     const request = new Request('/create/visio', {
         method: "POST",
         headers: {
@@ -775,25 +822,40 @@ function runVisio(user_id) {
 
                 document.querySelector('#visio').innerHTML = ""
 
-                const domain = 'meet.jit.si';
+                // const domain = 'meet.jit.si';8x8.vc
+                const domain = '8x8.vc'
+
+                let room_name = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'+roomRandom;
             
                 const options = {
-                    roomName: roomRandom,
+                    roomName: room_name,
                     width: "100%",
                     height: 700,
                     lang: 'fr',
-                    configOverwrite: { prejoinPageEnabled: false , toolbarButtons : ['microphone', 'camera', 'tileview','fullscreen','hangup', 'raisehand', 'select-background', 'desktop', 'closedcaptions']},
-                    // configOverwrite: { prejoinPageEnabled: false },
+                    jwt : jwt_key,
+                    // configOverwrite: { prejoinPageEnabled: false , toolbarButtons : ['microphone', 'camera', 'tileview','fullscreen','hangup', 'raisehand', 'select-background', 'desktop', 'closedcaptions']},
+                    configOverwrite: { prejoinPageEnabled: false },
                     // interfaceConfigOverwrite: { DISABLE_JOIN_LEAVE_NOTIFICATIONS: false },
                     parentNode: document.querySelector('#visio'),
                 };
 
-                const api = new JitsiMeetExternalAPI(domain, options);
+                let api = new JitsiMeetExternalAPI(domain, options);
                 
                 api.executeCommand('displayName', user_name);
 
-                // api.dispose();
+                api.on('readyToClose', () => {
 
+                    fetch("/getVisioByName/"+roomRandom)
+                    .then(response=>response.json())
+                    .then(visio=>{
+                        if(visio.from == document.querySelector("#amis_list").getAttribute("data-my-id")){
+                            setStatusMeetByName(roomRandom, "finished")
+                        }
+                    })
+
+                    document.querySelector('#visio').innerHTML =""
+            
+                })
             }
         })
 
@@ -910,6 +972,10 @@ let file_extension = {
 }
 
 let image_list = [];
+
+// JWT key declaration
+
+let jwt_key = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIxOTQ1ODksImV4cCI6MTY5MjIwMTc4OSwibmJmIjoxNjkyMTk0NTg0LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.EVlu8_WIqJf7gNFpbkP_oLMCFezQM9fKISRoBD9_3CdoyviwQwl1a4s-yl-qzVMeHvzS_8KTihfrVOt7IPDKJnNkMpVeEBnMjS4CtMRt0yKHWGH58EFvjb_yXuVRKmT-0FaKDg926JUUDfofkJLRxuV4d9ckJX2gJkuOgDXutazo-lZzeyyo7eGuZCbEXqAs6ec9YubrEcUQxZ9TBqWBnYfH5k7wnACrmK0CPvYiFQYYYvyhBDNbmYNLZJpAqsbll_3jMbALAPLOeViveIOY01qxzK2VJysV6QcauLg3z5YNVlYqR4NsYf-EbRUvxixcTRFh-sKCe5VjANk5ANZ8EA'
 
 if(document.querySelector("#closevisio")){
 

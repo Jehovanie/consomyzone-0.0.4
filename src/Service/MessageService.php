@@ -208,7 +208,7 @@ class MessageService extends PDOConnexionService{
         return $result;
     }
 
-    public function updateVisio($id, $status)
+    public function updateVisioById($id, $status)
 
     {
 
@@ -217,6 +217,18 @@ class MessageService extends PDOConnexionService{
         $stmt = $this->getPDO()->prepare($sql);
 
         $stmt->execute([$status, $id]);
+
+    }
+
+    public function updateVisioByName($name, $status)
+
+    {
+
+        $sql = "UPDATE visio_story set status = ? WHERE nom = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute([$status, $name]);
 
     }
 
@@ -224,11 +236,38 @@ class MessageService extends PDOConnexionService{
 
     {
 
-        $sql = "UPDATE visio_story set status = ? WHERE id = ?";
+        // $sql = "UPDATE visio_story set status = ? WHERE id = ?";
 
-        $stmt = $this->getPDO()->prepare($sql);
+        // $stmt = $this->getPDO()->prepare($sql);
 
-        $stmt->execute([$status, $id]);
+        // $stmt->execute([$status, $id]);
 
     }
+
+    public function getVisioById($my_id){
+
+        $sql = "SELECT * FROM visio_story WHERE visio_story.id = $my_id";
+
+        $stm = $this->getPDO()->prepare($sql);
+
+        $stm->execute();
+
+        $result = $stm->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    public function getVisioByName($name){
+
+        $sql = "SELECT * FROM visio_story WHERE visio_story.nom = '$name' ";
+
+        $stm = $this->getPDO()->prepare($sql);
+
+        $stm->execute();
+
+        $result = $stm->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
 }
