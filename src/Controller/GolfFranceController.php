@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
+use App\Service\GolfFranceService;
 use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
@@ -70,11 +71,15 @@ class GolfFranceController extends AbstractController
 
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
-        GolfFranceRepository $golfFranceRepository
+        GolfFranceRepository $golfFranceRepository,
+        GolfFranceService $golfFranceService,
     ){
 
         $golfs= [];
-        $golfs= $golfFranceRepository->findAll();
+        $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
+
+        $golfs= $golfFranceRepository->getSomeDataShuffle($userID);
+
         return $this->json([
             "success" => true,
             "data" => $golfs,
@@ -99,7 +104,7 @@ class GolfFranceController extends AbstractController
 
         ///current user connected
         $user = $this->getUser();
-
+        $userID = ($user) ? $user->getId() : null;
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
@@ -142,9 +147,9 @@ class GolfFranceController extends AbstractController
 
             "type" => "golf",
 
-            "golfs" => $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, 0),
+            "golf" => $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID),
 
-            "nombre_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
+            "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
 
             "profil" => $statusProfile["profil"],
 
@@ -164,8 +169,10 @@ class GolfFranceController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
     ){
+        $golfs= [];
+        $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        $golfs= $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, 0) ? $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, 0) : [];
+        $golfs= $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
 
         return $this->json([
             "success" => true,

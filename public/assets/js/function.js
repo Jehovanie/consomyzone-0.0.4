@@ -127,7 +127,7 @@ function addControlPlaceholders(map) {
 }
 
 ///jheo: dynamique icon for map leaflet. ---------
-function setIconn(urlIcon) {
+function setIconn(urlIcon, classIcon="") {
     const url = new URL(window.location.href);
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
@@ -137,7 +137,8 @@ function setIconn(urlIcon) {
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
         shadowSize: [68, 95],
-        shadowAnchor: [22, 94]
+        shadowAnchor: [22, 94],
+        className: classIcon
     });
     return myIcon;
 }

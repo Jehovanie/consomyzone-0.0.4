@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GolfFranceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -72,14 +74,14 @@ class GolfFrance
     /**
      * @var float|null
      *
-     * @ORM\Column(name="latitude", type="float", precision=18, scale=16, nullable=true)
+     * @ORM\Column(name="latitude", type="decimal", precision=16, scale=14, nullable=true)
      */
     private $latitude;
 
     /**
      * @var float|null
      *
-     * @ORM\Column(name="longitude", type="float", precision=18, scale=16, nullable=true)
+     * @ORM\Column(name="longitude", type="decimal", precision=16, scale=14, nullable=true)
      */
     private $longitude;
 
@@ -112,6 +114,14 @@ class GolfFrance
      * @ORM\Column(name="nom_dep", type="string", length=254, nullable=true)
      */
     private $nom_dep;
+
+    #[ORM\ManyToMany(targetEntity: GolfFinished::class, mappedBy: 'golfID')]
+    private Collection $golfFinisheds;
+
+    public function __construct()
+    {
+        $this->golfFinisheds = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -258,6 +268,59 @@ class GolfFrance
     public function setSiteWeb(?string $site_web): static
     {
         $this->site_web = $site_web;
+
+        return $this;
+    }
+
+       
+    public function getDep(): ?string
+    {
+        return $this->dep;
+    }
+
+    public function setDep(?string $dep): self
+    {
+        $this->dep = $dep;
+
+        return $this;
+    }
+
+    
+    public function getNomDep(): ?string
+    {
+        return $this->nom_dep;
+    }
+
+    public function setNomDep(?string $nomDep): self
+    {
+        $this->nom_dep = $nomDep;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GolfFinished>
+     */
+    public function getGolfFinisheds(): Collection
+    {
+        return $this->golfFinisheds;
+    }
+
+    public function addGolfFinished(GolfFinished $golfFinished): static
+    {
+        if (!$this->golfFinisheds->contains($golfFinished)) {
+            $this->golfFinisheds->add($golfFinished);
+            $golfFinished->addGolfID($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGolfFinished(GolfFinished $golfFinished): static
+    {
+        if ($this->golfFinisheds->removeElement($golfFinished)) {
+            $golfFinished->removeGolfID($this);
+        }
 
         return $this;
     }

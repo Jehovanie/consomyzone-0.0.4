@@ -10,9 +10,11 @@ class MarckerClusterGolf extends MapModule {
             this.createMarkersCluster();
             this.initMap();
 
-            const link =( this.nom_dep && this.id_dep) ? `/golf/departement/${this.nom_dep}/${this.id_dep}/allgolf` : `/api/all_golf`;
+            const link =( this.nom_dep && this.id_dep) ? `/api/golf/departement/${this.nom_dep}/${this.id_dep}` : `/api/golf`;
             const response= await fetch(link);
-            this.default_data= await response.json();
+            const result= await response.json();
+            this.default_data = result.data
+            
             this.data= this.default_data; 
             
 
@@ -22,21 +24,10 @@ class MarckerClusterGolf extends MapModule {
         }
     }
 
-    getAlreadyInit(){
-        return this.ALREADY_INIT;
-    }
-
-    setAlreadyInit(val){
-        this.ALREADY_INIT = val;
-    }
-
-    
-
     bindAction(){
         this.addMarker(this.data);
-        this.setNumberOfMarker();
-        // this.generateAllCard();
-        this.addEventOnMap(this.map);
+        // this.setNumberOfMarker();
+        // this.addEventOnMap(this.map);
     }
 
     
@@ -99,55 +90,57 @@ class MarckerClusterGolf extends MapModule {
 
     addMarker(newData){
         newData.forEach(item => {
-            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-            let title = "<span class='fw-bolder'> Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'><br>Departement: </span>" + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
+            let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
+
+            const pathIcon= item.user_status !== "" ? 'assets/icon/NewIcons/icon-bleu-golf-vert-badge.png' : 'assets/icon/NewIcons/icon-bleu-golf-vert.png';
+            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge'), id: item.id});
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
-            marker.on('click', (e) => {
-                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+            // marker.on('click', (e) => {
+            //     this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
-                const icon_R = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-                        iconSize: [32,50],
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
-                    }
-                })
-                marker.setIcon(new icon_R);
+            //     const icon_R = L.Icon.extend({
+            //         options: {
+            //             iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+            //             iconSize: [32,50],
+            //             iconAnchor: [11, 30],
+            //             popupAnchor: [0, -20],
+            //             shadowSize: [68, 95],
+            //             shadowAnchor: [22, 94]
+            //         }
+            //     })
+            //     marker.setIcon(new icon_R);
 
-                if (this.marker_last_selected && this.marker_last_selected != marker ) {
-                    const icon_B = L.Icon.extend({
-                        options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
-                            iconSize: [32,50],
-                            iconAnchor: [11, 30],
-                            popupAnchor: [0, -20],
-                            //shadowUrl: 'my-icon-shadow.png',
-                            shadowSize: [68, 95],
-                            shadowAnchor: [22, 94]
-                        }
-                    })
-                    this.marker_last_selected.setIcon(new icon_B)
-                }
-                this.marker_last_selected = marker;
+            //     if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            //         const icon_B = L.Icon.extend({
+            //             options: {
+            //                 iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
+            //                 iconSize: [32,50],
+            //                 iconAnchor: [11, 30],
+            //                 popupAnchor: [0, -20],
+            //                 //shadowUrl: 'my-icon-shadow.png',
+            //                 shadowSize: [68, 95],
+            //                 shadowAnchor: [22, 94]
+            //             }
+            //         })
+            //         this.marker_last_selected.setIcon(new icon_B)
+            //     }
+            //     this.marker_last_selected = marker;
 
-                this.markers.refreshClusters();
+            //     this.markers.refreshClusters();
 
                 
-                if (screen.width < 991) {
-                    let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-                    getDetailHomeForMobile(pathDetails)
-                } else {
-                    // getDetailsFerme(pathDetails, true)getDetailStation
-                    getDetailFerme(item.departement, item.departementName, item.id)
-                }
+            //     if (screen.width < 991) {
+            //         let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+            //         getDetailHomeForMobile(pathDetails)
+            //     } else {
+            //         // getDetailsFerme(pathDetails, true)getDetailStation
+            //         getDetailFerme(item.departement, item.departementName, item.id)
+            //     }
 
-            })
+            // })
 
             this.markers.addLayer(marker);
 

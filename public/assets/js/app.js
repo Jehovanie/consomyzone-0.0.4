@@ -826,6 +826,27 @@ if (document.querySelector(".open-navleft-station-spec")) {
     })
 }
 
+if (document.querySelector("#close-list-depart-golf-spec")) {
+    document.querySelector("#close-list-depart-golf-spec").addEventListener("click", () => {
+        document.querySelector(".content_navleft_spec_jheo_js").style.display="none"
+        iconsChange()
+    })
+}
+
+if( document.querySelector(".icon_close_nav_left_jheo_js")){
+    document.querySelector(".icon_close_nav_left_jheo_js").addEventListener('click' , () => {
+        document.querySelector(".content_navleft_jheo_js").style.display="none"
+        iconsChange()
+    })
+}
+
+if( document.querySelector(".open_nav_left_jheo_js")){
+    document.querySelector(".open_nav_left_jheo_js").addEventListener("click", () => {
+        document.querySelector(".content_navleft_jheo_js").style.display="block";
+        iconsChange()
+    })
+}
+
 if (document.querySelector("#menu-mobile")) {
     document.querySelector("#menu-mobile").onclick = () => {
         if (document.querySelector("#container-mobile")) {
