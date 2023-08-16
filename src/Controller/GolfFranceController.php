@@ -68,7 +68,7 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
-    #[Route('/api/all_golf', name: 'api_golf_france', methods: ["GET", "POST"])]
+    #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         GolfFranceRepository $golfFranceRepository
     ){

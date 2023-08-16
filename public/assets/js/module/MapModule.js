@@ -69,7 +69,7 @@ class MapModule{
             }
         );
         L.control.zoom({
-            position: 'bottomright'
+            position: 'topright'
         }).addTo(this.map);
 
         // let position = null, coords= null;
