@@ -1,9 +1,8 @@
 <div class="navleft  result_container_golf_spec content_navleft_jheo_js">
-    <nav class="navbar navbar-light navbar-light-left fixed-top">
+    <nav class="navbar navbar-light navbar-light-left">
         <div class="container-fluid">
-            
-                <div class="row mt-3">
-                    <div class="col-8 mt-5">
+                <div class="row">
+                    <div class="col-8">
                         <a href="{{path('app_golf_france') }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                             width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
@@ -19,7 +18,7 @@
                             </svg>
                         </a>
                     </div>
-                    <div class="col-2 mt-5">
+                    <div class="col-2">
                         <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-golf-spec"></i>
                     </div>
                 </div>
@@ -28,12 +27,13 @@
         
     </nav>
     <div class="container-fluid">
-        <div class="head-left spec-dep">
+        <div class="head-left">
             <div class="row">
+                <div class="col-md-1"></div>
                 <div class="col-md-2">
                     <img class="icon_golf" src="{{asset('assets/icon/NewIcons/golf.png')}}" alt="Icon Golf">
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
                         Golf à
                         <span class="fw-bolder">{{nom_dep}}</span>
