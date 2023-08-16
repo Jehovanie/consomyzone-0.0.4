@@ -283,7 +283,9 @@ function setAndShowModal(agenda){
         return 0;
     }
 
-    const agendaType= JSON.parse(agenda.type)
+    //const agendaType= JSON.parse(agenda.type)
+    const agendaType= agenda.type
+    
     const content_view_agenda= document.querySelector('.content_input_view_agenda_jheo_js')
     
     content_view_agenda.querySelector(".nameEvent_jheo_js").value= agenda.title !== null ? agenda.title.toUpperCase() : agenda.message;
@@ -532,7 +534,7 @@ function deleteAgenda(id){
 }
 
 
-function createLinkRestoPastile(index, resto , isValid=true){
+function createLinkRestoPastile(index, resto, isValid=true){
 
     if( isValid){
         const tr= document.createElement('tr');
@@ -544,6 +546,7 @@ function createLinkRestoPastile(index, resto , isValid=true){
           <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'${resto.name}',adress:'${resto.adress.toLowerCase()}'} ,this)">Choisissez</button></td>
         `
         document.querySelector(".list_tr_resto_jheo_js").appendChild(tr)
+
     }else{
         document.querySelector(".list_tr_resto_jheo_js").innerHTML= `
             <div class="alert alert-secondary" role="alert">
@@ -552,3 +555,310 @@ function createLinkRestoPastile(index, resto , isValid=true){
         `
     }
 }
+
+/** BLOC NANTENAINA */
+
+function selectEtab(e){
+
+    let etabCMZ = document.querySelector("#etabCMZ")
+    let nomEtab = document.querySelector("#containerNomEtab")
+    let adresseContainer = document.querySelector(".lieuEventContainer")
+
+    if(e.target.value == 1){
+
+        nomEtab.querySelector("input").disabled = true
+
+        adresseContainer.querySelector("input").disabled = true
+        
+        if(!nomEtab.classList.contains("d-none")){
+            nomEtab.classList.add("d-none")
+        }
+
+        if(etabCMZ.classList.contains("d-none")){
+            etabCMZ.classList.remove("d-none")
+        }
+
+        if(!adresseContainer.classList.contains("d-none")){
+            adresseContainer.classList.add("d-none")
+        }
+
+    }else if(e.target.value == 2){
+
+        nomEtab.querySelector("input").disabled = false
+
+        adresseContainer.querySelector("input").disabled = false
+
+        if(!etabCMZ.classList.contains("d-none")){
+            etabCMZ.classList.add("d-none")
+        }
+
+        if(nomEtab.classList.contains("d-none")){
+            nomEtab.classList.remove("d-none")
+        }
+
+        if(adresseContainer.classList.contains("d-none")){
+            adresseContainer.classList.remove("d-none")
+        }
+
+        document.querySelector("#containerNomEtab > input").value =""
+
+        adresseContainer.querySelector("input").value = ""
+
+    }else{
+        alert("Il y a eu une erreur !");
+    }
+}
+
+function handleChangeEtabCMZ(radio) {
+    let cmzEtab = radio.value
+    let navLinksModal = document.querySelectorAll("#smallNavInvitation > li > a")
+    //alert(radio.value)
+    $("#createAgenda").modal("hide")
+
+    activeOnglet(navLinksModal[0])
+    let contentList = document.querySelector(".list_resto_or_golf")
+
+    let cleQuoi = document.querySelector("#cleQuoiAgenda")
+
+    if(cmzEtab == "golf"){
+        if(!cleQuoi.classList.contains("d-none")){
+            cleQuoi.classList.add("d-none")
+        }
+        navLinksModal[0].textContent = "Tous les golfs"
+        navLinksModal[1].textContent = "Golfs pastillés"
+
+    }else{
+        if(cleQuoi.classList.contains("d-none")){
+            cleQuoi.classList.remove("d-none")
+        }
+        navLinksModal[0].textContent = "Tous les restaurants"
+        navLinksModal[1].textContent = "Restaurants pastillés"
+    }
+    
+    $("#listRestoOrGolfModal").modal("show")
+
+    makeLoading()
+
+    cmzEtab = cmzEtab != "" ? cmzEtab : "restaurant"
+    getAllEtab(cmzEtab, false)
+
+}
+
+function getAllEtab(etab, isPast){
+
+    let request = "";
+
+    if(isPast){
+        request = new Request(`/api/user/agenda/get/${etab}/pastille`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+        })
+    }else{
+
+        request = new Request(`/api/user/agenda/get/all/${etab}`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+        })
+
+    }
+
+    document.querySelector(".list_resto_or_golf > table > tbody").innerHTML =""
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+
+            if(!response.success){ 
+                throw  new Error(response.message); 
+            }
+
+            const { results } = response;
+
+            if( results.length > 0 ){
+                results.forEach((etablissement, index) => {
+                    generateTableForEtab( index, { id: etablissement.id_etab,  nom: etablissement.name, adresse: etablissement.adresse },true)
+                });
+
+            }else{
+                generateTableForEtab( 0,{ id:"",  nom:"", adresse:""}, false)
+            }
+
+            if(document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")){
+                document.querySelector(".list_resto_or_golf").classList.remove("opacity_03")
+            }
+            deleteChargement("chargement_content");
+
+        })
+}
+
+function generateTableForEtab(index, etab, isValid=true){
+
+    if( isValid){
+
+        let tableData = `<tr>
+                <th>${index+1}</th>
+                <td>${etab.nom}</td>
+                <td>${etab.adresse.toLowerCase()}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-info" onclick="setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)">Choisir</button>
+                </td>
+            </tr>
+            `
+        document.querySelector(".list_resto_or_golf > table > tbody").innerHTML += tableData
+
+    }else{
+        document.querySelector(".list_resto_or_golf > table > tbody").innerHTML= `
+            <td colspan="4" class="text-center">Aucun résultat</td>
+            `
+    }
+}
+
+function setNameOrAdresseForEtab(etab, element){
+
+    const classSuccess= "btn-info";
+    const classDefault= "btn-outline-info";
+
+    if(document.querySelector(".resto_pastiled_jheo_js")){
+        const pastiled = document.querySelector(".resto_pastiled_jheo_js");
+        pastiled.classList.remove("resto_pastiled_jheo_js");
+
+        pastiled.classList.remove(classSuccess);
+        pastiled.classList.add(classDefault);
+        pastiled.innerText = "Choisir"
+    }
+
+    if( element.classList.contains(classDefault)){
+        element.classList.remove(classDefault);
+        element.classList.add(classSuccess);
+        element.classList.add("resto_pastiled_jheo_js");
+
+        element.innerText = 'Sélectionner';
+    }
+
+    document.querySelector("#nomEtabEvent").value = etab.name;
+
+    document.querySelector("#lieuEvent").value = etab.adress;
+    
+    if(document.querySelector("#containerNomEtab").classList.contains("d-none")){
+        document.querySelector("#containerNomEtab").classList.remove("d-none")
+    }
+
+    if(document.querySelector("#containerAdresseEtab").classList.contains("d-none")){
+        document.querySelector("#containerAdresseEtab").classList.remove("d-none")
+    }
+}
+
+function makeLoading(){
+    let containerChargement = document.createElement("div")
+    containerChargement.classList.add("chargement_content")
+    containerChargement.classList.add("content_chargement_nanta_js")
+    containerChargement.classList.add("mt-3")
+    containerChargement.classList.add("mb-3")
+    document.querySelector(".container_list").appendChild(containerChargement)
+
+    createChargement(document.querySelector(".content_chargement_nanta_js"),c="chargement_content content_chargement_nanta_js")
+
+    if( !document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")){
+        document.querySelector(".list_resto_or_golf").classList.add("opacity_03")
+    }
+}
+
+function saveNewAgenda(agenda){
+    
+    const param = {
+        "title" : agenda.title,
+        "type": agenda.type,
+        "isEtabCMZ" : agenda.isEtabCMZ,
+        "isGolfCMZ" : agenda.isGolfCMZ,
+        "isRestoCMZ" : agenda.isRestoCMZ,
+        "name" : agenda.name,
+        "adresse": agenda.adresse,
+        "description": agenda.description,
+        "participant": agenda.participant,
+        "dateStart": agenda.dateStart,
+        "dateEnd": agenda.dateEnd,
+        "timeStart": agenda.timeStart,
+        "timeEnd": agenda.timeEnd,
+        "fileType": null,
+        "fileName": null,
+        "confidentiality" : 1,
+    };
+
+    // alert(JSON.stringify(param))
+    const request = new Request('/user/tribu/new-agenda', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(param)
+    })
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            console.log(response);
+            showAlertMessageFlash(response.message, "success" ,isReload=true);
+        })
+}
+
+function getObjectForNewAgenda(e){
+        
+    let state= true;
+
+    let isEtabCMZ = parseInt(document.querySelector("#etabSelectOptions").value) == 1 ? true : false;
+    
+    let isGolfCMZ = false
+
+    let isRestoCMZ = false
+
+    if(isEtabCMZ){
+        isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
+        isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false 
+    }
+
+    const agenda= {
+        "title" : document.querySelector("#eventTitle").value,
+        "type": document.querySelector("#typeEvent").value,
+        "isEtabCMZ" : isEtabCMZ,
+        "isGolfCMZ" : isGolfCMZ,
+        "isRestoCMZ" : isRestoCMZ,
+        "name" : document.querySelector("#nomEtabEvent").value,
+        "adresse": document.querySelector("#lieuEvent").value,
+        "description": document.querySelector("#eventDesc").value,
+        "participant": document.querySelector("#nbrParticipant").value,
+        "dateStart": document.querySelector("#eventStart").value,
+        "dateEnd": document.querySelector("#eventEnd").value,
+        "timeStart": document.querySelector("#timeStart").value,
+        "timeEnd": document.querySelector("#timeEnd").value,
+    }
+
+    console.log(agenda);
+
+    const agenda_keys= Object.keys(agenda);
+    agenda_keys.forEach(key => {
+        if( agenda[key] === ''){
+            state= false;
+        }
+    })
+
+    if( !state ){
+        e.preventDefault()
+        console.log(agenda)
+        document.querySelector(".invalid_agenda_jheo_js").click();
+
+        setTimeout(() => {
+            document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
+        }, 1500);
+    }else{
+        saveNewAgenda(agenda)
+    }
+}
+
+/** END BLOC */

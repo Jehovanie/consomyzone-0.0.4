@@ -468,17 +468,27 @@ class AgendaService extends PDOConnexionService
      */
 
     public function createEvent($nom_table_agenda,$agenda) {
+
         extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
         $statement = $this->getPDO()->prepare(
-            "INSERT INTO $nom_table_agenda (title, message, type, status, restaurant, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
-            values (:title, :message, :type, :status, :restaurant, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
+            "INSERT INTO $nom_table_agenda (title, name, description, isEtabCMZ, isGolfCMZ, isRestoCMZ, type, status, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
+            values (:title, :name, :description, :isEtabCMZ, :isGolfCMZ, :isRestoCMZ, :type, :status, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
         );
+
+        if(!$isEtabCMZ){
+            $isGolfCMZ = false;
+            $isRestoCMZ = false;
+        }
+
         $statement->bindParam(':title', $title);
-        $statement->bindParam(':message', $message);
+        $statement->bindParam(':name', $name);
+        $statement->bindParam(':description', $description);
+        $statement->bindParam(':isEtabCMZ', $isEtabCMZ);
+        $statement->bindParam(':isGolfCMZ', $isGolfCMZ);
+        $statement->bindParam(':isRestoCMZ', $isRestoCMZ);
         $statement->bindParam(':type', $type);
         $statement->bindParam(':status', $status);
-        $statement->bindParam(':restaurant', $restaurant);
         $statement->bindParam(':adresse', $adresse);
         $statement->bindParam(':file_type', $file_type);
         $statement->bindParam(':file_path', $file_path);
@@ -561,8 +571,14 @@ class AgendaService extends PDOConnexionService
             $temps= [
                 "id" => $agenda['id'],
                 "title" =>($agenda["title"]) ? $agenda["title"] : substr($agenda["message"], 0, 15) . "...",
+                "type" => $agenda["type"],
+                "name" => $agenda["name"],
+                "description" => $agenda["description"],
+                "adresse" => $agenda["adresse"],
+                "isEtabCMZ" => $agenda["isEtabCMZ"],
+                "isGolfCMZ" => $agenda["isGolfCMZ"],
+                "isRestoCMZ" => $agenda["isRestoCMZ"],
                 "dateStart" => $agenda["dateStart"],
-                "type" => json_decode($agenda["type"], true)['type'],
                 "dateEnd" => $agenda["dateEnd"],
                 "timeStart" => $agenda["heure_debut"],
                 "timeEnd" => $agenda["heure_fin"],

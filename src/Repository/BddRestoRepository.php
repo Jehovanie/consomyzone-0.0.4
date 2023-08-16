@@ -1017,4 +1017,68 @@ class BddRestoRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
     }
+
+    public function getAllEtab()
+    {
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                r.id as id_etab,
+                r.denominationF as name,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.dep,
+                r.dep as id_dep,
+                r.depName,
+                r.depName as departement,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as adresse"
+            )
+            ->orderBy('RAND()')
+            ->setMaxResults(20)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findRestoById(int $id)
+    {
+        return $this->createQueryBuilder("r")
+            ->select("r.id,
+                r.id as id_etab,
+                r.denominationF as name,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.dep,
+                r.dep as id_dep,
+                r.depName,
+                r.depName as departement,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as adresse"
+            )
+            ->orderBy('RAND()')
+            ->setMaxResults(20)
+            ->getQuery()
+            ->getResult();
+    }
 }

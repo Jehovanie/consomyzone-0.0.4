@@ -4,19 +4,21 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCreateAgendaTitles">Création d'un événement</h5>
+        {# <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button> #}
         <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body custom_modal">
         <div class="container content_input_create_agenda_jheo_js">
             <div class="mb-3">
-              <label for="nameEvent" class="form-label text_black">Nom attribuér à votre événement</label>
-              <input type="text" name="nameEvent" class="form-control input_black nameEvent_jheo_js" id="typeEvent">
+              <label for="eventTitle" class="form-label text_black">Titre de l'événement</label>
+              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Saisir le titre">
             </div>
-            <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div class="mb-3">
                 <div>
                   <label for="typeEvent" class="form-label text_black">Type de l'événement</label>
+                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent"  placeholder="Saisir le type">
                 </div>
-                <div>
+                {# <div>
                    <div class="form-check form-check-inline">
                     <input class="form-check-input inputRepas_radio_jheo_js" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
                     <label class="form-check-label text_black" for="inlineRadio1">Repas</label>
@@ -25,20 +27,61 @@
                     <input class="form-check-input inputOther_radio_jheo_js" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
                     <label class="form-check-label text_black" for="inlineRadio2">Autre</label>
                   </div>
-                </div>
+                </div> #}
             </div>
 
-            <div class="mb-3 d-none content_typeEventSelect_jheo_js">
-                 <select class="form-select form-select-sm input_black typeEventSelect_jheo_js" aria-label=".form-select-sm example">
+
+            {# <div class="mb-3">
+                 <label for="repas" class="form-label text_black">Repas</label>
+                 <select id="repas" class="form-select form-select-sm input_black" aria-label=".form-select-sm example">
                     <option value="Repas déjeuné" selected> Déjeuné</option>
                     <option value="Repas dîné">Dinné</option>
                 </select>
+            </div> #}
+
+
+
+            {# <div class="mb-3 content_typeEvent_jheo_js">
+                <input type="text" name="typeEvent" class="form-control input_black typeEvent_jheo_js" id="typeEvent"  list="typeEventList" placeholder="Tapez votre type...">
+            </div> #}
+
+            <div class="mb-3">
+                <label for="etablissement" class="form-label text_black">Etablissement</label>
+                <select onchange="selectEtab(event)" id="etabSelectOptions" class="form-select form-select-sm input_black" aria-label=".form-select-sm example">
+                    <option value = 1>Choisir parmi les établissements présent dans CMZ</option>
+                    <option value = 2>Entrer votre établissement</option>
+                </select>
+                <div id="etabCMZ">
+
+                  <div class="mt-3">
+                    <label for="etabCMZLabel">Choisir entre les golf et restaurant</label>
+                  </div>
+                  
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onchange="handleChangeEtabCMZ(this)">
+                      <label class="form-check-label text_black" for="golfRadio">GOLF</label>
+                  </div>
+
+                  <div class="form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onchange="handleChangeEtabCMZ(this)">
+                    <label class="form-check-label text_black" for="restoRadio">RESTAURANT</label>
+                  </div>
+
+                </div>
             </div>
 
-            <div class="mb-3 d-none content_typeEvent_jheo_js">
-                <input type="text" name="typeEvent" class="form-control input_black typeEvent_jheo_js" id="typeEvent"  list="typeEventList" placeholder="Tapez votre type...">
-            </div>
-            <div class="d-flex justify-content-center align-items-center mb-3 d-none content_searchResto_jheo_js">
+            {# <div class="d-flex justify-content-center align-items-center mb-3 content_searchResto_jheo_js">
+                <div class="flex-fill me-2">
+                  <input type="search" name="searchResto" class="form-control" placeholder="Cherchez dans tous">
+                </div>
+                <div class="flex-fill ms-2">
+                    <button type="button" class="btn btn-info chose_pastil_resto_jheo_js">
+                      Choisir parmi les pastillés
+                    </button>
+                </div>
+            </div> #}
+            
+            {# <div class="d-flex justify-content-center align-items-center mb-3 content_searchResto_jheo_js">
                 <div class="flex-fill me-2">
                   <label for="searchResto" class="form-label non_active">Recherche</label>
                   <input type="search" name="searchResto" class="form-control input_block searchResto_jheo_js" id="searchResto"  list="searchRestoList" placeholder="Tapez et Entre." disabled>
@@ -48,24 +91,29 @@
                       Choisir parmit vos restaurants pastillés
                     </button>
                 </div>
-            </div>
+            </div> #}
 
-            <div class="mb-3 d-none content_restoEvent_jheo_js">
+            {# <div class="mb-3 d-none content_restoEvent_jheo_js">
               <label for="restoEvent" class="form-label text_black">Restaurant</label>
               <input type="text" name="restoEvent" class="form-control input_black restoEvent_jheo_js" id="restoEvent" disabled>
+            </div> #}
+
+            <div class="mb-3 d-none" id="containerNomEtab">
+              <label for="nomEtabEvent" class="form-label text_black">Nom</label>
+              <input type="text" name="nomEtabEvent" class="form-control input_black" id="nomEtabEvent" placeholder="Saisir le nom de votre établissement" disabled>
             </div>
 
-            <div class="mb-3">
-                <label for="lieuEvent" class="form-label text_black">Lieu</label>
-                <input type="text" class="form-control input_black lieuEvent_jheo_js" id="lieuEvent">
+            <div class="mb-3 lieuEventContainer d-none" id="containerAdresseEtab">
+                <label for="lieuEvent" class="form-label text_black">Adresse</label>
+                <input type="text" class="form-control input_black lieuEvent_jheo_js" id="lieuEvent" placeholder = "Saisir l'adresse" disabled>
             </div>
             <div class="mb-3">
                 <label for="eventDesc" class="form-label text_black">Description</label>
-                <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2"></textarea>
+                <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2" placeholder="Décrire votre événement"></textarea>
             </div>
             <div class="mb-3">
                 <label for="nbrParticipant" class="form-label text_black">Nombre de participants</label>
-                <input type="number" min=1 class="form-control input_black nbrParticipant_jheo_js" id="nbrParticipant">
+                <input type="number" min=1 class="form-control input_black nbrParticipant_jheo_js" id="nbrParticipant" placeholder="Définir le nombre de participants">
             </div>
             <div class="d-flex mb-3">
                 <div class="flex-fill me-2">
@@ -101,7 +149,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-primary cta_confirm_create_agenda_jheo_js">Créer</button>
+        {# <button type="button" class="btn btn-primary cta_confirm_create_agenda_jheo_js">Créer</button> #}
+        <button type="button" class="btn btn-primary" onclick="getObjectForNewAgenda()">Créer</button>
       </div>
     </div>
   </div>
@@ -114,7 +163,7 @@
 
 
 <div class="modal fade" id="listRestoModal" aria-hidden="true" aria-labelledby="listRestoModal_label" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title listResto_title_jheo_js" id="listRestoModa_label">Résultat de restaurant trouver</h5>
@@ -156,6 +205,80 @@
 
 {# ///// END MODAL FOR LIST RESTO #}
 
+
+
+{# MODAL FOR GOLF OR RESTO #}
+<div class="modal fade" id="listRestoOrGolfModal" aria-hidden="true" aria-labelledby="listRestoOrGolfModal_label" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
+          <li class="nav-item">
+            <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOnglet(this)">Tous</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-secondary" href="#" onclick="activeOnglet(this)">Pastillé</a>
+          </li>
+        </ul>
+        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body custom_modal">
+        <div class="container_list">
+        
+          <div class="mb-3">
+            <form action="/search/restaurant" method="get" class="bar-de-recherche form_content_search_navbar_js">
+              <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" id="cleQuoiAgenda">
+              <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?" id="cleOuAgenda">
+              <datalist id="datalistOptions"></datalist>
+              <button type="submit" class="hidden"></button>
+            </form>
+          </div>
+          <div class="list_resto_or_golf">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {# <tr>
+                    <td>ROYAT BURGER</td>
+                    <td>2bis allard 63130 royat</td>
+                    <td>
+                      <button type="button" class="btn btn-outline-info">Choisir</button>
+                    </td>
+                  </tr> #}
+                </tbody>
+              </table>
+          </div>
+          {# <div class="list_resto_or_golf_past d-none">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                </tbody>
+              </table>
+          </div> #}
+          {# <div class="chargement_content content_chargement_nanta_js mt-3 mb-3"></div> #}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-info cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Terminer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# END MODAL #}
+
 {# ///// MODAL FOR ERROR ANGENDA CREATE #}
 <button class="d-none invalid_agenda_jheo_js" data-bs-target="#popup_invalid_agenda_jheo_js" data-bs-toggle="modal" data-bs-dismiss="modal"></button>
 
@@ -165,4 +288,5 @@
       Veuillez complète tous les nécessaires.
     </div>
     <button type="button" class="d-none close_modal_invalid_agenda_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">></button>
+  </div>
 </div>
