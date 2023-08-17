@@ -740,6 +740,11 @@ function generateUID() {
     //   );5e2f1338-9d4b-45f4-9f10-845ec628d3c73
 }
 
+// JWT key declaration
+
+let jwt_key = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIyNzUzNDEsImV4cCI6MTY5MjI4MjU0MSwibmJmIjoxNjkyMjc1MzM2LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.k4NfaYdOtbHFNjtxT_sdSm-29dwf0MDQCztLIZ_1Wm6b0eeJbRex9-t6R27IDTnzCc3wTc2t2xC8C6DCatKwyKSYqfx6sqeFeScn8quYt8UN1APcFE3pjq9cOFfan0_nC-gk4RKs9h6Vu2Wyg6TwjaIbfcHQzk-Y4lX77n5nb408y30kiiujLFYMl4HHpFPpsX6EKZ99USQPaWjSMyKt3oIqTyYf2hsxTzsqvw5UGgSvDI6NRciXj0Njn0EOK9hAfODKuaEQiMqWqZfh8LoyaYp-ZHOjz19JrNFhLE9b0hDFr-9TmrsV1nqrkHSOondJZYjhrj9Nb2l8Fa42rkNkMw'
+
+
 /**
  * Function joining a meeting jitsi
  * @constructor
@@ -753,6 +758,8 @@ function joinMeet(id, room) {
     const domain = '8x8.vc';
 
     room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'+room;
+
+    document.querySelector('#visio').innerHTML =""
             
     const options = {
         roomName: room,
@@ -762,15 +769,27 @@ function joinMeet(id, room) {
         jwt : jwt_key,
         configOverwrite: { prejoinPageEnabled: false},
         // configOverwrite: { prejoinPageEnabled: false , enableClosePage: false, toolbarButtons : ['microphone', 'camera','tileview','fullscreen', 'desktop', 'closedcaptions','participants-pane','hangup']},
+        interfaceConfigOverwrite: { VERTICAL_FILMSTRIP: false },
         parentNode: document.querySelector('#visio'),
     };
     let api = new JitsiMeetExternalAPI(domain, options);
 
     api.executeCommand('displayName', user_name);
 
+    api.addEventListener('filmstripDisplayChanged', (event) => {
+        console.log("etoooooooooooooooooooooooooooooooooo");
+        //api.executeCommand('toggleFilmStrip');
+        // if (!event.visible) {
+        //     console.log("etoooooooooooooooooooooooooooooooooo");
+        //     api.executeCommand('toggleFilmStrip');
+        // }
+    });
+
     setStatusMeetById(id, "progress")
 
     api.on('readyToClose', () => {
+
+        document.querySelector('#visio').innerHTML =""
 
         fetch("/getVisioById/"+id)
         .then(response=>response.json())
@@ -804,6 +823,8 @@ function runVisio(user_id) {
         to : user_id,
         status : "wait"
     }
+
+    document.querySelector('#visio').innerHTML =""
 
     const request = new Request('/create/visio', {
         method: "POST",
@@ -844,6 +865,8 @@ function runVisio(user_id) {
                 api.executeCommand('displayName', user_name);
 
                 api.on('readyToClose', () => {
+
+                    document.querySelector('#visio').innerHTML =""
 
                     fetch("/getVisioByName/"+roomRandom)
                     .then(response=>response.json())
@@ -972,10 +995,6 @@ let file_extension = {
 }
 
 let image_list = [];
-
-// JWT key declaration
-
-let jwt_key = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIxOTQ1ODksImV4cCI6MTY5MjIwMTc4OSwibmJmIjoxNjkyMTk0NTg0LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.EVlu8_WIqJf7gNFpbkP_oLMCFezQM9fKISRoBD9_3CdoyviwQwl1a4s-yl-qzVMeHvzS_8KTihfrVOt7IPDKJnNkMpVeEBnMjS4CtMRt0yKHWGH58EFvjb_yXuVRKmT-0FaKDg926JUUDfofkJLRxuV4d9ckJX2gJkuOgDXutazo-lZzeyyo7eGuZCbEXqAs6ec9YubrEcUQxZ9TBqWBnYfH5k7wnACrmK0CPvYiFQYYYvyhBDNbmYNLZJpAqsbll_3jMbALAPLOeViveIOY01qxzK2VJysV6QcauLg3z5YNVlYqR4NsYf-EbRUvxixcTRFh-sKCe5VjANk5ANZ8EA'
 
 if(document.querySelector("#closevisio")){
 
