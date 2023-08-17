@@ -29,6 +29,16 @@
     height: 72vh;
 }
 
+.content_description {
+    height: 75vh !important;
+}
+
+.site_web {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 @media screen and (min-width: 1440px) and (max-width: 1550px){
     .navbar-light-left .fa-x {
         margin-left: 169px !important;

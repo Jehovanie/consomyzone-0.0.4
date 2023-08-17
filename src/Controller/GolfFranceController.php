@@ -159,6 +159,8 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
+    
+
     #[Route('/api/golf/departement/{nom_dep}/{id_dep}', name: 'api_golf_dep_france', methods: ["GET", "POST"])]
     public function api_specifiqueDepartement(
         $nom_dep,
@@ -179,5 +181,27 @@ class GolfFranceController extends AbstractController
             "data" => $golfs,
             "message" => "Ok"
         ], 200);
+    }
+
+    #[Route('/golf/departement/{nom_dep}/{id_dep}/{golfID}', name: 'single_golf_france', methods: ["GET"])]
+    public function oneGolf(
+        $nom_dep, $id_dep, $golfID,
+        GolfFranceRepository $golfFranceRepository,
+        Status $status, 
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+    ){
+        ///current user connected
+        $user = $this->getUser();
+        $userID = ($user) ? $user->getId() : null;
+
+        // dd($golfFranceRepository->find(intval($golfID)));
+
+        return $this->render("golf/details_golf.html.twig", [
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "details" => $golfFranceRepository->find(intval($golfID)),
+        ]);
     }
 }

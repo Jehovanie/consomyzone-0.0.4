@@ -92,55 +92,68 @@ class MarckerClusterGolf extends MapModule {
         newData.forEach(item => {
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
             let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
-
-            const pathIcon= item.user_status !== "" ? 'assets/icon/NewIcons/icon-bleu-golf-vert-badge.png' : 'assets/icon/NewIcons/icon-bleu-golf-vert.png';
+            
+            let pathIcon="";
+            if( item.user_id === null){
+                pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+            }else{
+                pathIcon= item.user_status !== null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+            }
             let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge'), id: item.id});
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
-            // marker.on('click', (e) => {
-            //     this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+            marker.on('click', (e) => {
+                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
-            //     const icon_R = L.Icon.extend({
-            //         options: {
-            //             iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-            //             iconSize: [32,50],
-            //             iconAnchor: [11, 30],
-            //             popupAnchor: [0, -20],
-            //             shadowSize: [68, 95],
-            //             shadowAnchor: [22, 94]
-            //         }
-            //     })
-            //     marker.setIcon(new icon_R);
+                const icon_R = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-rouge-golf-C.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-rouge-golf-C.png",
+                        iconSize: [35,55],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
+                    }
+                })
+                marker.setIcon(new icon_R);
 
-            //     if (this.marker_last_selected && this.marker_last_selected != marker ) {
-            //         const icon_B = L.Icon.extend({
-            //             options: {
-            //                 iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
-            //                 iconSize: [32,50],
-            //                 iconAnchor: [11, 30],
-            //                 popupAnchor: [0, -20],
-            //                 //shadowUrl: 'my-icon-shadow.png',
-            //                 shadowSize: [68, 95],
-            //                 shadowAnchor: [22, 94]
-            //             }
-            //         })
-            //         this.marker_last_selected.setIcon(new icon_B)
-            //     }
-            //     this.marker_last_selected = marker;
+                if (this.marker_last_selected && this.marker_last_selected != marker ) {
+                       
+                    let pathIcon="";
+                    if( item.user_id === null){
+                        pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+                    }else{
+                        pathIcon= item.user_status !== null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                    }
 
-            //     this.markers.refreshClusters();
+                    const icon_B = L.Icon.extend({
+                        options: {
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + pathIcon : this.currentUrl.origin + "/" + pathIcon ,
+                            iconSize: [32,50],
+                            iconAnchor: [11, 30],
+                            popupAnchor: [0, -20],
+                            //shadowUrl: 'my-icon-shadow.png',
+                            shadowSize: [68, 95],
+                            shadowAnchor: [22, 94]
+                        }
+                    })
+                    this.marker_last_selected.setIcon(new icon_B)
+                }
+                this.marker_last_selected = marker;
+
+                this.markers.refreshClusters();
 
                 
-            //     if (screen.width < 991) {
-            //         let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-            //         getDetailHomeForMobile(pathDetails)
-            //     } else {
-            //         // getDetailsFerme(pathDetails, true)getDetailStation
-            //         getDetailFerme(item.departement, item.departementName, item.id)
-            //     }
+                if (screen.width < 991) {
+                    let pathDetails = `/ferme/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
+                    getDetailHomeForMobile(pathDetails)
+                } else {
+                    // getDetailsFerme(pathDetails, true)getDetailStation
+                    getDetailGolf(item.dep, item.nom_dep, item.id)
+                }
 
-            // })
+            })
 
             this.markers.addLayer(marker);
 

@@ -69,7 +69,7 @@ class MapModule{
             }
         );
         L.control.zoom({
-            position: 'topright'
+            position: 'bottomright'
         }).addTo(this.map);
 
         // let position = null, coords= null;
@@ -82,7 +82,7 @@ class MapModule{
         //     console.log(err.message)
         // }finally{
         // }
-
+        this.leafletControlExtend('bottomright');
     }
 
     handleEventOnMap(){
@@ -561,6 +561,7 @@ class MapModule{
         this.settingMemoryCenter();
         // this.bindControlOnLeaflet(this.map);
         // this.bindEventLocationForMobile();
+        // this.bindOtherControles()
     }
     
     getMax(max,min){
@@ -569,4 +570,122 @@ class MapModule{
         else
            return {max:max,min:min}
     }
+
+    bindOtherControles(){
+        L.control.custom({
+            // position: 'topright',
+            content : '<button class="btn btn-default">'+
+                      '    <i class="fa fa-crosshairs"></i>'+
+                      '</button>'+
+                      '<button class="btn btn-info">'+
+                      '    <i class="fa fa-compass"></i>'+
+                      '</button>'+
+                      '<button class="btn btn-primary">'+
+                      '    <i class="fa fa-spinner fa-pulse fa-fw"></i>'+
+                      '</button>'+
+                      '<button class="btn btn-danger">'+
+                      '    <i class="fa fa-times"></i>'+
+                      '</button>'+
+                      '<button class="btn btn-success">'+
+                      '    <i class="fa fa-check"></i>'+
+                      '</button>'+
+                      '<button class="btn btn-warning">'+
+                      '    <i class="fa fa-exclamation-triangle"></i>'+
+                      '</button>',
+            classes : 'btn-group-vertical btn-group-sm',
+            style   :
+            {
+                margin: '10px',
+                padding: '0px 0 0 0',
+                cursor: 'pointer',
+            },
+            datas   :
+            {
+                'foo': 'bar',
+            },
+            events:
+            {
+                click: function(data)
+                {
+                    console.log('wrapper div element clicked');
+                    console.log(data);
+                },
+                dblclick: function(data)
+                {
+                    console.log('wrapper div element dblclicked');
+                    console.log(data);
+                },
+                contextmenu: function(data)
+                {
+                    console.log('wrapper div element contextmenu');
+                    console.log(data);
+                },
+            }
+        }).addTo(this.map);
+
+    }
+
+    leafletControlExtend(position= 'topright'){
+        
+        L.Control.Custom = L.Control.extend({
+            version: '1.0.1',
+            options: {
+                position: position,
+                id: '',
+                title: '',
+                classes: '',
+                content: '',
+                style: {},
+                datas: {},
+                events: {},
+            },
+            container: null,
+
+            onAdd: function (map) {
+                this.container = L.DomUtil.create('div');
+                this.container.id = this.options.id;
+                this.container.title = this.options.title;
+                this.container.className = this.options.classes;
+                this.container.innerHTML = this.options.content;
+    
+                for (var option in this.options.style){
+                    this.container.style[option] = this.options.style[option];
+                }
+    
+                for (var data in this.options.datas){
+                    this.container.dataset[data] = this.options.datas[data];
+                }
+    
+    
+                /* Prevent click events propagation to map */
+                L.DomEvent.disableClickPropagation(this.container);
+    
+                /* Prevent right click event propagation to map */
+                L.DomEvent.on(this.container, 'contextmenu', function (ev){
+                    L.DomEvent.stopPropagation(ev);
+                });
+    
+                /* Prevent scroll events propagation to map when cursor on the div */
+                L.DomEvent.disableScrollPropagation(this.container);
+    
+                for (var event in this.options.events){
+                    L.DomEvent.on(this.container, event, this.options.events[event], this.container);
+                }
+    
+                return this.container;
+            },
+    
+            onRemove: function (map) {
+                for (var event in this.options.events){
+                    L.DomEvent.off(this.container, event, this.options.events[event], this.container);
+                }
+            },
+        });
+    
+        L.control.custom = function (options) {
+            return new L.Control.Custom(options);
+        };
+    }
+
+
 }

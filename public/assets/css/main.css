@@ -282,6 +282,31 @@ body {
     z-index: 10;
 }
 
+
+.icon_golf_navbar{
+    width: 21px;
+    height: 21px;
+    border: 2px solid green !important;
+    border-radius: 5px;
+}
+
+.icon_golf_navbar:hover{
+    width: 20px;
+    height: 20px;
+}
+
+.close_details{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    fill: #1111FE;
+    z-index: 10;
+}
+
+.close_details i {
+    z-index: 1000000;
+}
+
 #close-detail-ferme:hover {
     fill: #000;
 }

@@ -132,7 +132,7 @@ function setIconn(urlIcon, classIcon="") {
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
-        iconSize: [32, 50],
+        iconSize: [35,55],
         iconAnchor: [11, 30],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
@@ -644,6 +644,20 @@ function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
 
     const pathDetails = `/ferme/departement/${nameDepart}/${codeDepart}/details/${idFerme}`
+    fetchDetails(id_selector, pathDetails);
+}
+
+function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
+
+    let remove = !inHome ? document.getElementById("remove-detail-golf") : document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    const id_selector = !inHome ? "#content-details-golf" : "#content_details_home_js_jheo";
+
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading();
+
+    const pathDetails = `/golf/departement/${nameDepart}/${codeDepart}/${golfID}`;
     fetchDetails(id_selector, pathDetails);
 }
 

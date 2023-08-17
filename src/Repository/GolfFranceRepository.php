@@ -80,12 +80,15 @@ class GolfFranceRepository extends ServiceEntityRepository
        
         for($i=0; $i< count($data); $i++){
             if(!$userID){
-                $data[$i]["user_status"]="";
+                $data[$i]["user_status"]=null;
+                $data[$i]["user_id"]=null;
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
               
-                $data[$i]["user_status"]=($user) ? "a faire" : "";
+                $data[$i]["user_status"]=($user) ? "fait" : null;
+                $data[$i]["user_id"]=$userID;
+
             }
         }
 
