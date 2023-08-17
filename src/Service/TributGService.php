@@ -739,6 +739,11 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("SELECT name, description, avatar FROM $table_name");
         $statement->execute();
         $apropos = $statement->fetch(PDO::FETCH_ASSOC);
+        
+        if( !$apropos ){
+            return false;
+        }
+
         $apropos['name'] = 'Tribu G ' . $apropos['name'];
 
         return $apropos;
@@ -830,12 +835,15 @@ class TributGService extends PDOConnexionService{
      *                            ]
      */
     public function getAllPublicationsUpdate($table_name){
+        $resultats = [];
 
         $apropo_tribuG= $this->getApropos($table_name);
         // dd($apropo_tribuG);
+        if( !$apropo_tribuG){
+            return $resultats;
+        }
 
         $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
-        $resultats = [];
 
         if( count($publications) > 0 ){
             foreach( $publications as $d_pub ){
