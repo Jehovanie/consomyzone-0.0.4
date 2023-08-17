@@ -103,9 +103,11 @@ class GolfFranceRepository extends ServiceEntityRepository
         $data = $this->createQueryBuilder('p')
             ->select(
                 'p.id',
+                'p.nom_golf as name',
                 'p.nom_golf as nom',
                 'p.adr1',
                 'p.adr1 as add',
+                'p.adr1 as adress',
                 'p.adr2',
                 'p.adr3',
                 'p.e_mail as email',

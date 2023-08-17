@@ -94,12 +94,15 @@ class MarckerClusterGolf extends MapModule {
             let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
             
             let pathIcon="";
+            let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+
             if( item.user_id === null){
                 pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
             }else{
                 pathIcon= item.user_status !== null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                taille=1
             }
-            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge'), id: item.id});
+            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 

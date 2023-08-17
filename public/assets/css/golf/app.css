@@ -16,11 +16,6 @@
     height: 75vh !important;
 }
 
-.site_web {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 .icon_golf_legend{
     display: block;

@@ -391,6 +391,13 @@ body {
     color: #DF01D7;
 }
 
+
+.site_web {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .icon-tous .list-nav-bar:hover {
     background-color: #DF01D7;
     color: #fff;
