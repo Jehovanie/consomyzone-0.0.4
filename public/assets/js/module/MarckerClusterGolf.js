@@ -4,11 +4,11 @@ class MarckerClusterGolf extends MapModule {
         super(id_dep,nom_dep, "golf")
     }
 
-    async onInit(){
+    async onInit(isAddControl){
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
-            this.initMap();
+            this.initMap(null, null, isAddControl);
 
             const link =( this.nom_dep && this.id_dep) ? `/api/golf/departement/${this.nom_dep}/${this.id_dep}` : `/api/golf`;
             const response= await fetch(link);

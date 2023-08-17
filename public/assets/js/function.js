@@ -1604,6 +1604,36 @@ function checkTailleImage(maxOctetAccepted, file_base64){
 }
 
 
+function openRightSide(){
+    
+    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+        document.querySelector(".cart_map_jheo_js").style.width= '75%';
+        document.querySelector(".content_legende_jheo_js").style.width= '25%';
+        document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+    }else{
+        console.log("Selector not found")
+        console.log("cart_map_jheo_js", "content_legende_jheo_js")
+    }
+
+
+    if( document.querySelector('.close_right_side_jheo_js')){
+        document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+            closeRightSide();
+        })
+    }
+}
+
+function closeRightSide(){
+    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+        document.querySelector(".cart_map_jheo_js").style.width= '100%';
+        document.querySelector(".content_legende_jheo_js").style.width= '0%';
+        document.querySelector(".content_legende_jheo_js").style.padding= '0';
+    }else{
+        console.log("Selector not found")
+        console.log("cart_map_jheo_js", "content_legende_jheo_js")
+    }
+}
+
 function removePublication(pubId, tablePub){
 
     document.querySelector('.confirm_delete_pub_jheo_js').addEventListener('click',() => {

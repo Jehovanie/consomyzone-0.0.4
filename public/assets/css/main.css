@@ -631,18 +631,63 @@ body {
 
 /* ***************Map**************** */
 
-#map {
+/* #map {
     width: 100vw;
     height: 100vh;
-    /* margin-left: -3rem; */
+} */
+.content_cart_map {
+    height: 100vh;
+    overflow: hidden;
 }
+.cart_map{
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+#map{
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+.content_header_right_side{
+    display: block;
+    height: 100px;
+    margin-top: 100px;
+}
+
+.header_right_side{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+
+.close_right_side{
+    font-size: 1.3rem;
+}
+
+.content_legende {
+    display: block;
+    width: 0%;
+    background-color: white;
+
+}
+
 
 .leaflet-control-zoom.leaflet-bar.leaflet-control{
     /* margin-top: 100px; */
     /* margin-left: 95vw; */
     
-    margin-bottom: 100px;
-    margin-right: 2vw;
+    /* margin-bottom: 100px;
+    margin-right: 2vw; */
+}
+
+.leaflet-right{
+    margin-top: 110px;
+}
+
+.btn_group_vertical{
+    margin-top: 45px !important;
 }
 
 /* NAV account  */
@@ -706,7 +751,6 @@ li.nav-item.avatar-account-pdp > a > img{
     display: block;
     width: 100%;
     margin: 0 auto;
-    height: 95%;
     border-radius: 5px;
 }
 

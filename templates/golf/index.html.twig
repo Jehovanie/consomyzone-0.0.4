@@ -22,23 +22,22 @@
 {% endblock %}
 
 {% block body %}
-    
-    <div class="">
+    <div class="content_cart_body">
 
         {# //// NAV LEFT #}
         <div class="responsif-none" id="tous">
             {% include 'shard/golf/golf_navleft.twig' %}
         </div>
-       
+    
         {# //// NAV BAR  #}
         <div class="responsif-none">
             {% include 'shard/navbar.twig' %}
         </div>
         
         {# //// CONTENT CART #}
-        <div class="golf-mobile">
-            <div class="content_cart_map">
-                <div class="cart_map cart_map_js">
+        <div>
+            <div class="d-flex content_cart_map content_cart_map_jheo_js">
+                <div class="cart_map cart_map_js cart_map_jheo_js">
                     {# content chargement  #}
                     <div class="chargement_content" id="toggle_chargement">
                         <div class="containt">
@@ -47,14 +46,35 @@
                             <div class="word word-3">Z</div>
                         </div>
                     </div>
-
-                    <div id="list-depart-mobile"></div>
-                    {# <div id="map" class="map"></div> #}
                 </div>
+                {# <div class="content_legende content_legende_jheo_js">
+                    <div class="content_header_right_side">
+                        <div class="header_right_side">
+                            <div class="title_right_side">
+                                CONTROLE RIGHT SIDE
+                            </div>
+                            <div class="content_close_right_side">
+                                <div class="close_right_side close_right_side_jheo_js">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content_right_side_body">
+                        <h4> Description lists</h4>
+                        A description list is perfect for defining terms.
+                        <h5>Euismod</h5>
+                        Vestibulum id ligula porta felis euismod semper eget lacinia odio sem.
+                        Donec id elit non mi porta gravida at eget metus.
+                        <h6>Malesuada porta</h6>
+                        Etiam porta sem malesuada magna mollis euismod.
+                    </div>
+                </div> #}
             </div>
         </div>
-        
+    
     </div>
+    
     
     {% include 'shard/chatBot.html.twig' %}
     {% include 'shard/golf/detail_golf_navleft.twig' %}

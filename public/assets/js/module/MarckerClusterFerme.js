@@ -4,11 +4,11 @@ class MarckerClusterFerme extends MapModule {
         super(id_dep,nom_dep, "ferme")
     }
 
-    async onInit(){
+    async onInit(isAddControl=false){
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
-            this.initMap();
+            this.initMap(null, null, isAddControl);
 
             const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
             const response= await fetch(link);

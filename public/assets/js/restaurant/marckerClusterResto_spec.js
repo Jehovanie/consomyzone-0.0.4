@@ -3,4 +3,4 @@ const dep_name= document.querySelector('.resto_specifique_dep_js_jheo').getAttri
 
 ////INSTANCE ///
 const OBJECT_MARKERS_RESTO= new MarckerClusterResto(dep_name,id_dep)
-OBJECT_MARKERS_RESTO.onInit();
+OBJECT_MARKERS_RESTO.onInit(isAddControl=true);

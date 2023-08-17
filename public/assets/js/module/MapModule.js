@@ -68,10 +68,15 @@ class MapModule{
                 layers: [tiles] 
             }
         );
+
+        const position = "topright";
+
+
         L.control.zoom({
-            position: 'bottomright'
+            position: position
         }).addTo(this.map);
 
+        this.leafletControlExtend(position);
         // let position = null, coords= null;
         // try{
         //     position = await this.getUserLocation();
@@ -82,7 +87,7 @@ class MapModule{
         //     console.log(err.message)
         // }finally{
         // }
-        this.leafletControlExtend('bottomright');
+
     }
 
     handleEventOnMap(){
@@ -538,7 +543,7 @@ class MapModule{
         });
     }
 
-    initMap(lat= null,long= null){
+    initMap(lat= null,long= null, isAddControl=false){
         
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
@@ -559,9 +564,15 @@ class MapModule{
 
         this.addGeoJsonToMap();
         this.settingMemoryCenter();
+
+        if( isAddControl ){
+            this.bindOtherControles();
+            this.createRightSideControl();
+        }
+
+
         // this.bindControlOnLeaflet(this.map);
         // this.bindEventLocationForMobile();
-        // this.bindOtherControles()
     }
     
     getMax(max,min){
@@ -574,49 +585,42 @@ class MapModule{
     bindOtherControles(){
         L.control.custom({
             // position: 'topright',
-            content : '<button class="btn btn-default">'+
-                      '    <i class="fa fa-crosshairs"></i>'+
-                      '</button>'+
-                      '<button class="btn btn-info">'+
-                      '    <i class="fa fa-compass"></i>'+
-                      '</button>'+
-                      '<button class="btn btn-primary">'+
-                      '    <i class="fa fa-spinner fa-pulse fa-fw"></i>'+
-                      '</button>'+
-                      '<button class="btn btn-danger">'+
-                      '    <i class="fa fa-times"></i>'+
-                      '</button>'+
-                      '<button class="btn btn-success">'+
-                      '    <i class="fa fa-check"></i>'+
-                      '</button>'+
-                      '<button class="btn btn-warning">'+
-                      '    <i class="fa fa-exclamation-triangle"></i>'+
-                      '</button>',
-            classes : 'btn-group-vertical btn-group-sm',
-            style   :
-            {
-                margin: '10px',
-                padding: '0px 0 0 0',
-                cursor: 'pointer',
-            },
-            datas   :
-            {
+            content : `
+                <button class="btn btn-info">
+                    <i class="fa fa-compass"></i>
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                </button>
+                <button class="btn btn-danger">
+                    <i class="fa fa-times"></i>
+                </button>
+                <button class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                </button>
+                <button class="btn btn-warning">
+                    <i class="fa fa-exclamation-triangle"></i>
+                </button>
+            `,
+            classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
+            // style   :
+            // {
+            //     margin: '10px',
+            //     padding: '0px 0 0 0',
+            //     cursor: 'pointer',
+            // },
+            datas   :{
                 'foo': 'bar',
             },
-            events:
-            {
-                click: function(data)
-                {
-                    console.log('wrapper div element clicked');
-                    console.log(data);
+            events:{
+                click: function(data) {
+                    openRightSide();
+                   
                 },
-                dblclick: function(data)
-                {
-                    console.log('wrapper div element dblclicked');
-                    console.log(data);
+                dblclick: function(data){
+                    closeRightSide();
                 },
-                contextmenu: function(data)
-                {
+                contextmenu: function(data){
                     console.log('wrapper div element contextmenu');
                     console.log(data);
                 },
@@ -639,7 +643,7 @@ class MapModule{
                 datas: {},
                 events: {},
             },
-            container: null,
+            container: "container_lefleat_jheo_js",
 
             onAdd: function (map) {
                 this.container = L.DomUtil.create('div');
@@ -687,5 +691,41 @@ class MapModule{
         };
     }
 
+
+    createRightSideControl(){
+        if( !document.querySelector(".content_cart_map_jheo_js")){
+            console.log("Selector not found : 'content_cart_map_jheo_js'");
+            return null;
+        }
+
+        const container = document.createElement("div");
+        container.className = "content_legende content_legende_jheo_js";
+        
+        container.innerHTML = `
+            <div class="content_header_right_side">
+                <div class="header_right_side">
+                    <div class="title_right_side">
+                        CONTROLE RIGHT SIDE
+                    </div>
+                    <div class="content_close_right_side">
+                        <div class="close_right_side close_right_side_jheo_js">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content_right_side_body">
+                <h4> Description lists</h4>
+                A description list is perfect for defining terms.
+                <h5>Euismod</h5>
+                Vestibulum id ligula porta felis euismod semper eget lacinia odio sem.
+                Donec id elit non mi porta gravida at eget metus.
+                <h6>Malesuada porta</h6>
+                Etiam porta sem malesuada magna mollis euismod.
+            </div>
+        `
+
+        document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+    }
 
 }

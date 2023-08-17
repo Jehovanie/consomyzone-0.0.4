@@ -9,7 +9,7 @@ class MarckerClusterHome extends MapModule  {
         }
     }
 
-    async onInit() {
+    async onInit(isAddControl=false) {
         // const url = `/getLatitudeLongitudeForAll`;
         try {
             this.createMarkersCluster();
@@ -19,7 +19,7 @@ class MarckerClusterHome extends MapModule  {
             this.default_data = await response.json();
             this.data = this.default_data;
             
-            this.initMap();
+            this.initMap(null, null, isAddControl);
 
             this.bindAction();
 
