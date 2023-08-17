@@ -586,21 +586,13 @@ class MapModule{
         L.control.custom({
             // position: 'topright',
             content : `
-                <button class="btn btn-info">
-                    <i class="fa fa-compass"></i>
+                <button class="btn btn-info" data-type="info">
+                    <i class="fa-solid fa-info"></i>
                 </button>
-                <button class="btn btn-primary">
-                    <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                <button class="btn btn-primary" data-type="couche">
+                    <i class="fa-solid fa-layer-group"></i>
                 </button>
-                <button class="btn btn-danger">
-                    <i class="fa fa-times"></i>
-                </button>
-                <button class="btn btn-success">
-                    <i class="fa fa-check"></i>
-                </button>
-                <button class="btn btn-warning">
-                    <i class="fa fa-exclamation-triangle"></i>
-                </button>
+                
             `,
             classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
             // style   :
@@ -614,6 +606,7 @@ class MapModule{
             },
             events:{
                 click: function(data) {
+                    console.log(data)
                     openRightSide();
                    
                 },
@@ -714,14 +707,44 @@ class MapModule{
                     </div>
                 </div>
             </div>
+
             <div class="content_right_side_body">
-                <h4> Description lists</h4>
-                A description list is perfect for defining terms.
-                <h5>Euismod</h5>
-                Vestibulum id ligula porta felis euismod semper eget lacinia odio sem.
-                Donec id elit non mi porta gravida at eget metus.
-                <h6>Malesuada porta</h6>
-                Etiam porta sem malesuada magna mollis euismod.
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Icon</th>
+                            <th scope="col">Taille</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                            <td>Max</td>
+                            <td>Mon Golf</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
+                            <td>Moyenne</td>
+                            <td>A faire</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
+                            <td>Moyenne</td>
+                            <td>Fait</td>
+                        </tr>
+                        <tr>
+                        <th scope="row">4</th>
+                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                            <td>Minimun</td>
+                            <td>Inconnu</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         `
 

@@ -19,4 +19,4 @@ if( type !== "tous"){
 
 ////INSTANCE ///
 const OBJECT_MARKERS_STATION= new MarckerClusterStation(0,2.5,type,dep_name, dep_code)
-OBJECT_MARKERS_STATION.onInit(isAddControl=true);
+OBJECT_MARKERS_STATION.onInit(isAddControl=false);
