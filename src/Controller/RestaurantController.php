@@ -49,6 +49,7 @@ class RestaurantController extends AbstractController
 
         $amis_in_tributG = [];
 
+        $userConnected = $status->userProfilService($this->getUser());
         if($user){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -86,7 +87,8 @@ class RestaurantController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
             // "codinsees" => $datas,
             "codeApes" => $codeApeRep->getCode(),
-            "amisTributG" => $amis_in_tributG
+            "amisTributG" => $amis_in_tributG, 
+            "userConnected" => $userConnected,
         ]);
     }
 
@@ -98,12 +100,14 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto
     ) {
         $statusProfile = $status->statusFondateur($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
         return $this->render("shard/restaurant/mobile-depart.js.twig", [
             "departements" => $departementRepository->getDep(),
             "number_of_departement" => count($bddResto->getAllOpenedRestos()),
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
@@ -180,7 +184,7 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
-
+        $userConnected = $status->userProfilService($this->getUser());
         $datas = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
 
         $resultCount = $bddResto->getAccountRestauranting($codeDep);
@@ -223,6 +227,7 @@ class RestaurantController extends AbstractController
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
+            "userConnected" => $userConnected,
             "type" => "resto",
             "restaurants" => $datas,
             "nomber_resto" => $resultCount,
@@ -246,7 +251,7 @@ class RestaurantController extends AbstractController
         $codinsee = $dataRequest["codinsee"];
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
         $resultCount= $bddResto->getAccountRestauranting($codeDep);
-        
+        $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->render("shard/restaurant/specific_mobile_departement.js.twig", [
@@ -256,6 +261,7 @@ class RestaurantController extends AbstractController
             "nomber_resto" => $resultCount,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode(),
             "codinsee" => $codinsee
 
@@ -277,7 +283,7 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
-
+        $userConnected = $status->userProfilService($this->getUser());
         $datas = $code->getAllCodinsee($codeDep);
         
         $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
@@ -328,6 +334,7 @@ class RestaurantController extends AbstractController
             "restaurants" => $resto,
             "codinsees" => $datas,
             "resto_nombre" => $resultCount,
+            "userConnected" => $userConnected,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
@@ -349,7 +356,7 @@ class RestaurantController extends AbstractController
         $datas = $code->getAllCodinsee($codeDep);
         $resultCount= $bddResto->getAccountRestauranting($codeDep);
         $statusProfile = $status->statusFondateur($this->getUser());
-
+        $userConnected = $status->userProfilService($this->getUser());
         return $this->render("shard/restaurant/arrondisment_resto_mobile_navleft.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
@@ -357,6 +364,7 @@ class RestaurantController extends AbstractController
             "resto_nombre" => $resultCount,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
@@ -375,7 +383,7 @@ class RestaurantController extends AbstractController
         $datas = $bddResto->getRestoByCodinsee($codinsee, $codeDep);
         $resultCount = count($datas);
         $statusProfile = $status->statusFondateur($this->getUser());
-
+        $userConnected = $status->userProfilService($this->getUser());
 
 
         return $this->render("restaurant/specific_departement.html.twig", [
@@ -386,6 +394,7 @@ class RestaurantController extends AbstractController
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
+            "userConnected" => $userConnected,
             "codinsee" => $codinsee
         ]);
     }

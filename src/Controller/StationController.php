@@ -54,7 +54,7 @@ class StationController extends AbstractController
     {
         ///current user connected
         $user = $this->getUser();
-
+        $userConnected = $status->userProfilService($this->getUser());
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
@@ -99,7 +99,7 @@ class StationController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
 
             "codeApes" => $codeApeRep->getCode(),
-
+            "userConnected" => $userConnected,
             "amisTributG" => $amis_in_tributG
         ]);
     }
@@ -130,7 +130,7 @@ class StationController extends AbstractController
     )
     {
         $depart_code = strlen($depart_code) === 1 ? "0" . $depart_code : $depart_code;
-
+        $userConnected = $status->userProfilService($this->getUser());
         ///current user connected
         $user = $this->getUser();
 
@@ -170,7 +170,7 @@ class StationController extends AbstractController
         return $this->render("station/specificStationDepartement.html.twig", [
 
             "departCode" => $depart_code,
-
+            "userConnected" => $userConnected,
             "departName" => $depart_name,
 
             "type" => "station",

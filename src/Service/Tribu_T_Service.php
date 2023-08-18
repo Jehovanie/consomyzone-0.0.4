@@ -1489,6 +1489,11 @@ class Tribu_T_Service extends PDOConnexionService
         $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
         $statement->execute();
         $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if( !$userID_fondateurTribuT ){
+            return false;
+        }
+
         $id= $userID_fondateurTribuT['user_id'];
 
         $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
@@ -1638,11 +1643,16 @@ class Tribu_T_Service extends PDOConnexionService
      *                            ]
      */
     public function getAllPublicationsUpdate($table_name){
-        
+        $resultats = [];
+
         $apropo_tribuT = $this->getApropos($table_name);
 
+        if( !$apropo_tribuT ){
+            return $resultats;
+        }
+
         $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
-        $resultats = [];
+        
         
         if( count($publications) > 0 ){
             foreach( $publications as $d_pub ){

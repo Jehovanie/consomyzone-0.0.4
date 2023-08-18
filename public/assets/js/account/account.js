@@ -801,3 +801,74 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
 
     showPage('list-tribu-g');
 } 
+
+
+//SPA Profil
+
+if (document.querySelector("#navbarProfil > ul > li > label")) {
+    const navLinks = document.querySelectorAll("#navbarProfil > ul > li > label") 
+    const navLinksFils = document.querySelectorAll("#navbarProfil > ul > li > label > span > .fils")
+    const pages = document.querySelectorAll('.content-profil-navs');
+    
+    
+    let pageStyle = null
+    function showPageProfile(pageId) {
+        pages.forEach(page => {
+            pageStyle = page.getAttribute('style')
+            
+            if (page.id === pageId) {
+                page.style.display = 'block';
+                if (page.style.display === 'none') {
+                    page.removeAttribute('style')   
+                }
+                
+            } else if (page.id !== pageId){
+                page.style.display = 'none';
+            }
+        });
+    }
+
+    
+        navLinks.forEach(link => {
+            link.addEventListener('click', event => {
+                const dataLink = link.getAttribute('data-target')
+                
+                event.preventDefault();
+                const pageId = event.target.dataset.target;
+                    if (dataLink === 'apropos_pdp') {
+                        document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.remove('bg-pdp-profil')
+                    } else if (dataLink === 'gallery_profil') {
+                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.add('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
+                    }
+                    
+                    showPageProfile(pageId);
+            });
+        });  
+        navLinksFils.forEach(link => {
+            
+            link.addEventListener('click', event => {
+                const dataLink = link.getAttribute('data-target')
+                
+                event.preventDefault();
+                const pageId = event.target.dataset.target;
+                    if (dataLink === 'apropos_pdp') {
+                        document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.remove('bg-pdp-profil')
+                    } else if (dataLink === 'gallery_profil') {
+                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.add('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
+                    }
+                    
+                    showPageProfile(pageId);
+            });
+        });
+    
+
+    
+    
+
+    showPageProfile('apropos_pdp');
+}
+

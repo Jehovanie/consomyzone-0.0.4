@@ -77,7 +77,7 @@ class ToutsController extends AbstractController
     {
         ///current user connected
         $user = $this->getUser();
-
+        $userConnected = $status->userProfilService($this->getUser());
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
@@ -123,7 +123,7 @@ class ToutsController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
-            
+            "userConnected" => $userConnected,
             "amisTributG" => $amis_in_tributG
         ]);
 

@@ -726,7 +726,7 @@ class UserController extends AbstractController
         Status $status,
     ){
         $userConnected= $status->userProfilService($this->getUser());
-
+        
         $user = $this->getUser();
         $userId = $user->getId();
         $myuserType = $user->getType();
@@ -763,6 +763,8 @@ class UserController extends AbstractController
             # code...
             array_push($images_trie, $images[$i]);
         }
+
+        
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
         $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
@@ -2331,7 +2333,7 @@ class UserController extends AbstractController
 
             $this->entityManager->flush();
 
-
+            
 
             ///save image in public/uploader folder
 
