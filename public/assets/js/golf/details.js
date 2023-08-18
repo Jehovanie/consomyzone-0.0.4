@@ -30,7 +30,7 @@ function fecthGolfAction(goldID, action){
             if( action === "finished"){
                 if( document.querySelector(".content_btn_golf_did_jheo_js")){
                     document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
-                        Veuillez-vous annuler, c'est encore à faire ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
+                        Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
                     `
                 }
 

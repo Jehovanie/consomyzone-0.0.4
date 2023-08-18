@@ -428,15 +428,24 @@ class MessageController extends AbstractController
     }
 
     #[Route('/create/visio', name: 'app_new_visio')]
-    public function createVisio(Request $request, MessageService $messageService): Response
+    public function createVisio(Request $request, MessageService $messageService, ConsumerRepository $consumerRepository,
+    SupplierRepository $supplierRepository): Response
     {
         $user = $this->getUser();
+        
+        if( $user->getType() == "consumer"){
+            $profil = $consumerRepository->findOneBy(["userId" => intval($user->getId())]);
+        }else{
+            $profil = $supplierRepository->findOneBy(["userId" => intval($user->getId())]);
+        }
 
         $data = json_decode($request->getContent(), true);
 
         extract($data);
 
-        $messageService->createVisio($user->getId(), $to, $roomName, $status);
+        $username = $profil->getFirstname()." ".$profil->getLastname();
+
+        $messageService->createVisio($user->getId(), $to, $username, $roomName, $status);
 
         return $this->json([
             "success" => true
@@ -444,18 +453,63 @@ class MessageController extends AbstractController
 
     }
 
-    #[Route('/get/visio/by/{user_id}', name: 'app_get_visio')]
-    public function getVisio($user_id): Response
+    #[Route('/get/myvisio', name: 'app_get_visio')]
+    public function getVisio(MessageService $messageService): Response
     {
-        $sql = "SELECT * FROM visio_story WHERE user_id = $user_id";
 
-        $stm = $this->getPDO()->prepare($sql);
+        $user = $this->getUser();
+        
+        $visio_all = $messageService->getVisio($user->getId());
 
-        $stm->execute();
+        //// send SSE event
+        $response = new StreamedResponse();
+        $response->setCallback(function () use (&$visio_all) {
 
-        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+            echo "data:" . json_encode($visio_all) .  "\n\n";
+            ob_end_flush();
+            flush();
+        });
+        
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Headers', 'origin, content-type, accept');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Content-Type', 'text/event-stream');
 
-        return $result;
+        return $response;
+    }
+
+    #[Route('/update/visio/{id}/{status}', name: 'app_update_by_id_visio')]
+    public function updateVisioById($id, $status, MessageService $messageService): Response
+    {
+
+        $messageService->updateVisioById($id, $status);
+
+        return $this->json([
+            "success" => true
+        ]);
+       
+    }
+
+
+    #[Route('/getVisioById/{id}', name: 'app_getVisioById')]
+    public function getVisioById($id,MessageService $messageService): Response
+    {
+
+        $visio = $messageService->getVisioById($id);
+
+        return $this->json($visio);
+       
+    }
+
+    #[Route('/getVisioByName/{name}', name: 'app_getVisioByName')]
+    public function getVisioByName($name,MessageService $messageService): Response
+    {
+
+        $visio = $messageService->getVisioByName($name);
+
+        return $this->json($visio);
+       
     }
 
 }

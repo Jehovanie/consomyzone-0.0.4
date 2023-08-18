@@ -99,7 +99,7 @@ class MarckerClusterGolf extends MapModule {
             if( item.user_id === null){
                 pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
             }else{
-                pathIcon= item.user_status !== null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
                 taille=1
             }
             let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
@@ -113,7 +113,7 @@ class MarckerClusterGolf extends MapModule {
                 if( item.user_id === null){
                     pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
                 }else{
-                    pathIcon= item.user_status !== null ? '/assets/icon/NewIcons/icon-vert-golf-orange.png' : '/assets/icon/NewIcons/icon-vert-golf-bleu.png';
+                    pathIcon= item.user_status === null ? '/assets/icon/NewIcons/icon-vert-golf-orange.png' : '/assets/icon/NewIcons/icon-vert-golf-bleu.png';
                 }
                 const icon_R = L.Icon.extend({
                     options: {
@@ -135,7 +135,7 @@ class MarckerClusterGolf extends MapModule {
                     if( last_marker.user_id === null){
                         pathIcon='/assets/icon/NewIcons/icon-blanc-golf-vertC.png';
                     }else{
-                        pathIcon= last_marker.user_status !== null ? '/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : '/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                        pathIcon= last_marker.user_status === null ? '/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : '/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
                     }
 
                     const icon_B = L.Icon.extend({

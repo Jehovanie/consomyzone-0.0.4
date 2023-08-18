@@ -589,7 +589,7 @@ class MapModule{
                 <button class="btn btn-info" data-type="info">
                     <i class="fa-solid fa-info"></i>
                 </button>
-                <button class="btn btn-primary" data-type="couche">
+                <button class="btn btn-secondary non_active" data-type="couche">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
                 

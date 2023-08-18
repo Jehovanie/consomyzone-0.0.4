@@ -49,7 +49,7 @@
             </div>
             
             <div class="nombre_avis">
-                <button class="btn btn-warning btn-md see-avis"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
+                <button class="btn btn-secondary btn-md see-avis non_active"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
             </div>
         </div>
 
@@ -111,7 +111,7 @@
                 {% if details.user_status == null %}
                     Marquez que ce golf est déjà fait ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="setGolfFinished('{{details.id}}')">Oui</span>
                 {% else %}
-                    Veuillez-vous annuler, c'est encore à faire ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
+                    Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
                 {% endif %}
             </p>
         {% endif %}
