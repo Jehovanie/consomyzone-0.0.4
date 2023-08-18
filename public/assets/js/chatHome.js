@@ -776,16 +776,24 @@ function joinMeet(id, room) {
 
         // document.querySelector('#visio').innerHTML =""
 
-        fetch("/getVisioById/"+id)
+        fetch("/getVisioByName/"+room)
         .then(response=>response.json())
-        .then(visio=>{
-            
-            if(visio.from == document.querySelector("#amis_list").getAttribute("data-my-id")){
-                setStatusMeetById(id,"finished")
+        .then(visios=>{
+
+            if(visios.length > 0){
+
+                for(let visio of visios){
+
+                    if(visio.from == document.querySelector("#amis_list").getAttribute("data-my-id")){
+                        setStatusMeetById(visio.id,"finished")
+                    }
+                }
             }
+            
         })
         
         document.querySelector('#visio').innerHTML =""
+        document.querySelector("#user_name_chat").innerText ="VisioConférence"
 	})
 
     api.addEventListener('participantJoined', (e)=>{

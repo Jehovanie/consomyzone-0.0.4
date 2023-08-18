@@ -197,7 +197,7 @@ class MessageService extends PDOConnexionService{
 
     public function getVisio($my_id){
 
-        $sql = "SELECT * FROM visio_story WHERE visio_story.from = $my_id or visio_story.to = $my_id";
+        $sql = "SELECT * FROM visio_story WHERE visio_story.from = $my_id or visio_story.to = $my_id group by nom";
 
         $stm = $this->getPDO()->prepare($sql);
 
@@ -254,7 +254,7 @@ class MessageService extends PDOConnexionService{
 
         $stm->execute();
 
-        $result = $stm->fetch(PDO::FETCH_ASSOC);
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
     }
