@@ -91,20 +91,22 @@ class NotificationService extends PDOConnexionService{
     public function sendNotificationForOne(int $user_id_post,int $user_id,string $type, string $content ){
 
         ///get the name of the table notification for $user_id_post to send new notification
-
         $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id );
 
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
+        //// check if this table notification exists
+        $db = $_ENV["DATABASENAME"];
+        $query = "SHOW TABLES FROM $db like '" . $result["tablenotification"] . "'";
+        $sql = $this->getPDO()->query($query);
+        if( $sql->rowCount() === 0 ){
+            return false;
+        }
 
         ///insert notification
-
         $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
-
-            
 
         $this->getPDO()->prepare($sql)->execute([$user_id, $user_id_post, $type, $content,0,0]);
 

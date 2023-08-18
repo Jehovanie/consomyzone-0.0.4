@@ -636,8 +636,8 @@ class AgendaService extends PDOConnexionService
             "`adresse` varchar(255) NOT NULL,".
             "`restaurant` varchar(255) DEFAULT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
-            "`dateStart` date NOT NULL DEFAULT current_timestamp(),".
-            "`dateEnd` date NOT NULL DEFAULT current_timestamp(),".
+            "`dateStart` date NULL,".
+            "`dateEnd` date NULL,".
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
             "`file_type` varchar(40) DEFAULT NULL,".
