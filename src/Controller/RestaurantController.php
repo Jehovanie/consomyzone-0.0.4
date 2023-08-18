@@ -456,8 +456,6 @@ class RestaurantController extends AbstractController
             ], 200);
         }
 
-
-
         $arrayTribu = [];
         $arrayTribuRestoPast = [];
         $arrayTribuRestoJoinedPast = [];

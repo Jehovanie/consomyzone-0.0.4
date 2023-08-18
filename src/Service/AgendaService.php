@@ -504,6 +504,45 @@ class AgendaService extends PDOConnexionService
 
     }
 
+    public function updateEventCalendar($nom_table_agenda,$agenda, $agendaId) {
+
+        extract($agenda); 
+
+        $statement = $this->getPDO()->prepare(
+            "UPDATE $nom_table_agenda SET title=?, name=?, description=?, isEtabCMZ=?, isGolfCMZ=?, 
+            isRestoCMZ=?, type=?, status=?, adresse=?, file_type=?, file_path=?, dateStart=?, 
+            dateEnd=?, heure_debut=?, heure_fin=?, max_participant=? WHERE id=?"
+        );
+
+        if(!$isEtabCMZ){
+            $isGolfCMZ = false;
+            $isRestoCMZ = false;
+        }
+
+        $statement->bindParam(1, $title);
+        $statement->bindParam(2, $name);
+        $statement->bindParam(3, $description);
+        $statement->bindParam(4, $isEtabCMZ);
+        $statement->bindParam(5, $isGolfCMZ);
+        $statement->bindParam(6, $isRestoCMZ);
+        $statement->bindParam(7, $type);
+        $statement->bindParam(8, $status);
+        $statement->bindParam(9, $adresse);
+        $statement->bindParam(10, $file_type);
+        $statement->bindParam(11, $file_path);
+        $statement->bindParam(12, $dateStart);
+        $statement->bindParam(13, $dateEnd);
+        $statement->bindParam(14, $heureStart);
+        $statement->bindParam(15, $heureEnd);
+        $statement->bindParam(16, $participant);
+        $statement->bindParam(17, $agendaId);
+
+        $result = $statement->execute();
+
+        return $result;
+
+    }
+
 
 
     public function deleteAgendaUpdate($tableName, $id){

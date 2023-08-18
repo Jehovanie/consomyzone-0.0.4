@@ -3,7 +3,7 @@
   <div class="modal-dialog custom_modal_dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalCreateAgendaTitles">Création d'un événement</h5>
+        <h5 class="modal-title" id="modalCreateAgendaTitles">Créer un événement</h5>
         {# <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button> #}
         <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -58,12 +58,14 @@
                   </div>
                   
                   <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onchange="handleChangeEtabCMZ(this)">
+                      {# <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onchange="handleChangeEtabCMZ(this)"> #}
+                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onclick="showDepModal(this)">
                       <label class="form-check-label text_black" for="golfRadio">GOLF</label>
                   </div>
 
                   <div class="form-check form-check-inline mt-2">
-                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onchange="handleChangeEtabCMZ(this)">
+                    {# <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onchange="handleChangeEtabCMZ(this)"> #}
+                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onclick="showDepModal(this)">
                     <label class="form-check-label text_black" for="restoRadio">RESTAURANT</label>
                   </div>
 
@@ -140,17 +142,13 @@
                 {% include 'shard/input/inputImageDragDrop.html.twig' %}
             </div>
 
-            <div class="form-check form-switch">
-              <input class="form-check-input confidEvent_jheo_js" type="checkbox" id="confid" disabled>
-              <label class="form-check-label non_active" for="confid" >Tout le monde peut voir votre agenda?</label>
-            </div>
-
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
-        {# <button type="button" class="btn btn-primary cta_confirm_create_agenda_jheo_js">Créer</button> #}
-        <button type="button" class="btn btn-primary" onclick="getObjectForNewAgenda()">Créer</button>
+        <button type="button" class="btn btn-secondary  d-none non_active" id="shareAgendaBtn">Partager</button>
+        <button type="button" class="btn btn-danger d-none" id="deleteAgendaBtn" onclick="deleteAgenda()">Supprimer</button>
+        <button type="button" data-action="create" class="btn btn-primary" onclick="getObjectForNewAgenda(event)" id="createOrEditBtn">Créer</button>
       </div>
     </div>
   </div>
@@ -209,9 +207,20 @@
 
 {# MODAL FOR GOLF OR RESTO #}
 <div class="modal fade" id="listRestoOrGolfModal" aria-hidden="true" aria-labelledby="listRestoOrGolfModal_label" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
     <div class="modal-content">
       <div class="modal-header">
+        <a href="#" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
+
+            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+              <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+              17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+              9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+              92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"></path>
+            </g>
+          </svg>
+        </a>
         <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
           <li class="nav-item">
             <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOnglet(this)">Tous</a>
@@ -234,11 +243,14 @@
             </form>
           </div>
           <div class="list_resto_or_golf">
-              <table class="table table-striped">
+              <table class="table table-striped" id="tableEtabCMZ">
                 <thead>
                   <tr>
+                    {# <th scope="col" class="d-none forLogo">Logo</th>
+                    <th scope="col" class="d-none forTribu">TribuT</th> #}
                     <th scope="col">Nom</th>
                     <th scope="col">Adresse</th>
+                    <th scope="col">Téléphone</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -288,5 +300,64 @@
       Veuillez complète tous les nécessaires.
     </div>
     <button type="button" class="d-none close_modal_invalid_agenda_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">></button>
+  </div>
+</div>
+
+{# MODAL FOR LIST DEP #}
+<div class="modal fade" id="listDepModal" aria-hidden="true" aria-labelledby="listDepModal_label" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
+
+            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+              <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+              17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+              9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+              92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"></path>
+            </g>
+          </svg>
+        </a>
+        <ul class="nav nav-tabs ml-3" id="smallNavInvitationDep">
+          <li class="nav-item">
+            <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOngletForDep(this)">Tous</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-secondary" href="#" onclick="activeOngletForDep(this)">Pastillé</a>
+          </li>
+        </ul>
+        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body custom_modal">
+        <div class="container_list_dep">
+        
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" name="hidden" id="hiddenListDep">
+        <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# MODAL FOR DETAIL ETAB #}
+<div class="modal fade" id="detailEtabModal" aria-hidden="true" aria-labelledby="detailEtabModal_label" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        {# <h5 class="modal-title">Détail</h5> #}
+        <div class="content_etab_detail">
+        </div>
+        <button type="button" class="btn-close" data-bs-target="#listRestoOrGolfModal" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" data-bs-target="#listRestoOrGolfModal" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
   </div>
 </div>

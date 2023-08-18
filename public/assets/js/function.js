@@ -1940,25 +1940,3 @@ function slideToRight(elem, html) {
         elem.parentElement.style.display = "none"
         elem.parentElement.parentElement.innerHTML = html
 }
-
-function activeOnglet(elem){
-    if(!elem.classList.contains("active")){
-        elem.classList.add("active")
-        let cmzEtab = ""
-        if(elem.textContent.toLowerCase().includes("golf")){
-            cmzEtab = "golf"
-        }else if(elem.textContent.toLowerCase().includes("restaurant")){
-            cmzEtab = "restaurant"
-        }
-
-        if(elem.parentElement.nextElementSibling){
-            elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
-            makeLoading()
-            getAllEtab(cmzEtab, false)
-        }else{
-            elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
-            makeLoading()
-            getAllEtab(cmzEtab, true)
-        }
-    }
-}
