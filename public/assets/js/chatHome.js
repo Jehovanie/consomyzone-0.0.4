@@ -766,15 +766,13 @@ function joinMeet(id, room) {
 
     api.executeCommand('displayName', user_name);
 
-    setStatusMeetById(id, "progress")
+    setStatusMeetById(id,"progress")
 
     const iframe = api.getIFrame();
 
     iframe.scrollIntoView();
 
     api.on('readyToClose', () => {
-
-        // document.querySelector('#visio').innerHTML =""
 
         fetch("/getVisioByName/"+room)
         .then(response=>response.json())
@@ -784,9 +782,8 @@ function joinMeet(id, room) {
 
                 for(let visio of visios){
 
-                    if(visio.from == document.querySelector("#amis_list").getAttribute("data-my-id")){
-                        setStatusMeetById(visio.id,"finished")
-                    }
+                    setStatusMeetById(visio.id, "finished")
+
                 }
             }
             
