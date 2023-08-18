@@ -130,8 +130,8 @@
 		<script>
 
 			document.querySelector("#name").onchange = () => {
-					document.querySelector("#name_normalize").value = document.querySelector("#name").value.normalize("NFD").replace(/\p{Diacritic}/gu, "");
-				}
+				document.querySelector("#name_normalize").value = document.querySelector("#name").value.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+			}
 
 			let change_password_form = document.querySelector("#change_password");
 

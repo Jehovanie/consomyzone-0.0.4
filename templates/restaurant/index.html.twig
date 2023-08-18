@@ -22,7 +22,7 @@
 
 	{# <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	{# <script src="{{asset('assets/js/restaurant/MapAdminRestaurant.js')}}" defer></script> #}
-	{# // <script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script> #}
+	{# <script src="{{asset('assets/js/restaurant/chercher.js')}}" defer></script> #}
     <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
     {# <script src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script> #}
 
@@ -41,8 +41,53 @@
             </div>
             
             <div>
-                <div class="d-flex content_cart_map content_cart_map_jheo_js">
-                    <div class="cart_map cart_map_js_jheo cart_map_jheo_js cart_map_js">
+            {% if (app.user) %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-resto-mobile" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+            {% else %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-resto-mobile">
+            {% endif %}
+                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                        width="10vw" height="10vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
+
+                        <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
+                            <path d="M570 930 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M450 830 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M670 830 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M570 720 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M790 720 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M680 620 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M900 620 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M570 500 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M790 500 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M460 410 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M680 410 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M340 300 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                                -56 20 l-49 0 0 -40z"/>
+                            <path d="M560 300 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
+                            -56 20 l-49 0 0 -40z"/>
+                        </g>
+                    </svg>
+                </div>
+                    {# 
+                        <div id="remove-detail-resto" class="hidden responsif-none">
+                            <div class="list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content_detail_resto_js_jheo"></div>
+                        </div> 
+                    #}
+
+            
+                <div class="content_cart_map">
+                    <div class="cart_map cart_map_js_jheo cart_map_js">
                         <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
                             <div class="containt">
                                 <div class="word word-1">C</div>

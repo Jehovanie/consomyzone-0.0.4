@@ -30,6 +30,7 @@ class GolfFranceController extends AbstractController
     {
         ///current user connected
         $user = $this->getUser();
+        $userConnected = $status->userProfilService($this->getUser());
 
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
@@ -68,7 +69,8 @@ class GolfFranceController extends AbstractController
             'number_of_departement' => $golfFranceRepository->getCount(),
             "profil" => $statusProfile["profil"],
             "departements" => $departementRepository->getDep(),
-            "amisTributG" => $amis_in_tributG
+            "amisTributG" => $amis_in_tributG,
+            "userConnected" => $userConnected,
         ]);
     }
 
@@ -107,6 +109,7 @@ class GolfFranceController extends AbstractController
 
         ///current user connected
         $user = $this->getUser();
+        $userConnected = $status->userProfilService($this->getUser());
         $userID = ($user) ? $user->getId() : null;
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
@@ -158,7 +161,9 @@ class GolfFranceController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
 
-            "amisTributG" => $amis_in_tributG
+            "amisTributG" => $amis_in_tributG,
+
+            "userConnected" => $userConnected,
         ]);
     }
 

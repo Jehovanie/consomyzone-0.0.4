@@ -177,8 +177,10 @@
                 {# ======================== CONTENT CONNEXION/ACTUALITY =========================== #}
 				<div class="d-flex icon-connexion">
                     {% if app.user %}
+
                         <a class="cta_connexion_navbar" href="{{path('app_actualite')}}">
-                            <svg fill="green" class="svg-2" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
+                            <img src="{{ userConnected.photo_profil }}" alt="pdp">
+                            {# <svg fill="green" class="svg-2" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
                                 <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"  stroke="none">
                                     <path d="M2158 4700 c-97 -24 -184 -64 -271 -123 -37 -26 -71 -47 -75 -47 -18
                                         0 -152 -149 -199 -222 -108 -164 -156 -331 -155 -533 2 -566 251 -1070 615
@@ -211,10 +213,10 @@
                                     <path d="M3774 1487 c-33 -30 -36 -39 -41 -100 l-6 -67 122 0 121 0 0 51 c0
                                     92 -47 149 -124 149 -27 0 -45 -8 -72 -33z"/>
                                 </g>
-                            </svg>
+                            </svg> #}
                         </a>
                     {% else %}
-                        <a class="cta_connexion_navbar" href="{{path('app_login')}}">
+                        <a class="cta_connexion_navbar_no_connected" href="{{path('app_login')}}">
                             <svg fill="gray" class="svg-1" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
                                 <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"  stroke="none">
                                     <path d="M2158 4700 c-97 -24 -184 -64 -271 -123 -37 -26 -71 -47 -75 -47 -18

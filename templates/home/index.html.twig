@@ -28,7 +28,11 @@
     </div>
     
     <div class="content_body">
-        <div class="content content_tous_js_jheo">
+    {% if (app.user) %}
+        <div class="content content_tous_js_jheo" id="tout-dem"  data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+    {% else %}
+        <div class="content content_tous_js_jheo" >
+    {% endif %}
             <div class="content_cart_map content_cart_map-respons">
                 {# <div id="remove-detail" class="hidden responsif-none">
                     <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>

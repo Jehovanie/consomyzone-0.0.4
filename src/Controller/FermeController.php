@@ -65,7 +65,7 @@ class FermeController extends AbstractController
     {
         ///current user connected
         $user = $this->getUser();
-
+        $userConnected = $status->userProfilService($this->getUser());
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
@@ -110,7 +110,7 @@ class FermeController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
 
             "codeApes" => $codeApeRep->getCode(),
-
+            "userConnected" => $userConnected,
             "amisTributG" => $amis_in_tributG
         ]);
     }
@@ -126,8 +126,9 @@ class FermeController extends AbstractController
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
          return $this->render("shard/ferme/mobil-depart.js.twig", [
-
+            "userConnected" => $userConnected,
             "departements" => $departementRepository->getDep(),
 
             "number_of_departement" => $fermeGeomRepository->getCountFerme()[0]["1"],
@@ -163,7 +164,7 @@ class FermeController extends AbstractController
         $statusProfile = $status->statusFondateur($user);
 
         $amis_in_tributG = [];
-
+        $userConnected = $status->userProfilService($this->getUser());
         if($user){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -199,7 +200,7 @@ class FermeController extends AbstractController
             "nom_dep" => $nom_dep,
 
             "type" => "ferme",
-
+            "userConnected" => $userConnected,
             "fermes" => $fermeGeomRepository->getFermByDep($nom_dep, $id_dep, 0),
 
             "nomber_ferme" => $fermeGeomRepository->getCountFerme($nom_dep, $id_dep)[0]["1"],
@@ -225,7 +226,7 @@ class FermeController extends AbstractController
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());
-
+        $userConnected = $status->userProfilService($this->getUser());
         return $this->render("shard/ferme/specific_mobile_departement.js.twig", [
 
             "id_dep" => $id_dep,
@@ -239,7 +240,7 @@ class FermeController extends AbstractController
             "profil" => $statusProfile["profil"],
 
             "statusTribut" => $statusProfile["statusTribut"],
-
+            "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
@@ -296,11 +297,13 @@ class FermeController extends AbstractController
      */
     public function detailsFerme(CodeapeRepository $codeApeRep, Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep, $id_ferme): Response
     {
+        
         $statusProfile = $status->statusFondateur($this->getUser());
-
+        $userConnected = $status->userProfilService($this->getUser());
         return $this->render("ferme/details_ferme.html.twig", [
             "details" => $fermeGeomRepository->getOneFerme($nom_dep, $id_dep, $id_ferme)[0],
             "id_dep" => $id_dep,
+            "userConnected" => $userConnected,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
