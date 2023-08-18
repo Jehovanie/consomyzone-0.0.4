@@ -431,6 +431,7 @@ class TributGService extends PDOConnexionService{
         }else{
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
+
         return $profil;
     }
 
@@ -542,7 +543,7 @@ class TributGService extends PDOConnexionService{
      */
     public function getAllTributG($table_name){
 
-        $statement = $this->getPDO()->prepare('SELECT user_id FROM ' . $table_name);
+        $statement = $this->getPDO()->prepare('SELECT DISTINCT user_id FROM ' . $table_name);
 
         $statement->execute();
 

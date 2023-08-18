@@ -78,26 +78,31 @@ class FermeController extends AbstractController
             $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
 
             ///to contains profil user information
-            
             foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                ];
+                
+                if( $user_amis ){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                    ];
 
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
+
+
+
 
         return $this->render("ferme/index.html.twig", [
 
@@ -172,24 +177,26 @@ class FermeController extends AbstractController
             $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
 
             ///to contains profil user information
-            
             foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                ];
+                
+                if( $user_amis ){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                    ];
 
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
 
