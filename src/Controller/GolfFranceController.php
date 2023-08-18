@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Service\Status;
+use App\Entity\GolfFinished;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
 use App\Service\GolfFranceService;
 use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\GolfFinishedRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -194,14 +197,67 @@ class GolfFranceController extends AbstractController
     ){
         ///current user connected
         $user = $this->getUser();
-        $userID = ($user) ? $user->getId() : null;
-
-        // dd($golfFranceRepository->find(intval($golfID)));
+        $userID = ($user) ? intval($user->getId()) : null;
+        // dd($golfFranceRepository->getOneGolf(intval($golfID)));
 
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
-            "details" => $golfFranceRepository->find(intval($golfID)),
+            "details" => $golfFranceRepository->getOneGolf(intval($golfID),$userID),
         ]);
+    }
+
+    #[Route('user/setGolf/finished', name: 'set_golf_finished', methods: ["POST"])]
+    public function setGolfFinished(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ){
+        $requestContent = json_decode($request->getContent(), true);
+        extract($requestContent); ///$golfID
+
+        
+        ///current user connected
+        $user = $this->getUser();
+        if( !$user ){
+            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        }
+
+        $userID= $user->getId();
+
+        $golfFinished= new GolfFinished();
+        $golfFinished->setGolfId($golfID);
+        $golfFinished->setUserId($userID);
+
+
+        $entityManager->persist($golfFinished);
+        $entityManager->flush();
+
+        return $this->json([
+            "success" => true,
+            "message" => "Golf finished successfully"
+        ], 201);
+    }
+
+    #[Route('user/setGolf/unfinished', name: 'set_golf_unfinished', methods: ["POST"])]
+    public function setGolfUnFinished(
+        Request $request,
+        GolfFinishedRepository $golfFinishedRepository,
+        EntityManagerInterface $entityManager
+    ){
+        $requestContent = json_decode($request->getContent(), true);
+        extract($requestContent); ///$golfID
+
+        $isFinished= $golfFinishedRepository->findOneBy(['golf_id' => intval($golfID)]); 
+        if( !$isFinished){
+            return $this->json([ "success" => false, "message" => "This golf is not yet finished"], 200);
+        }
+
+        $entityManager->remove($isFinished);
+        $entityManager->flush();
+
+        return $this->json([
+            "success" => true,
+            "message" => "Setting golf unfinished successfully"
+        ], 201);
     }
 }

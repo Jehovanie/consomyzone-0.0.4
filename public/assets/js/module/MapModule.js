@@ -698,7 +698,7 @@ class MapModule{
             <div class="content_header_right_side">
                 <div class="header_right_side">
                     <div class="title_right_side">
-                        CONTROLE RIGHT SIDE
+                        CONTROL RIGHT SIDE
                     </div>
                     <div class="content_close_right_side">
                         <div class="close_right_side close_right_side_jheo_js">
@@ -714,7 +714,7 @@ class MapModule{
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Icon</th>
-                            <th scope="col">Taille</th>
+                           
                             <th scope="col">Status</th>
                         </tr>
                     </thead>
@@ -722,25 +722,25 @@ class MapModule{
                         <tr>
                             <th scope="row">1</th>
                             <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                            <td>Max</td>
+                            
                             <td>Mon Golf</td>
                         </tr>
                         <tr>
                             <th scope="row">2</th>
                             <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
-                            <td>Moyenne</td>
+
                             <td>A faire</td>
                         </tr>
                         <tr>
                             <th scope="row">3</th>
                             <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
-                            <td>Moyenne</td>
+
                             <td>Fait</td>
                         </tr>
                         <tr>
                         <th scope="row">4</th>
                             <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                            <td>Minimun</td>
+                            
                             <td>Inconnu</td>
                         </tr>
                     </tbody>

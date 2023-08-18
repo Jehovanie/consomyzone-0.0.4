@@ -109,9 +109,15 @@ class MarckerClusterGolf extends MapModule {
             marker.on('click', (e) => {
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
+                let pathIcon="";
+                if( item.user_id === null){
+                    pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
+                }else{
+                    pathIcon= item.user_status !== null ? '/assets/icon/NewIcons/icon-vert-golf-orange.png' : '/assets/icon/NewIcons/icon-vert-golf-bleu.png';
+                }
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-rouge-golf-C.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-rouge-golf-C.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
                         iconSize: [35,55],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
@@ -122,17 +128,19 @@ class MarckerClusterGolf extends MapModule {
                 marker.setIcon(new icon_R);
 
                 if (this.marker_last_selected && this.marker_last_selected != marker ) {
-                       
+
+                    const last_marker= this.default_data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+
                     let pathIcon="";
-                    if( item.user_id === null){
-                        pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+                    if( last_marker.user_id === null){
+                        pathIcon='/assets/icon/NewIcons/icon-blanc-golf-vertC.png';
                     }else{
-                        pathIcon= item.user_status !== null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                        pathIcon= last_marker.user_status !== null ? '/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : '/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
                     }
 
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + pathIcon : this.currentUrl.origin + "/" + pathIcon ,
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + pathIcon : this.currentUrl.origin + "/public" + pathIcon ,
                             iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],

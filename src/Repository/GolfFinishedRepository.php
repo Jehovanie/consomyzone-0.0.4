@@ -21,6 +21,13 @@ class GolfFinishedRepository extends ServiceEntityRepository
         parent::__construct($registry, GolfFinished::class);
     }
 
+    public function saveGolfFinished($userID, $golfID){
+
+
+    
+
+    }
+
 //    /**
 //     * @return GolfFinished[] Returns an array of GolfFinished objects
 //     */

@@ -129,14 +129,55 @@ class GolfFranceRepository extends ServiceEntityRepository
 
         for($i=0; $i< count($data); $i++){
             if(!$userID){
-                $data[$i]["user_status"]="";
+                $data[$i]["user_status"]= null;
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
                 
-                $data[$i]["user_status"]=($user) ? "a faire" : "";
+                $data[$i]["user_status"]=($user) ? "fait" : null;
             }
         }
+        return $data;
+    }
+
+
+    public function getOneGolf($golfID, $userID=null){
+        $data = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nom_golf as nomGolf',
+                'p.adr1',
+                'p.adr2',
+                'p.adr3',
+                'p.e_mail',
+                'p.e_mail as eMail',
+                'p.web',
+                'p.site_web',
+                'p.site_web as siteWeb',
+                'p.telephone',
+                'p.cp',
+                'p.dep',
+                'p.nom_dep',
+                'p.nom_dep as nomDep',
+                'p.nom_commune as nomCommune',
+                'p.latitude',
+                'p.longitude',
+            )
+            ->where('p.id = :k')
+            ->setParameter('k',  $golfID)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if( $data){
+            if(!$userID){
+                $data["user_status"]=null;
+            }else{
+                $golfFinishedRepository = new GolfFinishedRepository($this->registry);
+                $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data["id"]]);
+                $data["user_status"]=($user) ? "fait" : null;
+            }
+        }
+        // dd($data);
         return $data;
     }
 

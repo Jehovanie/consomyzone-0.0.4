@@ -13,12 +13,28 @@
 
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
-                <p>   {{details.nomGolf | upper}}</p>
+                {# <p>   {{details.nomGolf | upper}}  <span class="badge bg-primary golf_status">FAIT</span> </p> #}
+                <p> 
+                    {{details.nomGolf | upper}}  
+                    {% if app.user %}
+                        {% if details.user_status == null %}
+                            <span class="badge bg-primary golf_status golf_status_jheo_js">A FAIRE</span>
+                            {# <span class="badge bg-primary golf_status"><i class="fa-solid fa-xmark"></i></span> #}
+                            {# <span class="badge bg-primary golf_status"></span> #}
+                        {% else %}
+                            <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>
+                            {# <span class="badge bg-info  golf_status"><i class="fa-solid fa-check"></i></span> #}
+                            
+                        {% endif %}
+                    {% endif %}
+                </p>
+               
             </blockquote>
             <figcaption class="blockquote-footer">
                Adresse :  <a href="#" class="small text-center ">{{details.adr1 | raw}} </a>
-            </figcaption>
+            </figcaption>  
         </figure>
+       
     </div>
 
     <div class="p-4">
@@ -89,6 +105,15 @@
                 <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">Lien :  Site Web</a>
             </div>
         </div>
-     
+
+        {% if app.user %}
+            <p class="mt-3 lead content_btn_golf_did_jheo_js" data-golf-id="{{details.id}}">
+                {% if details.user_status == null %}
+                    Marquez que ce golf est déjà fait ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="setGolfFinished('{{details.id}}')">Oui</span>
+                {% else %}
+                    Veuillez-vous annuler, c'est encore à faire ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
+                {% endif %}
+            </p>
+        {% endif %}
     </div>
 </div>
