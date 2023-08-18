@@ -1319,7 +1319,6 @@ class Tribu_T_Service extends PDOConnexionService
                 $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $trib[0];");
                 $statement->execute();
                 $restos = $statement->fetchAll(PDO::FETCH_ASSOC);
-
                 
                 $results= array_merge($results, $restos);
             }
