@@ -606,9 +606,9 @@ class MapModule{
             },
             events:{
                 click: function(data) {
-                    console.log(data)
-                    openRightSide();
-                   
+                    if(data.srcElement.dataset.type === "info"){
+                        openRightSide();
+                    }
                 },
                 dblclick: function(data){
                     closeRightSide();
