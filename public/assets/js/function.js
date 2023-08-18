@@ -1668,6 +1668,10 @@ function checkTailleImage(maxOctetAccepted, file_base64){
 
 
 function openRightSide(){
+
+    if( document.querySelector(".close_details_jheo_js")){
+        document.querySelector(".close_details_jheo_js").click();
+    }
     
     if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
         document.querySelector(".cart_map_jheo_js").style.width= '75%';
