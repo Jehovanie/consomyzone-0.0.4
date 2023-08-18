@@ -220,17 +220,6 @@ class MessageService extends PDOConnexionService{
 
     }
 
-    public function updateVisioByName($name, $status)
-
-    {
-
-        $sql = "UPDATE visio_story set status = ? WHERE nom = ?";
-
-        $stmt = $this->getPDO()->prepare($sql);
-
-        $stmt->execute([$status, $name]);
-
-    }
 
     public function deleteAllVisio($my_id)
 

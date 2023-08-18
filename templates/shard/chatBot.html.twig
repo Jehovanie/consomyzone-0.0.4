@@ -75,6 +75,7 @@
 					<p class="mn-chat">Reponse automatique</p>
 				</div>
 			</div>
+			
 			<div>
 				<div x-data="{openDropDown: false}" class="h-chat">
 					<button @click="openDropDown = !openDropDown" class="lc-chat yc-chat zd-chat mg-chat pg-chat sh-chat ni-chat bj-chat wr-chat wj-chat yr-chat" id="closeChat">
@@ -156,19 +157,10 @@
 					</div>
 				</div>
 
-				<div class="cg-chat lc-chat mg-chat sh-chat ol-chat rl-chat tq-chat is-chat btn btn-outline-primary" id="assist_virt">
-					<div class="h-chat mb-chat th-chat">
-						{# <img src="https://www.iconpacks.net/icons/1/free-help-icon-1160-thumb.png" alt="profile" class="vc-chat yd-chat qk-chat rk-chat"/> #}
-						<i class="fas fa-plus"></i>
-						{# <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span> #}
-					</div>
-					<div class="yd-cha">
-						Créer un visio groupé
-						{# <h5 class="mn-chat un-chat zn-chat gs-chat">
-							Conférence groupée
-						</h5> #}
-					</div>
+				<div class="btn-group w-100" id="visio_group_btn" style="display:none">
+					<button type="button" class="btn btn-outline-primary waves-effect non_active"><i class="fas fa-plus pe-2" aria-hidden="true"></i>Créer un visio groupé</button>
 				</div>
+
 				<!-- Chat List boucle -->
 
 				{% if app.user %}

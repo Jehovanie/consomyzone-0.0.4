@@ -30,3 +30,15 @@
 .card_chatbot_footer{
 
 }
+
+.chat_container_visio{
+    width: 85vw !important;
+    height: 88vh !important;
+}
+
+.content_chat_visio{
+    width: 50vw !important;
+}
+.chat_friend_visio{
+    width: 80%;
+}
