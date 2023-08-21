@@ -41,6 +41,10 @@ class Status {
     public function userProfilService(
         $user
     ){
+
+        if (!$user) {
+            return ["profil" => "", "statusTribut" => ""];
+        }
         $userType = $user->getType();
         $userId = $user->getId();
         $profil = "";

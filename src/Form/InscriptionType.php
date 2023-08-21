@@ -21,7 +21,8 @@ class InscriptionType extends AbstractType
                     'required' => false
                 ))
                 ->add('Fournisseur', CheckboxType::class, array(
-                    'required' => false
+                    'required' => false,
+                    'label' => 'Partenaire'
                 ))
                 
                 ->add('profil', HiddenType::class) /// i do it later

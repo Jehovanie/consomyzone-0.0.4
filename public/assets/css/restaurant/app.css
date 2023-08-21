@@ -1,5 +1,11 @@
-#map {
+/* #map {
     margin-left: 1.5rem !important;
+} */
+.cart_map{
+    width:100% !important;
+}
+#map {
+    width: 100% !important;
 }
 
 .kidje3{
@@ -33,9 +39,9 @@
     /* text-align: center; */
 }
 
-.leaflet-control-zoom.leaflet-bar.leaflet-control {
+/* .leaflet-control-zoom.leaflet-bar.leaflet-control {
     margin-right: 4vw;
-}
+} */
 
 #btnPastilleCarte, .confirmPast{
     background-color: #0D6EFD !important;

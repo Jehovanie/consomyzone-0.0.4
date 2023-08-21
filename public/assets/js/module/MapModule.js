@@ -68,10 +68,15 @@ class MapModule{
                 layers: [tiles] 
             }
         );
+
+        const position = "topright";
+
+
         L.control.zoom({
-            position: 'bottomright'
+            position: position
         }).addTo(this.map);
 
+        this.leafletControlExtend(position);
         // let position = null, coords= null;
         // try{
         //     position = await this.getUserLocation();
@@ -538,7 +543,7 @@ class MapModule{
         });
     }
 
-    initMap(lat= null,long= null){
+    initMap(lat= null,long= null, isAddControl=false){
         
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
@@ -559,6 +564,13 @@ class MapModule{
 
         this.addGeoJsonToMap();
         this.settingMemoryCenter();
+
+        if( isAddControl ){
+            this.bindOtherControles();
+            this.createRightSideControl();
+        }
+
+
         // this.bindControlOnLeaflet(this.map);
         // this.bindEventLocationForMobile();
     }
@@ -569,4 +581,174 @@ class MapModule{
         else
            return {max:max,min:min}
     }
+
+    bindOtherControles(){
+        L.control.custom({
+            // position: 'topright',
+            content : `
+                <button class="btn btn-info" data-type="info">
+                    <i class="fa-solid fa-info"></i>
+                </button>
+                <button class="btn btn-secondary non_active" data-type="couche">
+                    <i class="fa-solid fa-layer-group"></i>
+                </button>
+                
+            `,
+            classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
+            // style   :
+            // {
+            //     margin: '10px',
+            //     padding: '0px 0 0 0',
+            //     cursor: 'pointer',
+            // },
+            datas   :{
+                'foo': 'bar',
+            },
+            events:{
+                click: function(data) {
+                    if(data.srcElement.dataset.type === "info"){
+                        openRightSide();
+                    }
+                },
+                dblclick: function(data){
+                    closeRightSide();
+                },
+                contextmenu: function(data){
+                    console.log('wrapper div element contextmenu');
+                    console.log(data);
+                },
+            }
+        }).addTo(this.map);
+
+    }
+
+    leafletControlExtend(position= 'topright'){
+        
+        L.Control.Custom = L.Control.extend({
+            version: '1.0.1',
+            options: {
+                position: position,
+                id: '',
+                title: '',
+                classes: '',
+                content: '',
+                style: {},
+                datas: {},
+                events: {},
+            },
+            container: "container_lefleat_jheo_js",
+
+            onAdd: function (map) {
+                this.container = L.DomUtil.create('div');
+                this.container.id = this.options.id;
+                this.container.title = this.options.title;
+                this.container.className = this.options.classes;
+                this.container.innerHTML = this.options.content;
+    
+                for (var option in this.options.style){
+                    this.container.style[option] = this.options.style[option];
+                }
+    
+                for (var data in this.options.datas){
+                    this.container.dataset[data] = this.options.datas[data];
+                }
+    
+    
+                /* Prevent click events propagation to map */
+                L.DomEvent.disableClickPropagation(this.container);
+    
+                /* Prevent right click event propagation to map */
+                L.DomEvent.on(this.container, 'contextmenu', function (ev){
+                    L.DomEvent.stopPropagation(ev);
+                });
+    
+                /* Prevent scroll events propagation to map when cursor on the div */
+                L.DomEvent.disableScrollPropagation(this.container);
+    
+                for (var event in this.options.events){
+                    L.DomEvent.on(this.container, event, this.options.events[event], this.container);
+                }
+    
+                return this.container;
+            },
+    
+            onRemove: function (map) {
+                for (var event in this.options.events){
+                    L.DomEvent.off(this.container, event, this.options.events[event], this.container);
+                }
+            },
+        });
+    
+        L.control.custom = function (options) {
+            return new L.Control.Custom(options);
+        };
+    }
+
+
+    createRightSideControl(){
+        if( !document.querySelector(".content_cart_map_jheo_js")){
+            console.log("Selector not found : 'content_cart_map_jheo_js'");
+            return null;
+        }
+
+        const container = document.createElement("div");
+        container.className = "content_legende content_legende_jheo_js";
+        
+        container.innerHTML = `
+            <div class="content_header_right_side">
+                <div class="header_right_side">
+                    <div class="title_right_side">
+                        CONTROL RIGHT SIDE
+                    </div>
+                    <div class="content_close_right_side">
+                        <div class="close_right_side close_right_side_jheo_js">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content_right_side_body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Icon</th>
+                           
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                            
+                            <td>Mon Golf</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
+
+                            <td>A faire</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
+
+                            <td>Fait</td>
+                        </tr>
+                        <tr>
+                        <th scope="row">4</th>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                            
+                            <td>Inconnu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `
+
+        document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+    }
+
 }

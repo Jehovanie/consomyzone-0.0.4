@@ -1,6 +1,6 @@
 window.addEventListener('load', () => {
 
-    const idRestaurant = document.querySelector("#all_ferme_in_dep > ul > li > div") ? document.querySelector("#all_ferme_in_dep > ul > li > div").getAttribute("data-toggle-id") : null;
+    const idRestaurant = document.querySelector("#details-coord") ? document.querySelector("#details-coord").getAttribute("data-toggle-id") : null;
     let currentUserId = 0
     if(document.querySelector(".FtBjOlVf"))
         currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
@@ -47,11 +47,11 @@ window.addEventListener('load', () => {
     }
 
     document.querySelector("#Submit-Avis-resto-tom-js").onclick = () => {
-       
+       let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
         let note = document.querySelector("#text-note").value
         note=note.replace(/,/g,".")
         const avis = document.querySelector("#message-text").value;
-        idRestaurant
+        newIdResto
         try {
             mustBeInferior4(note, document.querySelector("#text-note"), true)  
             const requestParam = {
@@ -59,7 +59,7 @@ window.addEventListener('load', () => {
                 avis:avis
             }
             //const idRestaurant=location.href.toString().split("/")[8]
-            const request = new Request(`/avis/restaurant/${idRestaurant}`, {
+            const request = new Request(`/avis/restaurant/${newIdResto}`, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
@@ -69,10 +69,10 @@ window.addEventListener('load', () => {
             })
             fetch(request).then(r => {
                 if (r.ok && r.status === 200) {
-                    showModifArea(idRestaurant, currentUserId)
+                    showModifArea(newIdResto, currentUserId)
                     if (document.querySelector("#see-tom-js")) {
-                        showNemberOfAvis(idRestaurant, document.querySelector("#see-tom-js"))
-                        showNoteGlobale(idRestaurant)
+                        showNemberOfAvis(newIdResto, document.querySelector("#see-tom-js"))
+                        showNoteGlobale(newIdResto)
                     }
                 }
             })
@@ -89,13 +89,15 @@ window.addEventListener('load', () => {
 
     if(document.querySelector("#see-tom-js")){
         document.querySelector("#see-tom-js").onclick = () => {
+            let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
             const d=document.querySelectorAll(".fIQYlf")
             if(d.length > 0){
                 d.forEach(i=>{
                     i.parentNode.removeChild(i)
                 })
             }
-            showAvis(currentUserId,idRestaurant) 
+            console.log(newIdResto)
+            showAvis(currentUserId,newIdResto) 
         }
     }
 

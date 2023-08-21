@@ -7,38 +7,23 @@
                     <div class="description" data-toggle-latitude="{{(station.latitude)|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{(station.longitude)|format_number({fraction_digit: 6})}}" data-toggle-departement="{{(station.departementCode) ? station.departementCode : 0 }}" data-toggle-namestation="{{station.nom}}" data-toggle-adresse="{{station.adresse}}">
                         
                         <div class="content_titre_details p-2">
-                            {% if station.nom %}
-                                <h3 class=" text-center">
-                                    {{station.nom |lower }}
-                                </h3>
-                                {% else %}
-                                <h3 >
-                                    La station de Inconnu
-                                </h3>
-                            {% endif %}
+                         
+                            <figure class="text-center mt-4">
+                                <blockquote class="blockquote">
+                                    <p>   {{station.nom | upper}}</p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer">
+                                Adresse :  <a href="#" class="small text-center ">{{station.adresse }} </a>
+                                </figcaption>
+                            </figure>
+
                         </div>
 
                         <div class="p-4">
-                            <div class="content_title">
-                                {% if station.adresse %}
-                                    <span class="important">Adress :</span>
-                                    {{station.adresse}}
-                                {% else %}
-                                    <span class="important">Adress :</span>
-                                    Nom connue.
-                                {% endif %}
-                            </div>
-
                             <div class="content_tow_cta d-flex justify-content-evenly my-2">
                                 <div class="site_web non_active">
                                     <button class="btn btn-primary rounded" style="cursor: not-allowed;">
                                         Lien :  site Web
-                                    </button>
-                                </div>
-
-                                <div class="iteneraire non_active">
-                                    <button class="btn btn-primary rounded" style="cursor: not-allowed;">
-                                        Itinéraire
                                     </button>
                                 </div>
                             </div>

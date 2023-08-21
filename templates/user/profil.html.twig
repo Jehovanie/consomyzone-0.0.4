@@ -6,150 +6,224 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
-	<script src="{{ asset('assets/js/profiles/profile.js') }}" defer></script>
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	{# // <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
+	{# // <script src="{{ asset('assets/js/profiles/profile.js') }}" defer></script> #}
 
 {% endblock %}
 
 {% block body %}
-<div class="nh">
-	{% include 'shard/account_navleft_new.html.twig' %}
-	{% include 'shard/account_navbar_new.html.twig' %}
-	<!-- ===== Main Content Start ===== -->
-	<main class="gv hm hv">
-		<div class="sk bu 2xl:ud-p-11 account-profil-conected">
-			<!-- ====== Profile Section Start -->
-			<div class="overflow-hidden qh qo nj">
-				<div class="h ka id ts st">
-					<img src="https://www.yseulis.com/wp-content/uploads/2018/02/5-0_finance_1600.jpg" alt="" class="vc yd qk rk li mi"/>
-					<div class="g y-photo o la d-flex">
-						<label for="cover" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 non_active">
-							<span >
-								<i class="bi bi-info-circle "></i>
-							</span>
-						</label>
-						<label for="cover" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 non_active">
-							{# <input type="file" name="cover" id="cover" class="d"/> #}
-							<span>
-								<svg width="16" height="16" viewbox="0 0 16 16" class="hk">
-									<path fill-rule="evenodd" clip-rule="evenodd" d="M5.4453 1.63085C5.56894 1.44539 5.7771 1.33398 6 1.33398H10C10.2229 1.33398 10.4311 1.44539 10.5547 1.63085L11.6901 3.33398H14C14.5304 3.33398 15.0391 3.5447 15.4142 3.91977C15.7893 4.29484 16 4.80355 16 5.33398V12.6673C16 13.1978 15.7893 13.7065 15.4142 14.0815C15.0391 14.4566 14.5304 14.6673 14 14.6673H2C1.46957 14.6673 0.960859 14.4566 0.585786 14.0815C0.210714 13.7065 0 13.1978 0 12.6673V5.33398C0 4.80355 0.210714 4.29484 0.585786 3.91977C0.960859 3.5447 1.46957 3.33398 2 3.33398H4.30988L5.4453 1.63085ZM6.35679 2.66732L5.22137 4.37045C5.09772 4.55592 4.88957 4.66732 4.66667 4.66732H2C1.82319 4.66732 1.65362 4.73756 1.5286 4.86258C1.40357 4.9876 1.33333 5.15717 1.33333 5.33398V12.6673C1.33333 12.8441 1.40357 13.0137 1.5286 13.1387C1.65362 13.2637 1.82319 13.334 2 13.334H14C14.1768 13.334 14.3464 13.2637 14.4714 13.1387C14.5964 13.0137 14.6667 12.8441 14.6667 12.6673V5.33398C14.6667 5.15717 14.5964 4.9876 14.4714 4.86258C14.3464 4.73756 14.1768 4.66732 14 4.66732H11.3333C11.1104 4.66732 10.9023 4.55592 10.7786 4.37045L9.64321 2.66732H6.35679Z"/>
-									<path fill-rule="evenodd" clip-rule="evenodd" d="M7.99984 6.66732C6.89527 6.66732 5.99984 7.56275 5.99984 8.66732C5.99984 9.77189 6.89527 10.6673 7.99984 10.6673C9.10441 10.6673 9.99984 9.77189 9.99984 8.66732C9.99984 7.56275 9.10441 6.66732 7.99984 6.66732ZM4.6665 8.66732C4.6665 6.82637 6.15889 5.33398 7.99984 5.33398C9.84079 5.33398 11.3332 6.82637 11.3332 8.66732C11.3332 10.5083 9.84079 12.0007 7.99984 12.0007C6.15889 12.0007 4.6665 10.5083 4.6665 8.66732Z"/>
-								</svg>
-							</span>
-						</label>
-						<label for="cover" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 non_active">
-							<span>
-								<i class="fa-solid fa-users-rays fw-bold"></i>
-							</span>
-						</label>
-					</div>
-				</div>
-				<div class="lc jg yl bn cn it _t xr">
-					<div class="pdp h -ud-top-14 qa jd yd sf th ri jj qo us ws">
-						<img src={{ (autre_profil[0].getPhotoProfil != null) ?  autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}"/>
-					</div>
-					<div class="yd iu">
-						<div class="wb mg qg ss">
-							<div class="zb qs">
-								<h4 class="xb qn wn zn gs">
-									{{ autre_profil[0].getFirstname }} {{ autre_profil[0].getLastname }}
-								</h4>
-								<p class="mn un">
-									{{status_tribuT_autre_profil}}
-								</p>
-							</div>
+	<div class="nh">
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv hm hv">
+			<div class="sk bu 2xl:ud-p-11 account-profil-conected">
+				<!-- ====== Profile Section Start -->
+				<div class="overflow-hidden qh qo nj" id="content-apropos-profile">
+					<div class="h ka id ts st">
+						<img src="https://www.yseulis.com/wp-content/uploads/2018/02/5-0_finance_1600.jpg" alt="" class="vc yd qk rk li mi"/>
+						<div class="g y-photo o la d-flex">
+							<nav class="navbar navbar-expand-lg navbar-light mb-4 w-50">
+								<div class="container-fluid">
+									<div class="collapse navbar-collapse" id="navbarProfil">
+										<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+											<li class="nav-item">
+													<label for="cover" class=" bg-pdp-profil  lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 apropos_pdp" data-target="apropos_pdp">
+														<span>
+															<i class="bi bi-info-circle fils" data-target="apropos_pdp"></i>
+														</span>
+													</label>
+											</li>
+											<li class="nav-item ">
+													<label for="cover" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 gallery_profil" data-target="gallery_profil">
+														{# <input type="file" name="cover" id="cover" class="d"/> #}
+														<span>
+															<svg width="16" height="16" viewbox="0 0 16 16" class="fils hk" data-target="gallery_profil">
+																<path fill-rule="evenodd" clip-rule="evenodd" class="fils" data-target="gallery_profil" d="M5.4453 1.63085C5.56894 1.44539 5.7771 1.33398 6 1.33398H10C10.2229 1.33398 10.4311 1.44539 10.5547 1.63085L11.6901 3.33398H14C14.5304 3.33398 15.0391 3.5447 15.4142 3.91977C15.7893 4.29484 16 4.80355 16 5.33398V12.6673C16 13.1978 15.7893 13.7065 15.4142 14.0815C15.0391 14.4566 14.5304 14.6673 14 14.6673H2C1.46957 14.6673 0.960859 14.4566 0.585786 14.0815C0.210714 13.7065 0 13.1978 0 12.6673V5.33398C0 4.80355 0.210714 4.29484 0.585786 3.91977C0.960859 3.5447 1.46957 3.33398 2 3.33398H4.30988L5.4453 1.63085ZM6.35679 2.66732L5.22137 4.37045C5.09772 4.55592 4.88957 4.66732 4.66667 4.66732H2C1.82319 4.66732 1.65362 4.73756 1.5286 4.86258C1.40357 4.9876 1.33333 5.15717 1.33333 5.33398V12.6673C1.33333 12.8441 1.40357 13.0137 1.5286 13.1387C1.65362 13.2637 1.82319 13.334 2 13.334H14C14.1768 13.334 14.3464 13.2637 14.4714 13.1387C14.5964 13.0137 14.6667 12.8441 14.6667 12.6673V5.33398C14.6667 5.15717 14.5964 4.9876 14.4714 4.86258C14.3464 4.73756 14.1768 4.66732 14 4.66732H11.3333C11.1104 4.66732 10.9023 4.55592 10.7786 4.37045L9.64321 2.66732H6.35679Z"/>
+																<path fill-rule="evenodd" clip-rule="evenodd" class="fils" data-target="gallery_profil" d="M7.99984 6.66732C6.89527 6.66732 5.99984 7.56275 5.99984 8.66732C5.99984 9.77189 6.89527 10.6673 7.99984 10.6673C9.10441 10.6673 9.99984 9.77189 9.99984 8.66732C9.99984 7.56275 9.10441 6.66732 7.99984 6.66732ZM4.6665 8.66732C4.6665 6.82637 6.15889 5.33398 7.99984 5.33398C9.84079 5.33398 11.3332 6.82637 11.3332 8.66732C11.3332 10.5083 9.84079 12.0007 7.99984 12.0007C6.15889 12.0007 4.6665 10.5083 4.6665 8.66732Z"/>
+															</svg>
+														</span>
+													</label>
+											</li>
+											<li class="nav-item non_active">
+													<label for="cover" class="disabled-link lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 non_active">
+														<span>
+															<i class="fa-solid fa-users-rays fw-bold"></i>
+														</span>
+													</label>
+											</li>
+
+										</ul>
+									</div>
+								</div>
+							</nav>
 						</div>
-						<div class="yd">
-							<div class="card-body p-4 text-black apropos_profil" style="display: block;">
-								<div class="">
-									<p class="lead fw-bolder mb-1" lng-tag="apropos">A propos
-										
+					</div>
+					<div class="lc jg yl bn cn it _t xr">
+						<div class="pdp h -ud-top-14 qa jd yd sf th ri jj qo us ws">
+							<img src={{ (autre_profil[0].getPhotoProfil != null) ? autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}"/>
+						</div>
+						<div class="yd iu">
+							<div class="wb mg qg ss">
+								<div class="zb qs">
+									<h4 class="xb qn wn zn gs">
+										{{ autre_profil[0].getFirstname }}
+										{{ autre_profil[0].getLastname }}
+									</h4>
+
+									<p class="mn un">
+										{{status_tribuT_autre_profil}} du département  {{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}
 									</p>
-									<a>
+								</div>
+							</div>
+							<div class="yd  content-profil-navs apropos_pdp" id="apropos_pdp">
+								<div class="card-body p-4 text-black apropos_profil">
+									<div class="">
+										<p class="lead fw-bolder mb-1" lng-tag="apropos">A propos
+
+										</p>
+										<a>
+											<div class="row fw-light">
+												<div class=" p-4" style="background-color: #f8f9fa;">
+													<p class="font-italic mb-1">
+														<i class="bi bi-briefcase"></i>
+														<span class="fw-light">Categories:</span>
+														{{ type }}
+													</p>
+													<p class="font-italic mb-1">
+														<i class="bi bi-geo-alt"></i>
+														Addresse:
+														{{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
+													</p>
+													<p class="font-italic mb-1">
+														<i class="bi bi-mailbox"></i>
+														Code Postal:
+														{{autre_profil[0].getCodePostal }}
+													</p>
+													<p class="font-italic mb-1">
+														<i class="bi bi-mailbox"></i>
+														Commune:
+														{{autre_profil[0].getCommune }}
+													</p>
+													<p class="font-italic mb-1">
+														<i class="bi bi-telephone"></i>
+														Telephone Mobile:
+														{{ autre_profil[0].getTelephone }}
+													</p>
+													<p class="font-italic mb-1">
+														<i class="bi bi-telephone-inbound"></i>
+														Telephone Fixe:
+														{{ autre_profil[0].getTelFixe }}
+													</p>
+												</div>
+											</div>
+										</a>
+									</div>
+									<a></a>
+								</div>
+								<div class="card-body p-4 text-black apropos_profil" style="display: block;">
+									<div class="mb-5">
+										<p class="lead fw-bolder mb-1">Tribu</p>
 										<div class="row fw-light">
-											<div class=" p-4" style="background-color: #f8f9fa;">
+											<div class="p-4" style="background-color: #f8f9fa;">
 												<p class="font-italic mb-1">
-													<i class="bi bi-briefcase"></i>
-													<span class="fw-light">Categories:</span>
-													{{ type }}
+													<i class="bi bi-collection"></i>
+													Groupe :
+													<span class="text-primary">{{tributG.profil.name }}</span>
 												</p>
+
 												<p class="font-italic mb-1">
-													<i class="bi bi-geo-alt"></i>
-													Addresse: {{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
-												</p>
-												<p class="font-italic mb-1">
-													<i class="bi bi-mailbox"></i>
-													Code Postal: {{autre_profil[0].getCodePostal }}
-												</p>
-												<p class="font-italic mb-1">
-													<i class="bi bi-mailbox"></i>
-													Commune: {{autre_profil[0].getCommune }}
-												</p>
-												<p class="font-italic mb-1">
-													<i class="bi bi-telephone"></i>
-													Telephone Mobile:  {{ autre_profil[0].getTelephone }}
-												</p>
-												<p class="font-italic mb-1">
-													<i class="bi bi-telephone-inbound"></i>
-													Telephone Fixe:  {{ autre_profil[0].getTelFixe }}
+													<i class="bi bi-geo-alt-fill"></i>
+													{{tributG.profil.description}}
 												</p>
 											</div>
-										</div>
-									</a>
-								</div>
-								<a></a>
-							</div>
-							<div class="card-body p-4 text-black apropos_profil" style="display: block;">
-								<div class="mb-5">
-									<p class="lead fw-bolder mb-1">Tribu</p>
-									<div class="row fw-light">
-										<div class="p-4" style="background-color: #f8f9fa;">
-											<p class="font-italic mb-1">
-												<i class="bi bi-collection"></i>
-												Groupe :
-												 <span class="text-primary">{{tributG.profil.name }}</span>
-											</p>
 
-											<p class="font-italic mb-1">
-												<i class="bi bi-geo-alt-fill"></i>
-												{{tributG.profil.description}}
-											</p>
 										</div>
-
 									</div>
 								</div>
 							</div>
+							<div id="gallery_profil" class="gallery-container mx-auto content-profil-navs gallery_profil">
+								<div class="row me-auto">
+									<p class="lead fw-bolder mb-1 col-6" lng-tag="apropos">Vos photo</p>
+									{% if app.user.id == app.request.get('user_id') %}
+										<div class="px-3 col-2 non_active" id="add-item">
+											<a href="#add_photos" class="btn btn-secondary disabled-link" style="width: 150px;text-decoration:none;" onclick="">
+												<label class="input-file" for="fileInputProfil_add"  style="z-index: 1;cursor:pointer;">
+												<p class="mb-1"><i class="bi bi-camera-fill"></i> Ajouter </p>
+												<input id="fileInputProfil_add" type="file" name="photo" style="display:none;">
+												
+											</label>
+												
+											</a>
+										</div>
+									{% endif %}
+										
+									{# <div class="px-3 col-2" id="gallery-item">
+										<a  style="text-decoration:none;">
+											<p class="mb-1">{{images|length}}</p>
+											<p class="small text-muted mb-0">Photos</p>
+										</a>
+									</div> #}
+								</div>
+								
+								{# <button class="float-end btn btn-primary"><i class="fas fa-camera"></i> Ajouter</button> #}
+								{# <div id="gallery"> 
+									{% for img in images %}
+										{% set imgç_path = img|split('public/', 2)[1] %}
+										<img src="{{asset(imgç_path)}}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+
+									{% endfor %}
+								</div> #}
+								<div id="gallery">
+									<div class="row">
+										{% for img in images %}
+											{% set imgç_path = img|split('public/', 2)[1] %}
+											<div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+												<img
+												src="{{asset(imgç_path)}}" 
+												class="w-100 shadow-1-strong  mb-4"
+												 data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)"
+												/>
+											</div>
+										{% endfor %}
+										
+									</div>
+								</div>
+							</div>
+
 						</div>
 					</div>
+					
 				</div>
+
+
+				<!-- ====== Profile Section End -->
 			</div>
-			<!-- ====== Profile Section End -->
-		</div>
-	</main>
-	<!-- ===== Main Content End ===== -->
+		</main>
+		<!-- ===== Main Content End ===== -->
 
 
-	{# </div>
-	
-	
-	<!-- Modal show photo-->
-	<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-lg">
-		<div class="modal-content">
-		<div class="modal-body">
-		<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-			<img id="img_modal" style="width:100%">
-		</div>
-		
-		</div>
+		{# </div>
+					
+					
+					<!-- Modal show photo-->
+					<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered modal-lg">
+						<div class="modal-content">
+						<div class="modal-body">
+						<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+							<img id="img_modal" style="width:100%">
+						</div>
+						
+						</div>
+					</div>
+					</div> #}
 	</div>
-	</div> #}
-</div>
 
 
 {% endblock %}

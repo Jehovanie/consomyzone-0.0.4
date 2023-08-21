@@ -1,5 +1,5 @@
 #calendar {
-  max-width: 900px;
+  max-width: 75vw;
   margin: 0 auto;
 }
 
@@ -61,3 +61,60 @@
   cursor: not-allowed !important;
 
 }
+
+.ulAgenda{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ulAgenda li{
+  list-style: none;
+  background-color: #ffffff;
+  width: 20vw;
+  height: 10vh;
+  margin-left: 10%;
+  margin-bottom: 20px;
+  margin-top: 15px;
+  border-radius: 30px;
+  box-shadow: 0px 10px 15px rgba(49, 49, 49, 0.3);
+  font-size: 11pt;
+}
+
+.ulAgenda li a .container-depart{
+  margin: auto auto auto auto;
+}
+
+.ulAgenda li a .container-depart svg{
+  fill: #28BE21;
+}
+
+#listRestoOrGolfModal .list_resto_or_golf > table > tbody > tr > td > img{
+  max-height: 30px;
+  max-width: 30px;
+}
+
+.content_etab_detail > p{
+  padding-left: 4% !important;
+}
+
+.content_etab_detail > p > a{
+  color: #19a8d8 !important;
+}
+
+.fc-day-top{
+  cursor: pointer !important;
+}
+
+.fc-day{
+  cursor: pointer !important;
+}
+
+.fc-content-skeleton table tbody tr td{
+  cursor: pointer !important;
+}
+
+.fc-day-grid-event .fc-content {
+  white-space: normal;
+}
+

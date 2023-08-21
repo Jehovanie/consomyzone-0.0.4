@@ -11,7 +11,8 @@ function getDetailFromListLeft(nom_dep, id_dep, id_resto) {
             var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
             location.assign(pathDetails)
         } else {
-            getDetailResto(id_dep, nom_dep, id_resto, false)
+            const select_dem = document.querySelector("#open-navleft-resto-spec-mobile")
+            getDetailResto(id_dep, nom_dep, id_resto, false,select_dem)
         }
 
         /// update card and the markers new

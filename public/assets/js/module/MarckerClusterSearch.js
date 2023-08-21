@@ -8,7 +8,7 @@ class MarckerClusterSearch extends MapModule  {
         }
     }
 
-    async onInit() {
+    async onInit(isAddControl=false) {
         const url = new Request(url_test.href.replace("search", 'api/search'));
         try {
             // this.getGeos()
@@ -20,7 +20,7 @@ class MarckerClusterSearch extends MapModule  {
 
             // this.map = await create_map_content(this.geos, this.id_dep, "search");
             const firstData= this.data.results[0][0]
-            this.initMap(firstData.lat, firstData.long);
+            this.initMap(firstData.lat, firstData.long, isAddControl);
 
             this.bindAction();
 

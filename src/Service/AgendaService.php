@@ -468,17 +468,27 @@ class AgendaService extends PDOConnexionService
      */
 
     public function createEvent($nom_table_agenda,$agenda) {
+
         extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
         $statement = $this->getPDO()->prepare(
-            "INSERT INTO $nom_table_agenda (title, message, type, status, restaurant, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
-            values (:title, :message, :type, :status, :restaurant, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
+            "INSERT INTO $nom_table_agenda (title, name, description, isEtabCMZ, isGolfCMZ, isRestoCMZ, type, status, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
+            values (:title, :name, :description, :isEtabCMZ, :isGolfCMZ, :isRestoCMZ, :type, :status, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
         );
+
+        if(!$isEtabCMZ){
+            $isGolfCMZ = false;
+            $isRestoCMZ = false;
+        }
+
         $statement->bindParam(':title', $title);
-        $statement->bindParam(':message', $message);
+        $statement->bindParam(':name', $name);
+        $statement->bindParam(':description', $description);
+        $statement->bindParam(':isEtabCMZ', $isEtabCMZ);
+        $statement->bindParam(':isGolfCMZ', $isGolfCMZ);
+        $statement->bindParam(':isRestoCMZ', $isRestoCMZ);
         $statement->bindParam(':type', $type);
         $statement->bindParam(':status', $status);
-        $statement->bindParam(':restaurant', $restaurant);
         $statement->bindParam(':adresse', $adresse);
         $statement->bindParam(':file_type', $file_type);
         $statement->bindParam(':file_path', $file_path);
@@ -487,6 +497,45 @@ class AgendaService extends PDOConnexionService
         $statement->bindParam(':heure_debut', $heureStart);
         $statement->bindParam(':heure_fin', $heureEnd);
         $statement->bindParam(':max_participant', $participant);
+
+        $result = $statement->execute();
+
+        return $result;
+
+    }
+
+    public function updateEventCalendar($nom_table_agenda,$agenda, $agendaId) {
+
+        extract($agenda); 
+
+        $statement = $this->getPDO()->prepare(
+            "UPDATE $nom_table_agenda SET title=?, name=?, description=?, isEtabCMZ=?, isGolfCMZ=?, 
+            isRestoCMZ=?, type=?, status=?, adresse=?, file_type=?, file_path=?, dateStart=?, 
+            dateEnd=?, heure_debut=?, heure_fin=?, max_participant=? WHERE id=?"
+        );
+
+        if(!$isEtabCMZ){
+            $isGolfCMZ = false;
+            $isRestoCMZ = false;
+        }
+
+        $statement->bindParam(1, $title);
+        $statement->bindParam(2, $name);
+        $statement->bindParam(3, $description);
+        $statement->bindParam(4, $isEtabCMZ);
+        $statement->bindParam(5, $isGolfCMZ);
+        $statement->bindParam(6, $isRestoCMZ);
+        $statement->bindParam(7, $type);
+        $statement->bindParam(8, $status);
+        $statement->bindParam(9, $adresse);
+        $statement->bindParam(10, $file_type);
+        $statement->bindParam(11, $file_path);
+        $statement->bindParam(12, $dateStart);
+        $statement->bindParam(13, $dateEnd);
+        $statement->bindParam(14, $heureStart);
+        $statement->bindParam(15, $heureEnd);
+        $statement->bindParam(16, $participant);
+        $statement->bindParam(17, $agendaId);
 
         $result = $statement->execute();
 
@@ -561,8 +610,14 @@ class AgendaService extends PDOConnexionService
             $temps= [
                 "id" => $agenda['id'],
                 "title" =>($agenda["title"]) ? $agenda["title"] : substr($agenda["message"], 0, 15) . "...",
+                "type" => $agenda["type"],
+                "name" => $agenda["name"],
+                "description" => $agenda["description"],
+                "adresse" => $agenda["adresse"],
+                "isEtabCMZ" => $agenda["isEtabCMZ"],
+                "isGolfCMZ" => $agenda["isGolfCMZ"],
+                "isRestoCMZ" => $agenda["isRestoCMZ"],
                 "dateStart" => $agenda["dateStart"],
-                "type" => json_decode($agenda["type"], true)['type'],
                 "dateEnd" => $agenda["dateEnd"],
                 "timeStart" => $agenda["heure_debut"],
                 "timeEnd" => $agenda["heure_fin"],
@@ -629,21 +684,25 @@ class AgendaService extends PDOConnexionService
      */
     public function createTableAgenda($table_agenda_name){
         $sql= "CREATE TABLE $table_agenda_name (".
-            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+            "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
             "`title` varchar(255) NOT NULL,".
-            "`message` text NOT NULL,".
-            "`type` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`type`)),".
-            "`adresse` varchar(255) NOT NULL,".
-            "`restaurant` varchar(255) DEFAULT NULL,".
+            "`description` text NOT NULL,".
+            "`type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
-            "`dateStart` date NOT NULL DEFAULT current_timestamp(),".
-            "`dateEnd` date NOT NULL DEFAULT current_timestamp(),".
+            "`adresse` varchar(255) NOT NULL,".
+            "`name` varchar(255) DEFAULT NULL,".
+            "`restaurant` varchar(255) DEFAULT NULL,".
+            "`dateStart` date DEFAULT NULL,".
+            "`dateEnd` date DEFAULT NULL,".
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
             "`file_type` varchar(40) DEFAULT NULL,".
             "`file_path` varchar(500) DEFAULT NULL,".
             "`status` tinyint(1) NOT NULL DEFAULT 0,".
             "`max_participant` int(11) NOT NULL DEFAULT 0".
+            "`isEtabCMZ` tinyint(1) NOT NULL DEFAULT 0,".
+            "`isGolfCMZ` tinyint(1) NOT NULL DEFAULT 0,".
+            "`isRestoCMZ` tinyint(1) NOT NULL DEFAULT 0,".
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
