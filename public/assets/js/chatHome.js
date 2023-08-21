@@ -737,7 +737,7 @@ function generateUID() {
 // On https://jaas.8x8.vc/
 
 const domain = '8x8.vc'
-const jwt = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIzNTYzMjQsImV4cCI6MTY5MjM2MzUyNCwibmJmIjoxNjkyMzU2MzE5LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.XIK8nb7dpy6IsZuu3KatWMz3rh1hFpe0ubi6uCTIwKMrAbT1sqaPP-l88WXhULYSoXatGeOAoM99reg85mcnjUMd16lQbaUuSkgQvuOE1ie1lojA2cCP7TDI9fnZxCLwIH9A-LOkzWFDN4EJFXwBwVF9enBvK4VKSeFbmoXwi7WXz0wgT8eUCpa9pvn99J7f3TUcgkDy10zyyqlZvy21OGDASWoWG5uV1Bj6Ew-EIOxlQ94yL3rdu1jWHdtYX8ZX6sIDlVUDmdu35MuvLcPgrgBE4p1B5UI4eK8zkiTvq49Inpm3uILWutjvSIHwfG5YCRLz9LGfKnQTxLG_-bEcbQ'
+const jwt = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIzNjQyNTksImV4cCI6MTY5MjM3MTQ1OSwibmJmIjoxNjkyMzY0MjU0LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.okmk_AhIG9UGctHzGDC60F14QDucn3ETMskx1iflinpJYwTcgrQ0u4_WzgWYMAsb0GctrsEvZSNbTBm-ZAurTrYCJWv133M5oJglXMfXTILo4_CEE-thJdTABuwp9shrIun7bEtoWah4vgH0K4nA4mmrRx9q6GxwRPzmgCIU71YApPgb8tQe87X17EeV_SIUk4w6f4Q2JvDaO4y_uATS5yIoJP0qcth8wuot4fOljREap9aWZnhUdg_2on5M5PIhoAayEm-RhPclEI5pWLO9V9_TyBXeYJxFtM_VBK9eIcirKQjzYDSxE3ayWW4F9wOGmfBfyGz_EHQ-V0XwDBf5UQ'
 const home_room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'
 
 /**
@@ -1225,7 +1225,7 @@ if (document.querySelector("#openVisio")) {
 
                         document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
                             <p class="qb-chat mn un mt-4">
-                                ${my_id==meet.from?meet.username +"(moi)" : meet.username}
+                                ${my_id==meet.from?meet.username +"(vous)" : meet.username}
                             </p>
                             <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
                             <p class="text-${color} mb-2">
@@ -1369,7 +1369,7 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
 
             let user_name = e.target.textContent.trim()
 
-            document.querySelector("#user_name_chat").innerText = user_name
+            // document.querySelector("#user_name_chat").innerText = user_name
 
         //     document.querySelector('#visio').innerHTML = `
 
