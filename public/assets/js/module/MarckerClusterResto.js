@@ -4,7 +4,7 @@ class MarckerClusterResto extends MapModule  {
         super(id_dep,nom_dep, "resto")
     }
 
-    async onInit(){
+    async onInit(isAddControl=false){
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
@@ -14,7 +14,7 @@ class MarckerClusterResto extends MapModule  {
             this.default_data= await response.json();
             this.data= this.default_data; 
             
-            this.initMap();
+            this.initMap(null, null, isAddControl);
 
             this.bindAction()
         }catch(e){

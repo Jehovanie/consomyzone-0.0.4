@@ -27,7 +27,7 @@
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/filter_a-z_asc_desc.js') }}" defer></script>
 
 	<script type="text/javascript" src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
-    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
 
 {% endblock %}
 
@@ -42,11 +42,15 @@
         <div class="responsif-none">
             {% include 'shard/navbar.twig' %}
         </div>
-		<div class="">
-			<div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-spec-mobile"  onclick=" {% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}">
-                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                 width="10vw" height="10vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
-
+		<div>
+            {% if (app.user) %}
+                <div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-spec-mobile"  onclick=" {% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+            {% else %}
+                <div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-spec-mobile"  onclick=" {% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}" >
+            {% endif %}   
+			<div class="d-flex content_cart_map content_cart_map_jheo_js">
+				<div class="cart_map cart_map_js cart_map_js_jheo cart_map_jheo_js">
+                {# <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="10vw" height="10vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
                     <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
                         <path d="M350 930 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
                             -56 20 l-49 0 0 -40z"/>
@@ -77,13 +81,8 @@
                         <path d="M560 300 l0 -40 49 0 c41 0 51 4 56 20 3 11 3 29 0 40 -5 16 -15 20
                         -56 20 l-49 0 0 -40z"/>
                     </g>
-                </svg>
-            </div>
+                </svg> #}
 
-            {{ include('shard/restaurant/detail_resto_navleft.html.twig') }}
-
-			<div class="content_cart_map">
-				<div class="cart_map cart_map_js cart_map_js_jheo">
 					<div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
                         <div class="containt">
                             <div class="word word-1">C</div>
@@ -91,7 +90,6 @@
                             <div class="word word-3">Z</div>
                         </div>
 					</div>
-					<div id="list-spesific-resto"></div>
 					{# <div id="map" class="map"></div> #}
 				</div>
 			</div>
@@ -101,6 +99,8 @@
         <div class="FtBjOlVf" data-dem="2ahUK:Ewip3tqU6Ob7AhW3gc:4B.{{app.user.id}}H:bAUBJQQ-EN6BAhzEAo"></div>
     {% endif %}
 
+
+    {{ include('shard/restaurant/detail_resto_navleft.html.twig') }}
     {{ include('shard/chatBot.html.twig') }}
     {{ include('shard/restaurant/list_avis.html.twig') }}
     {{ include('shard/restaurant/modal_avis_resto.html.twig') }}

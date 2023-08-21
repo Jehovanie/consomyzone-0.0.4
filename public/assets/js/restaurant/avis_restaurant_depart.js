@@ -1,16 +1,21 @@
+let currentUserId = 0
 window.addEventListener('load', () => {
     // const idRestaurant = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
     const idRestaurant = document.querySelector("#details-coord") ? document.querySelector("#details-coord").getAttribute("data-toggle-id-resto") : null
-    let currentUserId = 0
-    if(document.querySelector(".FtBjOlVf"))
-        currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
-    // if (document.querySelector(".FtBjOlVf") != null)
-    //      showModifArea(idRestaurant,currentUserId)
     
-    // if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
-    //     showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
-    //     showNoteGlobale(idRestaurant)
+    if (document.querySelector(".FtBjOlVf")) {
+        currentUserId = parseInt(document.querySelector(".FtBjOlVf").dataset.dem.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10) 
+    }
+    // if (document.querySelector(".FtBjOlVf") != null) {
+        
+    //     showModifArea(idRestaurant,currentUserId)
     // }
+        //  console.log(idRestaurant)
+    
+    if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
+        showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
+        showNoteGlobale(idRestaurant)
+    }
     if(document.querySelector(".content_one_cta"))
         currentUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
 
@@ -88,17 +93,7 @@ window.addEventListener('load', () => {
         
         
     }
-    // if(document.querySelector("#see-tom-js")){
-    //     document.querySelector("#see-tom-js").onclick = () => {
-    //         const d=document.querySelectorAll(".fIQYlf")
-    //         if(d.length > 0){
-    //             d.forEach(i=>{
-    //                 i.parentNode.removeChild(i)
-    //             })
-    //         }
-    //         showAvis(currentUserId,idRestaurant) 
-    //     }
-    // }
+    
 
     if (document.querySelector("#UpDate-Avis-tom-js")) {
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 
@@ -172,19 +167,34 @@ function showNoteGlobale(idRestaurant) {
                 for (let json of jsons) {
                     totalNote+=parseFloat(json["note"])
                 }
+                console.log(totalNote)
                 globalNote = totalNote / jsons.length
                 createGlobalNote(globalNote)
+
             }
+
         })
     })
 }
+
+function showListAvie() {
+    const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+    const d=document.querySelectorAll(".fIQYlf")
+        if(d.length > 0){
+            d.forEach(i=>{
+                i.parentNode.removeChild(i)
+            })
+        }
+        showAvis(currentUserId, newIdResto) 
+}
+
 
 
 function createGlobalNote(globalNote) {
     let rankRange = [0, 1, 2, 3, 4]
     // let stars = document.querySelectorAll("body > main > div.content_global > div > "+
     //     "div.content_home > div.left_content_home > div > div > div.content_note > div.start > i")
-    let stars = document.querySelectorAll("#details-coord > div.content_note > div.start > i")
+    let stars = document.querySelectorAll("#details-coord > div.p-4 > div.content_note > div.start > i")
     for (let star of stars) {
         if (rankRange.includes(parseInt(star.dataset.rank, 10))) {
             if(parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
@@ -240,14 +250,15 @@ function msgFlash(msg,target) {
     
 }
 
-function showAvis(currentUserId,idRestaurant) {
+function showAvis(currentUserId, idRestaurant) {
     fetch(`/avis/restaurant/global/${idRestaurant}`, {
         methode:"GET"
     }).then(r => {
         r.json().then(jsons => {
             if (jsons) {
                 for (let json of jsons) {
-                    createShowAvisAreas(json,currentUserId)
+                    createShowAvisAreas(json, currentUserId)
+                   
                 }
             }
         })
@@ -255,7 +266,8 @@ function showAvis(currentUserId,idRestaurant) {
 
 }
 
-function showModifArea(idRestaurant,currentUserId) {
+function showModifArea(idRestaurant, currentUserId) {
+    
     fetch(`/avis/restaurant/${idRestaurant}`)
         .then(r => r.json())
         .then(jsons => {

@@ -5,10 +5,13 @@
 {% endblock %}
 
 {% block stylesheets %}
+
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/core/main.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/daygrid/main.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+	{# <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}"> #}
 {% endblock %}
 
 
@@ -18,7 +21,9 @@
         <script src="{{asset('assets/js/agenda/fullCalandar/core/main.js')}}" defer></script>
         <script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
         <script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
         <script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         
 {% endblock %}
 

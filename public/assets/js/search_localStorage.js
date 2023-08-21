@@ -11,6 +11,6 @@ if( linkPathname.includes("/restaurant")){
     localStorage.setItem("type", "ferme");
 }else if( linkPathname.includes("/station")){
     localStorage.setItem("type", "station");
-}else if( linkPathname.length === 1  ||  linkPathname.includes("/search/tous") ){
+}else if( linkPathname.length === 1  ||  linkPathname.includes("/search/tous") ||  linkPathname.includes("/golf") ){
     localStorage.setItem("type", "tous");
 }

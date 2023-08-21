@@ -826,6 +826,27 @@ if (document.querySelector(".open-navleft-station-spec")) {
     })
 }
 
+if (document.querySelector("#close-list-depart-golf-spec")) {
+    document.querySelector("#close-list-depart-golf-spec").addEventListener("click", () => {
+        document.querySelector(".content_navleft_spec_jheo_js").style.display="none"
+        iconsChange()
+    })
+}
+
+if( document.querySelector(".icon_close_nav_left_jheo_js")){
+    document.querySelector(".icon_close_nav_left_jheo_js").addEventListener('click' , () => {
+        document.querySelector(".content_navleft_jheo_js").style.display="none"
+        iconsChange()
+    })
+}
+
+if( document.querySelector(".open_nav_left_jheo_js")){
+    document.querySelector(".open_nav_left_jheo_js").addEventListener("click", () => {
+        document.querySelector(".content_navleft_jheo_js").style.display="block";
+        iconsChange()
+    })
+}
+
 if (document.querySelector("#menu-mobile")) {
     document.querySelector("#menu-mobile").onclick = () => {
         if (document.querySelector("#container-mobile")) {
@@ -866,33 +887,11 @@ if (document.querySelector(".list-nav-bar")) {
         document.querySelector("#resto-page").classList.add("active");
     }else if( activPage.includes("/station")){
         document.querySelector("#station-page").classList.add("active");
+    }else if( activPage.includes("/golf")){
+        document.querySelector("#golf-page").classList.add("active");
     }else if(activPage.length === 1 ){
         document.querySelector("#tous-page").classList.add("active");
     }
-    // const links = document.querySelectorAll('.list-nav-bar');
-    // const specFerm = document.querySelector('.result_container_ferme_spec_js')
-    // const specReto = document.querySelector('.result_container_resto_spec_js')
-    // const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
-    // const specStation = document.querySelector('.result_container_station_spec_js')
-    // const tous = document.querySelector('.content_tous_js_jheo')
-    
-    // if (links.length) {
-    //     links.forEach((link) => {
-    //         if (link.href.includes(`${activPage}`)) {
-    //             link.classList.add("active");
-    //         } else if (specFerm) {
-    //             document.querySelector("#ferme-page").classList.add("active");
-    //         } else if (specReto) {
-    //             document.querySelector("#resto-page").classList.add("active");
-    //         } else if (specRestoArrond) {
-    //             document.querySelector("#resto-page").classList.add("active");
-    //         } else if (specStation) {
-    //             document.querySelector("#station-page").classList.add("active");
-    //         }else if(tous ){
-    //             document.querySelector("#station-page").classList.add("active");
-    //         }
-    //     });
-    // }
 }
 
 
@@ -905,3 +904,5 @@ if( document.querySelector('.btn_close_comment_jheo_js') || document.querySelect
         })
     })
 }
+
+

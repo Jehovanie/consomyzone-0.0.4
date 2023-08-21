@@ -8,7 +8,7 @@
  * @constructor
  */
 function openChat() {
-    document.querySelector("#chat_container").style = "width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px !important; z-index:1003;"
+    document.querySelector("#chat_container").style = "width:58vw;height:82vh; position: fixed;bottom: 0; right: -260px; z-index:1003;"
     document.querySelector("#openChat").style = "background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     document.querySelector("#chat_header").style = "display:;"
     document.querySelector("#amis_list").style = "display:;"
@@ -60,6 +60,7 @@ function closeChat() {
  */
 function endChat() {
     document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -320px; z-index:1003;background-color:transparent;"
+    document.querySelector("#chat_container").classList.add("right_full")
     document.querySelector("#openChat").style = "background-color: #69BC45;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML = ""
 
@@ -74,6 +75,8 @@ function endChat() {
 
     document.querySelector("#chat_header").style = "display:none;"
     document.querySelector("#amis_list").style = "display:none;"
+    document.querySelector("#visio_group_btn").style = "display:none"
+
 
     if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0" && document.querySelector("#amis_list").getAttribute("data-my-id") == "0") {
 
@@ -83,7 +86,12 @@ function endChat() {
 
     if(document.querySelector("#chat_container").getAttribute("data-type") == "visio"){
 
-        // document.querySelector("#chat_container").style = "height:70px; position: fixed;bottom: 0; right: -20px !important; z-index:1003;background-color:transparent;"
+        document.querySelector("#chat_container").classList.remove("chat_container_visio")
+        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat").classList.remove("content_chat_visio")
+        document.querySelector("#amis_list > div").classList.remove("chat_friend_visio")
+        // document.querySelector("#visio_group_btn").style = "display:block;"
+        // document.querySelector("#visio").innerHTML = ""
+        document.querySelector("#visio").style.display = "none"
         // document.querySelector("#chat_container").style = "width: 75vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
 
     }
@@ -516,7 +524,7 @@ function getChat(user_id) {
 
                             file_doc += `<div class="mt-2 mb-2" style="display:flex;flex-direction: row;justify-content: space-between">
                                             <a href="${file}" download class="icon_download_file" alt="photo" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-file-text"></i></a>
-                                            <div class="text-center" style="width:85%; display:block; overflow:auto;">document${ext}</div>
+                                            <div class="text-center" style="width:85%; display:block; overflow:auto;">document.${ext}</div>
                                             <a href="${file}" download class="icon_download_file" alt="photo" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-download"></i></a>
                                             </div>`
 
@@ -673,6 +681,13 @@ function lanceChat() {
 
 }
 
+
+/**
+ * Function to get a extension file js
+ * @constructor
+ * @param {string} params 
+ * @returns string : extension
+ */
 function getExtension(params) {
 
     let final_ext = params
@@ -681,13 +696,32 @@ function getExtension(params) {
             final_ext = value;
         }
     })
-    //console.log(value));
 
     return final_ext;
-
-    //let key = Object.keys(file_extension)
 }
 
+/**
+ * Function updating a status of visio
+ * @constructor
+ * @param {integer} id 
+ * @param {string} status 
+ */
+function setStatusMeetById(id, status) {
+
+    fetch("/update/visio/"+id+"/"+status, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: "POST",
+    })
+}
+
+/**
+ * Function gerating a UID
+ * @constructor
+ * @returns {string} : UID 
+ */
 function generateUID() {
 
     var firstPart = (Math.random() * 46656) | 0;
@@ -695,34 +729,94 @@ function generateUID() {
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
+
 }
 
+// Value's declaration of Jitsi
+// Editing with Jitsi as a Service API (Jaas)
+// On https://jaas.8x8.vc/
+
+const domain = '8x8.vc'
+const jwt = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIzNjQyNTksImV4cCI6MTY5MjM3MTQ1OSwibmJmIjoxNjkyMzY0MjU0LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.okmk_AhIG9UGctHzGDC60F14QDucn3ETMskx1iflinpJYwTcgrQ0u4_WzgWYMAsb0GctrsEvZSNbTBm-ZAurTrYCJWv133M5oJglXMfXTILo4_CEE-thJdTABuwp9shrIun7bEtoWah4vgH0K4nA4mmrRx9q6GxwRPzmgCIU71YApPgb8tQe87X17EeV_SIUk4w6f4Q2JvDaO4y_uATS5yIoJP0qcth8wuot4fOljREap9aWZnhUdg_2on5M5PIhoAayEm-RhPclEI5pWLO9V9_TyBXeYJxFtM_VBK9eIcirKQjzYDSxE3ayWW4F9wOGmfBfyGz_EHQ-V0XwDBf5UQ'
+const home_room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'
+
+/**
+ * Function joining a meeting jitsi
+ * @constructor
+ * @param {integer} id : id of meet
+ * @param {string} room : roomname of meet
+ */
+function joinMeet(id, room) {
+
+    let user_name = document.querySelector("#my_full_name").textContent.trim()
+            
+    const options = {
+        roomName: home_room+room,
+        width: "100%",
+        height: "95%",
+        lang: 'fr',
+        jwt : jwt,
+        configOverwrite: { prejoinPageEnabled: false},
+        // configOverwrite: { prejoinPageEnabled: false , enableClosePage: false, toolbarButtons : ['microphone', 'camera','tileview','fullscreen', 'desktop', 'closedcaptions','participants-pane','hangup']},
+        interfaceConfigOverwrite: { VERTICAL_FILMSTRIP: true },
+        parentNode: document.querySelector('#visio'),
+    };
+
+    let api = new JitsiMeetExternalAPI(domain, options);
+
+    api.executeCommand('displayName', user_name);
+
+    setStatusMeetById(id,"progress")
+
+    const iframe = api.getIFrame();
+
+    iframe.scrollIntoView();
+
+    api.on('readyToClose', () => {
+
+        fetch("/getVisioByName/"+room)
+        .then(response=>response.json())
+        .then(visios=>{
+
+            if(visios.length > 0){
+
+                for(let visio of visios){
+
+                    setStatusMeetById(visio.id, "finished")
+
+                }
+            }
+            
+        })
+        
+        document.querySelector('#visio').innerHTML =""
+        document.querySelector("#user_name_chat").innerText ="VisioConférence"
+	})
+
+    api.addEventListener('participantJoined', (e)=>{
+
+        document.querySelector("#user_name_chat").innerText +=" avec "+ e.displayName+", "
+
+    })
+    
+}
+
+
+/**
+ * Function creating a meeting jitsi
+ * @constructor
+ * @param {integer} user_id : user_id of user
+ */
 function runVisio(user_id) {
 
-    //let room_name = room.previousElementSibling.querySelector("input").value.trim()
-    
-    let user_name = document.querySelector("#my_full_name").textContent.trim()
-    
-    let my_tribu_g = document.querySelector("#my_tribu_g").textContent.trim()
-    
-    // let list_user = []
-    
-    // document.querySelectorAll("#visio > div > ul > li").forEach(user=>{
-    //     list_user.push({
-    //         user_id : user.getAttribute("user_id_visio"),
-    //         status : "wait"
-    //     })
-    // })
-    
     let roomRandom = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-    // console.log(roomRandom);
+    
     let data = {
         roomName : roomRandom,
         to : user_id,
         status : "wait"
     }
 
-    console.log(data);
     const request = new Request('/create/visio', {
         method: "POST",
         headers: {
@@ -731,47 +825,21 @@ function runVisio(user_id) {
         },
         body: JSON.stringify(data)
     })
-
+    
     fetch(request)
         .then(response=>response.json())
         .then(response =>{
             // console.log(response.success == true)
             if(response.success == true){
 
-                document.querySelector('#visio').innerHTML = ""
-
-                const domain = 'meet.jit.si';
-            
-                const options = {
-                    roomName: roomRandom,
-                    width: "100%",
-                    height: 700,
-                    parentNode: document.querySelector('#visio'),
-                };
-                const api = new JitsiMeetExternalAPI(domain, options);
-                
-                api.executeCommand('displayName', user_name);
-
+                fetch("/getVisioByName/"+roomRandom)
+                    .then(response=>response.json())
+                    .then(visio=>{
+                        joinMeet(visio.id, roomRandom)
+                    })
             }
         })
-
     
-    
-
-    // api.executeCommand('hangup')
-
-    // api.addListener('videoConferenceJoined', () => {
-
-    //     const iframe = api.getIFrame();
-
-    //     const doc = iframe.contentWindow.document.querySelector("#videospace");
-
-    //     console.log(doc);
-
-       
-    //   });
-
-
 }
 /***********************Action*************** */
 
@@ -908,8 +976,7 @@ if (document.querySelector("#openMessage")) {
 
         document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:block;"
 
-
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px !important;"
+        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px;"
 
         document.querySelectorAll("div.user_friends").forEach(user => {
             user.style = "display:";
@@ -1060,6 +1127,12 @@ if (document.querySelector("#openVisio")) {
 
         openChat()
 
+        document.querySelector("#chat_container").classList.add("chat_container_visio")
+        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat").classList.add("content_chat_visio")
+        document.querySelector("#amis_list > div").classList.add("chat_friend_visio")
+
+        document.querySelector("#visio_group_btn").style = "display:;"
+
         document.querySelector("#assist_virt").style = "display:none;"
         document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
 
@@ -1077,13 +1150,12 @@ if (document.querySelector("#openVisio")) {
         })
 
         document.querySelector("div#user_head").innerHTML = `
-                            <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
-                                <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
+                            <div class="d-flex p-1 ps-0">
+                                <div">
                                     <i class="fas fa-video-camera" style="margin-top: 25%;font-size:27px;color:red;"></i>
-                                    <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
                                 </div>
                             </div>
-                            <div class="user-chat-display w-100" data-user-id="">
+                            <div class="user-chat-display p-2" data-user-id="">
                                 <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
                                 VisioConférence
                                 </h5>
@@ -1092,6 +1164,8 @@ if (document.querySelector("#openVisio")) {
         // document.querySelector('#conversation').innerHTML = ""
 
         document.querySelector('#visio').style="display:block"
+
+        let my_id = document.querySelector("#amis_list").getAttribute("data-my-id")
 
         // document.querySelector('#visio').innerHTML = `
         // <div class="container">
@@ -1110,6 +1184,63 @@ if (document.querySelector("#openVisio")) {
             
         // </div>`
 
+        const evtSource_meet = new EventSource("/get/myvisio");
+
+        //// event onmessage
+        evtSource_meet.onmessage = function (event) {
+
+            const all_meet = JSON.parse(event.data);
+
+            all_meet.forEach(meet => {
+
+                if(!document.querySelector('.meet_'+meet.id)){
+
+                    let stat = "manqué"
+                    let color = ""
+                    let btn_join = ""
+                    switch(meet.status) {
+                        case 'wait':
+                            stat = `en attente...`
+                            color = 'info'
+                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
+                          break;
+                        case 'progress':
+                            stat = `en cours`
+                            color = 'warning'
+                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
+                          break;
+                        case 'finished':
+                            stat = `términé`
+                            color = 'success'
+                          break;
+                        case 'missed':
+                            stat = `manqué`
+                            color = 'danger'
+                          break;
+                        default:
+                            stat = "manqué"
+                      }
+
+                    if(!document.querySelector("#visio > iframe")){
+
+                        document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
+                            <p class="qb-chat mn un mt-4">
+                                ${my_id==meet.from?meet.username +"(moi)" : meet.username}
+                            </p>
+                            <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                            <p class="text-${color} mb-2">
+                                <i class="fas fa-video-camera me-2 ms-1"></i>
+                                Appel ${stat}
+                                ${btn_join}
+                            </p> 
+                            </div>
+                            <p class="nn-chat float-end">${meet.date}</p>
+                        </div>`
+                    }
+
+                }
+            })
+        }
 
     })
 }
@@ -1233,7 +1364,12 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
 
         }else{
 
+            
             runVisio(amis.getAttribute("data-toggle-user-id"))
+
+            let user_name = e.target.textContent.trim()
+
+            document.querySelector("#user_name_chat").innerText = user_name
 
         //     document.querySelector('#visio').innerHTML = `
 

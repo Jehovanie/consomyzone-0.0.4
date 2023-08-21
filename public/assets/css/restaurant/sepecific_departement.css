@@ -4,7 +4,7 @@ main {
 }
 
 #map {
-    margin-left: 0rem !important;
+    width: 100% !important;
 }
 
 /* .element {

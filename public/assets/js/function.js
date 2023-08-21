@@ -1,6 +1,7 @@
 let firstX = 0
 let firstY = 0
 let marker_last_selected = null
+
 /*
 
 */
@@ -127,17 +128,20 @@ function addControlPlaceholders(map) {
 }
 
 ///jheo: dynamique icon for map leaflet. ---------
-function setIconn(urlIcon) {
+function setIconn(urlIcon, classIcon="", taille=0) {
+    // taille : 0: min, 1 : moyenne, 2 : max
+
     const url = new URL(window.location.href);
     var myIcon = L.icon({
         // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
         iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
-        iconSize: [32, 50],
+        iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
         iconAnchor: [11, 30],
         popupAnchor: [0, -20],
         //shadowUrl: 'my-icon-shadow.png',
         shadowSize: [68, 95],
-        shadowAnchor: [22, 94]
+        shadowAnchor: [22, 94],
+        className: classIcon
     });
     return myIcon;
 }
@@ -546,6 +550,7 @@ function getDetailHomeForMobile(link) {
     }
 
     fetchDetailsVialink(".content_detail_home_js_jheo", link)
+    fetchAvies(idResto,document.querySelector("#tout-dem"))
 }
 
 function fetchDetailsVialink(selector, link) {
@@ -632,6 +637,55 @@ function fetchDetails(selector,linkGetDetail) {
 
 }
 
+function fetchAvies(idRestaurant, select_dem) {
+    console.log(idRestaurant)
+    let currentUserId = 0
+    
+    if (select_dem) {
+        currentUserId = parseInt(select_dem.getAttribute("data-dem").split(/\s*(?::|$)\s*/)[3].replace(/[^0-9]/g, ""), 10) 
+        console.log(currentUserId)
+    }
+        
+ 
+    fetch(`/avis/restaurant/${idRestaurant}`)
+    .then(r => r.json())
+    .then(jsons => {
+        if (jsons) {
+            console.log(jsons)
+            console.log("currentUserId : " + currentUserId)
+            for (let json of jsons) { 
+                console.log("jsonUserId : " + json["user"]["id"])
+                const b = (currentUserId == json["user"]["id"])
+                console.log("b : " + b)
+                if (b) {
+                    if (document.querySelector("#givs-avis-resto-tom-js").style.display != "none") {
+                        document.querySelector("#givs-avis-resto-tom-js").style.display = "none"
+                        createModifArea(json,b)
+                    } else {
+                        if (document.querySelector(".fIQYlfPFT")) {
+                            document.querySelector(".fIQYlfPFT").parentNode.removeChild(document.querySelector(".fIQYlfPFT"))
+                            createModifArea(json,b)
+                        }
+                    }
+                    break;
+                }else{
+                    console.log("Oooopssssssssssssssss vous n'êtes pas autorisé !")
+                } 
+            }
+           
+            if (document.querySelector("#see-tom-js")) {
+                showNemberOfAvis(idRestaurant, document.querySelector("#see-tom-js"))
+                showNoteGlobale(idRestaurant)
+            }
+        }
+    })
+    
+
+    
+}
+
+
+
 function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
     
     let remove = !inHome ? document.getElementById("remove-detail-ferme") : document.getElementById("remove-detail-home")
@@ -643,6 +697,20 @@ function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
 
     const pathDetails = `/ferme/departement/${nameDepart}/${codeDepart}/details/${idFerme}`
+    fetchDetails(id_selector, pathDetails);
+}
+
+function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
+
+    let remove = !inHome ? document.getElementById("remove-detail-golf") : document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    const id_selector = !inHome ? "#content-details-golf" : "#content_details_home_js_jheo";
+
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading();
+
+    const pathDetails = `/golf/departement/${nameDepart}/${codeDepart}/${golfID}`;
     fetchDetails(id_selector, pathDetails);
 }
 
@@ -663,8 +731,8 @@ function getDetailsFermeForMobile(pathDetails) {
 }
 
 
-function getDetailResto(codeDepart, nameDepart, idResto, inHome= false){
-
+function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_dem){
+    console.log(select_dem)
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
@@ -676,11 +744,21 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false){
     // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
     const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
     fetchDetails(id_selector, pathDetails);
+    if (document.querySelector("#open-navleft-resto-mobile")) {
+        fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
+    } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
+        fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile"))
+    } else if (document.querySelector("#tout-dem")) {
+        fetchAvies(idResto,document.querySelector("#tout-dem"))
+    }
+    
+     
+    
+    
 }
 
 
 function addListFermeMobile() {
-
     document.querySelector("#open-navleft-mobile").addEventListener('click', () => {
         document.querySelector("#open-navleft-mobile").style.opacity = 0
         document.querySelector("#open-navleft-mobile").style.transition = "opacity 0.5s ease-in-out"
@@ -1588,6 +1666,40 @@ function checkTailleImage(maxOctetAccepted, file_base64){
     return (sizeInBytes < maxOctetAccepted ) ? true : false;
 }
 
+
+function openRightSide(){
+
+    if( document.querySelector(".close_details_jheo_js")){
+        document.querySelector(".close_details_jheo_js").click();
+    }
+    
+    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+        document.querySelector(".cart_map_jheo_js").style.width= '75%';
+        document.querySelector(".content_legende_jheo_js").style.width= '25%';
+        document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+    }else{
+        console.log("Selector not found")
+        console.log("cart_map_jheo_js", "content_legende_jheo_js")
+    }
+
+
+    if( document.querySelector('.close_right_side_jheo_js')){
+        document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+            closeRightSide();
+        })
+    }
+}
+
+function closeRightSide(){
+    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+        document.querySelector(".cart_map_jheo_js").style.width= '100%';
+        document.querySelector(".content_legende_jheo_js").style.width= '0%';
+        document.querySelector(".content_legende_jheo_js").style.padding= '0';
+    }else{
+        console.log("Selector not found")
+        console.log("cart_map_jheo_js", "content_legende_jheo_js")
+    }
+}
 
 function removePublication(pubId, tablePub){
 

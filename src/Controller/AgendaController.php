@@ -18,6 +18,7 @@ use App\Service\NotificationService;
 
 use App\Repository\BddRestoRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -120,36 +121,6 @@ class AgendaController extends AbstractController
         ], 200);
     }
 
-    #[Route('/api/user/agenda/resto-pastille', name: 'api_resto_pastille_agenda', methods: ["GET"])]
-    public function getAllRestoPastiled(
-        Tribu_T_Service $tribuTService,
-        BddRestoRepository $bddRestoRepository
-    ){
-        $results= [ ];
-        if(!$this->getUser()){
-            return $this->json([ "success" => false, "message" => "User not Connecter"]);
-        }
-
-        $allresto = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
-
-        //// add adress
-        foreach($allresto as $result){
-            $resto = $bddRestoRepository->find(intval($result['id_resto']));
-            
-            if( $resto ){
-                $result["adress"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
-                array_push($results, $result);
-            }
-        }
-
-        return $this->json([
-                "success" => true,
-                "results" => $results
-            ],200);
-    }
-
-
-
     #[Route('/api/user/agenda/{id}', name: 'api_get_one_agenda', methods: ["GET"])]
     public function getOneAgenda(
         $id, 
@@ -194,8 +165,9 @@ class AgendaController extends AbstractController
 
         return $this->json([
             "success" => true,
-            "message" => 'Suppression avec succès'
+            "message" => 'Agenda supprimé avec succès !'
         ], 201);
+        
      }
  
 
@@ -710,7 +682,8 @@ class AgendaController extends AbstractController
     ){
 
         $data=json_decode($request->getContent(),true);
-        extract($data); //// $name, $description, $type, $status, $resto, $adresse, $fileName, $fileType, $dateStart, $dateEnd, $hourStart, $hourEnd, $participant
+
+        extract($data); 
 
         if( $fileName && $fileType ){
             $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
@@ -724,49 +697,83 @@ class AgendaController extends AbstractController
         }
 
         $newAgenda= [
-            "title" => $name,
-            "message" => $description,
+            "title" => $title,
             "type" => $type,
+            "isEtabCMZ" => $isEtabCMZ,
+            "isGolfCMZ" => $isGolfCMZ,
+            "isRestoCMZ" => $isRestoCMZ,
+            "name" => $name,
             "adresse" => $adresse,
+            "description" => $description,
+            "participant" => $participant,
             "dateStart" => $dateStart,
             "dateEnd" => $dateEnd,
-            "heureStart" => $hourStart,
-            "heureEnd" => $hourEnd,
-            "participant" => $participant,
-            "restaurant" => $resto ? $resto : null,
+            "heureStart" => $timeStart,
+            "heureEnd" => $timeEnd,
             "file_type" => $fileType ? $fileType : null,
             "file_path" => $fileName ? $fileName : null,
-            "status" => 0
+            "status" => 0,
         ];
 
         $agendaTableName=$this->getUser()->getNomTableAgenda();
 
         $agendaService->createEvent($agendaTableName,$newAgenda);
-        
-        // $fileUtils = new FilesUtils();
-        // $response = new Response();
-        // try{
-        //     if($req["fileSize"]>0)
-        //         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $req["fileBTOA"], $req["fileName"]);
-        //     else
-        //         $fs->touch($this->getParameter('kernel.project_dir') . $path. $req["fileName"]);
-        // }catch(\Exception $e){
-        //     $response->setStatusCode(500);
-        //     return $response;
-        // }
-        // $requestResponse=$agendaService->createEvent($agendaTableName,$param);
-       
-        // if($requestResponse){
-        //     $response->setStatusCode(200);
-        //     return $response;
-        // }else{
-        //     $response->setStatusCode(500);
-        //     return $response;
-        // }
 
         return $this->json([
             "success" => true,
-            "message" => "Agenda Créer"
+            "message" => "Agenda créé avec succès !"
+        ], 201);
+    }
+
+    #[Route("/user/tribu/update-agenda/{agendaId}", name: "app_update_agenda", methods: ["GET", "POST"] )]
+    public function updateEventCalendar(
+        Request $request,
+        AgendaService $agendaService,
+        Filesystem $fs,
+        $agendaId
+    ){
+
+        $data=json_decode($request->getContent(),true);
+
+        extract($data); 
+
+        if( $fileName && $fileType ){
+            $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
+            $path .= (str_contains($req["fileType"], "application")) ? "document/" : "img/";
+        
+            if(!$fs->exists($path)){
+                $fs->mkdir($path,0777);
+            }
+            $fileUtils = new FilesUtils();
+            $fileUtils->uploadImageAjax($path, $req["fileBTOA"], $req["fileName"]);
+        }
+
+        $newAgenda= [
+            "title" => $title,
+            "type" => $type,
+            "isEtabCMZ" => $isEtabCMZ,
+            "isGolfCMZ" => $isGolfCMZ,
+            "isRestoCMZ" => $isRestoCMZ,
+            "name" => $name,
+            "adresse" => $adresse,
+            "description" => $description,
+            "participant" => $participant,
+            "dateStart" => $dateStart,
+            "dateEnd" => $dateEnd,
+            "heureStart" => $timeStart,
+            "heureEnd" => $timeEnd,
+            "file_type" => $fileType ? $fileType : null,
+            "file_path" => $fileName ? $fileName : null,
+            "status" => 0,
+        ];
+
+        $agendaTableName=$this->getUser()->getNomTableAgenda();
+
+        $agendaService->updateEventCalendar($agendaTableName,$newAgenda, $agendaId);
+
+        return $this->json([
+            "success" => true,
+            "message" => "Agenda modifié avec succès !"
         ], 201);
     }
 
@@ -1338,6 +1345,202 @@ class AgendaController extends AbstractController
     public function presenceSuccess() : Response
     {
         return $this->render('agenda/presence_success.html.twig');
+    }
+
+    #[Route("/api/user/agenda/get/all/{etab}", name: 'user_all_etab', methods: ["GET"])]
+    public function getAllEtab(
+        SerializerInterface $serializer,
+        BddRestoRepository $bdd_resto_rep,
+        $etab
+    ) {
+
+        $results= [];
+
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "User not Connecter"]);
+        }
+
+        if($etab == "restaurant") {
+            $response = $bdd_resto_rep->getAllEtab();
+        }elseif ($etab == "golf") {
+            $response = [];
+        }else{
+            $response = [];
+        }
+        
+        return $this->json([
+            "success" => true,
+            "results" => $response
+        ],200);
+        
+    }
+
+    #[Route("/api/user/agenda/get/{etab}/dep/{id}", name: 'etab_for_specific_dep', methods: ["GET"])]
+    public function getAllEtabForSpecificDep(
+        BddRestoRepository $bdd_resto_rep,
+        $etab,
+        $id
+    ) {
+
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "User not Connecter"]);
+        }
+
+        if($etab == "restaurant") {
+            $response = $bdd_resto_rep->getEtabForSpecificDep($id);
+        }elseif ($etab == "golf") {
+            $response = [];
+        }else{
+            $response = [];
+        }
+        
+        return $this->json([
+            "success" => true,
+            "results" => $response
+        ],200);
+        
+    }
+
+    #[Route('/api/user/agenda/get/{etab}/pastille', name: 'user_etab_pastille', methods: ["GET"])]
+    public function getAllRestoPastille(
+        $etab,
+        Tribu_T_Service $tribuTService,
+        BddRestoRepository $bddRestoRepository
+    ){
+
+        $results= [];
+
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "User not Connecter"]);
+        }
+
+        if($etab == "restaurant") {
+            $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+        }elseif ($etab == "golf") {
+            $response = [];
+        }else{
+            $response = [];
+        }
+
+        //// add adress
+        foreach($response as $result){
+
+            $resto = $bddRestoRepository->find(intval($result['id_resto']));
+            
+            if( $resto ){
+                $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                $result["tel"] = $resto->getTel();
+                $result["id_etab"] = $resto->getId();
+                array_push($results, $result);
+            }
+        }
+
+        return $this->json([
+                "success" => true,
+                "results" => $results
+            ],200);
+    }
+
+    #[Route('/api/user/agenda/get/{etab}/pastille/dep/{id}', name: 'etab_pastille_for_specific_dep', methods: ["GET"])]
+    public function getRestoPastilleForSpecificDep(
+        $etab,
+        $id,
+        Tribu_T_Service $tribuTService,
+        BddRestoRepository $bddRestoRepository,
+        UserRepository $userRepository
+    ){
+
+        $results= [];
+
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "User not Connecter"]);
+        }
+
+        if($etab == "restaurant") {
+            $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+        }elseif ($etab == "golf") {
+            $response = [];
+        }else{
+            $response = [];
+        }
+
+        //// add adress
+        foreach($response as $result){
+
+            $resto = $bddRestoRepository->find(intval($result['id_resto']));
+            
+            if($resto){
+                $id_dep = $resto->getDep();
+                if($id_dep == $id){
+                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["id_etab"] = $resto->getId();
+                    $result["tel"] = $resto->getTel();
+                    $result["dep"] = $resto->getDep();
+                    $result["departement"] = $resto->getDepName();
+
+                    $tribu_t_list = $userRepository->getListTableTribuT();
+
+                    foreach ($tribu_t_list as $key) {
+                        $tableTribu = $key["table_name"];
+                        $logo_path = $key["logo_path"];
+                        $tableExtension = $tableTribu . "_restaurant";
+                        if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
+                            if($tribuTService->checkExtensionId($tableExtension, $resto->getId())){
+                                $result["tribu"] = $tableTribu;
+                                $result["logoTribu"] = $logo_path;
+                            }
+                        }
+                    }
+                    array_push($results, $result);
+                }
+            }
+        }
+
+        return $this->json([
+                "success" => true,
+                "results" => $results
+            ],200);
+    }
+
+    #[Route("/api/user/agenda/dep/list", name: 'agenda_all_dep', methods: ["GET"])]
+    public function getAllDepForEtab(
+        DepartementRepository $departementRepository,
+        ) {
+
+        return $this->render('agenda/listDep.twig', [
+            "departements" => $departementRepository->getDep()
+        ]);
+        
+    }
+
+    /** 
+     *
+     * 
+     * @Route("/api/agenda/etab/{nom_dep}/{id_dep}/detail/{id_restaurant}", name="api_agenda_detail_etab", methods="GET" )
+     */
+    public function detailRestaurant(
+        Request $request,
+        BddRestoRepository $bddResto,
+        $nom_dep,
+        $id_dep,
+        $id_restaurant
+    ): Response {
+        
+        $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        if(str_contains($request->getPathInfo(), '/api/restaurant')){
+            return $this->json([
+                "details" => $details,
+                "id_dep" => $id_dep,
+                "nom_dep" => $nom_dep,
+            ], 200);
+        }
+
+        return $this->render("agenda/detail_resto.html.twig", [
+            "details" => $details,
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+        ]);
     }
 
 }

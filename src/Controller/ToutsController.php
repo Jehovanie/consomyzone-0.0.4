@@ -77,7 +77,7 @@ class ToutsController extends AbstractController
     {
         ///current user connected
         $user = $this->getUser();
-
+        $userConnected = $status->userProfilService($this->getUser());
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
@@ -88,26 +88,28 @@ class ToutsController extends AbstractController
             $profil = $tributGService->getProfil($user, $entityManager);
 
             $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
             ///to contains profil user information
             
             foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                ];
-
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                
+                if( $user_amis ){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                    ];
+    
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
 
@@ -123,7 +125,7 @@ class ToutsController extends AbstractController
 
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
-            
+            "userConnected" => $userConnected,
             "amisTributG" => $amis_in_tributG
         ]);
 
