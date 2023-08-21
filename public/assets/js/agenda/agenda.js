@@ -953,7 +953,7 @@ function generateTableForEtab(index, etab, isValid=true){
 
 
             nomTribu = etab.tribu.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-            logoTribu = etab.logoTribu ? etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+            logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
             
             forTribuT = `<td><img src="${logoTribu}" alt=""></td><td>${nomTribu}</td>`;
 

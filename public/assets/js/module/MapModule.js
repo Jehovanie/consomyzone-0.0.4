@@ -721,25 +721,25 @@ class MapModule{
                     <tbody>
                         <tr>
                             <th scope="row">1</th>
-                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
                             
                             <td>Mon Golf</td>
                         </tr>
                         <tr>
                             <th scope="row">2</th>
-                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
 
                             <td>A faire</td>
                         </tr>
                         <tr>
                             <th scope="row">3</th>
-                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
 
                             <td>Fait</td>
                         </tr>
                         <tr>
                         <th scope="row">4</th>
-                            <td><img class="icon_golf_legend" src="/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
                             
                             <td>Inconnu</td>
                         </tr>

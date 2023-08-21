@@ -151,8 +151,8 @@
 								<div class="row me-auto">
 									<p class="lead fw-bolder mb-1 col-6" lng-tag="apropos">Vos photo</p>
 									{% if app.user.id == app.request.get('user_id') %}
-										<div class="px-3 col-2 " id="add-item">
-											<a href="#add_photos" class="btn btn-primary" style="width: 150px;text-decoration:none;" onclick="">
+										<div class="px-3 col-2 non_active" id="add-item">
+											<a href="#add_photos" class="btn btn-secondary disabled-link" style="width: 150px;text-decoration:none;" onclick="">
 												<label class="input-file" for="fileInputProfil_add"  style="z-index: 1;cursor:pointer;">
 												<p class="mb-1"><i class="bi bi-camera-fill"></i> Ajouter </p>
 												<input id="fileInputProfil_add" type="file" name="photo" style="display:none;">
