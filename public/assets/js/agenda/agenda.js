@@ -1235,3 +1235,18 @@ function initInputForm(){
 }
 
 /** END BLOC */
+
+function tableActiveFilterPartisant(e){
+    const allTypeActive= ["list_partisant_tous_jheo_js", "list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js" ];
+    const current_class_active= allTypeActive.find( item => e.classList.contains(item) )
+    const other_not_active= allTypeActive.filter(item => item != current_class_active)
+    
+    if( !e.classList.contains("active")){
+        e.classList.add("active")
+    }
+    other_not_active.forEach(item => {
+        if( document.querySelector(`.${item}`).classList.contains("active")){
+            document.querySelector(`.${item}`).classList.remove("active")
+        }
+    })
+}
