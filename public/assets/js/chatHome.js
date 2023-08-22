@@ -737,7 +737,7 @@ function generateUID() {
 // On https://jaas.8x8.vc/
 
 const domain = '8x8.vc'
-const jwt = 'eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQvY2UxZmY4LVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE2OTIzNjQyNTksImV4cCI6MTY5MjM3MTQ1OSwibmJmIjoxNjkyMzY0MjU0LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6ZmFsc2UsIm5hbWUiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1IiwiYXZhdGFyIjoiIiwiZW1haWwiOiIifX0sInJvb20iOiIqIn0.okmk_AhIG9UGctHzGDC60F14QDucn3ETMskx1iflinpJYwTcgrQ0u4_WzgWYMAsb0GctrsEvZSNbTBm-ZAurTrYCJWv133M5oJglXMfXTILo4_CEE-thJdTABuwp9shrIun7bEtoWah4vgH0K4nA4mmrRx9q6GxwRPzmgCIU71YApPgb8tQe87X17EeV_SIUk4w6f4Q2JvDaO4y_uATS5yIoJP0qcth8wuot4fOljREap9aWZnhUdg_2on5M5PIhoAayEm-RhPclEI5pWLO9V9_TyBXeYJxFtM_VBK9eIcirKQjzYDSxE3ayWW4F9wOGmfBfyGz_EHQ-V0XwDBf5UQ'
+const jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6InZwYWFzLW1hZ2ljLWNvb2tpZS02Yzg3YzllY2NlOGI0Y2NkYTMwYWYzNTkxZGMyNGI1NC82MGVkZjAifQ.eyJpc3MiOiJjaGF0IiwiYXVkIjoiaml0c2kiLCJleHAiOjE3MjM3OTQ0NDIsIm5iZiI6MTY5MjY5MDQ0Miwicm9vbSI6IioiLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7InVzZXIiOnsibW9kZXJhdG9yIjoiZmFsc2UiLCJlbWFpbCI6ImVsaWVmZW5vaGFzaW5hQGdtYWlsLmNvbSIsIm5hbWUiOiIiLCJhdmF0YXIiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1In0sImZlYXR1cmVzIjp7InJlY29yZGluZyI6InRydWUiLCJsaXZlc3RyZWFtaW5nIjoidHJ1ZSIsInRyYW5zY3JpcHRpb24iOiJmYWxzZSIsIm91dGJvdW5kLWNhbGwiOiJmYWxzZSJ9fX0.aVoq6pqgQL4vIHrOnvFOBP7UY1Q-1v1CaGWsO04zKPtC_uFWvkp09EX5I6qD8sBLcwxv8anF1zhOCAIJIdPruDlfp82RIhD0x4_RAkxie8TJqr0MneAQoNAXSyf8ZJent-VxTlAwIuP5OwKgVEGcF1LPXxe7aFr4cxQ24kGd_z7aspR52GPo_R8QjX-AN-jelqIDcQQCiqLvJSLFRHwYIvM9kQaA5OHezUT-4uZy-R0P6fx3oMr0OFDn3DeQobJUkADDYMj4M6W1_trjmDoUkEa2moJmSmDnrj8rT0lpC3jg-oWvMz5PVFSu1d4jJniDSKjjjfTXNFvqplibMvK8rA'
 const home_room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'
 
 /**
@@ -839,6 +839,14 @@ function runVisio(user_id) {
                     })
             }
         })
+    
+}
+
+/**
+ * Function creating a group visio
+ * @constructor
+ */
+function createVisioGroup(params) {
     
 }
 /***********************Action*************** */
@@ -1425,6 +1433,60 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
         }
 
     })
+})
+
+document.querySelector("#visio_group_btn").addEventListener("click", (e)=>{
+
+        // document.querySelector('#visio').innerHTML = `
+
+        //     <div class="container text-center">
+        //         <h1 class="m-4">ConsoMyZone</h1>
+        //         <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
+        //     </div>
+        //     <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
+        //         <div class="lc-chat mg-chat qg-chat hh-chat">
+        //             <div class="h-chat yd-chat">
+        //                 <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
+        //             </div>
+        //             <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
+        //                 Démarrer la conférence
+        //             </button>
+        //         </div>
+        //     </div>
+        // `
+
+        // let user_name = e.target.textContent.trim()
+
+        // let user_id = amis.getAttribute("data-toggle-user-id")
+
+        // let doc_user = document.createElement("li")
+        // doc_user.classList = "list-group-item d-flex justify-content-between align-items-center"
+        // // doc_user.setAttribute("user_id_visio",user_id)
+
+        // doc_user.innerHTML =`
+        //     ${user_name}
+        //     <span class="badge bg-danger rounded-pill cursor-pointer" onclick="removeToList(this)"><i class="fas fa-trash"></i></span>`
+
+
+        // document.querySelector('#visio > div > ul').appendChild(doc_user)
+
+        document.querySelector('#visio').innerHTML = `
+
+            <div class="container text-center">
+                <h1 class="m-4">ConsoMyZone</h1>
+                <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
+            </div>
+            <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
+                <div class="lc-chat mg-chat qg-chat hh-chat">
+                    <div class="h-chat yd-chat">
+                        <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
+                    </div>
+                    <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="createVisioGroup(this)">
+                        Démarrer la conférence
+                    </button>
+                </div>
+            </div>
+        `
 })
 
 /** Upload image */
