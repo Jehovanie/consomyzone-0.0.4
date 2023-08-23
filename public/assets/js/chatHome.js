@@ -989,18 +989,19 @@ if (document.querySelector("#openMessage")) {
 
         if (first_user) {
             user_id = first_user.getAttribute("data-toggle-user-id")
-        } else {
-            user_id = 0;
-            runSpinner()
+        } 
+        // else {
+        //     user_id = 0;
+        //     runSpinner()
 
-            writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+        //     writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
 
-            runSuggestion()
-        }
+        //     runSuggestion()
+        // }
 
-        let user_name = first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
+        let user_name = (first_user === undefined ) ? "" : first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
 
-        let user_photo = first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
+        let user_photo = (first_user === undefined ) ? "" : first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
 
         document.querySelector("div#user_head").innerHTML = `
                             <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
