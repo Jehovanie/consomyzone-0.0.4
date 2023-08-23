@@ -1667,15 +1667,25 @@ function checkTailleImage(maxOctetAccepted, file_base64){
 }
 
 
-function openRightSide(){
-
+function openRightSide(rightSideContentType){
+    console.log(rightSideContentType)
     if( document.querySelector(".close_details_jheo_js")){
         document.querySelector(".close_details_jheo_js").click();
     }
+
+    const cart_width= rightSideContentType === "info_jheo_js" ? '75%' : '83%';
+    const cont_legent_width= rightSideContentType === "info_jheo_js" ? '25%' : '17%';
     
     if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-        document.querySelector(".cart_map_jheo_js").style.width= '75%';
-        document.querySelector(".content_legende_jheo_js").style.width= '25%';
+
+        if( rightSideContentType === "info_jheo_js"){
+            injectStatusGolf();
+        }else{
+            injectChooseCouche();
+        }
+
+        document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+        document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
         document.querySelector(".content_legende_jheo_js").style.padding= '25px';
     }else{
         console.log("Selector not found")
@@ -1688,6 +1698,101 @@ function openRightSide(){
             closeRightSide();
         })
     }
+}
+
+
+function injectStatusGolf(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icon</th>
+                    
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                        
+                        <td>Mon Golf</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
+
+                        <td>A faire</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
+
+                        <td>Fait</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">4</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                        
+                        <td>Inconnu</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `
+}
+
+function injectChooseCouche(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+        <div class="right_side_body right_side_body_jheo_js">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="region">
+                <label class="form-check-label" for="region">
+                    REGION
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="commune">
+                <label class="form-check-label" for="commune">
+                    COMMUNE
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="departement">
+                <label class="form-check-label" for="departement">
+                    DEPARTEMENT
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="iris" >
+                <label class="form-check-label" for="iris">
+                    IRIS
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="quartierDeVie" >
+                <label class="form-check-label" for="quartierDeVie">
+                    QUARTIER DE VIE
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="canton" >
+                <label class="form-check-label" for="canton">
+                    CANTON
+                </label>
+            </div>
+        </div>
+    `
 }
 
 function closeRightSide(){

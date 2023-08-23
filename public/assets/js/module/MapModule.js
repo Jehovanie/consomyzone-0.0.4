@@ -586,10 +586,10 @@ class MapModule{
         L.control.custom({
             // position: 'topright',
             content : `
-                <button class="btn btn-info" data-type="info">
+                <button class="btn btn-info" data-type="info_jheo_js">
                     <i class="fa-solid fa-info"></i>
                 </button>
-                <button class="btn btn-secondary non_active" data-type="couche">
+                <button class="btn btn-secondary" data-type="couche">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
                 
@@ -606,13 +606,11 @@ class MapModule{
             },
             events:{
                 click: function(data) {
-                    if(data.srcElement.dataset.type === "info"){
-                        openRightSide();
-                    }
+                    openRightSide(data.srcElement.dataset.type);
                 },
-                dblclick: function(data){
-                    closeRightSide();
-                },
+                // dblclick: function(data){
+                //     closeRightSide();
+                // },
                 contextmenu: function(data){
                     console.log('wrapper div element contextmenu');
                     console.log(data);
@@ -697,7 +695,7 @@ class MapModule{
         container.innerHTML = `
             <div class="content_header_right_side">
                 <div class="header_right_side">
-                    <div class="title_right_side">
+                    <div class="title_right_side title_right_side_jheo_js">
                         CONTROL RIGHT SIDE
                     </div>
                     <div class="content_close_right_side">
@@ -708,43 +706,8 @@ class MapModule{
                 </div>
             </div>
 
-            <div class="content_right_side_body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Icon</th>
-                           
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                            
-                            <td>Mon Golf</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
-
-                            <td>A faire</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
-
-                            <td>Fait</td>
-                        </tr>
-                        <tr>
-                        <th scope="row">4</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                            
-                            <td>Inconnu</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="content_right_side_body content_right_side_body_jheo_js">
+                
             </div>
         `
 
