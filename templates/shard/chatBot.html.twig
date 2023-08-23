@@ -9,6 +9,7 @@
 	{# <script src="{{asset('assets/js/visio/visio_external_api.js')}}" defer></script> #}
 	{# <script src='https://meet.jit.si/external_api.js'></script> #}
 	<script src='https://8x8.vc/external_api.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% endblock %}
 
@@ -157,8 +158,8 @@
 					</div>
 				</div>
 
-				<div class="btn-group w-100" id="visio_group_btn" style="display:none" data-bs-toggle="modal" data-bs-target="#modalVisio">
-					<button type="button" class="btn btn-outline-primary waves-effect"><i class="fas fa-plus pe-2" aria-hidden="true"></i>Créer un visio groupé</button>
+				<div class="btn-group w-100" id="visio_group_btn" style="display:none" onclick="createVisioGroup()">
+					<button type="button" class="btn btn-outline-primary waves-effect"><i class="fas fa-plus pe-2" aria-hidden="true"></i>Créer une réunion</button>
 				</div>
 
 				<!-- Chat List boucle -->

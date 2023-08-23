@@ -36,20 +36,6 @@ function closeChat() {
     })
 
 
-    // document.querySelector("#conversation").innerHTML += `
-    //                 <div class="qf-chat text-center popup_exit">
-    //                     <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-    //                     <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
-    //                     <div class="p-4">
-    //                         <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
-    //                         <button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat ks-chat w-100 mb-1 p-1 h-100" onclick="escapeChat()">Pas maintenant</button>
-    //                     </div>
-    //                     </div>
-
-    //                 </div>`
-
-    // document.querySelector(".popup_exit").scrollIntoView();
-
     endChat()
 
 }
@@ -795,7 +781,11 @@ function joinMeet(id, room) {
 
     api.addEventListener('participantJoined', (e)=>{
 
-        document.querySelector("#user_name_chat").innerText +=" avec "+ e.displayName+", "
+        if(!document.querySelector("#user_name_chat").textContent.trim().includes(e.displayName)){
+
+            document.querySelector("#user_name_chat").innerText =document.querySelector("#user_name_chat").textContent.trim().replace("VisioConférence", "Vous") +", "+e.displayName
+        }
+
 
     })
     
@@ -805,12 +795,11 @@ function joinMeet(id, room) {
 /**
  * Function creating a meeting jitsi
  * @constructor
+ * @param {string} roomRandom : name of room
  * @param {integer} user_id : user_id of user
  */
-function runVisio(user_id) {
+function runVisio(roomRandom, user_id) {
 
-    let roomRandom = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-    
     let data = {
         roomName : roomRandom,
         to : user_id,
@@ -835,7 +824,9 @@ function runVisio(user_id) {
                 fetch("/getVisioByName/"+roomRandom)
                     .then(response=>response.json())
                     .then(visio=>{
-                        joinMeet(visio.id, roomRandom)
+                        if(!document.querySelector("#visio").querySelector("iframe")){
+                            joinMeet(visio.id, roomRandom)
+                        }
                     })
             }
         })
@@ -846,7 +837,102 @@ function runVisio(user_id) {
  * Function creating a group visio
  * @constructor
  */
-function createVisioGroup(params) {
+function createVisioGroup() {
+
+    let friend_list_node = document.querySelectorAll("#amis_list > div > div > div.user_friends")
+
+    let htm = "<div class='overflow-auto' style='max-height:50vh;'><ul class='list-group' id='list-group-user-visio'>"
+
+    friend_list_node.forEach(nd=>{
+
+        htm+=`
+            <li class="list-group-item d-flex justify-content-between align-items-center" user_id_visio="${nd.getAttribute("data-toggle-user-id")}">
+                <div class="d-flex justify-content-start align-items-center">
+                    <img src="${nd.querySelector("img").src}" alt="profile" class="user-pdp-visio">    
+                    <span class="ms-1">${nd.querySelector("h5").textContent.trim()}</span>
+                </div>
+                <span class="rounded-pill text-primary cursor-pointer" onclick="selectOneUser(this)">Inviter</span>
+            </li>
+        `
+
+    })
+
+    htm+="</ul></div>"
+
+    const { value: accept } = Swal.fire({
+        title: 'Réunion par visioconférence',
+        input: 'text',
+        inputPlaceholder:
+          'Entrer le tritre de conférence',
+        showCancelButton: true,
+        cancelButtonText: 'Pas maintenant',
+        confirmButtonText:
+          'Créer la conférence <i class="fas fa-arrow-right"></i>',
+        inputValidator: (result) => {
+          return (result.length < 9 || /[^a-zA-Z0-9]/g.test(result)) && '9 caractères réquis, ni espace ni caractère spéciaux'
+        }
+        
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Inviter des amis',
+                html: htm,
+                showCloseButton: true,
+                showCancelButton: false,
+                focusConfirm: false,
+                confirmButtonText:
+                  '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
+              }).then(res=>{
+                if (res.isConfirmed){
+
+                    let roomGroup = result.value
+
+                    if(document.querySelectorAll("#list-group-user-visio > li.selected").length>0){
+
+                        document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li=>{
+
+                            runVisio(roomGroup, li.getAttribute("user_id_visio"))
+    
+                        })
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Aucun utilisateur sélectionné!',
+                            footer: 'Réunion annulée!'
+                          })
+                    }
+                    
+                }
+              })
+        } 
+      })
+      
+    
+}
+
+/**
+ * Function selecting one or more user to meeting
+ * @constructor
+ * @param {node} params : li element
+ */
+function selectOneUser(params) {
+
+    if(params.textContent.trim()=="Inviter"){
+        params.textContent = "Annuler"
+        params.classList.remove("text-primary")
+        params.classList.add("text-danger")
+        params.parentElement.style ="background-color:#CFF4FC;"
+        params.parentElement.classList.add("selected")
+    }else{
+        params.textContent = "Inviter"
+        params.classList.remove("text-danger")
+        params.classList.add("text-primary")
+        params.parentElement.style =""
+        params.parentElement.classList.remove("selected")
+
+    }
     
 }
 /***********************Action*************** */
@@ -997,18 +1083,19 @@ if (document.querySelector("#openMessage")) {
 
         if (first_user) {
             user_id = first_user.getAttribute("data-toggle-user-id")
-        } else {
-            user_id = 0;
-            runSpinner()
+        } 
+        // else {
+        //     user_id = 0;
+        //     runSpinner()
 
-            writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+        //     writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
 
-            runSuggestion()
-        }
+        //     runSuggestion()
+        // }
 
-        let user_name = first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
+        let user_name = first_user == undefined? "" : first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
 
-        let user_photo = first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
+        let user_photo = first_user == undefined? "" : first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
 
         document.querySelector("div#user_head").innerHTML = `
                             <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
@@ -1018,7 +1105,7 @@ if (document.querySelector("#openMessage")) {
                                 </div>
                             </div>
                             <div class="user-chat-display" data-user-id="${user_id}">
-                                <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
+                                <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
                                     ${user_name}
                                 </h5>
                             </div>
@@ -1054,37 +1141,12 @@ if (document.querySelector("#openChat")) {
                                 </div>
                             </div>
                             <div class="user-chat-display" data-user-id="0">
-                                <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
+                                <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
                                     Assistant Virtuel
                                 </h5>
                                 <p class="mn-chat">Reponse automatique</p>
                             </div>
                             `
-
-        // if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
-
-        //     runSpinner()
-
-        //     writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
-        //     Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
-        //     <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
-
-        // }else{
-
-        //     if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
-
-        //         runSpinner()
-
-        //         writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-
-        //         runSuggestion()
-
-        //     }else{
-
-        //         getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-
-        //     }
-        // }
 
         if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0") {
 
@@ -1099,31 +1161,6 @@ if (document.querySelector("#openChat")) {
             getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
 
         }
-
-        // if(document.querySelector("#amis_list").getAttribute("data-my-id") == 0 ){
-
-        //     runSpinner()
-
-        //     writeResponse(`Vous n'êtes pas connecté.<br><a class='link-primary' href=\"/connexion\">
-        //     Connectez-vous</a> ou <a class='link-primary' href=\"/connexion\">créez un compte</a>.<br><br>
-        //     <span class='link-primary cursor-pointer' onclick='lanceChat()'>Parlez avec l'assistant virtuel.</span>`)
-
-        // }else{
-
-        //     if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") == "0"){
-
-        //         runSpinner()
-
-        //         writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-        
-        //         runSuggestion()
-                
-        //     }else{
-                
-        //         getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-            
-        //     }
-        // }
 
     })
 }
@@ -1160,11 +1197,11 @@ if (document.querySelector("#openVisio")) {
         document.querySelector("div#user_head").innerHTML = `
                             <div class="d-flex p-1 ps-0">
                                 <div">
-                                    <i class="fas fa-video-camera" style="margin-top: 25%;font-size:27px;color:red;"></i>
+                                    <i class="fas fa-video-camera" style="margin-top: 15%;font-size:27px;color:red;"></i>
                                 </div>
                             </div>
                             <div class="user-chat-display p-2" data-user-id="">
-                                <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
+                                <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
                                 VisioConférence
                                 </h5>
                             </div>
@@ -1175,23 +1212,6 @@ if (document.querySelector("#openVisio")) {
 
         let my_id = document.querySelector("#amis_list").getAttribute("data-my-id")
 
-        // document.querySelector('#visio').innerHTML = `
-        // <div class="container">
-        //     <h3 class="m-3">Inviter des amis</h3>
-        //     <ul class="list-group m-2">
-        //         <li class="list-group-item d-flex justify-content-between align-items-center" user_id_visio ="${document.querySelector("#amis_list").getAttribute("data-my-id")}">
-        //             ${document.querySelector("#my_full_name").textContent.trim()}
-        //             <span class="badge bg-danger rounded-pill cursor-pointer" onclick="removeToList(this)"><i class="fas fa-trash"></i></span>
-        //         </li>
-        //     </ul>
-        //     <div class="w-100">
-        //         <button class="m-2 btn btn-outline-primary" style="width: 95%;" onclick="runVisio(this)">
-        //             Démarrer la conférence
-        //         </button>
-        //     </div>
-            
-        // </div>`
-
         const evtSource_meet = new EventSource("/get/myvisio");
 
         //// event onmessage
@@ -1199,55 +1219,68 @@ if (document.querySelector("#openVisio")) {
 
             const all_meet = JSON.parse(event.data);
 
-            all_meet.forEach(meet => {
+            const last_meet = all_meet[all_meet.length-1]
 
-                if(!document.querySelector('.meet_'+meet.id)){
+            if(all_meet.length>0){
 
-                    let stat = "manqué"
-                    let color = ""
-                    let btn_join = ""
-                    switch(meet.status) {
-                        case 'wait':
-                            stat = `en attente...`
-                            color = 'info'
-                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
-                          break;
-                        case 'progress':
-                            stat = `en cours`
-                            color = 'warning'
-                            btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
-                          break;
-                        case 'finished':
-                            stat = `términé`
-                            color = 'success'
-                          break;
-                        case 'missed':
-                            stat = `manqué`
-                            color = 'danger'
-                          break;
-                        default:
-                            stat = "manqué"
-                      }
+                all_meet.forEach(meet => {
 
-                    if(!document.querySelector("#visio > iframe")){
-
-                        document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
-                            <p class="qb-chat mn un mt-4">
-                                ${my_id==meet.from?meet.username +"(vous)" : meet.username}
-                            </p>
-                            <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                            <p class="text-${color} mb-2">
-                                <i class="fas fa-video-camera me-2 ms-1"></i>
-                                Appel ${stat}
-                                ${btn_join}
-                            </p> 
-                            </div>
-                            <p class="nn-chat float-end">${meet.date}</p>
-                        </div>`
+                    if(!document.querySelector('.meet_'+meet.id)){
+    
+                        let stat = "manqué"
+                        let color = ""
+                        let btn_join = ""
+                        switch(meet.status) {
+                            case 'wait':
+                                stat = `en attente...`
+                                color = 'info'
+                                btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
+                              break;
+                            case 'progress':
+                                stat = `en cours`
+                                color = 'warning'
+                                btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
+                              break;
+                            case 'finished':
+                                stat = `términé`
+                                color = 'success'
+                              break;
+                            case 'missed':
+                                stat = `manqué`
+                                color = 'danger'
+                              break;
+                            default:
+                                stat = "manqué"
+                          }
+    
+                        if(!document.querySelector("#visio > iframe")){
+    
+                            document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
+                                <p class="qb-chat mn un mt-4">
+                                    ${my_id==meet.from?meet.username +"(vous)" : meet.username}
+                                </p>
+                                <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                                <p class="text-${color} mb-2">
+                                    <i class="fas fa-video-camera me-2 ms-1"></i>
+                                    ${meet.users_number > 1? "Réunion" : "Appel"} ${stat}
+                                    ${btn_join}
+                                </p> 
+                                </div>
+                                <p class="nn-chat float-end">${meet.date}</p>
+                            </div>`
+                        }
+    
                     }
-
+                    
+                })
+    
+                if(last_meet && !document.querySelector("#visio > iframe")){
+                    document.querySelector(".meet_"+last_meet.id).scrollIntoView();
                 }
-            })
+            }else{
+                document.querySelector("#visio").innerHTML ="<div class='m-4'><p class='text-center'>Aucune visioconférence a été notée.</p></div>";
+            }
+
         }
 
     })
@@ -1372,122 +1405,15 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
 
         }else{
 
-            
-            runVisio(amis.getAttribute("data-toggle-user-id"))
+            let roomRandom = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
 
-            let user_name = e.target.textContent.trim()
-
-            // document.querySelector("#user_name_chat").innerText = user_name
-
-        //     document.querySelector('#visio').innerHTML = `
-
-        //     <div class="container text-center">
-        //         <h1 class="m-4">ConsoMyZone</h1>
-        //         <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
-        //     </div>
-        //     <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
-        //         <div class="lc-chat mg-chat qg-chat hh-chat">
-        //             <div class="h-chat yd-chat">
-        //                 <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
-        //             </div>
-        //             <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
-        //                 Démarrer la conférence
-        //             </button>
-        //         </div>
-        //     </div>
-        // `
-
-        // let user_name = e.target.textContent.trim()
-
-        // let user_id = amis.getAttribute("data-toggle-user-id")
-
-        // let doc_user = document.createElement("li")
-        // doc_user.classList = "list-group-item d-flex justify-content-between align-items-center"
-        // doc_user.setAttribute("user_id_visio",user_id)
-
-        // doc_user.innerHTML =`
-        //     ${user_name}
-        //     <span class="badge bg-danger rounded-pill cursor-pointer" onclick="removeToList(this)"><i class="fas fa-trash"></i></span>`
-
-
-        // document.querySelector('#visio > div > ul').appendChild(doc_user)
-
-        // document.querySelector('#visio').innerHTML = `
-
-        //     <div class="container text-center">
-        //         <h1 class="m-4">ConsoMyZone</h1>
-        //         <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
-        //     </div>
-        //     <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
-        //         <div class="lc-chat mg-chat qg-chat hh-chat">
-        //             <div class="h-chat yd-chat">
-        //                 <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
-        //             </div>
-        //             <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
-        //                 Démarrer la conférence
-        //             </button>
-        //         </div>
-        //     </div>
-        // `
+            runVisio(roomRandom, amis.getAttribute("data-toggle-user-id"))
 
         }
 
     })
 })
 
-document.querySelector("#visio_group_btn").addEventListener("click", (e)=>{
-
-        // document.querySelector('#visio').innerHTML = `
-
-        //     <div class="container text-center">
-        //         <h1 class="m-4">ConsoMyZone</h1>
-        //         <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
-        //     </div>
-        //     <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
-        //         <div class="lc-chat mg-chat qg-chat hh-chat">
-        //             <div class="h-chat yd-chat">
-        //                 <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
-        //             </div>
-        //             <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="runVisio(this)">
-        //                 Démarrer la conférence
-        //             </button>
-        //         </div>
-        //     </div>
-        // `
-
-        // let user_name = e.target.textContent.trim()
-
-        // let user_id = amis.getAttribute("data-toggle-user-id")
-
-        // let doc_user = document.createElement("li")
-        // doc_user.classList = "list-group-item d-flex justify-content-between align-items-center"
-        // // doc_user.setAttribute("user_id_visio",user_id)
-
-        // doc_user.innerHTML =`
-        //     ${user_name}
-        //     <span class="badge bg-danger rounded-pill cursor-pointer" onclick="removeToList(this)"><i class="fas fa-trash"></i></span>`
-
-
-        // document.querySelector('#visio > div > ul').appendChild(doc_user)
-
-        document.querySelector('#visio').innerHTML = `
-
-            <div class="container text-center">
-                <h1 class="m-4">ConsoMyZone</h1>
-                <h5 class="m-3">Conférence sécurisée et de haute quelité</h5>
-            </div>
-            <div class="nj-chat xr-chat ti-chat bj-chat wr-chat sl-chat ql-chat">
-                <div class="lc-chat mg-chat qg-chat hh-chat">
-                    <div class="h-chat yd-chat">
-                        <input type="text" placeholder="Serveur de conférence(9 caractères min)" class="xc-chat yd-chat qh-chat ni-chat bj-chat wr-chat vj-chat yr-chat zn-chat gs-chat no-chat vo-chat fr-chat pe-2 ps-2">
-                    </div>
-                    <button class="xc-chat yd-chat lc-chat mg-chat pg-chat qh-chat oj-chat eo-chat wq-chat" onclick="createVisioGroup(this)">
-                        Démarrer la conférence
-                    </button>
-                </div>
-            </div>
-        `
-})
 
 /** Upload image */
 
