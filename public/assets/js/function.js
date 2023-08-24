@@ -1667,40 +1667,6 @@ function checkTailleImage(maxOctetAccepted, file_base64){
 }
 
 
-function openRightSide(rightSideContentType){
-    console.log(rightSideContentType)
-    if( document.querySelector(".close_details_jheo_js")){
-        document.querySelector(".close_details_jheo_js").click();
-    }
-
-    const cart_width= rightSideContentType === "info_jheo_js" ? '75%' : '83%';
-    const cont_legent_width= rightSideContentType === "info_jheo_js" ? '25%' : '17%';
-    
-    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-
-        if( rightSideContentType === "info_jheo_js"){
-            injectStatusGolf();
-        }else{
-            injectChooseCouche();
-        }
-
-        document.querySelector(".cart_map_jheo_js").style.width= cart_width;
-        document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
-        document.querySelector(".content_legende_jheo_js").style.padding= '25px';
-    }else{
-        console.log("Selector not found")
-        console.log("cart_map_jheo_js", "content_legende_jheo_js")
-    }
-
-
-    if( document.querySelector('.close_right_side_jheo_js')){
-        document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-            closeRightSide();
-        })
-    }
-}
-
-
 function injectStatusGolf(){
     if( !document.querySelector(".content_right_side_body_jheo_js")){
         console.log("Selector not found : '.content_right_side_body_body'")
@@ -1748,7 +1714,7 @@ function injectStatusGolf(){
     `
 }
 
-function injectChooseCouche(){
+function injectChooseCouch(){
     if( !document.querySelector(".content_right_side_body_jheo_js")){
         console.log("Selector not found : '.content_right_side_body_body'")
         return false;
@@ -1793,17 +1759,6 @@ function injectChooseCouche(){
             </div>
         </div>
     `
-}
-
-function closeRightSide(){
-    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-        document.querySelector(".cart_map_jheo_js").style.width= '100%';
-        document.querySelector(".content_legende_jheo_js").style.width= '0%';
-        document.querySelector(".content_legende_jheo_js").style.padding= '0';
-    }else{
-        console.log("Selector not found")
-        console.log("cart_map_jheo_js", "content_legende_jheo_js")
-    }
 }
 
 function removePublication(pubId, tablePub){

@@ -1,6 +1,6 @@
 
-<header class="g s r vd vd-head ya cj" :class="{ 'hh sm _k dj bl ll' : stickyMenu }" @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
-	<div class="bb ze ki xn 2xl:ud-px-0 oo wf yf i">
+<header class="g s r vd vd-head ya cj padding_header" :class="{ 'hh sm _k dj bl ll' : stickyMenu }" @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
+	<div class="bb 2xl:ud-px-0 oo wf yf i">
 	{# <div class="bb ze ki xn 2xl:ud-px-0 oo i"> #}
 
         {# =================== CONTENT LOGO AND FORM SEARCH =================== #}
@@ -168,9 +168,9 @@
                         </a>
                     </li>
                     <li class="nav-item ms-4 icon-golf">
-                        <a id="golf-page"  class="nav-link list-nav-bar" aria-current="page" href="{{path('app_bureau_tabac')}}">
-                            <img class="icon_golf_navbar" src="{{asset('assets/icon/NewIcons/golf.png')}}" alt="Icon Golf">
-                            &ensp;Bureau Tabac
+                        <a id="tabac-page"  class="nav-link list-nav-bar" aria-current="page" href="{{path('app_bureau_tabac')}}">
+                            <img class="icon_golf_navbar" src="{{asset('assets/icon/NewIcons/tabac.png')}}" alt="Icon Golf">
+                            &ensp;Tabac
                         </a>
                     </li>
                 </ul>

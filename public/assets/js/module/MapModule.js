@@ -19,6 +19,11 @@ class MapModule{
         this.id_dep= idDep ? parseInt(idDep) : null;
         this.nom_dep= nomDep ? nomDep : null;
         this.map= null;
+
+
+        this.isRightSideAlreadyOpen = false;
+
+        this.objectGeoJson = [];
     }
 
     initTales(){
@@ -134,19 +139,19 @@ class MapModule{
         }
 
         let geos= this.settingGeos();
-
-        L.geoJson(geos, {
-            style: {
-                weight: 2,
-                opacity: 1,
-                color: (this.id_dep) ? "red" : "#63A3F6",
-                dashArray: '3',
-                fillOpacity: 0
-            },
-            onEachFeature: function (feature, layer) {
-                layer.bindTooltip(feature.properties.nom);
-            }
-        }).addTo(this.map);
+        this.geoJSONLayer = L.geoJson().addTo(this.map);
+        // this.geoJSONLayer = L.geoJson(geos, {
+        //     style: {
+        //         weight: 2,
+        //         opacity: 1,
+        //         color: (this.id_dep) ? "red" : "#63A3F6",
+        //         dashArray: '3',
+        //         fillOpacity: 0
+        //     },
+        //     onEachFeature: function (feature, layer) {
+        //         layer.bindTooltip(feature.properties.nom);
+        //     }
+        // }).addTo(this.map);
     }
 
     eventSetPositionOnMap(){
@@ -192,10 +197,6 @@ class MapModule{
     }
 
     updateCenter(lat, long, zoom){
-        console.log("lat: " , lat)
-        console.log("long: " , long)
-        console.log("zoom: ", zoom)
-        
         this.map.setView(L.latLng(lat, long), zoom, { animation: true });
     }
 
@@ -589,7 +590,7 @@ class MapModule{
                 <button class="btn btn-info" data-type="info_jheo_js">
                     <i class="fa-solid fa-info"></i>
                 </button>
-                <button class="btn btn-secondary" data-type="couche">
+                <button class="btn btn-primary" data-type="couche_jheo_js">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
                 
@@ -605,8 +606,8 @@ class MapModule{
                 'foo': 'bar',
             },
             events:{
-                click: function(data) {
-                    openRightSide(data.srcElement.dataset.type);
+                click: (data) => {
+                    this.openRightSide(data.srcElement.dataset.type);
                 },
                 // dblclick: function(data){
                 //     closeRightSide();
@@ -712,6 +713,54 @@ class MapModule{
         `
 
         document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+    }
+
+    openRightSide(rightSideContentType){
+        if( document.querySelector(".close_details_jheo_js")){
+            document.querySelector(".close_details_jheo_js").click();
+        }
+    
+        const cart_width= '75%';
+        const cont_legent_width= '25%';
+        
+        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+    
+            if( rightSideContentType === "info_jheo_js"){
+                injectStatusGolf();
+            }else{
+                this.injectChooseCouche();
+            }
+    
+            document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+            document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
+            document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+        }else{
+            console.log("Selector not found")
+            console.log("cart_map_jheo_js", "content_legende_jheo_js")
+        }
+    
+    
+        if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
+            document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+                this.closeRightSide();
+            })
+        }
+
+    }
+
+    closeRightSide(){
+        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+            document.querySelector(".cart_map_jheo_js").style.width= '100%';
+            document.querySelector(".content_legende_jheo_js").style.width= '0%';
+            document.querySelector(".content_legende_jheo_js").style.padding= '0';
+        }else{
+            console.log("Selector not found")
+            console.log("cart_map_jheo_js", "content_legende_jheo_js")
+        }
+    }
+
+    injectChooseCouche(){
+        throw new Error("The function 'injectChooseCouche' must be redefined on child.")
     }
 
 }

@@ -52,6 +52,10 @@ body {
             color-stop(.6, #54DE5D))
 }
 
+.padding_header{
+    padding-left: 3.2rem;
+}
+
 /* **********navLeft************* */
 
 .navleft {

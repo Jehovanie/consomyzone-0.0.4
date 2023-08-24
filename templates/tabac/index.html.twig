@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tabac ConsoMyZone{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/tabac/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script src="{{asset('assets/js/tabac/data_tabac.js')}}" defer></script>
+
+    <script src="{{asset('assets/js/tabac/leaflet.shpfile.js')}}" defer></script>
+    <script src="{{asset('assets/js/tabac/shp.js')}}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterTabac.js') }}" defer></script>
+
+	<script type="text/javascript" src="{{ asset('assets/js/tabac/marckerClusterTabac_all_dep.js') }}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/tabac/tabac.js') }}" defer></script>
+    {# <script src="{{asset('assets/js/tabac/details.js')}}" defer></script> #}
+{% endblock %}
+
+{% block body %}
+    <div class="content_cart_body">
+
+        {# //// NAV LEFT #}
+        {# <div class="responsif-none" id="tous">
+            {% include 'shard/tabac/tabac_navleft.twig' %}
+        </div> #}
+
+        {# //// NAV BAR  #}
+        <div class="responsif-none">
+            {% include 'shard/navbar.twig' %}
+        </div>
+        
+        {# //// CONTENT CART #}
+        <div>
+            <div class="d-flex content_cart_map content_cart_map_jheo_js">
+                <div class="cart_map cart_map_js cart_map_jheo_js">
+                    {# content chargement  #}
+                    <div class="chargement_content" id="toggle_chargement">
+                        <div class="containt">
+                            <div class="word word-1">C</div>
+                            <div class="word word-2">M</div>
+                            <div class="word word-3">Z</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    
+    
+    {% include 'shard/chatBot.html.twig' %}
+    {# {% include 'shard/tabac/detail_golf_navleft.twig' %}
+    {% include 'shard/tabac/modalDetailMobil.html.twig' %} #}
+{% endblock %}

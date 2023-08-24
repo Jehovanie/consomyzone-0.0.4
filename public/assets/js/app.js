@@ -206,25 +206,15 @@ if( document.querySelector("#show_list")){
 
 
 if( document.querySelector("#hide_list")){
-
-
-
     const btn_hide_list = document.querySelector("#hide_list");
-
-    
 
     btn_hide_list.addEventListener("click", () => {
 
         // contentMessageFlash.style.animation = "toShowFlass 0.8s linear forwards"
-
         document.querySelector(".left_content_home").style.animation ="toHideList 0.8s linear forwards";
-
         document.querySelector(".right_content_home").style.animation ="toScaleUp 0.8s linear forwards";
 
-
-
         document.querySelector("#show_list").style.display="block"
-
     })
 
 }
@@ -889,6 +879,8 @@ if (document.querySelector(".list-nav-bar")) {
         document.querySelector("#station-page").classList.add("active");
     }else if( activPage.includes("/golf")){
         document.querySelector("#golf-page").classList.add("active");
+    }else if( activPage.includes("/tabac")){
+        document.querySelector("#tabac-page").classList.add("active");
     }else if(activPage.length === 1 ){
         document.querySelector("#tous-page").classList.add("active");
     }
