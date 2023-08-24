@@ -859,56 +859,39 @@ function createVisioGroup() {
 
     htm+="</ul></div>"
 
-    const { value: accept } = Swal.fire({
-        title: 'Réunion par visioconférence',
-        input: 'text',
-        inputPlaceholder:
-          'Entrer le tritre de conférence',
+    Swal.fire({
+        title: 'Inviter des amis',
+        html: htm,
+        showCloseButton: true,
         showCancelButton: true,
-        cancelButtonText: 'Pas maintenant',
+        focusConfirm: false,
         confirmButtonText:
-          'Créer la conférence <i class="fas fa-arrow-right"></i>',
-        inputValidator: (result) => {
-          return (result.length < 9 || /[^a-zA-Z0-9]/g.test(result)) && '9 caractères réquis, ni espace ni caractère spéciaux'
+          '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
+        cancelButtonText:
+          '<i class="fas fa-close"></i> Pas maitenant',
+      }).then(res=>{
+        if (res.isConfirmed){
+
+            let roomGroup = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+
+            if(document.querySelectorAll("#list-group-user-visio > li.selected").length>0){
+
+                document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li=>{
+
+                    runVisio(roomGroup, li.getAttribute("user_id_visio"))
+
+                })
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Aucun utilisateur sélectionné!',
+                    footer: 'Réunion annulée!'
+                  })
+            }
+            
         }
-        
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Inviter des amis',
-                html: htm,
-                showCloseButton: true,
-                showCancelButton: false,
-                focusConfirm: false,
-                confirmButtonText:
-                  '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
-              }).then(res=>{
-                if (res.isConfirmed){
-
-                    let roomGroup = result.value
-
-                    if(document.querySelectorAll("#list-group-user-visio > li.selected").length>0){
-
-                        document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li=>{
-
-                            runVisio(roomGroup, li.getAttribute("user_id_visio"))
-    
-                        })
-                    }else{
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Aucun utilisateur sélectionné!',
-                            footer: 'Réunion annulée!'
-                          })
-                    }
-                    
-                }
-              })
-        } 
       })
-      
     
 }
 

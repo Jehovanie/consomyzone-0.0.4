@@ -16,6 +16,8 @@ use App\Service\MailService;
 
 use App\Form\InscriptionType;
 
+use App\Service\AgendaService;
+
 use App\Entity\Confidentiality;
 
 use App\Service\MessageService;
@@ -33,9 +35,7 @@ use App\Security\UserAuthenticator;
 use App\Service\NotificationService;
 
 use App\Repository\CodeapeRepository;
-
 use App\Repository\CommuneRepository;
-use App\Service\AgendaService;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +43,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Routing\Annotation\Route;
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -59,7 +61,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
@@ -135,6 +136,7 @@ class SecurityController extends AbstractController
     ): Response {
 
         if ($this->getUser()) {
+
             return $this->redirectToRoute('app_account');
         }
 
@@ -349,10 +351,26 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/deconnexion', name: 'app_logout')]
+
+    #[Route(path: '/deconnexion', name: 'app_disconnect')]
+    public function disconnect(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager): ?Response
+    {
+        $user = $this->getUser();
+
+        $user->setIsActive(0);
+
+        ///stock the user
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new RedirectResponse($urlGenerator->generate('app_logout'));
+        
+    }
+
+    #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-
+        
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 

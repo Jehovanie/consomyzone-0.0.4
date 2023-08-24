@@ -170,7 +170,7 @@
 
 						{% for amis in amisTributG %}
 
-							{% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+							{% if not (amis.id|number_format is same as(app.user.id|number_format)) and amis.is_online == 1 %}
 
 								<div class="cg-chat lc-chat mg-chat sh-chat ol-chat rl-chat tq-chat is-chat user_friends" data-toggle-user-id={{amis.id}} tooltip={{amis.email}}>
 									<div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">

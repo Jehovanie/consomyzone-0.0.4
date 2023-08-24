@@ -128,8 +128,6 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
                         $userId = $user->getId();
 
-
-
                         if ($userType == "consumer") {
 
                             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
@@ -170,9 +168,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
                     
 
-                
 
-                
 
                 return $user;
 
@@ -196,6 +192,15 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+
+        $user = $token->getUser();
+
+        $user->setIsActive(1);
+
+        ///stock the user
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
         // return new RedirectResponse($this->urlGenerator->generate('app_account'));
         return new RedirectResponse($this->urlGenerator->generate('app_actualite'));
     }
@@ -209,6 +214,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
 
     }
+    
 
 }
 

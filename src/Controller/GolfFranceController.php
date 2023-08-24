@@ -59,6 +59,7 @@ class GolfFranceController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsActive(),
                     ];
 
                     ///get it
@@ -141,6 +142,7 @@ class GolfFranceController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsActive(),
                     ];
 
                     ///get it
