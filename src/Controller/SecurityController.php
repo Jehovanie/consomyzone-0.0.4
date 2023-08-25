@@ -444,6 +444,7 @@ class SecurityController extends AbstractController
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
         $user->setVerifiedMail(false);
+        $user->setIsConnected(true);
 
 
 

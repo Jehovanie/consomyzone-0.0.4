@@ -1320,7 +1320,7 @@ function showPartisanAgenda(tribu_t_name) {
                             <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
                             <td>${firstName}</td>
                             <td>${lastName}</td>
-                            <td></td>
+                            <td class="content-checkbox"></td>
                             <td>${json.roles}</td>
                             <td>
                                 <input type="checkbox" name="selectOui" class="select-tribu-t-oui" data-id="${json.user_id}" data-tribu="${tribu_t_name}" data-toggle-last="${lastName}" data-toggle-pdp="${profil}" value="${firstName}" onchange="handleChange(this)">
