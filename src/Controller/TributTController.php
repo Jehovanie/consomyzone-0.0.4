@@ -184,6 +184,12 @@ class TributTController extends AbstractController
         $json = $serializer->serialize($v, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
+
+
+    
+
+
+
     #[Route('/user/get/comment/pub', name: "user_get_comment_pubss",methods:["GET"])]
     public function getCommentPubTribuT(Request $request,Tribu_T_Service $serv,SerializerInterface $serializer){
 
