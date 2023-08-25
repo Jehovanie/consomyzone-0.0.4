@@ -93,6 +93,7 @@ class FermeController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
                     ];
 
                     ///get it
@@ -192,6 +193,7 @@ class FermeController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
                     ];
 
                     ///get it
