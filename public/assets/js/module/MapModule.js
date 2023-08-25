@@ -584,17 +584,24 @@ class MapModule{
     }
 
     bindOtherControles(){
-        L.control.custom({
-            // position: 'topright',
-            content : `
-                <button class="btn btn-info" data-type="info_jheo_js">
+        console.log(this)
+        let htmlControl = '';
+        if( this.mapForType === "golf"){
+            htmlControl= `
+                <button class="btn btn-info" data-type="info_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-info"></i>
                 </button>
+            `
+        }else if( this.mapForType === "tabac") {
+            htmlControl= `
                 <button class="btn btn-primary" data-type="couche_jheo_js">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
-                
-            `,
+            `
+        }
+        L.control.custom({
+            // position: 'topright',
+            content : htmlControl,
             classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
             // style   :
             // {

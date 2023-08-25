@@ -1,7 +1,7 @@
 class MarckerClusterTabac extends MapModule {
 
     constructor(nom_dep=null,id_dep=null){
-        super(id_dep,nom_dep, "golf")
+        super(id_dep,nom_dep, "tabac")
 
         // REFERENCES : https://gist.github.com/frankrowe/9007567
         this.tabacOption = [
