@@ -1698,3 +1698,43 @@ i.fa-eye-slash, i.fa-eye{
 .content_titre_details{
     z-index: 1 !important;
 }
+
+#confirmPartageAgenda .modal-content{
+    height: 150px;
+}
+
+.partage_agenda{
+    background-color: #fff;
+    /* height: 115vh; */
+}
+
+.partage_agenda h3 svg {
+    display: inline !important;
+}
+
+.partage_agenda .dataTables_wrapper{
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.partage_agenda .btn-partage-agenda{
+    width: 250px;
+    margin-left: 58vw !important;
+}
+
+.pdp-agenda-tribu-g{
+    width: 50px;
+    clip-path: circle(40%);
+}
+
+.pdp-agenda-tribu-t {
+    width: 50px;
+    clip-path: circle(40%);
+}
+
+.btn-second-primary{
+    background-color: #7eb8ee !important;
+    border: #7eb8ee 1px solid !important;
+    pointer-events: none;
+}

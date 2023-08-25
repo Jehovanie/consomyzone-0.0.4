@@ -3,85 +3,63 @@
 <div class="modal fade" id="confirmPartageAgenda" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title modal_title_event_jheo_js" id="modalShowEvent">Confirmation</h5>
-        </div>
-        <div class="modal-body">
-            Veuillez partager cette agenda ?
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-target="#listPartisantInTribu" data-bs-toggle="modal" data-bs-dismiss="modal">OUI</button>
+        <h3 class="mx-auto mt-4">Voulez-vous partager ?</h3>
+        <div class="mx-auto mt-3">
+            <a href="{{path('app_partage_agenda')}}" class="btn btn-primary">OUI</a>
             <button type="button" class="btn btn-danger" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">NON</button>
         </div>
     </div>
   </div>
 </div>
 
-{# MODAL FOR GOLF OR RESTO #}
-<div class="modal fade" id="listPartisantInTribu" aria-hidden="true" aria-labelledby="listRestoOrGolfModal_label" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <a href="#" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">
-          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
+{# CONFIRM PARTAGE AGENDA du partage #}
+<div class="modal fade " id="confirmPartageAgendaTribu" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<h3 class="mx-auto mt-4">Voulez-vous partager ?</h3>
+			<div class="mx-auto mt-3 mb-3">
+				<a href="" class="btn btn-primary">OUI</a>
+				<button type="button" class="btn btn-danger" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">NON</button>
+			</div>
+		</div>
+	</div>
+</div>
 
-            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
-              <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
-              17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
-              9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
-              92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"></path>
-            </g>
-          </svg>
-        </a>
-        <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
-          <li class="nav-item">
-            <a class="nav-link text-secondary list_partisant_tous_jheo_js active" aria-current="page" href="#" onclick="tableActiveFilterPartisant(this)">Tous</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary list_partisant_tribuG_jheo_js" href="#" onclick="tableActiveFilterPartisant(this)">Tribu G</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary list_partisant_tribuT_jheo_js" href="#" onclick="tableActiveFilterPartisant(this)">Tribu T</a>
-          </li>
-        </ul>
-        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body custom_modal">
-        <div class="container_list">
-            <div class="form-check float-end mb-3">
-                <input class="form-check-input" type="checkbox" value="" id="checkTous" name="checkTous" >
-                <label class="form-check-label user-select-none" for="checkTous">
-                    Séléctionner tous
-                </label>
-            </div>
-            <div class="list_resto_or_golf">
-                <table class="table table-striped" id="tableEtabCMZ">
-                    <thead>
-                    <tr>
-                        {# <th scope="col" class="d-none forLogo">Logo</th>
-                        <th scope="col" class="d-none forTribu">TribuT</th> #}
-                        <th scope="col">Nom</th>
-                        <th scope="col">Adresse</th>
-                        <th scope="col">Téléphone</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {# <tr>
-                        <td>ROYAT BURGER</td>
-                        <td>2bis allard 63130 royat</td>
-                        <td>
-                        <button type="button" class="btn btn-outline-info">Choisir</button>
-                        </td>
-                    </tr> #}
-                    </tbody>
-                </table>
-            </div>
+
+  <div class="modal fade" id="ModalPartisonsSelect" aria-hidden="true" aria-labelledby="listRestoOrGolfModal_label" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste des partisans que vous avez sélectionner</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-info cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Terminer</button>
+        <div class="modal-body custom_modal">
+          <div class="container_list">
+              <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda">
+                  <table id="list-partisans-tribu-selection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Profile</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Prenom</th>
+                            <th scope="col">Tribu</th>
+                            <th scope="col">
+                                <input type="checkbox" class="selectTribuGAll" name="selectionner" id="selectTribuGAll" onclick="selectTribuGAll(this)"> 
+                                <label for="selectionner">Sélection</label></th>
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="list-partisans-tribu-selection-ckecked">
+                        
+                    </tbody>
+                  </table>
+              </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-info cta_close_list_resto_jheo_js">Terminer</button>
+        </div>
       </div>
     </div>
   </div>
-</div>

@@ -742,13 +742,20 @@ if (document.querySelector(".list-nav-left")) {
     const activPage = window.location.pathname
     const links = document.querySelectorAll('.list-nav-left');
     const superAdmin = document.querySelector(".dashbord-super-admin")
-
+    const myAgenda = document.querySelector(".myAgendaLink")
+    
     if (links.length) {
+        
         links.forEach((link) => {
+            
             if (link.href.includes(`${activPage}`)) {
                 link.classList.add("active");
+                
             } else if (superAdmin) {
                 document.querySelector("#link-super-admin").classList.add("active");
+            }
+             else if (myAgenda) {
+                document.querySelector("#link-agenda").classList.add("active");
             }
         });
     }
@@ -872,3 +879,37 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
     showPageProfile('apropos_pdp');
 }
 
+//SPA agenda list
+
+if (document.querySelector("#smallNavInvitation > li > a")) {
+    const navLinks = document.querySelectorAll('#smallNavInvitation > li > a');
+    const pages = document.querySelectorAll('.list_resto_or_golf');
+    
+    
+    let pageStyle = null
+    function showPageAgenda(pageId) {
+        pages.forEach(page => {
+            pageStyle = page.getAttribute('style')
+            
+            if (page.id === pageId) {
+                page.style.display = 'block';
+            } else {
+                page.style.display = 'none';
+            }
+        });
+    }
+
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', event => {
+            const dataLink = link.getAttribute('data-target')
+            
+            event.preventDefault();
+            const pageId = event.target.dataset.target;
+                showPageAgenda(pageId);
+        });
+    });
+    
+
+    showPageAgenda('agenda-tribu-g');
+} 

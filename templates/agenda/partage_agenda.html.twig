@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Agenda
+{% endblock %}
+
+{% block stylesheets %}
+
+	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/core/main.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/daygrid/main.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+{% endblock %}
+
+
+{% block javascripts %}
+	{# ----------------------agendea-------------------- #}
+	<script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
+	<script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+	<script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+	<div class="nh">
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv hm hv">
+			<div class="sk bu 2xl:ud-p-11 partage_agenda">
+                <div class=" myAgendaLink">
+                    <h3 class="text-center">
+                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="25pt" height="25pt" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
+
+                            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                                <path d="M2257 4755 c-480 -61 -905 -263 -1264 -602 -81 -76 -94 -133 -42
+                                    -182 50 -47 94 -32 204 71 362 336 806 517 1310 535 523 18 1017 -163 1415
+                                    -517 l45 -40 -95 0 c-155 0 -205 -25 -205 -101 0 -29 7 -46 27 -66 l27 -27
+                                    247 3 c136 1 257 6 269 11 52 20 55 36 55 291 0 142 -4 248 -11 267 -21 62
+                                    -95 81 -146 38 -27 -24 -28 -27 -33 -152 l-5 -128 -65 59 c-301 270 -681 453
+                                    -1095 526 -156 27 -480 35 -638 14z"/>
+                                <path d="M845 3542 c-109 -38 -208 -120 -254 -210 -43 -85 -51 -143 -51 -387
+                                    0 -126 5 -246 10 -266 6 -20 24 -56 40 -80 29 -43 30 -46 30 -175 l0 -130 -87
+                                    -48 c-47 -27 -145 -88 -217 -137 -308 -207 -320 -226 -314 -508 l3 -163 28
+                                    -24 c37 -32 87 -32 124 0 l28 24 5 169 c3 92 9 174 14 181 25 40 302 228 470
+                                    319 132 71 130 68 134 285 2 100 1 196 -3 214 -3 18 -22 52 -41 75 l-35 42 3
+                                    242 3 242 30 49 c19 30 49 60 79 79 45 27 59 30 150 33 119 5 163 -7 217 -55
+                                    80 -72 84 -88 87 -349 l3 -231 -35 -42 c-44 -53 -49 -82 -44 -303 4 -212 3
+                                    -210 134 -281 168 -91 445 -279 470 -319 5 -7 11 -89 14 -181 l5 -169 28 -24
+                                    c37 -32 87 -32 124 0 l28 24 3 159 c6 250 -10 289 -168 411 -93 71 -292 200
+                                    -397 257 l-53 28 0 132 c0 118 2 135 20 158 11 14 29 45 40 69 18 39 20 66 20
+                                    283 0 262 -7 316 -57 407 -37 67 -121 143 -200 181 -65 30 -75 32 -203 35
+                                    -109 2 -145 -1 -185 -16z"/>
+                                <path fill="#0D6EFD"  d="M3935 3542 c-109 -38 -208 -120 -254 -210 -43 -85 -51 -143 -51 -387
+                                    0 -126 5 -246 10 -266 6 -20 24 -56 40 -80 29 -43 30 -46 30 -175 l0 -130 -87
+                                    -48 c-47 -27 -145 -88 -217 -137 -308 -207 -320 -226 -314 -508 l3 -163 28
+                                    -24 c50 -43 124 -26 150 35 6 14 14 96 17 181 l5 154 60 49 c85 69 293 205
+                                    408 267 140 75 137 67 137 323 0 122 -4 216 -10 227 -6 11 -22 31 -35 46 l-25
+                                    27 0 231 c0 229 0 233 25 283 47 93 125 133 259 133 122 -1 199 -42 249 -135
+                                    20 -37 22 -57 25 -271 l3 -232 -30 -34 c-17 -19 -35 -47 -41 -62 -5 -15 -10
+                                    -109 -10 -214 1 -245 2 -248 131 -317 188 -101 450 -281 476 -328 8 -14 12
+                                    -71 13 -160 0 -147 11 -196 48 -216 34 -18 79 -13 109 13 l28 24 3 159 c6 250
+                                    -10 289 -168 411 -93 71 -292 200 -397 257 l-53 28 0 132 c0 118 2 135 20 158
+                                    11 14 29 45 40 69 18 39 20 66 20 283 0 262 -7 316 -57 407 -37 67 -121 143
+                                    -200 181 -65 30 -75 32 -203 35 -109 2 -145 -1 -185 -16z"/>
+                                <path d=" M1090 1291 c-242 -6 -259 -10 -279 -59 -19 -45 -11 -499 8 -529 32
+                                -48 94 -56 140 -17 l31 26 0 125 c0 145 -13 142 116 29 160 -139 418 -291 624
+                                -369 294 -111 558 -155 875 -144 547 18 1052 229 1443 604 78 74 82 80 82 121
+                                0 58 -33 92 -88 92 -36 0 -50 -9 -144 -92 -265 -237 -522 -380 -838 -468 -227
+                                -63 -555 -86 -780 -56 -418 57 -771 214 -1072 477 l-76 67 116 4 c124 4 152
+                                13 171 55 18 40 13 78 -15 107 -15 14 -32 26 -38 26 -6 0 -20 2 -31 3 -11 2
+                                -121 1 -245 -2z"/>
+                            </g>
+                        </svg>
+                        Partagez agenda
+                    </h3>
+                    
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            
+                            <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
+                                
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary list_partisant_tribuG_jheo_js active agenda-tribu-g" data-target="agenda-tribu-g" onclick="tableActiveFilterPartisant(this)">Tribu G</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary list_partisant_tribuT_jheo_js agenda-tribu-t" data-target="agenda-tribu-t" onclick="tableActiveFilterPartisant(this)">Tribu T</a>
+                                </li>
+                                {# <li class="nav-item">
+                                    <a class="nav-link text-secondary list_partisant_tous_jheo_js  agenda-tribu-g-t" aria-current="page" data-target="agenda-tribu-g-t" onclick="tableActiveFilterPartisant(this)">Tribu G et Tribu T </a>
+                                </li> #}
+                            </ul>
+                        </div>
+                        <div class="modal-body custom_modal">
+                            <div class="container_list">
+                                
+                                {# <div class="list_resto_or_golf " id="agenda-tribu-g-t">
+                                    <table id="list-tribu-partage-agenda" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">N°</th>
+                                                <th scope="col">Nom</th>
+                                                <th scope="col">Prenom</th>
+                                                <th scope="col">Pseudo</th>
+                                                <th scope="col">Rôle</th>
+                                                <th scope="col">
+                                                    <input type="checkbox" class="selectAll" name="selectionner" id="selectAll" onclick="selectAll(this)"> 
+                                                    <label for="selectionner">Sélectionner tout</label></th>
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody >
+                                            {% set id = 2 %}
+                                            <tr>
+                                                <td>1</td>
+                                                <td>{{allTribuG|replace({'_': ' '})}}</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <input type="checkbox" name="selectOui" class="select-oui">
+                                                    <label for="oui"></label>
+                                                </td>
+                                            </tr>
+                                            {% for allTribuT in allTribuTs %}
+                                                <tr>
+                                                    <td>{{ id }}</td>
+                                                    <td>{{allTribuT.table_name|replace({'_': ' '})}}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="checkbox" name="selectOui" class="select-oui">
+                                                        <label for="oui"></label>
+                                                    </td>
+                                                </tr>
+                                                {% set id = id + 1 %}
+                                            {% endfor %}
+                                        </tbody>
+                                        
+                                    </table>
+                                </div> #}
+
+                                <div class="list_resto_or_golf" id="agenda-tribu-g">
+                                    <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste des partisans de votre {{allTribuG|replace({'_': ' '})}}</h5>
+                            
+                                    <table id="list-tribu-g-partage-agenda" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Profile</th>
+                                                <th scope="col">Nom</th>
+                                                <th scope="col">Prenom</th>
+                                                <th scope="col">Email</th>
+                                                <th scope="col">Rôle</th>
+                                                <th scope="col">
+                                                    <input type="checkbox" class="selectTribuGAll" name="selectionner" id="selectTribuGAll" onclick="selectTribuGAll(this)"> 
+                                                    <label for="selectionner">Sélectionner tout</label></th>
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody >
+                                            {% for result in results %}
+                                            <tr>
+                                                <td>
+                                                    {% if result.photoProfil != null %}
+                                                        <img src={{ result.photoProfil }} alt="" class="pdp-agenda-tribu-g">
+                                                    {% else %}
+                                                        <img src="/uploads/users/photos/img_avatar.png" alt="" class="pdp-agenda-tribu-g">
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ result.lastname }}</td>
+                                                <td>{{ result.firstname }}</td>
+                                                <td>{{ result.email }}</td>
+                                                <td>{{ result.roles }}</td>
+                                                <td class="content-checkbox">
+                                                    <input type="checkbox" name="selectOui" class="select-tribu-g-oui" data-email="{{result.email}}" data-id="{{result.id}}" data-tribu="{{allTribuG|replace({'_': ' '})}}" data-toggle-pdp="{{ result.photoProfil }}" data-toggle-last="{{ result.lastname }}" value="{{result.firstname}}" onchange="handleChange(this)">
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+
+                                <div class="list_resto_or_golf" id="agenda-tribu-t">
+                                    <table id="list-tribu-t-partage-agenda" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">N°</th>
+                                                <th scope="col">Vos Tribus T</th>
+                                                <th scope="col">
+                                                    {# <input type="checkbox" class="selectAll" name="selectionner" id="selectAll" onclick="selectAll(this)">  #}
+                                                    <label for="selectionner">Sélectionner</label></th>
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody >
+                                            {% set id = 1 %}
+                                           
+                                            {% for allTribuT in allTribuTs %}
+                                                <tr  data-value="{{ allTribuT.table_name }}" class="tribu_t_partisans_{{ allTribuT.table_name }}">
+                                                    <td>{{ id }}</td>
+                                                    <td>{{allTribuT.table_name|replace({'_': ' '})}}</td>
+                                                   
+                                                    <td>
+                                                        {# <input type="checkbox" name="selectOui" class="select-oui">
+                                                        <label for="oui">Oui</label> #}
+                                                        <a class="btn btn-success listPartisantInTribuT" id="tribu_t_partisans_{{ allTribuT.table_name }}" data-bs-target="#listPartisantInTribu_{{ allTribuT.table_name }}" data-bs-toggle="modal" data-bs-dismiss="modal" onclick="showPartisanAgenda('{{ allTribuT.table_name }}')">Liste des partisans</a>
+                                                    </td>
+                                                </tr>
+                                                {% set id = id + 1 %}
+                                            {% endfor %}
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        
+                    </div>
+
+                    <div class="row btn-partage-agenda mt-5">
+                        <div class="col-8">
+                            <button class="btn btn-primary btn-second-primary " type="button"  data-bs-toggle="modal" data-bs-target="#ModalPartisonsSelect" id="getPartisonsSelectAgenda" >Vos sélections</button>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-danger">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</main>
+		<!-- ===== Main Content End ===== -->
+	</div>
+
+	
+	{% include 'shard/modal/new_agenda.html.twig' %}
+	{% include 'shard/modal/show_agenda.html.twig' %}
+	{% include 'shard/modal/partage_agenda.html.twig' %}
+	{% include 'shard/modal/partage_agenda_tribu_t.html.twig' %}
+	{% include 'shard/modal/alert_flash.html.twig' %}
+{% endblock %}
+
