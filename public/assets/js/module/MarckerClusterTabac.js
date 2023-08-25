@@ -21,12 +21,12 @@ class MarckerClusterTabac extends MapModule {
             this.createMarkersCluster();
             this.initMap(null, null, isAddControl);
 
-            // const link =( this.nom_dep && this.id_dep) ? `/api/golf/departement/${this.nom_dep}/${this.id_dep}` : `/api/golf`;
-            // const response= await fetch(link);
-            // const result= await response.json();
-            // this.default_data = result.data
+            const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
+            const response= await fetch(link);
+            const result= await response.json();
+            this.default_data = result.data
             
-            // this.data= this.default_data; 
+            this.data= this.default_data; 
             
 
             this.bindAction()
@@ -100,6 +100,71 @@ class MarckerClusterTabac extends MapModule {
     }
 
     addMarker(newData){
+
+        newData.forEach(item => {
+            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>"  + item.adress;
+            let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+            
+            let pathIcon="assets/icon/NewIcons/tabac_black.png";
+            let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+
+            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
+            
+            marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+
+            marker.on('click', (e) => {
+                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+                pathIcon='/assets/icon/NewIcons/tabac_red.png';
+               
+                const icon_R = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                        iconSize: [45,55],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
+                    }
+                })
+                marker.setIcon(new icon_R);
+
+                if (this.marker_last_selected && this.marker_last_selected != marker ) {
+
+                    let pathIcon='/assets/icon/NewIcons/tabac_map.png';
+
+                    const icon_B = L.Icon.extend({
+                        options: {
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + pathIcon : this.currentUrl.origin + "/public" + pathIcon ,
+                            iconSize: [32,50],
+                            iconAnchor: [11, 30],
+                            popupAnchor: [0, -20],
+                            //shadowUrl: 'my-icon-shadow.png',
+                            shadowSize: [68, 95],
+                            shadowAnchor: [22, 94]
+                        }
+                    })
+                    this.marker_last_selected.setIcon(new icon_B)
+                }
+                this.marker_last_selected = marker;
+
+                this.markers.refreshClusters();
+
+                
+                if (screen.width < 991) {
+                    let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
+                    getDetailHomeForMobile(pathDetails)
+                } else {
+                    // getDetailsFerme(pathDetails, true)getDetailStation
+                    getDetailTabac(item.dep, item.nom_dep, item.id)
+                }
+
+            })
+
+            this.markers.addLayer(marker);
+
+        })
+        this.map.addLayer(this.markers);
     }
 
     addEventOnMap(map) {
@@ -160,7 +225,7 @@ class MarckerClusterTabac extends MapModule {
                 <div class="form-check">
                     <div class="content_input">
                         <input class="form-check-input check_tabac_region_jheo_js" type="checkbox" value="" id="region">
-                        <label class="form-check-label" for="region">
+                        <label class="form-check-label text-black" for="region">
                             REGION
                         </label>
                         <!-- <span class="badge bg-info show_list_select">AFFICHER</span> -->
@@ -170,35 +235,18 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune">
-                    <label class="form-check-label" for="commune">
-                        COMMUNE
-                    </label>
-                    <div class="content_select_commune_jheo_js">
-                        <div class="select_region select_commune_jheo_js"></div>
-                    </div>
-                </div>
-                <div class="form-check">
                     <input class="form-check-input check_tabac_departement_jheo_js" type="checkbox" value="" id="departement">
-                    <label class="form-check-label" for="departement">
+                    <label class="form-check-label text-black" for="departement">
                         DEPARTEMENT
                     </label>
                     <div class="content_select_departement_jheo_js">
                         <div class="select_region select_departement_jheo_js"></div>
                     </div>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" >
-                    <label class="form-check-label" for="iris">
-                        IRIS
-                    </label>
-                    <div class="content_select_iris_jheo_js">
-                        <div class="select_region select_iris_jheo_js"></div>
-                    </div>
-                </div>
+                
                 <div class="form-check">
                     <input class="form-check-input check_tabac_quartier_jheo_js" type="checkbox" value="" id="quartier" >
-                    <label class="form-check-label" for="quartierDeVie">
+                    <label class="form-check-label text-black" for="quartier">
                         QUARTIER DE VIE
                     </label>
                        <div class="content_select_region_jheo_js">
@@ -210,11 +258,29 @@ class MarckerClusterTabac extends MapModule {
                 </div>
                 <div class="form-check">
                     <input class="form-check-input check_tabac_canton_jheo_js" type="checkbox" value="" id="canton" >
-                    <label class="form-check-label" for="canton">
+                    <label class="form-check-label text-black" for="canton">
                         CANTON
                     </label>
                     <div class="content_select_canton_jheo_js">
                         <div class="select_region select_canton_jheo_js"></div>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune" disabled>
+                    <label class="form-check-label text-black" for="commune">
+                        COMMUNE
+                    </label>
+                    <div class="content_select_commune_jheo_js">
+                        <div class="select_region select_commune_jheo_js"></div>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" disabled>
+                    <label class="form-check-label text-black" for="iris">
+                        IRIS
+                    </label>
+                    <div class="content_select_iris_jheo_js">
+                        <div class="select_region select_iris_jheo_js"></div>
                     </div>
                 </div>
             </div>
@@ -248,6 +314,10 @@ class MarckerClusterTabac extends MapModule {
                     this.removeCoucheOnLeafled(couche)
                     if(list && !list.classList.contains("d-none") ){
                         list.classList.add("d-none")
+
+                        while (list.firstChild) {
+                          list.removeChild(list.firstChild);
+                        }
                     }
                 }
             })
@@ -267,8 +337,10 @@ class MarckerClusterTabac extends MapModule {
 
                 const reader = new FileReader();
                 reader.onload = () => {
+                    console.log(reader.result)
                     shp(reader.result)
                         .then((geoJson) =>{
+                            
                             const coucheOption= this.tabacOption.find(item => item.couche === COUCHE.toLowerCase());
 
                             this.objectGeoJson.push({ couche: COUCHE, data : geoJson.features, color : coucheOption.arrayColor , child : []})
@@ -301,6 +373,11 @@ class MarckerClusterTabac extends MapModule {
         const geoJson = L.geoJson(data_spec.data[parseInt(indexInJson)], {
             style: styles,
             onEachFeature : (feature, layer)  => {
+                const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
+                const lat= (feature.geometry.bbox[1] + feature.geometry.bbox[3]) / 2 ;
+
+                this.updateCenter(lat, lng, 8);
+
                 const coucheOption= this.tabacOption.find(item => item.couche === couche.toLowerCase());
 
                 let description = "";
@@ -327,10 +404,14 @@ class MarckerClusterTabac extends MapModule {
         const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === COUCHE.toLowerCase());
 
         //// remove geoJsom
-        data_spec.child.forEach(jtem => jtem.geoJson.clearLayers())
+        data_spec.child.forEach(jtem => jtem.geoJson.clearLayers());
 
         ///// update data remove all children selected in this
-        this.objectGeoJson= this.objectGeoJson.filter(ktem => ktem.couche.toLowerCase() !== COUCHE.toLowerCase())
+        this.objectGeoJson= this.objectGeoJson.map(item => { 
+            item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
+            return item;
+        })
+
     }
 
     removeSpecGeoJson(couche,indexInJson){
@@ -342,9 +423,7 @@ class MarckerClusterTabac extends MapModule {
         jsonIndex.geoJson.clearLayers()
 
         this.objectGeoJson= this.objectGeoJson.map(item => { 
-            if( item.couche.toLowerCase() === couche ){
-                item.child = item.child.filter(ktem => ktem.index !== indexInJson)
-            }
+            item.child = ( item.couche.toLowerCase() === couche ) ?  item.child.filter(ktem => ktem.index !== indexInJson) : item.child;
             return item;
         })
     }

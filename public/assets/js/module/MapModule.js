@@ -696,7 +696,7 @@ class MapModule{
         container.innerHTML = `
             <div class="content_header_right_side">
                 <div class="header_right_side">
-                    <div class="title_right_side title_right_side_jheo_js">
+                    <div class="title_right_side text-black title_right_side_jheo_js">
                         CONTROL RIGHT SIDE
                     </div>
                     <div class="content_close_right_side">
@@ -719,7 +719,11 @@ class MapModule{
         if( document.querySelector(".close_details_jheo_js")){
             document.querySelector(".close_details_jheo_js").click();
         }
-    
+
+        if( document.querySelector('.icon_close_nav_left_jheo_js')){
+            document.querySelector(".icon_close_nav_left_jheo_js").click();
+        }
+
         const cart_width= '75%';
         const cont_legent_width= '25%';
         

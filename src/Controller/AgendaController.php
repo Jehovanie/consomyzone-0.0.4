@@ -685,9 +685,9 @@ class AgendaController extends AbstractController
         $newAgenda= [
             "title" => $title,
             "type" => $type,
-            "isEtabCMZ" => $isEtabCMZ,
-            "isGolfCMZ" => $isGolfCMZ,
-            "isRestoCMZ" => $isRestoCMZ,
+            "isEtabCMZ" => $isEtabCMZ ? 1 : 0 ,
+            "isGolfCMZ" => $isGolfCMZ ? 1 : 0 ,
+            "isRestoCMZ" => $isRestoCMZ ? 1 : 0 ,
             "name" => $name,
             "adresse" => $adresse,
             "description" => $description,

@@ -714,6 +714,21 @@ function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
     fetchDetails(id_selector, pathDetails);
 }
 
+
+function getDetailTabac(codeDepart,nameDepart, golfID, inHome = false) {
+
+    let remove = !inHome ? document.getElementById("remove-detail-tabac") : document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    const id_selector = !inHome ? "#content-details-tabac" : "#content_details_home_js_jheo";
+
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading();
+
+    const pathDetails = `/tabac/departement/${nameDepart}/${codeDepart}/${golfID}`;
+    fetchDetails(id_selector, pathDetails);
+}
+
 function getDetailsFermeForMobile(pathDetails) {
     // location.assign(pathDetails)
 

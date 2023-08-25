@@ -52,7 +52,7 @@ class GolfFranceRepository extends ServiceEntityRepository
      * 
      * @param integer $limits: number of the data to get
      * 
-     * @return array Ferme
+     * @return array Golf
      */
     public function getSomeDataShuffle($userID= null, $limits= 1000){
         $results=[];

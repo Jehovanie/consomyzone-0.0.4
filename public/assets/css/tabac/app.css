@@ -28,3 +28,17 @@
     width: 0 !important;
     display: none;
 }
+
+.navleft .list-depart {
+    margin-top: 0px;
+    font-size: 10pt;
+}
+
+.content_description {
+    height: 75vh !important;
+}
+.navleft .list-depart-all-specific {
+    height: 70vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}

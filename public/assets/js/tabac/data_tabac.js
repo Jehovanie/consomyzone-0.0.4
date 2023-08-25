@@ -6,7 +6,7 @@ function generateSelect(couche, data,itemsSelected= []){
         if(couche === "region"){
             nom_reg = item.properties.nom_reg;
         }else if( couche === "quartier"){
-            nom_reg = item.properties.nom_reg;
+            nom_reg = item.properties.code_qv + " " + item.properties.nom_pole ;
         }else if( couche === "departement"){
             nom_reg = item.properties.nom_reg;
         }else if( couche === "canton"){
@@ -18,7 +18,7 @@ function generateSelect(couche, data,itemsSelected= []){
         all_select_HTML += `
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="${couche + "_" + nom_reg + "_" + index}" onchange="updateGeoJson('${couche}', '${index}', this)" ${ isSelected ? "checked" : "" }>
-                <label class="form-check-label" for="${couche + "_" + nom_reg + "_" + index}">
+                <label class="form-check-label text-black" for="${couche + "_" + nom_reg + "_" + index}">
                     ${nom_reg.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()).join(" ")}
                 </label>
             </div>
@@ -42,3 +42,8 @@ function updateGeoJson(couche,index, e){
         OBJECT_MARKERS_TABAC.removeSpecGeoJson(couche, index)
     }
 }
+
+//// HIDE DETAILS TABAC POP UP
+document.querySelector(".close_details_jheo_js").addEventListener("click", () => { 
+    document.getElementById("remove-detail-tabac").setAttribute("class", "hidden")
+})
