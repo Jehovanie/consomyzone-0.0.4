@@ -195,7 +195,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
         $user = $token->getUser();
 
-        $user->setIsActive(1);
+        $user->setIsConnected(1);
 
         ///stock the user
         $this->entityManager->persist($user);

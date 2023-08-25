@@ -139,9 +139,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var bool
      *
-     * @ORM\Column(name="is_active", type="boolean", nullable=false)
+     * @ORM\Column(name="is_connected", type="boolean", nullable=false)
      */
-    private $isActive;
+    private $isConnected;
 
     
 
@@ -492,9 +492,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return  bool
      */ 
-    public function getIsActive()
+    public function getIsConnected()
     {
-        return $this->isActive;
+        return $this->isConnected;
     }
 
     /**
@@ -504,9 +504,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return  self
      */ 
-    public function setIsActive(bool $isActive)
+    public function setIsConnected(bool $isConnected)
     {
-        $this->isActive = $isActive;
+        $this->isConnected = $isConnected;
 
         return $this;
     }

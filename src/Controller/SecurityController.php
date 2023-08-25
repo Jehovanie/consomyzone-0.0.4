@@ -357,7 +357,7 @@ class SecurityController extends AbstractController
     {
         $user = $this->getUser();
 
-        $user->setIsActive(0);
+        $user->setIsConnected(0);
 
         ///stock the user
         $entityManager->persist($user);
