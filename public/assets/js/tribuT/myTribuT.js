@@ -174,6 +174,8 @@ function showPartisan() {
         }
     })
 }
+
+
 function convertFileToBlob(file) {
     const reader = new FileReader();
     reader.onload = function (e) {

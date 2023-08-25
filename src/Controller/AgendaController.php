@@ -18,8 +18,10 @@ use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
+use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\SupplierRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -1572,6 +1574,9 @@ class AgendaController extends AbstractController
         
     }
 
+
+    
+
     /** 
      *
      * 
@@ -1599,6 +1604,91 @@ class AgendaController extends AbstractController
             "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
+        ]);
+    }
+
+    #[Route("/user/tribu/partage/agenda", name: 'app_partage_agenda')]
+    public function partageAgenda( 
+        Request $request,
+        Status $status,
+        Tribu_T_Service $tributTService,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository
+    )
+    {
+        $user = $this->getUser();
+        $userId = $user->getId();
+
+        $userType = $user->getType();
+
+        if ($userType == "consumer") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+        
+        $allTribuT = $tributTService->getAllTribuT($userId);
+        
+        // $tableTribuTName = $request->query->get("tribuTName");
+        // $TribuTName = $tributTService->getPartisanOfTribuT($allTribuT);
+        // dd($TribuTName);
+        $tableTribuGName = $profil[0]->getTributG();
+
+        $allTribuG = $tableTribuGName;
+
+        $results = [];
+
+        $under_tributG = $tributGService->getAllUserWithRoles($allTribuG);
+        if ($under_tributG === 0) {
+            goto quit;
+        }
+
+        foreach ($under_tributG as $tributG) {
+
+            $user = $userRepository->find(intval($tributG["user_id"]));
+            if ($user->getType() === "consumer") {
+                $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
+            } else {
+                $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+            }
+            // dd($user_profil);
+            $result = [
+                "id" => $tributG["user_id"],
+                "roles" => $tributG["roles"],
+                "email" => $user->getEmail(),
+                "firstname" => $user_profil->getFirstname(),
+                "lastname" => $user_profil->getLastname(),
+                "commune" => $user_profil->getCommune(),
+                "photoProfil" => $user_profil->getphotoProfil(),
+                "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
+            ];
+
+
+
+            array_push($results, $result);
+        }
+
+
+
+        quit:
+        
+        // dd($result['photoProfil']);
+        
+
+        $userConnected = $status->userProfilService($this->getUser());
+        $statusProfile = $status->statusFondateur($this->getUser());
+        return $this->render('agenda/partage_agenda.html.twig',[
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
+            "allTribuTs" => $allTribuT,
+            "allTribuG" => $allTribuG,
+            "results" => $results,
         ]);
     }
 
