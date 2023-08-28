@@ -584,7 +584,6 @@ class MapModule{
     }
 
     bindOtherControles(){
-        console.log(this)
         let htmlControl = '';
         if( this.mapForType === "golf"){
             htmlControl= `

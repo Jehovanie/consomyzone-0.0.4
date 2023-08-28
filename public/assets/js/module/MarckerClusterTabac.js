@@ -267,7 +267,7 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune" disabled>
+                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune">
                     <label class="form-check-label text-black" for="commune">
                         COMMUNE
                     </label>
@@ -276,7 +276,7 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" disabled>
+                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris">
                     <label class="form-check-label text-black" for="iris">
                         IRIS
                     </label>
@@ -330,7 +330,8 @@ class MarckerClusterTabac extends MapModule {
         try{
             const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
             if(!currentCouche){
-                const response= await fetch(`/assets/shapefile/${COUCHE.toUpperCase()}.zip`)
+                const link = IS_DEV_MODE ? `/assets/shapefile/${COUCHE.toUpperCase()}.zip` : `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
+                const response= await fetch(link)
                 const blob= await response.blob()
                 const file=new File([blob], "xxx.zip",{type:"application/x-zip-compressed"})
 
