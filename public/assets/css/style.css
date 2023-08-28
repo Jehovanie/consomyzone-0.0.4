@@ -186,7 +186,6 @@ table {
 3. Remove default padding in all browsers.
 */
 
-button,
 input,
 optgroup,
 select,
@@ -213,7 +212,7 @@ select {
 1. Correct the inability to style clickable types in iOS and Safari.
 2. Remove default button styles.
 */
-
+/* 
 button,
 [type='button'],
 [type='reset'],
@@ -221,7 +220,7 @@ button,
   -webkit-appearance: button; /* 1 */
   background-color: transparent; /* 2 */
   background-image: none; /* 2 */
-}
+} */
 
 /*
 Use the modern Firefox focus style for all focusable elements.
@@ -1002,7 +1001,7 @@ h1,  h2,  h3,  h4,  h5,  h6{
   max-height: 400px;
 }
 .vd{
-  width: 100%;
+  width: 97%;
 }
 .wd{
   width: 1.875rem;

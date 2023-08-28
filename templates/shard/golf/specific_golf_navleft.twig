@@ -1,0 +1,64 @@
+<div class="navleft  result_container_golf_spec content_navleft_jheo_js">
+    <nav class="navbar navbar-light navbar-light-left">
+        <div class="container-fluid">
+                <div class="row">
+                    <div class="col-8">
+                        <a href="{{path('app_golf_france') }}">
+                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                            width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
+                            preserveAspectRatio="xMidYMid meet">
+
+                                <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+                                fill="#000000" stroke="none">
+                                    <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+                                    17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+                                    9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+                                    92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"/>
+                                </g>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-2">
+                        <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-golf-spec"></i>
+                    </div>
+                </div>
+            <hr>
+        </div>
+        
+    </nav>
+    <div class="container-fluid">
+        <div class="head-left">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <img class="icon_golf" src="{{asset('assets/icon/NewIcons/golf.png')}}" alt="Icon Golf">
+                </div>
+                <div class="col-md-9">
+                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
+                        Golf à <span class="fw-bolder">{{nom_dep}}</span>
+                        <span class="content_nombre_result_js_jheo">{{nomber_golf}}</span> résultats
+                    </p>
+                </div>
+                <div class="content_filter_trie content_filter_trie_jheo_js">
+                    <div class="pagination_alphabet pagination_alphabet_jheo_js">
+                        <ul>
+                            {# CONTENT LIST ALPHABET generate by js #}
+                        </ul>
+                    </div>
+				</div>
+            </div>
+            <div class="container list-depart-all-specific" id="Scrollbar">
+                <div class="list_result content_container_list" id="all_golf_in_dep"  data-toggle-id-dep="{{id_dep}}" data-toggle-dep-name="{{nom_dep}}">
+                    <ul class="content_list_ferme_spec_js_jheo">
+                        {% for  rubrique in golf %}
+                            {% include "card/card_rubrique.html.twig" %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% include 'shard/golf/detail_golf_navleft.twig' %}
+

@@ -174,6 +174,8 @@ function showPartisan() {
         }
     })
 }
+
+
 function convertFileToBlob(file) {
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -1416,13 +1418,13 @@ function showPhotos(){
                 setGallerie(document.querySelectorAll(".img_gal"))
                 photosContainer.innerHTML += `<div class="gallery-container">
                 <div>
-                        <span class="h2">Album photo</span> 
-                        <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
-                            <i class="bi bi-camera-fill"></i> Importer
-                            <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
-                            <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
-                        </label>
-                    </div>
+                    <span class="h2">Vos photo</span> 
+                    <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                        <i class="bi bi-camera-fill"></i> Importer
+                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                    </label>
+                </div>
                 <div id="gallery"><div class="row">${li_img}</div></div></div>`
 
                 setGallerie(document.querySelectorAll("#gallery img"))

@@ -18,6 +18,7 @@
 /public/users/photos/
 /var/
 /vendor/
+/jwt/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

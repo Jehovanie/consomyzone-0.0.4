@@ -274,32 +274,14 @@ class TributGController extends AbstractController
         UserService $userService
 
     ) {
-
         $user_connected = $this->getUser();
-
-
-
-        $tributG_name = $tributGService->getTribuGtableForNotif(
-
-            $user_connected->getId()
-
-        );
-
-
-
-
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_connected->getId());
 
         $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
-
         $memberTributG = [];
 
-
-
         foreach ($all_user_id_tribug as $user_id) {
-
             $user = $userRepository->find(intval($user_id["user_id"]));
-
-
 
             $single_user = [
 

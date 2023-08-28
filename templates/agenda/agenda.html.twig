@@ -24,7 +24,7 @@
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
         <script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        
+        <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -57,6 +57,7 @@
     </div> #}
     {% include 'shard/modal/new_agenda.html.twig' %}
     {% include 'shard/modal/show_agenda.html.twig' %}
+    {% include 'shard/modal/partage_agenda.html.twig' %}
     {% include 'shard/modal/alert_flash.html.twig' %}
 {% endblock %}
 

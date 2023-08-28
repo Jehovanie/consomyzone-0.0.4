@@ -1437,9 +1437,9 @@ class Tribu_T_Service extends PDOConnexionService
     public function getPartisanOfTribuT($tableTribuT){
         $sql= "SELECT * FROM $tableTribuT as t1 left join (".
         "SELECT id,type, case type when 'consumer' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName',".
-        "lastname,'adresse_postale',adresse_postale,'photo_profil',photo_profil,'tribuG',tributg) as infos FROM consumer as c where c.user_id= u.id)".
+        "lastname,'photo_profil',photo_profil,'tribuG',tributg) as infos FROM consumer as c where c.user_id= u.id)".
         "when 'supplier' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName', lastname,".
-        "'adresse_postale',adresse_postale,'photo_profil',photo_profil,'tribuG',tributg)as infos FROM supplier as c where c.user_id= u.id)".
+        "'photo_profil',photo_profil,'tribuG',tributg)as infos FROM supplier as c where c.user_id= u.id)".
         "end infos_profil from user as u ) as t2 on t2.id=t1.user_id";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
@@ -1470,7 +1470,14 @@ class Tribu_T_Service extends PDOConnexionService
         $statement->execute();
         $all_tables = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return $all_tables;
+        $results= [];
+        foreach($all_tables as $table){
+            if( $this->hasTableResto($table["table_name"])){
+                array_push($results, $table);
+            }
+        }
+
+        return $results;
     }
 
     /**
@@ -1488,6 +1495,11 @@ class Tribu_T_Service extends PDOConnexionService
         $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
         $statement->execute();
         $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if( !$userID_fondateurTribuT ){
+            return false;
+        }
+
         $id= $userID_fondateurTribuT['user_id'];
 
         $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
@@ -1637,11 +1649,16 @@ class Tribu_T_Service extends PDOConnexionService
      *                            ]
      */
     public function getAllPublicationsUpdate($table_name){
-        
+        $resultats = [];
+
         $apropo_tribuT = $this->getApropos($table_name);
 
+        if( !$apropo_tribuT ){
+            return $resultats;
+        }
+
         $publications = $this->getAllPublicationBrutes($table_name); // [...publications]
-        $resultats = [];
+        
         
         if( count($publications) > 0 ){
             foreach( $publications as $d_pub ){

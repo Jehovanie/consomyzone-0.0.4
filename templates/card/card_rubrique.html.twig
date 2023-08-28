@@ -18,70 +18,88 @@
                 <a onclick="getDetailFromListLeft('{{rubrique.depName}}', '{{rubrique.dep}}', '{{rubrique.id}}')" href="#" class="small">{{rubrique.add|replace({'?': ''})|capitalize|trim}}</a>
             </p>
             {% if type == "resto" %}
-            <div class="cmz-categories-list">
-                {% if rubrique.cafe %}
-                    <span class="cmz-category">cafe</span>
-                {% endif %}
-                {% if rubrique.bar %}
-                    <span class="cmz-category">bar</span>
-                {% endif %}
-                {% if rubrique.brasserie %}
-                    <span class="cmz-category">brasserie</span>
-                {% endif %}
-                {% if rubrique.creperie %}
-                    <span class="cmz-category">creperie</span>
-                {% endif %}
-                {% if rubrique.fastFood %}
-                    <span class="cmz-category">fast_food</span>
-                {% endif %}
-                {% if rubrique.salonThe %}
-                    <span class="cmz-category">salon_the</span>
-                {% endif %}
-                {% if rubrique.cuisineMonde %}
-                    <span class="cmz-category">cuisine_monde</span>
-                {% endif %}
-                {% if rubrique.pizzeria %}
-                    <span class="cmz-category">pizzeria</span>
-                {% endif %}
-                {% if rubrique.boulangerie %}
-                    <span class="cmz-category">boulangerie</span>
-                {% endif %}
-            </div>
+                <div class="cmz-categories-list">
+                    {% if rubrique.cafe %}
+                        <span class="cmz-category">cafe</span>
+                    {% endif %}
+                    {% if rubrique.bar %}
+                        <span class="cmz-category">bar</span>
+                    {% endif %}
+                    {% if rubrique.brasserie %}
+                        <span class="cmz-category">brasserie</span>
+                    {% endif %}
+                    {% if rubrique.creperie %}
+                        <span class="cmz-category">creperie</span>
+                    {% endif %}
+                    {% if rubrique.fastFood %}
+                        <span class="cmz-category">fast_food</span>
+                    {% endif %}
+                    {% if rubrique.salonThe %}
+                        <span class="cmz-category">salon_the</span>
+                    {% endif %}
+                    {% if rubrique.cuisineMonde %}
+                        <span class="cmz-category">cuisine_monde</span>
+                    {% endif %}
+                    {% if rubrique.pizzeria %}
+                        <span class="cmz-category">pizzeria</span>
+                    {% endif %}
+                    {% if rubrique.boulangerie %}
+                        <span class="cmz-category">boulangerie</span>
+                    {% endif %}
+                </div>
             {% endif %}
+
             {% if type == "ferme" %}
-            <div class="cmz-categories-list">
-                {% if rubrique.genre %}
-                    <span class="cmz-category">{{rubrique.genre}}</span>
-                {% endif %}
-            </div>
+                <div class="cmz-categories-list">
+                    {% if rubrique.genre %}
+                        <span class="cmz-category">{{rubrique.genre}}</span>
+                    {% endif %}
+                </div>
             {% endif %}
 
             {% if type == "station" %}
-            <div class="cmz-categories-list">
-                {% if rubrique.prixE85 > 0 %}
-                    <span class="cmz-category">E85</span>
-                {% endif %}
-                {% if rubrique.prixGplc > 0 %}
-                    <span class="cmz-category">GPLC</span>
-                {% endif %}
-                {% if rubrique.prixSp95 > 0 %}
-                    <span class="cmz-category">SP95</span>
-                {% endif %}
-                {% if rubrique.prixSp95E10 > 0 %}
-                    <span class="cmz-category">SP95-E10</span>
-                {% endif %}
-                {% if rubrique.prixSp98 > 0 %}
-                    <span class="cmz-category">SP98</span>
-                {% endif %}
-                {% if rubrique.prixGasoil > 0 %}
-                    <span class="cmz-category">GASOIL</span>
-                {% endif %}
-            </div>
+                <div class="cmz-categories-list">
+                    {% if rubrique.prixE85 > 0 %}
+                        <span class="cmz-category">E85</span>
+                    {% endif %}
+                    {% if rubrique.prixGplc > 0 %}
+                        <span class="cmz-category">GPLC</span>
+                    {% endif %}
+                    {% if rubrique.prixSp95 > 0 %}
+                        <span class="cmz-category">SP95</span>
+                    {% endif %}
+                    {% if rubrique.prixSp95E10 > 0 %}
+                        <span class="cmz-category">SP95-E10</span>
+                    {% endif %}
+                    {% if rubrique.prixSp98 > 0 %}
+                        <span class="cmz-category">SP98</span>
+                    {% endif %}
+                    {% if rubrique.prixGasoil > 0 %}
+                        <span class="cmz-category">GASOIL</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+             {% if type == "tabac" %}
+                <div class="cmz-categories-list">
+                    {% if rubrique.barTabac > 0 %}
+                        <span class="cmz-category">Bar Tabac</span>
+                    {% endif %}
+                    {% if rubrique.bureauTabac > 0 %}
+                        <span class="cmz-category">Bureaux Tabac</span>
+                    {% endif %}
+                    {% if rubrique.caveCigare > 0 %}
+                        <span class="cmz-category">Cave Cigare</span>
+                    {% endif %}
+                    {% if rubrique.tabacPresse > 0 %}
+                        <span class="cmz-category">Tabac Presse</span>
+                    {% endif %}
+                </div>
             {% endif %}
 
             {% if rubrique.tel is defined %}
                 {% if rubrique.tel %}
-                    <div class="cmz-tel">
+                    <div class="cmz-tel mb-2">
                         <button onclick="displayContact(this)" type="button" class="btn btn-secondary">
                             <i class="bi bi-telephone-plus"></i> Afficher le N°
                         </button>
@@ -91,6 +109,7 @@
                     </div>
                 {% endif %}
             {% endif %}
+
             {% if rubrique.email is defined %}
                 {% if rubrique.email %}
                     <div class="cmz-tel">

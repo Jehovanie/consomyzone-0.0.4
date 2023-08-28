@@ -169,7 +169,6 @@ Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 3. Remove default padding in all browsers.
 */
 
-  button,
   input,
   optgroup,
   select,
@@ -203,18 +202,15 @@ Remove the inheritance of text transform in Edge and Firefox.
 1. Correct the inability to style clickable types in iOS and Safari.
 2. Remove default button styles.
 */
-
+/*  
   button,
   [type='button'],
   [type='reset'],
   [type='submit'] {
       -webkit-appearance: button;
-      /* 1 */
       background-color: transparent;
-      /* 2 */
       background-image: none;
-      /* 2 */
-  }
+  }*/
 
   /*
 Use the modern Firefox focus style for all focusable elements.

@@ -1,4 +1,4 @@
-const IS_DEV_MODE= true;
+const IS_DEV_MODE= false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -206,25 +206,15 @@ if( document.querySelector("#show_list")){
 
 
 if( document.querySelector("#hide_list")){
-
-
-
     const btn_hide_list = document.querySelector("#hide_list");
-
-    
 
     btn_hide_list.addEventListener("click", () => {
 
         // contentMessageFlash.style.animation = "toShowFlass 0.8s linear forwards"
-
         document.querySelector(".left_content_home").style.animation ="toHideList 0.8s linear forwards";
-
         document.querySelector(".right_content_home").style.animation ="toScaleUp 0.8s linear forwards";
 
-
-
         document.querySelector("#show_list").style.display="block"
-
     })
 
 }
@@ -732,97 +722,21 @@ if (document.querySelector("#close-list-depart-resto")) {
     })
 }
 
-
-if (document.querySelector(".open-navleft-resto")) {
-    document.querySelector(".open-navleft-resto").addEventListener("click", () => {
-        document.querySelector(".result_container_resto").style.display = "block"
-        iconsChange()
+if( document.querySelector(".icon_close_nav_left_jheo_js")){
+    document.querySelector(".icon_close_nav_left_jheo_js").addEventListener('click' , () => {
+        if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_navleft_jheo_js").classList.add("d-none")
+            iconsChange()
+        };
     })
 }
 
-
-if (document.querySelector("#close-list-depart-resto-spec")) {
-    document.querySelector("#close-list-depart-resto-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-resto-spec")) {
-    document.querySelector(".open-navleft-resto-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-resto-spec-arrond")) {
-    document.querySelector("#close-list-depart-resto-spec-arrond").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec_arrond").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-resto-arrond")) {
-    document.querySelector(".open-navleft-resto-arrond").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec_arrond").style.display="block"
-        iconsChange()
-    })
-}
-
-
-if (document.querySelector("#close-list-depart-ferme")) {
-    document.querySelector("#close-list-depart-ferme").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-ferme")) {
-    document.querySelector(".open-navleft-ferme").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-ferme-spec")) {
-    document.querySelector("#close-list-depart-ferme-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme_spec").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-ferme-spec")) {
-    document.querySelector(".open-navleft-ferme-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme_spec").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-station")) {
-    document.querySelector("#close-list-depart-station").addEventListener("click", () => {
-        document.querySelector(".result_container_station").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-station")) {
-    document.querySelector(".open-navleft-station").addEventListener("click", () => {
-        document.querySelector(".result_container_station").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-station-spec")) {
-    document.querySelector("#close-list-depart-station-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_station_spec").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-station-spec")) {
-    document.querySelector(".open-navleft-station-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_station_spec").style.display="block"
-        iconsChange()
+if( document.querySelector(".open_nav_left_jheo_js")){
+    document.querySelector(".open_nav_left_jheo_js").addEventListener("click", () => {
+        if( document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_navleft_jheo_js").classList.remove("d-none")
+            iconsChange()
+        }
     })
 }
 
@@ -866,33 +780,13 @@ if (document.querySelector(".list-nav-bar")) {
         document.querySelector("#resto-page").classList.add("active");
     }else if( activPage.includes("/station")){
         document.querySelector("#station-page").classList.add("active");
+    }else if( activPage.includes("/golf")){
+        document.querySelector("#golf-page").classList.add("active");
+    }else if( activPage.includes("/tabac")){
+        document.querySelector("#tabac-page").classList.add("active");
     }else if(activPage.length === 1 ){
         document.querySelector("#tous-page").classList.add("active");
     }
-    // const links = document.querySelectorAll('.list-nav-bar');
-    // const specFerm = document.querySelector('.result_container_ferme_spec_js')
-    // const specReto = document.querySelector('.result_container_resto_spec_js')
-    // const specRestoArrond = document.querySelector('.result_container_resto_spec_arrond_js')
-    // const specStation = document.querySelector('.result_container_station_spec_js')
-    // const tous = document.querySelector('.content_tous_js_jheo')
-    
-    // if (links.length) {
-    //     links.forEach((link) => {
-    //         if (link.href.includes(`${activPage}`)) {
-    //             link.classList.add("active");
-    //         } else if (specFerm) {
-    //             document.querySelector("#ferme-page").classList.add("active");
-    //         } else if (specReto) {
-    //             document.querySelector("#resto-page").classList.add("active");
-    //         } else if (specRestoArrond) {
-    //             document.querySelector("#resto-page").classList.add("active");
-    //         } else if (specStation) {
-    //             document.querySelector("#station-page").classList.add("active");
-    //         }else if(tous ){
-    //             document.querySelector("#station-page").classList.add("active");
-    //         }
-    //     });
-    // }
 }
 
 
@@ -905,3 +799,5 @@ if( document.querySelector('.btn_close_comment_jheo_js') || document.querySelect
         })
     })
 }
+
+

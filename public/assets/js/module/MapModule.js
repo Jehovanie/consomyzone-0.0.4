@@ -19,6 +19,11 @@ class MapModule{
         this.id_dep= idDep ? parseInt(idDep) : null;
         this.nom_dep= nomDep ? nomDep : null;
         this.map= null;
+
+
+        this.isRightSideAlreadyOpen = false;
+
+        this.objectGeoJson = [];
     }
 
     initTales(){
@@ -68,10 +73,15 @@ class MapModule{
                 layers: [tiles] 
             }
         );
+
+        const position = "topright";
+
+
         L.control.zoom({
-            position: 'bottomright'
+            position: position
         }).addTo(this.map);
 
+        this.leafletControlExtend(position);
         // let position = null, coords= null;
         // try{
         //     position = await this.getUserLocation();
@@ -129,19 +139,19 @@ class MapModule{
         }
 
         let geos= this.settingGeos();
-
-        L.geoJson(geos, {
-            style: {
-                weight: 2,
-                opacity: 1,
-                color: (this.id_dep) ? "red" : "#63A3F6",
-                dashArray: '3',
-                fillOpacity: 0
-            },
-            onEachFeature: function (feature, layer) {
-                layer.bindTooltip(feature.properties.nom);
-            }
-        }).addTo(this.map);
+        this.geoJSONLayer = L.geoJson().addTo(this.map);
+        // this.geoJSONLayer = L.geoJson(geos, {
+        //     style: {
+        //         weight: 2,
+        //         opacity: 1,
+        //         color: (this.id_dep) ? "red" : "#63A3F6",
+        //         dashArray: '3',
+        //         fillOpacity: 0
+        //     },
+        //     onEachFeature: function (feature, layer) {
+        //         layer.bindTooltip(feature.properties.nom);
+        //     }
+        // }).addTo(this.map);
     }
 
     eventSetPositionOnMap(){
@@ -187,10 +197,6 @@ class MapModule{
     }
 
     updateCenter(lat, long, zoom){
-        console.log("lat: " , lat)
-        console.log("long: " , long)
-        console.log("zoom: ", zoom)
-        
         this.map.setView(L.latLng(lat, long), zoom, { animation: true });
     }
 
@@ -538,7 +544,7 @@ class MapModule{
         });
     }
 
-    initMap(lat= null,long= null){
+    initMap(lat= null,long= null, isAddControl=false){
         
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
@@ -559,6 +565,13 @@ class MapModule{
 
         this.addGeoJsonToMap();
         this.settingMemoryCenter();
+
+        if( isAddControl ){
+            this.bindOtherControles();
+            this.createRightSideControl();
+        }
+
+
         // this.bindControlOnLeaflet(this.map);
         // this.bindEventLocationForMobile();
     }
@@ -569,4 +582,196 @@ class MapModule{
         else
            return {max:max,min:min}
     }
+
+    bindOtherControles(){
+        console.log(this)
+        let htmlControl = '';
+        if( this.mapForType === "golf"){
+            htmlControl= `
+                <button class="btn btn-info" data-type="info_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-info"></i>
+                </button>
+            `
+        }else if( this.mapForType === "tabac") {
+            htmlControl= `
+                <button class="btn btn-primary" data-type="couche_jheo_js">
+                    <i class="fa-solid fa-layer-group"></i>
+                </button>
+            `
+        }
+        L.control.custom({
+            // position: 'topright',
+            content : htmlControl,
+            classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
+            // style   :
+            // {
+            //     margin: '10px',
+            //     padding: '0px 0 0 0',
+            //     cursor: 'pointer',
+            // },
+            datas   :{
+                'foo': 'bar',
+            },
+            events:{
+                click: (data) => {
+                    this.openRightSide(data.srcElement.dataset.type);
+                },
+                // dblclick: function(data){
+                //     closeRightSide();
+                // },
+                contextmenu: function(data){
+                    console.log('wrapper div element contextmenu');
+                    console.log(data);
+                },
+            }
+        }).addTo(this.map);
+
+    }
+
+    leafletControlExtend(position= 'topright'){
+        
+        L.Control.Custom = L.Control.extend({
+            version: '1.0.1',
+            options: {
+                position: position,
+                id: '',
+                title: '',
+                classes: '',
+                content: '',
+                style: {},
+                datas: {},
+                events: {},
+            },
+            container: "container_lefleat_jheo_js",
+
+            onAdd: function (map) {
+                this.container = L.DomUtil.create('div');
+                this.container.id = this.options.id;
+                this.container.title = this.options.title;
+                this.container.className = this.options.classes;
+                this.container.innerHTML = this.options.content;
+    
+                for (var option in this.options.style){
+                    this.container.style[option] = this.options.style[option];
+                }
+    
+                for (var data in this.options.datas){
+                    this.container.dataset[data] = this.options.datas[data];
+                }
+    
+    
+                /* Prevent click events propagation to map */
+                L.DomEvent.disableClickPropagation(this.container);
+    
+                /* Prevent right click event propagation to map */
+                L.DomEvent.on(this.container, 'contextmenu', function (ev){
+                    L.DomEvent.stopPropagation(ev);
+                });
+    
+                /* Prevent scroll events propagation to map when cursor on the div */
+                L.DomEvent.disableScrollPropagation(this.container);
+    
+                for (var event in this.options.events){
+                    L.DomEvent.on(this.container, event, this.options.events[event], this.container);
+                }
+    
+                return this.container;
+            },
+    
+            onRemove: function (map) {
+                for (var event in this.options.events){
+                    L.DomEvent.off(this.container, event, this.options.events[event], this.container);
+                }
+            },
+        });
+    
+        L.control.custom = function (options) {
+            return new L.Control.Custom(options);
+        };
+    }
+
+
+    createRightSideControl(){
+        if( !document.querySelector(".content_cart_map_jheo_js")){
+            console.log("Selector not found : 'content_cart_map_jheo_js'");
+            return null;
+        }
+
+        const container = document.createElement("div");
+        container.className = "content_legende content_legende_jheo_js";
+        
+        container.innerHTML = `
+            <div class="content_header_right_side">
+                <div class="header_right_side">
+                    <div class="title_right_side text-black title_right_side_jheo_js">
+                        CONTROL RIGHT SIDE
+                    </div>
+                    <div class="content_close_right_side">
+                        <div class="close_right_side close_right_side_jheo_js">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content_right_side_body content_right_side_body_jheo_js">
+                
+            </div>
+        `
+
+        document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+    }
+
+    openRightSide(rightSideContentType){
+        if( document.querySelector(".close_details_jheo_js")){
+            document.querySelector(".close_details_jheo_js").click();
+        }
+
+        if( document.querySelector('.icon_close_nav_left_jheo_js')){
+            document.querySelector(".icon_close_nav_left_jheo_js").click();
+        }
+
+        const cart_width= '75%';
+        const cont_legent_width= '25%';
+        
+        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+    
+            if( rightSideContentType === "info_jheo_js"){
+                injectStatusGolf();
+            }else{
+                this.injectChooseCouche();
+            }
+    
+            document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+            document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
+            document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+        }else{
+            console.log("Selector not found")
+            console.log("cart_map_jheo_js", "content_legende_jheo_js")
+        }
+    
+    
+        if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
+            document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+                this.closeRightSide();
+            })
+        }
+
+    }
+
+    closeRightSide(){
+        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+            document.querySelector(".cart_map_jheo_js").style.width= '100%';
+            document.querySelector(".content_legende_jheo_js").style.width= '0%';
+            document.querySelector(".content_legende_jheo_js").style.padding= '0';
+        }else{
+            console.log("Selector not found")
+            console.log("cart_map_jheo_js", "content_legende_jheo_js")
+        }
+    }
+
+    injectChooseCouche(){
+        throw new Error("The function 'injectChooseCouche' must be redefined on child.")
+    }
+
 }

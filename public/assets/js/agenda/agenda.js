@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const repasType= [ 'repas', 'dîné', 'déjeuné'];
 
-            console.log(allAgenda);
+            // console.log(allAgenda);
 
             allAgenda.forEach(agenda => { 
                 const {id, title, dateStart:start, dateEnd: end, timeStart : heureDebut, timeEnd: heureFin } = agenda;
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dateEndAgd = dateEndAgd.setHours(heureFin.split(":")[0], heureFin.split(":")[1], heureFin.split(":")[2]);
                 agendaTab.push({id, title, start : dateStartAgd, end: dateEndAgd, textColor: 'black'})
             })
-            console.log(agendaTab)
+            // console.log(agendaTab)
             rendreCalendarWithEvents(agendaTab)
         })
 
@@ -201,7 +201,7 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
 
 
     document.querySelectorAll(".cta_close_list_resto_jheo_js").forEach(close => {
-        close.addEventListener("click",() => {
+        close.addEventListener("click", () => {
             document.querySelectorAll(".list_tr_resto_jheo_js tr").forEach(tr => tr.remove())
         })
     })
@@ -900,6 +900,8 @@ function getAllEtab(etab, isPast, element){
                     }
                 });
 
+                document.querySelector(".list_resto_or_golf").style.display= "block";
+                
                /*$("#tableEtabCMZ").DataTable({language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }});*/
@@ -953,7 +955,7 @@ function generateTableForEtab(index, etab, isValid=true){
 
 
             nomTribu = etab.tribu.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-            logoTribu = etab.logoTribu ? etab.logoTribu : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+            logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
             
             forTribuT = `<td><img src="${logoTribu}" alt=""></td><td>${nomTribu}</td>`;
 
@@ -1090,9 +1092,9 @@ function saveNewAgenda(agenda){
         .then(response=>response.json())
         .then(response =>{
             swal("Bravo !", response.message, "success")
-                .then((value) => {
-                    location.reload();
-                });
+            .then((value) => {
+                location.reload();
+            });
         })
 }
 
@@ -1235,3 +1237,142 @@ function initInputForm(){
 }
 
 /** END BLOC */
+
+function tableActiveFilterPartisant(e){
+    const allTypeActive= [ "list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js" ];
+    const current_class_active= allTypeActive.find( item => e.classList.contains(item) )
+    const other_not_active= allTypeActive.filter(item => item != current_class_active)
+    
+    if( !e.classList.contains("active")){
+        e.classList.add("active")
+    }
+    other_not_active.forEach(item => {
+        if( document.querySelector(`.${item}`).classList.contains("active")){
+            document.querySelector(`.${item}`).classList.remove("active")
+        }
+    })
+}
+
+if (document.querySelector('#list-tribu-partage-agenda')) {
+    new DataTable('#list-tribu-partage-agenda');  
+}
+if (document.querySelector('#list-tribu-g-partage-agenda')) {
+    new DataTable('#list-tribu-g-partage-agenda');  
+}
+if (document.querySelector('#list-tribu-t-partage-agenda')) {
+    new DataTable('#list-tribu-t-partage-agenda');  
+}
+
+if (document.querySelector('#list-partisans-tribu-selection')) {
+    new DataTable('#list-partisans-tribu-selection');  
+}
+
+if (document.querySelector("#list-partisans-tribu-t-partage-agenda")) {
+    const selectorTableT = document.querySelector("#list-partisans-tribu-t-partage-agenda")
+    const idTribuT = selectorTableT.getAttribute('data-toggel-tribu-t')
+    new DataTable('#' + idTribuT);  
+}
+
+
+
+
+function selectAll(source) {
+    var checkboxes = document.querySelectorAll('.select-oui');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source)
+            checkboxes[i].checked = source.checked;
+    }
+    
+}
+
+function selectTribuGAll(source) {
+    var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source)
+            checkboxes[i].checked = source.checked;
+    }
+    
+}
+
+
+function showPartisanAgenda(tribu_t_name) {
+
+    
+    const param = "?tbl_tribu_T_name=" + encodeURIComponent(tribu_t_name)
+    console.log(param)
+    const request = new Request("/user/partisan/tribu_T"+param, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+    })
+    fetch(request).then((response) => { 
+        if ( response.ok && response.status == 200) {
+            response.json().then(jsons => {
+                jsons.forEach(json => {
+                    console.log(JSON.parse(json.infos_profil));
+                    profilInfo = JSON.parse(json.infos_profil)
+                    let profil = profilInfo.photo_profil!=null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
+                    let lastName = profilInfo.lastName
+                    let firstName = profilInfo.firstName
+                    let tribuG = profilInfo.tribuG.replace("tribug_01_","")
+                    
+                    document.querySelector(`#list-partisans-tribu-t-agenda-${tribu_t_name}`).innerHTML += `
+                        <tr class="table-partisans-${tribu_t_name}-${lastName}">
+                            <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
+                            <td>${firstName}</td>
+                            <td>${lastName}</td>
+                            <td class="content-checkbox"></td>
+                            <td>${json.roles}</td>
+                            <td>
+                                <input type="checkbox" name="selectOui" class="select-tribu-t-oui" data-id="${json.user_id}" data-tribu="${tribu_t_name}" data-toggle-last="${lastName}" data-toggle-pdp="${profil}" value="${firstName}" onchange="handleChange(this)">
+                            </td>
+                       </tr>
+                    `
+                    if (document.querySelector(`.btn-close-partisans-${tribu_t_name}`)) {
+                        document.querySelector(`.btn-close-partisans-${tribu_t_name}`).addEventListener('click' , () => {
+                            document.querySelector(`.table-partisans-${tribu_t_name}-${lastName}`).remove()
+                        })
+                    }
+                })    
+            })
+        }
+    })
+    
+   
+}
+
+function handleChange(checkbox) {
+    let isChecked = document.querySelectorAll(".content-checkbox > input[type='checkbox']:checked").length
+    if (isChecked > 0) {
+        document.getElementById("getPartisonsSelectAgenda").classList.remove('btn-second-primary');
+       
+    } else {
+        document.getElementById("getPartisonsSelectAgenda").classList.add('btn-second-primary');
+    }
+    if (checkbox.checked == true) {
+        // document.querySelector("#list-partisans-tribu-selection-ckecked >.odd >.dataTables_empty").remove()
+        if (!document.querySelector(`#exist-parisans-${checkbox.getAttribute('data-id')}`)){
+            document.querySelector("#list-partisans-tribu-selection-ckecked").innerHTML += `
+                <tr class="firstName" id="exist-parisans-${checkbox.getAttribute('data-id')}">
+                    <td><img class="pdp-agenda-tribu-t" src="${checkbox.getAttribute('data-toggle-pdp')}" alt=""></td>
+                    <td>${checkbox.getAttribute('data-toggle-last')}</td>
+                    <td >${checkbox.value}</td>
+                    <td> ${checkbox.getAttribute('data-tribu')}</td>
+                    <td>
+                        <input type="checkbox" name="selectOui" class="select-tribu-t-oui" checked="true">
+                    </td>
+                </tr>
+            `
+        }
+        
+        // if () {
+            
+        // }
+    } else if (checkbox.checked == false) {
+        document.querySelector(`#exist-parisans-${checkbox.getAttribute('data-id')}`).remove()
+    }
+
+    
+}
+

@@ -1183,6 +1183,7 @@ function chargeMapAndMarkers(response1, map, markers) {
                 var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
                 location.assign(pathDetails)
             } else {
+                
                 getDetailResto(item.dep, item.depName, item.id, false)
             }
 

@@ -7,7 +7,9 @@
 {% block javascripts %}
 	<script src="{{asset('assets/js/chatHome.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/visio/visio_external_api.js')}}" defer></script> #}
-	<script src='https://meet.jit.si/external_api.js'></script>
+	{# <script src='https://meet.jit.si/external_api.js'></script> #}
+	<script src='https://8x8.vc/external_api.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% endblock %}
 
@@ -29,9 +31,9 @@
 
 			</div>
 
-			<div class="text-center ms-2 non_active " id="" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;cursor:pointer;">
+			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
 			{# <div class="text-center ms-2 non_active " id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;cursor:pointer;"> #}
-				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#808080;"></i>
+				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
 
 			</div>
 
@@ -74,6 +76,7 @@
 					<p class="mn-chat">Reponse automatique</p>
 				</div>
 			</div>
+			
 			<div>
 				<div x-data="{openDropDown: false}" class="h-chat">
 					<button @click="openDropDown = !openDropDown" class="lc-chat yc-chat zd-chat mg-chat pg-chat sh-chat ni-chat bj-chat wr-chat wj-chat yr-chat" id="closeChat">
@@ -154,6 +157,11 @@
 						</h5>
 					</div>
 				</div>
+
+				<div class="btn-group w-100" id="visio_group_btn" style="display:none" onclick="createVisioGroup()">
+					<button type="button" class="btn btn-outline-primary waves-effect"><i class="fas fa-plus pe-2" aria-hidden="true"></i>Créer une réunion</button>
+				</div>
+
 				<!-- Chat List boucle -->
 
 				{% if app.user %}
@@ -162,7 +170,7 @@
 
 						{% for amis in amisTributG %}
 
-							{% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+							{% if not (amis.id|number_format is same as(app.user.id|number_format)) and amis.is_online == 1 %}
 
 								<div class="cg-chat lc-chat mg-chat sh-chat ol-chat rl-chat tq-chat is-chat user_friends" data-toggle-user-id={{amis.id}} tooltip={{amis.email}}>
 									<div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">

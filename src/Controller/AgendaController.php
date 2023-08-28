@@ -10,15 +10,18 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\FilesUtils;
 use App\Service\MailService;
+use App\Service\UserService;
 use App\Service\AgendaService;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
-use App\Service\NotificationService;
 
+use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
+use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\SupplierRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -258,9 +261,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function hasAgenda($tribut_name, $date)
-
-    {
+    public function hasAgenda($tribut_name, $date){
 
         return  $this->json($this->agendaService->hasAgenda($tribut_name, $date));
     }
@@ -273,9 +274,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function detailAgenda($table_name, $id, TributGService $tributGService)
-
-    {
+    public function detailAgenda($table_name, $id, TributGService $tributGService){
 
         $user = $this->getUser();
 
@@ -414,9 +413,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function setActionAgenda($table_name, $id, Request $request)
-
-    {
+    public function setActionAgenda($table_name, $id, Request $request){
 
         $user = $this->getUser();
 
@@ -496,9 +493,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function modifyAgenda($table_name, $id, Request $request)
-
-    {
+    public function modifyAgenda($table_name, $id, Request $request){
 
         $requestContent = json_decode($request->getContent(), true);
 
@@ -532,9 +527,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function getListUser($table_name, $id, $type)
-
-    {
+    public function getListUser($table_name, $id, $type){
 
         $list = $this->agendaService->getListUser($table_name, $id, $type);
 
@@ -568,9 +561,7 @@ class AgendaController extends AbstractController
 
      */
 
-     public function shareAgenda($type , $table_origin, $id_agenda, $table_dest)
-
-     {
+     public function shareAgenda($type , $table_origin, $id_agenda, $table_dest){
         $user = $this->getUser();
 
         $user_id = $user ->getId();
@@ -625,8 +616,7 @@ class AgendaController extends AbstractController
      /**
      * @Route("user/tribut/get_resto/{table_resto_pastille}/{value}" , name="get_resto_agenda", methods={"GET"})
      */
-    public function getRestaurant($table_resto_pastille, $value)
-    {
+    public function getRestaurant($table_resto_pastille, $value){
 
         $list = $this->agendaService->getRestoAgenda($table_resto_pastille, $value);
 
@@ -645,8 +635,7 @@ class AgendaController extends AbstractController
     /** 
     *@Route("user/tribut/save_resto/{table}" , name="save_resto_agenda", methods={"POST"})
     */
-    public function saveRestaurant($table, Request $request)
-    {
+    public function saveRestaurant($table, Request $request){
         $user_id = $this->getUser()->getId();
         $requestContent = json_decode($request->getContent(), true);
 
@@ -661,8 +650,7 @@ class AgendaController extends AbstractController
 
    
     #[Route("/user/tribu/agenda", name: "app_agenda")]
-    public function agenda(Status $status)
-    {
+    public function agenda(Status $status){
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
 
@@ -699,9 +687,9 @@ class AgendaController extends AbstractController
         $newAgenda= [
             "title" => $title,
             "type" => $type,
-            "isEtabCMZ" => $isEtabCMZ,
-            "isGolfCMZ" => $isGolfCMZ,
-            "isRestoCMZ" => $isRestoCMZ,
+            "isEtabCMZ" => $isEtabCMZ ? 1 : 0 ,
+            "isGolfCMZ" => $isGolfCMZ ? 1 : 0 ,
+            "isRestoCMZ" => $isRestoCMZ ? 1 : 0 ,
             "name" => $name,
             "adresse" => $adresse,
             "description" => $description,
@@ -827,6 +815,7 @@ class AgendaController extends AbstractController
 
 
     }
+
     #[Route("/user/agenda", name: "app_get_agenda")]
     public function getAgenda(AgendaService $agendaService, SerializerInterface $ser){
         $agendaTableName = $this->getUser()->getNomTableAgenda();
@@ -864,9 +853,9 @@ class AgendaController extends AbstractController
 
     #[Route("/user/agenda/up", name: "agenda_update")]
     public function updateAgendaTom(
-    Request $request, 
-    AgendaService $agendaService,
-    Filesystem $fs){
+        Request $request, 
+        AgendaService $agendaService,
+        Filesystem $fs){
         $agendaTableName = $this->getUser()->getNomTableAgenda();
         $req = json_decode($request->getContent(), true);
         if (str_contains($req["fileType"], "image"))
@@ -1053,6 +1042,80 @@ class AgendaController extends AbstractController
         }
 
         return  $this->redirectToRoute("app_account");
+    }
+
+
+    #[Route("/api/users/agenda/all_partisant", name: "api_all_partisant_agenda", methods: ["GET"])]
+    public function getAllPartisant(
+        UserRepository $userRepository,
+        UserService $userService,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService
+    ){
+
+        if( !$this->getUser()){
+            return $this->json(["success" => false,"data" => [],"message" => "user not connected"], 403);
+        }
+        $partisants= [];
+        $user_connected = $this->getUser();
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_connected->getId());
+        $tribuG_apropos= $tributGService->getApropos($tributG_name);
+
+        $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
+
+        foreach ($all_user_id_tribug as $user_id) {
+            $user = $userRepository->find(intval($user_id["user_id"]));
+            if( !$user ){ continue; }
+
+            $single_user = [
+                "id" => intval($user->getId()),
+                "email" => $user->getEmail(),
+                "firstname" => $userService->getUserFirstName($user->getId()),
+                "lastname" => $userService->getUserLastName($user->getId()),
+                "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId()),
+                "tribu" => [$tribuG_apropos]
+            ];
+
+            array_push($partisants, $single_user);
+        }
+
+        $all_tribuT= $userRepository->getListTableTribuT();
+
+        for($i=0; $i < count($all_tribuT); $i++ ){
+            $tribut= $all_tribuT[$i];
+
+            $all_partisans_tribuT=  $tributGService->getFullNameForAllMembers($tribut["table_name"]);/// [ [ "userID" => ... , "fullName" => ... ], ... ] 
+            $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
+
+            for($j=0; $j< count($all_partisans_tribuT); $j++ ){
+                $partisant= $all_partisans_tribuT[$j];
+
+                $isExist= array_search(intval($partisant["userID"]), array_column($partisants, 'id'));
+                if($isExist !== false){
+                    array_push( $partisants[$isExist]["tribu"], $tribuT_apropos);
+                }else{
+                    $user = $userRepository->find(intval($partisant["userID"]));
+                    if( !$user ){ continue; }
+        
+                    $single_user = [
+                        "id" => intval($user->getId()),
+                        "email" => $user->getEmail(),
+                        "firstname" => $userService->getUserFirstName($user->getId()),
+                        "lastname" => $userService->getUserLastName($user->getId()),
+                        "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId()),
+                        "tribu" =>[ $tribuT_apropos ],
+                    ];
+        
+                    array_push($partisants, $single_user);
+                }
+            }
+        }
+
+        return $this->json([
+            "success" => true,
+            "data" => $partisants,
+            "message" => "ok"
+        ], 200);
     }
 
 
@@ -1296,8 +1359,7 @@ class AgendaController extends AbstractController
         UserRepository $userRepository,
         TributGService $tributGService,
         NotificationService $notification
-    )
-    {
+    ){
 
         $timeOut = $agendaService->getTimeOut($table_partage_agenda, $userId, $agenda_id);
 
@@ -1372,7 +1434,6 @@ class AgendaController extends AbstractController
             "success" => true,
             "results" => $response
         ],200);
-        
     }
 
     #[Route("/api/user/agenda/get/{etab}/dep/{id}", name: 'etab_for_specific_dep', methods: ["GET"])]
@@ -1513,6 +1574,9 @@ class AgendaController extends AbstractController
         
     }
 
+
+    
+
     /** 
      *
      * 
@@ -1540,6 +1604,91 @@ class AgendaController extends AbstractController
             "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
+        ]);
+    }
+
+    #[Route("/user/tribu/partage/agenda", name: 'app_partage_agenda')]
+    public function partageAgenda( 
+        Request $request,
+        Status $status,
+        Tribu_T_Service $tributTService,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository
+    )
+    {
+        $user = $this->getUser();
+        $userId = $user->getId();
+
+        $userType = $user->getType();
+
+        if ($userType == "consumer") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+        
+        $allTribuT = $tributTService->getAllTribuT($userId);
+        
+        // $tableTribuTName = $request->query->get("tribuTName");
+        // $TribuTName = $tributTService->getPartisanOfTribuT($allTribuT);
+        // dd($TribuTName);
+        $tableTribuGName = $profil[0]->getTributG();
+
+        $allTribuG = $tableTribuGName;
+
+        $results = [];
+
+        $under_tributG = $tributGService->getAllUserWithRoles($allTribuG);
+        if ($under_tributG === 0) {
+            goto quit;
+        }
+
+        foreach ($under_tributG as $tributG) {
+
+            $user = $userRepository->find(intval($tributG["user_id"]));
+            if ($user->getType() === "consumer") {
+                $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
+            } else {
+                $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+            }
+            // dd($user_profil);
+            $result = [
+                "id" => $tributG["user_id"],
+                "roles" => $tributG["roles"],
+                "email" => $user->getEmail(),
+                "firstname" => $user_profil->getFirstname(),
+                "lastname" => $user_profil->getLastname(),
+                "commune" => $user_profil->getCommune(),
+                "photoProfil" => $user_profil->getphotoProfil(),
+                "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
+            ];
+
+
+
+            array_push($results, $result);
+        }
+
+
+
+        quit:
+        
+        // dd($result['photoProfil']);
+        
+
+        $userConnected = $status->userProfilService($this->getUser());
+        $statusProfile = $status->statusFondateur($this->getUser());
+        return $this->render('agenda/partage_agenda.html.twig',[
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
+            "allTribuTs" => $allTribuT,
+            "allTribuG" => $allTribuG,
+            "results" => $results,
         ]);
     }
 

@@ -684,21 +684,25 @@ class AgendaService extends PDOConnexionService
      */
     public function createTableAgenda($table_agenda_name){
         $sql= "CREATE TABLE $table_agenda_name (".
-            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+            "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
             "`title` varchar(255) NOT NULL,".
-            "`message` text NOT NULL,".
-            "`type` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`type`)),".
-            "`adresse` varchar(255) NOT NULL,".
-            "`restaurant` varchar(255) DEFAULT NULL,".
+            "`description` text NOT NULL,".
+            "`type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
-            "`dateStart` date NOT NULL DEFAULT current_timestamp(),".
-            "`dateEnd` date NOT NULL DEFAULT current_timestamp(),".
+            "`adresse` varchar(255) NOT NULL,".
+            "`name` varchar(255) DEFAULT NULL,".
+            "`restaurant` varchar(255) DEFAULT NULL,".
+            "`dateStart` date DEFAULT NULL,".
+            "`dateEnd` date DEFAULT NULL,".
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
             "`file_type` varchar(40) DEFAULT NULL,".
             "`file_path` varchar(500) DEFAULT NULL,".
             "`status` tinyint(1) NOT NULL DEFAULT 0,".
             "`max_participant` int(11) NOT NULL DEFAULT 0".
+            "`isEtabCMZ` tinyint(1) NOT NULL DEFAULT 0,".
+            "`isGolfCMZ` tinyint(1) NOT NULL DEFAULT 0,".
+            "`isRestoCMZ` tinyint(1) NOT NULL DEFAULT 0,".
            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();

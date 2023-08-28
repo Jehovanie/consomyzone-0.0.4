@@ -57,10 +57,10 @@
                     <label for="etabCMZLabel">Choisir entre les golf et restaurant</label>
                   </div>
                   
-                  <div class="form-check form-check-inline">
+                  <div class="form-check form-check-inline ">
                       {# <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onchange="handleChangeEtabCMZ(this)"> #}
-                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onclick="showDepModal(this)">
-                      <label class="form-check-label text_black" for="golfRadio">GOLF</label>
+                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" disabled>
+                      <label class="form-check-label text-secondary" for="golfRadio">GOLF</label>
                   </div>
 
                   <div class="form-check form-check-inline mt-2">
@@ -146,7 +146,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-secondary  d-none non_active" id="shareAgendaBtn">Partager</button>
+        <button type="button" class="btn btn-info" id="shareAgendaBtn"  data-bs-target="#confirmPartageAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Partager</button>
         <button type="button" class="btn btn-danger d-none" id="deleteAgendaBtn" onclick="deleteAgenda()">Supprimer</button>
         <button type="button" data-action="create" class="btn btn-primary" onclick="getObjectForNewAgenda(event)" id="createOrEditBtn">Créer</button>
       </div>
@@ -236,8 +236,8 @@
         
           <div class="mb-3">
             <form action="/search/restaurant" method="get" class="bar-de-recherche form_content_search_navbar_js">
-              <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" id="cleQuoiAgenda">
-              <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?" id="cleOuAgenda">
+              <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" id="cleQuoiAgenda" disabled>
+              <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?" id="cleOuAgenda" disabled>
               <datalist id="datalistOptions"></datalist>
               <button type="submit" class="hidden"></button>
             </form>
@@ -319,11 +319,19 @@
             </g>
           </svg>
         </a>
-        <ul class="nav nav-tabs ml-3" id="smallNavInvitationDep">
+        <ul class="nav nav-tabs ml-3">
           <li class="nav-item">
-            <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOngletForDep(this)">Tous</a>
+            <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOngletForDep(this)">Choisissez un département,</br> puis choisissez l'établissement où se passera votre événement.</a>
           </li>
+          <li class="nav-item d-none">
+            <a class="nav-link text-secondary" href="#" onclick="activeOngletForDep(this)">Pastillé</a>
+          </li>
+        </ul>
+        <ul class="nav nav-tabs ml-3 d-none" id="smallNavInvitationDep">
           <li class="nav-item">
+            <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOngletForDep(this)">Choisissez un département,</br> puis choisissez l'établissement où se passera votre événement.</a>
+          </li>
+          <li class="nav-item d-none">
             <a class="nav-link text-secondary" href="#" onclick="activeOngletForDep(this)">Pastillé</a>
           </li>
         </ul>

@@ -37,7 +37,7 @@
                         </a>
                     </p>
                     <span>
-                        <a id="see-tom-js" class="see-avis non_active" data-bs-toggle="modalNone" data-bs-target="#staticBackdropNone">avis</a>
+                        <a id="see-tom-js" class="see-avis btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">avis</a>
                     </span>
                 </div>
             </div>
@@ -219,7 +219,7 @@
                 {% if (app.user) %}
                     <div class="content_one_cta text-center mt-3 mb-3" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
                         {# <button class="btn btn-success " id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button> #}
-                        <button class="btn btn-secondary non_active" id="givs-avis-resto-tom-js" data-bs-toggle="modalNone" data-bs-target="#modalAvisRestaurantNone">Donné votre avis</button>
+                        <button class="btn btn-success " id="givs-avis-resto-tom-js" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
                     </div>
 
                     {% if tribu_t_resto_pastille|length > 0 %}
