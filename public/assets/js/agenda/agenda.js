@@ -592,12 +592,10 @@ function deleteAgenda(){
                 .then(response=>response.json())
                 .then(response =>{
                     $("#createAgenda").modal("hide")
-                    //console.log(response);
-                    //showAlertMessageFlash(response.message, "success", true);
-                    swal(response.message, {
-                        icon: "success",
+                    swal("Bravo !", response.message, "success")
+                    .then((value) => {
+                        location.reload();
                     });
-                    location.reload()
                 })
         }
 
@@ -1091,8 +1089,10 @@ function saveNewAgenda(agenda){
     fetch(request)
         .then(response=>response.json())
         .then(response =>{
-            swal("Bravo !", response.message, "success");
-            location.reload();
+            swal("Bravo !", response.message, "success")
+                .then((value) => {
+                    location.reload();
+                });
         })
 }
 
