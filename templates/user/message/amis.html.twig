@@ -42,7 +42,7 @@
 
                                 <!-- Chat List Item -->
                                 {% for item in amisTributG %}
-                                    {% if item.id != app.user.id %}
+                                    {% if item.id != app.user.id and item.is_online == 1 %}
                                         <div class="cg lc mg sh ol rl tq is">
                                             <div class="h mb sc yd of th">
                                                 {# /// photo de profil #}

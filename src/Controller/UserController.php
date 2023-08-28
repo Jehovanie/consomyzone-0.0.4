@@ -2255,7 +2255,13 @@ class UserController extends AbstractController
             file_put_contents($path . $imagename, file_get_contents($image));
         }
 
-        return $this->json("Photo ajouté avec succès !");
+        // return $this->json("Photo ajouté avec succès !");
+
+        return $this->json([
+            "success" => true,
+            "message" => "Photo ajouté avec succès!"
+        ], 200);
+        
     }
 
     #[Route('/user/profil/update/avatar', name: 'update_avatar_user')]
@@ -2340,9 +2346,12 @@ class UserController extends AbstractController
             file_put_contents($path . $imagename, file_get_contents($image));
         }
 
+        return $this->json([
+            "success" => true,
+            "message" => "Photo de profil bien à jour!"
+        ], 200);
 
-
-        return $this->json("Photo de profil bien à jour");
+        // return $this->json("Photo de profil bien à jour");
     }
 
     #[Route('/user/reception', name: 'user_boit_reception')]
@@ -2485,5 +2494,38 @@ class UserController extends AbstractController
         return $this->json([
             "success" => true,
         ], 200);
+    }
+
+    #[Route('/user/setpdp', name: 'app_setpdp_user', methods: ["POST"])]
+    public function setAsPdp(Request $request){
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $userType = $user->getType();
+
+        $profil = null;
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data);
+
+        if ($userType == "consumer") {
+
+            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } elseif ($userType == "supplier") {
+
+            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+
+        $profil[0]->setPhotoProfil($image_path);
+
+        $this->entityManager->flush();
+
+        return $this->json([
+            "success" => true,
+        ], 200);
+
     }
 }

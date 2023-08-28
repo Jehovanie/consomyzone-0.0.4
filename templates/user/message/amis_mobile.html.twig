@@ -40,7 +40,7 @@
 							{% for amis in amisTributG %}
                                 {# don't show current user connected #}
 								<li>
-                                {% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+                                {% if not (amis.id|number_format is same as(app.user.id|number_format)) and amis.is_online == 1 %}
                                 
                                     <a href="{{path('app_message') ~ '?user_id=' ~ amis.id }}"
                                        data-toggle-user-id = {{amis.id}}

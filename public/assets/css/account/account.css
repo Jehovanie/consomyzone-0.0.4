@@ -2109,3 +2109,55 @@ a:focus {
 .content-super-admin {
     width: 100% !important;
 }
+
+.btn-set-pdp{
+    font-size: 12px;
+    cursor: pointer;
+    position: absolute;
+    /* margin-top: -30px; */
+    border-radius: 10px;
+    background-color: transparent;
+    border: 1px solid #0d6efd;
+    color: white;
+    padding-left: 2px;
+    padding-right: 2px;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+    transform: translate(-60%, -120%);
+}
+
+.btn-set-pdp:hover{
+    background-color: white;
+    color: #0d6efd;
+}
+
+img.zoom {
+    cursor: pointer;
+    width: 100%;
+    height: 200px;
+    border-radius:5px;
+    object-fit:cover;
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    cursor: pointer;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+
+.zoom:hover{
+    transform: scale(1.2);
+}
+
+.thumb{
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.transition {
+    -webkit-transform: scale(1.2); 
+    -moz-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2);
+}

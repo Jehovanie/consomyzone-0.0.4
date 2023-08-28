@@ -682,14 +682,59 @@ fileInputProfils.forEach(fileInputProfil=>{
                 image : avatarPartisant
             }
 
-            fetch(new Request("/user/profil/update/avatar", {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })).then(x => x.json()).then(response => console.log(response));
+            Swal.fire({
+                title: 'Definir comme photo de profile',
+                text: "Voulez-vous definir cette photo comme photo de profile?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, accepter',
+                cancelButtonText: 'Non, pas du tous'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  fetch(new Request("/user/profil/update/avatar", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })).then(x => x.json()).then(response => {
+                    // console.log(response)
+
+                    if(response.success){
+                        Swal.fire(
+                            'Modifié',
+                            response.message,
+                            'success'
+                          )
+                    }
+
+                });
+                }else{
+                    
+                    fetch(new Request("/user/profil/add/photo", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })).then(x => x.json()).then(response => {
+                        // console.log(response)
+
+                        if(response.success){
+                            Swal.fire(
+                                'Téléchargé',
+                                response.message,
+                                'success'
+                              )
+                        }
+
+                    });
+                }
+              })
 
         });
 
@@ -844,33 +889,42 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
                 const pageId = event.target.dataset.target;
                     if (dataLink === 'apropos_pdp') {
                         document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
-                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.remove('bg-pdp-profil')
-                    } else if (dataLink === 'gallery_profil') {
-                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.add('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.remove('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.remove('bg-pdp-profil')
+                    } else if (dataLink === 'elie_gallery_profil') {
+                        document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.add('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.remove('bg-pdp-profil')
+                    }else {
+                        document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.add('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
+                        document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.remove('bg-pdp-profil')
+                        // new DataTable('#table_tribu_g'); 
                     }
+
+                    console.log(pageId);
                     
                     showPageProfile(pageId);
             });
         });  
-        navLinksFils.forEach(link => {
+        // navLinksFils.forEach(link => {
             
-            link.addEventListener('click', event => {
-                const dataLink = link.getAttribute('data-target')
+        //     link.addEventListener('click', event => {
+        //         const dataLink = link.getAttribute('data-target')
                 
-                event.preventDefault();
-                const pageId = event.target.dataset.target;
-                    if (dataLink === 'apropos_pdp') {
-                        document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
-                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.remove('bg-pdp-profil')
-                    } else if (dataLink === 'gallery_profil') {
-                        document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.add('bg-pdp-profil')
-                        document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
-                    }
+        //         event.preventDefault();
+        //         const pageId = event.target.dataset.target;
+        //             if (dataLink === 'apropos_pdp') {
+        //                 document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
+        //                 document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.remove('bg-pdp-profil')
+        //             } else if (dataLink === 'gallery_profil') {
+        //                 document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.add('bg-pdp-profil')
+        //                 document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
+        //             }
                     
-                    showPageProfile(pageId);
-            });
-        });
+        //             showPageProfile(pageId);
+        //     });
+        // });
     
 
     
@@ -913,3 +967,85 @@ if (document.querySelector("#smallNavInvitation > li > a")) {
 
     showPageAgenda('agenda-tribu-g');
 } 
+
+function setAsPdp(span){
+
+    let img =  span.previousElementSibling.href
+
+    let img_path = new URL(img).pathname
+
+    let data ={
+        image_path : img_path.includes("/public")?img_path : "/public"+img_path
+    }
+
+    fetch(new Request("/user/setpdp", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })).then(x => x.json()).then(response => {
+        
+        if(response.success){
+            Swal.fire(
+                'Modifié',
+                'Votre photo de profile a été mis à jour!',
+                'success'
+              )
+
+        }
+    });
+
+}
+
+document.querySelectorAll(".fancybox > img").forEach(fancy=>{
+    let url = fancy.src
+
+    fancy.addEventListener("click", function(){
+        console.log(fancy.naturalWidth);
+        let h = fancy.naturalHeight ;
+        if(fancy.naturalHeight > window.screen.height){
+            h = window.screen.height
+        }
+        Swal.fire({
+            imageUrl: url,
+            imageHeight: h,
+            imageWidth: fancy.naturalWidth,
+            imageAlt: '',
+            showCloseButton: true,
+            showConfirmButton: false,
+          })
+    })
+
+})
+
+document.querySelectorAll(".elie_nav_link").forEach(i=>{
+    i.addEventListener("click", function(){
+
+        document.querySelectorAll(".elie_nav_link").forEach(item=>{
+            item.classList.remove("active")
+        })
+        i.classList.add("active")
+
+        // if(document.querySelector(".dataTables_info")) document.querySelector(".dataTables_info").remove()
+
+        if(i.getAttribute("data-tribu")=="G"){
+            new DataTable('#table_tribu_g'); 
+            document.querySelector(".table_tribu_g").style="display:block;"
+            document.querySelector(".table_tribu_t").style="display:none;"
+
+
+
+        }else{
+            new DataTable('#table_tribu_t'); 
+            document.querySelector(".table_tribu_g").style="display:none;"
+            document.querySelector(".table_tribu_t").style="display:block;"
+
+
+
+        }
+    })
+    
+})
+
