@@ -900,6 +900,8 @@ function getAllEtab(etab, isPast, element){
                     }
                 });
 
+                document.querySelector(".list_resto_or_golf").style.display= "block";
+                
                /*$("#tableEtabCMZ").DataTable({language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }});*/

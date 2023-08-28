@@ -329,7 +329,7 @@ class MarckerClusterTabac extends MapModule {
         try{
             const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
             if(!currentCouche){
-                const response= await fetch(`/assets/shapefile/${COUCHE}.zip`)
+                const response= await fetch(`/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`)
                 const blob= await response.blob()
                 const file=new File([blob], "xxx.zip",{type:"application/x-zip-compressed"})
 
