@@ -883,7 +883,7 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
 
 if (document.querySelector("#smallNavInvitation > li > a")) {
     const navLinks = document.querySelectorAll('#smallNavInvitation > li > a');
-    const pages = document.querySelectorAll('.list_resto_or_golf');
+    const pages = document.querySelectorAll('.list_resto_or_golf_partage');
     
     
     let pageStyle = null

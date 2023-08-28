@@ -96,56 +96,7 @@
                         </div>
                         <div class="modal-body custom_modal">
                             <div class="container_list">
-                                
-                                {# <div class="list_resto_or_golf " id="agenda-tribu-g-t">
-                                    <table id="list-tribu-partage-agenda" class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">N°</th>
-                                                <th scope="col">Nom</th>
-                                                <th scope="col">Prenom</th>
-                                                <th scope="col">Pseudo</th>
-                                                <th scope="col">Rôle</th>
-                                                <th scope="col">
-                                                    <input type="checkbox" class="selectAll" name="selectionner" id="selectAll" onclick="selectAll(this)"> 
-                                                    <label for="selectionner">Sélectionner tout</label></th>
-                                                </th>
-
-                                            </tr>
-                                        </thead>
-                                        <tbody >
-                                            {% set id = 2 %}
-                                            <tr>
-                                                <td>1</td>
-                                                <td>{{allTribuG|replace({'_': ' '})}}</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <input type="checkbox" name="selectOui" class="select-oui">
-                                                    <label for="oui"></label>
-                                                </td>
-                                            </tr>
-                                            {% for allTribuT in allTribuTs %}
-                                                <tr>
-                                                    <td>{{ id }}</td>
-                                                    <td>{{allTribuT.table_name|replace({'_': ' '})}}</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <input type="checkbox" name="selectOui" class="select-oui">
-                                                        <label for="oui"></label>
-                                                    </td>
-                                                </tr>
-                                                {% set id = id + 1 %}
-                                            {% endfor %}
-                                        </tbody>
-                                        
-                                    </table>
-                                </div> #}
-
-                                <div class="list_resto_or_golf" id="agenda-tribu-g">
+                                <div class="list_resto_or_golf_partage" id="agenda-tribu-g">
                                     <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste des partisans de votre {{allTribuG|replace({'_': ' '})}}</h5>
                             
                                     <table id="list-tribu-g-partage-agenda" class="table table-striped">
@@ -187,7 +138,7 @@
                                     </table>
                                 </div>
 
-                                <div class="list_resto_or_golf" id="agenda-tribu-t">
+                                <div class="list_resto_or_golf_partage" id="agenda-tribu-t">
                                     <table id="list-tribu-t-partage-agenda" class="table table-striped">
                                         <thead>
                                             <tr>

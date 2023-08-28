@@ -9,7 +9,8 @@ class MarckerClusterTabac extends MapModule {
             { couche : "commune", arrayColor :["#e0f3db","#a8ddb5","#43a2ca"], properties: []},        /// GnBu
             { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
             { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
-            { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            // { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: []},       /// YlOrRd
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ]
           
@@ -329,11 +330,9 @@ class MarckerClusterTabac extends MapModule {
         try{
             const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
             if(!currentCouche){
-                const response= await fetch(`/assets/shapefile/${COUCHE}.zip`)
+                const response= await fetch(`/assets/shapefile/${COUCHE.toUpperCase()}.zip`)
                 const blob= await response.blob()
                 const file=new File([blob], "xxx.zip",{type:"application/x-zip-compressed"})
-
-           
 
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -366,7 +365,7 @@ class MarckerClusterTabac extends MapModule {
         const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
         const styles={
             color: data_spec.color[0],
-            fillColor: data_spec.color[0],
+            fillColor: data_spec.color[1],
             fillOpacity: 1
         }
 
