@@ -68,7 +68,7 @@ class MapModule{
         
         this.map = L.map('map', {
                 zoomControl: false,
-                center: ( this.id_dep || ( lat && long ) ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                center: ( this.id_dep || ( lat && long ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
                 zoom: this.id_dep ? this.defaultZoom : ( ( lat && long ) ? 14 :  memoryCenter ?  memoryCenter.zoom : this.defaultZoom ),
                 layers: [tiles] 
             }

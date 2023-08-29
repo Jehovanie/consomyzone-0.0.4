@@ -727,16 +727,8 @@ function addControlPlaceholdersferme(map) {
 
 
 function iconsChange() {
-    document.querySelector(".open-navleft-resto > i").classList.toggle("fa-bars")
-    document.querySelector(".open-navleft-resto > i").classList.toggle("fa-minuss")
-}
-
-
-if (document.querySelector("#close-list-depart-resto")) {
-    document.querySelector("#close-list-depart-resto").addEventListener("click", () => {
-        document.querySelector(".result_container_resto").style.display = "none"
-        iconsChange()
-    })
+    document.querySelector(".icon_open_nav_left_jheo_js").classList.toggle("fa-bars")
+    document.querySelector(".icon_open_nav_left_jheo_js").classList.toggle("fa-minuss")
 }
 
 if( document.querySelector(".icon_close_nav_left_jheo_js")){

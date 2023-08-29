@@ -1,47 +1,46 @@
-<div class="navleft  result_container_resto_spec result_container_resto_spec_js">
+<div class="navleft  result_container_resto_spec result_container_resto_spec_js content_navleft_jheo_js">
     <nav class="navbar navbar-light navbar-light-left fixed-top">
         <div class="container-fluid">
-            
-                <div class="row mt-3">
-                    <div class="col-8 mt-5">
-                        {% if id_dep is same as('75')%}
-                            <a href="{{path('app_dep_restaurant_arrondisme', {'nom_dep': nom_dep, 'id_dep': id_dep }) }}">
-                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
-                                preserveAspectRatio="xMidYMid meet">
+            <div class="row mt-3">
+                <div class="col-8 mt-5">
+                    {% if id_dep is same as('75')%}
+                        <a href="{{path('app_dep_restaurant_arrondisme', {'nom_dep': nom_dep, 'id_dep': id_dep }) }}">
+                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                            width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
+                            preserveAspectRatio="xMidYMid meet">
 
-                                    <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                                    fill="#000000" stroke="none">
-                                        <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
-                                        17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
-                                        9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
-                                        92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"/>
-                                    </g>
-                                </svg>
+                                <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+                                fill="#000000" stroke="none">
+                                    <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+                                    17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+                                    9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+                                    92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"/>
+                                </g>
+                            </svg>
 
-                            </a>
-                        {% else %}
-                            <a href="{{path('restaurant_all_dep') }}">
-                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
-                                preserveAspectRatio="xMidYMid meet">
+                        </a>
+                    {% else %}
+                        <a href="{{path('restaurant_all_dep') }}">
+                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                            width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
+                            preserveAspectRatio="xMidYMid meet">
 
-                                    <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                                    fill="#000000" stroke="none">
-                                        <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
-                                        17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
-                                        9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
-                                        92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"/>
-                                    </g>
-                                </svg>
+                                <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+                                fill="#000000" stroke="none">
+                                    <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+                                    17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+                                    9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+                                    92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"/>
+                                </g>
+                            </svg>
 
-                            </a>
-                        {% endif %}
-                    </div>
-                    <div class="col-2 mt-5">
-                        <i class="fa-solid fa-x" id="close-list-depart-resto-spec" ></i>
-                    </div>
+                        </a>
+                    {% endif %}
                 </div>
+                <div class="col-2 mt-5">
+                    <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-resto-spec" ></i>
+                </div>
+            </div>
             <hr>
         </div>
         
