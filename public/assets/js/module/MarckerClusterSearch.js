@@ -16,10 +16,16 @@ class MarckerClusterSearch extends MapModule  {
             
             const response = await fetch(url);
             this.default_data = await response.json();
-            this.data = this.default_data;
+            this.data = this.default_data;  /// [ data, data_length, data_type]
 
+            console.log(this.data.results)
             // this.map = await create_map_content(this.geos, this.id_dep, "search");
-            const firstData= this.data.results[0][0]
+            const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+            const firstData= (this.data.results[0].length>0) ? this.data.results[0][0] : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
+
+            console.log("firstData");
+            console.log(firstData);
+
             this.initMap(firstData.lat, firstData.long, isAddControl);
 
             this.bindAction();
@@ -80,32 +86,34 @@ class MarckerClusterSearch extends MapModule  {
     }
 
     addMarker(newData) {
-        newData.forEach(item => {
-            if( item.ferme !== undefined ){
-                // address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.add;
-                // miniFiche_HTML = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nom + ".</br><span class='fw-bolder'> Departement:</span>  <br>" + item.dep +"." + address_HTML;
-                // image_icon= "icon-ferme-new-B.png";
+        if( newData.length > 0 ){
+            newData.forEach(item => {
+                if( item.ferme !== undefined ){
+                    // address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.add;
+                    // miniFiche_HTML = "<span class='fw-bolder'>Ferme:</span>  <br>" + item.nom + ".</br><span class='fw-bolder'> Departement:</span>  <br>" + item.dep +"." + address_HTML;
+                    // image_icon= "icon-ferme-new-B.png";
 
-                this.settingSingleMarkerFerme(item)
+                    this.settingSingleMarkerFerme(item)
 
-            }else if( item.station !== undefined ){
-                // miniFiche_HTML =setMiniFicheForStation(item.nom, item.add,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
-                // image_icon= "icon-station-new-B.png";
+                }else if( item.station !== undefined ){
+                    // miniFiche_HTML =setMiniFicheForStation(item.nom, item.add,item.prixE85,item.prixGplc,item.prixSp95,item.prixSp95E10,item.prixGasoil,item.prixSp98 )
+                    // image_icon= "icon-station-new-B.png";
 
-                this.settingSingleMarkerStation(item)
+                    this.settingSingleMarkerStation(item)
 
-            }else if( item.resto !== undefined ){
-                // const fullAdresse=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
-                // address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + fullAdresse;
-                // miniFiche_HTML = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + item.depName +"." + address_HTML;
-                // image_icon= "icon-resto-new-B.png";
+                }else if( item.resto !== undefined ){
+                    // const fullAdresse=`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+                    // address_HTML = "<br><span class='fw-bolder'> Adresse:</span> <br>" + fullAdresse;
+                    // miniFiche_HTML = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + item.depName +"." + address_HTML;
+                    // image_icon= "icon-resto-new-B.png";
 
-                this.settingSingleMarkerResto(item);
-            }
-        })
+                    this.settingSingleMarkerResto(item);
+                }
+            })
 
-        ////affiche les resultats.
-        this.map.addLayer(this.markers);
+            ////affiche les resultats.
+            this.map.addLayer(this.markers);
+        }
     }
 
     addStation(dataStation) {

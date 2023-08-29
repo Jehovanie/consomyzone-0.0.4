@@ -68,8 +68,8 @@ class MapModule{
         
         this.map = L.map('map', {
                 zoomControl: false,
-                center:this.id_dep ? L.latLng(this.latitude, this.longitude) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude)),
-                zoom:this.id_dep ? this.defaultZoom : ( memoryCenter ? memoryCenter.zoom : this.defaultZoom ),
+                center: ( this.id_dep || ( lat && long ) ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                zoom: this.id_dep ? this.defaultZoom : ( ( lat && long ) ? 14 :  memoryCenter ?  memoryCenter.zoom : this.defaultZoom ),
                 layers: [tiles] 
             }
         );
@@ -120,6 +120,9 @@ class MapModule{
                 geos.push(f)
             }
         }
+
+        console.log("geos")
+        console.log(geos)
         return geos;
     }
 
