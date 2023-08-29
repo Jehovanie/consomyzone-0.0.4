@@ -724,6 +724,9 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
         Status $status,
+        UserRepository $userRepository,
+        UserService $userService,
+        Tribu_T_Service $tributTService,
     ){
         $userConnected= $status->userProfilService($this->getUser());
         
@@ -768,6 +771,60 @@ class UserController extends AbstractController
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
         $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+
+        //Editing by Elie for a tribu g and t partisans
+        
+        $partisansG = [];
+        $partisansT = [];
+
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_id);
+
+        $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
+
+        foreach ($all_user_id_tribug as $user_id_tribu_g) {
+            $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
+
+            $single_user = [
+                "id" => intval($friend->getId()),
+                "email" => $friend->getEmail(),
+                "firstname" => $userService->getUserFirstName($friend->getId()),
+                "lastname" => $userService->getUserLastName($friend->getId()),
+                "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
+            ];
+
+            array_push($partisansG, $single_user);
+        }
+
+        $all_tribuT = $userService->getTribuByIdUser($user_id);
+
+        for($i=0; $i < count($all_tribuT); $i++ ){
+
+            $tribut= $all_tribuT[$i];
+
+            $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
+
+            $membres = $userService->getMembreTribuT($tribut["table_name"]);
+
+            for($j=0; $j< count($membres); $j++ ){
+
+                $partisant= $membres[$j];
+
+                $friendT = $userRepository->find(intval($partisant["user_id"]));
+    
+                $single_user = [
+                    "id" => intval($friendT->getId()),
+                    "email" => $friendT->getEmail(),
+                    "firstname" => $userService->getUserFirstName($friendT->getId()),
+                    "lastname" => $userService->getUserLastName($friendT->getId()),
+                    "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
+                    "role" =>$partisant["roles"],
+                ];
+    
+                array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+            }
+
+        }
+
         return $this->render('user/profil.html.twig', [
             "userConnected" => $userConnected,
             "profil" => $myProfil,
@@ -777,7 +834,7 @@ class UserController extends AbstractController
             "statusTribut" => $tributGService->getStatusAndIfValid(
                 $profil[0]->getTributg(),
                 $profil[0]->getIsVerifiedTributGAdmin(),
-                $user_id
+                intval($user_id)
             ),
 
             "tributG" => [
@@ -785,12 +842,15 @@ class UserController extends AbstractController
 
                 "profil" => $tributGService->getProfilTributG(
                     $profil[0]->getTributg(),
-                    $user_id
+                    intval($user_id)
                 ),
             ],
 
             "nombre_partisant" => $nombre_partisant,
-            "status_tribuT_autre_profil" =>$status_tribuT_autre_profil
+            "status_tribuT_autre_profil" =>$status_tribuT_autre_profil,
+            "tribu_g_friend" => $partisansG,
+            "tribu_t_friend" => $partisansT,
+
         ]);
     }
 
@@ -2528,4 +2588,12 @@ class UserController extends AbstractController
         ], 200);
 
     }
+
+    // #[Route('/user/getPartisans', name: 'app_getpartisan_user', methods: ["GET"])]
+    // public function getPartisantUser(Request $request): Response
+    // {
+    //     $userId = $request->query->get("id")
+
+    // }
+
 }

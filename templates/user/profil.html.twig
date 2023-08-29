@@ -7,6 +7,7 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="	https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
 {% endblock %}
 
@@ -79,7 +80,7 @@
 										{{ autre_profil[0].getLastname }}
 									</h4>
 
-									<p class="mn un">
+									<p class="mn un" id="elie_my_tribu_g" data-g ="{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}">
 										{{status_tribuT_autre_profil}} du département  {{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}
 									</p>
 								</div>
@@ -151,10 +152,10 @@
 								</div>
 							</div>
 							<div id="elie_gallery_profil" class="gallery-container mx-auto content-profil-navs elie_gallery_profil">
-								<div class="row me-auto">
-									<p class="lead fw-bolder mb-1 col-10" lng-tag="apropos">Vos photos</p>
+								<div class="d-flex bd-highlight">
+									<p class="lead fw-bolder flex-grow-1 bd-highlight" lng-tag="apropos">Vos photos</p>
 									{% if app.user.id == app.request.get('user_id') %}
-										<div class="px-3 me-0 col-2 align-item-end" id="add-item">
+										<div class="bd-highlight" id="add-item">
 											<a href="#add_photos" class="btn btn-primary float-end" style="width: 150px;text-decoration:none;" onclick="">
 												<label class="input-file" for="fileInputProfil"  style="z-index: 1;cursor:pointer;">
 												<p class="mb-1"><i class="fas fa-camera"></i> Ajouter </p>
@@ -201,7 +202,7 @@
 									</div>
 								</div> #}
 
-								<!-- TEST GALLLLLLLLLLLLLLLL-->
+								<!-- START GALLLLLLLLLLLLLLLL-->
 
 								<div class="row mt-2">
 
@@ -225,7 +226,7 @@
 
 							<div id="tribu_profil" class="gallery-container mx-auto content-profil-navs tribu_profil">
 								<h5 class="fw-bolder">Liste des partisans</h5>
-								<ul class="nav nav-tabs mt-3">
+								<ul class="nav nav-tabs mt-3 mb-3">
 									<li class="nav-item">
 										<span class="nav-link active elie_nav_link" aria-current="page" href="#" data-tribu="G">Tribu G</span>
 									</li>
@@ -235,86 +236,49 @@
 									
 								</ul>
 
-								<table id="table_tribu_g" class="display  mt-3 table_tribu_g" style="width:100%">
+								<table id="table_tribu_g" class="display mt-3 table_tribu_g" style="width:100%">
 									<thead>
 										<tr>
-											<th>Name G</th>
-											<th>Position</th>
-											<th>Office</th>
-											<th>Age</th>
-											<th>Start date</th>
-											<th>Salary</th>
+											<th>Nom d'utilisateur</th>
+											<th>E-mail</th>
+											<th>Rôle</th>
+											<th>Tribu G</th>
 										</tr>
 									</thead>
-									<tbody>
+									<tbody id="tbody_tribu_g">
+									{% for user in tribu_g_friend %}
+
 										<tr>
-											<td>Tiger Nixon</td>
-											<td>System Architect</td>
-											<td>Edinburgh</td>
-											<td>61</td>
-											<td>2011-04-25</td>
-											<td>$320,800</td>
+											<td><a href="{{user.id}}">{{user.firstname ~" "~ user.lastname}}</a></td>
+											<td>{{user.email}}</td>
+											<td>{{user.status}}</td>
+											<td style="width:100%">{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}</td>
 										</tr>
-										<tr>
-											<td>Garrett Winters</td>
-											<td>Accountant</td>
-											<td>Tokyo</td>
-											<td>63</td>
-											<td>2011-07-25</td>
-											<td>$170,750</td>
-										</tr>
+										
+									{% endfor %}
 									</tbody>
-									<tfoot>
-										<tr>
-											<th>Name</th>
-											<th>Position</th>
-											<th>Office</th>
-											<th>Age</th>
-											<th>Start date</th>
-											<th>Salary</th>
-										</tr>
-									</tfoot>
+									
 								</table>
 
 								<table id="table_tribu_t" class="display  mt-3 table_tribu_t" style="width:100%; display:none;">
 									<thead>
 										<tr>
-											<th>Name T</th>
-											<th>XXXXX</th>
-											<th>Office</th>
-											<th>Age</th>
-											<th>Start date</th>
-											<th>Salary</th>
+											<th>Tribu T</th>
+											<th>Membres</th>
+											<th>E-mail</th>
+											<th>Rôle</th>
 										</tr>
 									</thead>
-									<tbody>
+									<tbody id="tbody_tribu_t">
+									{% for user in tribu_t_friend %}
 										<tr>
-											<td>Tiger Nixon</td>
-											<td>System Architect</td>
-											<td>Edinburgh</td>
-											<td>61</td>
-											<td>2011-04-25</td>
-											<td>$320,800</td>
+											<td style="width:100%;"><img src="{{user.tribuT.avatar}}" alt="" style="width:40px; height:40px;border-radius:50%;display:inline;"/><span class="ms-2" style="display:inline-block;">{{user.tribuT.name}}</span></td>
+											<td><a href="{{user.user.id}}">{{user.user.firstname ~" "~ user.user.lastname}}</a></td>
+											<td>{{user.user.email}}</td>
+											<td>{{user.user.role}}</td>
 										</tr>
-										<tr>
-											<td>Garrett Winters</td>
-											<td>Accountant</td>
-											<td>Tokyo</td>
-											<td>63</td>
-											<td>2011-07-25</td>
-											<td>$170,750</td>
-										</tr>
+									{% endfor %}
 									</tbody>
-									<tfoot>
-										<tr>
-											<th>Name</th>
-											<th>Position</th>
-											<th>Office</th>
-											<th>Age</th>
-											<th>Start date</th>
-											<th>Salary</th>
-										</tr>
-									</tfoot>
 								</table>
 
 							</div>
@@ -332,19 +296,6 @@
 
 
 		</div>
-					
-		{# <!-- Modal show photo-->
-		<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered modal-lg">
-				<div class="modal-content">
-				<div class="modal-body">
-				<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-					<img id="img_modal" style="width:100%">
-				</div>
-				
-				</div>
-			</div>
-		</div> #}
 
 	</div>
 

@@ -683,14 +683,14 @@ fileInputProfils.forEach(fileInputProfil=>{
             }
 
             Swal.fire({
-                title: 'Definir comme photo de profile',
+                // title: 'Voulez-vous definir cette photo comme photo de profile?',
                 text: "Voulez-vous definir cette photo comme photo de profile?",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Oui, accepter',
-                cancelButtonText: 'Non, pas du tous'
+                cancelButtonText: 'Non, pas maintenant'
               }).then((result) => {
                 if (result.isConfirmed) {
                   fetch(new Request("/user/profil/update/avatar", {
@@ -899,36 +899,16 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
                         document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.add('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.remove('bg-pdp-profil')
-                        // new DataTable('#table_tribu_g'); 
+
+                        document.querySelectorAll(".elie_nav_link")[0].click()
+                        
                     }
 
-                    console.log(pageId);
+                    // console.log(pageId);
                     
                     showPageProfile(pageId);
             });
         });  
-        // navLinksFils.forEach(link => {
-            
-        //     link.addEventListener('click', event => {
-        //         const dataLink = link.getAttribute('data-target')
-                
-        //         event.preventDefault();
-        //         const pageId = event.target.dataset.target;
-        //             if (dataLink === 'apropos_pdp') {
-        //                 document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
-        //                 document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.remove('bg-pdp-profil')
-        //             } else if (dataLink === 'gallery_profil') {
-        //                 document.querySelector("#navbarProfil > ul > li > label.gallery_profil").classList.add('bg-pdp-profil')
-        //                 document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
-        //             }
-                    
-        //             showPageProfile(pageId);
-        //     });
-        // });
-    
-
-    
-    
 
     showPageProfile('apropos_pdp');
 }
@@ -1028,24 +1008,40 @@ document.querySelectorAll(".elie_nav_link").forEach(i=>{
         })
         i.classList.add("active")
 
-        // if(document.querySelector(".dataTables_info")) document.querySelector(".dataTables_info").remove()
-
         if(i.getAttribute("data-tribu")=="G"){
-            new DataTable('#table_tribu_g'); 
-            document.querySelector(".table_tribu_g").style="display:block;"
+            // new DataTable('#table_tribu_g'); 
+            document.querySelector(".table_tribu_g").style="display:table;"
             document.querySelector(".table_tribu_t").style="display:none;"
 
-
+            if ( !$.fn.dataTable.isDataTable('#table_tribu_g') ) {
+                
+                $('#table_tribu_g').DataTable( {
+                    language: {
+                        url:'/assets/js/account/fr-FR.json',
+                    }
+                } );
+                
+            }
+            
+            $('#table_tribu_t').DataTable().destroy()
+            
 
         }else{
-            new DataTable('#table_tribu_t'); 
             document.querySelector(".table_tribu_g").style="display:none;"
-            document.querySelector(".table_tribu_t").style="display:block;"
+            document.querySelector(".table_tribu_t").style="display:table;"
 
+            if ( !$.fn.dataTable.isDataTable('#table_tribu_t') ) {
+                $('#table_tribu_t').DataTable( {
+                    language: {
+                        url:'/assets/js/account/fr-FR.json',
+                    },
+                } );
 
+            }
+
+            $('#table_tribu_g').DataTable().destroy()
 
         }
     })
     
 })
-
