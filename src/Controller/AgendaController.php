@@ -18,6 +18,7 @@ use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
+use App\Repository\CodeinseeRepository;
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
@@ -1574,6 +1575,15 @@ class AgendaController extends AbstractController
         
     }
 
+    //TODO codinsee
+    // #[Route("/api/user/agenda/arrondissement/list/{dep}", name: 'agenda_all_arrondissement', methods: ["GET"])]
+    // public function getAllArrondissement(CodeinseeRepository $codeinseeRepository, $dep) {
+
+    //     $codeIns = $codeinseeRepository->getAllCodinsee($dep);
+    //     dd($codeIns);
+    //     return $this->render('agenda/listArrondissement.twig');
+        
+    // }
 
     
 
