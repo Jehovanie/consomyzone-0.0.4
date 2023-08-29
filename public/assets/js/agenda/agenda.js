@@ -640,9 +640,17 @@ function getListEtabCMZ(element){
 
         tabEtab[1].dataset.name = cmzEtab
 
-        $("#listRestoOrGolfModal").modal("show")
+        if(element.dataset.id != "75"){
+
+            $("#listRestoOrGolfModal").modal("show")
         
-        getAllEtab(cmzEtab, false, element)
+            getAllEtab(cmzEtab, false, element)
+
+        }else{
+            $("#listArrondissement").modal("show")
+            let container = document.querySelector(".container_list_arron")
+            getListArrondissement(container, "75")
+        }
 
     }else{
 
@@ -784,6 +792,7 @@ function showDepModal(radio){
 
 }
 
+
 function getAllEtab(etab, isPast, element){
 
     let request = "";
@@ -843,7 +852,23 @@ function getAllEtab(etab, isPast, element){
 
     }
 
-    document.querySelector(".list_resto_or_golf > table > tbody").innerHTML =""
+    let initTable = `<table class="table table-striped" id="tableEtabCMZ">
+                        <thead>
+                        <tr>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Adresse</th>
+                            <th scope="col">Téléphone</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        
+                        </tbody>
+                    </table>`
+
+    // document.querySelector(".list_resto_or_golf > table > tbody").innerHTML =""
+    // document.querySelector("#tableEtabCMZ > tbody").innerHTML =""
+    document.querySelector(".list_resto_or_golf").innerHTML = initTable
 
     fetch(request)
         .then(response=>response.json())
@@ -857,18 +882,90 @@ function getAllEtab(etab, isPast, element){
 
             if( results.length > 0 ){
                 results.forEach((etablissement, index) => {
-                    if(etablissement.tribu){
-                        generateTableForEtab( index, { id: etablissement.id_etab,  nom: etablissement.name, adresse: etablissement.adresse, tel: etablissement.tel, tribu : etablissement.tribu, logoTribu : etablissement.logoTribu, departement : etablissement.departement, dep : etablissement.dep, id_etab: etablissement.id_etab },true)
-                    }else{
-                        generateTableForEtab( index, { id: etablissement.id_etab,  nom: etablissement.name, adresse: etablissement.adresse, tel: etablissement.tel, departement : etablissement.departement, dep : etablissement.dep, id_etab: etablissement.id_etab },true)
-                    }
+                   
+                    // if(etablissement.tribu){
+                    //     generateTableForEtab( index, { id: etablissement.id_etab,  nom: etablissement.name, adresse: etablissement.adresse, tel: etablissement.tel, tribu : etablissement.tribu, logoTribu : etablissement.logoTribu, departement : etablissement.departement, dep : etablissement.dep, id_etab: etablissement.id_etab },true)
+                    // }else{
+                        document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                            generateTableForEtab( index, { id: etablissement.id_etab,  
+                            nom: etablissement.name, 
+                            adresse: etablissement.adresse, 
+                            tel: etablissement.tel, 
+                            departement : etablissement.departement, 
+                            dep : etablissement.dep, 
+                            id_etab: etablissement.id_etab },true))
+                            
+                        // document.querySelector("#tableEtabCMZ > tbody").appendChild(v)
+                    // }
                 });
                 document.querySelector(".list_resto_or_golf").style.display= "block";
-               /*$("#tableEtabCMZ").DataTable({language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                }});*/
+
+                $(document).ready(function () {
+                        // Setup - add a text input to each footer cell
+                    
+                        $('#tableEtabCMZ thead tr')
+                                .clone(true)
+                                .addClass('filters')
+                                .appendTo('#tableEtabCMZ thead');
+                                var table = $('#tableEtabCMZ').DataTable({
+                                    orderCellsTop: true,
+                                    fixedHeader: true,
+                                    initComplete: function () {
+                                        var api = this.api();
+                                        var i=0;
+                                        // For each column
+                                        api.columns()
+                                            .eq(0)
+                                            .each(function (colIdx) {
+                                                
+                                                if(i < 3){
+                                                    // Set the header cell to contain the input element
+                                                var cell = $('.filters th').eq(
+                                                    $(api.column(colIdx).header()).index()
+                                                    );
+                                                var title = $(cell).text();
+                                                $(cell).html('<input type="text" placeholder="Chercher ' + title + '" style="width:150px" />');
+                            
+                                                // On every keypress in this input
+                                                $(
+                                                    'input',
+                                                    $('.filters th').eq($(api.column(colIdx).header()).index())
+                                                )
+                                                    .off('keyup change')
+                                                    .on('keyup change', function (e) {
+                                                        e.stopPropagation();
+                            
+                                                        // Get the search value
+                                                        $(this).attr('title', $(this).val());
+                                                        var regexr = '({search})'; //$(this).parents('th').find('select').val();
+                            
+                                                        var cursorPosition = this.selectionStart;
+                                                        // Search the column for that value
+                                                        api
+                                                            .column(colIdx)
+                                                            .search(
+                                                                this.value != ''
+                                                                    ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                                                    : '',
+                                                                this.value != '',
+                                                                this.value == ''
+                                                            )
+                                                            .draw();
+                            
+                                                        $(this)
+                                                            .focus()[0]
+                                                            .setSelectionRange(cursorPosition, cursorPosition);
+                                                    });
+                                                }
                 
+                                                i++;
+                                            });
+                                    },
+                                });
+                });
+
             }else{
+                document.querySelector(".list_resto_or_golf").style.display= "block";
                 generateTableForEtab( 0,{ id:"",  nom:"", adresse:""}, false)
             }
 
@@ -878,6 +975,7 @@ function getAllEtab(etab, isPast, element){
             deleteChargement("chargement_content");
 
     })
+
 }
 
 function generateTableForEtab(index, etab, isValid=true){
@@ -885,8 +983,8 @@ function generateTableForEtab(index, etab, isValid=true){
     if( isValid){
 
         let forTribuT = "";
-
-        if (etab.tribu) {
+        let tableData="";
+        if (etab.tribu && etab.tribu !=null) {
             
             if(!document.querySelector(".forTribu")){
 
@@ -917,9 +1015,11 @@ function generateTableForEtab(index, etab, isValid=true){
 
 
             nomTribu = etab.tribu.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-            logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+            nomTribu = nomTribu.charAt(0).toUpperCase() + nomTribu.slice(1)
+            // logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+            logoTribu = etab.logoTribu ? etab.logoTribu : "/uploads/tribu_t/photo/avatar_tribu.jpg";
             
-            forTribuT = `<td><img src="${logoTribu}" alt=""></td><td>${nomTribu}</td>`;
+            forTribuT = `<td><img src="${logoTribu}" alt="" style="max-height: 30px; max-width: 30px;"></td><td>${nomTribu}</td>`;
 
         }else{
 
@@ -931,18 +1031,47 @@ function generateTableForEtab(index, etab, isValid=true){
         }
 
 
-        let tableData = `<tr>
-                ${forTribuT}
-                <td class="dataName">${etab.nom}</td>
-                <td class="dataAdresse">${etab.adresse.toLowerCase()}</td>
-                <td>${etab.tel}</td>
-                <td>
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="showEtabDetail(this, '${etab.departement}', ${etab.dep}, ${etab.id_etab})">Détail</button>
-                    <button type="button" class="btn btn-outline-info btn-sm" onclick="setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)">Choisir</button>
-                </td>
-            </tr>
-            `
-        document.querySelector(".list_resto_or_golf > table > tbody").innerHTML += tableData
+        let tr= document.createElement("tr")
+
+        let tdDataName=document.createElement("td")
+        tdDataName.textContent=etab.nom
+        let tdDataAdresse=document.createElement("td")
+        tdDataAdresse.textContent=etab.adresse.toLowerCase()
+        let tdDatel=document.createElement("td")
+        tdDatel.textContent=etab.tel
+        let tdAction=document.createElement("td")
+        let btnDetails=document.createElement("button")
+        btnDetails.setAttribute("type","button")
+        btnDetails.setAttribute("class","btn btn-outline-primary btn-sm")
+        btnDetails.setAttribute("onclick","showEtabDetail(this, '${etab.departement}', ${etab.dep}, ${etab.id_etab})")
+        btnDetails.textContent="Détail"
+        let btnCheck=document.createElement("button")
+        btnCheck.setAttribute("type","button")
+        btnCheck.setAttribute("class","btn btn-outline-info btn-sm")
+        btnCheck.setAttribute("onclick","setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)")
+        btnCheck.textContent="Choisir"
+
+        tr.appendChild(tdDataName)
+        tr.appendChild(tdDataAdresse)
+        tr.appendChild(tdDatel)
+        tdAction.appendChild(btnDetails)
+        tdAction.appendChild(btnCheck)
+        tr.appendChild(tdAction)
+        // tableData= `<tr>
+        //         ${forTribuT}
+        //         <td class="dataName">${etab.nom}</td>
+        //         <td class="dataAdresse">${etab.adresse.toLowerCase()}</td>
+        //         <td class="dataTel">${etab.tel}</td>
+        //         <td class="action">
+        //             // <button type="button" class="btn btn-outline-primary btn-sm" onclick="showEtabDetail(this, '${etab.departement}', ${etab.dep}, ${etab.id_etab})">Détail</button>
+        //             // <button type="button" class="btn btn-outline-info btn-sm" onclick="setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)">Choisir</button>
+        //         </td>
+        //     </tr>
+        //     `
+        //console.log(new DOMParser().parseFromString(tableData, "text/xml"))
+        return  tr;
+        // // document.querySelector(".list_resto_or_golf > table > tbody").innerHTML += tableData
+        // document.querySelector("#tableEtabCMZ > tbody").innerHTML += tableData
 
     }else{
         document.querySelector(".list_resto_or_golf > table > tbody").innerHTML= `
@@ -1116,6 +1245,17 @@ function getObjectForNewAgenda(e){
 function getListDep(container){
 
     const request = new Request('/api/user/agenda/dep/list')
+
+    fetch(request)
+        .then(res => res.text()).then(html => {
+            container.innerHTML = html;
+        });
+
+}
+
+function getListArrondissement(container, dep){
+
+    const request = new Request('/api/user/agenda/arrondissement/list/'+dep)
 
     fetch(request)
         .then(res => res.text()).then(html => {

@@ -19,25 +19,42 @@ if( document.querySelector(".form_content_search_navbar_js")){
             
             if( cles0=== "" && cles1 === "" ){
 
-                alert("Veuillez renseigner au moins l'adresse!")
-    
                 e.preventDefault();
-                // document.querySelector(".input_search_type_js").classList.add("border_red")
-                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+
+                new swal("Attention !", "Veuillez renseigner au moins l'adresse!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    });
     
             }else if(cles1 === ""){
-                alert("L'addresse est obligatoire!")
+
                 e.preventDefault();
-                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    });
             }
         }else{
 
-            if( cles0=== "" && cles1 === "" ){
+            if( cles1 === "" ){
+
+                e.preventDefault();
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    });
     
-                alert("Veuillez renseigner les deux champs!")
+            }
+
+            /*if( cles0=== "" && cles1 === "" ){
+    
+                //alert("Veuillez renseigner les deux champs!")
+                alert("L'adresse est obligatoire!")
     
                 e.preventDefault();
-                document.querySelector(".input_search_type_js").classList.add("border_red")
+                // document.querySelector(".input_search_type_js").classList.add("border_red")
                 document.querySelector(".input_mots_cle_js").classList.add("border_red")
     
             }else if( cles0=== "" || cles1 === "" ){
@@ -60,7 +77,7 @@ if( document.querySelector(".form_content_search_navbar_js")){
                     e.preventDefault();
                 }
     
-            }
+            }*/
 
         }
 

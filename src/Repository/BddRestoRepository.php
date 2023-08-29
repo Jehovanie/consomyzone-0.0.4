@@ -1079,7 +1079,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->where("r.dep =:id")
             ->setParameter("id",$id)
             ->orderBy('RAND()')
-            ->setMaxResults(50)
+            // ->setMaxResults(50)
             ->getQuery()
             ->getResult();
     }
