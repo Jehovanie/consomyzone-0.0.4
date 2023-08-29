@@ -1,16 +1,18 @@
 class MarckerClusterResto extends MapModule  {
     
-    constructor(nom_dep=null,id_dep=null){
-        super(id_dep,nom_dep, "resto")
+    constructor(nom_dep=null,id_dep=null, codinsee=null){
+        super(id_dep,nom_dep, "resto");
+        this.codinsee = codinsee;
     }
 
     async onInit(isAddControl=false){
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
-            
-            const link =( this.nom_dep && this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}` : `/Coord/All/Restaurant`;
-            const response= await fetch(link);
+            const linkArrond = this.codinsee ? `/Coord/All/Restaurant/specific/arrondissement/${this.id_dep}/${this.codinsee}` : null;
+            this.api_data =( this.nom_dep && this.id_dep) ? ( this.codinsee ? linkArrond : `/Coord/Spec/Restaurant/${this.id_dep}` ) : `/Coord/All/Restaurant`;
+
+            const response= await fetch(this.api_data);
             this.default_data= await response.json();
             this.data= this.default_data; 
             
@@ -258,8 +260,8 @@ class MarckerClusterResto extends MapModule  {
             const { minx, miny, maxx, maxy }= new_size;
             const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
 
-            const api_data= (this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}/${param}` : `/Coord/All/Restaurant${param}`;
-            const response = await fetch(api_data);
+            // const api_data= (this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}/${param}` : `/Coord/All/Restaurant${param}`;
+            const response = await fetch(`${this.api_data}${param}`);
             let new_data = await response.json();
             
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));

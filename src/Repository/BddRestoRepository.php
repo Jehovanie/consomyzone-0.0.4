@@ -141,55 +141,65 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getCoordinateAndRestoIdForSpecific($dep)
+    public function getCoordinateAndRestoIdForSpecific($dep, $codinsee= null)
     {
         $dep= strlen($dep) === 1  ? "0" . $dep : $dep;
-        return $this->createQueryBuilder("r")
-            ->select("r.id,
-                r.denominationF,
-                r.denominationF as nom,
-                r.numvoie,
-                r.typevoie,
-                r.nomvoie,
-                r.compvoie,
-                r.codpost,
-                r.villenorm,
-                r.commune,
-                r.restaurant,
-                r.restaurant as resto,
-                r.brasserie,
-                r.creperie,
-                r.fastFood,
-                r.pizzeria,
-                r.boulangerie,
-                r.bar,
-                r.cuisineMonde,
-                r.cafe,
-                r.salonThe,
-                r.site1,
-                r.fonctionalite1,
-                r.fourchettePrix1,
-                r.horaires1,
-                r.prestation1,
-                r.regimeSpeciaux1,
-                r.repas1,
-                r.typeCuisine1,
-                r.dep,
-                r.depName,
-                r.tel,
-                r.poiX,
-                r.poiY,
-                r.poiX as long,
-                r.poiY as lat,
-                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
-                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
-            )
-            ->where("r.dep =:dep")
-            ->setParameter("dep",$dep)
-            ->orderBy('RAND()')
-            ->setMaxResults(2000)
-            ->getQuery()
-            ->getResult();
+        $query= $this->createQueryBuilder("r")
+                    ->select("r.id,
+                        r.denominationF,
+                        r.denominationF as nom,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.restaurant as resto,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiX,
+                        r.poiY,
+                        r.poiX as long,
+                        r.poiY as lat,
+                        CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                        CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
+                    )
+                    ->where("r.dep =:dep")
+                    ->setParameter("dep",$dep)
+                    ->groupBy("r.denominationF, r.poiX, r.poiY")
+                    ->having('count(r.denominationF)=1')
+                    ->andHaving('count(r.poiX)=1')
+                    ->andHaving('count(r.poiY) =1');
+
+        if( $codinsee ){
+            $query = $query->andWhere("r.codinsee =:codinsee")
+                           ->setParameter("codinsee", $codinsee);
+        }
+
+        return $query->orderBy('RAND()')
+                ->setMaxResults(2000)
+                ->getQuery()
+                ->getResult();
     }
 
     public function getCoordinateAndRestoIdForSpecificParis($dep)
@@ -216,7 +226,6 @@ class BddRestoRepository extends ServiceEntityRepository
             ->setParameter("dep",$dep)
             ->orderBy("r.denominationF", 'ASC')
             ->getQuery()
-            //->setMaxResults(10)
             ->getResult();
     }
 
@@ -636,23 +645,44 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getRestoByCodinsee($codinsee, $dep)
     {
         return $this->createQueryBuilder("r")
-            ->select(
-                "r.id,r.denominationF,
-                r.numvoie,r.typevoie,
-                r.nomvoie,r.compvoie,
-                r.codpost,r.villenorm,
-                r.commune,r.restaurant,
-                r.brasserie,r.creperie,
-                r.fastFood,r.pizzeria,
-                r.boulangerie,r.bar,
-                r.cuisineMonde,r.cafe,
-                r.salonThe,r.site1,
+            ->select("r.id,
+                r.denominationF,
+                r.denominationF as nom,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.restaurant as resto,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
                 r.fonctionalite1,
-                r.fourchettePrix1,r.horaires1,
-                r.prestation1,r.regimeSpeciaux1,
-                r.repas1,r.typeCuisine1,
-                r.dep,r.depName,r.tel,
-                r.poiX,r.poiY"
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
             )
             ->where("r.codinsee =:codinsee")
             ->andWhere("r.dep =:dep")
@@ -900,7 +930,7 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null){
         $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
@@ -932,8 +962,10 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.dep,
                         r.depName,
                         r.tel,
-                        r.poiY as lat,
-                        r.poiX as long"
+                        r.poiX,
+                        r.poiY,
+                        r.poiX as long,
+                        r.poiY as lat"
                     )
                     ->where("ABS(r.poiX) >=ABS(:minx) ")
                     ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
@@ -942,11 +974,20 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->setParameter("minx", $minx)
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
-                    ->setParameter("maxy", $maxy);
+                    ->setParameter("maxy", $maxy)
+                    ->groupBy("r.denominationF, r.poiX, r.poiY")
+                    ->having('count(r.denominationF)=1')
+                    ->andHaving('count(r.poiX)=1')
+                    ->andHaving('count(r.poiY) =1');
                     
         if( $idDep ){
             $query = $query->andWhere("r.dep =:dep")
                            ->setParameter("dep", $idDep);
+        }
+
+        if( $codinsee ){
+            $query = $query->andWhere("r.codinsee =:codinsee")
+                           ->setParameter("codinsee", $codinsee);
         }
 
         return $query->orderBy('RAND()')

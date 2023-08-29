@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="row mt-3">
                 <div class="col-8 mt-5">
-                    {% if id_dep is same as('75')%}
+                    {% if id_dep is same as('75') %}
                         <a href="{{path('app_dep_restaurant_arrondisme', {'nom_dep': nom_dep, 'id_dep': id_dep }) }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                             width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
@@ -79,10 +79,14 @@
                     </svg>
                 </div>
 
-                <div class="col-md-8 mb-3" style="margin-left:20px;">
+                <div class="col-md-10 mb-3" style="margin-left:20px;">
                     <p  class="titre nombre_de_resultat" data-toggle-deparement="{{nom_dep}}">
                         Restaurants à 
-                        <span class="fw-bolder">{{nom_dep}}</span><br>
+                        {% if id_dep is same as('75') %}
+                            <span class="fw-bolder">{{nom_dep}}</span>  {{arrdssm }} arrondissement ,<br>
+                        {% else %}
+                            <span class="fw-bolder">{{nom_dep}}</span><br>
+                        {% endif %}
                         <span class="nombre content_nombre_result_js_jheo" id="resultTot">{{nomber_resto}}</span> 
                         résultats
                     </p>

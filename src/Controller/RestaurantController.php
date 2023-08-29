@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
 use App\Service\TributGService;
+use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Repository\CodeapeRepository;
 use App\Repository\BddRestoRepository;
@@ -12,7 +13,6 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
-use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -144,10 +144,22 @@ class RestaurantController extends AbstractController
     public function getAllRestCoorArrondissement(
         $dep,
         $codinsee,
+        Request $request,
         BddRestoRepository $bddResto,
         SerializerInterface $serialize
     ) {
-        $datas = $serialize->serialize($bddResto->getRestoByCodinsee($codinsee, $dep), 'json');
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee), 'json');
+
+            return new JsonResponse($datas, 200, [], true);
+        }
+        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep, $codinsee), 'json');
         return new JsonResponse($datas, 200, [], true);
     }
 
@@ -286,6 +298,7 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
+
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -294,6 +307,7 @@ class RestaurantController extends AbstractController
         $datas = $code->getAllCodinsee($codeDep);
         
         $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+
         $resultCount = $bddResto->getAccountRestauranting($codeDep);
         // dump($resultCount);
 
@@ -388,6 +402,8 @@ class RestaurantController extends AbstractController
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
         $codinsee = $dataRequest["codinsee"];
+        $arrdssm = $dataRequest["arrdssm"];
+
         $datas = $bddResto->getRestoByCodinsee($codinsee, $codeDep);
         $resultCount = count($datas);
         $statusProfile = $status->statusFondateur($this->getUser());
@@ -397,13 +413,15 @@ class RestaurantController extends AbstractController
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
+            "type" => "resto",
             "restaurants" => $datas,
             "nomber_resto" => $resultCount,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
             "userConnected" => $userConnected,
-            "codinsee" => $codinsee
+            "codinsee" => $codinsee,
+            "arrdssm" => $arrdssm
         ]);
     }
 
