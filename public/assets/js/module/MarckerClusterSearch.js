@@ -18,13 +18,9 @@ class MarckerClusterSearch extends MapModule  {
             this.default_data = await response.json();
             this.data = this.default_data;  /// [ data, data_length, data_type]
 
-            console.log(this.data.results)
             // this.map = await create_map_content(this.geos, this.id_dep, "search");
             const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
             const firstData= (this.data.results[0].length>0) ? this.data.results[0][0] : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
-
-            console.log("firstData");
-            console.log(firstData);
 
             this.initMap(firstData.lat, firstData.long, isAddControl);
 

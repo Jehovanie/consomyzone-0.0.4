@@ -190,26 +190,12 @@ class HomeController extends AbstractController
         $user = $this->getUser();
         $userConnected = $status->userProfilService($this->getUser());
 
-        $userType = $user->getType();
+        $userType = $user ? $user->getType()  : null;
+        $userId=  $user ?  $user->getId() : null;
 
-        $userId= $user->getId();
         if ($userType == "consumer") {
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } else {
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-        }
-
-        $userConnected = $status->userProfilService($this->getUser());
-
-        $userType = $user->getType();
-
-        $userId = $user->getId();
-
-        if ($userType == "consumer") {
-
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
@@ -355,7 +341,8 @@ class HomeController extends AbstractController
                     }
     
                     if(!$otherFerme && !$otherResto && !$otherStation){
-                        $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                        // $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
                         $results[1] = $station[1] + $ferme[1] + $resto[1];
                     }elseif(!$otherFerme && $otherResto && $otherStation){
                         $results[0] = array_merge($ferme[0]);
@@ -367,16 +354,19 @@ class HomeController extends AbstractController
                         $results[0] = array_merge($station[0]);
                         $results[1] = $station[1];
                     }elseif(!$otherFerme && !$otherResto && $otherStation){
-                        $results[0] = array_merge($ferme[0], $resto[0]);
+                        // $results[0] = array_merge($ferme[0], $resto[0]);
+                        $results[0] = array_merge($resto[0], $ferme[0]);
                         $results[1] = $ferme[1] + $resto[1];
                     }elseif(!$otherFerme && $otherResto && !$otherStation){
                         $results[0] = array_merge($station[0] , $ferme[0]);
                         $results[1] = $station[1] + $ferme[1];
                     }elseif($otherFerme && !$otherResto && !$otherStation){
-                        $results[0] = array_merge($station[0] , $resto[0]);
+                        // $results[0] = array_merge($station[0] , $resto[0]);
+                        $results[0] = array_merge($resto[0] , $station[0]);
                         $results[1] = $station[1] + $resto[1];
                     }else{
-                        $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                        // $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
                         $results[1] = $station[1] + $ferme[1] + $resto[1];
                         $otherResult = true;
                     }
@@ -423,8 +413,6 @@ class HomeController extends AbstractController
             "cles1" => $cles1,
             "page" => $page,
             "amisTributG" => $amis_in_tributG,
-            "userConnected" => $userConnected,
-            "profil" => $profil
         ]);
     }
 

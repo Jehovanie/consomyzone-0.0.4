@@ -74,9 +74,12 @@ class MapModule{
             }
         );
 
+        if( lat && long ){
+            this.updateDataInSessionStorage(lat,long, 13);
+        }
+
+
         const position = "topright";
-
-
         L.control.zoom({
             position: position
         }).addTo(this.map);
@@ -121,8 +124,6 @@ class MapModule{
             }
         }
 
-        console.log("geos")
-        console.log(geos)
         return geos;
     }
 
@@ -197,6 +198,14 @@ class MapModule{
             }
             setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
         })
+    }
+
+    updateDataInSessionStorage(lat, lng, zoom){
+        const coordAndZoom = {
+            zoom: zoom,
+            coord: { lat, lng }
+        }
+        setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
     }
 
     updateCenter(lat, long, zoom){
