@@ -3,7 +3,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></button>
 			</div>
 			<div class="modal-body">
 				{# <div class="content_note">
@@ -13,10 +13,7 @@
 						<i class="fa-solid fa-star" data-rank="3"></i>
 						<i class="fa-solid fa-star" data-rank="4"></i>
 						<i class="fa-solid fa-star" data-rank="5"></i>
-						
 					</div>
-
-
 				</div> #}
 				<form>
 					{# <div class="mb-3"> #}
@@ -28,7 +25,7 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-envoyer" data-bs-dismiss="modal" id="Submit-Avis-resto-tom-js">Envoyer</button>
+				<button type="button" class="btn btn-envoyer" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="Submit-Avis-resto-tom-js">Envoyer</button>
 			</div>
 		</div>
 	</div>

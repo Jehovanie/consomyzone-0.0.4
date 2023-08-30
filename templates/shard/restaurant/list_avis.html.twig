@@ -8,6 +8,13 @@
 			<div class="list-avis-ferme">
 				<div class="modal-body container-avis"></div>
 			</div>
+
+			{% if app.user %}
+				<div class="modal-footer">
+					<button type="button" class="btn btn-warning" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
+				</div>
+			{% endif %}
+			
 		</div>
 	</div>
 </div>
