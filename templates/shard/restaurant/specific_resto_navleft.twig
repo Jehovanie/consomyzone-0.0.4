@@ -80,15 +80,14 @@
                 </div>
 
                 <div class="col-md-10 mb-3" style="margin-left:20px;">
-                    <p  class="titre nombre_de_resultat" data-toggle-deparement="{{nom_dep}}">
-                        Restaurants à 
+                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
+                        Restaurants à <span class="fw-bolder">{{nom_dep}}</span>
                         {% if id_dep is same as('75') %}
-                            <span class="fw-bolder">{{nom_dep}}</span>  {{arrdssm }} arrondissement ,<br>
+                            département <span class="fw-bolder">{{id_dep}}, arrondissement  {{arrdssm }},</span> <br>
                         {% else %}
-                            <span class="fw-bolder">{{nom_dep}}</span><br>
+                            département <span class="fw-bolder">{{id_dep}},</span> <br>
                         {% endif %}
-                        <span class="nombre content_nombre_result_js_jheo" id="resultTot">{{nomber_resto}}</span> 
-                        résultats
+                        <span class="fw-bolder content_nombre_result_js_jheo">{{nomber_resto}}</span> résultats.
                     </p>
                 </div>
 

@@ -64,10 +64,15 @@
                         </svg>
                 </div>
                 <div class="col-md-10">
-                    <p  class="titre" data-toggle-deparement="{{nom_dep}}">
+                    {# <p  class="titre" data-toggle-deparement="{{nom_dep}}">
                         Restaurants à
 						<span class="fw-bolder">{{nom_dep}}</span><br>
                         <span  class="nombre content_nombre_result_js_jheo" id="resultTot">{{resto_nombre}}</span> résultats
+                    </p> #}
+                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
+                        Restaurants à <span class="fw-bolder">{{nom_dep}}</span>
+                        département <span class="fw-bolder">{{id_dep}},</span> <br>
+                        <span class="fw-bolder content_nombre_result_js_jheo">{{resto_nombre}}</span> résultats.
                     </p>
                 </div>
             </div>
@@ -96,7 +101,7 @@
                                 <a class="text-decoration-none text-dark" href="{{path('restaurant_specific_arrondissement_sepcial', {'nom_dep': nom_dep, 'id_dep': id_dep, 'codinsee' : arrondissement.codinsee, 'arrdssm' : arrondissement.arrondissement }) }}">
                                     <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{id_dep}}" data-toggle-depart-name="{{nom_dep}}">
                                         <div class="col-md-8">
-                                            <h5 class="lead">{{nom_dep ~ " " ~ id_dep ~ " " ~ arrondissement.arrondissement  ~ " Arrondissement"  }}</h5>
+                                            <h5 class="lead text-center">{{ arrondissement.arrondissement  ~ " Arrondissement"  }}</h5>
                                         </div>
                                         <div class="col-md-2">
                                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">

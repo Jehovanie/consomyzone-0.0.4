@@ -50,10 +50,15 @@
                     </svg>
                 </div>
                 <div class="col-md-10" style="margin-left:10px;">
-                    <p  class="titre mb-3" data-toggle-deparement="{{departName}}">
+                    {# <p  class="titre mb-3" data-toggle-deparement="{{departName}}">
                         Stations à
                         <span class="fw-bolder">{{departName}}</span><br>
                         <span class="content_nombre_result_js_jheo">{{number_station}}</span> résultats
+                    </p> #}
+                    <p  class="titre mb-3" data-toggle-deparement="{{departName}}">
+                        Stations à <span class="fw-bolder">{{departName}}</span>
+                        departement <span class="fw-bolder">{{departCode}},</span> <br>
+                        <span class="fw-bolder content_nombre_result_js_jheo">{{number_station}}</span> résultats.
                     </p>
                 </div>
                 <div class="content_filter_trie content_filter_trie_jheo_js">
