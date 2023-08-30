@@ -1,0 +1,28 @@
+<div class="image-upload image_upload_jheo_js" id="imageUploadTribu" onclick="$('.image-upload-input').trigger( 'click' )">
+	
+	<div class="image-upload-wrap">
+		{% if InputDropDown is defined %}
+			{{ form_row(InputDropDown, {'attr': {'class': 'image-upload-input image_upload_input_jheo_js', 'accept': 'image/png, image/jpeg, image/gif', 'onchange':'readURL(this);'}}) }}
+		{% else %}
+			<input class="image-upload-input image_upload_input_jheo_js" id="{{id is defined ? id : 'uploadImageID'}}" name="{{name is defined ? name : 'uploadImageName'}}" type="file" onchange="readURL(this);" accept="image/png, image/jpeg, image/gif"/>
+		{% endif %}
+		<div class="drag-text drag_text_jheo_js">
+			<img src="{{asset('assets/image/uplaodIcon.png')}}" alt="background upload file">
+			<h3 class="text_upload_image_jheo_js">Faites glisser et déposez un fichier ou sélectionnez ajouter une image</h3>
+		</div>
+	</div>
+	<div class="image-upload-content">
+		<img class="image-upload-image image_upload_image_jheo_js" src="#" alt="your image"/>
+		<div class="image-title-wrap">
+			<button type="button" onclick="removeUpload()" class="remove-image-uplaod remove_image_upload_jheo_js">
+				Change l'image
+				{# <span class="image-title">Uploaded Image</span> #}
+			</button>
+		</div>
+	</div>
+</div>
+
+ <div class="drop-zone">
+    <span class="drop-zone__prompt">Drop file here or click to upload</span>
+    <input type="file" name="myFile" class="drop-zone__input">
+  </div>

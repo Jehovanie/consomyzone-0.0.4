@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/core/main.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/daygrid/main.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/partage_agenda.css')}}">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 {% endblock %}
 
@@ -23,7 +24,7 @@
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
 {% endblock %}
-
+{% import 'shard/input/inputImageDragDrop.html.twig' as inputPartage %}
 {% block body %}
 	<div class="nh">
 		{% include 'shard/account_navleft_new.html.twig' %}
@@ -75,13 +76,13 @@
                                 -121 1 -245 -2z"/>
                             </g>
                         </svg>
-                        Partagez agenda
+                        Partagez votre événement avec : 
                     </h3>
                     
                     <div class="modal-content">
                         <div class="modal-header">
                             
-                            <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
+                            <ul class="nav nav-tabs ml-3" id="smallNavInvitation" style="color:black;font-weight:bold;">
                                 
                                 <li class="nav-item">
                                     <a class="nav-link text-secondary list_partisant_tribuG_jheo_js active agenda-tribu-g" data-target="agenda-tribu-g" onclick="tableActiveFilterPartisant(this)">Tribu G</a>
@@ -89,9 +90,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-secondary list_partisant_tribuT_jheo_js agenda-tribu-t" data-target="agenda-tribu-t" onclick="tableActiveFilterPartisant(this)">Tribu T</a>
                                 </li>
-                                {# <li class="nav-item">
-                                    <a class="nav-link text-secondary list_partisant_tous_jheo_js  agenda-tribu-g-t" aria-current="page" data-target="agenda-tribu-g-t" onclick="tableActiveFilterPartisant(this)">Tribu G et Tribu T </a>
-                                </li> #}
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary list_partisant_emailing_jheo_js agenda-emailing" data-target="agenda-emailing" onclick="tableActiveFilterPartisant(this)">Donnez votre propre liste d'invités</a>
+                                </li>
                             </ul>
                         </div>
                         <div class="modal-body custom_modal">
@@ -146,14 +147,14 @@
                                 </div> #}
 
                                 <div class="list_resto_or_golf" id="agenda-tribu-g">
-                                    <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste des partisans de votre {{allTribuG|replace({'_': ' '})}}</h5>
+                                    <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste de partisan(s) de votre {{allTribuG|replace({'_': ' '})}}</h5>
                             
                                     <table id="list-tribu-g-partage-agenda" class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Profile</th>
+                                                <th scope="col">Profil</th>
                                                 <th scope="col">Nom</th>
-                                                <th scope="col">Prenom</th>
+                                                <th scope="col">Prénom</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Rôle</th>
                                                 <th scope="col">
@@ -164,6 +165,7 @@
                                             </tr>
                                         </thead>
                                         <tbody >
+                                        {% if results|length > 0 %}
                                             {% for result in results %}
                                             <tr>
                                                 <td>
@@ -182,6 +184,7 @@
                                                 </td>
                                             </tr>
                                             {% endfor %}
+                                        {% endif %}
                                         </tbody>
                                         
                                     </table>
@@ -206,12 +209,14 @@
                                             {% for allTribuT in allTribuTs %}
                                                 <tr  data-value="{{ allTribuT.table_name }}" class="tribu_t_partisans_{{ allTribuT.table_name }}">
                                                     <td>{{ id }}</td>
-                                                    <td>{{allTribuT.table_name|replace({'_': ' '})}}</td>
+                                                    <td>{{allTribuT.table_name|split('_', 4)|last|replace({'_':' '})|capitalize}}</td>
                                                    
                                                     <td>
                                                         {# <input type="checkbox" name="selectOui" class="select-oui">
                                                         <label for="oui">Oui</label> #}
-                                                        <a class="btn btn-success listPartisantInTribuT" id="tribu_t_partisans_{{ allTribuT.table_name }}" data-bs-target="#listPartisantInTribu_{{ allTribuT.table_name }}" data-bs-toggle="modal" data-bs-dismiss="modal" onclick="showPartisanAgenda('{{ allTribuT.table_name }}')">Liste des partisans</a>
+                                                        <a class="btn btn-success listPartisantInTribuT" id="tribu_t_partisans_{{ allTribuT.table_name }}" 
+                                                        data-bs-target="#listPartisantInTribuT" data-bs-toggle="modal" 
+                                                        data-bs-dismiss="modal" onclick="showPartisanAgenda('{{ allTribuT.table_name }}')">Liste des partisans</a>
                                                     </td>
                                                 </tr>
                                                 {% set id = id + 1 %}
@@ -220,11 +225,45 @@
                                         
                                     </table>
                                 </div>
+
+                                <div class="list_resto_or_golf mt-3" id="agenda-emailing">
+                                    <div class="accordion" id="accordion1" style="width: 448px; margin:auto;">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingOne">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"></use></svg>
+                                                    <span class="lead">Comment ça marche ?</span>
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordion1" style="">
+                                                <div class="accordion-body">
+                                                    <div class="card mb-3" style="max-width: 540px; margin:auto;">
+                                                        <div class="row g-0">
+                                                            <div class="col-md-12">
+                                                                <div class="card-body">
+                                                                    <h6 class="card-title" style="margin-bottom:10px">Glissez un fichier CSV avec séparateur <span class="badge bg-light text-dark">;</span></h6>
+                                                                    <p class="card-text">Le fichier doit avoir les colonnes suivantes  :</p>
+                                                                    <p class="card-text"><small class="text-muted">
+                                                                        <span class="badge bg-light text-dark">Nom</span> 
+                                                                        <span class="badge bg-light text-dark">Prénom</span>  
+                                                                        <span class="badge bg-light text-dark">Email</span>
+                                                                    </small></p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>                                 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="margin:auto;" class="mt-3">
+                                        {{ inputPartage.inputPartageAgenda()}}
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
-                        
-                        
                     </div>
 
                     <div class="row btn-partage-agenda mt-5">

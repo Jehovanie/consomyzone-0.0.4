@@ -227,6 +227,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $page_current =$page > 1 ? $page * 10 +1  : 0;
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
+                        p.id as id_etab,
                         p.dep,
                         p.depName,
                         p.numvoie,
@@ -240,6 +241,10 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.compvoie,
                         p.restaurant as resto,
                         p.brasserie,
+                        p.denominationF as name,
+                        p.dep as id_dep,
+                        p.depName as departement,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
                         p.creperie,
                         p.fastFood,
                         p.pizzeria,
@@ -433,6 +438,11 @@ class BddRestoRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,
+                        p.id as id_etab,
+                        p.denominationF as name,
+                        p.dep as id_dep,
+                        p.depName as departement,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
                         p.depName,
                         p.numvoie,
                         p.typevoie,
@@ -637,9 +647,14 @@ class BddRestoRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder("r")
             ->select(
-                "r.id,r.denominationF,
+                "r.id,
+                r.denominationF,
+                r.id as id_etab,
+                r.denominationF as name,
                 r.numvoie,r.typevoie,
                 r.nomvoie,r.compvoie,
+                r.dep as id_dep,
+                r.depName as departement,
                 r.codpost,r.villenorm,
                 r.commune,r.restaurant,
                 r.brasserie,r.creperie,
@@ -652,6 +667,7 @@ class BddRestoRepository extends ServiceEntityRepository
                 r.prestation1,r.regimeSpeciaux1,
                 r.repas1,r.typeCuisine1,
                 r.dep,r.depName,r.tel,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as adresse,
                 r.poiX,r.poiY"
             )
             ->where("r.codinsee =:codinsee")
