@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
-use App\Service\Status;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
 use App\Service\SortResultService;
@@ -13,6 +13,7 @@ use App\Repository\FermeGeomRepository;
 use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\CommuneGeoCoderRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -183,6 +184,7 @@ class HomeController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
+        CommuneGeoCoderRepository $communeGeoCoderRepository
         
     ){
 
@@ -377,6 +379,8 @@ class HomeController extends AbstractController
 
                 break;
         }
+
+        // dd($communeGeoCoderRepository->findBy(["nom_com" => $cles1]));
 
         if(str_contains($request->getPathInfo(), '/api/search')){
             return $this->json([

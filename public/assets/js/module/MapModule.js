@@ -557,7 +557,7 @@ class MapModule{
     }
 
     initMap(lat= null,long= null, isAddControl=false){
-        
+        console.log(lat, long)
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
             content_map.removeChild(document.querySelector("#toggle_chargement"))

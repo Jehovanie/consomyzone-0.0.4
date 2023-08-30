@@ -10,23 +10,41 @@ class MarckerClusterSearch extends MapModule  {
 
     async onInit(isAddControl=false) {
         const url = new Request(url_test.href.replace("search", 'api/search'));
+        this.isAddControl = isAddControl;
         try {
             // this.getGeos()
             this.createMarkersCluster();
             
             const response = await fetch(url);
             this.default_data = await response.json();
-            this.data = this.default_data;  /// [ data, data_length, data_type]
+            this.data = this.default_data;  /// [ data, data_length, cles0, cles1]
 
-            // this.map = await create_map_content(this.geos, this.id_dep, "search");
+            const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.cles1}&format=json&limit=1`)
+            const address = await responsePos.json();
+
             const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-            const firstData= (this.data.results[0].length>0) ? this.data.results[0][0] : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
 
-            this.initMap(firstData.lat, firstData.long, isAddControl);
+            const latLong= (address.length> 0) ?  { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
 
+            this.initMap(latLong.lat, latLong.long, this.isAddControl);
             this.bindAction();
-
         } catch (e) {
+            console.log(e)
+        }
+    }
+
+
+    async getAdresseDetailsOpenStrettMap(cles){
+        try{
+            const response = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cles}&format=json&limit=1`)
+            const address = await response.json();
+
+            const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+            const latLong= (address.length>0) ?  { lat: address[0].lat, long: address[0].lng } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
+
+            this.initMap(latLong.lat, latLong.long, this.isAddControl);
+            this.bindAction();
+        }catch(e){
             console.log(e)
         }
     }
