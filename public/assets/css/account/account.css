@@ -1216,7 +1216,7 @@ thead > tr{
 
 .ModalCreationTribuT .modal-body .mini-couvertur-tribu-t img{
     width: 468px;
-    height: 200px;
+    height: 160px;
 }
 
 .form-tribu-t{
@@ -1225,13 +1225,18 @@ thead > tr{
 
 .nom-tribu-t{
     position: absolute;
-    top: 225px;
-    left: 180px;
-    width: 300px !important;
-    border: none !important;
+    top: 240px;
+    left: 15px;
+    width: 470px !important;
+    height: 50px !important;
+    /* border: none !important; */
     background-color: transparent   !important;
     font-size: 14pt !important;
     font-weight: 700    !important;
+}
+
+.elie-border-black{
+    border: 1px solid !important;
 }
 
 .description-tribu-t{
@@ -1239,8 +1244,8 @@ thead > tr{
     top: 300px;
     left: 15px;
     width: 470px !important;
-    height: 50px !important;
-    border: none !important;
+    height: 42px !important;
+    /* border: none !important; */
     resize: none !important;
     background-color: transparent !important;
     font-size: 12pt !important;
@@ -1277,11 +1282,25 @@ thead > tr{
     border-radius: 50%;
 }
 
+.elie-div-ext{
+    margin-top: 85px;
+}
+
+.form-check-label{
+    color: #000 !important;
+    margin-top: 44px !important;
+}
+#form_extension{
+    border: 1px #000 solid;
+}
+
 .text-choisir{
     position: absolute;
-    top: 420px;
-    left: 28px;
-    font-size: 8pt;
+    top: 425px;
+    left: 17px;
+    font-size: 12pt;
+    color: #000 !important;
+    font-weight: bold;
 }
 
 .pastille-resto{
@@ -2160,4 +2179,53 @@ img.zoom {
     -moz-transform: scale(1.2);
     -o-transform: scale(1.2);
     transform: scale(1.2);
+}
+
+.elie-img-pastilled img{
+    width: 50px;
+    height: 50px;
+    max-width: 50px ;
+    max-height: 50px;
+    border-radius: 50%;
+}
+
+.elie-resto-rech{
+    border: 1px solid !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    height: 45px !important;
+}
+
+#resto-rech, #button-addon2{
+    border: 1px solid !important;
+}
+#resto-rech-ou{
+    border-radius: 0 !important;
+}
+
+.elie-div-resto-search{
+    width: 80%;
+    height: 80%;
+    /* background-color: blue; */
+    display: none;
+    z-index: 9999;
+    position: fixed;
+    top: 10%;
+    /* right: 13%; */
+    /* bottom: 10%; */
+    left: 10%;
+    
+    background-color: white;
+    padding: 2px;
+    border: 1px rgb(22, 2, 2);
+    border-radius: 15px;
+    /* background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4);  */
+}
+#elie-restou{
+    width: 79%;
+    height: 71%;
+    margin: 5px;
+    overflow-y: auto;
+    position: fixed;
 }

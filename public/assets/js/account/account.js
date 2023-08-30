@@ -1017,7 +1017,7 @@ document.querySelectorAll(".elie_nav_link").forEach(i=>{
                 
                 $('#table_tribu_g').DataTable( {
                     language: {
-                        url:'/assets/js/account/fr-FR.json',
+                        url:'//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 } );
                 
@@ -1033,7 +1033,7 @@ document.querySelectorAll(".elie_nav_link").forEach(i=>{
             if ( !$.fn.dataTable.isDataTable('#table_tribu_t') ) {
                 $('#table_tribu_t').DataTable( {
                     language: {
-                        url:'/assets/js/account/fr-FR.json',
+                        url:'//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     },
                 } );
 

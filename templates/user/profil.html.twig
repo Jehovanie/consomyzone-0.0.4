@@ -249,7 +249,7 @@
 									{% for user in tribu_g_friend %}
 
 										<tr>
-											<td><a href="{{user.id}}">{{user.firstname ~" "~ user.lastname}}</a></td>
+											<td><a href="{{user.id}}" class="text-primary">{{user.firstname ~" "~ user.lastname}}</a></td>
 											<td>{{user.email}}</td>
 											<td>{{user.status}}</td>
 											<td style="width:100%">{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}</td>
@@ -273,7 +273,7 @@
 									{% for user in tribu_t_friend %}
 										<tr>
 											<td style="width:100%;"><img src="{{user.tribuT.avatar}}" alt="" style="width:40px; height:40px;border-radius:50%;display:inline;"/><span class="ms-2" style="display:inline-block;">{{user.tribuT.name}}</span></td>
-											<td><a href="{{user.user.id}}">{{user.user.firstname ~" "~ user.user.lastname}}</a></td>
+											<td><a href="{{user.user.id}}" class="text-primary">{{user.user.firstname ~" "~ user.user.lastname}}</a></td>
 											<td>{{user.user.email}}</td>
 											<td>{{user.user.role}}</td>
 										</tr>

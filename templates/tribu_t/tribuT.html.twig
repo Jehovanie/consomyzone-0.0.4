@@ -24,6 +24,8 @@
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 {% endblock %}
 
 {% block body %}
@@ -104,7 +106,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="creerTribuTModal">
+				<h5 class="modal-title text-black" id="creerTribuTModal">
 					Créer un nouveau tribu-T</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
@@ -113,26 +115,35 @@
 					<img src="{{asset('assets/image/mini-couverture.jpg')}}" alt="">
 				</div>
 
-				{# <form action="{{path('create_file')}}" class="form-tribu-t" method="post"> #}
+
 				{{ form_start(form, {'method': 'POST'}) }}
+
 				<label for="" class="label" id="uploadImage">
 					{{ form_row(form.upload, {'attr': {'class': 'input'}}) }}
 					<span class="label-uplaod-tribu-t"></span>
 				</label>
-				{{ form_row(form.tribuTName, {'attr': {'class': 'nom-tribu-t', 'placeholder': "Entrer le nom de la tribu"}}) }}
-				{{ form_row(form.extensionData, {'attr': {'class': 'extensionData'}}) }}
-				{{ form_row(form.description, {'attr': {'class': 'description-tribu-t', 'placeholder': "Entrer votre déscription"}}) }}
-				{{ form_row(form.adresse, {'attr': {'class': 'adress-tripu-t', 'placeholder': "Entrer votre adresse"}}) }}
-				<p class="text-choisir">Choisir une extension</p>
-				<div class="form-check form-switch mt-4">
-					{{ form_row(form.extension, {'attr': {'class': 'form-check-input', 'role': "switch", 'onclick':"openModalForExtension(this)"}}) }}
+
+				<div class="" style="margin-top: -70px;">
+					{{ form_label(form.tribuTName , "Nom de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+					{{ form_widget(form.tribuTName, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black','placeholder': "Entrer ici le nom de la tribu"}}) }}
+
+					{{ form_label(form.description , "Description de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+					{{ form_widget(form.description, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black', 'placeholder': "Entrer ici la description de la tribu"}}) }}
+
+					<p class="text-choisir">Choisir une extension</p>
+
+					<div class="form-check form-switch mt-6">
+						{{ form_row(form.extension, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
+					</div>
+					
 				</div>
+
 				<center class="mt-3">
 					<button class="btn-creer" type="submit">Créer</button>
 				</center>
-				{{ form_end(form)}}
 
-				{# </form> #}
+				{{form_end(form)}}
+
 			</div>
 
 
@@ -144,7 +155,7 @@
 
 <!-- Modal For Extension -->
 <div class="modal fade" id="modalForExtension" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Pastiller un restaurant</h1>
@@ -156,13 +167,21 @@
 			<input type="text" class="form-control  rounded" placeholder="Saisir le nom du restaurant" id="resto-rech">
 			<button class="btn btn-light" type="button" id="button-addon2" onclick="listResto()"><i class="fas fa-search"></i></button>
 		</div>
+		<div id="result_resto_chr" class="result_resto_chr"></div>
       </div>
       <div class="modal-footer">
-        <div id="result_resto_chr" class="result_resto_chr owl-carousel owl-theme"></div>
+        {# <div id="result_resto_chr" class="result_resto_chr"></div> #}
       </div>
     </div>
   </div>
 </div>
 <!-- End Modal -->
+<div style="" class="elie-div-resto-search border border-dark">
+	<div class="d-flex justify-content-between">
+		<h6 class="text-primary m-2">Resultat de recherche restaurant</h6>
+		<button class="border border-secondary pe-2 ps-2 me-2 rounded-1" onclick="closeSearch()"><i class="fas fa-close text-danger fa-2x"></i></button>
+	</div>
+	<div id="elie-restou"></div>
+</div>
 
 {% endblock %}
