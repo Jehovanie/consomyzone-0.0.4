@@ -111,6 +111,11 @@ body {
 }
 
 
+.link_nav_rubrique{
+    font-size : 0.75em !important;
+}
+
+
 .navleft .list-depart-all ul li{
     list-style: none;
     background-color: #ffffff;
