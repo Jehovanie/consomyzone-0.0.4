@@ -236,6 +236,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $page_current =$page > 1 ? $page * 10 +1  : 0;
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
+                        p.id as id_etab,
                         p.dep,
                         p.depName,
                         p.numvoie,
@@ -249,6 +250,10 @@ class BddRestoRepository extends ServiceEntityRepository
                         p.compvoie,
                         p.restaurant as resto,
                         p.brasserie,
+                        p.denominationF as name,
+                        p.dep as id_dep,
+                        p.depName as departement,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
                         p.creperie,
                         p.fastFood,
                         p.pizzeria,
@@ -442,6 +447,11 @@ class BddRestoRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,
+                        p.id as id_etab,
+                        p.denominationF as name,
+                        p.dep as id_dep,
+                        p.depName as departement,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
                         p.depName,
                         p.numvoie,
                         p.typevoie,

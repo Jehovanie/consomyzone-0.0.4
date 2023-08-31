@@ -1,25 +1,25 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     const request = new Request('/api/user/all_agenda', {
         method: "GET",
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json'
         },
     })
 
     fetch(request)
-        .then(response=>response.json())
-        .then(response =>{
-            const allAgenda= response.allAgenda;
-            const agendaTab= [];
-            
-            const repasType= [ 'repas', 'dîné', 'déjeuné'];
+        .then(response => response.json())
+        .then(response => {
+            const allAgenda = response.allAgenda;
+            const agendaTab = [];
+
+            const repasType = ['repas', 'dîné', 'déjeuné'];
 
             // console.log(allAgenda);
 
-            allAgenda.forEach(agenda => { 
-                const {id, title, dateStart:start, dateEnd: end, timeStart : heureDebut, timeEnd: heureFin } = agenda;
+            allAgenda.forEach(agenda => {
+                const { id, title, dateStart: start, dateEnd: end, timeStart: heureDebut, timeEnd: heureFin } = agenda;
                 // const className=  repasType.some(item => item.includes(type.toLowerCase())) ? "repas": 'other_event';
                 // var tomorrow = new Date(end);
                 // tomorrow.setDate(tomorrow.getDate()+1)
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dateStartAgd = dateStartAgd.setHours(heureDebut.split(":")[0], heureDebut.split(":")[1], heureDebut.split(":")[2]);
                 let dateEndAgd = new Date(end)
                 dateEndAgd = dateEndAgd.setHours(heureFin.split(":")[0], heureFin.split(":")[1], heureFin.split(":")[2]);
-                agendaTab.push({id, title, start : dateStartAgd, end: dateEndAgd, textColor: 'black'})
+                agendaTab.push({ id, title, start: dateStartAgd, end: dateEndAgd, textColor: 'black' })
             })
             // console.log(agendaTab)
             rendreCalendarWithEvents(agendaTab)
@@ -37,10 +37,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+
+
+if ('WebSocket' in window) {
+    (function () {
+        function refreshCSS() {
+            var sheets = [].slice.call(document.getElementsByTagName("link"));
+            var head = document.getElementsByTagName("head")[0];
+            for (var i = 0; i < sheets.length; ++i) {
+                var elem = sheets[i];
+                var parent = elem.parentElement || head;
+                parent.removeChild(elem);
+                var rel = elem.rel;
+                if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+                    var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+                    elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+                }
+                parent.appendChild(elem);
+            }
+        }
+        var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+        var address = protocol + window.location.host + window.location.pathname + '/ws';
+        var socket = new WebSocket(address);
+        socket.onmessage = function (msg) {
+            if (msg.data == 'reload') window.location.reload();
+            else if (msg.data == 'refreshcss') refreshCSS();
+        };
+        if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+            console.log('Live reload enabled.');
+            sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+        }
+    })();
+} else {
+    console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+}
+
+
 ///// CANCEL CREATE AGENDA ------------------------------------------------------
-if( document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.querySelector(".btn_close_create_agenda_jheo_js")){
+if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.querySelector(".btn_close_create_agenda_jheo_js")) {
     const cta_cancel_create_agenda = [document.querySelector(".cta_cancel_create_agenda_jheo_js"), document.querySelector(".btn_close_create_agenda_jheo_js")];
-    
+
     cta_cancel_create_agenda.forEach(item => {
         item.addEventListener("click", () => {
             initInputForm()
@@ -50,56 +86,56 @@ if( document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
 
 
 //// PUSH NEW AGENT -----------------------------------------------------------
-if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
+if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
 
     //// CHECK INPUT TYPE EVENT : IF 'REPAS' SHOW INPUT SEARCH RESTO
-    const handleTypeEvent= [document.querySelector(".inputOther_radio_jheo_js"), document.querySelector(".inputRepas_radio_jheo_js") ];
+    const handleTypeEvent = [document.querySelector(".inputOther_radio_jheo_js"), document.querySelector(".inputRepas_radio_jheo_js")];
 
     handleTypeEvent.forEach(typeEvent => {
 
-        const content_inputTypeSelect= document.querySelector(".content_typeEventSelect_jheo_js");
-        const content_inputType= document.querySelector(".content_typeEvent_jheo_js");
+        const content_inputTypeSelect = document.querySelector(".content_typeEventSelect_jheo_js");
+        const content_inputType = document.querySelector(".content_typeEvent_jheo_js");
 
         typeEvent.addEventListener("change", () => {
-            if( typeEvent.classList.contains("inputOther_radio_jheo_js")){
-                if(content_inputType.classList.contains("d-none")){
+            if (typeEvent.classList.contains("inputOther_radio_jheo_js")) {
+                if (content_inputType.classList.contains("d-none")) {
                     content_inputType.classList.remove("d-none")
 
-                    document.querySelector(".typeEvent_jheo_js").value=null;
+                    document.querySelector(".typeEvent_jheo_js").value = null;
                 }
-    
-                if(!content_inputTypeSelect.classList.contains("d-none")){
+
+                if (!content_inputTypeSelect.classList.contains("d-none")) {
                     content_inputTypeSelect.classList.add("d-none")
                 }
 
-                if(!document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')){
+                if (!document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')) {
                     document.querySelector(".content_searchResto_jheo_js").classList.add('d-none');
                 }
 
-                if(!document.querySelector(".content_restoEvent_jheo_js").classList.contains('d-none')){
+                if (!document.querySelector(".content_restoEvent_jheo_js").classList.contains('d-none')) {
                     document.querySelector(".content_restoEvent_jheo_js").classList.add('d-none');
                     document.querySelector(".restoEvent_jheo_js").value = null
                 }
-    
-                if(document.querySelector(".lieuEvent_jheo_js").hasAttribute('disabled')){
+
+                if (document.querySelector(".lieuEvent_jheo_js").hasAttribute('disabled')) {
                     document.querySelector(".lieuEvent_jheo_js").removeAttribute('disabled');
-                    document.querySelector(".lieuEvent_jheo_js").value= null;
+                    document.querySelector(".lieuEvent_jheo_js").value = null;
                 }
-    
-            }else{
-                if(!content_inputType.classList.contains("d-none")){
+
+            } else {
+                if (!content_inputType.classList.contains("d-none")) {
                     content_inputType.classList.add("d-none")
                 }
-    
-                if(content_inputTypeSelect.classList.contains("d-none")){
+
+                if (content_inputTypeSelect.classList.contains("d-none")) {
                     content_inputTypeSelect.classList.remove("d-none")
                 }
 
-                if(document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')){
+                if (document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')) {
                     document.querySelector(".content_searchResto_jheo_js").classList.remove('d-none')
                 }
 
-                document.querySelector(".typeEvent_jheo_js").value="Repas déjeuné"
+                document.querySelector(".typeEvent_jheo_js").value = "Repas déjeuné"
             }
         })
     })
@@ -110,9 +146,9 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
 
 
     //// CHANGE EVENT FOR SEARCH RESTO
-    document.querySelector(".searchResto_jheo_js").addEventListener("keyup",(e) => {
-        if(parseInt(e.keyCode) === 13 ){
-            if( document.querySelector(".searchResto_jheo_js").value != "" ){
+    document.querySelector(".searchResto_jheo_js").addEventListener("keyup", (e) => {
+        if (parseInt(e.keyCode) === 13) {
+            if (document.querySelector(".searchResto_jheo_js").value != "") {
 
                 /// afficher la liste des restos trouver
                 bindActionSearchResto(document.querySelector(".searchResto_jheo_js").value);
@@ -121,36 +157,36 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
     })
 
     ///// AFFICHER UNE LISTE DES RESTO
-    document.querySelector(".chose_pastil_resto_jheo_js").addEventListener("click",() => {
+    document.querySelector(".chose_pastil_resto_jheo_js").addEventListener("click", () => {
 
         /// afficher la liste des restos pastiller
         bindActionSearchResto("RESTO_PASTILLE");
     })
 
     document.querySelector(".cta_confirm_create_agenda_jheo_js").addEventListener("click", (e) => {
-        
-        let state= true;
 
-        const agenda= {
-            "title" : document.querySelector(".nameEvent_jheo_js").value,
-            "type" : document.querySelector(".typeEvent_jheo_js").value,
-            "address" : document.querySelector(".lieuEvent_jheo_js").value,
-            "desc" : document.querySelector(".eventDesc_jheo_js").value,
-            "participant" : document.querySelector(".nbrParticipant_jheo_js").value,
-            "dateStart" : document.querySelector(".eventStart_jheo_js").value,
-            "dateEnd" : document.querySelector(".eventEnd_jheo_js").value,
-            "timeStart" : document.querySelector(".timeStart_jheo_js").value,
-            "timeEnd" : document.querySelector(".timeEnd_jheo_js").value,
+        let state = true;
+
+        const agenda = {
+            "title": document.querySelector(".nameEvent_jheo_js").value,
+            "type": document.querySelector(".typeEvent_jheo_js").value,
+            "address": document.querySelector(".lieuEvent_jheo_js").value,
+            "desc": document.querySelector(".eventDesc_jheo_js").value,
+            "participant": document.querySelector(".nbrParticipant_jheo_js").value,
+            "dateStart": document.querySelector(".eventStart_jheo_js").value,
+            "dateEnd": document.querySelector(".eventEnd_jheo_js").value,
+            "timeStart": document.querySelector(".timeStart_jheo_js").value,
+            "timeEnd": document.querySelector(".timeEnd_jheo_js").value,
         }
 
-        const agenda_keys= Object.keys(agenda);
+        const agenda_keys = Object.keys(agenda);
         agenda_keys.forEach(key => {
-            if( agenda[key] === ''){
-                state= false;
+            if (agenda[key] === '') {
+                state = false;
             }
         })
 
-        if( !state ){
+        if (!state) {
             e.preventDefault()
             console.log(agenda)
             document.querySelector(".invalid_agenda_jheo_js").click();
@@ -158,7 +194,7 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
             setTimeout(() => {
                 document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
             }, 1500);
-        }else{
+        } else {
             sendNewAgenda(agenda)
         }
     })
@@ -172,12 +208,12 @@ if( document.querySelector(".cta_confirm_create_agenda_jheo_js")){
 }
 
 
-function rendreCalendarWithEvents(events){
-    
+function rendreCalendarWithEvents(events) {
+
     var calendarEl = document.getElementById('calendar');
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'interaction', 'dayGrid' ],
+        plugins: ['interaction', 'dayGrid'],
         themeSystem: 'bootstrap5',
         defaultDate: new Date(),
         editable: true,
@@ -194,10 +230,10 @@ function rendreCalendarWithEvents(events){
             "default": true
         },
         events: events,
-        dateClick: function(info) {
+        dateClick: function (info) {
             bindEventForAllDay(info)
         },
-        eventClick: function(info) {
+        eventClick: function (info) {
             const id = info.event.id ? parseInt(info.event.id) : 0
             bindEventForAnEvent(id)
         },
@@ -206,68 +242,68 @@ function rendreCalendarWithEvents(events){
     calendar.render();
 }
 
-function bindEventForAllDay(info){
+function bindEventForAllDay(info) {
     const info_date = new Date(info.dateStr);
     const today = new Date();
 
     // if( info_date.getTime() >=  today.getTime()){
     // }
 
-    document.querySelector(".eventStart_jheo_js").value= info.dateStr;
-    document.querySelector(".eventEnd_jheo_js").value= info.dateStr;
+    document.querySelector(".eventStart_jheo_js").value = info.dateStr;
+    document.querySelector(".eventEnd_jheo_js").value = info.dateStr;
 
-    document.querySelector(".timeStart_jheo_js").value= '00:00';
-    document.querySelector(".timeEnd_jheo_js").value= '23:00';
+    document.querySelector(".timeStart_jheo_js").value = '00:00';
+    document.querySelector(".timeEnd_jheo_js").value = '23:00';
 
     ///show modal
     //document.querySelector('.show_modal_createAgenda_jheo_js').click()
     $("#createAgenda").modal("show")
 
-    if(document.querySelector('#createOrEditBtn').textContent.toLowerCase().trim() == "modifier"){
+    if (document.querySelector('#createOrEditBtn').textContent.toLowerCase().trim() == "modifier") {
         initInputForm()
     }
 
 }
 
-function bindEventForAnEvent(id){
-    if(id===0){
+function bindEventForAnEvent(id) {
+    if (id === 0) {
         showAlertMessageFlash('Evenement non trouvée!', 'danger')
         return 0;
     }
-    
+
 
     const request = new Request(`/api/user/agenda/${id}`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json'
         },
     })
 
     fetch(request)
-        .then(response=>response.json())
-        .then(response =>{
-            const agenda= response.agenda;
+        .then(response => response.json())
+        .then(response => {
+            const agenda = response.agenda;
             setAndShowModal(agenda)
         })
 }
 
-function setAndShowModal(agenda){
+function setAndShowModal(agenda) {
     $("#createAgenda").modal("show")
     $("#createOrEditBtn").text("Modifier")
     $("#modalCreateAgendaTitles").text("Modifier l'événement")
     document.querySelector('#createOrEditBtn').dataset.action = "update"
     document.querySelector('#createOrEditBtn').dataset.rank = agenda.id
-    console.log(agenda)
+    document.querySelector('#shareAgendaBtn').dataset.agenda = JSON.stringify(agenda)
     document.querySelector("#eventTitle").value = agenda.title
     document.querySelector("#typeEvent").value = agenda.type
     document.querySelector("#eventDesc").value = agenda.description
 
-    if(document.querySelector("#deleteAgendaBtn").classList.contains("d-none")){
+    if (document.querySelector("#deleteAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#deleteAgendaBtn").classList.remove("d-none")
     }
 
-    if(document.querySelector("#shareAgendaBtn").classList.contains("d-none")){
+    if (document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#shareAgendaBtn").classList.remove("d-none")
     }
 
@@ -275,15 +311,15 @@ function setAndShowModal(agenda){
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")
 
-    if(nomEtab.classList.contains("d-none")){
+    if (nomEtab.classList.contains("d-none")) {
         nomEtab.classList.remove("d-none")
     }
 
-    if(adresseContainer.classList.contains("d-none")){
+    if (adresseContainer.classList.contains("d-none")) {
         adresseContainer.classList.remove("d-none")
     }
 
-    if(agenda.isEtabCMZ){
+    if (agenda.isEtabCMZ) {
 
         document.querySelector("#etabSelectOptions").value = 1
 
@@ -291,17 +327,17 @@ function setAndShowModal(agenda){
 
         adresseContainer.querySelector("input").disabled = true
 
-        if(etabCMZ.classList.contains("d-none")){
+        if (etabCMZ.classList.contains("d-none")) {
             etabCMZ.classList.remove("d-none")
         }
 
-        if(agenda.isGolfCMZ){
+        if (agenda.isGolfCMZ) {
             document.querySelector("#golfRadio").checked = true
-        }else{
+        } else {
             document.querySelector("#restoRadio").checked = true
         }
 
-    }else{
+    } else {
 
         document.querySelector("#etabSelectOptions").value = 2
 
@@ -309,7 +345,7 @@ function setAndShowModal(agenda){
 
         adresseContainer.querySelector("input").disabled = false
 
-        if(!document.querySelector("#etabCMZ").classList.contains("d-none"))
+        if (!document.querySelector("#etabCMZ").classList.contains("d-none"))
             document.querySelector("#etabCMZ").classList.add("d-none")
 
     }
@@ -320,79 +356,79 @@ function setAndShowModal(agenda){
 
     document.querySelector("#nbrParticipant").value = agenda.max_participant
 
-    document.querySelector("#eventStart").value= agenda.dateStart;
+    document.querySelector("#eventStart").value = agenda.dateStart;
 
-    document.querySelector("#eventEnd").value= agenda.dateEnd;
+    document.querySelector("#eventEnd").value = agenda.dateEnd;
 
-    document.querySelector("#timeStart").value= agenda.heure_debut;
+    document.querySelector("#timeStart").value = agenda.heure_debut;
 
-    document.querySelector("#timeEnd").value= agenda.heure_fin;
-    
+    document.querySelector("#timeEnd").value = agenda.heure_fin;
+
 }
 
 
-function updateAgenda(){
-    const array= [
+function updateAgenda() {
+    const array = [
         document.querySelector('.cta_update_agenda_jheo_js'),
         document.querySelector('.cta_cancel_edit_agenda_jheo_js'),
         document.querySelector('.content_input_view_agenda_jheo_js')
     ];
 
-    if(array.some(item => item === null )){
+    if (array.some(item => item === null)) {
         console.log("Selector not found")
         return 0
     }
 
-    const content_view_agenda= document.querySelector('.content_input_view_agenda_jheo_js')
-    document.querySelector(".cta_update_agenda_jheo_js").addEventListener("click",() => {
+    const content_view_agenda = document.querySelector('.content_input_view_agenda_jheo_js')
+    document.querySelector(".cta_update_agenda_jheo_js").addEventListener("click", () => {
         content_view_agenda.querySelectorAll("input").forEach(input => {
-            if( input.hasAttribute("disabled") && !input.classList.contains("nbrParticipantCur_jheo_js")){
+            if (input.hasAttribute("disabled") && !input.classList.contains("nbrParticipantCur_jheo_js")) {
                 input.removeAttribute("disabled")
             }
         })
 
-        const textArea= content_view_agenda.querySelector("textarea");
-        if( textArea.hasAttribute("disabled")){
+        const textArea = content_view_agenda.querySelector("textarea");
+        if (textArea.hasAttribute("disabled")) {
             textArea.removeAttribute("disabled")
         }
 
-        document.querySelector(".modal_title_event_jheo_js").innerText= "Modification d'une évenement"
+        document.querySelector(".modal_title_event_jheo_js").innerText = "Modification d'une évenement"
 
-        document.querySelector(".cta_update_agenda_jheo_js").innerText= 'Confirme la modification';
+        document.querySelector(".cta_update_agenda_jheo_js").innerText = 'Confirme la modification';
 
-        const cta_cancel_edit= document.querySelector(".cta_cancel_edit_agenda_jheo_js");
-        if( cta_cancel_edit.classList.contains("d-none")){
+        const cta_cancel_edit = document.querySelector(".cta_cancel_edit_agenda_jheo_js");
+        if (cta_cancel_edit.classList.contains("d-none")) {
             cta_cancel_edit.classList.remove("d-none");
         }
     })
 
-    document.querySelector(".cta_cancel_edit_agenda_jheo_js").addEventListener("click",() => {
+    document.querySelector(".cta_cancel_edit_agenda_jheo_js").addEventListener("click", () => {
         content_view_agenda.querySelectorAll("input").forEach(input => {
-            if( !input.hasAttribute("disabled")){
+            if (!input.hasAttribute("disabled")) {
                 input.setAttribute("disabled", "")
             }
         })
 
-        const textArea= content_view_agenda.querySelector("textarea");
-        if( !textArea.hasAttribute("disabled")){
+        const textArea = content_view_agenda.querySelector("textarea");
+        if (!textArea.hasAttribute("disabled")) {
             textArea.setAttribute("disabled", "")
         }
 
-        document.querySelector(".modal_title_event_jheo_js").innerText= "Evenement"
-        document.querySelector(".cta_update_agenda_jheo_js").innerText= 'Voulez-vous modifier?';
-        
-        const cta_cancel_edit= document.querySelector(".cta_cancel_edit_agenda_jheo_js");
-        if( !cta_cancel_edit.classList.contains("d-none")){
+        document.querySelector(".modal_title_event_jheo_js").innerText = "Evenement"
+        document.querySelector(".cta_update_agenda_jheo_js").innerText = 'Voulez-vous modifier?';
+
+        const cta_cancel_edit = document.querySelector(".cta_cancel_edit_agenda_jheo_js");
+        if (!cta_cancel_edit.classList.contains("d-none")) {
             cta_cancel_edit.classList.add("d-none");
         }
     })
 
 
-    document.querySelector(".cta_delete_agenda_jheo_js").addEventListener("click",() => {
-        const agendaID= document.querySelector(".cta_delete_agenda_jheo_js").getAttribute("data-agenda-id");
-        if(!agendaID){
+    document.querySelector(".cta_delete_agenda_jheo_js").addEventListener("click", () => {
+        const agendaID = document.querySelector(".cta_delete_agenda_jheo_js").getAttribute("data-agenda-id");
+        if (!agendaID) {
             showAlertMessageFlash("Impossible de supprimer cette agenda parce que ce n'est pas vous qu'il a crée.", "danger");
-        }else{
+        } else {
             document.querySelector(".confirm_delete_agenda_jheo_js").addEventListener("click", () => {
                 deleteAgenda(parseInt(agendaID))
             })
@@ -400,12 +436,12 @@ function updateAgenda(){
     })
 }
 
-function sendNewAgenda(agenda){
-    
+function sendNewAgenda(agenda) {
+
     const param = {
-        "name" : agenda.title,
+        "name": agenda.title,
         "description": agenda.desc,
-        "type": JSON.stringify({ "type": agenda.type, "code" : 1 }),
+        "type": JSON.stringify({ "type": agenda.type, "code": 1 }),
         "confidentiality": agenda.confidentiality,
         "dateStart": agenda.dateStart,
         "dateEnd": agenda.dateEnd,
@@ -414,8 +450,8 @@ function sendNewAgenda(agenda){
         "adresse": agenda.address,
         "participant": agenda.participant,
         "resto": agenda.resto,
-        "resto" : (document.querySelector(".restoEvent_jheo_js").value !== "" ) ? document.querySelector(".restoEvent_jheo_js").value : null,
-        "confidentiality" : 1,
+        "resto": (document.querySelector(".restoEvent_jheo_js").value !== "") ? document.querySelector(".restoEvent_jheo_js").value : null,
+        "confidentiality": 1,
         "fileType": null,
         "fileName": null,
     };
@@ -425,26 +461,26 @@ function sendNewAgenda(agenda){
         method: "POST",
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(param)
     })
 
     fetch(request)
-        .then(response=>response.json())
-        .then(response =>{
+        .then(response => response.json())
+        .then(response => {
             console.log(response);
-            showAlertMessageFlash(response.message, "success" ,isReload=true);
+            showAlertMessageFlash(response.message, "success", isReload = true);
         })
 }
 
 
-function setRestoAgenda(resto, element){
+function setRestoAgenda(resto, element) {
 
-    const classSuccess= "btn-info";
-    const classDefault= "btn-outline-info";
+    const classSuccess = "btn-info";
+    const classDefault = "btn-outline-info";
 
-    if( document.querySelector(".resto_pastiled_jheo_js")){
+    if (document.querySelector(".resto_pastiled_jheo_js")) {
         const pastiled = document.querySelector(".resto_pastiled_jheo_js");
         pastiled.classList.remove("resto_pastiled_jheo_js");
 
@@ -453,7 +489,7 @@ function setRestoAgenda(resto, element){
         pastiled.innerText = "Choisir"
     }
 
-    if( element.classList.contains(classDefault)){
+    if (element.classList.contains(classDefault)) {
         element.classList.remove(classDefault);
         element.classList.add(classSuccess);
         element.classList.add("resto_pastiled_jheo_js");
@@ -463,63 +499,59 @@ function setRestoAgenda(resto, element){
     document.querySelector(".restoEvent_jheo_js").value = resto.name;
     document.querySelector(".lieuEvent_jheo_js").value = resto.adress;
     document.querySelector(".lieuEvent_jheo_js").setAttribute("disabled", "");
-    
-    if( document.querySelector(".content_restoEvent_jheo_js").classList.contains("d-none")){
+
+    if (document.querySelector(".content_restoEvent_jheo_js").classList.contains("d-none")) {
         document.querySelector(".content_restoEvent_jheo_js").classList.remove("d-none")
     }
 }
 
 
-function bindActionSearchResto(motCles){
+function bindActionSearchResto(motCles) {
     document.querySelector(".listRestoModal_jheo_js").click();
 
-    createChargement(document.querySelector(".content_chargement_jheo_js"),c="chargement_content chargment_content_js_jheo")
-    if( !document.querySelector(".content_list_resto_js").classList.contains("opacity_03")){
+    createChargement(document.querySelector(".content_chargement_jheo_js"), c = "chargement_content chargment_content_js_jheo")
+    if (!document.querySelector(".content_list_resto_js").classList.contains("opacity_03")) {
         document.querySelector(".content_list_resto_js").classList.add("opacity_03")
     }
 
-    // setTimeout(function(){
-    //     deleteChargement("chargement_content")
-    // },2000)
+    let titleModal = (motCles === "RESTO_PASTILLE") ? "Liste des restaurants pastillés dans vos tribu Tribu T." : "Résultat de restaurant trouver"
+    document.querySelector(".listResto_title_jheo_js").innerText = titleModal
 
-    let titleModal= ( motCles === "RESTO_PASTILLE" ) ? "Liste des restaurants pastillés dans vos tribu Tribu T." : "Résultat de restaurant trouver"
-    document.querySelector(".listResto_title_jheo_js").innerText= titleModal
-
-    if( motCles === "RESTO_PASTILLE"){
+    if (motCles === "RESTO_PASTILLE") {
         const request = new Request('/api/user/agenda/resto-pastille', {
             method: "GET",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'  
+                'Content-Type': 'application/json'
             },
         })
-    
+
         fetch(request)
-            .then(response=>response.json())
-            .then(response =>{
-                if(!response.success){ 
-                    throw  new Error(response.message); 
+            .then(response => response.json())
+            .then(response => {
+                if (!response.success) {
+                    throw new Error(response.message);
                 }
 
                 const { results } = response;
-                if( results.length > 0 ){
+                if (results.length > 0) {
                     results.forEach((resto, index) => {
-                        createLinkRestoPastile( index,{ id: resto.id_resto,  name: resto.name, adress: resto.adress },true)
+                        createLinkRestoPastile(index, { id: resto.id_resto, name: resto.name, adress: resto.adress }, true)
                     });
-    
-                }else{
-                    createLinkRestoPastile( 0,{ id:"",  name:"", adress:""}, false)
+
+                } else {
+                    createLinkRestoPastile(0, { id: "", name: "", adress: "" }, false)
                 }
 
-                if(document.querySelector(".content_list_resto_js").classList.contains("opacity_03")){
+                if (document.querySelector(".content_list_resto_js").classList.contains("opacity_03")) {
                     document.querySelector(".content_list_resto_js").classList.remove("opacity_03")
                 }
                 deleteChargement("chargement_content");
 
             })
-            // .catch(error=> {
-            //     console.log(error)
-            // })
+        // .catch(error=> {
+        //     console.log(error)
+        // })
     }
 
     // ///open modal
@@ -528,7 +560,7 @@ function bindActionSearchResto(motCles){
 }
 
 
-function deleteAgenda(){
+function deleteAgenda() {
 
     swal({
         title: "Etes vous sûr de vouloir supprimer cet événement?",
@@ -536,52 +568,52 @@ function deleteAgenda(){
         icon: "warning",
         buttons: true,
         dangerMode: true,
-      })
-      .then((willDelete) => {
+    })
+        .then((willDelete) => {
 
-        if (willDelete) {
+            if (willDelete) {
 
-            const id = document.querySelector('#createOrEditBtn').dataset.rank
+                const id = document.querySelector('#createOrEditBtn').dataset.rank
 
-            const request = new Request('/user/tribu/delete-agenda', {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'  
-                },
-                body: JSON.stringify({ agendaID: id})
-            })
-        
-            fetch(request)
-                .then(response=>response.json())
-                .then(response =>{
-                    $("#createAgenda").modal("hide")
-                    swal("Bravo !", response.message, "success")
-                    .then((value) => {
-                        location.reload();
-                    });
+                const request = new Request('/user/tribu/delete-agenda', {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ agendaID: id })
                 })
-        }
 
-      });
+                fetch(request)
+                    .then(response => response.json())
+                    .then(response => {
+                        $("#createAgenda").modal("hide")
+                        swal("Bravo !", response.message, "success")
+                            .then((value) => {
+                                location.reload();
+                            });
+                    })
+            }
+
+        });
 }
 
 
-function createLinkRestoPastile(index, resto, isValid=true){
+function createLinkRestoPastile(index, resto, isValid = true) {
 
-    if( isValid){
-        const tr= document.createElement('tr');
+    if (isValid) {
+        const tr = document.createElement('tr');
 
         tr.innerHTML = `
-          <th>${index+1}</th>
+          <th>${index + 1}</th>
           <td>${resto.name}</td>
           <td>${resto.adress.toLowerCase()}</td>
           <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'${resto.name}',adress:'${resto.adress.toLowerCase()}'} ,this)">Choisissez</button></td>
         `
         document.querySelector(".list_tr_resto_jheo_js").appendChild(tr)
 
-    }else{
-        document.querySelector(".list_tr_resto_jheo_js").innerHTML= `
+    } else {
+        document.querySelector(".list_tr_resto_jheo_js").innerHTML = `
             <div class="alert alert-secondary" role="alert">
                 Vous n'avez pas encore des restaurants pastillées.
             </div>
@@ -591,22 +623,22 @@ function createLinkRestoPastile(index, resto, isValid=true){
 
 /** BLOC NANTENAINA */
 
-function activeOnglet(elem){
-    if(!elem.classList.contains("active")){
+function activeOnglet(elem) {
+    if (!elem.classList.contains("active")) {
         elem.classList.add("active")
         let cmzEtab = ""
 
-        if(elem.dataset.name == "golf"){
+        if (elem.dataset.name == "golf") {
             cmzEtab = "golf"
-        }else if(elem.dataset.name == "restaurant"){
+        } else if (elem.dataset.name == "restaurant") {
             cmzEtab = "restaurant"
         }
 
-        if(elem.parentElement.nextElementSibling){
+        if (elem.parentElement.nextElementSibling) {
             elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
             makeLoading()
             getAllEtab(cmzEtab, false, elem)
-        }else{
+        } else {
             elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
             makeLoading()
             getAllEtab(cmzEtab, true, elem)
@@ -614,17 +646,17 @@ function activeOnglet(elem){
     }
 }
 
-function getListEtabCMZ(element){
+function getListEtabCMZ(element) {
     let tab = document.querySelectorAll("#smallNavInvitationDep > li > a")
     let cmzEtab = ""
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
-    if(tab[0].classList.contains("active")){
+    if (tab[0].classList.contains("active")) {
 
-        if(tab[0].textContent.toLowerCase().includes("golf")){
+        if (tab[0].textContent.toLowerCase().includes("golf")) {
             cmzEtab = "golf"
             tabEtab[0].textContent = "Tous les golfs"
             tabEtab[1].textContent = "Golfs pastillés"
-        }else if(tab[0].textContent.toLowerCase().includes("restaurant")){
+        } else if (tab[0].textContent.toLowerCase().includes("restaurant")) {
             cmzEtab = "restaurant"
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
@@ -640,25 +672,26 @@ function getListEtabCMZ(element){
 
         tabEtab[1].dataset.name = cmzEtab
 
-        if(element.dataset.id != "75"){
+        if (element.dataset.id != "75") {
 
             $("#listRestoOrGolfModal").modal("show")
-        
+            makeLoading()
             getAllEtab(cmzEtab, false, element)
 
-        }else{
+        } else {
             $("#listArrondissement").modal("show")
+            makeLoading()
             let container = document.querySelector(".container_list_arron")
             getListArrondissement(container, "75")
         }
 
-    }else{
+    } else {
 
-        if(tab[1].textContent.toLowerCase().includes("golf")){
+        if (tab[1].textContent.toLowerCase().includes("golf")) {
             cmzEtab = "golf"
             tabEtab[0].textContent = "Tous les golfs"
             tabEtab[1].textContent = "Golfs pastillés"
-        }else if(tab[1].textContent.toLowerCase().includes("restaurant")){
+        } else if (tab[1].textContent.toLowerCase().includes("restaurant")) {
             cmzEtab = "restaurant"
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
@@ -681,13 +714,13 @@ function getListEtabCMZ(element){
     }
 }
 
-function activeOngletForDep(elem){
-    if(!elem.classList.contains("active")){
+function activeOngletForDep(elem) {
+    if (!elem.classList.contains("active")) {
         elem.classList.add("active")
         let cmzEtab = ""
-        if(elem.textContent.toLowerCase().includes("golf")){
+        if (elem.textContent.toLowerCase().includes("golf")) {
             cmzEtab = "golf"
-        }else if(elem.textContent.toLowerCase().includes("restaurant")){
+        } else if (elem.textContent.toLowerCase().includes("restaurant")) {
             cmzEtab = "restaurant"
         }
 
@@ -695,67 +728,71 @@ function activeOngletForDep(elem){
 
         hiddenEtab.dataset.etab = cmzEtab
 
-        if(elem.parentElement.nextElementSibling){
+        if (elem.parentElement.nextElementSibling) {
             elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
-        }else{
+        } else {
             elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
         }
 
     }
 }
 
-function selectEtab(e){
+function selectEtab(e) {
 
     let etabCMZ = document.querySelector("#etabCMZ")
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")
 
-    if(e.target.value == 1){
+    if (e.target.value == 1) {
 
         nomEtab.querySelector("input").disabled = true
 
         adresseContainer.querySelector("input").disabled = true
-        
-        if(!nomEtab.classList.contains("d-none")){
+
+        if (!nomEtab.classList.contains("d-none")) {
             nomEtab.classList.add("d-none")
         }
 
-        if(etabCMZ.classList.contains("d-none")){
+        if (etabCMZ.classList.contains("d-none")) {
             etabCMZ.classList.remove("d-none")
         }
 
-        if(!adresseContainer.classList.contains("d-none")){
+        if (!adresseContainer.classList.contains("d-none")) {
             adresseContainer.classList.add("d-none")
         }
 
-    }else if(e.target.value == 2){
+    } else if (e.target.value == 2) {
 
         nomEtab.querySelector("input").disabled = false
 
         adresseContainer.querySelector("input").disabled = false
 
-        if(!etabCMZ.classList.contains("d-none")){
+        if (!etabCMZ.classList.contains("d-none")) {
             etabCMZ.classList.add("d-none")
         }
 
-        if(nomEtab.classList.contains("d-none")){
+        if (nomEtab.classList.contains("d-none")) {
             nomEtab.classList.remove("d-none")
         }
 
-        if(adresseContainer.classList.contains("d-none")){
+        if (adresseContainer.classList.contains("d-none")) {
             adresseContainer.classList.remove("d-none")
         }
 
-        document.querySelector("#containerNomEtab > input").value =""
+        document.querySelector("#containerNomEtab > input").value = ""
 
         adresseContainer.querySelector("input").value = ""
 
-    }else{
+    } else {
         alert("Il y a eu une erreur !");
     }
 }
 
-function showDepModal(radio){
+/**
+ * showing list departement
+ * @param {*} radio 
+ */
+function showDepModal(radio) {
 
     let container = document.querySelector('.container_list_dep')
 
@@ -765,17 +802,17 @@ function showDepModal(radio){
 
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
 
-    if(!tabEtab[0].classList.contains("active")){
+    if (!tabEtab[0].classList.contains("active")) {
         tabEtab[0].classList.add("active")
         tabEtab[1].classList.remove("active")
     }
 
     activeOngletForDep(navLinksModal[0])
 
-    if(cmzEtab == "golf"){
+    if (cmzEtab == "golf") {
         navLinksModal[0].textContent = "Tous les golfs"
         navLinksModal[1].textContent = "Golfs pastillés"
-    }else{
+    } else {
         navLinksModal[0].textContent = "Tous les restaurants"
         navLinksModal[1].textContent = "Restaurants pastillés"
     }
@@ -792,64 +829,28 @@ function showDepModal(radio){
 
 }
 
+/**
+ * get restaurant by codinsee (dep 75)
+ * @param {*} element 
+ */
+function getEtabByCodeinse(element) {
 
-function getAllEtab(etab, isPast, element){
+    let id_dep = encodeURIComponent(element.dataset.dpt)
+    let codinsee = encodeURIComponent(element.dataset.cds);
 
-    let request = "";
-
-    let id = element.dataset.id
-    let name = element.dataset.name
-
-    /*if(isPast){
-        request = new Request(`/api/user/agenda/get/${etab}/pastille`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'  
-            },
-        })
-    }else{
-
-        request = new Request(`/api/user/agenda/get/all/${etab}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'  
-            },
-        })
-
-    }*/
+    let request = new Request(`/api/user/agenda/arrondissement/restaurant/codeinse?id_dep=${id_dep}&codinsee=${codinsee}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
 
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
 
-    if(isPast){
-        request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'  
-            },
-        })
-
-        if(!tabEtab[1].classList.contains("active")){
-            tabEtab[1].classList.add("active")
-            tabEtab[0].classList.remove("active")
-        }
-    }else{
-
-        request = new Request(`/api/user/agenda/get/${etab}/dep/${id}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'  
-            },
-        })
-
-        if(!tabEtab[0].classList.contains("active")){
-            tabEtab[0].classList.add("active")
-            tabEtab[1].classList.remove("active")
-        }
-
+    if (tabEtab[1].classList.contains("active")) {
+        tabEtab[1].classList.remove("active")
+        tabEtab[0].classList.add("active")
     }
 
     let initTable = `<table class="table table-striped" id="tableEtabCMZ">
@@ -865,145 +866,198 @@ function getAllEtab(etab, isPast, element){
                         
                         </tbody>
                     </table>`
-
-    // document.querySelector(".list_resto_or_golf > table > tbody").innerHTML =""
-    // document.querySelector("#tableEtabCMZ > tbody").innerHTML =""
     document.querySelector(".list_resto_or_golf").innerHTML = initTable
-
     fetch(request)
-        .then(response=>response.json())
-        .then(response =>{
+        .then(response => response.json())
+        .then(response => {
 
-            if(!response.success){
-                throw  new Error(response.message); 
-            }
+            const results = response;
+            let turnOffLogo=false
+            $("#listArrondissement").modal("hide")
 
-            const { results } = response;
+            $("#listRestoOrGolfModal").modal("show")
 
-            if( results.length > 0 ){
+            document.querySelector("#tableEtabCMZ").style.width = "100%"
+
+            if (results.length > 0) {
                 results.forEach((etablissement, index) => {
-                   
-                    // if(etablissement.tribu){
-                    //     generateTableForEtab( index, { id: etablissement.id_etab,  nom: etablissement.name, adresse: etablissement.adresse, tel: etablissement.tel, tribu : etablissement.tribu, logoTribu : etablissement.logoTribu, departement : etablissement.departement, dep : etablissement.dep, id_etab: etablissement.id_etab },true)
-                    // }else{
+                   if (etablissement.tribu) {
+                        turnOffLogo=true
+                        document.querySelector("#tableEtabCMZ > tbody").appendChild(generateTableForEtab(index,
+                            {
+                                id: etablissement.id_etab,
+                                nom: etablissement.name,
+                                adresse: etablissement.adresse,
+                                tel: etablissement.tel,
+                                tribu: etablissement.tribu,
+                                logoTribu: etablissement.logoTribu,
+                                departement: etablissement.departement,
+                                dep: etablissement.dep,
+                                id_etab: etablissement.id_etab
+                            }, true))
+
+                    } else {
+                        turnOffLogo=false
                         document.querySelector("#tableEtabCMZ > tbody").appendChild(
-                            generateTableForEtab( index, { id: etablissement.id_etab,  
-                            nom: etablissement.name, 
-                            adresse: etablissement.adresse, 
-                            tel: etablissement.tel, 
-                            departement : etablissement.departement, 
-                            dep : etablissement.dep, 
-                            id_etab: etablissement.id_etab },true))
-                            
+                            generateTableForEtab(index, {
+                                id: etablissement.id_etab,
+                                nom: etablissement.name,
+                                adresse: etablissement.adresse,
+                                tel: etablissement.tel,
+                                departement: etablissement.departement,
+                                dep: etablissement.dep,
+                                id_etab: etablissement.id_etab
+                            }, true))
+
                         // document.querySelector("#tableEtabCMZ > tbody").appendChild(v)
-                    // }
+                    }
                 });
-                document.querySelector(".list_resto_or_golf").style.display= "block";
+                document.querySelector(".list_resto_or_golf").style.display = "block";
 
-                $(document).ready(function () {
-                        // Setup - add a text input to each footer cell
-                    
-                        $('#tableEtabCMZ thead tr')
-                                .clone(true)
-                                .addClass('filters')
-                                .appendTo('#tableEtabCMZ thead');
-                                var table = $('#tableEtabCMZ').DataTable({
-                                    orderCellsTop: true,
-                                    fixedHeader: true,
-                                    initComplete: function () {
-                                        var api = this.api();
-                                        var i=0;
-                                        // For each column
-                                        api.columns()
-                                            .eq(0)
-                                            .each(function (colIdx) {
-                                                
-                                                if(i < 3){
-                                                    // Set the header cell to contain the input element
-                                                var cell = $('.filters th').eq(
-                                                    $(api.column(colIdx).header()).index()
-                                                    );
-                                                var title = $(cell).text();
-                                                $(cell).html('<input type="text" placeholder="Chercher ' + title + '" style="width:150px" />');
-                            
-                                                // On every keypress in this input
-                                                $(
-                                                    'input',
-                                                    $('.filters th').eq($(api.column(colIdx).header()).index())
-                                                )
-                                                    .off('keyup change')
-                                                    .on('keyup change', function (e) {
-                                                        e.stopPropagation();
-                            
-                                                        // Get the search value
-                                                        $(this).attr('title', $(this).val());
-                                                        var regexr = '({search})'; //$(this).parents('th').find('select').val();
-                            
-                                                        var cursorPosition = this.selectionStart;
-                                                        // Search the column for that value
-                                                        api
-                                                            .column(colIdx)
-                                                            .search(
-                                                                this.value != ''
-                                                                    ? regexr.replace('{search}', '(((' + this.value + ')))')
-                                                                    : '',
-                                                                this.value != '',
-                                                                this.value == ''
-                                                            )
-                                                            .draw();
-                            
-                                                        $(this)
-                                                            .focus()[0]
-                                                            .setSelectionRange(cursorPosition, cursorPosition);
-                                                    });
-                                                }
-                
-                                                i++;
-                                            });
-                                    },
-                                });
-                });
+                generateDataTable("#tableEtabCMZ", 3,turnOffLogo)
 
-            }else{
-                document.querySelector(".list_resto_or_golf").style.display= "block";
-                generateTableForEtab( 0,{ id:"",  nom:"", adresse:""}, false)
+
+            } else {
+                document.querySelector(".list_resto_or_golf").style.display = "block";
+                generateTableForEtab(0, { id: "", nom: "", adresse: "" }, false)
             }
 
-            if(document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")){
+            if (document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")) {
                 document.querySelector(".list_resto_or_golf").classList.remove("opacity_03")
             }
+
             deleteChargement("chargement_content");
 
-    })
+        })
 
 }
 
-function generateTableForEtab(index, etab, isValid=true){
+/**
+ * Show all restaurant after you choose departement
+ * @param {*} etab 
+ * @param {*} isPast 
+ * @param {*} element 
+ */
+function getAllEtab(etab, isPast, element) {
 
-    if( isValid){
+    let request = "";
+    let id = element.dataset.id
+    let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
+    if (isPast) {
+        request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        if (!tabEtab[1].classList.contains("active")) {
+            tabEtab[1].classList.add("active")
+            tabEtab[0].classList.remove("active")
+        }
+    } else {
+        request = new Request(`/api/user/agenda/get/${etab}/dep/${id}`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        if (!tabEtab[0].classList.contains("active")) {
+            tabEtab[0].classList.add("active")
+            tabEtab[1].classList.remove("active")
+        }
+    }
+    let initTable = `<table class="table table-striped" id="tableEtabCMZ">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Adresse</th>
+                                <th scope="col">Téléphone</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>`
+    document.querySelector(".list_resto_or_golf").innerHTML = initTable
+    fetch(request)
+        .then(response => response.json())
+        .then(response => {
+            if (!response.success)
+                throw new Error(response.message);
+            const { results } = response;
+            let turnOffLogo=false
+            if (results.length > 0) {
+                results.forEach((etablissement, index) => {
+                    if (etablissement.tribu) {
+                        turnOffLogo=true
+                        document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                            generateTableForEtab(index,
+                                {
+                                    id: etablissement.id_etab,
+                                    nom: etablissement.name,
+                                    adresse: etablissement.adresse,
+                                    tel: etablissement.tel,
+                                    tribu: etablissement.tribu,
+                                    logoTribu: etablissement.logoTribu,
+                                    departement: etablissement.departement,
+                                    dep: etablissement.dep,
+                                    id_etab: etablissement.id_etab
+                                }, true))
+                    } else {
+                        turnOffLogo=false
+                        document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                            generateTableForEtab(index, {
+                                id: etablissement.id_etab,
+                                nom: etablissement.name,
+                                adresse: etablissement.adresse,
+                                tel: etablissement.tel,
+                                departement: etablissement.departement,
+                                dep: etablissement.dep,
+                                id_etab: etablissement.id_etab
+                            }, true))
+                    }
+                });
+                document.querySelector(".list_resto_or_golf").style.display = "block";
+                generateDataTable("#tableEtabCMZ", 3,turnOffLogo)
+            } else {
+                document.querySelector(".list_resto_or_golf").style.display = "block";
+                generateTableForEtab(0, { id: "", nom: "", adresse: "" }, false)
+            }
 
+            if (document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")) {
+                document.querySelector(".list_resto_or_golf").classList.remove("opacity_03")
+            }
+            deleteChargement("chargement_content");
+        })
+
+}
+
+function generateTableForEtab(index, etab, isValid = true) {
+
+    if (isValid) {
         let forTribuT = "";
-        let tableData="";
-        if (etab.tribu && etab.tribu !=null) {
-            
-            if(!document.querySelector(".forTribu")){
+        let tr = document.createElement("tr")
+        if (etab.tribu && etab.tribu != null) {
+
+            if (!document.querySelector(".forTribu")) {
 
                 const thForLogo = document.createElement("th");
-    
+
                 thForLogo.classList.add("forLogo")
-    
+
                 const textNodeLogo = document.createTextNode("Logo");
-    
+
                 thForLogo.appendChild(textNodeLogo);
-    
+
                 const thForTribu = document.createElement("th");
-    
+
                 thForTribu.classList.add("forTribu")
-    
+
                 const textNodeTribu = document.createTextNode("TribuT");
-    
+
                 thForTribu.appendChild(textNodeTribu);
-    
+
                 // Insert before existing child:
                 const thead = document.querySelector("#tableEtabCMZ > thead > tr");
 
@@ -1018,74 +1072,69 @@ function generateTableForEtab(index, etab, isValid=true){
             nomTribu = nomTribu.charAt(0).toUpperCase() + nomTribu.slice(1)
             // logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
             logoTribu = etab.logoTribu ? etab.logoTribu : "/uploads/tribu_t/photo/avatar_tribu.jpg";
-            
+
             forTribuT = `<td><img src="${logoTribu}" alt="" style="max-height: 30px; max-width: 30px;"></td><td>${nomTribu}</td>`;
 
-        }else{
+            let tdTribu = document.createElement("td")
+            tdTribu.textContent = nomTribu
+            let tdLogo = document.createElement("td")
+            let imgTribu = document.createElement("img")
+            imgTribu.setAttribute("src", logoTribu)
+            imgTribu.setAttribute("style", "max-height: 100px; max-width: 100px;clip-path: circle(40%);")
+            tdLogo.appendChild(imgTribu)
+            tr.appendChild(tdLogo)
+            tr.appendChild(tdTribu)
 
-            if(document.querySelector(".forLogo"))
+        } else {
+
+            if (document.querySelector(".forLogo"))
                 document.querySelector(".forLogo").remove()
 
-            if(document.querySelector(".forTribu"))
+            if (document.querySelector(".forTribu"))
                 document.querySelector(".forTribu").remove()
         }
 
-
-        let tr= document.createElement("tr")
-
-        let tdDataName=document.createElement("td")
-        tdDataName.textContent=etab.nom
-        let tdDataAdresse=document.createElement("td")
-        tdDataAdresse.textContent=etab.adresse.toLowerCase()
-        let tdDatel=document.createElement("td")
-        tdDatel.textContent=etab.tel
-        let tdAction=document.createElement("td")
-        let btnDetails=document.createElement("button")
-        btnDetails.setAttribute("type","button")
-        btnDetails.setAttribute("class","btn btn-outline-primary btn-sm")
-        btnDetails.setAttribute("onclick","showEtabDetail(this, '${etab.departement}', ${etab.dep}, ${etab.id_etab})")
-        btnDetails.textContent="Détail"
-        let btnCheck=document.createElement("button")
-        btnCheck.setAttribute("type","button")
-        btnCheck.setAttribute("class","btn btn-outline-info btn-sm")
-        btnCheck.setAttribute("onclick","setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)")
-        btnCheck.textContent="Choisir"
-
+        let tdDataName = document.createElement("td")
+        tdDataName.textContent = etab.nom
+       
+        let tdDataAdresse = document.createElement("td")
+        tdDataAdresse.textContent = etab.adresse.toLowerCase()
+        let tdDatel = document.createElement("td")
+        tdDatel.textContent = etab.tel
+        let tdAction = document.createElement("td")
+        let btnDetails = document.createElement("button")
+        btnDetails.dataset.name = etab.nom
+        btnDetails.dataset.adresse = etab.adresse.toLowerCase()
+        btnDetails.setAttribute("type", "button")
+        btnDetails.setAttribute("class", "btn btn-outline-primary btn-sm")
+        btnDetails.setAttribute("onclick", `showEtabDetail(event, '${etab.departement}', '${etab.dep}', '${etab.id_etab}')`)
+        btnDetails.textContent = "Détail"
+        let btnCheck = document.createElement("button")
+        btnCheck.setAttribute("type", "button")
+        btnCheck.setAttribute("class", "btn btn-outline-info btn-sm")
+        btnCheck.setAttribute("onclick", `setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)`)
+        btnCheck.textContent = "Choisir"
         tr.appendChild(tdDataName)
         tr.appendChild(tdDataAdresse)
         tr.appendChild(tdDatel)
         tdAction.appendChild(btnDetails)
         tdAction.appendChild(btnCheck)
         tr.appendChild(tdAction)
-        // tableData= `<tr>
-        //         ${forTribuT}
-        //         <td class="dataName">${etab.nom}</td>
-        //         <td class="dataAdresse">${etab.adresse.toLowerCase()}</td>
-        //         <td class="dataTel">${etab.tel}</td>
-        //         <td class="action">
-        //             // <button type="button" class="btn btn-outline-primary btn-sm" onclick="showEtabDetail(this, '${etab.departement}', ${etab.dep}, ${etab.id_etab})">Détail</button>
-        //             // <button type="button" class="btn btn-outline-info btn-sm" onclick="setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)">Choisir</button>
-        //         </td>
-        //     </tr>
-        //     `
-        //console.log(new DOMParser().parseFromString(tableData, "text/xml"))
-        return  tr;
-        // // document.querySelector(".list_resto_or_golf > table > tbody").innerHTML += tableData
-        // document.querySelector("#tableEtabCMZ > tbody").innerHTML += tableData
+        return tr;
 
-    }else{
-        document.querySelector(".list_resto_or_golf > table > tbody").innerHTML= `
+    } else {
+        document.querySelector(".list_resto_or_golf > table > tbody").innerHTML = `
             <td colspan="4" class="text-center">Aucun résultat</td>
             `
     }
 }
 
-function setNameOrAdresseForEtab(etab, element){
+function setNameOrAdresseForEtab(etab, element) {
 
-    const classSuccess= "btn-info";
-    const classDefault= "btn-outline-info";
+    const classSuccess = "btn-info";
+    const classDefault = "btn-outline-info";
 
-    if(document.querySelector(".resto_pastiled_jheo_js")){
+    if (document.querySelector(".resto_pastiled_jheo_js")) {
         const pastiled = document.querySelector(".resto_pastiled_jheo_js");
         pastiled.classList.remove("resto_pastiled_jheo_js");
 
@@ -1094,7 +1143,7 @@ function setNameOrAdresseForEtab(etab, element){
         pastiled.innerText = "Choisir"
     }
 
-    if( element.classList.contains(classDefault)){
+    if (element.classList.contains(classDefault)) {
         element.classList.remove(classDefault);
         element.classList.add(classSuccess);
         element.classList.add("resto_pastiled_jheo_js");
@@ -1105,17 +1154,17 @@ function setNameOrAdresseForEtab(etab, element){
     document.querySelector("#nomEtabEvent").value = etab.name;
 
     document.querySelector("#lieuEvent").value = etab.adress;
-    
-    if(document.querySelector("#containerNomEtab").classList.contains("d-none")){
+
+    if (document.querySelector("#containerNomEtab").classList.contains("d-none")) {
         document.querySelector("#containerNomEtab").classList.remove("d-none")
     }
 
-    if(document.querySelector("#containerAdresseEtab").classList.contains("d-none")){
+    if (document.querySelector("#containerAdresseEtab").classList.contains("d-none")) {
         document.querySelector("#containerAdresseEtab").classList.remove("d-none")
     }
 }
 
-function makeLoading(){
+function makeLoading() {
     let containerChargement = document.createElement("div")
     containerChargement.classList.add("chargement_content")
     containerChargement.classList.add("content_chargement_nanta_js")
@@ -1123,22 +1172,22 @@ function makeLoading(){
     containerChargement.classList.add("mb-3")
     document.querySelector(".container_list").appendChild(containerChargement)
 
-    createChargement(document.querySelector(".content_chargement_nanta_js"),c="chargement_content content_chargement_nanta_js")
+    createChargement(document.querySelector(".content_chargement_nanta_js"), c = "chargement_content content_chargement_nanta_js")
 
-    if( !document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")){
+    if (!document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")) {
         document.querySelector(".list_resto_or_golf").classList.add("opacity_03")
     }
 }
 
-function saveNewAgenda(agenda){
-    
+function saveNewAgenda(agenda) {
+
     const param = {
-        "title" : agenda.title,
+        "title": agenda.title,
         "type": agenda.type,
-        "isEtabCMZ" : agenda.isEtabCMZ,
-        "isGolfCMZ" : agenda.isGolfCMZ,
-        "isRestoCMZ" : agenda.isRestoCMZ,
-        "name" : agenda.name,
+        "isEtabCMZ": agenda.isEtabCMZ,
+        "isGolfCMZ": agenda.isGolfCMZ,
+        "isRestoCMZ": agenda.isRestoCMZ,
+        "name": agenda.name,
         "adresse": agenda.adresse,
         "description": agenda.description,
         "participant": agenda.participant,
@@ -1148,69 +1197,69 @@ function saveNewAgenda(agenda){
         "timeEnd": agenda.timeEnd,
         "fileType": null,
         "fileName": null,
-        "confidentiality" : 1,
+        "confidentiality": 1,
     };
 
     let request = ""
 
     let action = document.querySelector('#createOrEditBtn').dataset.action
 
-    if(action.toLowerCase().trim() == "create"){
+    if (action.toLowerCase().trim() == "create") {
         request = new Request('/user/tribu/new-agenda', {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'  
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(param)
         })
-    }else if(action.toLowerCase().trim() == "update"){
+    } else if (action.toLowerCase().trim() == "update") {
         let agendaId = document.querySelector('#createOrEditBtn').dataset.rank
         // alert("agendaId : " + agendaId)
         request = new Request(`/user/tribu/update-agenda/${agendaId}`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'  
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(param)
         })
-    }else{
+    } else {
         alert("il y a eu une erreur !")
     }
 
     fetch(request)
-        .then(response=>response.json())
-        .then(response =>{
+        .then(response => response.json())
+        .then(response => {
             swal("Bravo !", response.message, "success")
-            .then((value) => {
-                location.reload();
-            });
+                .then((value) => {
+                    location.reload();
+                });
         })
 }
 
-function getObjectForNewAgenda(e){
-        
-    let state= true;
+function getObjectForNewAgenda(e) {
+
+    let state = true;
 
     let isEtabCMZ = parseInt(document.querySelector("#etabSelectOptions").value) == 1 ? true : false;
-    
+
     let isGolfCMZ = false
 
     let isRestoCMZ = false
 
-    if(isEtabCMZ){
+    if (isEtabCMZ) {
         isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
-        isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false 
+        isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false
     }
 
-    const agenda= {
-        "title" : document.querySelector("#eventTitle").value,
+    const agenda = {
+        "title": document.querySelector("#eventTitle").value,
         "type": document.querySelector("#typeEvent").value,
-        "isEtabCMZ" : isEtabCMZ,
-        "isGolfCMZ" : isGolfCMZ,
-        "isRestoCMZ" : isRestoCMZ,
-        "name" : document.querySelector("#nomEtabEvent").value,
+        "isEtabCMZ": isEtabCMZ,
+        "isGolfCMZ": isGolfCMZ,
+        "isRestoCMZ": isRestoCMZ,
+        "name": document.querySelector("#nomEtabEvent").value,
         "adresse": document.querySelector("#lieuEvent").value,
         "description": document.querySelector("#eventDesc").value,
         "participant": document.querySelector("#nbrParticipant").value,
@@ -1222,14 +1271,14 @@ function getObjectForNewAgenda(e){
 
     console.log(agenda);
 
-    const agenda_keys= Object.keys(agenda);
+    const agenda_keys = Object.keys(agenda);
     agenda_keys.forEach(key => {
-        if( agenda[key] === ''){
-            state= false;
+        if (agenda[key] === '') {
+            state = false;
         }
     })
 
-    if( !state ){
+    if (!state) {
         e.preventDefault()
         console.log(agenda)
         document.querySelector(".invalid_agenda_jheo_js").click();
@@ -1237,34 +1286,42 @@ function getObjectForNewAgenda(e){
         setTimeout(() => {
             document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
         }, 1500);
-    }else{
+    } else {
         saveNewAgenda(agenda)
     }
 }
 
-function getListDep(container){
+/**
+ * got and show list of departement
+ * @param {*} container 
+ */
+function getListDep(container) {
+
+
 
     const request = new Request('/api/user/agenda/dep/list')
 
     fetch(request)
         .then(res => res.text()).then(html => {
             container.innerHTML = html;
+            generateDataTable("#tableListDepCMZ", 2)
         });
 
 }
 
-function getListArrondissement(container, dep){
+function getListArrondissement(container, dep) {
 
-    const request = new Request('/api/user/agenda/arrondissement/list/'+dep)
+    const request = new Request('/api/user/agenda/arrondissement/list/' + dep)
 
     fetch(request)
         .then(res => res.text()).then(html => {
             container.innerHTML = html;
+
         });
 
 }
 
-function showEtabDetail(element, nom_dep, id_dep, id_restaurant){
+function showEtabDetail( event,nom_dep, id_dep, id_restaurant) {
 
     const request = new Request(`/api/agenda/etab/${nom_dep}/${id_dep}/detail/${id_restaurant}`)
 
@@ -1273,8 +1330,8 @@ function showEtabDetail(element, nom_dep, id_dep, id_restaurant){
             $("#listRestoOrGolfModal").modal("hide")
             $("#detailEtabModal").modal("show")
             //content_titre_details
-            let dataName = element.parentElement.parentElement.querySelector('.dataName').textContent
-            let dataAdresse = element.parentElement.parentElement.querySelector('.dataAdresse').textContent
+            let dataName = event.target.dataset.name
+            let dataAdresse = event.target.dataset.adresse
             document.querySelector(".content_etab_detail").innerHTML = `<div>
                                         <div class="mb-2">
                                             <span class="mt-2 ms-3"><b>${dataName}</b></span>
@@ -1289,12 +1346,12 @@ function showEtabDetail(element, nom_dep, id_dep, id_restaurant){
         });
 }
 
-function initInputForm(){
+function initInputForm() {
 
-    const all_input= document.querySelectorAll('.content_input_create_agenda_jheo_js input')
+    const all_input = document.querySelectorAll('.content_input_create_agenda_jheo_js input')
 
     all_input.forEach(j => {
-        if( j.value !== null ){
+        if (j.value !== null) {
             j.value = null;
         }
     })
@@ -1317,62 +1374,106 @@ function initInputForm(){
 
     let cmzEtab = document.querySelector("#etabCMZ")
 
-    if(cmzEtab.classList.contains("d-none")){
+    if (cmzEtab.classList.contains("d-none")) {
         cmzEtab.classList.remove("d-none")
     }
 
-    if(!nomEtab.classList.contains("d-none")){
+    if (!nomEtab.classList.contains("d-none")) {
         nomEtab.classList.add("d-none")
     }
 
-    if(!adresseContainer.classList.contains("d-none")){
+    if (!adresseContainer.classList.contains("d-none")) {
         adresseContainer.classList.add("d-none")
     }
 
-    if(!document.querySelector("#deleteAgendaBtn").classList.contains("d-none")){
+    if (!document.querySelector("#deleteAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#deleteAgendaBtn").classList.add("d-none")
     }
 
-    if(!document.querySelector("#shareAgendaBtn").classList.contains("d-none")){
+    if (!document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#shareAgendaBtn").classList.add("d-none")
     }
 }
 
+if(document.querySelector("#shareAgendaBtn")){
+    document.querySelector("#shareAgendaBtn").addEventListener("click", (e)=>{
+        e.preventDefault()
+        // console.log(e.target.dataset.agenda);
+        // let data = JSON.parse(e.target.dataset.agenda)
+        // console.log(data);
+        // console.log("id = " + data.id);
+        // console.log("title = " + data.title);
+        // console.log("description = " + data.description);
+        sessionStorage.setItem("agenda", e.target.dataset.agenda);
+    })
+}
+
 /** END BLOC */
 
-function tableActiveFilterPartisant(e){
-    const allTypeActive= [ "list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js" ];
-    const current_class_active= allTypeActive.find( item => e.classList.contains(item) )
-    const other_not_active= allTypeActive.filter(item => item != current_class_active)
-    
-    if( !e.classList.contains("active")){
+function tableActiveFilterPartisant(e) {
+    const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "list_partisant_emailing_jheo_js"];
+    const current_class_active = allTypeActive.find(item => e.classList.contains(item))
+    const other_not_active = allTypeActive.filter(item => item != current_class_active)
+
+    if (!e.classList.contains("active")) {
         e.classList.add("active")
     }
     other_not_active.forEach(item => {
-        if( document.querySelector(`.${item}`).classList.contains("active")){
+        if (document.querySelector(`.${item}`).classList.contains("active")) {
             document.querySelector(`.${item}`).classList.remove("active")
         }
     })
 }
 
 if (document.querySelector('#list-tribu-partage-agenda')) {
-    new DataTable('#list-tribu-partage-agenda');  
+    new DataTable('#list-tribu-partage-agenda');
+
+    $('#list-tribu-partage-agenda').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            "search": "Recherche global",
+
+        },})
 }
 if (document.querySelector('#list-tribu-g-partage-agenda')) {
-    new DataTable('#list-tribu-g-partage-agenda');  
+    // new DataTable('#list-tribu-g-partage-agenda');
+    $('#list-tribu-g-partage-agenda').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            "search": "Recherche global",
+
+        },})
 }
 if (document.querySelector('#list-tribu-t-partage-agenda')) {
-    new DataTable('#list-tribu-t-partage-agenda');  
+    // new DataTable('#list-tribu-t-partage-agenda');
+    $('#list-tribu-t-partage-agenda').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            "search": "Recherche global",
+
+        },})
 }
 
 if (document.querySelector('#list-partisans-tribu-selection')) {
-    new DataTable('#list-partisans-tribu-selection');  
+    // new DataTable('#list-partisans-tribu-selection');
+    $('#list-partisans-tribu-selection').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            "search": "Recherche global",
+
+        },})
 }
 
 if (document.querySelector("#list-partisans-tribu-t-partage-agenda")) {
     const selectorTableT = document.querySelector("#list-partisans-tribu-t-partage-agenda")
     const idTribuT = selectorTableT.getAttribute('data-toggel-tribu-t')
-    new DataTable('#' + idTribuT);  
+    // new DataTable('#' + idTribuT);
+    $('#' + idTribuT).DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            "search": "Recherche global",
+
+        },})
 }
 
 
@@ -1384,97 +1485,373 @@ function selectAll(source) {
         if (checkboxes[i] != source)
             checkboxes[i].checked = source.checked;
     }
-    
+
 }
 
-function selectTribuGAll(source) {
-    var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
-    for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i] != source)
-            checkboxes[i].checked = source.checked;
+function selectAllPartisan(source,isG) {
+
+    if(isG){
+        var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+
+        if(source.checked){
+            document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+        }else{
+            document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+        }
+
+    }else{
+        var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+
+        if(source.checked){
+            document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+        }else{
+            document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+        }
     }
     
+
 }
 
 
+/**
+ * generate table for partisan tribu t
+ * @param {*-} tribu_t_name 
+ */
 function showPartisanAgenda(tribu_t_name) {
 
-    
+    document.querySelector('#list-partisans-tribu-t-agenda').innerHTML = ""
+
     const param = "?tbl_tribu_T_name=" + encodeURIComponent(tribu_t_name)
     console.log(param)
-    const request = new Request("/user/partisan/tribu_T"+param, {
+    const request = new Request("/user/partisan/tribu_T" + param, {
         method: "GET",
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
         },
     })
-    fetch(request).then((response) => { 
-        if ( response.ok && response.status == 200) {
+    fetch(request).then((response) => {
+        if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-                jsons.forEach(json => {
-                    console.log(JSON.parse(json.infos_profil));
-                    profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil!=null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
-                    let lastName = profilInfo.lastName
-                    let firstName = profilInfo.firstName
-                    let tribuG = profilInfo.tribuG.replace("tribug_01_","")
-                    
-                    document.querySelector(`#list-partisans-tribu-t-agenda-${tribu_t_name}`).innerHTML += `
-                        <tr class="table-partisans-${tribu_t_name}-${lastName}">
-                            <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
-                            <td>${firstName}</td>
-                            <td>${lastName}</td>
-                            <td class="content-checkbox"></td>
-                            <td>${json.roles}</td>
-                            <td>
-                                <input type="checkbox" name="selectOui" class="select-tribu-t-oui" data-id="${json.user_id}" data-tribu="${tribu_t_name}" data-toggle-last="${lastName}" data-toggle-pdp="${profil}" value="${firstName}" onchange="handleChange(this)">
-                            </td>
-                       </tr>
-                    `
-                    if (document.querySelector(`.btn-close-partisans-${tribu_t_name}`)) {
-                        document.querySelector(`.btn-close-partisans-${tribu_t_name}`).addEventListener('click' , () => {
-                            document.querySelector(`.table-partisans-${tribu_t_name}-${lastName}`).remove()
-                        })
+                // makeLoading()
+                let i = 0
+                jsons[0].forEach(json => {
+                    console.log(json)
+                    if(jsons["curent_user"] != json.id){
+
+                        // console.log(JSON.parse(json.infos_profil));
+                        profilInfo = JSON.parse(json.infos_profil)
+                        let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
+                        let lastName = profilInfo.lastName
+                        let firstName = profilInfo.firstName
+                        let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
+    
+                        document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
+                            <tr class="table-partisans-${tribu_t_name}-${lastName}">
+                                <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
+                                <td data-id="${json.user_id}" class="firstname">${firstName}</td>
+                                <td class="lastname">${lastName}</td>
+                                <td class="content-checkbox email">${profilInfo.email}</td>
+                                <td>${json.roles}</td>
+                                <td>
+                                    <input type="checkbox" name="selectOui" class="select-tribu-t-oui" 
+                                     onchange="handleChange(this,false)">
+                                </td>
+                           </tr>
+                        `
+                        if (document.querySelector(`.btn-close-partisans-${tribu_t_name}`)) {
+                            document.querySelector(`.btn-close-partisans-${tribu_t_name}`).addEventListener('click', () => {
+                                document.querySelector(`.table-partisans-${tribu_t_name}-${lastName}`).remove()
+                            })
+                        }
+
+                        i++
+
                     }
-                })    
+                })
+
+                if(i < 1){
+                    document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
+                            <tr class="text-center">
+                                <td colspan="6">Aucun partisan à part vous</td>
+                           </tr>
+                        `
+                }
             })
         }
     })
-    
-   
+
+
 }
 
-function handleChange(checkbox) {
-    let isChecked = document.querySelectorAll(".content-checkbox > input[type='checkbox']:checked").length
-    if (isChecked > 0) {
-        document.getElementById("getPartisonsSelectAgenda").classList.remove('btn-second-primary');
-       
-    } else {
-        document.getElementById("getPartisonsSelectAgenda").classList.add('btn-second-primary');
-    }
-    if (checkbox.checked == true) {
-        // document.querySelector("#list-partisans-tribu-selection-ckecked >.odd >.dataTables_empty").remove()
-        if (!document.querySelector(`#exist-parisans-${checkbox.getAttribute('data-id')}`)){
-            document.querySelector("#list-partisans-tribu-selection-ckecked").innerHTML += `
-                <tr class="firstName" id="exist-parisans-${checkbox.getAttribute('data-id')}">
-                    <td><img class="pdp-agenda-tribu-t" src="${checkbox.getAttribute('data-toggle-pdp')}" alt=""></td>
-                    <td>${checkbox.getAttribute('data-toggle-last')}</td>
-                    <td >${checkbox.value}</td>
-                    <td> ${checkbox.getAttribute('data-tribu')}</td>
-                    <td>
-                        <input type="checkbox" name="selectOui" class="select-tribu-t-oui" checked="true">
-                    </td>
-                </tr>
-            `
+function handleChange(elment,isG) {
+    if(isG){
+        if(elment.checked){
+            var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+            let allChekecd=true
+            let hasChecked = false
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (!checkboxes[i].checked)
+                    allChekecd=false
+            }
+            if(allChekecd){
+                document.querySelector("#selectTribuGAll").checked=true
+            }
+
+            document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+
+        }else{
+                document.querySelector("#selectTribuGAll").checked=false
+                var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+                let hasChecked = false
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked)
+                        hasChecked=true
+                }
+
+                if(hasChecked){
+                    document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+                }else{
+                    document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+                }
         }
-        
-        // if () {
-            
-        // }
-    } else if (checkbox.checked == false) {
-        document.querySelector(`#exist-parisans-${checkbox.getAttribute('data-id')}`).remove()
-    }
 
+    }else{
+        if(elment.checked){
+            var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
+            let allChekecd=true
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (!checkboxes[i].checked)
+                    allChekecd=false
+            }
+            if(allChekecd){
+                document.querySelector("#selectTribuTAll").checked=true
+            }
+            document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+        }else{
+                document.querySelector("#selectTribuTAll").checked=false
+                var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
+                let hasChecked = false
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked)
+                        hasChecked=true
+                }
+
+                if(hasChecked){
+                    document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+                }else{
+                    document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+                }
+        }
+    }
     
 }
 
+function generateDataTable(selector, limite,turnOffLogo=false) {
+    $(document).ready(function () {
+        // Setup - add a text input to each footer cell
+       
+        var trHeadClone = $(selector + ' thead tr').clone(true)
+        $(trHeadClone).children().last().text("")
+        console.log($(trHeadClone).children().last())
+        $(trHeadClone).addClass('filters').appendTo(selector + ' thead');
+        limite = document.querySelectorAll(selector + ' thead tr:nth-child(2) > th').length
+        var table = $(selector).DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                "search": "Recherche global",
+
+            },
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function () {
+                var api = this.api();
+                var i = 0;
+                // For each column
+                api.columns()
+                    .eq(0)
+                    .each(function (colIdx) {
+                        if(!turnOffLogo){
+                            if (i < limite - 1 ) {
+                                putInputOnDataTableHeader(selector,colIdx,api)
+                            }
+                        }else{
+                            $(trHeadClone).children().first().text("")
+                            if(i > 0 && i < limite-1 ){
+                                putInputOnDataTableHeader(selector,colIdx,api)
+                            }
+                        }
+                        
+
+                        i++;
+                    });
+            },
+        });
+
+    });
+}
+
+function putInputOnDataTableHeader(selector,colIdx,api){
+    // Set the header cell to contain the input element
+    var cell = $(selector + ' .filters th').eq(
+        $(api.column(colIdx).header()).index()
+    );
+    var title = $(cell).text();
+
+    $(cell).html('<input type="text" placeholder="Chercher ' + title + '" style="width:100%; font-size:1em" />');
+
+    // On every keypress in this input
+    $('input', $(selector + ' .filters th').eq($(api.column(colIdx).header()).index()))
+        .off('keyup change')
+        .on('keyup change', function (e) {
+            e.stopPropagation();
+
+            // Get the search value
+            $(this).attr('title', $(this).val());
+            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+
+            var cursorPosition = this.selectionStart;
+            // Search the column for that value
+            api
+                .column(colIdx)
+                .search(
+                    this.value != ''
+                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                        : '',
+                    this.value != '',
+                    this.value == ''
+                )
+                .draw();
+
+            $(this)
+                .focus()[0]
+                .setSelectionRange(cursorPosition, cursorPosition);
+        });
+}
+
+function findEtabByKey(e){
+    
+    let cles0 = ""
+    let cles1 = ""
+    if(e.target.nextElementSibling){
+        cles0 = e.target.value
+        cles1 = e.target.nextElementSibling.value
+    }else{
+        cles0 = e.target.previousElementSibling.value
+        cles1 = e.target.value
+    }
+
+    e.preventDefault()
+    
+    if(e.code == "Enter" || e.code == 13){
+        let param = "?cles0="+cles0+"&cles1="+cles1
+        const request = new Request("/api/search/restaurant" + param, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+        })
+
+        $("#listArrondissement").modal("hide")
+
+        $("#listDepModal").modal("hide")
+
+        $("#listRestoOrGolfModal").modal("show")
+
+        fetch(request)
+            .then(response => response.json())
+            .then(data=>{
+
+                let results = data.results[0]
+                let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
+                if (!tabEtab[0].classList.contains("active")) {
+                    tabEtab[0].classList.add("active")
+                    tabEtab[1].classList.remove("active")
+                }
+                
+                let initTable = `<table class="table table-striped" id="tableEtabCMZ">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Adresse</th>
+                                <th scope="col">Téléphone</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>`
+
+                document.querySelector(".list_resto_or_golf").innerHTML = initTable
+
+                let turnOffLogo=false
+                if (results.length > 0) {
+                    results.forEach((etablissement, index) => {
+                            document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                                generateTableForEtab(index, {
+                                    id: etablissement.id_etab,
+                                    nom: etablissement.name,
+                                    adresse: etablissement.adresse,
+                                    tel: etablissement.tel,
+                                    departement: etablissement.departement,
+                                    dep: etablissement.dep,
+                                    id_etab: etablissement.id_etab
+                                }, true))
+                    });
+                    document.querySelector(".list_resto_or_golf").style.display = "block";
+                    generateDataTable("#tableEtabCMZ", 3,turnOffLogo)
+                } else {
+                    document.querySelector(".list_resto_or_golf").style.display = "block";
+                    generateTableForEtab(0, { id: "", nom: "", adresse: "" }, false)
+                }
+
+                if (document.querySelector(".list_resto_or_golf").classList.contains("opacity_03")) {
+                    document.querySelector(".list_resto_or_golf").classList.remove("opacity_03")
+                }
+                deleteChargement("chargement_content");
+
+            })
+    }
+
+}
+
+function shareEvent(){
+    let data = []
+    let memberElem = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
+    memberElem.forEach(tr=>{
+        let isChecked = tr.querySelector("input").checked
+        if(isChecked){
+            let user = {
+                id : tr.querySelector(".lastname").dataset.id,
+                firstname : tr.querySelector(".firstname").textContent,
+                lastname : tr.querySelector(".lastname").textContent,
+                email : tr.querySelector(".email").textContent,
+                role : tr.querySelector(".role").textContent,
+                agenda : sessionStorage.getItem("agenda")
+            }
+            data.push(user)
+        }
+    })
+
+    let request = new Request("/api/user/send/event", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    fetch(request).then(r=>{
+        if(r.status===200 && r.ok){
+            //swetalert
+        }else{
+            //sweat alert
+        }
+    })
+}

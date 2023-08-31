@@ -1,17 +1,17 @@
-<div class="content_container_list" id="list_arrondissements">
+{# <div class="content_container_list" id="list_arrondissements">
     <ul class="ulAgenda">
-        {% for i in 1..20 %}
-            {% if i == 1 %}
+        {% for codinsee in codeIns %}
+            {% if codinsee.arrondissement == 1 %}
                 {% set rang = "er" %}
             {% else %}
                 {% set rang = "ème" %}
             {% endif %}
             <li>
                 
-                <a onclick="getListEtabCMZ(this)" class="text-decoration-none text-dark" href="#" data-id="{{ i }}">
+                <a onclick="getEtabByCodeinse(this)" class="text-decoration-none text-dark" href="#" data-dpt="{{ codinsee.departement }}" data-id="{{ codinsee.arrondissement }}" data-cds="{{ codinsee.codinsee }}">
                     <div class="row container-depart pt-4">
                         <div class="col-md-2">
-                            <h5 style="font-size:1rem;" class="id_arrondissement">{{ i ~ rang }}</h5>
+                            <h5 style="font-size:1rem;" class="id_arrondissement">{{ codinsee.arrondissement ~ rang }}</h5>
                         </div>
                         <div class="col-md-8 col-8 col-sm-8 col-lg-8">
                             <h5 style="font-size:1rem;">Arrondissement</h5>
@@ -40,4 +40,30 @@
             </li>
         {% endfor %} 
     </ul>
-</div>
+</div> #}
+
+<table class="table table-striped" id="tableListArrondissementCMZ">
+    <thead>
+        <tr>
+            <th scope="col">Arrondissement</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for codinsee in codeIns %}
+            {% if codinsee.arrondissement == 1 %}
+                {% set rang = "er" %}
+            {% else %}
+                {% set rang = "ème" %}
+            {% endif %}
+            <tr>
+                <td scope="col">{{ codinsee.arrondissement ~ rang }} Arrondissement</td>
+                <td scope="col">
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="getEtabByCodeinse(this)" data-dpt="{{ codinsee.departement }}" data-id="{{ codinsee.arrondissement }}" data-cds="{{ codinsee.codinsee }}">
+                        Choisir
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

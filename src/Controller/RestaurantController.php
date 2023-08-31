@@ -397,6 +397,9 @@ class RestaurantController extends AbstractController
         Status $status,
         Request $request,
         CodeapeRepository $codeApeRep,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -410,6 +413,42 @@ class RestaurantController extends AbstractController
         $userConnected = $status->userProfilService($this->getUser());
 
 
+        ///current user connected
+        $user = $this->getUser();
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                    "is_online" => $user_amis->getIsConnected(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
+ 
+
+
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
@@ -421,7 +460,8 @@ class RestaurantController extends AbstractController
             "codeApes" => $codeApeRep->getCode(),
             "userConnected" => $userConnected,
             "codinsee" => $codinsee,
-            "arrdssm" => $arrdssm
+            "arrdssm" => $arrdssm,
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 

@@ -118,3 +118,14 @@
   white-space: normal;
 }
 
+table > thead > tr > th {
+  width: 200px;
+}
+
+table > thead > tr > th:last-child {
+  width: 100px;
+}
+
+#tableListDepCMZ_filter{
+  display: none;
+}
