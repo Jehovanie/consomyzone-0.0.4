@@ -702,7 +702,8 @@ class AgendaService extends PDOConnexionService
             "`max_participant` int(11) NOT NULL DEFAULT 0,".
             "`isEtabCMZ` tinyint(1) DEFAULT 0,".
             "`isGolfCMZ` tinyint(1) DEFAULT 0,".
-            "`isRestoCMZ` tinyint(1) DEFAULT 0".
+            "`isRestoCMZ` tinyint(1) DEFAULT 0,".
+            "`user_id` int(11) DEFAULT NULL".
             " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
