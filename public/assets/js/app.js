@@ -694,6 +694,10 @@ function getDataInSessionStorage(type){
     return sessionStorage.getItem(type);
 }
 
+function clearDataInSessionStorage(type){
+    return sessionStorage.removeItem(type);
+}
+
 function setDataInLocalStorage(type , value){
     localStorage.setItem(type, value );
 }

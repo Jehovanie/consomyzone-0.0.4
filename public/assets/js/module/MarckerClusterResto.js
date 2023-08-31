@@ -9,16 +9,31 @@ class MarckerClusterResto extends MapModule  {
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
+
+            /// Three possiblities : all departement, arrondissement, in departement
             const linkArrond = this.codinsee ? `/Coord/All/Restaurant/specific/arrondissement/${this.id_dep}/${this.codinsee}` : null;
             this.api_data =( this.nom_dep && this.id_dep) ? ( this.codinsee ? linkArrond : `/Coord/Spec/Restaurant/${this.id_dep}` ) : `/Coord/All/Restaurant`;
 
-            const response= await fetch(this.api_data);
+            /// if the user just did a search
+            let param = "";
+            if(getDataInSessionStorage("lastSearchPosition")){
+                const lastSearchPosition= getDataInSessionStorage("lastSearchPosition") ? JSON.parse(getDataInSessionStorage("lastSearchPosition")) : null;
+                const { minx, miny, maxx, maxy }= lastSearchPosition.position;
+                param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
+            }
+ 
+
+            const response= await fetch(`${this.api_data}${param}`);
             this.default_data= await response.json();
             this.data= this.default_data; 
             
             this.initMap(null, null, isAddControl);
+            this.bindAction();
 
-            this.bindAction()
+            if(getDataInSessionStorage("lastSearchPosition")){
+                clearDataInSessionStorage("lastSearchPosition")
+            }
+
         }catch(e){
             console.log(e)
         }

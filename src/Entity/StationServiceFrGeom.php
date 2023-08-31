@@ -112,16 +112,16 @@ class StationServiceFrGeom
     private $prixGasoil;
 
     /**
-     * @var string|null
+     * @var float|null
      *
-     * @ORM\Column(name="latitude", type="decimal", precision=10, scale=0, nullable=true)
+     * @ORM\Column(name="latitude",type="decimal", precision=16, scale=14, nullable=true)
      */
     private $latitude;
 
     /**
-     * @var string|null
+     * @var float|null
      *
-     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=0, nullable=true)
+     * @ORM\Column(name="longitude",type="decimal", precision=16, scale=14, nullable=true)
      */
     private $longitude;
 
@@ -295,24 +295,24 @@ class StationServiceFrGeom
         return $this;
     }
 
-    public function getLatitude(): ?string
+    public function getLatitude(): ?float
     {
         return $this->latitude;
     }
 
-    public function setLatitude(?string $latitude): self
+    public function setLatitude(?float $latitude): self
     {
         $this->latitude = $latitude;
 
         return $this;
     }
 
-    public function getLongitude(): ?string
+    public function getLongitude(): ?float
     {
         return $this->longitude;
     }
 
-    public function setLongitude(?string $longitude): self
+    public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
 

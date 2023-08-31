@@ -196,7 +196,25 @@ class MapModule{
                 zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
                 coord: e.target._lastCenter ? e.target._lastCenter : { lat: this.latitude, lng: this.longitude }
             }
-            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
+            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+
+            if(getDataInSessionStorage("lastSearchPosition")){
+                const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+                const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+                const lastSearchPosition = {
+                    zoom: 13,
+                    position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+                }
+                setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
+            }
+
+
+            if( document.querySelector(".icon_close_nav_left_jheo_js")){
+                if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+                    document.querySelector(".content_navleft_jheo_js").classList.add("d-none")
+                    iconsChange()
+                };
+            }
         })
     }
 
@@ -557,7 +575,6 @@ class MapModule{
     }
 
     initMap(lat= null,long= null, isAddControl=false){
-        console.log(lat, long)
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
             content_map.removeChild(document.querySelector("#toggle_chargement"))

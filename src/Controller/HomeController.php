@@ -235,6 +235,8 @@ class HomeController extends AbstractController
             }
         }
 
+        $origin_cles1= $request->query->get("cles1"); //// use for searching geojson API OpenStreetMap
+
         $cles0 = $request->query->get("cles0") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles0"))) : "";
         $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
         $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
@@ -388,6 +390,7 @@ class HomeController extends AbstractController
                 "type" => $type,
                 "cles0" => $cles0,
                 "cles1" => $cles1,
+                "origin_cles1" => $origin_cles1
             ], 200);
         }
 

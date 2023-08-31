@@ -17,17 +17,26 @@ class MarckerClusterSearch extends MapModule  {
             
             const response = await fetch(url);
             this.default_data = await response.json();
-            this.data = this.default_data;  /// [ data, data_length, cles0, cles1]
+            this.data = this.default_data;  /// [ data, data_length, cles0, cles1, origin_cles1]
 
-            const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.cles1}&format=json&limit=1`)
+            const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
             const address = await responsePos.json();
 
+            //// In cas API openStreetMap failed or return empty
             const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-
-            const latLong= (address.length> 0) ?  { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
+            const latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
 
             this.initMap(latLong.lat, latLong.long, this.isAddControl);
             this.bindAction();
+
+            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+            const lastSearchPosition = {
+                zoom: 13,
+                position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+            }
+            setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
+
         } catch (e) {
             console.log(e)
         }
