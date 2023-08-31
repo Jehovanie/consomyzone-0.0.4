@@ -13,8 +13,11 @@ window.addEventListener('load', () => {
         //  console.log(idRestaurant)
     
     if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
+        console.log("show Nember of Avis and show note globale")
         showNemberOfAvis(idRestaurant, document.querySelector("#details-coord > div.content_note > div.nombre_avis"))
         showNoteGlobale(idRestaurant)
+    }else{
+        console.log("opsssssss not show Nember of Avis and show note globale")
     }
     if(document.querySelector(".content_one_cta"))
         currentUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
@@ -146,6 +149,9 @@ window.addEventListener('load', () => {
    
 })
 
+
+
+
 function showNemberOfAvis(idRestaurant,parent) {
     fetch(`/nombre/avis/restaurant/${idRestaurant}`).then(r => {
         r.json().then(json => {
@@ -179,7 +185,8 @@ function showNoteGlobale(idRestaurant) {
 
 function showListAvie() {
     const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-    const d=document.querySelectorAll(".fIQYlf")
+    // const d=document.querySelectorAll(".fIQYlf")
+    const d=document.querySelectorAll(".fIQYlfPFT")
         if(d.length > 0){
             d.forEach(i=>{
                 i.parentNode.removeChild(i)
@@ -227,6 +234,8 @@ function createNombreAvisContainer(parent,nombre) {
     //parent.insertBefore(, parent.firstChild)
 
 }
+
+
 function mustBeInferior4(value,target, isThrowException) {
     regex=/[^0-9,\.]+/
     if (parseFloat(value) > 4.00) {
@@ -298,7 +307,9 @@ function showModifArea(idRestaurant, currentUserId) {
         })
 }
 
-
+/*
+*show comment with btn modification
+*/
 function createModifArea(json,b) {
     console.log(json)
     const divEtAndModf=document.createElement("div")
@@ -363,8 +374,13 @@ function createModifArea(json,b) {
     divContentAvis.appendChild(divEtAndModf)
     divContentAvis.appendChild(divComment)
     document.querySelector(".content_one_cta").appendChild(divContentAvis)
+
+    document.querySelector(".all_avis_jheo_js").appendChild(divContentAvis)
 }
 
+/*
+*show comment without btn modification
+*/
 function createShowAvisAreas(json,currentUserId) {
     console.log(json)
     const divEtAndModf=document.createElement("div")
@@ -397,7 +413,9 @@ function createShowAvisAreas(json,currentUserId) {
     divBtn.dataset.bsToggle = "modal"
     divBtn.setAttribute("href" , "#exampleModalToggle")
     divBtn.textContent = "Modifier"
-    a=[iStars1, iStars2 , iStars3 ,iStars4]
+    a=[iStars1, iStars2 , iStars3 ,iStars4];
+
+
     for(let i=0; i<a.length; i++){
         if( i < json["note"]){
             a[i].classList.add("checked")
@@ -429,6 +447,7 @@ function createShowAvisAreas(json,currentUserId) {
     divContentAvis.appendChild(divComment)
     document.querySelector("#staticBackdrop > div > div > div.list-avis-ferme > div").appendChild(divContentAvis)
 }
+
 function _kidMo(event) {
     const v=event.target.parentNode.parentNode.querySelector(".tnEmMeco").textContent
     const stars=event.target.parentNode.querySelectorAll(".lioTe >i.checked").length

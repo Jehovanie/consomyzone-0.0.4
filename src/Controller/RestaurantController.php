@@ -478,10 +478,20 @@ class RestaurantController extends AbstractController
         $id_dep,
         $id_restaurant,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        AvisRestaurantRepository $avisRestaurantRepository
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        // $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+        
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto
+        ];
+
 
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
             return $this->json([
@@ -559,18 +569,13 @@ class RestaurantController extends AbstractController
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
 
-        // return $this->json([
-        //     "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
-        //     "id_dep" => $id_dep,
-        //     "nom_dep" => $nom_dep,
-        //     "profil" => $statusProfile["profil"],
-        //     "statusTribut" => $statusProfile["statusTribut"],
-        //     "codeApes" => $codeApeRep->getCode()
+        $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
-        // ], 200);
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
+        // dd($nbr_avis_resto);
 
         return $this->render("shard/restaurant/detail_resto_navleft.twig", [
-            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "details" => $resto,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],
@@ -593,15 +598,23 @@ class RestaurantController extends AbstractController
         $nom_dep,
         $id_dep,
         $id_restaurant,
-        CodeinseeRepository $code
+        CodeinseeRepository $code,
+        AvisRestaurantRepository $avisRestaurantRepository,
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $dataRequest = $request->query->all();
     
         $codinsee = array_key_exists('codinsee', $dataRequest)? $dataRequest["codinsee"]: null;
+
+        $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
+        // dd($nbr_avis_resto);
+
+        $response = $serializer->serialize(["nombre_avis" => $response], 'json');
         
         return $this->render("shard/restaurant/details_mobile.js.twig", [
-            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "details" => $resto,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "codinsee" => $codinsee,

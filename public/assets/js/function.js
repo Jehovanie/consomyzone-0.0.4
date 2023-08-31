@@ -638,6 +638,7 @@ function fetchDetails(selector,linkGetDetail) {
 }
 
 function fetchAvies(idRestaurant, select_dem) {
+    console.log("idRestaurant")
     console.log(idRestaurant)
     let currentUserId = 0
     
@@ -680,7 +681,7 @@ function fetchAvies(idRestaurant, select_dem) {
         }
     })
     
-
+    
     
 }
 
@@ -747,6 +748,7 @@ function getDetailsFermeForMobile(pathDetails) {
 
 
 function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_dem){
+    console.log("select_dem")
     console.log(select_dem)
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
@@ -759,6 +761,8 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
     // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
     const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
     fetchDetails(id_selector, pathDetails);
+
+
     if (document.querySelector("#open-navleft-resto-mobile")) {
         fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
     } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
@@ -766,10 +770,6 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
     } else if (document.querySelector("#tout-dem")) {
         fetchAvies(idResto,document.querySelector("#tout-dem"))
     }
-    
-     
-    
-    
 }
 
 
