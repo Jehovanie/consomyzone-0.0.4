@@ -1,4 +1,4 @@
-<div class="content_home content_body_details_jheo_js">
+<div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user.id ? app.user.id : 0}}">
 	<div class="left_content_home">
         <div class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
             <div class="content_titre_details">
@@ -38,7 +38,8 @@
                         </a>
                     </p>
                     <span>
-                        <a id="see-tom-js" class="see-avis btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
+                        <button class="hidden open_modal_avis_resto_jheo_js" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></button>
+                        <a id="see-tom-js" class="see-avis btn btn-warning" onclick="showListAvie()">
                            <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
                         </a>
                     </span>
@@ -51,10 +52,13 @@
                 <hr>
                 <div class="content_note">
                     <div class="start">
-                        <i class="fa-solid fa-star" data-rank="1"></i>
-                        <i class="fa-solid fa-star" data-rank="2"></i>
-                        <i class="fa-solid fa-star" data-rank="3"></i>
-                        <i class="fa-solid fa-star" data-rank="4"></i>
+                        {% for item in 0..3 %}
+                            {% if item < details.avis.nbr|number_format %}
+                                <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+                            {% else %}
+                                <i class="fa-solid fa-star" data-rank="1"></i>
+                            {% endif %}
+                        {% endfor %}
                     </div>
 
                     <div class="nombre_avis"></div>

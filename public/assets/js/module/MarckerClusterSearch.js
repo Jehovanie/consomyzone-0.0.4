@@ -19,32 +19,81 @@ class MarckerClusterSearch extends MapModule  {
             this.default_data = await response.json();
             this.data = this.default_data;  /// [ data, data_length, cles0, cles1, origin_cles1]
 
-            const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
-            const address = await responsePos.json();
+            // const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
+            // const responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${this.data.origin_cles1}&country=France`)
+            // const address = await responsePos.json();
 
             //// In cas API openStreetMap failed or return empty
-            const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-            const latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
+            // const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+            // const latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
 
+
+            const latLong= await this.getCenterFromOpenStreetMap();
             this.initMap(latLong.lat, latLong.long, this.isAddControl);
             this.bindAction();
 
-            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-            const lastSearchPosition = {
-                zoom: 13,
-                position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
-            }
-            setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
-
+            this.saveBoundsMap();
         } catch (e) {
             console.log(e)
         }
     }
 
 
+    async getCenterFromOpenStreetMap(){
+        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+        let latLong = memoryCenter ? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng } : { lat: null, long: null };
+        try{
+
+            const dataLink= [
+                {
+                    regex : /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
+                    clesType:"completAdresss",
+                    link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`
+                },
+                {
+                    regex: /[\d]{5}/g,
+                    clesType:"codepostal",
+                    link : `https://nominatim.openstreetmap.org/search?format=json&postalcode=${this.data.origin_cles1}&country=France&limit=1`
+                },
+                {
+                    regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
+                    clesType : "city",
+                    link : `https://nominatim.openstreetmap.org/search?format=json&city=${this.data.origin_cles1}&country=France&limit=1`
+                },
+                
+            ]
+            
+            let useLink = dataLink.find(item =>item.regex.test(this.data.origin_cles1))
+            console.log(useLink);
+            const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`;
+            const responsePos = await fetch(apiOpenStreetMap)
+            const address = await responsePos.json();
+
+            //// In cas API openStreetMap failed or return empty
+            const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+            latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
+        }catch (e){
+                console.log(e)
+        }finally{
+            return latLong;
+        }
+    }
+
+
+    saveBoundsMap(){
+        const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const lastSearchPosition = {
+            zoom: 13,
+            position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+        }
+        setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
+    }
+
     async getAdresseDetailsOpenStrettMap(cles){
         try{
+            
+
             const response = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cles}&format=json&limit=1`)
             const address = await response.json();
 

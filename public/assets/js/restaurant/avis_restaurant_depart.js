@@ -55,6 +55,8 @@ window.addEventListener('load', () => {
             })
         }, 5000)   
     }
+
+
     document.querySelector("#Submit-Avis-resto-tom-js").onclick = () => {
 
         let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
@@ -67,6 +69,22 @@ window.addEventListener('load', () => {
             const requestParam = {
                 note: parseFloat(note),
                 avis:avis
+            }
+
+
+            document.querySelector(".note_number_jheo_js").value = "";
+            document.querySelector(".note_avis_jheo_js").value = "";
+
+            if( document.querySelector(".card_avis_resto_empty_jheo_js")){
+                document.querySelector(".card_avis_resto_empty_jheo_js").remove();
+
+                document.querySelector(".all_avis_jheo_js").innerHTML = `
+                    <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                        <div class="spinner-border m-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                `
             }
 
             const request = new Request(`/avis/restaurant/${newIdResto}`, {
@@ -146,6 +164,34 @@ window.addEventListener('load', () => {
             }
         }
     }
+
+
+
+    if( document.querySelector(".btn_modal_avis_resto_jheo_js")){
+        const modifyAvis = document.querySelector(".btn_modal_avis_resto_jheo_js")
+        modifyAvis.addEventListener("click",() => {
+            if( modifyAvis.getAttribute("data-status") === "update" ){
+                // data-avis-note="${json.note}" data-avis-text="${json.avis}> my_comment_jheo_js
+                const note = document.querySelector(".my_comment_jheo_js").getAttribute('data-avis-note')
+                const text = document.querySelector(".my_comment_jheo_js").getAttribute('data-avis-text')
+                
+                document.querySelector(".note_number_jheo_js").value = parseFloat(note);
+                document.querySelector(".note_avis_jheo_js").value = text;
+
+                const btn_update = document.querySelector(".send_avis_jheo_js");
+
+                btn_update.setAttribute("id", "dfdf")
+                // btn_update.setAttribute("onclick","_kidMo(event)")
+
+                if( btn_update.classList.contains("btn-warning")){
+                    btn_update.classList.remove("btn-warning")
+                }
+
+                btn_update.classList.add("btn-secondary")
+                btn_update.classList.add("non_active")
+            }
+        })
+    }
    
 })
 
@@ -186,13 +232,15 @@ function showNoteGlobale(idRestaurant) {
 function showListAvie() {
     const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
     // const d=document.querySelectorAll(".fIQYlf")
-    const d=document.querySelectorAll(".fIQYlfPFT")
-        if(d.length > 0){
-            d.forEach(i=>{
-                i.parentNode.removeChild(i)
-            })
-        }
-        showAvis(currentUserId, newIdResto) 
+    // const d=document.querySelectorAll(".fIQYlfPFT")
+    // if(d.length > 0){
+    //     d.forEach(i=>{
+    //         i.parentNode.removeChild(i)
+    //     })
+    // }
+    // showAvis(currentUserId, newIdResto) 
+    const userId = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+    showAvis(userId, newIdResto) 
 }
 
 
@@ -260,19 +308,89 @@ function msgFlash(msg,target) {
 }
 
 function showAvis(currentUserId, idRestaurant) {
+
+    if( document.querySelectorAll(".card_avis_resto_jheo_js")){
+        document.querySelectorAll(".card_avis_resto_jheo_js").forEach(item => item.remove())
+
+        document.querySelector(".all_avis_jheo_js").innerHTML = `
+            <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                <div class="spinner-border m-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `
+    }
+
+    const btn_modal_avis_resto = document.querySelector(".btn_modal_avis_resto_jheo_js");
+
+    btn_modal_avis_resto.innerText = "Donné votre avis";
+    if(btn_modal_avis_resto.classList.contains("non_active")){
+        btn_modal_avis_resto.classList.remove("non_active");
+    }
+
+    document.querySelector(".open_modal_avis_resto_jheo_js").click();
+
+    const btn_update = document.querySelector(".send_avis_jheo_js");
+
+    btn_update.setAttribute("id", "dfdf")
+    // btn_update.setAttribute("onclick","_kidMo(event)")
+
+    if( !btn_update.classList.contains("btn-warning")){
+        btn_update.classList.add("btn-warning")
+    }
+
+    if(btn_update.classList.contains("btn-secondary")){
+        btn_update.classList.remove("btn-secondary")
+    }
+
+    if(btn_update.classList.contains("non_active")){
+        btn_update.classList.remove("non_active")
+    }
+
     fetch(`/avis/restaurant/global/${idRestaurant}`, {
         methode:"GET"
-    }).then(r => {
-        r.json().then(jsons => {
-            if (jsons) {
-                for (let json of jsons) {
-                    createShowAvisAreas(json, currentUserId)
-                   
-                }
+    }).then(r => r.json())
+    .then(jsons => {
+        document.querySelector(".all_avis_jheo_js").innerHTML = "";
+        let ulreadyCommented = false
+        jsons.forEach(item => {
+            console.log(parseInt(item.user.id))
+            console.log(currentUserId)
+            if(parseInt(item.user.id) === parseInt(currentUserId)){
+                ulreadyCommented= true;
             }
         })
-    })
+        if( ulreadyCommented ){
+            document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = "Modifier votre avis"
+            document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "update");
+            document.querySelector(".btn_modal_avis_resto_jheo_js").classList.add("non_active");
+            // document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("onclick","_kidMo(event)")
+        }
 
+
+        if (jsons.length > 0 ) {
+            if( document.querySelector(".card_avis_resto_empty_jheo_js")){
+                document.querySelector(".card_avis_resto_empty_jheo_js").remove();
+            }
+
+            for (let json of jsons) {
+                createShowAvisAreas(json, currentUserId)
+            }
+        }else{
+            document.querySelector(".all_avis_jheo_js").innerHTML= `
+                <div class="card mb-2 card_avis_resto_empty_jheo_js">
+                    <div class="card-body">
+                        <div class="avis_content">
+                            <div class="text-danger text-center">
+                                Actuellement, il n'y a pas encore d'avis sur cette restaurant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        }
+
+    })
 }
 
 function showModifArea(idRestaurant, currentUserId) {
@@ -290,11 +408,13 @@ function showModifArea(idRestaurant, currentUserId) {
                     if (b) {
                         if (document.querySelector("#givs-avis-resto-tom-js").style.display != "none") {
                             document.querySelector("#givs-avis-resto-tom-js").style.display = "none"
-                            createModifArea(json,b)
+                            // createModifArea(json,b)
+                            createShowAvisAreas(json,b)
                         } else {
                             if (document.querySelector(".fIQYlfPFT")) {
                                 document.querySelector(".fIQYlfPFT").parentNode.removeChild(document.querySelector(".fIQYlfPFT"))
-                                createModifArea(json,b)
+                                // createModifArea(json,b)
+                                createShowAvisAreas(json,b)
                             }
                         }
                         break;
@@ -382,70 +502,102 @@ function createModifArea(json,b) {
 *show comment without btn modification
 */
 function createShowAvisAreas(json,currentUserId) {
+
     console.log(json)
-    const divEtAndModf=document.createElement("div")
-    divEtAndModf.setAttribute("class", "fIQYlfMOP row")
+    // const divEtAndModf=document.createElement("div")
+    // divEtAndModf.setAttribute("class", "fIQYlfMOP row")
     
-    const divContentAvis = document.createElement("div")
-    divContentAvis.setAttribute("class", "fIQYlf card mt-4")
-    const divNom = document.createElement("div")
-    divNom.setAttribute("class", "TSUbDb")
-    const pNom = document.createElement("p")
-    pNom.setAttribute("class" , " text-muted")
-    pNom.textContent = json["user"]["pseudo"]
-    const hr = document.createElement("hr")
-    const divEtoile=document.createElement("div")
-    divEtoile.setAttribute("class", "lioTe  ms-5 col-6")
-    const iStars1 = document.createElement("i")
-    const iStars2 = document.createElement("i")
-    const iStars3 = document.createElement("i")
-    const iStars4 = document.createElement("i")
-    const iStars5 = document.createElement("i")
-    iStars1.setAttribute("class", "fa-solid fa-star")
-    iStars2.setAttribute("class", "fa-solid fa-star")
-    iStars3.setAttribute("class", "fa-solid fa-star")
-    iStars4.setAttribute("class", "fa-solid fa-star")
+    // const divContentAvis = document.createElement("div")
+    // divContentAvis.setAttribute("class", "fIQYlf card mt-4")
+    // const divNom = document.createElement("div")
+    // divNom.setAttribute("class", "TSUbDb")
+    // const pNom = document.createElement("p")
+    // pNom.setAttribute("class" , " text-muted")
+    // pNom.textContent = json["user"]["pseudo"]
+    // const hr = document.createElement("hr")
+    // const divEtoile=document.createElement("div")
+    // divEtoile.setAttribute("class", "lioTe  ms-5 col-6")
+
+
+    // const iStars1 = document.createElement("i")
+    // const iStars2 = document.createElement("i")
+    // const iStars3 = document.createElement("i")
+    // const iStars4 = document.createElement("i")
+    // const iStars5 = document.createElement("i")
+    // iStars1.setAttribute("class", "fa-solid fa-star")
+    // iStars2.setAttribute("class", "fa-solid fa-star")
+    // iStars3.setAttribute("class", "fa-solid fa-star")
+    // iStars4.setAttribute("class", "fa-solid fa-star")
   
 
-    const divBtn = document.createElement("button")
-    divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary")
-    divBtn.setAttribute("onclick","_kidMo(event)")
-    divBtn.dataset.bsToggle = "modal"
-    divBtn.setAttribute("href" , "#exampleModalToggle")
-    divBtn.textContent = "Modifier"
-    a=[iStars1, iStars2 , iStars3 ,iStars4];
+    // const divBtn = document.createElement("button")
+    // divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary")
+    // divBtn.setAttribute("onclick","_kidMo(event)")
+    // divBtn.dataset.bsToggle = "modal"
+    // divBtn.setAttribute("href" , "#exampleModalToggle")
+    // divBtn.textContent = "Modifier"
 
 
-    for(let i=0; i<a.length; i++){
-        if( i < json["note"]){
-            a[i].classList.add("checked")
-            a[i].style.color="#F5D165"
-        }
+    // a=[iStars1, iStars2 , iStars3 ,iStars4];
+
+
+    // for(let i=0; i<a.length; i++){
+    //     if( i < json["note"]){
+    //         a[i].classList.add("checked")
+    //         a[i].style.color="#F5D165"
+    //     }
             
-        divEtoile.appendChild(a[i])
+    //     divEtoile.appendChild(a[i])
+    // }
+
+    // divEtAndModf.appendChild(divEtoile)
+
+    // if(currentUserId == json["user"]["id"] && currentUserId!=null){
+    //     divEtoile.after(divBtn)
+    // }
+    // const divComment = document.createElement("div")
+    // divComment.setAttribute("class", "tnEmMeco text-center")
+
+    // const pComment = document.createElement("p")
+    // pComment.textContent = json["avis"]
+    
+    // divComment.appendChild(pComment)
+    
+    // divNom.appendChild(pNom)
+
+    
+    // divContentAvis.appendChild(divNom)
+    // divContentAvis.appendChild(hr)
+    // divContentAvis.appendChild(divEtAndModf)
+    // divContentAvis.appendChild(divComment)
+    // document.querySelector("#staticBackdrop > div > div > div.list-avis-ferme > div").appendChild(divContentAvis)
+
+    let startIcon = "";
+    for(let i=0; i<4 ; i++  ){
+        if(i<parseInt(json.note)){
+            startIcon +=`<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+        }else{
+            startIcon += ` <i class="fa-solid fa-star"></i>`
+        }
     }
+    const spec_selector = (currentUserId == json["user"]["id"] && currentUserId!=null) ? "my_comment_jheo_js" : "";
+    const singleAvisHtml= `
+        <div class="card mb-2 card_avis_resto_jheo_js ${spec_selector} " data-avis-note="${json.note}" data-avis-text="${json.avis}">
+            <div class="card-body">
+                <div class="avis_content">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3>
+                            <small class="fw-bolder text-black"> ${ json["user"]["pseudo"] } : </small> <br>
+                            ${json["avis"]}
+                        </h3>	
+                        <p> ${startIcon}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
 
-    divEtAndModf.appendChild(divEtoile)
-
-    if(currentUserId == json["user"]["id"] && currentUserId!=null){
-        divEtoile.after(divBtn)
-    }
-    const divComment = document.createElement("div")
-    divComment.setAttribute("class", "tnEmMeco text-center")
-
-    const pComment = document.createElement("p")
-    pComment.textContent = json["avis"]
-    
-    divComment.appendChild(pComment)
-    
-    divNom.appendChild(pNom)
-
-    
-    divContentAvis.appendChild(divNom)
-    divContentAvis.appendChild(hr)
-    divContentAvis.appendChild(divEtAndModf)
-    divContentAvis.appendChild(divComment)
-    document.querySelector("#staticBackdrop > div > div > div.list-avis-ferme > div").appendChild(divContentAvis)
+    document.querySelector(".all_avis_jheo_js").innerHTML += singleAvisHtml;
 }
 
 function _kidMo(event) {

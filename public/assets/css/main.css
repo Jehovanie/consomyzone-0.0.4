@@ -809,6 +809,7 @@ li a .station {
     background-color : lightgray;
 } */
 .non_active{
+    pointer-events: none !important;
     cursor: not-allowed !important;
 }
 /*
