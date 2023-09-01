@@ -8,10 +8,10 @@
         <button type="button" class="btn-close btn-close-partisans-tribuT" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body custom_modal">
-        <div class="container_list">
+        <div>
             {# <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda" data-toggel-tribu-t="list-partisans-tribu-t-partage-agenda{{ allTribuT.table_name }}"> #}
-            <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda" data-toggel-tribu-t="list-partisans-tribu-t-partage-agenda-tribuT">
-                <table id="list-partisans-tribu-t-partage-agenda-tribuT" class="table table-striped">
+            <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda" >
+                <table id="list-partisans-tribuT" class="table table-striped">
                   <thead>
                       <tr>
                           <th scope="col">Profil</th>
@@ -20,7 +20,7 @@
                           <th scope="col">Email</th>
                           <th scope="col">Rôle</th>
                           <th scope="col">
-                              <input type="checkbox" class="selectTribuGAll" name="selectionner" id="selectTribuGAll" onclick="selectTribuGAll(this)"> 
+                              <input type="checkbox" class="selectTribuTAll" name="selectionner" id="selectTribuTAll" onchange="selectAllPartisan(this,false)"> 
                               <label for="selectionner">Sélectionner tout</label></th>
                           </th>
 
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-info cta_close_list_resto_jheo_js">Terminer</button>
+        <button class="btn btn-primary btn-second-primary" id="shareBtnTribuTForPart" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" onclick="showModalEditor(0)">Partager</button>
       </div>
     </div>
   </div>

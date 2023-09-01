@@ -1792,3 +1792,25 @@ i.fa-eye-slash, i.fa-eye{
     font-size: 14px;
     text-align: center;
   }
+
+
+/* FOR TEXT EDITOR */
+/* * {
+	font-family: sans-serif;
+} */
+
+textarea {
+	padding: 2rem;
+	
+}
+
+.wrapper {
+	max-width: 64rem;
+	margin: 0 auto;
+	display: block;
+	padding: 4rem 0;
+}
+
+#editor {
+	min-height: 180px;
+}

@@ -827,11 +827,11 @@ if(dropZones.length > 0 && dropZones!=null){
           inputElement.click();
         });
       
-        inputElement.addEventListener("change", (e) => {
-          if (inputElement.files.length) {
-            updateThumbnail(dropZoneElement, inputElement.files[0]);
-          }
-        });
+        // inputElement.addEventListener("change", (e) => {
+        //   if (inputElement.files.length) {
+        //     updateThumbnail(dropZoneElement, inputElement.files[0]);
+        //   }
+        // });
       
         dropZoneElement.addEventListener("dragover", (e) => {
           e.preventDefault();
@@ -844,16 +844,16 @@ if(dropZones.length > 0 && dropZones!=null){
           });
         });
       
-        dropZoneElement.addEventListener("drop", (e) => {
-          e.preventDefault();
+        // dropZoneElement.addEventListener("drop", (e) => {
+        //   e.preventDefault();
       
-          if (e.dataTransfer.files.length) {
-            inputElement.files = e.dataTransfer.files;
-            updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
-          }
+        //   if (e.dataTransfer.files.length) {
+        //     //inputElement.files = e.dataTransfer.files;
+        //     //updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+        //   }
       
-          dropZoneElement.classList.remove("drop-zone--over");
-        });
+        //   dropZoneElement.classList.remove("drop-zone--over");
+        // });
       });
 }
  /**
@@ -862,12 +862,15 @@ if(dropZones.length > 0 && dropZones!=null){
    * @param {HTMLElement} dropZoneElement
    * @param {File} file
    */
-  function updateThumbnail(dropZoneElement, file) {
+  function updateThumbnail(dropZoneElement, file, customFile) {
+
+    console.log(file.type)
+
     let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
   
     // First time - remove the prompt
-    if (dropZoneElement.querySelector(".drop-zone__prompt")) {
-      dropZoneElement.querySelector(".drop-zone__prompt").remove();
+    if (dropZoneElement.querySelector(".drop_zone__prompt_Nantenaina_css_js")) {
+      dropZoneElement.querySelector(".drop_zone__prompt_Nantenaina_css_js").remove();
     }
   
     // First time - there is no thumbnail element, so lets create it
@@ -888,8 +891,199 @@ if(dropZones.length > 0 && dropZones!=null){
         thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
       };
     } else {
-      thumbnailElement.style.backgroundImage = null;
+        // thumbnailElement.style.backgroundImage ="url('/public/assets/image/doc.jpg')" ;
+        thumbnailElement.style.backgroundImage ="url('/public/assets/image/doc.jfif')" ;
     }
   }
 
+let editor;
 
+CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
+    // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
+    toolbar: {
+        items: [
+            
+            'selectAll', '|',
+           
+            'bold', 'italic', 'strikethrough', 'underline', 'code', 'subscript', 'superscript', 'removeFormat', '|',
+            'bulletedList', 'numberedList', 'todoList', '|',
+            'outdent', 'indent', '|','undo', 'redo',
+            '-',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
+            'alignment', '|',
+            'link',  'blockQuote','|',
+             'horizontalLine', 'pageBreak', '|',
+            'textPartLanguage'
+            
+        ],
+        shouldNotGroupWhenFull: true
+    },
+    // Changing the language of the interface requires loading the language file using the <script> tag.
+    // language: 'es',
+    list: {
+        properties: {
+            styles: true,
+            startIndex: true,
+            reversed: true
+        }
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
+    heading: {
+        options: [
+            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+            { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+            { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+            { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+        ]
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
+    placeholder: 'Welcome to CKEditor&nbsp;5!',
+    // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+    fontFamily: {
+        options: [
+            'default',
+            'Arial, Helvetica, sans-serif',
+            'Courier New, Courier, monospace',
+            'Georgia, serif',
+            'Lucida Sans Unicode, Lucida Grande, sans-serif',
+            'Tahoma, Geneva, sans-serif',
+            'Times New Roman, Times, serif',
+            'Trebuchet MS, Helvetica, sans-serif',
+            'Verdana, Geneva, sans-serif'
+        ],
+        supportAllValues: true
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-size-feature
+    fontSize: {
+        options: [ 10, 12, 14, 'default', 18, 20, 22 ],
+        supportAllValues: true
+    },
+    // Be careful with the setting below. It instructs CKEditor to accept ALL HTML markup.
+    // https://ckeditor.com/docs/ckeditor5/latest/features/general-html-support.html#enabling-all-html-features
+    htmlSupport: {
+        allow: [
+            {
+                name: /.*/,
+                attributes: true,
+                classes: true,
+                styles: true
+            }
+        ]
+    },
+    // Be careful with enabling previews
+    // https://ckeditor.com/docs/ckeditor5/latest/features/html-embed.html#content-previews
+    htmlEmbed: {
+        showPreviews: true
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
+    link: {
+        decorators: {
+            addTargetToExternalLinks: true,
+            defaultProtocol: 'https://',
+            toggleDownloadable: {
+                mode: 'manual',
+                label: 'Downloadable',
+                attributes: {
+                    download: 'file'
+                }
+            }
+        }
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html#configuration
+    mention: {
+        feeds: [
+            {
+                marker: '@',
+                feed: [
+                    '@apple', '@bears', '@brownie', '@cake', '@cake', '@candy', '@canes', '@chocolate', '@cookie', '@cotton', '@cream',
+                    '@cupcake', '@danish', '@donut', '@dragée', '@fruitcake', '@gingerbread', '@gummi', '@ice', '@jelly-o',
+                    '@liquorice', '@macaroon', '@marzipan', '@oat', '@pie', '@plum', '@pudding', '@sesame', '@snaps', '@soufflé',
+                    '@sugar', '@sweet', '@topping', '@wafer'
+                ],
+                minimumCharacters: 1
+            }
+        ]
+    },
+    // The "super-build" contains more premium features that require additional configuration, disable them below.
+    // Do not turn them on unless you read the documentation and know how to configure them and setup the editor.
+    removePlugins: [
+        // These two are commercial, but you can try them out without registering to a trial.
+        // 'ExportPdf',
+        // 'ExportWord',
+        'CKBox',
+        'CKFinder',
+        'EasyImage',
+        // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
+        // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
+        // Storing images as Base64 is usually a very bad idea.
+        // Replace it on production website with other solutions:
+        // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/image-upload.html
+        // 'Base64UploadAdapter',
+        'RealTimeCollaborativeComments',
+        'RealTimeCollaborativeTrackChanges',
+        'RealTimeCollaborativeRevisionHistory',
+        'PresenceList',
+        'Comments',
+        'TrackChanges',
+        'TrackChangesData',
+        'RevisionHistory',
+        'Pagination',
+        'WProofreader',
+        // Careful, with the Mathtype plugin CKEditor will not load when loading this sample
+        // from a local file system (file://) - load this site via HTTP server if you enable MathType.
+        'MathType',
+        // The following features are part of the Productivity Pack and require additional license.
+        'SlashCommand',
+        'Template',
+        'DocumentOutline',
+        'FormatPainter',
+        'TableOfContents',
+        'PasteFromOfficeEnhanced'
+    ]
+}).then( newEditor => {
+    editor=newEditor
+    let html=showModalEditor()
+    editor.setData(html)
+
+});
+function showModalEditor(isG){
+    document.querySelector("#btnValidate").dataset.g = isG
+    let agenda = JSON.parse(sessionStorage.getItem("agenda"))
+    // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité 
+//</span>
+    return html=` 
+    <p>Madame / Monsieur 
+       <br>
+        C'est avec un immense plaisir que je vous annonce la tenue de l'événement 
+        <span id="eventTitleText" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.title}
+        </span>
+        , qui aura lieu à l'établissement
+        <span id="etabNameText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.name}
+        </span> 
+        , se trouvant à l'adresse 
+        <span id="etabAdresseText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.adresse}
+        </span> 
+         qui aura lieu le <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.dateStart}
+        </span> à partir de  
+        <span id="heureDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.heure_debut}
+        </span>  jusqu'à 
+        <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.heure_fin}
+        </span><br></p>
+    <p >
+      <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
+    </p>
+    <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
+    <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
+    <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
+    <button type="btn" disabled>Confirmation</button>
+    <p>Remerciement cordialement</p>`
+}

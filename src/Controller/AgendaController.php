@@ -702,6 +702,7 @@ class AgendaController extends AbstractController
             "file_type" => $fileType ? $fileType : null,
             "file_path" => $fileName ? $fileName : null,
             "status" => 0,
+            "user_id" => $this->getUser()->getId()
         ];
 
         $agendaTableName=$this->getUser()->getNomTableAgenda();
@@ -1699,7 +1700,6 @@ class AgendaController extends AbstractController
         }
 
         quit:
-
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
         return $this->render('agenda/partage_agenda.html.twig',[

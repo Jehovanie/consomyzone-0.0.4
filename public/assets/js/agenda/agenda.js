@@ -211,35 +211,37 @@ if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
 function rendreCalendarWithEvents(events) {
 
     var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: ['interaction', 'dayGrid'],
-        themeSystem: 'bootstrap5',
-        defaultDate: new Date(),
-        editable: true,
-        eventLimit: true, // allow "more" link when too many events
-        displayEventTime: true,
-        eventTimeFormat: {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        },
-        displayEventEnd: {
-            month: false,
-            basicWeek: true,
-            "default": true
-        },
-        events: events,
-        dateClick: function (info) {
-            bindEventForAllDay(info)
-        },
-        eventClick: function (info) {
-            const id = info.event.id ? parseInt(info.event.id) : 0
-            bindEventForAnEvent(id)
-        },
-    });
-
-    calendar.render();
+    if(typeof FullCalendar != "undefined"){
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: ['interaction', 'dayGrid'],
+            themeSystem: 'bootstrap5',
+            defaultDate: new Date(),
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            displayEventTime: true,
+            eventTimeFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
+            displayEventEnd: {
+                month: false,
+                basicWeek: true,
+                "default": true
+            },
+            events: events,
+            dateClick: function (info) {
+                bindEventForAllDay(info)
+            },
+            eventClick: function (info) {
+                const id = info.event.id ? parseInt(info.event.id) : 0
+                bindEventForAnEvent(id)
+            },
+        });
+    
+        calendar.render();
+    }
+    
 }
 
 function bindEventForAllDay(info) {
@@ -294,7 +296,7 @@ function setAndShowModal(agenda) {
     $("#modalCreateAgendaTitles").text("Modifier l'événement")
     document.querySelector('#createOrEditBtn').dataset.action = "update"
     document.querySelector('#createOrEditBtn').dataset.rank = agenda.id
-    console.log(agenda)
+    document.querySelector('#shareAgendaBtn').dataset.agenda = JSON.stringify(agenda)
     document.querySelector("#eventTitle").value = agenda.title
     document.querySelector("#typeEvent").value = agenda.type
     document.querySelector("#eventDesc").value = agenda.description
@@ -1395,6 +1397,19 @@ function initInputForm() {
     }
 }
 
+if(document.querySelector("#shareAgendaBtn")){
+    document.querySelector("#shareAgendaBtn").addEventListener("click", (e)=>{
+        e.preventDefault()
+        // console.log(e.target.dataset.agenda);
+        // let data = JSON.parse(e.target.dataset.agenda)
+        // console.log(data);
+        // console.log("id = " + data.id);
+        // console.log("title = " + data.title);
+        // console.log("description = " + data.description);
+        sessionStorage.setItem("agenda", e.target.dataset.agenda);
+    })
+}
+
 /** END BLOC */
 
 function tableActiveFilterPartisant(e) {
@@ -1451,21 +1466,6 @@ if (document.querySelector('#list-partisans-tribu-selection')) {
         },})
 }
 
-if (document.querySelector("#list-partisans-tribu-t-partage-agenda")) {
-    const selectorTableT = document.querySelector("#list-partisans-tribu-t-partage-agenda")
-    const idTribuT = selectorTableT.getAttribute('data-toggel-tribu-t')
-    // new DataTable('#' + idTribuT);
-    $('#' + idTribuT).DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-            "search": "Recherche global",
-
-        },})
-}
-
-
-
-
 function selectAll(source) {
     var checkboxes = document.querySelectorAll('.select-oui');
     for (var i = 0; i < checkboxes.length; i++) {
@@ -1475,16 +1475,44 @@ function selectAll(source) {
 
 }
 
-function selectTribuGAll(source) {
-    var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
-    for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i] != source)
-            checkboxes[i].checked = source.checked;
+function selectAllPartisan(source,isG) {
+
+    if(isG){
+        var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+
+        if(source.checked){
+            document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+        }else{
+            document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+        }
+
+    }else{
+
+        var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+
+        if(source.checked){
+            document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+        }else{
+            document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+        }
     }
+    
 
 }
 
 
+/**
+ * generate table for partisan tribu t
+ * @param {*-} tribu_t_name 
+ */
 function showPartisanAgenda(tribu_t_name) {
 
     document.querySelector('#list-partisans-tribu-t-agenda').innerHTML = ""
@@ -1500,9 +1528,10 @@ function showPartisanAgenda(tribu_t_name) {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
+                // makeLoading()
                 let i = 0
                 jsons[0].forEach(json => {
-
+                    console.log(json)
                     if(jsons["curent_user"] != json.id){
 
                         // console.log(JSON.parse(json.infos_profil));
@@ -1515,12 +1544,13 @@ function showPartisanAgenda(tribu_t_name) {
                         document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
                             <tr class="table-partisans-${tribu_t_name}-${lastName}">
                                 <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
-                                <td>${firstName}</td>
-                                <td>${lastName}</td>
-                                <td class="content-checkbox"></td>
+                                <td data-id="${json.user_id}" class="firstname">${firstName}</td>
+                                <td class="lastname">${lastName}</td>
+                                <td class="content-checkbox email">${profilInfo.email}</td>
                                 <td>${json.roles}</td>
                                 <td>
-                                    <input type="checkbox" name="selectOui" class="select-tribu-t-oui" data-id="${json.user_id}" data-tribu="${tribu_t_name}" data-toggle-last="${lastName}" data-toggle-pdp="${profil}" value="${firstName}" onchange="handleChange(this)">
+                                    <input type="checkbox" name="selectOui" class="select-tribu-t-oui" 
+                                     onchange="handleChange(this,false)">
                                 </td>
                            </tr>
                         `
@@ -1542,6 +1572,16 @@ function showPartisanAgenda(tribu_t_name) {
                            </tr>
                         `
                 }
+
+                $("#listPartisantInTribuT").modal("show")
+
+                $('#list-partisans-tribuT').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        "search": "Recherche global",
+            
+                    },"ordering": true, destroy: true})
+
             })
         }
     })
@@ -1549,38 +1589,67 @@ function showPartisanAgenda(tribu_t_name) {
 
 }
 
-function handleChange(checkbox) {
-    let isChecked = document.querySelectorAll(".content-checkbox > input[type='checkbox']:checked").length
-    if (isChecked > 0) {
-        document.getElementById("getPartisonsSelectAgenda").classList.remove('btn-second-primary');
+function handleChange(elment,isG) {
+    if(isG){
+        if(elment.checked){
+            var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+            let allChekecd=true
+            let hasChecked = false
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (!checkboxes[i].checked)
+                    allChekecd=false
+            }
+            if(allChekecd){
+                document.querySelector("#selectTribuGAll").checked=true
+            }
 
-    } else {
-        document.getElementById("getPartisonsSelectAgenda").classList.add('btn-second-primary');
-    }
-    if (checkbox.checked == true) {
-        // document.querySelector("#list-partisans-tribu-selection-ckecked >.odd >.dataTables_empty").remove()
-        if (!document.querySelector(`#exist-parisans-${checkbox.getAttribute('data-id')}`)) {
-            document.querySelector("#list-partisans-tribu-selection-ckecked").innerHTML += `
-                <tr class="firstName" id="exist-parisans-${checkbox.getAttribute('data-id')}">
-                    <td><img class="pdp-agenda-tribu-t" src="${checkbox.getAttribute('data-toggle-pdp')}" alt=""></td>
-                    <td>${checkbox.getAttribute('data-toggle-last')}</td>
-                    <td >${checkbox.value}</td>
-                    <td> ${checkbox.getAttribute('data-tribu')}</td>
-                    <td>
-                        <input type="checkbox" name="selectOui" class="select-tribu-t-oui" checked="true">
-                    </td>
-                </tr>
-            `
+            document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+
+        }else{
+                document.querySelector("#selectTribuGAll").checked=false
+                var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
+                let hasChecked = false
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked)
+                        hasChecked=true
+                }
+
+                if(hasChecked){
+                    document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+                }else{
+                    document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+                }
         }
 
-        // if () {
+    }else{
+        if(elment.checked){
+            var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
+            let allChekecd=true
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (!checkboxes[i].checked)
+                    allChekecd=false
+            }
+            if(allChekecd){
+                document.querySelector("#selectTribuTAll").checked=true
+            }
+            document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+        }else{
+                document.querySelector("#selectTribuTAll").checked=false
+                var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
+                let hasChecked = false
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked)
+                        hasChecked=true
+                }
 
-        // }
-    } else if (checkbox.checked == false) {
-        document.querySelector(`#exist-parisans-${checkbox.getAttribute('data-id')}`).remove()
+                if(hasChecked){
+                    document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+                }else{
+                    document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+                }
+        }
     }
-
-
+    
 }
 
 function generateDataTable(selector, limite,turnOffLogo=false) {
@@ -1749,3 +1818,38 @@ function findEtabByKey(e){
     }
 
 }
+
+// function shareEvent(){
+//     let data = []
+//     let memberElem = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
+//     memberElem.forEach(tr=>{
+//         let isChecked = tr.querySelector("input").checked
+//         if(isChecked){
+//             let user = {
+//                 id : tr.querySelector(".lastname").dataset.id,
+//                 firstname : tr.querySelector(".firstname").textContent,
+//                 lastname : tr.querySelector(".lastname").textContent,
+//                 email : tr.querySelector(".email").textContent,
+//                 role : tr.querySelector(".role").textContent,
+//                 agenda : sessionStorage.getItem("agenda")
+//             }
+//             data.push(user)
+//         }
+//     })
+
+//     let request = new Request("/api/user/send/event", {
+//         method: "POST",
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(data)
+//     })
+//     fetch(request).then(r=>{
+//         if(r.status===200 && r.ok){
+//             //swetalert
+//         }else{
+//             //sweat alert
+//         }
+//     })
+// }
