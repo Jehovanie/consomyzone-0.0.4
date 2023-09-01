@@ -1420,6 +1420,13 @@ function tableActiveFilterPartisant(e) {
     if (!e.classList.contains("active")) {
         e.classList.add("active")
     }
+
+    if (e.classList.contains("agenda-emailing")) {
+        document.querySelector("#shareAgendaForPartisan").disabled = true
+    }else{
+        document.querySelector("#shareAgendaForPartisan").disabled = false
+    }
+
     other_not_active.forEach(item => {
         if (document.querySelector(`.${item}`).classList.contains("active")) {
             document.querySelector(`.${item}`).classList.remove("active")
