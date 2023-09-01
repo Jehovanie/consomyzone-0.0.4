@@ -180,7 +180,6 @@ window.addEventListener('load', () => {
 
                 const btn_update = document.querySelector(".send_avis_jheo_js");
 
-                btn_update.setAttribute("id", "dfdf")
                 // btn_update.setAttribute("onclick","_kidMo(event)")
 
                 if( btn_update.classList.contains("btn-warning")){
@@ -332,7 +331,6 @@ function showAvis(currentUserId, idRestaurant) {
 
     const btn_update = document.querySelector(".send_avis_jheo_js");
 
-    btn_update.setAttribute("id", "dfdf")
     // btn_update.setAttribute("onclick","_kidMo(event)")
 
     if( !btn_update.classList.contains("btn-warning")){
@@ -394,11 +392,12 @@ function showAvis(currentUserId, idRestaurant) {
 }
 
 function showModifArea(idRestaurant, currentUserId) {
-    
+
     fetch(`/avis/restaurant/${idRestaurant}`)
         .then(r => r.json())
         .then(jsons => {
             if (jsons) {
+                document.querySelector(".all_avis_jheo_js").innerHTML = "";
                 console.log(jsons)
                 console.log("currentUserId : " + currentUserId)
                 for (let json of jsons) { 
