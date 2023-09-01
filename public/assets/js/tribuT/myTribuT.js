@@ -6,11 +6,11 @@ var id_c_u //id du user courant
 // var IS_DEV_MODE = true;
 let image_list = [];
 let dataExtension = [];
-// var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') :  new Worker('/public/assets/js/tribuT/worker.js');
-var worker = new Worker('/assets/js/tribuT/worker.js') ;
-// var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
-// var workerGetCommentaireTribuT= IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
+var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') :  new Worker('/public/assets/js/tribuT/worker.js');
+// var worker = new Worker('/assets/js/tribuT/worker.js') ;
+var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
+// var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
+var workerGetCommentaireTribuT= IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
 var workerGetCommentaireTribuT= new Worker('/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t 
 var descriptionTribuT=""
@@ -104,9 +104,12 @@ function showBlockPub(){
             /**end */
 
             /**change pdp tribu_t */
-            document.querySelector("#fileInputModifTribuT").onchange = (e) => {
-                let files = e.target.files[0]
-                updatePdpTribu_T(files)
+            if(document.querySelector("#fileInputModifTribuT")){
+
+                document.querySelector("#fileInputModifTribuT").onchange = (e) => {
+                    let files = e.target.files[0]
+                    updatePdpTribu_T(files)
+                }
             }
             /**end */
             
@@ -740,9 +743,11 @@ function showCommentaireTribu_T(event, idmin=0,b ) {
     workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
 }
     
-function showComment() {
+function showComment(id_resto) {
+    // alert(id_resto)
     
     workerGetCommentaireTribuT.onmessage = (e) => {
+        console.log("afffichage comment");
         console.log(e.data)
                 const datas = e.data[0]
                 const index=e.data[0].length
@@ -898,8 +903,8 @@ function showResto(table_rst_pastilled,id_c_u){
                                         <div id="form_past"></div>
                                         <div class="g-3">
                                             <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech" onkeyup = "findRestoByOnKey(this)">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou" onkeyup = "findRestoByOnKey(this)">
                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
                                             </div>
                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
@@ -925,6 +930,7 @@ function showResto(table_rst_pastilled,id_c_u){
              document.getElementById('list_resto_pastilled').
                 removeChild(child)
     }
+    
 
     restoContainer.classList.add("bg-white");
     restoContainer.classList.add("p-2");
@@ -972,6 +978,8 @@ function showResto(table_rst_pastilled,id_c_u){
                     let denominationsF = resto.denomination_f
                     let nbrAvis = resto.nbrAvis
                     let key = 0
+                    let note = resto.globalNote ? resto.globalNote : 0
+
                     for (let [k, v] of id_user.entries()) {
                         if (v === id_c_u)
                             key = k
@@ -995,18 +1003,19 @@ function showResto(table_rst_pastilled,id_c_u){
                                 <span style="font-size:12pt;">${denominationsF} </span> 
                             <!--</a>-->
                         </td>
-                        <td>0/4</td>
+                        <td>${note}/4</td>
                         <td>
                             <!--<div id="etoile_${id_resto}" class="non_active">
                                 <i class="fa-solid fa-star" data-rank="1"></i>
                                 <i class="fa-solid fa-star" data-rank="2"></i>
                                 <i class="fa-solid fa-star" data-rank="3"></i>
                                 <i class="fa-solid fa-star" data-rank="4"> </i>-->
-                                <a class="text-secondary disabled-link" style="cursor: none;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>
+                                <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
+                                <a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}"> ${nbrAvis} Avis</a>
                             <!--</div>-->
                         </td>
                         <td>
-                            <button class="btn btn-info" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}',${resto.id})"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-secondary disabled" style="cursor:not-allowed !important;" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}',${resto.id})"><i class="fas fa-plus"></i> Plus</button>
                             <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                             
                             <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
@@ -1049,6 +1058,8 @@ function showResto(table_rst_pastilled,id_c_u){
 
     if(document.querySelector("#resto-rech")){
         document.querySelector("#resto-rech").addEventListener("keyup",  (event) =>{
+
+            // alert("ato")
             const q = event.target.value.toLowerCase();
 
             if (event.keyCode === 13) {
@@ -1068,6 +1079,33 @@ function showResto(table_rst_pastilled,id_c_u){
 
     
 }
+
+// document.querySelector("#resto-rech")
+
+if(document.querySelector("#resto-rech")){
+
+    const src_resto = document.querySelector("#resto-rech")
+
+    src_resto.addEventListener("keyup",  function onEvent(event) {
+        alert("ato")
+        // const q = event.target.value.toLowerCase();
+
+        // if (event.keyCode === 13) {
+        //     alert("ato")
+        //     listResto()
+        // }else{
+        //     document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
+        //         if(elem.textContent.toLowerCase().includes(q)){
+        //             elem.style = "display : flex!important;"
+        //         }else{
+        //             elem.style = "display : none !important;"
+        //         }
+        //     })
+        // }
+        
+    });
+}
+
 
 function printNodeGlobale(element,globalNote){
 
@@ -1147,21 +1185,24 @@ function updateNote(event, _idRestoComment) {
     } )
 }
 
-function findResto(val){
-    
-    const request = new Request(`/user/getRestoByName/${val}`, {
+function findResto(val, localisation=""){
+
+    const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
        method: 'GET'
    }) 
-
-//     let ou = "Paris"
 
 //    const request =new Request(`/tribu/findresto/${val}/${ou}`, {
 //         method: 'GET'
 //     })  
 
    document.querySelector("#result_resto_past").style.display="block;"
-    fetch(request).then(response => response.json()).then(jsons => {
-        // console.log(jsons)
+    fetch(request).then(response => response.json()).then(data => {
+
+        let jsons = data.results[0]
+
+        jsons.length > 1? document.querySelector("#extModalLabel").innerText = jsons.length +" restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length +" restaurant trouvé"
+
+        // console.log(jsons.results[0])
 
         let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
         <thead>
@@ -1190,16 +1231,17 @@ function findResto(val){
                 const nomvoie = json.nomvoie;
                 const numvoie = json.numvoie;
                 const typevoie = json.typevoie;
-                const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-                const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar</span></p>` : '' 
-                const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span>Boulangerie</span></p>` : ''
-                const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span>Brasserie</span></p>` : ''
+                // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+                const adresse = json.add;
+                const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : '' 
+                const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
+                const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
                 const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
-                const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span>Cuisine du Monde</span></p>` : '' 
-                const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span>Fast food</span></p>` : '' 
-                const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span>Crêperie</span></p>` : '' 
-                const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span>Salon de thé</span></p>` : '' 
-                const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span>Pizzeria</span></p>` : '' 
+                const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : '' 
+                const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : '' 
+                const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : '' 
+                const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : '' 
+                const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : '' 
     
                 body_table +=`
                                 <tr>
@@ -1219,7 +1261,10 @@ function findResto(val){
                                         </div>
                                     </td>
                                     <td>${adresse}</td>
-                                    <td><button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button></td>
+                                    <td class="d-flex bd-highlight">
+                                        <button class="btn btn-info"><!--<i class="fas fa-plus"></i>--> Détail</button>
+                                        <button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
+                                    </td>
                                 </tr>
                             `
     
@@ -1275,8 +1320,8 @@ function findResto(val){
             });
 
         }else{
-            document.querySelector("#result_resto_chr").style.display = "block"
-            document.querySelector("#result_resto_chr").innerHTML = "Aucun restaurant qui correspond à " + document.querySelector("#resto-rech").value
+            document.querySelector("#elie-restou").style.display = "block"
+            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value +"</div>"
         }
     })
     
@@ -1302,6 +1347,8 @@ function pastillerPast(element, id, nom) {
     // let modal = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
     let modal = element.parentElement.parentElement.parentElement
     // if(modal.id == "modalForExtension"){
+    element.classList = "btn btn-success ms-1"
+    element.innerText = "Pastillé"
     if(modal.id == "resto-a-pastiller-list"){
         setRestoForPast(id, nom)
         element.disabled = true;
@@ -1949,30 +1996,36 @@ if(searchParams.has('message')){
 
 function listResto(){
 
-    document.querySelector(".elie-div-resto-search").style.display="block"
+    $("#modalForExtension").modal("show")
+
     // document.querySelector(".content-actualite-connected").style ="background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);"
 
-    document.querySelector("#result_resto_chr").innerHTML = ""
+    document.querySelector("#elie-restou").innerHTML = ""
     let inputName = document.querySelector("#resto-rech").value;
+    let adresse = document.querySelector("#resto-rech-ou").value;
     if(inputName.trim() != ""){
-        // $("#modalForExtension").modal();
-        findResto(inputName)
+        findResto(inputName,adresse)
     }else{
-        alert("Veuillez saisir le nom du restaurant");
+
+        Swal.fire({
+            icon: 'error',
+            text: "Quoi veux-tu trouver? Veuillez remplire ce que vous cherchez.",
+          })
     }
 }
 
-function closeSearch(){
-    document.querySelector(".elie-div-resto-search").style.display="none"
-    document.querySelector("#elie-restou").innerHTML =""
-}
+// function closeModal(){
+//     document.querySelector(".main-search-resto").style.display = "none";
+//     document.querySelector("#elie-restou").innerHTML =""
+//     document.querySelector("body").style.overflowY = 'auto'
+// }
 
-window.onclick = function(event) {
-    let modal = document.querySelector(".elie-div-resto-search")
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
+// document.querySelector(".main-search-resto").onclick = function(event) {
+//     let modal = document.querySelector(".main-search-resto")
+//     if (event.target == modal) {
+//         closeModal()
+//     }
+//   }
 
 function openPopupAction(id_pastille,denomination_f, latitude,longitude,text1,id_resto_comment_key){
 
@@ -1995,7 +2048,7 @@ function openPopupAction(id_pastille,denomination_f, latitude,longitude,text1,id
       }).then((result) => {
         if (result.isConfirmed) {
           swalWithBootstrapButtons.fire(
-            'Notez!',
+            'Noté!',
             'Note ajouté avec succès',
             'success'
           )

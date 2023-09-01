@@ -2159,8 +2159,10 @@ class TributTController extends AbstractController
     public function getRestoByName($name,
     BddRestoRepository $bddResto,SerializerInterface $serializer){
       
+        
         $result=$bddResto->findRestoByName($name);
         $json=$serializer->serialize($result,'json');
+        // dd($json);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
     //,  TributGService $tributGService

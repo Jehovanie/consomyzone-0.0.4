@@ -46,10 +46,11 @@
                                         <div class="cg lc mg sh ol rl tq is">
                                             <div class="h mb sc yd of th">
                                                 {# /// photo de profil #}
-                                                <img src="{{(item.photo) ? item.photo  : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{item.firstname}}" class="vc yd qk rk"/>
+                                                
+                                                <img src="{{(item.photo) ? item.photo  : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{item.firstname}}" class="vc yd qk rk elie-pdp-modif"/>
                                                 
                                                 {# //// state blue if in contact  #}
-                                                {# <span class="g l m jc wc ce th pi ij xj"></span> #}
+                                                <span class="g l m jc wc ce th pi ij xj"></span>
 
                                             </div>
                                             <a href="{{path('app_message', { 'user_id' : item.id })}}" class="yd">

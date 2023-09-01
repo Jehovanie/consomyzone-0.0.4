@@ -3,14 +3,16 @@
 namespace App\Controller;
 
 use App\Service\Status;
+use App\Entity\Consumer;
+use App\Entity\Supplier;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
 use App\Service\SortResultService;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
 use App\Service\StringTraitementService;
-use App\Repository\DepartementRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -184,6 +186,20 @@ class HomeController extends AbstractController
 
         ///current user connected
         $user = $this->getUser();
+
+        $userConnected = $status->userProfilService($this->getUser());
+
+        $userType = $user->getType();
+
+        $userId = $user->getId();
+
+        if ($userType == "consumer") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
 
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
@@ -386,6 +402,8 @@ class HomeController extends AbstractController
         $results = $resultSort[0];
 
         return $this->render("home/search_result.html.twig", [
+            "userConnected" => $userConnected,
+            "profil" => $profil,
             "results" => $results,
             "otherResult" => $otherResult,
             "type" => $type,

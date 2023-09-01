@@ -2207,8 +2207,8 @@ img.zoom {
     width: 80%;
     height: 80%;
     /* background-color: blue; */
-    display: none;
-    z-index: 9999;
+    /* display: none; */
+    /* z-index: 9999; */
     position: fixed;
     top: 10%;
     /* right: 13%; */
@@ -2218,14 +2218,25 @@ img.zoom {
     background-color: white;
     padding: 2px;
     border: 1px rgb(22, 2, 2);
-    border-radius: 15px;
-    /* background-color: rgb(0,0,0); 
-    background-color: rgba(0,0,0,0.4);  */
+    border-radius: 5px;
+   
 }
-#elie-restou{
+/* #elie-restou{
     width: 79%;
     height: 71%;
     margin: 5px;
     overflow-y: auto;
     position: fixed;
+} */
+
+.main-search-resto{
+    display: none;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    /* background-color: rgb(0,0,0);  */
+    background-color: rgba(0,0,0,0.4); 
 }

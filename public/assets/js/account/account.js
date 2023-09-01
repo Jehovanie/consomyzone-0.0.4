@@ -865,6 +865,9 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
     
     let pageStyle = null
     function showPageProfile(pageId) {
+
+        // loading()
+
         pages.forEach(page => {
             pageStyle = page.getAttribute('style')
             
@@ -887,18 +890,25 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
                 
                 event.preventDefault();
                 const pageId = event.target.dataset.target;
+
+                showPageProfile(pageId);
+
                     if (dataLink === 'apropos_pdp') {
                         document.querySelector("#navbarProfil > ul > li >  label.apropos_pdp").classList.add('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.remove('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.remove('bg-pdp-profil')
-                    } else if (dataLink === 'elie_gallery_profil') {
+                    }if (dataLink === 'elie_gallery_profil') {
+                        // loading()
                         document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.add('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.remove('bg-pdp-profil')
-                    }else {
+                    }if (dataLink === 'tribu_profil'){
+                        // loading()
+
                         document.querySelector("#navbarProfil > ul > li > label.tribu_profil").classList.add('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.apropos_pdp").classList.remove('bg-pdp-profil')
                         document.querySelector("#navbarProfil > ul > li > label.elie_gallery_profil").classList.remove('bg-pdp-profil')
+                        document.querySelector("#tribu_profil").style.display="block"
 
                         document.querySelectorAll(".elie_nav_link")[0].click()
                         
@@ -906,7 +916,7 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
 
                     // console.log(pageId);
                     
-                    showPageProfile(pageId);
+                    // showPageProfile(pageId);
             });
         });  
 
@@ -950,7 +960,7 @@ if (document.querySelector("#smallNavInvitation > li > a")) {
 
 function setAsPdp(span){
 
-    let img =  span.previousElementSibling.href
+    let img =  span.previousElementSibling.querySelector("img").src
 
     let img_path = new URL(img).pathname
 
