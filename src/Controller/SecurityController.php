@@ -38,6 +38,7 @@ use App\Repository\CodeapeRepository;
 use App\Repository\CommuneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -63,10 +64,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-
-
-
-
+use Symfony\Component\Serializer\SerializerInterface;
 
 class SecurityController extends AbstractController
 
@@ -997,5 +995,27 @@ class SecurityController extends AbstractController
         return $this->json([
             "commune" => $communeRepository->findAll(),
         ], 200);
+    }
+    #[Route(path:'/agenda/send/invitation', name:"app_agenda_send_invitation", methods:"POST")]
+    public function sendLinkOnEmailAboutAgendaSharing(
+        Request $request,
+        SerializerInterface $serialize,
+        MailService $mailService){
+        $context=[];
+        $requestContent = json_decode($request->getContent(), true);
+        $receivers=$requestContent["receiver"];
+        $content=$requestContent["emailCore"];
+        foreach($receivers as $receiver){
+                $email_to=$receiver["email"];
+                $nom=$receiver["lastname"];
+                $prenom=$receiver["firstname"];
+                $context["object_mail"]="Invitation à particper à un événement";
+                $context["template_path"]="emails/mail_invitation_agenda.html.twig";
+                $context["link_confirm"]="";
+                $context["content_mail"]=$content;
+                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+        }
+        $r = $serialize->serialize(["response"=>"0k"], 'json');
+        return new JsonResponse($r, 200, [], true);
     }
 }

@@ -211,35 +211,37 @@ if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
 function rendreCalendarWithEvents(events) {
 
     var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: ['interaction', 'dayGrid'],
-        themeSystem: 'bootstrap5',
-        defaultDate: new Date(),
-        editable: true,
-        eventLimit: true, // allow "more" link when too many events
-        displayEventTime: true,
-        eventTimeFormat: {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        },
-        displayEventEnd: {
-            month: false,
-            basicWeek: true,
-            "default": true
-        },
-        events: events,
-        dateClick: function (info) {
-            bindEventForAllDay(info)
-        },
-        eventClick: function (info) {
-            const id = info.event.id ? parseInt(info.event.id) : 0
-            bindEventForAnEvent(id)
-        },
-    });
-
-    calendar.render();
+    if(typeof FullCalendar != "undefined"){
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: ['interaction', 'dayGrid'],
+            themeSystem: 'bootstrap5',
+            defaultDate: new Date(),
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            displayEventTime: true,
+            eventTimeFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
+            displayEventEnd: {
+                month: false,
+                basicWeek: true,
+                "default": true
+            },
+            events: events,
+            dateClick: function (info) {
+                bindEventForAllDay(info)
+            },
+            eventClick: function (info) {
+                const id = info.event.id ? parseInt(info.event.id) : 0
+                bindEventForAnEvent(id)
+            },
+        });
+    
+        calendar.render();
+    }
+    
 }
 
 function bindEventForAllDay(info) {
@@ -1418,6 +1420,22 @@ function tableActiveFilterPartisant(e) {
     if (!e.classList.contains("active")) {
         e.classList.add("active")
     }
+
+    if (e.classList.contains("agenda-emailing")) {
+        document.querySelector("#agenda-emailing").style.display = "block"
+        document.querySelector("#agenda-tribu-g").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "none"
+    }else if(e.classList.contains("agenda-tribu-g")){
+        document.querySelector("#agenda-tribu-g").style.display = "block"
+        document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "none"
+    }else{
+        document.querySelector("#agenda-tribu-g").style.display = "none"
+        document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "block"
+
+    }
+
     other_not_active.forEach(item => {
         if (document.querySelector(`.${item}`).classList.contains("active")) {
             document.querySelector(`.${item}`).classList.remove("active")
@@ -1463,21 +1481,6 @@ if (document.querySelector('#list-partisans-tribu-selection')) {
 
         },})
 }
-
-if (document.querySelector("#list-partisans-tribu-t-partage-agenda")) {
-    const selectorTableT = document.querySelector("#list-partisans-tribu-t-partage-agenda")
-    const idTribuT = selectorTableT.getAttribute('data-toggel-tribu-t')
-    // new DataTable('#' + idTribuT);
-    $('#' + idTribuT).DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-            "search": "Recherche global",
-
-        },})
-}
-
-
-
 
 function selectAll(source) {
     var checkboxes = document.querySelectorAll('.select-oui');
@@ -1584,6 +1587,16 @@ function showPartisanAgenda(tribu_t_name) {
                            </tr>
                         `
                 }
+
+                $("#listPartisantInTribuT").modal("show")
+
+                $('#list-partisans-tribuT').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        "search": "Recherche global",
+            
+                    },"ordering": true, destroy: true})
+
             })
         }
     })
@@ -1821,37 +1834,37 @@ function findEtabByKey(e){
 
 }
 
-function shareEvent(){
-    let data = []
-    let memberElem = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
-    memberElem.forEach(tr=>{
-        let isChecked = tr.querySelector("input").checked
-        if(isChecked){
-            let user = {
-                id : tr.querySelector(".lastname").dataset.id,
-                firstname : tr.querySelector(".firstname").textContent,
-                lastname : tr.querySelector(".lastname").textContent,
-                email : tr.querySelector(".email").textContent,
-                role : tr.querySelector(".role").textContent,
-                agenda : sessionStorage.getItem("agenda")
-            }
-            data.push(user)
-        }
-    })
+// function shareEvent(){
+//     let data = []
+//     let memberElem = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
+//     memberElem.forEach(tr=>{
+//         let isChecked = tr.querySelector("input").checked
+//         if(isChecked){
+//             let user = {
+//                 id : tr.querySelector(".lastname").dataset.id,
+//                 firstname : tr.querySelector(".firstname").textContent,
+//                 lastname : tr.querySelector(".lastname").textContent,
+//                 email : tr.querySelector(".email").textContent,
+//                 role : tr.querySelector(".role").textContent,
+//                 agenda : sessionStorage.getItem("agenda")
+//             }
+//             data.push(user)
+//         }
+//     })
 
-    let request = new Request("/api/user/send/event", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    fetch(request).then(r=>{
-        if(r.status===200 && r.ok){
-            //swetalert
-        }else{
-            //sweat alert
-        }
-    })
-}
+//     let request = new Request("/api/user/send/event", {
+//         method: "POST",
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(data)
+//     })
+//     fetch(request).then(r=>{
+//         if(r.status===200 && r.ok){
+//             //swetalert
+//         }else{
+//             //sweat alert
+//         }
+//     })
+// }

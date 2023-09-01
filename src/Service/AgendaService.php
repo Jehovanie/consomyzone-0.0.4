@@ -472,8 +472,8 @@ class AgendaService extends PDOConnexionService
         extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
         $statement = $this->getPDO()->prepare(
-            "INSERT INTO $nom_table_agenda (title, name, description, isEtabCMZ, isGolfCMZ, isRestoCMZ, type, status, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
-            values (:title, :name, :description, :isEtabCMZ, :isGolfCMZ, :isRestoCMZ, :type, :status, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
+            "INSERT INTO $nom_table_agenda (title, name, description, isEtabCMZ, isGolfCMZ, isRestoCMZ, type, status, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant, user_id) 
+            values (:title, :name, :description, :isEtabCMZ, :isGolfCMZ, :isRestoCMZ, :type, :status, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant, :user_id)"
         );
 
         if(!$isEtabCMZ){
@@ -497,6 +497,7 @@ class AgendaService extends PDOConnexionService
         $statement->bindParam(':heure_debut', $heureStart);
         $statement->bindParam(':heure_fin', $heureEnd);
         $statement->bindParam(':max_participant', $participant);
+        $statement->bindParam(':user_id', $user_id);
 
         $result = $statement->execute();
 
