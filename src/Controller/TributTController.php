@@ -1970,7 +1970,8 @@ class TributTController extends AbstractController
         Filesystem $filesyst,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-        StringTraitementService $stringTraitementService
+        StringTraitementService $stringTraitementService,
+        BddRestoRepository $bddRestoRepository
     ) : Response
     {
         $userConnected= $status->userProfilService($this->getUser());
@@ -1988,14 +1989,14 @@ class TributTController extends AbstractController
                 'label' => false ,
                 'required' => false
             ])
-            ->add('description', TextareaType::class, [
+            ->add('description', TextType::class, [
                 'label' => false ,
                 'required' => false
             ])
-            ->add('adresse', TextType::class, [
-                'label' => false ,
-                'required' => false
-            ])
+            // ->add('adresse', TextType::class, [
+            //     'label' => false ,
+            //     'required' => false
+            // ])
             ->add('extension', CheckboxType::class, [
                 'label' => 'Restaurant',
                 'required' => false
@@ -2031,7 +2032,7 @@ class TributTController extends AbstractController
                 "path" => str_replace("/public","",$path),
                 "tribu_t_name"=>$tribuName,
                 "description"=>$data["description"],
-                "adresse"=>$data["adresse"], 
+                // "adresse"=>$data["adresse"], 
                 "extension"=>$data["extension"],
                 "extensionData"=>$data["extensionData"]
             );
@@ -2159,8 +2160,10 @@ class TributTController extends AbstractController
     public function getRestoByName($name,
     BddRestoRepository $bddResto,SerializerInterface $serializer){
       
+        
         $result=$bddResto->findRestoByName($name);
         $json=$serializer->serialize($result,'json');
+        // dd($json);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
     //,  TributGService $tributGService
@@ -2208,15 +2211,15 @@ class TributTController extends AbstractController
 
                         $tribut->createTableComment($tableTribu, "restaurant_commentaire");
 
-                        $extensionData = json_decode($body["extensionData"]);
+                        // $extensionData = json_decode($body["extensionData"]);
 
-                        if (count($extensionData) > 0) {
-                            $agendaService = new AgendaService ();
-                            for($i = 0; $i < count($extensionData); $i++){
-                                $agendaService->saveRestaurant($tableTribu."_restaurant", $extensionData[$i]->denomination_f, $extensionData[$i]->id_resto);
-                            }
+                        // if (count($extensionData) > 0) {
+                        //     $agendaService = new AgendaService ();
+                        //     for($i = 0; $i < count($extensionData); $i++){
+                        //         $agendaService->saveRestaurant($tableTribu."_restaurant", $extensionData[$i]->denomination_f, $extensionData[$i]->id_resto);
+                        //     }
 
-                        }
+                        // }
 
                     }
 
@@ -2358,6 +2361,14 @@ class TributTController extends AbstractController
         return $this->json($publications);
 
     }   
+
+    #[Route('/tribu/findresto/{quoi}/{ou}', name: 'find_resto_tribu_t')]
+    public function findRestoInBdd($quoi, $ou): Response{
+
+        $resto = $bddRestoRepository->getBySpecificClef($quoi, $ou, 1, 20);
+
+        return $resto;
+    }
 
 }
 
