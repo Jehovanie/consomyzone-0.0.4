@@ -748,8 +748,7 @@ function getDetailsFermeForMobile(pathDetails) {
 
 
 function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_dem){
-    console.log("select_dem")
-    console.log(select_dem)
+
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
@@ -763,13 +762,13 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
     fetchDetails(id_selector, pathDetails);
 
 
-    if (document.querySelector("#open-navleft-resto-mobile")) {
-        fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
-    } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
-        fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile"))
-    } else if (document.querySelector("#tout-dem")) {
-        fetchAvies(idResto,document.querySelector("#tout-dem"))
-    }
+    // if (document.querySelector("#open-navleft-resto-mobile")) {
+    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
+    // } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
+    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile"))
+    // } else if (document.querySelector("#tout-dem")) {
+    //     fetchAvies(idResto,document.querySelector("#tout-dem"))
+    // }
 }
 
 
