@@ -12,7 +12,7 @@
 								Cependant ces résultats pourraient vous intéresser<br>
 								{% endif %}
 							{% else %}
-								Résultat(s) pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{cles1}}</span><br>
+								Résultat(s) pour <span id="cles0"><b>"{{cles0}}"</b></span> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "Département " ~ cles1}}</span><br>
 							{% endif %}
 						{% else %}
 							{% set rubrique = type == "resto"?"restaurant":type %}
@@ -22,7 +22,7 @@
 									Cependant ces résultats pourraient vous intéresser<br>
 								{% endif %}
 							{% else %}
-								<b>{{rubrique|upper}}</b> à <span id="cles1">{{cles1}}</span><br>
+								<b>{{rubrique|upper}}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
 							{% endif %}
 						{% endif %}
                         

@@ -98,6 +98,7 @@ window.addEventListener('load', () => {
             })
             fetch(request).then(r => {
                 if (r.ok && r.status === 200) {
+                    document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis'
                     showModifArea(newIdResto, newUserId)
                     if (document.querySelector("#see-tom-js")) {
                         showNemberOfAvis(newIdResto, document.querySelector("#see-tom-js"))
@@ -606,11 +607,19 @@ function createShowAvisAreas(json,currentUserId) {
     // document.querySelector("#staticBackdrop > div > div > div.list-avis-ferme > div").appendChild(divContentAvis)
 
     let startIcon = "";
+    let rate= parseFloat(json.note) - Math.trunc(parseFloat(json.note));
+    let rateYellow = rate * 100;
+    let rateBlack= 100 - rateYellow;
     for(let i=0; i<4 ; i++  ){
         if(i<parseInt(json.note)){
             startIcon +=`<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
         }else{
-            startIcon += ` <i class="fa-solid fa-star"></i>`
+            if( rate != 0 ){
+                startIcon += `<i class="fa-solid fa-star" data-rank="1" style ="background: linear-gradient(90deg, #F5D165 ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>`
+                rate = 0;
+            }else{
+                startIcon += `<i class="fa-solid fa-star" data-rank="1"></i>`
+            }
         }
     }
     const spec_selector = (currentUserId == json["user"]["id"] && currentUserId!=null) ? "my_comment_jheo_js" : "";
