@@ -68,15 +68,18 @@ class MapModule{
         
         this.map = L.map('map', {
                 zoomControl: false,
-                center:this.id_dep ? L.latLng(this.latitude, this.longitude) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude)),
-                zoom:this.id_dep ? this.defaultZoom : ( memoryCenter ? memoryCenter.zoom : this.defaultZoom ),
+                center: ( this.id_dep || ( lat && long ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                zoom: this.id_dep ? this.defaultZoom : ( ( lat && long ) ? 14 :  memoryCenter ?  memoryCenter.zoom : this.defaultZoom ),
                 layers: [tiles] 
             }
         );
 
+        if( lat && long ){
+            this.updateDataInSessionStorage(lat,long, 13);
+        }
+
+
         const position = "topright";
-
-
         L.control.zoom({
             position: position
         }).addTo(this.map);
@@ -120,6 +123,7 @@ class MapModule{
                 geos.push(f)
             }
         }
+
         return geos;
     }
 
@@ -192,8 +196,34 @@ class MapModule{
                 zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
                 coord: e.target._lastCenter ? e.target._lastCenter : { lat: this.latitude, lng: this.longitude }
             }
-            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
+            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+
+            if(getDataInSessionStorage("lastSearchPosition")){
+                const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+                const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+                const lastSearchPosition = {
+                    zoom: 13,
+                    position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+                }
+                setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
+            }
+
+
+            if( document.querySelector(".icon_close_nav_left_jheo_js")){
+                if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+                    document.querySelector(".content_navleft_jheo_js").classList.add("d-none")
+                    iconsChange()
+                };
+            }
         })
+    }
+
+    updateDataInSessionStorage(lat, lng, zoom){
+        const coordAndZoom = {
+            zoom: zoom,
+            coord: { lat, lng }
+        }
+        setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
     }
 
     updateCenter(lat, long, zoom){
@@ -545,7 +575,6 @@ class MapModule{
     }
 
     initMap(lat= null,long= null, isAddControl=false){
-        
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
             content_map.removeChild(document.querySelector("#toggle_chargement"))
@@ -584,7 +613,6 @@ class MapModule{
     }
 
     bindOtherControles(){
-        console.log(this)
         let htmlControl = '';
         if( this.mapForType === "golf"){
             htmlControl= `

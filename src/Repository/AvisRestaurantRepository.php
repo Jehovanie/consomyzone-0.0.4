@@ -90,12 +90,12 @@ class AvisRestaurantRepository extends ServiceEntityRepository
     }
 
     public function getNombreAvis($idrestaurant){
-            return $this->createQueryBuilder("r")
-            ->select("count(r.id)")
-            ->where("r.restaurant = :idResto ")
-            ->setParameter("idResto",$idrestaurant)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->createQueryBuilder("r")
+                    ->select("count(r.id)")
+                    ->where("r.restaurant = :idResto ")
+                    ->setParameter("idResto",$idrestaurant)
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 //    /**
 //     * @return AvisRestaurant[] Returns an array of AvisRestaurant objects

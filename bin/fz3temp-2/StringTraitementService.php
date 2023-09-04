@@ -25,7 +25,7 @@ class StringTraitementService{
      * @return string $str: final string contains only AlphaNumerique caracteres
      */
     public function removeNotAlphaNumerique($str){
-        $str = preg_replace('/[^a-z0-9\s]/i', '', $str);
+        $str = preg_replace('/[^a-z0-9]/i', '', $str);
         return $str;
     }
 
@@ -37,9 +37,7 @@ class StringTraitementService{
      * @return string $str: final uppercase string without white space
      */
     public function normalizedString($str){
-        $str=preg_replace('/[^a-zàâçéèêëîïôûùüÿñæœ0-9 ]/i',' ',$str);
-        $tmp=\Normalizer::normalize($str,\Normalizer::NFD);
-        $str = iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$tmp);
+        $str = iconv('UTF-8','ASCII//TRANSLIT',$str);
         $str = preg_replace('/[^a-z0-9 ]/i', '', $str);
         $str = strtoupper($str);
         return $str;

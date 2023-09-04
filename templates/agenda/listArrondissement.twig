@@ -1,15 +1,20 @@
-{# <div class="content_container_list" id="list_departements">
+{# <div class="content_container_list" id="list_arrondissements">
     <ul class="ulAgenda">
-        {% for departement in departements %}
+        {% for codinsee in codeIns %}
+            {% if codinsee.arrondissement == 1 %}
+                {% set rang = "er" %}
+            {% else %}
+                {% set rang = "ème" %}
+            {% endif %}
             <li>
                 
-                <a onclick="getListEtabCMZ(this)" class="text-decoration-none text-dark" href="#" data-id="{{departement.id}}" data-name="{{departement.departement}}">
+                <a onclick="getEtabByCodeinse(this)" class="text-decoration-none text-dark" href="#" data-dpt="{{ codinsee.departement }}" data-id="{{ codinsee.arrondissement }}" data-cds="{{ codinsee.codinsee }}">
                     <div class="row container-depart pt-4">
                         <div class="col-md-2">
-                            <h5 style="font-size:1rem;" class="id_departement">{{departement.id }}</h5>
+                            <h5 style="font-size:1rem;" class="id_arrondissement">{{ codinsee.arrondissement ~ rang }}</h5>
                         </div>
                         <div class="col-md-8 col-8 col-sm-8 col-lg-8">
-                            <h5 style="font-size:1rem;">{{departement.departement}}</h5>
+                            <h5 style="font-size:1rem;">Arrondissement</h5>
                         </div>
                         <div class="col-md-2">
                                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
@@ -37,22 +42,24 @@
     </ul>
 </div> #}
 
-
-<table class="table table-striped" id="tableListDepCMZ">
+<table class="table table-striped" id="tableListArrondissementCMZ">
     <thead>
         <tr>
-            <th scope="col">Code département</th>
-            <th scope="col">Nom département</th>
+            <th scope="col">Arrondissement</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
     <tbody>
-        {% for departement in departements %}
+        {% for codinsee in codeIns %}
+            {% if codinsee.arrondissement == 1 %}
+                {% set rang = "er" %}
+            {% else %}
+                {% set rang = "ème" %}
+            {% endif %}
             <tr>
-                <td scope="col">{{departement.id }}</td>
-                <td scope="col">{{departement.departement}}</td>
+                <td scope="col">{{ codinsee.arrondissement ~ rang }} Arrondissement</td>
                 <td scope="col">
-                    <button type="button" class="btn btn-outline-info btn-sm" onclick="getListEtabCMZ(this)" data-id="{{departement.id}}" data-name="{{departement.departement}}">
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="getEtabByCodeinse(this)" data-dpt="{{ codinsee.departement }}" data-id="{{ codinsee.arrondissement }}" data-cds="{{ codinsee.codinsee }}">
                         Choisir
                     </button>
                 </td>

@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Codinsee;
+use App\Entity\CommuneGeoCoder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Codinsee>
+ * @extends ServiceEntityRepository<CommuneGeoCoder>
  *
- * @method Codinsee|null find($id, $lockMode = null, $lockVersion = null)
- * @method Codinsee|null findOneBy(array $criteria, array $orderBy = null)
- * @method Codinsee[]    findAll()
- * @method Codinsee[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CommuneGeoCoder|null find($id, $lockMode = null, $lockVersion = null)
+ * @method CommuneGeoCoder|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CommuneGeoCoder[]    findAll()
+ * @method CommuneGeoCoder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CodeinseeRepository extends ServiceEntityRepository
+class CommuneGeoCoderRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Codinsee::class);
+        parent::__construct($registry, CommuneGeoCoder::class);
     }
 
-    public function add(Codinsee $entity, bool $flush = false): void
+    public function add(CommuneGeoCoder $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class CodeinseeRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Codinsee $entity, bool $flush = false): void
+    public function remove(CommuneGeoCoder $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -38,17 +38,9 @@ class CodeinseeRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-    public function getAllCodinsee($dep){
-        return $this->createQueryBuilder("c")
-        ->where("c.departement = :dep")
-        ->setParameter("dep",$dep)
-        ->orderBy('c.codinsee', 'ASC')
-        ->getQuery()
-        ->getResult();
-    }
 
 //    /**
-//     * @return Codinsee[] Returns an array of Codinsee objects
+//     * @return CommuneGeoCoder[] Returns an array of CommuneGeoCoder objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -62,7 +54,7 @@ class CodeinseeRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Codinsee
+//    public function findOneBySomeField($value): ?CommuneGeoCoder
 //    {
 //        return $this->createQueryBuilder('c')
 //            ->andWhere('c.exampleField = :val')

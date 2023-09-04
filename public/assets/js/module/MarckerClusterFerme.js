@@ -11,12 +11,25 @@ class MarckerClusterFerme extends MapModule {
             this.initMap(null, null, isAddControl);
 
             const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
-            const response= await fetch(link);
+
+            /// if the user just did a search
+            let param = "";
+            if(getDataInSessionStorage("lastSearchPosition")){
+                const lastSearchPosition= getDataInSessionStorage("lastSearchPosition") ? JSON.parse(getDataInSessionStorage("lastSearchPosition")) : null;
+                const { minx, miny, maxx, maxy }= lastSearchPosition.position;
+                param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
+            }
+ 
+            const response= await fetch(`${link}${param}`);
             this.default_data= await response.json();
             this.data= this.default_data; 
             
-
             this.bindAction()
+
+
+            if(getDataInSessionStorage("lastSearchPosition")){
+                clearDataInSessionStorage("lastSearchPosition")
+            }
         }catch(e){
             console.log(e)
         }

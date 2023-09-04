@@ -181,7 +181,8 @@ class TributTController extends AbstractController
     SerializerInterface $serializer){
         $tableTribuTName=$request->query->get("tbl_tribu_T_name");
         $v=$serv->getPartisanOfTribuT($tableTribuTName);
-        $json = $serializer->serialize($v, 'json');
+        $results = array_merge(["curent_user" => $this->getUser()->getId()], array($v));
+        $json = $serializer->serialize($results, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 

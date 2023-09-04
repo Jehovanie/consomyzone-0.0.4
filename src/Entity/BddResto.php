@@ -433,14 +433,14 @@ class BddResto
     /**
      * @var float|null
      *
-     * @ORM\Column(name="poi_x", type="float", precision=10, scale=0, nullable=true)
+     * @ORM\Column(name="poi_x",type="decimal", precision=16, scale=14, nullable=true)
      */
     private $poiX;
 
     /**
      * @var float|null
      *
-     * @ORM\Column(name="poi_y", type="float", precision=10, scale=0, nullable=true)
+     * @ORM\Column(name="poi_y",type="decimal", precision=16, scale=14, nullable=true)
      */
     private $poiY;
 

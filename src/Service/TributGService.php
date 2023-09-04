@@ -583,8 +583,7 @@ class TributGService extends PDOConnexionService{
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return $result['roles'];
-
+        return $result ?  $result['roles'] : false;
     }
 
 

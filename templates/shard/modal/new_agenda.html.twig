@@ -146,7 +146,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-info" id="shareAgendaBtn"  data-bs-target="#confirmPartageAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Partager</button>
+        <button type="button" class="btn btn-info d-none" id="shareAgendaBtn"  data-bs-target="#confirmPartageAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Partager</button>
         <button type="button" class="btn btn-danger d-none" id="deleteAgendaBtn" onclick="deleteAgenda()">Supprimer</button>
         <button type="button" data-action="create" class="btn btn-primary" onclick="getObjectForNewAgenda(event)" id="createOrEditBtn">Créer</button>
       </div>
@@ -235,7 +235,7 @@
         <div class="container_list">
         
           <div class="mb-3">
-            <form action="/search/restaurant" method="get" class="bar-de-recherche form_content_search_navbar_js">
+            <form action="/search/restaurant" method="get" class="bar-de-recherche form_content_search_navbar_js d-none">
               <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" id="cleQuoiAgenda" disabled>
               <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?" id="cleOuAgenda" disabled>
               <datalist id="datalistOptions"></datalist>
@@ -246,8 +246,6 @@
               <table class="table table-striped" id="tableEtabCMZ">
                 <thead>
                   <tr>
-                    {# <th scope="col" class="d-none forLogo">Logo</th>
-                    <th scope="col" class="d-none forTribu">TribuT</th> #}
                     <th scope="col">Nom</th>
                     <th scope="col">Adresse</th>
                     <th scope="col">Téléphone</th>
@@ -255,31 +253,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {# <tr>
-                    <td>ROYAT BURGER</td>
-                    <td>2bis allard 63130 royat</td>
-                    <td>
-                      <button type="button" class="btn btn-outline-info">Choisir</button>
-                    </td>
-                  </tr> #}
-                </tbody>
-              </table>
-          </div>
-          {# <div class="list_resto_or_golf_past d-none">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">Nom</th>
-                    <th scope="col">Adresse</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
                   
                 </tbody>
               </table>
-          </div> #}
-          {# <div class="chargement_content content_chargement_nanta_js mt-3 mb-3"></div> #}
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -305,7 +282,7 @@
 
 {# MODAL FOR LIST DEP #}
 <div class="modal fade" id="listDepModal" aria-hidden="true" aria-labelledby="listDepModal_label" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <a href="#" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">
@@ -338,6 +315,10 @@
         <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body custom_modal">
+        <div class="contentForSearch mb-3" style="margin-left: 20%;">
+          <input type="text" name="qoui" id="quoi" placeholder="Quoi ?" class="input_black ps-3" onkeyup="findEtabByKey(event)">
+          <input type="text" name="where" id="where" placeholder="Où ?" class="input_black ps-3" onkeyup="findEtabByKey(event)">
+        </div>
         <div class="container_list_dep">
         
         </div>
@@ -365,6 +346,48 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger" data-bs-target="#listRestoOrGolfModal" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# MODAL FOR LIST ARRONDISSEMENT #}
+<div class="modal fade" id="listArrondissement" aria-hidden="true" aria-labelledby="listArrondissement_label" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
+
+            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+              <path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+              17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+              9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+              92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"></path>
+            </g>
+          </svg>
+        </a>
+        <ul class="nav nav-tabs ml-3">
+          <li class="nav-item">
+            <a class="nav-link text-secondary active" aria-current="page" href="#" onclick="activeOngletForDep(this)">Choisissez un arrondissement,</br> puis choisissez l'établissement où se passera votre événement.</a>
+          </li>
+          <li class="nav-item d-none">
+            <a class="nav-link text-secondary" href="#" onclick="activeOngletForDep(this)">Pastillé</a>
+          </li>
+        </ul>
+        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body custom_modal">
+        <div class="contentForSearch mb-3" style="margin-left: 20%;">
+          <input type="text" name="qouiArrondissement" id="qouiArrondissement" placeholder="Quoi ?" class="input_black ps-3" onkeyup="findEtabByKey(event)">
+          <input type="text" name="whereArrondissement" id="whereArrondissement" placeholder="Où ?" class="input_black ps-3" onkeyup="findEtabByKey(event)">
+        </div>
+        <div class="container_list container_list_arron">
+        
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>

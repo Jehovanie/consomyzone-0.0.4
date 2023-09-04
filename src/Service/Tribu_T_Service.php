@@ -1437,9 +1437,9 @@ class Tribu_T_Service extends PDOConnexionService
     public function getPartisanOfTribuT($tableTribuT){
         $sql= "SELECT * FROM $tableTribuT as t1 left join (".
         "SELECT id,type, case type when 'consumer' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName',".
-        "lastname,'photo_profil',photo_profil,'tribuG',tributg) as infos FROM consumer as c where c.user_id= u.id)".
+        "lastname,'photo_profil',photo_profil,'tribuG',tributg,'email',email) as infos FROM consumer as c where c.user_id= u.id)".
         "when 'supplier' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName', lastname,".
-        "'photo_profil',photo_profil,'tribuG',tributg)as infos FROM supplier as c where c.user_id= u.id)".
+        "'photo_profil',photo_profil,'tribuG',tributg,'email',email)as infos FROM supplier as c where c.user_id= u.id)".
         "end infos_profil from user as u ) as t2 on t2.id=t1.user_id";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();

@@ -1,4 +1,4 @@
-<div class="navleft  result_container_resto_spec_arrond result_container_resto_spec_arrond_js">
+<div class="navleft  result_container_resto_spec_arrond result_container_resto_spec_arrond_js content_navleft_jheo_js">
 
     <nav class="navbar navbar-light navbar-light-left fixed-top">
         <div class="container-fluid">
@@ -22,7 +22,7 @@
                     </div>
                     
                     <div class="col-2 mt-5">
-                        <i class="fa-solid fa-x" id="close-list-depart-resto-spec-arrond"></i>
+                        <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-resto-spec-arrond"></i>
                     </div>
                 </div> 
             <hr>
@@ -64,10 +64,15 @@
                         </svg>
                 </div>
                 <div class="col-md-10">
-                    <p  class="titre" data-toggle-deparement="{{nom_dep}}">
+                    {# <p  class="titre" data-toggle-deparement="{{nom_dep}}">
                         Restaurants à
 						<span class="fw-bolder">{{nom_dep}}</span><br>
                         <span  class="nombre content_nombre_result_js_jheo" id="resultTot">{{resto_nombre}}</span> résultats
+                    </p> #}
+                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
+                        Restaurants à <span class="fw-bolder">{{nom_dep}}</span>
+                        département <span class="fw-bolder">{{id_dep}},</span> <br>
+                        <span class="fw-bolder content_nombre_result_js_jheo">{{resto_nombre}}</span> résultats.
                     </p>
                 </div>
             </div>
@@ -87,34 +92,18 @@
 
              {# pagination content #}
                 {# <div class="pagination"> #}
-            <div class="pagination_alphabet pagination_alphabet_jheo_js">
-                <ul>
-                    <!--pages or li are comes from javascript -->
-                    
-                </ul>
-            </div>
 
             <div class="container list-depart-all-specific" id="Scrollbar">
                 <div class="list_result content_container_list" id="all_ferme_in_dep"  data-toggle-id-dep="{{id_dep}}">
-                    <ul class="content_list_resto_spec_js_jheo">
-            
-                        {% for rubrique in restaurants %}
-
-                            {% include "card/card_rubrique.html.twig" %}
-
-                            {# <li class="card-list name_resto_js_jheo" onclick="getDetailFromListLeft('{{nom_dep}}','{{id_dep}}','{{restaurant.id}}')">
-                                <div class="row container-depart pt-4 element" data-toggle-id="{{restaurant.id}}" data-toggle-latitude="{{((restaurant.poiY) ? restaurant.poiY : '0' )|format_number({fraction_digit: 15})}}" data-toggle-longitude="{{ ((restaurant.poiX) ? restaurant.poiX | raw : '0' )|format_number({fraction_digit: 14})}}">
-
-                                    <div class="col-md-9">
-                                        <p class="text-center fw-bold fs-6 name_to_filter_js_jheo">{{restaurant.denominationF}} </p>
-                                        <p>
-                                            <img src="{{asset('assets/icon/NewIcons/icon-adres.png')}}" alt="adres" width="20">
-                                            {{restaurant.numvoie ~" "~ restaurant.typevoie ~" "~ restaurant.nomvoie ~" "~ restaurant.codpost ~" "~ restaurant.villenorm }}
-                                        </p>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <a id="open-detail">
+                    <ul class="content_list_arrondissement">
+                        {% for arrondissement in codinsees %}
+                            <li class="item_arrondissement_resto">
+                                <a class="text-decoration-none text-dark" href="{{path('restaurant_specific_arrondissement_sepcial', {'nom_dep': nom_dep, 'id_dep': id_dep, 'codinsee' : arrondissement.codinsee, 'arrdssm' : arrondissement.arrondissement }) }}">
+                                    <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{id_dep}}" data-toggle-depart-name="{{nom_dep}}">
+                                        <div class="col-md-8">
+                                            <h5 class="lead text-center">{{ arrondissement.arrondissement  ~ " Arrondissement"  }}</h5>
+                                        </div>
+                                        <div class="col-md-2">
                                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
                                                 <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" 
@@ -131,16 +120,13 @@
                                                     98 57 120 59 652 59 l487 -1 3 517 3 517 29 62 c16 35 35 68 42 74 8 6 14 20
                                                     14 29 0 47 174 151 280 169 77 12 115 12 190 0z"/>
                                                 </g>
-                                                
                                             </svg>
-                                        </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </li> #}
-
+                                </a>
+                            </li>
                         {% endfor %}
                     </ul>
-                    
                 </div>
             </div>
             

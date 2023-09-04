@@ -3,23 +3,19 @@
 namespace App\Controller;
 
 use App\Service\Status;
-use App\Entity\Consumer;
-use App\Entity\Supplier;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
 use App\Service\SortResultService;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
 use App\Service\StringTraitementService;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
-use App\Repository\CommuneGeoCoderRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\StationServiceFrGeomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 
 class HomeController extends AbstractController
 {
@@ -184,36 +180,10 @@ class HomeController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
-        CommuneGeoCoderRepository $communeGeoCoderRepository
-        
     ){
 
         ///current user connected
         $user = $this->getUser();
-        $userConnected = $status->userProfilService($this->getUser());
-
-        $userType = $user ? $user->getType()  : null;
-        $userId=  $user ?  $user->getId() : null;
-
-        if ($userType == "consumer") {
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        } else {
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-        }
-
-        $userConnected = $status->userProfilService($this->getUser());
-
-        $userType = $user->getType();
-
-        $userId = $user->getId();
-
-        if ($userType == "consumer") {
-
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        } else {
-
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
-        }
 
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
@@ -248,8 +218,6 @@ class HomeController extends AbstractController
                 array_push($amis_in_tributG, $amis);
             }
         }
-
-        $origin_cles1= $request->query->get("cles1"); //// use for searching geojson API OpenStreetMap
 
         $cles0 = $request->query->get("cles0") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles0"))) : "";
         $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
@@ -359,8 +327,7 @@ class HomeController extends AbstractController
                     }
     
                     if(!$otherFerme && !$otherResto && !$otherStation){
-                        // $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
-                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
+                        $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
                         $results[1] = $station[1] + $ferme[1] + $resto[1];
                     }elseif(!$otherFerme && $otherResto && $otherStation){
                         $results[0] = array_merge($ferme[0]);
@@ -372,19 +339,16 @@ class HomeController extends AbstractController
                         $results[0] = array_merge($station[0]);
                         $results[1] = $station[1];
                     }elseif(!$otherFerme && !$otherResto && $otherStation){
-                        // $results[0] = array_merge($ferme[0], $resto[0]);
-                        $results[0] = array_merge($resto[0], $ferme[0]);
+                        $results[0] = array_merge($ferme[0], $resto[0]);
                         $results[1] = $ferme[1] + $resto[1];
                     }elseif(!$otherFerme && $otherResto && !$otherStation){
                         $results[0] = array_merge($station[0] , $ferme[0]);
                         $results[1] = $station[1] + $ferme[1];
                     }elseif($otherFerme && !$otherResto && !$otherStation){
-                        // $results[0] = array_merge($station[0] , $resto[0]);
-                        $results[0] = array_merge($resto[0] , $station[0]);
+                        $results[0] = array_merge($station[0] , $resto[0]);
                         $results[1] = $station[1] + $resto[1];
                     }else{
-                        // $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
-                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
+                        $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
                         $results[1] = $station[1] + $ferme[1] + $resto[1];
                         $otherResult = true;
                     }
@@ -396,15 +360,12 @@ class HomeController extends AbstractController
                 break;
         }
 
-        // dd($communeGeoCoderRepository->findBy(["nom_com" => $cles1]));
-
         if(str_contains($request->getPathInfo(), '/api/search')){
             return $this->json([
                 "results" => $results,
                 "type" => $type,
                 "cles0" => $cles0,
                 "cles1" => $cles1,
-                "origin_cles1" => $origin_cles1
             ], 200);
         }
 
@@ -425,15 +386,13 @@ class HomeController extends AbstractController
         $results = $resultSort[0];
 
         return $this->render("home/search_result.html.twig", [
-            "userConnected" => $userConnected,
-            "profil" => $profil,
             "results" => $results,
             "otherResult" => $otherResult,
             "type" => $type,
             "cles0" => $cles0,
             "cles1" => $cles1,
             "page" => $page,
-            "amisTributG" => $amis_in_tributG,
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 

@@ -783,16 +783,20 @@ class UserController extends AbstractController
 
         foreach ($all_user_id_tribug as $user_id_tribu_g) {
             $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
+            
+            if( $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
 
-            $single_user = [
-                "id" => intval($friend->getId()),
-                "email" => $friend->getEmail(),
-                "firstname" => $userService->getUserFirstName($friend->getId()),
-                "lastname" => $userService->getUserLastName($friend->getId()),
-                "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
-            ];
+                $single_user = [
+                    "id" => intval($friend->getId()),
+                    "email" => $friend->getEmail(),
+                    "firstname" => $userService->getUserFirstName($friend->getId()),
+                    "lastname" => $userService->getUserLastName($friend->getId()),
+                    "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
+                ];
+    
+                array_push($partisansG, $single_user);
 
-            array_push($partisansG, $single_user);
+            }
         }
 
         $all_tribuT = $userService->getTribuByIdUser($user_id);

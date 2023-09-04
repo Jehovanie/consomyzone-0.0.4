@@ -79,8 +79,44 @@
         <div class="container">
             <img class="image_logo" src="{{ email.image('@images/logo.png') }}" alt="Logo">
             {# <img src="{{ absolute_url(asset('assets/image/logo.png')) }}" alt="Logo"> #}
+
+            <p class="content_date_current" >{{ today }}</p>
+
+            <h3 class="content_nom_destination" >Cher/chère {{fullNameTo}}</h3>
+
+            <p class="text_introduction">
+                Nous avons le plaisir de vous inviter à notre evenement: {{ agenda.message }} 
+                qui se tiendra le {{agenda.date|date('F jS')  }} à {{agenda.heure_debut}} jusqu'à {{agenda.heure_fin}} à {{agenda.restaurant ? agenda.restaurant : "Consomyzone" }}. 
+                Cet événement est organisé par mon {{ agenda.organisateur}}.
+            </p>
             
-            {{ content | raw }}
+            <p class="content_cta">
+                Nous espérons sincèrement que vous pourrez vous joindre à nous et participer à cette journée exceptionnelle. <br>
+                Nous vous remercions par avance pour votre réponse et nous attendons avec impatience de vous voir.
+            </p>
+            <p>
+                <a  class="btn_style btn_primary" 
+                    href="{{absolute_url(path("app_agenda_confirmation" , {"userID_sender": user_sender.id, "agendaID": agenda.id, "userID" : user_sender.userToID , "isAccepted": 1 }))}}" 
+                    targer="_blank">
+                    Accepter
+                </a>
+                <a class="btn_style btn_danger" 
+                    href="{{absolute_url(path("app_agenda_confirmation" , {"userID_sender": user_sender.id, "agendaID": agenda.id, "userID" : user_sender.userToID , "isAccepted": 0 }))}}" 
+                    targer="_blank">
+                    Refuser
+                </a>
+            </p>
+
+            {# <p class="text_muted"> (this link is valid until {{ expiration_date|date('F jS') }})</p> #}
+
+            <p>
+                Cordialement,
+            </p>
+
+            <p>
+                {{ user_sender.fullname }} <br>
+                {{ user_sender.email }}
+            </p>
         </div>
     </div>
 </body>

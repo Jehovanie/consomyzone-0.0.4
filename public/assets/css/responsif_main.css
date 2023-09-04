@@ -1076,7 +1076,8 @@
     }
 
     .nav-item a {
-        font-size: 5pt !important;
+        /* font-size: 5pt !important; */
+        font-size: 0.3587em !important;
     }
 
     .nav-item li{

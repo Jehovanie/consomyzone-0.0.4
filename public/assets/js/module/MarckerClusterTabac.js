@@ -9,7 +9,8 @@ class MarckerClusterTabac extends MapModule {
             { couche : "commune", arrayColor :["#e0f3db","#a8ddb5","#43a2ca"], properties: []},        /// GnBu
             { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
             { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
-            { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            // { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: []},       /// YlOrRd
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ]
           
@@ -266,7 +267,7 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune" disabled>
+                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune">
                     <label class="form-check-label text-black" for="commune">
                         COMMUNE
                     </label>
@@ -275,7 +276,7 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" disabled>
+                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris">
                     <label class="form-check-label text-black" for="iris">
                         IRIS
                     </label>
@@ -329,11 +330,10 @@ class MarckerClusterTabac extends MapModule {
         try{
             const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
             if(!currentCouche){
-                const response= await fetch(`/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`)
+                const link = IS_DEV_MODE ? `/assets/shapefile/${COUCHE.toUpperCase()}.zip` : `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
+                const response= await fetch(link)
                 const blob= await response.blob()
                 const file=new File([blob], "xxx.zip",{type:"application/x-zip-compressed"})
-
-           
 
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -366,7 +366,7 @@ class MarckerClusterTabac extends MapModule {
         const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
         const styles={
             color: data_spec.color[0],
-            fillColor: data_spec.color[0],
+            fillColor: data_spec.color[1],
             fillOpacity: 1
         }
 

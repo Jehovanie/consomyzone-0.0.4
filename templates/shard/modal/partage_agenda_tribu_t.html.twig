@@ -1,43 +1,41 @@
 
 {# MODAL FOR GOLF OR RESTO #}
-{% for allTribuT in allTribuTs %}
+<div class="modal fade" id="listPartisantInTribuT" aria-hidden="true" aria-labelledby="listPartisantInTribuTModal_label" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste de partisan(s) de la tribu T</h5>
+        <button type="button" class="btn-close btn-close-partisans-tribuT" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body custom_modal">
+        <div>
+            {# <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda" data-toggel-tribu-t="list-partisans-tribu-t-partage-agenda{{ allTribuT.table_name }}"> #}
+            <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda" >
+                <table id="list-partisans-tribuT" class="table table-striped">
+                  <thead>
+                      <tr>
+                          <th scope="col">Profil</th>
+                          <th scope="col">Nom</th>
+                          <th scope="col">Prénom</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Rôle</th>
+                          <th scope="col">
+                              <input type="checkbox" class="selectTribuTAll" name="selectionner" id="selectTribuTAll" onchange="selectAllPartisan(this,false)"> 
+                              <label for="selectionner">Sélectionner tout</label></th>
+                          </th>
 
-  <div class="modal fade" id="listPartisantInTribu_{{ allTribuT.table_name }}" aria-hidden="true" aria-labelledby="listRestoOrGolfModal_label" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste des partisans du {{allTribuT.table_name|replace({'_': ' '})}}</h5>
-          <button type="button" class="btn-close btn-close-partisans-{{ allTribuT.table_name }}" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body custom_modal">
-          <div class="container_list">
-              <div class="list_resto_or_golf_modal" id="list-partisans-tribu-t-partage-agenda" data-toggel-tribu-t="list-partisans-tribu-t-partage-agenda{{ allTribuT.table_name }}">
-                  <table id="list-partisans-tribu-t-partage-agenda{{ allTribuT.table_name }}" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Profile</th>
-                            <th scope="col">Nom</th>
-                            <th scope="col">Prenom</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Rôle</th>
-                            <th scope="col">
-                                <input type="checkbox" class="selectTribuGAll" name="selectionner" id="selectTribuGAll" onclick="selectTribuGAll(this)"> 
-                                <label for="selectionner">Sélectionner tout</label></th>
-                            </th>
+                      </tr>
+                  </thead>
+                  <tbody id="list-partisans-tribu-t-agenda">
 
-                        </tr>
-                    </thead>
-                    <tbody id="list-partisans-tribu-t-agenda-{{ allTribuT.table_name }}">
-
-                    </tbody>
-                  </table>
-              </div>
-          </div>
+                  </tbody>
+                </table>
+            </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-info cta_close_list_resto_jheo_js">Terminer</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-second-primary" id="shareBtnTribuTForPart" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" onclick="showModalEditor(0)">Partager</button>
       </div>
     </div>
   </div>
-{% endfor %}
+</div>

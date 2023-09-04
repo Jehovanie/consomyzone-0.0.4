@@ -8,7 +8,7 @@
                 </div>
                 <div class="col-md-8">
                     <p>
-                        Tabac dans tous les departements francais.
+                        Bureaux tabac dans tous les departements français.
                         <span class="content_nombre_result_js_jheo">{{number_of_departement}}</span> résultats
                     </p>
                 </div>
@@ -19,9 +19,8 @@
             </div>
             <div class="container list-depart-all" id="Scrollbar">
                 <div class="content_container_list" id="list_departements">
-                    {% set listDepExist = [75] %}
-
                     <ul>
+                        {% set listDepExist = [75] %}
                         {% for departement in departements %}
                             {% if departement.id|number_format in listDepExist %}
                                 <li>
