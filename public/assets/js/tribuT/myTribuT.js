@@ -903,8 +903,8 @@ function showResto(table_rst_pastilled,id_c_u){
                                         <div id="form_past"></div>
                                         <div class="g-3">
                                             <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech" onkeyup = "findRestoByOnKey(this)">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou" onkeyup = "findRestoByOnKey(this)">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
                                             </div>
                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
@@ -1196,6 +1196,17 @@ function findResto(val, localisation=""){
 //     })  
 
    document.querySelector("#result_resto_past").style.display="block;"
+
+
+   document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+   document.querySelector("#elie-restou").innerHTML = 
+        `<div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        </div>`
+
+
     fetch(request).then(response => response.json()).then(data => {
 
         let jsons = data.results[0]
@@ -1222,7 +1233,9 @@ function findResto(val, localisation=""){
 
         if(jsons.length > 0){
 
+
             for (let json of jsons) { 
+                
                 const name = json.denominationF;
                 const dep = json.dep;
                 const depName = json.depName;
@@ -1996,8 +2009,6 @@ if(searchParams.has('message')){
 
 function listResto(){
 
-    $("#modalForExtension").modal("show")
-
     // document.querySelector(".content-actualite-connected").style ="background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);"
 
     document.querySelector("#elie-restou").innerHTML = ""
@@ -2005,11 +2016,13 @@ function listResto(){
     let adresse = document.querySelector("#resto-rech-ou").value;
     if(inputName.trim() != ""){
         findResto(inputName,adresse)
+        $("#modalForExtension").modal("show")
     }else{
 
         Swal.fire({
             icon: 'error',
-            text: "Quoi veux-tu trouver? Veuillez remplire ce que vous cherchez.",
+            // text: "Quoi veux-tu trouver? Veuillez remplire ce que vous cherchez.",
+            text: "Champ invalide!",
           })
     }
 }
