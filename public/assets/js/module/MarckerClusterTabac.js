@@ -106,7 +106,7 @@ class MarckerClusterTabac extends MapModule {
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>"  + item.adress;
             let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
             
-            let pathIcon="assets/icon/NewIcons/tabac_black.png";
+            let pathIcon="assets/icon/NewIcons/tabac_black0.png";
             let taille= 0 /// 0: min, 1: moyenne, 2 : grand
 
             let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
@@ -116,7 +116,7 @@ class MarckerClusterTabac extends MapModule {
             marker.on('click', (e) => {
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
-                pathIcon='/assets/icon/NewIcons/tabac_red.png';
+                pathIcon='/assets/icon/NewIcons/tabac_red0.png';
                
                 const icon_R = L.Icon.extend({
                     options: {
