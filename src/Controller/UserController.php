@@ -784,15 +784,19 @@ class UserController extends AbstractController
         foreach ($all_user_id_tribug as $user_id_tribu_g) {
             $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
 
-            $single_user = [
-                "id" => intval($friend->getId()),
-                "email" => $friend->getEmail(),
-                "firstname" => $userService->getUserFirstName($friend->getId()),
-                "lastname" => $userService->getUserLastName($friend->getId()),
-                "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
-            ];
+            if( $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
 
-            array_push($partisansG, $single_user);
+                $single_user = [
+                    "id" => intval($friend->getId()),
+                    "email" => $friend->getEmail(),
+                    "firstname" => $userService->getUserFirstName($friend->getId()),
+                    "lastname" => $userService->getUserLastName($friend->getId()),
+                    "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
+                ];
+    
+                array_push($partisansG, $single_user);
+
+            }
         }
 
         $all_tribuT = $userService->getTribuByIdUser($user_id);
@@ -804,23 +808,23 @@ class UserController extends AbstractController
             $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
 
             $membres = $userService->getMembreTribuT($tribut["table_name"]);
-
             for($j=0; $j< count($membres); $j++ ){
 
                 $partisant= $membres[$j];
-
                 $friendT = $userRepository->find(intval($partisant["user_id"]));
-    
-                $single_user = [
-                    "id" => intval($friendT->getId()),
-                    "email" => $friendT->getEmail(),
-                    "firstname" => $userService->getUserFirstName($friendT->getId()),
-                    "lastname" => $userService->getUserLastName($friendT->getId()),
-                    "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
-                    "role" =>$partisant["roles"],
-                ];
-    
-                array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+
+                if( $friendT ){
+                    $single_user = [
+                        "id" => intval($friendT->getId()),
+                        "email" => $friendT->getEmail(),
+                        "firstname" => $userService->getUserFirstName($friendT->getId()),
+                        "lastname" => $userService->getUserLastName($friendT->getId()),
+                        "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
+                        "role" =>$partisant["roles"],
+                    ];
+        
+                    array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+                }
             }
 
         }

@@ -320,11 +320,14 @@ function showAvis(currentUserId, idRestaurant) {
         `
     }
 
-    const btn_modal_avis_resto = document.querySelector(".btn_modal_avis_resto_jheo_js");
+    if( document.querySelector(".btn_modal_avis_resto_jheo_js")){
+        
+        const btn_modal_avis_resto = document.querySelector(".btn_modal_avis_resto_jheo_js");
+        btn_modal_avis_resto.innerText = "Donné votre avis";
 
-    btn_modal_avis_resto.innerText = "Donné votre avis";
-    if(btn_modal_avis_resto.classList.contains("non_active")){
-        btn_modal_avis_resto.classList.remove("non_active");
+        if(btn_modal_avis_resto.classList.contains("non_active")){
+            btn_modal_avis_resto.classList.remove("non_active");
+        }
     }
 
     document.querySelector(".open_modal_avis_resto_jheo_js").click();

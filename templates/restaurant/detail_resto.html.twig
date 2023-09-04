@@ -1,4 +1,4 @@
-<div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user.id ? app.user.id : 0}}">
+<div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
 	<div class="left_content_home">
         <div class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
             <div class="content_titre_details">
