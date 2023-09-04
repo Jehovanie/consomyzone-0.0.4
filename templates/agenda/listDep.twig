@@ -1,4 +1,4 @@
-<div class="content_container_list" id="list_departements">
+{# <div class="content_container_list" id="list_departements">
     <ul class="ulAgenda">
         {% for departement in departements %}
             <li>
@@ -35,4 +35,28 @@
             </li>
         {% endfor %} 
     </ul>
-</div>
+</div> #}
+
+
+<table class="table table-striped" id="tableListDepCMZ">
+    <thead>
+        <tr>
+            <th scope="col">Code département</th>
+            <th scope="col">Nom département</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for departement in departements %}
+            <tr>
+                <td scope="col">{{departement.id }}</td>
+                <td scope="col">{{departement.departement}}</td>
+                <td scope="col">
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="getListEtabCMZ(this)" data-id="{{departement.id}}" data-name="{{departement.departement}}">
+                        Choisir
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

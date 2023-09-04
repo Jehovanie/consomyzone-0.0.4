@@ -42,7 +42,7 @@ class CodeinseeRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("c")
         ->where("c.departement = :dep")
         ->setParameter("dep",$dep)
-        ->orderBy('c.arrondissement', 'ASC')
+        ->orderBy('c.codinsee', 'ASC')
         ->getQuery()
         ->getResult();
     }

@@ -1,3 +1,8 @@
+function getDetailFromListLeft(depart_name, depart_code, id) { 
+    OBJECT_MARKERS_GOLF.clickOnMarker(id)
+}
+
+
 function setGolfFinished(goldID){
     fecthGolfAction(goldID, "finished")
 }

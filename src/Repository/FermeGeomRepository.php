@@ -643,12 +643,17 @@ class FermeGeomRepository extends ServiceEntityRepository
 
     
     public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
-        return $this->createQueryBuilder("r")
+
+        $query =  $this->createQueryBuilder("r")
                     ->select(
                         'r.id',
+                        'r.nomFerme',
                         'r.nomFerme as nom',
+                        'r.adresseFerme',
                         'r.adresseFerme as add',
+                        'r.departement',
                         'r.departement as dep',
+                        'r.departementName',
                         'r.departementName as depName',
                         'r.produitFerme',
                         'r.email',
@@ -673,26 +678,31 @@ class FermeGeomRepository extends ServiceEntityRepository
                         'r.degustation',
                         'r.marcherProduit',
                         'r.motDuFermier',
+                        'r.produitFerme',
                         'r.produitFerme as ferme',
                         'r.codePostal',
                         'r.nomProprietaire',
                         'r.motDuFermier',
                         'r.ville',
+                        'r.latitude',
                         'r.latitude as lat',
+                        'r.longitude',
                         'r.longitude as long',
                     )
-                    ->where("ABS(r.latitude) >=ABS(:minx) ")
+                    ->where("ABS(r.latitude) >= ABS(:minx) ")
                     ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
-                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
-                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
-                    ->setParameter("minx", $minx)
-                    ->setParameter("maxx", $maxx)
-                    ->setParameter("miny", $miny)
-                    ->setParameter("maxy", $maxy)
-                    ->orderBy('RAND()')
+                    ->andWhere("ABS(r.longitude) >= ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <= ABS(:maxy)")
+                    ->setParameter("minx", floatval($miny))
+                    ->setParameter("maxx", floatval($maxy))
+                    ->setParameter("miny", floatval($minx))
+                    ->setParameter("maxy", floatval($maxx))
                     ->setMaxResults(200)
-                    ->getQuery()
-                    ->getResult();
+                    ->orderBy('RAND()')
+                    ->getQuery();
+
+
+            return $query->getResult();;
     }
 
     //    /**

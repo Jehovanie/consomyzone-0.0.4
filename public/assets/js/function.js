@@ -42,73 +42,74 @@ function addEventLocation() {
 
 }
 
-function addListFermeMobile() {
-    document.querySelector("#mobil-ferme").addEventListener('click', (event) => {
-        document.querySelector("#map > div.leaflet-control-container").innerHTML =
-            `
-            <div class="content-mobil-ferme">
-                <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
-                width="10px" height="10px" viewBox="0 0 980.000000 982.000000"
-                preserveAspectRatio="xMidYMid meet">
+// function addListFermeMobile() {
+//     document.querySelector("#mobil-ferme").addEventListener('click', (event) => {
+//         alert("Please select")
+//         document.querySelector("#map > div.leaflet-control-container").innerHTML =
+//             `
+//             <div class="content-mobil-ferme">
+//                 <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
+//                 width="10px" height="10px" viewBox="0 0 980.000000 982.000000"
+//                 preserveAspectRatio="xMidYMid meet">
 
-                    <g transform="translate(0.000000,982.000000) scale(0.100000,-0.100000)"
-                    fill="#000000" stroke="none">
-                        <path d="M217 9593 l-217 -218 2232 -2232 2233 -2233 -2233 -2233 -2232 -2232
-                        220 -220 220 -220 2228 2228 c1225 1225 2232 2227 2237 2227 5 0 1010 -1000
-                        2232 -2222 l2223 -2223 220 220 220 220 -2227 2227 -2228 2228 2228 2228 2227
-                        2227 -220 220 -220 220 -2223 -2223 c-1222 -1222 -2227 -2222 -2232 -2222 -6
-                        0 -1011 1001 -2235 2225 -1224 1224 -2227 2225 -2230 2225 -3 0 -103 -98 -223
-                        -217z"/>
-                    </g>
-                </svg>
-                <div>
-                    <p>
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
-                        width="6vw" height="6vh" viewbox="0 0 128.000000 128.000000" 
-                        preserveaspectratio="xMidYMid meet">
+//                     <g transform="translate(0.000000,982.000000) scale(0.100000,-0.100000)"
+//                     fill="#000000" stroke="none">
+//                         <path d="M217 9593 l-217 -218 2232 -2232 2233 -2233 -2233 -2233 -2232 -2232
+//                         220 -220 220 -220 2228 2228 c1225 1225 2232 2227 2237 2227 5 0 1010 -1000
+//                         2232 -2222 l2223 -2223 220 220 220 220 -2227 2227 -2228 2228 2228 2228 2227
+//                         2227 -220 220 -220 220 -2223 -2223 c-1222 -1222 -2227 -2222 -2232 -2222 -6
+//                         0 -1011 1001 -2235 2225 -1224 1224 -2227 2225 -2230 2225 -3 0 -103 -98 -223
+//                         -217z"/>
+//                     </g>
+//                 </svg>
+//                 <div>
+//                     <p>
+//                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
+//                         width="6vw" height="6vh" viewbox="0 0 128.000000 128.000000" 
+//                         preserveaspectratio="xMidYMid meet">
 
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
-                                fill="#1111FE" stroke="none">
-                                <path d="M820 965 c-14 -7 -38 -16 -53 -20 -20 -4 -33 -16 -43 -40 -7 -18 -18
-                                -36 -24 -40 -13 -8 -13 -51 0 -75 5 -10 21 -20 34 -24 20 -5 26 -14 31 -50 8
-                                -52 -13 -101 -50 -118 -14 -6 -25 -17 -25 -25 0 -23 31 -14 65 20 44 44 53 91
-                                31 170 -16 58 -16 62 2 86 26 35 67 39 99 9 20 -19 24 -29 19 -59 -5 -31 -2
-                                -39 19 -53 33 -21 76 -98 90 -158 6 -27 15 -48 20 -46 17 5 8 83 -14 126 -12
-                                23 -17 42 -12 42 15 0 32 36 25 55 -4 8 -18 22 -33 29 l-26 14 28 13 c15 7 26
-                                17 24 23 -6 17 -49 36 -85 36 -29 0 -32 2 -26 24 4 19 -1 32 -20 50 -29 30
-                                -41 31 -76 11z m145 -125 c-3 -5 -10 -10 -16 -10 -5 0 -9 5 -9 10 0 6 7 10 16
-                                10 8 0 12 -4 9 -10z"/>
-                                <path d="M855 831 c-7 -12 12 -24 25 -16 11 7 4 25 -10 25 -5 0 -11 -4 -15 -9z"/>
-                                <path d="M246 778 c-69 -40 -109 -153 -72 -204 8 -10 16 -17 18 -14 2 3 12 18
-                                22 33 9 15 28 33 42 39 13 6 24 18 24 26 0 10 4 12 13 5 6 -6 32 -13 56 -16
-                                62 -8 71 -23 13 -23 -142 0 -218 -164 -126 -274 33 -38 74 -60 114 -60 35 0
-                                37 8 10 52 -40 65 -16 159 49 193 44 22 48 20 53 -33 9 -96 91 -205 174 -232
-                                25 -8 34 -18 34 -33 0 -12 7 -30 15 -41 12 -16 12 -20 -1 -33 -7 -8 -14 -21
-                                -14 -29 0 -19 26 -18 34 2 5 14 7 14 22 0 17 -18 50 -21 59 -6 3 6 -5 14 -19
-                                20 -55 21 -9 84 81 110 92 28 189 138 196 224 4 51 -20 40 -37 -17 -55 -189
-                                -300 -252 -439 -113 -47 47 -67 85 -74 144 l-5 47 67 -3 c77 -4 118 4 112 21
-                                -2 8 -24 11 -70 9 -95 -5 -103 -1 -99 52 5 54 -24 115 -70 147 -47 34 -131 37
-                                -182 7z m494 -539 c0 -11 -27 -29 -33 -22 -14 14 -6 32 13 30 11 -1 20 -4 20
-                                -8z"/>
-                                <path d="M865 590 c-4 -6 10 -26 32 -45 21 -19 33 -34 27 -35 -6 0 -17 7 -24
-                                15 -17 20 -54 19 -98 -4 -100 -51 -121 -60 -175 -74 -33 -9 -62 -19 -65 -22
-                                -11 -11 49 -53 97 -70 59 -20 170 -19 221 1 75 30 107 109 72 174 -22 40 -76
-                                77 -87 60z"/>
-                            </g>
-                        </svg>
-                        Ferme dans tous les departements francais.
-                    </p>
-                    <div>
+//                             <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
+//                                 fill="#1111FE" stroke="none">
+//                                 <path d="M820 965 c-14 -7 -38 -16 -53 -20 -20 -4 -33 -16 -43 -40 -7 -18 -18
+//                                 -36 -24 -40 -13 -8 -13 -51 0 -75 5 -10 21 -20 34 -24 20 -5 26 -14 31 -50 8
+//                                 -52 -13 -101 -50 -118 -14 -6 -25 -17 -25 -25 0 -23 31 -14 65 20 44 44 53 91
+//                                 31 170 -16 58 -16 62 2 86 26 35 67 39 99 9 20 -19 24 -29 19 -59 -5 -31 -2
+//                                 -39 19 -53 33 -21 76 -98 90 -158 6 -27 15 -48 20 -46 17 5 8 83 -14 126 -12
+//                                 23 -17 42 -12 42 15 0 32 36 25 55 -4 8 -18 22 -33 29 l-26 14 28 13 c15 7 26
+//                                 17 24 23 -6 17 -49 36 -85 36 -29 0 -32 2 -26 24 4 19 -1 32 -20 50 -29 30
+//                                 -41 31 -76 11z m145 -125 c-3 -5 -10 -10 -16 -10 -5 0 -9 5 -9 10 0 6 7 10 16
+//                                 10 8 0 12 -4 9 -10z"/>
+//                                 <path d="M855 831 c-7 -12 12 -24 25 -16 11 7 4 25 -10 25 -5 0 -11 -4 -15 -9z"/>
+//                                 <path d="M246 778 c-69 -40 -109 -153 -72 -204 8 -10 16 -17 18 -14 2 3 12 18
+//                                 22 33 9 15 28 33 42 39 13 6 24 18 24 26 0 10 4 12 13 5 6 -6 32 -13 56 -16
+//                                 62 -8 71 -23 13 -23 -142 0 -218 -164 -126 -274 33 -38 74 -60 114 -60 35 0
+//                                 37 8 10 52 -40 65 -16 159 49 193 44 22 48 20 53 -33 9 -96 91 -205 174 -232
+//                                 25 -8 34 -18 34 -33 0 -12 7 -30 15 -41 12 -16 12 -20 -1 -33 -7 -8 -14 -21
+//                                 -14 -29 0 -19 26 -18 34 2 5 14 7 14 22 0 17 -18 50 -21 59 -6 3 6 -5 14 -19
+//                                 20 -55 21 -9 84 81 110 92 28 189 138 196 224 4 51 -20 40 -37 -17 -55 -189
+//                                 -300 -252 -439 -113 -47 47 -67 85 -74 144 l-5 47 67 -3 c77 -4 118 4 112 21
+//                                 -2 8 -24 11 -70 9 -95 -5 -103 -1 -99 52 5 54 -24 115 -70 147 -47 34 -131 37
+//                                 -182 7z m494 -539 c0 -11 -27 -29 -33 -22 -14 14 -6 32 13 30 11 -1 20 -4 20
+//                                 -8z"/>
+//                                 <path d="M865 590 c-4 -6 10 -26 32 -45 21 -19 33 -34 27 -35 -6 0 -17 7 -24
+//                                 15 -17 20 -54 19 -98 -4 -100 -51 -121 -60 -175 -74 -33 -9 -62 -19 -65 -22
+//                                 -11 -11 49 -53 97 -70 59 -20 170 -19 221 1 75 30 107 109 72 174 -22 40 -76
+//                                 77 -87 60z"/>
+//                             </g>
+//                         </svg>
+//                         Ferme dans tous les departements francais.
+//                     </p>
+//                     <div>
                         
-                    </div>
-                </div>
-            </div>
-        `
-        document.querySelector("#close").addEventListener('click', () => {
-            document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)"
-        })
-    })
-}
+//                     </div>
+//                 </div>
+//             </div>
+//         `
+//         document.querySelector("#close").addEventListener('click', () => {
+//             document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)"
+//         })
+//     })
+// }
 
 function addControlPlaceholders(map) {
     const corners = map._controlCorners
@@ -638,6 +639,7 @@ function fetchDetails(selector,linkGetDetail) {
 }
 
 function fetchAvies(idRestaurant, select_dem) {
+    console.log("idRestaurant")
     console.log(idRestaurant)
     let currentUserId = 0
     
@@ -680,7 +682,7 @@ function fetchAvies(idRestaurant, select_dem) {
         }
     })
     
-
+    
     
 }
 
@@ -714,6 +716,21 @@ function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
     fetchDetails(id_selector, pathDetails);
 }
 
+
+function getDetailTabac(codeDepart,nameDepart, golfID, inHome = false) {
+
+    let remove = !inHome ? document.getElementById("remove-detail-tabac") : document.getElementById("remove-detail-home")
+    remove.removeAttribute("class", "hidden");
+    remove.setAttribute("class", "navleft-detail fixed-top")
+
+    const id_selector = !inHome ? "#content-details-tabac" : "#content_details_home_js_jheo";
+
+    document.querySelector(id_selector).innerHTML = createMiniCMZloading();
+
+    const pathDetails = `/tabac/departement/${nameDepart}/${codeDepart}/${golfID}`;
+    fetchDetails(id_selector, pathDetails);
+}
+
 function getDetailsFermeForMobile(pathDetails) {
     // location.assign(pathDetails)
 
@@ -732,7 +749,7 @@ function getDetailsFermeForMobile(pathDetails) {
 
 
 function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_dem){
-    console.log(select_dem)
+
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     remove.setAttribute("class", "navleft-detail fixed-top")
@@ -744,17 +761,15 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
     // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
     const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
     fetchDetails(id_selector, pathDetails);
-    if (document.querySelector("#open-navleft-resto-mobile")) {
-        fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
-    } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
-        fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile"))
-    } else if (document.querySelector("#tout-dem")) {
-        fetchAvies(idResto,document.querySelector("#tout-dem"))
-    }
-    
-     
-    
-    
+
+
+    // if (document.querySelector("#open-navleft-resto-mobile")) {
+    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
+    // } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
+    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile"))
+    // } else if (document.querySelector("#tout-dem")) {
+    //     fetchAvies(idResto,document.querySelector("#tout-dem"))
+    // }
 }
 
 
@@ -927,7 +942,6 @@ if (document.querySelector("#list-depart-mobile")) {
 
 function addListDepartRest() {
     document.querySelector("#open-navleft-resto-mobile").addEventListener('click', () => {
-        alert("Please select")
         document.querySelector("#open-navleft-resto-mobile").style.opacity = 0
         document.querySelector("#open-navleft-resto-mobile").style.transition = "opacity 0.5s ease-in-out";
 
@@ -1667,38 +1681,98 @@ function checkTailleImage(maxOctetAccepted, file_base64){
 }
 
 
-function openRightSide(){
-
-    if( document.querySelector(".close_details_jheo_js")){
-        document.querySelector(".close_details_jheo_js").click();
+function injectStatusGolf(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
     }
-    
-    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-        document.querySelector(".cart_map_jheo_js").style.width= '75%';
-        document.querySelector(".content_legende_jheo_js").style.width= '25%';
-        document.querySelector(".content_legende_jheo_js").style.padding= '25px';
-    }else{
-        console.log("Selector not found")
-        console.log("cart_map_jheo_js", "content_legende_jheo_js")
-    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icon</th>
+                    
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                        
+                        <td>Mon Golf</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
 
+                        <td>A faire</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
 
-    if( document.querySelector('.close_right_side_jheo_js')){
-        document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-            closeRightSide();
-        })
-    }
+                        <td>Fait</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">4</th>
+                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+                        
+                        <td>Inconnu</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `
 }
 
-function closeRightSide(){
-    if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-        document.querySelector(".cart_map_jheo_js").style.width= '100%';
-        document.querySelector(".content_legende_jheo_js").style.width= '0%';
-        document.querySelector(".content_legende_jheo_js").style.padding= '0';
-    }else{
-        console.log("Selector not found")
-        console.log("cart_map_jheo_js", "content_legende_jheo_js")
+function injectChooseCouch(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
     }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+        <div class="right_side_body right_side_body_jheo_js">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="region">
+                <label class="form-check-label" for="region">
+                    REGION
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="commune">
+                <label class="form-check-label" for="commune">
+                    COMMUNE
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="departement">
+                <label class="form-check-label" for="departement">
+                    DEPARTEMENT
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="iris" >
+                <label class="form-check-label" for="iris">
+                    IRIS
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="quartierDeVie" >
+                <label class="form-check-label" for="quartierDeVie">
+                    QUARTIER DE VIE
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="canton" >
+                <label class="form-check-label" for="canton">
+                    CANTON
+                </label>
+            </div>
+        </div>
+    `
 }
 
 function removePublication(pubId, tablePub){

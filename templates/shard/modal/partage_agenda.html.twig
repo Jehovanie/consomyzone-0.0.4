@@ -1,4 +1,4 @@
-
+{% import 'shard/input/textEditor.twig' as textEditor %}
 {# CONFIRM PARTAGE AGENDA #}
 <div class="modal fade" id="confirmPartageAgenda" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -25,6 +25,7 @@
 	</div>
 </div>
 
+<<<<<<< HEAD
 
   <div class="modal fade" id="ModalPartisonsSelect" aria-hidden="true" aria-labelledby="listRestoOrGolfModal_label" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
@@ -59,7 +60,28 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-info   ">Terminer</button>
+=======
+<div class="modal fade" id="emailTemplateModal" tabindex="-1" aria-labelledby="emailTemplateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="emailTemplateModalLabel" >Veuillez valider ou modifier votre invitation</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="indication">
+          Les parties en fond orange seront remplies automatiquement par l'application CMZ <br>
+          La partie en bleue est à remplir par vous. <br>
+          Les restes du texte sont modifiables
+>>>>>>> dev
         </div>
+        {{ textEditor.textEditor() }}
+        <div class="container_list"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-g="true" onclick="sendInvitation(event)" id="btnValidate">Valider</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
       </div>
     </div>
   </div>
+</div>

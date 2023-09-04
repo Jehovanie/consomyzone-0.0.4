@@ -412,6 +412,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         // // showResultSearchNavBar("station", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder('p')
             ->select('p.id',
+                    'p.adresse',
                     'p.adresse as add',
                     'p.adresse as commune',
                     'p.departementCode as dep',
@@ -510,6 +511,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         // // showResultSearchNavBar("station", nom, add, dep, depName, id);
         $qb = $this->createQueryBuilder('p')
             ->select('p.id',
+                    'p.adresse',
                     'p.adresse as add',
                     'p.adresse as commune',
                     'p.departementCode as dep',

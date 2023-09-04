@@ -19,6 +19,11 @@ class MapModule{
         this.id_dep= idDep ? parseInt(idDep) : null;
         this.nom_dep= nomDep ? nomDep : null;
         this.map= null;
+
+
+        this.isRightSideAlreadyOpen = false;
+
+        this.objectGeoJson = [];
     }
 
     initTales(){
@@ -63,15 +68,18 @@ class MapModule{
         
         this.map = L.map('map', {
                 zoomControl: false,
-                center:this.id_dep ? L.latLng(this.latitude, this.longitude) : (memoryCenter ? L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng) :  L.latLng(this.latitude, this.longitude)),
-                zoom:this.id_dep ? this.defaultZoom : ( memoryCenter ? memoryCenter.zoom : this.defaultZoom ),
+                center: ( this.id_dep || ( lat && long ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                zoom: this.id_dep ? this.defaultZoom : ( ( lat && long ) ? 14 :  memoryCenter ?  memoryCenter.zoom : this.defaultZoom ),
                 layers: [tiles] 
             }
         );
 
+        if( lat && long ){
+            this.updateDataInSessionStorage(lat,long, 13);
+        }
+
+
         const position = "topright";
-
-
         L.control.zoom({
             position: position
         }).addTo(this.map);
@@ -115,6 +123,7 @@ class MapModule{
                 geos.push(f)
             }
         }
+
         return geos;
     }
 
@@ -134,19 +143,19 @@ class MapModule{
         }
 
         let geos= this.settingGeos();
-
-        L.geoJson(geos, {
-            style: {
-                weight: 2,
-                opacity: 1,
-                color: (this.id_dep) ? "red" : "#63A3F6",
-                dashArray: '3',
-                fillOpacity: 0
-            },
-            onEachFeature: function (feature, layer) {
-                layer.bindTooltip(feature.properties.nom);
-            }
-        }).addTo(this.map);
+        this.geoJSONLayer = L.geoJson().addTo(this.map);
+        // this.geoJSONLayer = L.geoJson(geos, {
+        //     style: {
+        //         weight: 2,
+        //         opacity: 1,
+        //         color: (this.id_dep) ? "red" : "#63A3F6",
+        //         dashArray: '3',
+        //         fillOpacity: 0
+        //     },
+        //     onEachFeature: function (feature, layer) {
+        //         layer.bindTooltip(feature.properties.nom);
+        //     }
+        // }).addTo(this.map);
     }
 
     eventSetPositionOnMap(){
@@ -187,15 +196,37 @@ class MapModule{
                 zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
                 coord: e.target._lastCenter ? e.target._lastCenter : { lat: this.latitude, lng: this.longitude }
             }
-            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
+            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+
+            if(getDataInSessionStorage("lastSearchPosition")){
+                const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+                const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+                const lastSearchPosition = {
+                    zoom: 13,
+                    position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+                }
+                setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
+            }
+
+
+            if( document.querySelector(".icon_close_nav_left_jheo_js")){
+                if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+                    document.querySelector(".content_navleft_jheo_js").classList.add("d-none")
+                    iconsChange()
+                };
+            }
         })
     }
 
+    updateDataInSessionStorage(lat, lng, zoom){
+        const coordAndZoom = {
+            zoom: zoom,
+            coord: { lat, lng }
+        }
+        setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
+    }
+
     updateCenter(lat, long, zoom){
-        console.log("lat: " , lat)
-        console.log("long: " , long)
-        console.log("zoom: ", zoom)
-        
         this.map.setView(L.latLng(lat, long), zoom, { animation: true });
     }
 
@@ -222,7 +253,7 @@ class MapModule{
         
         L.Control.DockPannel = L.Control.extend({
             onAdd: function (map) {
-                var el = L.DomUtil.create('button', 'leaflet-bar my-control');
+                var el = L.DomUtil.create('button', 'leaflet-bar my-control responsif-none-pc');
                 el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
                                 preserveAspectRatio="xMidYMid meet">
@@ -265,9 +296,9 @@ class MapModule{
         L.Control.DockPannel2 = L.Control.extend({
             onAdd: function (map) {
                 var el = L.DomUtil.create('div', 'leaflet-bar my-controller');
-                el.innerHTML = `
-                    <div class="card-options-home hide" id="card">
-                    <div class="options-container">
+                el.innerHTML = ` 
+                    <div class="card-options-home hide responsif-none-pc" id="card">
+                    <div class="options-container ">
                             <ul>
                                 <li class="home-mobile" id="home-mobile">
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
@@ -301,6 +332,40 @@ class MapModule{
                                             433 -173 692 -211 197 -29 530 -24 723 11 1061 188 1856 1082 1909 2145 l6
                                             130 105 3 c120 3 140 13 140 70 0 27 -37 93 -181 323 -99 159 -189 294 -199
                                             299 -30 16 -57 12 -84 -12z"/>
+                                        </g>
+                                    </svg>
+                                </li>
+                                
+                                <li class="resto" id="mobil-resto">
+                                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                                    width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
+                                    preserveAspectRatio="xMidYMid meet">
+
+                                        <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+                                        fill="#fff" stroke="none">
+                                            <path d="M520 1047 c-20 -7 -36 -20 -38 -31 -3 -16 0 -18 25 -11 15 4 76 9
+                                            136 12 79 4 107 8 107 18 0 7 -7 16 -16 19 -27 10 -177 5 -214 -7z"/>
+                                            <path d="M372 948 c-8 -8 -12 -48 -12 -105 0 -92 0 -93 34 -131 l34 -38 -10
+                                            -188 c-7 -133 -7 -196 1 -212 20 -44 102 -44 122 0 8 16 8 79 1 212 l-10 188
+                                            34 38 c34 38 34 39 34 132 0 66 -4 97 -13 105 -23 18 -27 2 -27 -96 0 -92 0
+                                            -93 -35 -131 l-34 -38 10 -188 c6 -103 8 -194 5 -202 -7 -18 -45 -18 -52 0 -3
+                                            8 -1 99 5 202 l10 188 -34 38 c-35 38 -35 39 -35 132 0 95 -6 116 -28 94z"/>
+                                            <path d="M437 954 c-4 -4 -7 -52 -7 -106 0 -89 2 -99 18 -96 15 3 17 16 17
+                                            102 0 92 -8 120 -28 100z"/>
+                                            <path d="M495 948 c-3 -8 -5 -55 -3 -104 3 -76 6 -89 21 -92 16 -3 17 5 15 99
+                                            -2 71 -7 104 -15 107 -7 2 -15 -3 -18 -10z"/>
+                                            <path d="M765 951 c-75 -32 -106 -203 -49 -271 l27 -31 -7 -184 c-7 -177 -7
+                                            -184 13 -204 27 -27 75 -27 102 0 20 20 20 27 13 204 l-7 184 27 31 c25 31 31
+                                            59 26 135 -2 37 -31 106 -52 122 -20 17 -69 24 -93 14z m74 -52 c41 -45 44
+                                            -160 4 -201 l-26 -27 4 -193 4 -193 -25 0 -25 0 4 193 4 193 -26 27 c-56 58
+                                            -24 222 43 222 11 0 28 -10 39 -21z"/>
+                                            <path d="M935 910 c-4 -6 8 -33 25 -60 87 -136 81 -321 -15 -442 -36 -44 -42
+                                            -62 -26 -73 12 -7 55 38 87 91 78 131 72 327 -14 448 -29 43 -46 53 -57 36z"/>
+                                            <path d="M276 858 c-45 -79 -59 -139 -54 -241 5 -101 26 -161 81 -234 31 -40
+                                            67 -57 67 -30 0 6 -16 32 -35 55 -90 115 -103 292 -28 420 23 41 25 72 4 72
+                                            -6 0 -21 -19 -35 -42z"/>
+                                            <path d="M580 245 c-16 -19 -1 -25 61 -25 56 0 84 14 59 30 -20 12 -108 9
+                                            -120 -5z"/>
                                         </g>
                                     </svg>
                                 </li>
@@ -339,45 +404,11 @@ class MapModule{
                                         </g>
                                     </svg>
                                 </li>
-                                <li class="resto" id="mobil-resto">
-                                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                    width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
-                                    preserveAspectRatio="xMidYMid meet">
-
-                                        <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                                        fill="#fff" stroke="none">
-                                            <path d="M520 1047 c-20 -7 -36 -20 -38 -31 -3 -16 0 -18 25 -11 15 4 76 9
-                                            136 12 79 4 107 8 107 18 0 7 -7 16 -16 19 -27 10 -177 5 -214 -7z"/>
-                                            <path d="M372 948 c-8 -8 -12 -48 -12 -105 0 -92 0 -93 34 -131 l34 -38 -10
-                                            -188 c-7 -133 -7 -196 1 -212 20 -44 102 -44 122 0 8 16 8 79 1 212 l-10 188
-                                            34 38 c34 38 34 39 34 132 0 66 -4 97 -13 105 -23 18 -27 2 -27 -96 0 -92 0
-                                            -93 -35 -131 l-34 -38 10 -188 c6 -103 8 -194 5 -202 -7 -18 -45 -18 -52 0 -3
-                                            8 -1 99 5 202 l10 188 -34 38 c-35 38 -35 39 -35 132 0 95 -6 116 -28 94z"/>
-                                            <path d="M437 954 c-4 -4 -7 -52 -7 -106 0 -89 2 -99 18 -96 15 3 17 16 17
-                                            102 0 92 -8 120 -28 100z"/>
-                                            <path d="M495 948 c-3 -8 -5 -55 -3 -104 3 -76 6 -89 21 -92 16 -3 17 5 15 99
-                                            -2 71 -7 104 -15 107 -7 2 -15 -3 -18 -10z"/>
-                                            <path d="M765 951 c-75 -32 -106 -203 -49 -271 l27 -31 -7 -184 c-7 -177 -7
-                                            -184 13 -204 27 -27 75 -27 102 0 20 20 20 27 13 204 l-7 184 27 31 c25 31 31
-                                            59 26 135 -2 37 -31 106 -52 122 -20 17 -69 24 -93 14z m74 -52 c41 -45 44
-                                            -160 4 -201 l-26 -27 4 -193 4 -193 -25 0 -25 0 4 193 4 193 -26 27 c-56 58
-                                            -24 222 43 222 11 0 28 -10 39 -21z"/>
-                                            <path d="M935 910 c-4 -6 8 -33 25 -60 87 -136 81 -321 -15 -442 -36 -44 -42
-                                            -62 -26 -73 12 -7 55 38 87 91 78 131 72 327 -14 448 -29 43 -46 53 -57 36z"/>
-                                            <path d="M276 858 c-45 -79 -59 -139 -54 -241 5 -101 26 -161 81 -234 31 -40
-                                            67 -57 67 -30 0 6 -16 32 -35 55 -90 115 -103 292 -28 420 23 41 25 72 4 72
-                                            -6 0 -21 -19 -35 -42z"/>
-                                            <path d="M580 245 c-16 -19 -1 -25 61 -25 56 0 84 14 59 30 -20 12 -108 9
-                                            -120 -5z"/>
-                                        </g>
-                                    </svg>
-                                </li>
                                 <li class="station" id="mobile_station_js_jheo">
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                     width="50px" height="50px" viewBox="0 0 128.000000 128.000000"
                                     preserveAspectRatio="xMidYMid meet">
-                                        <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                                        fill="#fff" stroke="none">
+                                        <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#fff" stroke="none">
                                             <path d="M397 942 c-13 -15 -17 -39 -17 -112 0 -79 3 -97 19 -114 15 -16 24
                                             -51 35 -141 20 -148 20 -179 1 -195 -8 -7 -15 -28 -15 -46 l0 -34 184 0 c119
                                             0 187 4 191 11 9 14 -2 55 -21 73 -12 13 -14 29 -8 86 6 64 9 70 29 70 38 0
@@ -391,6 +422,44 @@ class MapModule{
                                             -27 3 -61z"/>
                                         </g>
                                     </svg>
+                                </li>
+                                <li class="golf" id="mobile-golf" >
+                                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                                    width="25px" viewBox="0 0 300.000000 500.000000"
+                                    preserveAspectRatio="xMidYMid meet">
+
+                                    <g transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)"
+                                    fill="#fff" stroke="none">
+                                    <path d="M1141 4661 c-18 -33 -12 -59 21 -97 35 -40 40 -88 10 -110 -9 -7 -13
+                                    -19 -9 -33 3 -13 -1 -54 -9 -93 -8 -39 -16 -75 -17 -81 -2 -9 28 -32 78 -62
+                                    10 -6 16 -18 14 -28 -4 -16 -7 -15 -38 8 -20 14 -48 25 -65 25 -61 0 -217 -63
+                                    -253 -102 -21 -24 -34 -136 -20 -187 5 -19 22 -48 38 -64 l30 -29 -67 -172
+                                    c-37 -94 -93 -230 -125 -302 -70 -160 -84 -207 -105 -346 -14 -95 -14 -111 -1
+                                    -121 7 -7 20 -28 27 -47 7 -19 19 -40 26 -46 11 -9 10 -22 -6 -75 -13 -43 -20
+                                    -94 -20 -154 0 -49 -7 -153 -15 -230 -8 -77 -15 -206 -15 -287 l0 -148 41 0
+                                    42 0 -7 -47 c-36 -265 -27 -419 46 -766 11 -54 19 -100 17 -101 -2 -2 -65 -15
+                                    -139 -30 -239 -48 -437 -126 -527 -209 -56 -51 -87 -116 -79 -162 33 -174 408
+                                    -325 937 -375 198 -19 707 -8 883 19 340 53 578 136 688 239 59 55 78 88 78
+                                    137 0 94 -93 182 -271 256 -78 32 -318 99 -356 99 -27 0 -40 19 -22 31 11 7 9
+                                    17 -11 55 -13 26 -37 65 -53 86 -31 44 -33 44 -126 2 l-53 -24 -27 21 c-33 26
+                                    -121 151 -186 265 -40 70 -68 103 -140 167 -182 161 -176 155 -169 196 4 20
+                                    12 47 19 61 12 25 44 196 65 355 15 116 27 158 46 172 22 16 43 125 44 225 0
+                                    50 4 78 12 80 9 3 12 46 13 154 0 130 -3 159 -24 224 l-23 74 78 73 c44 40 85
+                                    79 92 86 7 6 40 42 72 80 50 56 60 74 60 104 0 20 10 52 23 72 19 31 22 49 21
+                                    128 -1 86 -3 96 -42 174 -31 61 -39 86 -31 96 26 31 105 73 148 78 25 4 55 11
+                                    66 16 26 13 321 -46 675 -134 l255 -64 16 -62 c9 -35 24 -70 32 -78 20 -20 73
+                                    -11 118 20 30 21 34 28 32 65 -1 24 -14 65 -30 95 -26 49 -31 52 -69 55 -38 3
+                                    -44 0 -65 -30 -12 -18 -24 -34 -25 -36 -3 -5 -185 40 -370 92 -89 24 -222 56
+                                    -295 70 -233 46 -270 57 -267 81 2 15 -3 21 -21 23 -14 2 -37 17 -53 34 -21
+                                    22 -34 29 -51 25 -12 -3 -56 -15 -97 -25 -41 -11 -77 -18 -79 -16 -12 10 39
+                                    106 79 151 73 80 89 173 46 271 -19 45 -32 59 -86 92 -86 53 -105 56 -190 27
+                                    l-73 -24 -56 22 c-93 37 -99 38 -110 16z m-8 -3298 c78 -75 177 -160 219 -190
+                                    65 -45 177 -155 178 -173 0 -3 -84 -4 -187 -2 -104 1 -236 -1 -295 -5 l-108
+                                    -9 0 100 c0 54 5 127 11 161 10 51 9 81 -5 168 -9 58 -16 111 -16 117 0 19 54
+                                    -26 203 -167z"/>
+                                    </g>
+                                    </svg>
+
                                 </li>
                                 <li class="home-mobile" id="home-mobile-connexion">
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
@@ -425,23 +494,7 @@ class MapModule{
                                         </g>
                                     </svg>
                                 </li>
-                                <li class="recherche" onclick="showModalSearch()">
-                                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                                    width="50" height="50" viewBox="0 0 128.000000 128.000000"
-                                    preserveAspectRatio="xMidYMid meet">
-
-                                        <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
-                                        fill="#fff" stroke="none">
-                                            <path d="M403 985 c-80 -39 -119 -81 -158 -169 -30 -69 -32 -127 -5 -200 59
-                                            -155 226 -238 377 -187 34 12 74 21 88 21 35 0 85 50 85 85 0 14 9 54 21 88
-                                            51 151 -32 318 -187 377 -81 30 -136 26 -221 -15z m226 -31 c124 -52 189 -196
-                                            146 -325 -37 -111 -155 -188 -271 -176 -220 23 -318 283 -166 440 79 82 186
-                                            105 291 61z"/>
-                                            <path d="M789 451 l-35 -36 89 -97 c87 -95 91 -98 133 -98 l44 0 0 44 c0 42
-                                            -3 46 -97 133 l-98 89 -36 -35z"/>
-                                        </g>
-                                    </svg>
-                                </li>
+                                
                         </ul>
                             <div class="home">
                                 <button id="retoure" class="retoure">
@@ -484,7 +537,7 @@ class MapModule{
             onAdd: function (map) {
                 var el = L.DomUtil.create('div', 'leaflet-bar my-list');
                 el.innerHTML = ` 
-                    <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
+                    <svg class="close responsif-none-pc" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
                     width="20px" height="20px" viewBox="0 0 980.000000 982.000000"
                     preserveAspectRatio="xMidYMid meet">
 
@@ -541,10 +594,17 @@ class MapModule{
         document.getElementById("home-mobile-connexion").addEventListener('click', () => {
             location.assign('/connexion')
         });
+
+        document.getElementById("mobile-golf").addEventListener('click', () => {
+            location.assign('/golf')
+        });
+
+        document.getElementById("mobile-tabac").addEventListener('click', () => {
+            location.assign('/tabac')
+        });
     }
 
     initMap(lat= null,long= null, isAddControl=false){
-        
         const content_map= document.querySelector(".cart_map_js");
         if( document.querySelector("#toggle_chargement")){
             content_map.removeChild(document.querySelector("#toggle_chargement"))
@@ -571,8 +631,8 @@ class MapModule{
         }
 
 
-        // this.bindControlOnLeaflet(this.map);
-        // this.bindEventLocationForMobile();
+        this.bindControlOnLeaflet(this.map);
+        this.bindEventLocationForMobile();
     }
     
     getMax(max,min){
@@ -583,17 +643,23 @@ class MapModule{
     }
 
     bindOtherControles(){
-        L.control.custom({
-            // position: 'topright',
-            content : `
-                <button class="btn btn-info" data-type="info">
+        let htmlControl = '';
+        if( this.mapForType === "golf"){
+            htmlControl= `
+                <button class="btn btn-info" data-type="info_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-info"></i>
                 </button>
-                <button class="btn btn-secondary non_active" data-type="couche">
+            `
+        }else if( this.mapForType === "tabac") {
+            htmlControl= `
+                <button class="btn btn-primary" data-type="couche_jheo_js">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
-                
-            `,
+            `
+        }
+        L.control.custom({
+            // position: 'topright',
+            content : htmlControl,
             classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
             // style   :
             // {
@@ -605,14 +671,12 @@ class MapModule{
                 'foo': 'bar',
             },
             events:{
-                click: function(data) {
-                    if(data.srcElement.dataset.type === "info"){
-                        openRightSide();
-                    }
+                click: (data) => {
+                    this.openRightSide(data.srcElement.dataset.type);
                 },
-                dblclick: function(data){
-                    closeRightSide();
-                },
+                // dblclick: function(data){
+                //     closeRightSide();
+                // },
                 contextmenu: function(data){
                     console.log('wrapper div element contextmenu');
                     console.log(data);
@@ -697,7 +761,7 @@ class MapModule{
         container.innerHTML = `
             <div class="content_header_right_side">
                 <div class="header_right_side">
-                    <div class="title_right_side">
+                    <div class="title_right_side text-black title_right_side_jheo_js">
                         CONTROL RIGHT SIDE
                     </div>
                     <div class="content_close_right_side">
@@ -708,47 +772,64 @@ class MapModule{
                 </div>
             </div>
 
-            <div class="content_right_side_body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Icon</th>
-                           
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                            
-                            <td>Mon Golf</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
-
-                            <td>A faire</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
-
-                            <td>Fait</td>
-                        </tr>
-                        <tr>
-                        <th scope="row">4</th>
-                            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                            
-                            <td>Inconnu</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="content_right_side_body content_right_side_body_jheo_js">
+                
             </div>
         `
 
         document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+    }
+
+    openRightSide(rightSideContentType){
+        if( document.querySelector(".close_details_jheo_js")){
+            document.querySelector(".close_details_jheo_js").click();
+        }
+
+        if( document.querySelector('.icon_close_nav_left_jheo_js')){
+            document.querySelector(".icon_close_nav_left_jheo_js").click();
+        }
+
+        const cart_width= '75%';
+        const cont_legent_width= '25%';
+        
+        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+    
+            if( rightSideContentType === "info_jheo_js"){
+                injectStatusGolf();
+            }else{
+                this.injectChooseCouche();
+            }
+    
+            document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+            document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
+            document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+        }else{
+            console.log("Selector not found")
+            console.log("cart_map_jheo_js", "content_legende_jheo_js")
+        }
+    
+    
+        if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
+            document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+                this.closeRightSide();
+            })
+        }
+
+    }
+
+    closeRightSide(){
+        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+            document.querySelector(".cart_map_jheo_js").style.width= '100%';
+            document.querySelector(".content_legende_jheo_js").style.width= '0%';
+            document.querySelector(".content_legende_jheo_js").style.padding= '0';
+        }else{
+            console.log("Selector not found")
+            console.log("cart_map_jheo_js", "content_legende_jheo_js")
+        }
+    }
+
+    injectChooseCouche(){
+        throw new Error("The function 'injectChooseCouche' must be redefined on child.")
     }
 
 }

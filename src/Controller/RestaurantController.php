@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
 use App\Service\TributGService;
+use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Repository\CodeapeRepository;
 use App\Repository\BddRestoRepository;
@@ -12,7 +13,6 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
-use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -73,6 +73,7 @@ class RestaurantController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
                     ];
     
                     ///get it
@@ -143,10 +144,22 @@ class RestaurantController extends AbstractController
     public function getAllRestCoorArrondissement(
         $dep,
         $codinsee,
+        Request $request,
         BddRestoRepository $bddResto,
         SerializerInterface $serialize
     ) {
-        $datas = $serialize->serialize($bddResto->getRestoByCodinsee($codinsee, $dep), 'json');
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee), 'json');
+
+            return new JsonResponse($datas, 200, [], true);
+        }
+        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep, $codinsee), 'json');
         return new JsonResponse($datas, 200, [], true);
     }
 
@@ -221,6 +234,7 @@ class RestaurantController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
                     ];
     
                     ///get it
@@ -284,6 +298,7 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
+
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -292,6 +307,7 @@ class RestaurantController extends AbstractController
         $datas = $code->getAllCodinsee($codeDep);
         
         $resto = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
+
         $resultCount = $bddResto->getAccountRestauranting($codeDep);
         // dump($resultCount);
 
@@ -324,6 +340,7 @@ class RestaurantController extends AbstractController
                     "firstname" => $profil_amis->getFirstname(),
                     "lastname" => $profil_amis->getLastname(),
                     "image_profil" => $profil_amis->getPhotoProfil(),
+                    "is_online" => $user_amis->getIsConnected(),
                 ];
 
                 ///get it
@@ -380,27 +397,71 @@ class RestaurantController extends AbstractController
         Status $status,
         Request $request,
         CodeapeRepository $codeApeRep,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
         $codinsee = $dataRequest["codinsee"];
+        $arrdssm = $dataRequest["arrdssm"];
+
         $datas = $bddResto->getRestoByCodinsee($codinsee, $codeDep);
         $resultCount = count($datas);
         $statusProfile = $status->statusFondateur($this->getUser());
         $userConnected = $status->userProfilService($this->getUser());
 
 
+        ///current user connected
+        $user = $this->getUser();
+
+        $amis_in_tributG = [];
+
+        if($user){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                    "is_online" => $user_amis->getIsConnected(),
+                ];
+
+                ///get it
+                array_push($amis_in_tributG, $amis);
+            }
+        }
+ 
+
+
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
+            "type" => "resto",
             "restaurants" => $datas,
             "nomber_resto" => $resultCount,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
             "userConnected" => $userConnected,
-            "codinsee" => $codinsee
+            "codinsee" => $codinsee,
+            "arrdssm" => $arrdssm,
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 
@@ -457,10 +518,23 @@ class RestaurantController extends AbstractController
         $id_dep,
         $id_restaurant,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        AvisRestaurantRepository $avisRestaurantRepository
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            $note_temp += $note->getNote(); 
+        }
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0 
+        ];
 
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
             return $this->json([
@@ -538,18 +612,13 @@ class RestaurantController extends AbstractController
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
 
-        // return $this->json([
-        //     "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
-        //     "id_dep" => $id_dep,
-        //     "nom_dep" => $nom_dep,
-        //     "profil" => $statusProfile["profil"],
-        //     "statusTribut" => $statusProfile["statusTribut"],
-        //     "codeApes" => $codeApeRep->getCode()
+        $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
-        // ], 200);
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
+        // dd($nbr_avis_resto);
 
         return $this->render("shard/restaurant/detail_resto_navleft.twig", [
-            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "details" => $resto,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],
@@ -572,15 +641,23 @@ class RestaurantController extends AbstractController
         $nom_dep,
         $id_dep,
         $id_restaurant,
-        CodeinseeRepository $code
+        CodeinseeRepository $code,
+        AvisRestaurantRepository $avisRestaurantRepository,
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $dataRequest = $request->query->all();
     
         $codinsee = array_key_exists('codinsee', $dataRequest)? $dataRequest["codinsee"]: null;
+
+        $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
+        // dd($nbr_avis_resto);
+
+        $response = $serializer->serialize(["nombre_avis" => $response], 'json');
         
         return $this->render("shard/restaurant/details_mobile.js.twig", [
-            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "details" => $resto,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "codinsee" => $codinsee,

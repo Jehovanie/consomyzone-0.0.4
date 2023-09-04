@@ -217,9 +217,9 @@ button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-  -webkit-appearance: button; /* 1 */
-  background-color: transparent; /* 2 */
-  background-image: none; /* 2 */
+  -webkit-appearance: button; 
+  background-color: transparent; 
+  background-image: none; 
 } */
 
 /*
@@ -1001,7 +1001,7 @@ h1,  h2,  h3,  h4,  h5,  h6{
   max-height: 400px;
 }
 .vd{
-  width: 100%;
+  width: 97%;
 }
 .wd{
   width: 1.875rem;

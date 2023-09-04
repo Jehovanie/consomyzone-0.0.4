@@ -16,6 +16,8 @@ use App\Service\MailService;
 
 use App\Form\InscriptionType;
 
+use App\Service\AgendaService;
+
 use App\Entity\Confidentiality;
 
 use App\Service\MessageService;
@@ -33,16 +35,17 @@ use App\Security\UserAuthenticator;
 use App\Service\NotificationService;
 
 use App\Repository\CodeapeRepository;
-
 use App\Repository\CommuneRepository;
-use App\Service\AgendaService;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Routing\Annotation\Route;
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -59,13 +62,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-
-
-
-
+use Symfony\Component\Serializer\SerializerInterface;
 
 class SecurityController extends AbstractController
 
@@ -135,6 +134,7 @@ class SecurityController extends AbstractController
     ): Response {
 
         if ($this->getUser()) {
+
             return $this->redirectToRoute('app_account');
         }
 
@@ -349,10 +349,26 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/deconnexion', name: 'app_logout')]
+
+    #[Route(path: '/deconnexion', name: 'app_disconnect')]
+    public function disconnect(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager): ?Response
+    {
+        $user = $this->getUser();
+
+        $user->setIsConnected(0);
+
+        ///stock the user
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new RedirectResponse($urlGenerator->generate('app_logout'));
+        
+    }
+
+    #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-
+        
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
@@ -426,6 +442,7 @@ class SecurityController extends AbstractController
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
         $user->setVerifiedMail(false);
+        $user->setIsConnected(true);
 
 
 
@@ -978,5 +995,27 @@ class SecurityController extends AbstractController
         return $this->json([
             "commune" => $communeRepository->findAll(),
         ], 200);
+    }
+    #[Route(path:'/agenda/send/invitation', name:"app_agenda_send_invitation", methods:"POST")]
+    public function sendLinkOnEmailAboutAgendaSharing(
+        Request $request,
+        SerializerInterface $serialize,
+        MailService $mailService){
+        $context=[];
+        $requestContent = json_decode($request->getContent(), true);
+        $receivers=$requestContent["receiver"];
+        $content=$requestContent["emailCore"];
+        foreach($receivers as $receiver){
+                $email_to=$receiver["email"];
+                $nom=$receiver["lastname"];
+                $prenom=$receiver["firstname"];
+                $context["object_mail"]="Invitation à particper à un événement";
+                $context["template_path"]="emails/mail_invitation_agenda.html.twig";
+                $context["link_confirm"]="";
+                $context["content_mail"]=$content;
+                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+        }
+        $r = $serialize->serialize(["response"=>"0k"], 'json');
+        return new JsonResponse($r, 200, [], true);
     }
 }

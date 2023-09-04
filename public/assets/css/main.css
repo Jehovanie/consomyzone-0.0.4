@@ -52,6 +52,10 @@ body {
             color-stop(.6, #54DE5D))
 }
 
+.padding_header{
+    padding-left: 3.2rem;
+}
+
 /* **********navLeft************* */
 
 .navleft {
@@ -104,6 +108,11 @@ body {
 .navleft .list-depart-all{
     height: 82vh;
     overflow-y: scroll;
+}
+
+
+.link_nav_rubrique{
+    font-size : 0.75em !important;
 }
 
 
@@ -800,6 +809,7 @@ li a .station {
     background-color : lightgray;
 } */
 .non_active{
+    pointer-events: none !important;
     cursor: not-allowed !important;
 }
 /*
@@ -1720,7 +1730,7 @@ i.fa-eye-slash, i.fa-eye{
 
 .partage_agenda .btn-partage-agenda{
     width: 250px;
-    margin-left: 58vw !important;
+    margin-left: 50vw !important;
 }
 
 .pdp-agenda-tribu-g{
@@ -1737,4 +1747,76 @@ i.fa-eye-slash, i.fa-eye{
     background-color: #7eb8ee !important;
     border: #7eb8ee 1px solid !important;
     pointer-events: none;
+}
+/*input upload file style*/
+.drop_zone_Nantenaina_css_js {
+  
+    max-width: 500px;
+    height: 200px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    cursor: pointer;
+    color: #cccccc;
+    border: 4px dashed #009578;
+    border-radius: 10px;
+   
+  }
+  
+  .drop-zone--over {
+    border-style: solid;
+  }
+  
+  .drop_zone__input_Nantenaina_css_js {
+    display: none;
+  }
+  
+  .drop-zone__thumb {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #cccccc;
+    background-size: cover;
+    position: relative;
+  }
+  
+  .drop-zone__thumb::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 0;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.75);
+    font-size: 14px;
+    text-align: center;
+  }
+
+
+/* FOR TEXT EDITOR */
+/* * {
+	font-family: sans-serif;
+} */
+
+textarea {
+	padding: 2rem;
+	
+}
+
+.wrapper {
+	max-width: 64rem;
+	margin: 0 auto;
+	display: block;
+	padding: 4rem 0;
+}
+
+#editor {
+	min-height: 180px;
 }

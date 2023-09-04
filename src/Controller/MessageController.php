@@ -6,6 +6,8 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
+use App\Service\JWTService;
+use App\Service\JWTService1;
 use App\Service\MessageService;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
@@ -73,7 +75,8 @@ class MessageController extends AbstractController
                     "firstname" => $profil_amis->getFirstname(),
                     "lastname" => $profil_amis->getLastname(),
                     "image_profil" => $profil_amis->getPhotoProfil(),
-                    "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"])
+                    "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
+                    "is_online" => $user_amis->getIsConnected(),
                 ];
                 ///get it
                 array_push($amis_in_tributG, $amis);
@@ -510,6 +513,50 @@ class MessageController extends AbstractController
 
         return $this->json($visio);
        
+    }
+
+    #[Route('/getJWTToken', name:'app_get_token_jwt')]
+    public function getJWTToken(JWTService $jwt_service):Response
+    {
+
+        $API_KEY="vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/60edf0";
+        $APP_ID="vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54"; // Your AppID (previously tenant)
+        $USER_EMAIL="eliefenohasina@gmail.com";
+        $USER_NAME="";
+        $USER_IS_MODERATOR=false;
+        $USER_AVATAR_URL="";
+        $USER_ID="google-oauth2|118304592490975962975";
+        $LIVESTREAMING_IS_ENABLED=true;
+        $RECORDING_IS_ENABLED=true;
+        $OUTBOUND_IS_ENABLED=false;
+        $TRANSCRIPTION_IS_ENABLED=false;
+        $EXP_DELAY_SEC=31104000; // un an
+        $NBF_DELAY_SEC=0;
+
+        $fp = fopen("jwt_key.pk", "r");
+        $privKey = fread($fp, 8192);
+        fclose($fp);
+
+        $PRIVATE_KEY = openssl_get_privatekey($privKey, 'consomyzone');
+
+        $token = $jwt_service->create_jaas_token($API_KEY,
+                                    $APP_ID,
+                                    $USER_EMAIL,
+                                    $USER_NAME,
+                                    $USER_IS_MODERATOR,
+                                    $USER_AVATAR_URL,
+                                    $USER_ID,
+                                    $LIVESTREAMING_IS_ENABLED,
+                                    $RECORDING_IS_ENABLED,
+                                    $OUTBOUND_IS_ENABLED,
+                                    $TRANSCRIPTION_IS_ENABLED,
+                                    $EXP_DELAY_SEC,
+                                    $NBF_DELAY_SEC,
+                                    $PRIVATE_KEY);
+
+        /// This writes the jwt to standard output
+    
+        return $this->json($token);
     }
 
 }

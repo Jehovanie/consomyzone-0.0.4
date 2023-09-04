@@ -38,3 +38,21 @@
 .arrow_paginnation{
     color: #28BE21;
 }
+
+.item_arrondissement_resto{
+    list-style: none;
+    background-color: #ffffff;
+    width: 24vw;
+    height: 10vh;
+    margin-left: 0;
+    margin-bottom: 20px;
+    margin-top: 15px;
+    border-radius: 30px;
+    box-shadow: 0px 10px 15px rgba(49, 49, 49, 0.3);
+    font-size: 11pt;
+}
+
+.item_arrondissement_resto .container-depart svg {
+    margin-left: 0 !important; 
+    margin-top: 0 !important;
+}

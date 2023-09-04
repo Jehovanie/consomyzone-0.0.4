@@ -5,6 +5,8 @@
     /* .leaflet-control-container{
         display: none ;
     } */
+
+    
     .leaflet-control-zoom{
         display: block !important;
     }
@@ -94,7 +96,11 @@
     
     }
 
-    
+
+
+    .hj-resto {
+        margin-left: 0rem !important;
+    }
     
     /* .card-pub-actu img {
         width: 62vw;
@@ -321,6 +327,7 @@
         background-color: #fff;
         width: 100vw;
         height: 100vh;
+        padding-top: 25px;
         /* overflow-y: scroll !important; */
     }
 
@@ -505,6 +512,8 @@
         position: relative;
         height: 75vh;
         overflow-y: scroll !important;
+        padding-left: 50px !important;
+        
     }
 
 
@@ -561,6 +570,7 @@
         background-color: #fff;
         width: 100vw;
         height: 100vh;
+        padding-top: 50px;
     }
 
     .content_list_menu {
@@ -1049,7 +1059,117 @@
 
 /* pc */
 
-@media screen and (min-width:1020px) and (max-width: 1251px) {
+@media screen and (min-width:1020px) and (max-width: 1136px) {
+ .width-content-t {
+        width: 74%;
+    }
+
+    .navleft-chat{
+        right: -205px !important;
+    }
+
+    .apropos-tribu-t {
+        width: 220px !important;
+    }
+
+    .apropos-tribu-g {
+        width: 220px !important;
+        top: 140px !important;
+    }
+
+    .ep {
+        margin-left: -64px;
+    }
+
+    .navbar-brand img {
+        width: 7rem !important;
+    }
+
+    .nav-item a {
+        /* font-size: 5pt !important; */
+        font-size: 0.3587em !important;
+    }
+
+    .nav-item li{
+        margin-left: 15px !important;
+    }
+
+    .xn {
+        padding-left: 4rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 390px;
+        margin-left: 20px !important;
+    }
+
+    /* .uf {
+        max-width: 44.75rem !important;
+    } */
+
+    /* .card-pub-actu img {
+            width: 52vw;
+        } */
+    .content_list {
+        margin-left: -15px;
+    }
+    .form__input_time {
+        width: 145px;
+    }
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    /* .spec-dep {
+        margin-top: 115px;
+    } */
+
+    .result_container_ferme_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 1rem !important;
+    }
+
+    .content-logo-shearch {
+        width: 360px;
+    }
+
+    .nav-menu {
+        margin-left: 390px !important;
+        width: 42vw;
+    }
+
+    .nav-menu-connexion {
+        margin-left: 950px !important;
+        margin-top: -2px;
+        width: 0vw;
+    }
+
+    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
+        height: 100px !important;
+    }
+
+    .form__input_time {
+        margin-top: 15px !important;
+        width: 140px !important;
+        height: 20px !important;
+    }
+
+    .listTribu_t_mobile {
+        margin-top: 0px !important;
+    }
+    
+}
+
+@media screen and (min-width:1137px) and (max-width: 1259px) {
+
     .width-content-t {
         width: 74%;
     }
@@ -1076,7 +1196,7 @@
     }
 
     .nav-item a {
-        font-size: 8pt !important;
+        font-size: 7pt !important;
     }
 
     .nav-item li{
@@ -1156,7 +1276,10 @@
     }
 }
 
-@media screen and (min-width:1260px) and (max-width: 1304px) {
+@media screen and (min-width:1260px) and (max-width: 1315px) {
+ header > div > div.vd.sd.qo.f.ho.oo.wf.yf > nav > ul{
+	font-size: 6pt !important;
+    }
     .width-content-t {
         width: 74%;
     }
@@ -1252,10 +1375,17 @@
     }
 }
 
+<<<<<<< HEAD
 @media screen and (min-width:1305px) and (max-width: 1439px) {
    
+=======
+@media screen and (min-width:1316px) and (max-width: 1439px) {
+>>>>>>> dev
     .width-content-t {
         width: 74%;
+    }
+    header > div > div.vd.sd.qo.f.ho.oo.wf.yf > nav > ul{
+	font-size: 9pt !important;
     }
 
     .apropos-tribu-g {
@@ -1979,11 +2109,6 @@
 
     #map {
         /* margin-left: -16rem !important; */
-    }
-
-    .to\/4\/2 {
-        margin-left: -16.5rem !important;
-        width: 56% !important;
     }
 
     .head-pub .param-content i {

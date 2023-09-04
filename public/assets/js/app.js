@@ -19,25 +19,42 @@ if( document.querySelector(".form_content_search_navbar_js")){
             
             if( cles0=== "" && cles1 === "" ){
 
-                alert("Veuillez renseigner au moins l'adresse!")
-    
                 e.preventDefault();
-                // document.querySelector(".input_search_type_js").classList.add("border_red")
-                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+
+                new swal("Attention !", "Veuillez renseigner au moins l'adresse!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    });
     
             }else if(cles1 === ""){
-                alert("L'addresse est obligatoire!")
+
                 e.preventDefault();
-                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    });
             }
         }else{
 
-            if( cles0=== "" && cles1 === "" ){
+            if( cles1 === "" ){
+
+                e.preventDefault();
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js").classList.add("border_red")
+                    });
     
-                alert("Veuillez renseigner les deux champs!")
+            }
+
+            /*if( cles0=== "" && cles1 === "" ){
+    
+                //alert("Veuillez renseigner les deux champs!")
+                alert("L'adresse est obligatoire!")
     
                 e.preventDefault();
-                document.querySelector(".input_search_type_js").classList.add("border_red")
+                // document.querySelector(".input_search_type_js").classList.add("border_red")
                 document.querySelector(".input_mots_cle_js").classList.add("border_red")
     
             }else if( cles0=== "" || cles1 === "" ){
@@ -60,7 +77,7 @@ if( document.querySelector(".form_content_search_navbar_js")){
                     e.preventDefault();
                 }
     
-            }
+            }*/
 
         }
 
@@ -206,25 +223,15 @@ if( document.querySelector("#show_list")){
 
 
 if( document.querySelector("#hide_list")){
-
-
-
     const btn_hide_list = document.querySelector("#hide_list");
-
-    
 
     btn_hide_list.addEventListener("click", () => {
 
         // contentMessageFlash.style.animation = "toShowFlass 0.8s linear forwards"
-
         document.querySelector(".left_content_home").style.animation ="toHideList 0.8s linear forwards";
-
         document.querySelector(".right_content_home").style.animation ="toScaleUp 0.8s linear forwards";
 
-
-
         document.querySelector("#show_list").style.display="block"
-
     })
 
 }
@@ -687,6 +694,10 @@ function getDataInSessionStorage(type){
     return sessionStorage.getItem(type);
 }
 
+function clearDataInSessionStorage(type){
+    return sessionStorage.removeItem(type);
+}
+
 function setDataInLocalStorage(type , value){
     localStorage.setItem(type, value );
 }
@@ -720,130 +731,25 @@ function addControlPlaceholdersferme(map) {
 
 
 function iconsChange() {
-    document.querySelector(".open-navleft-resto > i").classList.toggle("fa-bars")
-    document.querySelector(".open-navleft-resto > i").classList.toggle("fa-minuss")
-}
-
-
-if (document.querySelector("#close-list-depart-resto")) {
-    document.querySelector("#close-list-depart-resto").addEventListener("click", () => {
-        document.querySelector(".result_container_resto").style.display = "none"
-        iconsChange()
-    })
-}
-
-
-if (document.querySelector(".open-navleft-resto")) {
-    document.querySelector(".open-navleft-resto").addEventListener("click", () => {
-        document.querySelector(".result_container_resto").style.display = "block"
-        iconsChange()
-    })
-}
-
-
-if (document.querySelector("#close-list-depart-resto-spec")) {
-    document.querySelector("#close-list-depart-resto-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-resto-spec")) {
-    document.querySelector(".open-navleft-resto-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-resto-spec-arrond")) {
-    document.querySelector("#close-list-depart-resto-spec-arrond").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec_arrond").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-resto-arrond")) {
-    document.querySelector(".open-navleft-resto-arrond").addEventListener("click", () => {
-        document.querySelector(".result_container_resto_spec_arrond").style.display="block"
-        iconsChange()
-    })
-}
-
-
-if (document.querySelector("#close-list-depart-ferme")) {
-    document.querySelector("#close-list-depart-ferme").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-ferme")) {
-    document.querySelector(".open-navleft-ferme").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-ferme-spec")) {
-    document.querySelector("#close-list-depart-ferme-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme_spec").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-ferme-spec")) {
-    document.querySelector(".open-navleft-ferme-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_ferme_spec").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-station")) {
-    document.querySelector("#close-list-depart-station").addEventListener("click", () => {
-        document.querySelector(".result_container_station").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-station")) {
-    document.querySelector(".open-navleft-station").addEventListener("click", () => {
-        document.querySelector(".result_container_station").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-station-spec")) {
-    document.querySelector("#close-list-depart-station-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_station_spec").style.display="none"
-        iconsChange()
-    })
-}
-
-if (document.querySelector(".open-navleft-station-spec")) {
-    document.querySelector(".open-navleft-station-spec").addEventListener("click", () => {
-        document.querySelector(".result_container_station_spec").style.display="block"
-        iconsChange()
-    })
-}
-
-if (document.querySelector("#close-list-depart-golf-spec")) {
-    document.querySelector("#close-list-depart-golf-spec").addEventListener("click", () => {
-        document.querySelector(".content_navleft_spec_jheo_js").style.display="none"
-        iconsChange()
-    })
+    document.querySelector(".icon_open_nav_left_jheo_js").classList.toggle("fa-bars")
+    document.querySelector(".icon_open_nav_left_jheo_js").classList.toggle("fa-minuss")
 }
 
 if( document.querySelector(".icon_close_nav_left_jheo_js")){
     document.querySelector(".icon_close_nav_left_jheo_js").addEventListener('click' , () => {
-        document.querySelector(".content_navleft_jheo_js").style.display="none"
-        iconsChange()
+        if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_navleft_jheo_js").classList.add("d-none")
+            iconsChange()
+        };
     })
 }
 
 if( document.querySelector(".open_nav_left_jheo_js")){
     document.querySelector(".open_nav_left_jheo_js").addEventListener("click", () => {
-        document.querySelector(".content_navleft_jheo_js").style.display="block";
-        iconsChange()
+        if( document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_navleft_jheo_js").classList.remove("d-none")
+            iconsChange()
+        }
     })
 }
 
@@ -889,6 +795,8 @@ if (document.querySelector(".list-nav-bar")) {
         document.querySelector("#station-page").classList.add("active");
     }else if( activPage.includes("/golf")){
         document.querySelector("#golf-page").classList.add("active");
+    }else if( activPage.includes("/tabac")){
+        document.querySelector("#tabac-page").classList.add("active");
     }else if(activPage.length === 1 ){
         document.querySelector("#tous-page").classList.add("active");
     }
@@ -905,4 +813,273 @@ if( document.querySelector('.btn_close_comment_jheo_js') || document.querySelect
     })
 }
 
+/**upload file */
+let dropZones=document.querySelectorAll(".drop_zone__input_Nantenaina_css_js")
+if(dropZones.length > 0 && dropZones!=null){
+    document.querySelectorAll(".drop_zone__input_Nantenaina_css_js").forEach((inputElement) => {
+        const dropZoneElement = inputElement.closest(".drop_zone_Nantenaina_css_js");
+      
+        dropZoneElement.addEventListener("click", (e) => {
+          inputElement.click();
+        });
+      
+        // inputElement.addEventListener("change", (e) => {
+        //   if (inputElement.files.length) {
+        //     updateThumbnail(dropZoneElement, inputElement.files[0]);
+        //   }
+        // });
+      
+        dropZoneElement.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropZoneElement.classList.add("drop-zone--over");
+        });
+      
+        ["dragleave", "dragend"].forEach((type) => {
+          dropZoneElement.addEventListener(type, (e) => {
+            dropZoneElement.classList.remove("drop-zone--over");
+          });
+        });
+      
+        // dropZoneElement.addEventListener("drop", (e) => {
+        //   e.preventDefault();
+      
+        //   if (e.dataTransfer.files.length) {
+        //     //inputElement.files = e.dataTransfer.files;
+        //     //updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+        //   }
+      
+        //   dropZoneElement.classList.remove("drop-zone--over");
+        // });
+      });
+}
+ /**
+   * Updates the thumbnail on a drop zone element.
+   *
+   * @param {HTMLElement} dropZoneElement
+   * @param {File} file
+   */
+  function updateThumbnail(dropZoneElement, file, customFile) {
 
+    console.log(file.type)
+
+    let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+  
+    // First time - remove the prompt
+    if (dropZoneElement.querySelector(".drop_zone__prompt_Nantenaina_css_js")) {
+      dropZoneElement.querySelector(".drop_zone__prompt_Nantenaina_css_js").remove();
+    }
+  
+    // First time - there is no thumbnail element, so lets create it
+    if (!thumbnailElement) {
+      thumbnailElement = document.createElement("div");
+      thumbnailElement.classList.add("drop-zone__thumb");
+      dropZoneElement.appendChild(thumbnailElement);
+    }
+  
+    thumbnailElement.dataset.label = file.name;
+  
+    // Show thumbnail for image files
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+  
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+      };
+    } else {
+        // thumbnailElement.style.backgroundImage ="url('/public/assets/image/doc.jpg')" ;
+        thumbnailElement.style.backgroundImage ="url('/public/assets/image/doc.jfif')" ;
+    }
+  }
+
+let editor;
+
+CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
+    // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
+    toolbar: {
+        items: [
+            
+            'selectAll', '|',
+           
+            'bold', 'italic', 'strikethrough', 'underline', 'code', 'subscript', 'superscript', 'removeFormat', '|',
+            'bulletedList', 'numberedList', 'todoList', '|',
+            'outdent', 'indent', '|','undo', 'redo',
+            '-',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
+            'alignment', '|',
+            'link',  'blockQuote','|',
+             'horizontalLine', 'pageBreak', '|',
+            'textPartLanguage'
+            
+        ],
+        shouldNotGroupWhenFull: true
+    },
+    // Changing the language of the interface requires loading the language file using the <script> tag.
+    // language: 'es',
+    list: {
+        properties: {
+            styles: true,
+            startIndex: true,
+            reversed: true
+        }
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
+    heading: {
+        options: [
+            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+            { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+            { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+            { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+        ]
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
+    placeholder: 'Welcome to CKEditor&nbsp;5!',
+    // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+    fontFamily: {
+        options: [
+            'default',
+            'Arial, Helvetica, sans-serif',
+            'Courier New, Courier, monospace',
+            'Georgia, serif',
+            'Lucida Sans Unicode, Lucida Grande, sans-serif',
+            'Tahoma, Geneva, sans-serif',
+            'Times New Roman, Times, serif',
+            'Trebuchet MS, Helvetica, sans-serif',
+            'Verdana, Geneva, sans-serif'
+        ],
+        supportAllValues: true
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-size-feature
+    fontSize: {
+        options: [ 10, 12, 14, 'default', 18, 20, 22 ],
+        supportAllValues: true
+    },
+    // Be careful with the setting below. It instructs CKEditor to accept ALL HTML markup.
+    // https://ckeditor.com/docs/ckeditor5/latest/features/general-html-support.html#enabling-all-html-features
+    htmlSupport: {
+        allow: [
+            {
+                name: /.*/,
+                attributes: true,
+                classes: true,
+                styles: true
+            }
+        ]
+    },
+    // Be careful with enabling previews
+    // https://ckeditor.com/docs/ckeditor5/latest/features/html-embed.html#content-previews
+    htmlEmbed: {
+        showPreviews: true
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
+    link: {
+        decorators: {
+            addTargetToExternalLinks: true,
+            defaultProtocol: 'https://',
+            toggleDownloadable: {
+                mode: 'manual',
+                label: 'Downloadable',
+                attributes: {
+                    download: 'file'
+                }
+            }
+        }
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html#configuration
+    mention: {
+        feeds: [
+            {
+                marker: '@',
+                feed: [
+                    '@apple', '@bears', '@brownie', '@cake', '@cake', '@candy', '@canes', '@chocolate', '@cookie', '@cotton', '@cream',
+                    '@cupcake', '@danish', '@donut', '@dragée', '@fruitcake', '@gingerbread', '@gummi', '@ice', '@jelly-o',
+                    '@liquorice', '@macaroon', '@marzipan', '@oat', '@pie', '@plum', '@pudding', '@sesame', '@snaps', '@soufflé',
+                    '@sugar', '@sweet', '@topping', '@wafer'
+                ],
+                minimumCharacters: 1
+            }
+        ]
+    },
+    // The "super-build" contains more premium features that require additional configuration, disable them below.
+    // Do not turn them on unless you read the documentation and know how to configure them and setup the editor.
+    removePlugins: [
+        // These two are commercial, but you can try them out without registering to a trial.
+        // 'ExportPdf',
+        // 'ExportWord',
+        'CKBox',
+        'CKFinder',
+        'EasyImage',
+        // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
+        // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
+        // Storing images as Base64 is usually a very bad idea.
+        // Replace it on production website with other solutions:
+        // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/image-upload.html
+        // 'Base64UploadAdapter',
+        'RealTimeCollaborativeComments',
+        'RealTimeCollaborativeTrackChanges',
+        'RealTimeCollaborativeRevisionHistory',
+        'PresenceList',
+        'Comments',
+        'TrackChanges',
+        'TrackChangesData',
+        'RevisionHistory',
+        'Pagination',
+        'WProofreader',
+        // Careful, with the Mathtype plugin CKEditor will not load when loading this sample
+        // from a local file system (file://) - load this site via HTTP server if you enable MathType.
+        'MathType',
+        // The following features are part of the Productivity Pack and require additional license.
+        'SlashCommand',
+        'Template',
+        'DocumentOutline',
+        'FormatPainter',
+        'TableOfContents',
+        'PasteFromOfficeEnhanced'
+    ]
+}).then( newEditor => {
+    editor=newEditor
+    let html=showModalEditor()
+    editor.setData(html)
+
+});
+function showModalEditor(isG){
+    document.querySelector("#btnValidate").dataset.g = isG
+    let agenda = JSON.parse(sessionStorage.getItem("agenda"))
+    // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité 
+//</span>
+    return html=` 
+    <p>Madame / Monsieur 
+       <br>
+        C'est avec un immense plaisir que je vous annonce la tenue de l'événement 
+        <span id="eventTitleText" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.title}
+        </span>
+        , qui aura lieu à l'établissement
+        <span id="etabNameText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.name}
+        </span> 
+        , se trouvant à l'adresse 
+        <span id="etabAdresseText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.adresse}
+        </span> 
+         qui aura lieu le <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.dateStart}
+        </span> à partir de  
+        <span id="heureDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.heure_debut}
+        </span>  jusqu'à 
+        <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            ${agenda.heure_fin}
+        </span><br></p>
+    <p >
+      <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
+    </p>
+    <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
+    <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
+    <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
+    <button type="btn" disabled>Confirmation</button>
+    <p>Remerciement cordialement</p>`
+}

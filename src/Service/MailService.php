@@ -60,6 +60,9 @@ class MailService extends AbstractController {
     }
 
 
+    /**
+     * just send simple plain text
+     */
     public function sendEmail($email_to,$fullName_to,$objet,$message):void
 
     {
@@ -103,6 +106,31 @@ class MailService extends AbstractController {
                 'today' => $date_fr,
                 'fullNameTo' => $fullName_to,
                 'link' => $context["link"]
+            ]));
+
+        $customMailer->send($email);
+    }
+    public function sendLinkOnEmailAboutAgendaSharing($email_to,$fullName_to,$context):void
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($context["object_mail"]);
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email =  $email->html($this->renderView($context["template_path"],[
+                'email' => new WrappedTemplatedEmail($this->twig, $email),
+                'today' => $date_fr,
+                'fullNameTo' => $fullName_to,
+                'link' => $context["link_confirm"],
+                'content' => $context["content_mail"],
+                'Nom'=>$fullName_to
             ]));
 
         $customMailer->send($email);

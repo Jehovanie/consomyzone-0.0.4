@@ -9,6 +9,7 @@
 	{# <script src="{{asset('assets/js/visio/visio_external_api.js')}}" defer></script> #}
 	{# <script src='https://meet.jit.si/external_api.js'></script> #}
 	<script src='https://8x8.vc/external_api.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% endblock %}
 
@@ -157,8 +158,8 @@
 					</div>
 				</div>
 
-				<div class="btn-group w-100" id="visio_group_btn" style="display:none">
-					<button type="button" class="btn btn-outline-primary waves-effect non_active"><i class="fas fa-plus pe-2" aria-hidden="true"></i>Créer un visio groupé</button>
+				<div class="btn-group w-100" id="visio_group_btn" style="display:none" onclick="createVisioGroup()">
+					<button type="button" class="btn btn-outline-primary waves-effect"><i class="fas fa-plus pe-2" aria-hidden="true"></i>Créer une réunion</button>
 				</div>
 
 				<!-- Chat List boucle -->
@@ -169,7 +170,7 @@
 
 						{% for amis in amisTributG %}
 
-							{% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+							{% if not (amis.id|number_format is same as(app.user.id|number_format)) and amis.is_online == 1 %}
 
 								<div class="cg-chat lc-chat mg-chat sh-chat ol-chat rl-chat tq-chat is-chat user_friends" data-toggle-user-id={{amis.id}} tooltip={{amis.email}}>
 									<div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">

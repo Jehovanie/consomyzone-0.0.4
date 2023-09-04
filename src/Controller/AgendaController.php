@@ -18,6 +18,7 @@ use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
+use App\Repository\CodeinseeRepository;
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
@@ -687,9 +688,9 @@ class AgendaController extends AbstractController
         $newAgenda= [
             "title" => $title,
             "type" => $type,
-            "isEtabCMZ" => $isEtabCMZ,
-            "isGolfCMZ" => $isGolfCMZ,
-            "isRestoCMZ" => $isRestoCMZ,
+            "isEtabCMZ" => $isEtabCMZ ? 1 : 0 ,
+            "isGolfCMZ" => $isGolfCMZ ? 1 : 0 ,
+            "isRestoCMZ" => $isRestoCMZ ? 1 : 0 ,
             "name" => $name,
             "adresse" => $adresse,
             "description" => $description,
@@ -701,6 +702,7 @@ class AgendaController extends AbstractController
             "file_type" => $fileType ? $fileType : null,
             "file_path" => $fileName ? $fileName : null,
             "status" => 0,
+            "user_id" => $this->getUser()->getId()
         ];
 
         $agendaTableName=$this->getUser()->getNomTableAgenda();
@@ -1574,7 +1576,31 @@ class AgendaController extends AbstractController
         
     }
 
+    // TODO codinsee
+    #[Route("/api/user/agenda/arrondissement/list/{dep}", name: 'agenda_all_arrondissement', methods: ["GET"])]
+    public function getAllArrondissement(CodeinseeRepository $codeinseeRepository, $dep) {
 
+        $codeIns = $codeinseeRepository->getAllCodinsee($dep);
+
+        return $this->render('agenda/listArrondissement.twig', [
+            "codeIns" => $codeIns
+        ]);
+        
+    }
+
+
+    #[Route("/api/user/agenda/arrondissement/restaurant/codeinse", name: 'agenda_resto_codinse_arrondissement', methods: ["GET"])]
+    public function getAllRestoByArrondissement(BddRestoRepository $bddResto, Request $request) {
+
+        $dataRequest = $request->query->all();
+        $codeDep = $dataRequest["id_dep"];
+        $codinsee = $dataRequest["codinsee"];
+        
+        $datas = $bddResto->getRestoByCodinsee($codinsee, $codeDep);
+        
+        return $this->json($datas);
+        
+    }
     
 
     /** 
@@ -1632,8 +1658,9 @@ class AgendaController extends AbstractController
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
         
-        $allTribuT = $tributTService->getAllTribuT($userId);
-        
+        // $allTribuT = $tributTService->getAllTribuT($userId);
+        $allTribuT = $userRepository->getListTableTribuT();
+
         // $tableTribuTName = $request->query->get("tribuTName");
         // $TribuTName = $tributTService->getPartisanOfTribuT($allTribuT);
         // dd($TribuTName);
@@ -1668,18 +1695,11 @@ class AgendaController extends AbstractController
                 "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
             ];
 
-
-
-            array_push($results, $result);
+            if($tributG["user_id"] != $userId)
+                array_push($results, $result);
         }
 
-
-
         quit:
-        
-        // dd($result['photoProfil']);
-        
-
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
         return $this->render('agenda/partage_agenda.html.twig',[

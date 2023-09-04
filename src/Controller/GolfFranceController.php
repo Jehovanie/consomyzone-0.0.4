@@ -59,6 +59,7 @@ class GolfFranceController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
                     ];
 
                     ///get it
@@ -79,7 +80,6 @@ class GolfFranceController extends AbstractController
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         GolfFranceRepository $golfFranceRepository,
-        GolfFranceService $golfFranceService,
     ){
 
         $golfs= [];
@@ -104,10 +104,6 @@ class GolfFranceController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
     ){
-
-        $golfs= [];
-        $golfs= $golfFranceRepository->findAll();
-
 
         ///current user connected
         $user = $this->getUser();
@@ -141,6 +137,7 @@ class GolfFranceController extends AbstractController
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
                     ];
 
                     ///get it
@@ -200,9 +197,6 @@ class GolfFranceController extends AbstractController
         $nom_dep, $id_dep, $golfID,
         GolfFranceRepository $golfFranceRepository,
         Status $status, 
-        TributGService $tributGService,
-        UserRepository $userRepository,
-        EntityManagerInterface $entityManager,
     ){
         ///current user connected
         $user = $this->getUser();

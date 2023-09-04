@@ -472,8 +472,8 @@ class AgendaService extends PDOConnexionService
         extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
         $statement = $this->getPDO()->prepare(
-            "INSERT INTO $nom_table_agenda (title, name, description, isEtabCMZ, isGolfCMZ, isRestoCMZ, type, status, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant) 
-            values (:title, :name, :description, :isEtabCMZ, :isGolfCMZ, :isRestoCMZ, :type, :status, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant)"
+            "INSERT INTO $nom_table_agenda (title, name, description, isEtabCMZ, isGolfCMZ, isRestoCMZ, type, status, adresse, file_type, file_path, dateStart, dateEnd, heure_debut, heure_fin, max_participant, user_id) 
+            values (:title, :name, :description, :isEtabCMZ, :isGolfCMZ, :isRestoCMZ, :type, :status, :adresse, :file_type, :file_path, :dateStart, :dateEnd, :heure_debut, :heure_fin, :max_participant, :user_id)"
         );
 
         if(!$isEtabCMZ){
@@ -497,6 +497,7 @@ class AgendaService extends PDOConnexionService
         $statement->bindParam(':heure_debut', $heureStart);
         $statement->bindParam(':heure_fin', $heureEnd);
         $statement->bindParam(':max_participant', $participant);
+        $statement->bindParam(':user_id', $user_id);
 
         $result = $statement->execute();
 
@@ -699,11 +700,12 @@ class AgendaService extends PDOConnexionService
             "`file_type` varchar(40) DEFAULT NULL,".
             "`file_path` varchar(500) DEFAULT NULL,".
             "`status` tinyint(1) NOT NULL DEFAULT 0,".
-            "`max_participant` int(11) NOT NULL DEFAULT 0".
-            "`isEtabCMZ` tinyint(1) NOT NULL DEFAULT 0,".
-            "`isGolfCMZ` tinyint(1) NOT NULL DEFAULT 0,".
-            "`isRestoCMZ` tinyint(1) NOT NULL DEFAULT 0,".
-           " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+            "`max_participant` int(11) NOT NULL DEFAULT 0,".
+            "`isEtabCMZ` tinyint(1) DEFAULT 0,".
+            "`isGolfCMZ` tinyint(1) DEFAULT 0,".
+            "`isRestoCMZ` tinyint(1) DEFAULT 0,".
+            "`user_id` int(11) DEFAULT NULL".
+            " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
     }

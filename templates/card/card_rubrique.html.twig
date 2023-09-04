@@ -80,6 +80,23 @@
                 </div>
             {% endif %}
 
+             {% if type == "tabac" %}
+                <div class="cmz-categories-list">
+                    {% if rubrique.barTabac > 0 %}
+                        <span class="cmz-category">Bar Tabac</span>
+                    {% endif %}
+                    {% if rubrique.bureauTabac > 0 %}
+                        <span class="cmz-category">Bureaux Tabac</span>
+                    {% endif %}
+                    {% if rubrique.caveCigare > 0 %}
+                        <span class="cmz-category">Cave Cigare</span>
+                    {% endif %}
+                    {% if rubrique.tabacPresse > 0 %}
+                        <span class="cmz-category">Tabac Presse</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
             {% if rubrique.tel is defined %}
                 {% if rubrique.tel %}
                     <div class="cmz-tel mb-2">
