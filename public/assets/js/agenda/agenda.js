@@ -1322,7 +1322,7 @@ function showPartisanAgenda(tribu_t_name) {
                             <td>${lastName}</td>
                             <td></td>
                             <td>${json.roles}</td>
-                            <td>
+                            <td  class="content-checkbox">
                                 <input type="checkbox" name="selectOui" class="select-tribu-t-oui" data-id="${json.user_id}" data-tribu="${tribu_t_name}" data-toggle-last="${lastName}" data-toggle-pdp="${profil}" value="${firstName}" onchange="handleChange(this)">
                             </td>
                        </tr>
@@ -1332,11 +1332,17 @@ function showPartisanAgenda(tribu_t_name) {
                             document.querySelector(`.table-partisans-${tribu_t_name}-${lastName}`).remove()
                         })
                     }
+
                 })    
             })
         }
     })
-    
+    if (document.querySelector(".cta_close_list_partisons_t")) {
+        document.querySelector(".cta_close_list_partisons_t").addEventListener('click', () => { 
+            alert('Close')
+            document.querySelector(`#listPartisantInTribu_${tribu_t_name}`).close()
+        })
+    }
    
 }
 
