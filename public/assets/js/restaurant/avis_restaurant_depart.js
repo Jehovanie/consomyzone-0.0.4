@@ -56,7 +56,7 @@ window.addEventListener('load', () => {
         }, 5000)   
     }
 
-
+    /// Send note post
     document.querySelector("#Submit-Avis-resto-tom-js").onclick = () => {
 
         let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
@@ -75,6 +75,7 @@ window.addEventListener('load', () => {
             document.querySelector(".note_number_jheo_js").value = "";
             document.querySelector(".note_avis_jheo_js").value = "";
 
+            ///// remove alert card and add chargement spinner
             if( document.querySelector(".card_avis_resto_empty_jheo_js")){
                 document.querySelector(".card_avis_resto_empty_jheo_js").remove();
 
@@ -180,7 +181,7 @@ window.addEventListener('load', () => {
 
                 const btn_update = document.querySelector(".send_avis_jheo_js");
 
-                btn_update.setAttribute("id", "dfdf")
+                // btn_update.setAttribute("id", "dfdf")
                 // btn_update.setAttribute("onclick","_kidMo(event)")
 
                 if( btn_update.classList.contains("btn-warning")){
@@ -211,22 +212,31 @@ function showNemberOfAvis(idRestaurant,parent) {
 function showNoteGlobale(idRestaurant) { 
     fetch(`/avis/restaurant/global/${idRestaurant}`, {
         methode:"GET"
-    }).then(r => {
-        r.json().then(jsons => {
-            let globalNote=0.00
-            if (jsons) {
-                let totalNote=0.00
-                for (let json of jsons) {
-                    totalNote+=parseFloat(json["note"])
-                }
-                console.log(totalNote)
-                globalNote = totalNote / jsons.length
-                createGlobalNote(globalNote)
-
+    }).then(r => r.json())
+    .then(response => {
+        let globalNote=0.00;
+        let totalNote=0.00;
+        if( response.length > 0 ){
+            for (let avis of response) {
+                totalNote+=parseFloat(avis["note"])
             }
-
-        })
+            globalNote= totalNote /(response.length);
+            createGlobalNote(globalNote)
+        }
     })
+
+    // .then(jsons => {
+    //     let globalNote=0.00
+    //     if (jsons) {
+    //         let totalNote=0.00
+    //         for (let json of jsons) {
+    //             totalNote+=parseFloat(json["note"])
+    //         }
+    //         console.log(totalNote)
+    //         globalNote = totalNote / jsons.length
+    //         createGlobalNote(globalNote)
+    //     }
+    // })
 }
 
 function showListAvie() {
@@ -246,30 +256,48 @@ function showListAvie() {
 
 
 function createGlobalNote(globalNote) {
-    let rankRange = [0, 1, 2, 3, 4]
+    // let rankRange = [0, 1, 2, 3, 4]
     // let stars = document.querySelectorAll("body > main > div.content_global > div > "+
     //     "div.content_home > div.left_content_home > div > div > div.content_note > div.start > i")
-    let stars = document.querySelectorAll("#details-coord > div.p-4 > div.content_note > div.start > i")
-    for (let star of stars) {
-        if (rankRange.includes(parseInt(star.dataset.rank, 10))) {
-            if(parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
-                    star.style.color = "#F5D165"
-            if (globalNote % 1 != 0) {
-                //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
-                if (parseInt(star.dataset.rank, 10) == (Math.trunc(globalNote) + 1)) {
-                      //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
-                    let rateYello = (globalNote % 1) *100
-                    let rateBlack=100 -rateYello
-                    star.style = `
-                     background: linear-gradient(90deg, #F5D165 ${rateYello}%, #000 ${rateBlack}%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    `
-                    
-                }
+    // let stars = document.querySelectorAll("#details-coord > div.p-4 > div.content_note > div.start > i")
+    // for (let star of stars) {
+    //     if (rankRange.includes(parseInt(star.dataset.rank, 10))) {
+    //         if(parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
+    //                 star.style.color = "#F5D165"
+    //         if (globalNote % 1 != 0) {
+    //             //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
+    //             if (parseInt(star.dataset.rank, 10) == (Math.trunc(globalNote) + 1)) {
+    //                   //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
+    //                 let rateYello = (globalNote % 1) *100
+    //                 let rateBlack=100 -rateYello
+    //                 star.style = `
+    //                  background: linear-gradient(90deg, #F5D165 ${rateYello}%, #000 ${rateBlack}%);
+    //                 -webkit-background-clip: text;
+    //                 -webkit-text-fill-color: transparent;
+    //                 `
+    //             }
+    //         }
+    //     }
+    // }
+
+    let startHTML = "";
+    let rate= globalNote - Math.trunc(globalNote);
+    let rateYellow = rate * 100;
+    let rateBlack= 100 - rateYellow;
+    for(let i=0; i< 4; i++ ){
+        if( i < Math.trunc(globalNote) ){
+            startHTML += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+        }else{
+            if( rate != 0 ){
+                startHTML += `<i class="fa-solid fa-star" data-rank="1" style ="background: linear-gradient(90deg, #F5D165 ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>`
+                rate = 0;
+            }else{
+                startHTML += `<i class="fa-solid fa-star" data-rank="1"></i>`
             }
         }
     }
+
+    document.querySelector(".start_jheo_js").innerHTML = startHTML;
 }
 
 
@@ -321,18 +349,21 @@ function showAvis(currentUserId, idRestaurant) {
         `
     }
 
-    const btn_modal_avis_resto = document.querySelector(".btn_modal_avis_resto_jheo_js");
+    if( document.querySelector(".btn_modal_avis_resto_jheo_js")){
+        const btn_modal_avis_resto = document.querySelector(".btn_modal_avis_resto_jheo_js");
+        btn_modal_avis_resto.innerText = "Donné votre avis";
 
-    btn_modal_avis_resto.innerText = "Donné votre avis";
-    if(btn_modal_avis_resto.classList.contains("non_active")){
-        btn_modal_avis_resto.classList.remove("non_active");
+        if(btn_modal_avis_resto.classList.contains("non_active")){
+            btn_modal_avis_resto.classList.remove("non_active");
+        }
     }
+
 
     document.querySelector(".open_modal_avis_resto_jheo_js").click();
 
     const btn_update = document.querySelector(".send_avis_jheo_js");
 
-    btn_update.setAttribute("id", "dfdf")
+    // btn_update.setAttribute("id", "dfdf")
     // btn_update.setAttribute("onclick","_kidMo(event)")
 
     if( !btn_update.classList.contains("btn-warning")){
@@ -399,28 +430,30 @@ function showModifArea(idRestaurant, currentUserId) {
         .then(r => r.json())
         .then(jsons => {
             if (jsons) {
+                //// before show all comments, delete the content.
+                document.querySelector(".all_avis_jheo_js").innerHTML = "";
+
                 console.log(jsons)
                 console.log("currentUserId : " + currentUserId)
                 for (let json of jsons) { 
-                    console.log("jsonUserId : " + json["user"]["id"])
                     const b = (currentUserId == json["user"]["id"])
-                    console.log("b : " + b)
-                    if (b) {
-                        if (document.querySelector("#givs-avis-resto-tom-js").style.display != "none") {
-                            document.querySelector("#givs-avis-resto-tom-js").style.display = "none"
-                            // createModifArea(json,b)
-                            createShowAvisAreas(json,b)
-                        } else {
-                            if (document.querySelector(".fIQYlfPFT")) {
-                                document.querySelector(".fIQYlfPFT").parentNode.removeChild(document.querySelector(".fIQYlfPFT"))
-                                // createModifArea(json,b)
-                                createShowAvisAreas(json,b)
-                            }
-                        }
-                        break;
-                    }else{
-                        console.log("Oooopssssssssssssssss vous n'êtes pas autorisé !")
-                    } 
+                    createShowAvisAreas(json,b)
+                    // if (b) {
+                    //     if (document.querySelector("#givs-avis-resto-tom-js").style.display != "none") {
+                    //         document.querySelector("#givs-avis-resto-tom-js").style.display = "none"
+                    //         // createModifArea(json,b)
+                    //         createShowAvisAreas(json,b)
+                    //     } else {
+                    //         if (document.querySelector(".fIQYlfPFT")) {
+                    //             document.querySelector(".fIQYlfPFT").parentNode.removeChild(document.querySelector(".fIQYlfPFT"))
+                    //             // createModifArea(json,b)
+                    //             createShowAvisAreas(json,b)
+                    //         }
+                    //     }
+                    //     break;
+                    // }else{
+                    //     console.log("Oooopssssssssssssssss vous n'êtes pas autorisé !")
+                    // } 
                 }
                 
             }

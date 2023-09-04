@@ -527,15 +527,22 @@ class RestaurantController extends AbstractController
         $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
 
         $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+
+        // dump(count($global_note) );
+
         $note_temp=0;
         foreach ($global_note as $note ) {
             $note_temp += $note->getNote(); 
         }
+
+        // dump($note_temp);
         $details["avis"] = [
             "nbr" => $nbr_avis_resto,
             "note" => $global_note ?  $note_temp / count($global_note) : 0 
         ];
 
+        // dd($details["avis"]);
+        
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
             return $this->json([
                 "details" => $details,
@@ -679,9 +686,11 @@ class RestaurantController extends AbstractController
         $user = $this->getUser();
         $resto = $resto->find($idRestaurant);
         $avisResto = new AvisRestaurant();
+
         $requestJson = json_decode($request->getContent(), true);
         $avis = $requestJson["avis"];
         $note = $requestJson["note"];
+        
         //dd($user,$resto);
         $avisResto->setAvis($avis)
             ->setnote($note)
