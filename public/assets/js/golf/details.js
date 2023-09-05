@@ -4,10 +4,12 @@ function getDetailFromListLeft(depart_name, depart_code, id) {
 
 
 function setGolfFinished(goldID){
+    OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
     fecthGolfAction(goldID, "finished")
 }
 
 function cancelGolfFinished(goldID){
+    OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
     fecthGolfAction(goldID, "cancel")
 }
 

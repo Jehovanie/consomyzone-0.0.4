@@ -107,6 +107,7 @@ class MarckerClusterGolf extends MapModule {
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
+                console.log(item)
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
                 let pathIcon="";
@@ -252,6 +253,45 @@ class MarckerClusterGolf extends MapModule {
             }
         });
     }
+
+    updateStateGolf(status, id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                let pathIcon= "";
+
+                if( status ==="fait"){
+                    pathIcon='/assets/icon/NewIcons/icon-vert-golf-bleu.png';
+                }else if( status === "afaire"){
+                    pathIcon='/assets/icon/NewIcons/icon-vert-golf-orange.png';
+                }else{ /// aucun 
+                    pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
+                }
+
+                const icon_R = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                        iconSize: [35,55],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
+                    }
+                })
+                marker.setIcon(new icon_R);
+            }
+        });
+
+        this.markers.refreshClusters();
+
+
+        this.data.forEach(item => {
+            if( parseInt(item.id) === parseInt(id) ){
+                console.log(item)
+            }
+        })
+    }
+
+
 
     async addPeripheriqueMarker(new_size) {
         try {
