@@ -4,7 +4,6 @@ if(dropZones)
             const dropZoneElement = inputElement.closest(".drop_zone_Nantenaina_css_js");
             inputElement.addEventListener("change", (e) => {
                 if (e.target.files.length) {
-                    console.log(e.target)
                     checkFileExtension(dropZoneElement,e.target.files[0])
                 }
             });
@@ -38,28 +37,24 @@ function makeLoadingEmail(){
 function checkFileExtension(dropZoneElement,file){
    
     if(file.type ==="text/csv"){
-     
-        updateThumbnail(dropZoneElement, file);
-        findDefColumn(file);
+        findDefColumn(dropZoneElement, file);
     }else
         swal("Attention !", "Veuillez choisir un fichier CSV", "error")
         .then((value) => {
             // location.reload();
-        });
+    });
 }
 
-function findDefColumn(file){
+function findDefColumn(dropZoneElement, file){
     let reader=new FileReader
     reader.onload=()=>{
-        console.log(reader.result)
         let csvContent
         try{
             csvContent= b64DecodeUnicode(reader.result.split(",")[1])
-            console.log(csvContent)
+
             let header = csvContent.trim().split('\r\n')[0]
             
             header= header.normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/[^a-zA-Z;]/g, "").toLowerCase()
-            console.log(header)
             let param={}
             let hasName=false, hasFirstName=false,hasMail=false
             for (const [index, value] of header.split(";").entries()) {
@@ -109,7 +104,10 @@ function findDefColumn(file){
             }
 
             if(hasMail && hasFirstName && hasName){
-                console.log(param)
+                sessionStorage.setItem("csvContent", csvContent)
+                sessionStorage.setItem("headerIndex", JSON.stringify(param))
+                updateThumbnail(dropZoneElement, file);
+                document.querySelector(".btn_share_csv_file_nanta_js").classList.remove("btn-second-primary")
             }else{
                 let errorFisrtName="", errorName="", errorMail=""
                 if(!hasFirstName)
@@ -129,19 +127,14 @@ function findDefColumn(file){
             }
         }catch(exception){
             if(exception instanceof URIError){
-                swal("Attention !","votre fichier n'est pas encodé en UTF-8", "error")
+                swal("Attention !","Votre fichier n'est pas encodé en UTF-8", "error")
                 .then((value) => {
                     // location.reload();
                 });
             }else{
                 console.log(exception)
             }
-        }
-    
-        
-       
-
-        
+        }  
     }
     reader.readAsDataURL(file)
 }
@@ -174,10 +167,38 @@ function sendInvitation(event){
     let data=editor.getData()
 
     let isG = event.target.dataset.g
-
+    console.log("isG : " + isG);
     let dataInfos = []
+    let isValidateEmail = true
+    if(isG){
+        isValidateEmail = getUserInfoForSharing(isG, dataInfos)
+    }else{
+        let contenu = sessionStorage.getItem("csvContent")
+        let headerIndex = JSON.parse(sessionStorage.getItem("headerIndex"))
+        for (let i = 0; i < contenu.trim().split('\r\n').length; i++) {
 
-    getUserInfoForSharing(isG, dataInfos)
+            if(i>0){
+                let email = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexMail]
+                if(validateEmail(email)){
+                    dataInfos.push({
+                        from_id:null,
+                        to_id:null,
+                        lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
+                        firstname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexFirstName],
+                        email : email
+                    })
+                }else{
+                    swal("Erreur !","Vérifier l'adresse email dans votre fichier !", "error")
+                        .then((value) => {
+                    });
+                    resetFilePartage()
+                    isValidateEmail = false
+                    break;
+                }
+            }
+            
+        }
+    }
 
     let dataEmail={
         emailCore:data,
@@ -194,23 +215,65 @@ function sendInvitation(event){
         body: JSON.stringify(dataEmail)
     })
 
-    makeLoadingEmail()
-
-    fetch(request).then(r=>{
+    if(isValidateEmail){
+        makeLoadingEmail()
     
-    if(r.status===200 && r.ok){
-        deleteChargement("chargement_content");
-        swal("Bravo !","Invitation bien envoyée", "success")
-                .then((value) => {
-                    $("#emailTemplateModal").modal("hide")
-            });
+        fetch(request).then(r=>{
+        
+            if(r.status===200 && r.ok){
+                deleteChargement("chargement_content");
+                swal("Bravo !","Invitation bien envoyée", "success")
+                        .then((value) => {
+                            if(isG){
+                                if(isG ==="1"){
+                                    let allTr = document.querySelectorAll("#list-tribu-g-partage-agenda> tbody >tr")
+                                    
+                                    allTr.forEach(elem => {
+                                        let isChecked = elem.querySelector("input").checked
+                                    
+                                        if(isChecked){
+                                            elem.querySelector("input").click()                                 
+                                        }
+                                    })
+    
+                                    document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+                                
+                                }else if(isG ==="0"){
+                            
+                                    let allTr = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
+                                    
+                                    allTr.forEach(elem => {
+                                        let isChecked = elem.querySelector("input").checked
+                                        if(isChecked){
+                                            elem.querySelector("input").click()
+                                        }
+                                    })
+    
+                                    document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+    
+                                }
+                            }else{
+                                document.querySelector(".drop_zone_Nantenaina_css_js").innerHTML = `<span class="drop_zone__prompt_Nantenaina_css_js">Cliquez sur la bannière 
+                                ou glissez le fichier ici directement</span>
+                                <input type="file" name="fileAgendaShare" id="fileAgendaShare" class="drop_zone__input_Nantenaina_css_js" accept='text/csv'>`
+                                document.querySelector(".btn_share_csv_file_nanta_js").classList.add("btn-second-primary")
+                                sessionStorage.removeItem("csvContent");   
+                                sessionStorage.removeItem("headerIndex");
+                            }
+                            $("#emailTemplateModal").modal("hide")
+                    });
+            }else{
+                deleteChargement("chargement_content");
+                swal("Erreur !","Erreur 500", "error")
+                        .then((value) => {
+                            $("#emailTemplateModal").modal("hide")
+                    });
+            }
+        })
     }else{
-        swal("Erreur !","Erreur 500", "error")
-                .then((value) => {
-                    $("#emailTemplateModal").modal("hide")
-            });
+        $("#emailTemplateModal").modal("hide")
     }
-})
+
 }
 
 function sendEventByMessage(e){
@@ -260,11 +323,34 @@ function sendEventByMessage(e){
 }
 
 function getUserInfoForSharing(isG, dataInfos){
-
+    let isValidateEmail = true
     if(isG ==="1"){
         let allTr = document.querySelectorAll("#list-tribu-g-partage-agenda> tbody >tr")
-        
-        allTr.forEach(elem => {
+        for (let i = 0; i < allTr.length; i++) {
+            let isChecked = allTr[i].querySelector("input").checked
+            if(isChecked){
+                let to_id = allTr[i].querySelector(".lastname").dataset.id
+                let lastname = allTr[i].querySelector(".lastname").textContent
+                let firstname = allTr[i].querySelector(".firstname").textContent
+                let email = allTr[i].querySelector(".email").textContent
+                if(validateEmail(email)){
+                    dataInfos.push({
+                        from_id:allTr[i].parentElement.dataset.id,
+                        to_id:to_id,
+                        lastname : lastname,
+                        firstname : firstname,
+                        email : email
+                    })
+                }else{
+                    swal("Erreur !","Il y a un adresse email non valide !", "error")
+                        .then((value) => {
+                    });
+                    isValidateEmail = false
+                    break;
+                }
+            }
+        }
+        /*allTr.forEach(elem => {
             let isChecked = elem.querySelector("input").checked
            
             if(isChecked){
@@ -272,37 +358,101 @@ function getUserInfoForSharing(isG, dataInfos){
                 let lastname = elem.querySelector(".lastname").textContent
                 let firstname = elem.querySelector(".firstname").textContent
                 let email = elem.querySelector(".email").textContent
-                dataInfos.push({
-                    from_id:elem.parentElement.dataset.id,
-                    to_id:to_id,
-                    lastname : lastname,
-                    firstname : firstname,
-                    email : email
-                })
+                if(validateEmail(email)){
+                    dataInfos.push({
+                        from_id:elem.parentElement.dataset.id,
+                        to_id:to_id,
+                        lastname : lastname,
+                        firstname : firstname,
+                        email : email
+                    })
+                }else{
+                    swal("Erreur !","Il y a un adresse email non valide !", "error")
+                        .then((value) => {
+                    });
+                    isValidateEmail = false
+                }
                
             }
-        })
+        })*/
     
     }else if(isG ==="0"){
 
         let allTr = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
         
-        allTr.forEach(elem => {
+        for (let i = 0; i < allTr.length; i++) {
+            let isChecked = allTr[i].querySelector("input").checked
+            if(isChecked){
+                let to_id = allTr[i].querySelector(".lastname").dataset.id
+                let lastname = allTr[i].querySelector(".lastname").textContent
+                let firstname = allTr[i].querySelector(".firstname").textContent
+                let email = allTr[i].querySelector(".email").textContent
+                if(validateEmail(email)){
+                    dataInfos.push({
+                        from_id:allTr[i].parentElement.dataset.id,
+                        to_id:to_id,
+                        lastname : lastname,
+                        firstname : firstname,
+                        email : email
+                    })
+                }else{
+                    swal("Erreur !","Il y a un adresse email non valide !", "error")
+                        .then((value) => {
+                    });
+                    isValidateEmail = false
+                    break;
+                }
+            }
+        }
+
+        /*allTr.forEach(elem => {
             let isChecked = elem.querySelector("input").checked
             if(isChecked){
                 let to_id = elem.querySelector(".lastname").dataset.id
                 let lastname = elem.querySelector(".lastname").textContent
                 let firstname = elem.querySelector(" .firstname").textContent
                 let email = elem.querySelector(" .email").textContent
-                dataInfos.push({
-                    from_id:elem.parentElement.dataset.id,
-                    to_id:to_id,
-                    lastname : lastname,
-                    firstname : firstname,
-                    email : email
-                })
+                if(validateEmail(email)){
+                    dataInfos.push({
+                        from_id:elem.parentElement.dataset.id,
+                        to_id:to_id,
+                        lastname : lastname,
+                        firstname : firstname,
+                        email : email
+                    })
+                }else{
+                    swal("Erreur !","Il y a un adresse email non valide !", "error")
+                        .then((value) => {
+                    });
+                    isValidateEmail = false
+                }
             }
-        })
+        })*/
     
     }
+
+    return isValidateEmail;
+}
+
+function resetListPartageG(){
+    let allTr = document.querySelectorAll("#list-tribu-g-partage-agenda> tbody >tr")
+                            
+    allTr.forEach(elem => {
+        let isChecked = elem.querySelector("input").checked
+        
+        if(isChecked){
+            elem.querySelector("input").click()                                 
+        }
+    })
+
+    document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+}
+
+function resetFilePartage(){
+    document.querySelector(".drop_zone_Nantenaina_css_js").innerHTML = `<span class="drop_zone__prompt_Nantenaina_css_js">Cliquez sur la bannière 
+                        ou glissez le fichier ici directement</span>
+                        <input type="file" name="fileAgendaShare" id="fileAgendaShare" class="drop_zone__input_Nantenaina_css_js" accept='text/csv'>`
+    document.querySelector(".btn_share_csv_file_nanta_js").classList.add("btn-second-primary")
+    sessionStorage.removeItem("csvContent");   
+    sessionStorage.removeItem("headerIndex");
 }

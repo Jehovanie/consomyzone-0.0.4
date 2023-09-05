@@ -2126,3 +2126,14 @@ function slideToRight(elem, html) {
         elem.parentElement.style.display = "none"
         elem.parentElement.parentElement.innerHTML = html
 }
+
+function validateEmail(mail) 
+{
+let reg = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gmi
+ if (reg.test(mail))
+  {
+    return true
+  }else{
+      return false
+  }
+}

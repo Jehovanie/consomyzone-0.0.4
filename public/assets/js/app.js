@@ -860,8 +860,6 @@ if(dropZones.length > 0 && dropZones!=null){
    */
   function updateThumbnail(dropZoneElement, file, customFile) {
 
-    console.log(file.type)
-
     let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
   
     // First time - remove the prompt
@@ -1043,11 +1041,19 @@ CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
     editor=newEditor
     let html=showModalEditor()
     editor.setData(html)
-
 });
-function showModalEditor(isG){
-    document.querySelector("#btnValidate").dataset.g = isG
-    document.querySelector("#btnValidateMessage").dataset.g = isG
+function showModalEditor(isG, isListeInfile=false){
+
+    if(isListeInfile){
+        document.querySelector("#btnValidate").removeAttribute("data-g")
+        document.querySelector("#btnValidateMessage").removeAttribute("data-g")
+        document.querySelector("#btnValidateMessage").style.display = "none"
+    }else{
+        document.querySelector("#btnValidateMessage").style.display = "block"
+        document.querySelector("#btnValidate").dataset.g = isG
+        document.querySelector("#btnValidateMessage").dataset.g = isG
+    }
+
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité 
 //</span>

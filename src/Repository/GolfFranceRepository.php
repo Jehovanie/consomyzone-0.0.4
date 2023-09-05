@@ -173,7 +173,7 @@ class GolfFranceRepository extends ServiceEntityRepository
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data["id"]]);
-                $data["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait()] : null;
+                $data["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait()] : ["a_faire" => null, "fait" => null];
             }
         }
         return $data;

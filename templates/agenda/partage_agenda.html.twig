@@ -147,12 +147,9 @@
                                         
                                     </table>
                                     <div class="row btn-partage-agenda mt-5">
-                                        <div class="col-10">
-                                            {# <button class="btn btn-primary btn-second-primary " type="button"  data-bs-toggle="modal" data-bs-target="#ModalPartisonsSelect" id="getPartisonsSelectAgenda" >Partager</button> #}
+                                        <div>
                                             <button class="btn btn-primary btn-second-primary" type="button" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" id="shareAgendaForPartisan" onclick="showModalEditor(1)">Partager</button>
-                                        </div>
-                                        <div class="col-2">
-                                            <button class="btn btn-danger">Annuler</button>
+                                            <button class="btn btn-danger" onclick="resetListPartageG()">Annuler</button>
                                         </div>
                                     </div>
                                 </div>
@@ -246,8 +243,9 @@
                                         {{ inputPartage.inputPartageAgenda()}}
                                     </div>
                                     <div class="row btn-partage-agenda mt-5">
-                                        <div class="col-10 disabled-link">
-                                            <button class="btn btn-secondary non_active" type="button" disabled>Partager</button>
+                                        <div>
+                                            <button class="btn btn-primary  btn-second-primary btn_share_csv_file_nanta_js" type="button" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" onclick="showModalEditor(1, true)">Partager</button>
+                                            <button class="btn btn-danger" onclick="resetFilePartage()">Annuler</button>
                                         </div>
                                     </div>
                                 </div>
