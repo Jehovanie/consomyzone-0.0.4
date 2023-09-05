@@ -223,10 +223,10 @@ class MessageController extends AbstractController
             $type= "text";
         }
 
-        if($dataInfos){
-           foreach ($dataInfos as $key) {
+        if(isset($dataInfos)){
+            foreach ($dataInfos as $key) {
                 $result = $messageService->sendMessageForOne($key["from_id"], $key["to_id"], json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type);
-           }
+            }
         }else{
             $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type); /// [ ["last_id_message" => .. ] ]
         }

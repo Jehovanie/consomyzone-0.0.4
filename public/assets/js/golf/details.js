@@ -7,7 +7,6 @@ function setGolfTodo(goldID){
 }
 
 function setGolfFinished(goldID){
-    OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
     fecthGolfAction(goldID, "finished")
 }
 
@@ -16,7 +15,6 @@ function setGolfNone(goldID){
 }
 
 function cancelGolfFinished(goldID){
-    OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
     fecthGolfAction(goldID, "cancel")
 }
 
@@ -24,12 +22,16 @@ function executeActionForPastGolf(goldID){
     let action = document.querySelector("#selectActionGolf").value
     if(action == "1"){
         setGolfTodo(goldID)
+        OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
     }else if(action == "2"){
         setGolfFinished(goldID)
+        OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
     }else if(action == "0"){
         setGolfNone(goldID)
+        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
     }else{
         cancelGolfFinished(goldID)
+        // OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
     }
 }
 
@@ -127,7 +129,9 @@ function fecthGolfAction(goldID, action){
                         if( document.querySelector(".golf_status_jheo_js")){
                                 document.querySelector(".golf_status_jheo_js").innerText= ""
                         }
-                    });  
+
+                        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+                    })
 
                 }
             }
