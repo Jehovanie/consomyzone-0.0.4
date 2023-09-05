@@ -10,7 +10,9 @@
 //     document.querySelector(".mode_pc").remove()
 // }
 
-
+if (document.querySelector(".content-message-nanta-css .bloc-text-message")) {
+    document.querySelector(".content-message-nanta-css .bloc-text-message").classList.remove("text-white")
+}
 const imageType= ["jpg", "png", "gif", "jpeg"];
 const fileDefaults = "/assets/image/type_file.png";
 ///check btn send and input msg

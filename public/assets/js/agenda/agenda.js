@@ -1459,6 +1459,7 @@ if (document.querySelector('#list-tribu-g-partage-agenda')) {
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
+            "emptyTable": "Aucun partisan à part vous dans ce tribu",
 
         },})
 }
@@ -1495,26 +1496,38 @@ function selectAllPartisan(source,isG) {
 
     if(isG){
         var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source)
-                checkboxes[i].checked = source.checked;
-        }
 
-        if(source.checked){
-            document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+        if(checkboxes.length > 0){
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+            }
+    
+            if(source.checked){
+                document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+            }else{
+                document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+            }
         }else{
             document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
         }
 
+
     }else{
         var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source)
-                checkboxes[i].checked = source.checked;
-        }
 
-        if(source.checked){
-            document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+        if(checkboxes.length > 0){
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+            }
+    
+            if(source.checked){
+                document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+            }else{
+                document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+            }
         }else{
             document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
         }
@@ -1530,7 +1543,27 @@ function selectAllPartisan(source,isG) {
  */
 function showPartisanAgenda(tribu_t_name) {
 
-    document.querySelector('#list-partisans-tribu-t-agenda').innerHTML = ""
+    document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+
+    document.querySelector("#list-partisans-tribu-t-partage-agenda").innerHTML = `<table id="list-partisans-tribuT" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Profil</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Prénom</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Rôle</th>
+                                <th scope="col">
+                                    <input type="checkbox" class="selectTribuTAll" name="selectionner" id="selectTribuTAll" onchange="selectAllPartisan(this,false)"> 
+                                    <label for="selectionner">Sélectionner tout</label></th>
+                                </th>
+      
+                            </tr>
+                        </thead>
+                        <tbody id="list-partisans-tribu-t-agenda">
+      
+                        </tbody>
+                      </table>`
 
     const param = "?tbl_tribu_T_name=" + encodeURIComponent(tribu_t_name)
     console.log(param)
@@ -1543,13 +1576,11 @@ function showPartisanAgenda(tribu_t_name) {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-                // makeLoading()
-                let i = 0
+                
                 jsons[0].forEach(json => {
-                    console.log(json)
-                    if(jsons["curent_user"] != json.id){
 
-                        // console.log(JSON.parse(json.infos_profil));
+                    if(jsons["curent_user"] != json.id){
+                        
                         profilInfo = JSON.parse(json.infos_profil)
                         let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
                         let lastName = profilInfo.lastName
@@ -1559,8 +1590,8 @@ function showPartisanAgenda(tribu_t_name) {
                         document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
                             <tr class="table-partisans-${tribu_t_name}-${lastName}">
                                 <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
-                                <td data-id="${json.user_id}" class="firstname">${firstName}</td>
-                                <td class="lastname">${lastName}</td>
+                                <td data-id="${json.user_id}" class="lastname">${firstName}</td>
+                                <td class="firstname">${lastName}</td>
                                 <td class="content-checkbox email">${profilInfo.email}</td>
                                 <td>${json.roles}</td>
                                 <td>
@@ -1575,18 +1606,10 @@ function showPartisanAgenda(tribu_t_name) {
                             })
                         }
 
-                        i++
-
+                    }else{
+                        document.querySelector("#list-partisans-tribu-t-agenda").dataset.id = json.id
                     }
                 })
-
-                if(i < 1){
-                    document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
-                            <tr class="text-center">
-                                <td colspan="6">Aucun partisan à part vous</td>
-                           </tr>
-                        `
-                }
 
                 $("#listPartisantInTribuT").modal("show")
 
@@ -1594,8 +1617,9 @@ function showPartisanAgenda(tribu_t_name) {
                     language: {
                         url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                         "search": "Recherche global",
+                        "emptyTable": "Aucun partisan à part vous dans ce tribu",
             
-                    },"ordering": true, destroy: true})
+                    }})
 
             })
         }
