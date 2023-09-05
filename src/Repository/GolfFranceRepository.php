@@ -133,7 +133,6 @@ class GolfFranceRepository extends ServiceEntityRepository
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
-                
                 $data[$i]["user_status"]=($user) ? "fait" : null;
             }
         }
@@ -170,14 +169,13 @@ class GolfFranceRepository extends ServiceEntityRepository
 
         if( $data){
             if(!$userID){
-                $data["user_status"]=null;
+                $data["user_status"]=["a_faire" => null, "fait" => null];
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data["id"]]);
-                $data["user_status"]=($user) ? "fait" : null;
+                $data["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait()] : null;
             }
         }
-        // dd($data);
         return $data;
     }
 

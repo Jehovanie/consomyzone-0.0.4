@@ -1009,7 +1009,7 @@ class SecurityController extends AbstractController
                 $email_to=$receiver["email"];
                 $nom=$receiver["lastname"];
                 $prenom=$receiver["firstname"];
-                $context["object_mail"]="Invitation à particper à un événement";
+                $context["object_mail"]="Invitation à participer à un événement";
                 $context["template_path"]="emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"]="";
                 $context["content_mail"]=$content;
