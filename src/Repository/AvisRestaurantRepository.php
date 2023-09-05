@@ -82,9 +82,9 @@ class AvisRestaurantRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder("r")
             ->where("r.restaurant = :idResto ")
-            ->andWhere("r.user = :idUser")
+            // ->andWhere("r.user = :idUser")
             ->setParameter("idResto", $idrestaurant)
-            ->setParameter("idUser", $user)
+            // ->setParameter("idUser", $user)
             ->getQuery()
             ->getResult();
     }

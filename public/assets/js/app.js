@@ -1,4 +1,4 @@
-const IS_DEV_MODE= false;
+const IS_DEV_MODE= true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -1047,6 +1047,7 @@ CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
 });
 function showModalEditor(isG){
     document.querySelector("#btnValidate").dataset.g = isG
+    document.querySelector("#btnValidateMessage").dataset.g = isG
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité 
 //</span>
@@ -1073,7 +1074,7 @@ function showModalEditor(isG){
         </span>  jusqu'à 
         <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
             ${agenda.heure_fin}
-        </span><br></p>
+        </span></p>
     <p >
       <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
     </p>
@@ -1081,5 +1082,5 @@ function showModalEditor(isG){
     <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
     <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
     <button type="btn" disabled>Confirmation</button>
-    <p>Remerciement cordialement</p>`
+    <p>Cordialement</p>`
 }

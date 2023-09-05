@@ -27,7 +27,7 @@ class MarckerClusterResto extends MapModule  {
             this.default_data= await response.json();
             this.data= this.default_data; 
             
-            this.initMap(null, null, isAddControl);
+            this.initMap(null, null, null, isAddControl);
             this.bindAction();
 
             if(getDataInSessionStorage("lastSearchPosition")){

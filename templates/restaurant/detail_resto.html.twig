@@ -51,12 +51,22 @@
                 {# note avis   #}
                 <hr>
                 <div class="content_note">
-                    <div class="start">
+                    <div class="start start_jheo_js">
+                        {% set rate = details.avis.note != 0 ?  details.avis.note - (details.avis.note|number_format - 1): 0 %}
+
+                        {% set rateYellow = rate * 100  %}
+                        {% set rateBlack = 100 - rateYellow %}
+
                         {% for item in 0..3 %}
-                            {% if item < details.avis.nbr|number_format %}
+                            {% if item < details.avis.note|number_format - 1 %}
                                 <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
                             {% else %}
-                                <i class="fa-solid fa-star" data-rank="1"></i>
+                                {% if rate != 0 %}
+                                    <i class="fa-solid fa-star" data-rank="1" style ="{{ "background: linear-gradient(90deg, #F5D165 " ~  rateYellow ~ "%, #000 " ~ rateBlack ~ "%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>
+                                    {% set rate = 0 %}
+                                {% else %}
+                                    <i class="fa-solid fa-star" data-rank="1"></i>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                     </div>

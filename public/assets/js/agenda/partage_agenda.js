@@ -170,58 +170,20 @@ function fromBinary(encoded) {
 }
 
 function sendInvitation(event){
+
     let data=editor.getData()
-    console.log(data)
 
     let isG = event.target.dataset.g
-    console.log(isG)
+
     let dataInfos = []
 
-    if(isG ==="1"){
-        let allTr = document.querySelectorAll("#list-tribu-g-partage-agenda> tbody >tr")
-        
-        allTr.forEach(elem => {
-            let isChecked = elem.querySelector("input").checked
-           
-            if(isChecked){
-                
-                let lastname = elem.querySelector(".lastname").textContent
-                let firstname = elem.querySelector(".firstname").textContent
-                let email = elem.querySelector(".email").textContent
-                dataInfos.push({
-                    lastname : lastname,
-                    firstname : firstname,
-                    email : email
-                })
-               
-            }
-        })
-    
-    }else if(isG ==="0"){
-        console.log("ato e")
-        let allTr = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
-        
-        allTr.forEach(elem => {
-            let isChecked = elem.querySelector("input").checked
-            if(isChecked){
-                let lastname = elem.querySelector(".lastname").textContent
-                let firstname = elem.querySelector(" .firstname").textContent
-                let email = elem.querySelector(" .email").textContent
-                dataInfos.push({
-                    lastname : lastname,
-                    firstname : firstname,
-                    email : email
-                })
-            }
-        })
-    
-        console.log(dataInfos)
-    }
+    getUserInfoForSharing(isG, dataInfos)
 
     let dataEmail={
         emailCore:data,
         receiver:dataInfos
     }
+
     console.log(JSON.stringify(dataEmail))
     let request =new Request("/agenda/send/invitation",{
         method: "POST",
@@ -249,4 +211,98 @@ function sendInvitation(event){
             });
     }
 })
+}
+
+function sendEventByMessage(e){
+
+    e.preventDefault()
+
+    makeLoadingEmail()
+
+    let content = "<div class=\"bloc-text-message text-white\">"+editor.getData()+"</div>"
+
+    let isG = e.target.dataset.g
+
+    let dataInfos = []
+
+    getUserInfoForSharing(isG, dataInfos)
+
+    let data = {
+        dataInfos: dataInfos,
+        message: content,
+        files : [], 
+    }
+
+    fetch("/user/push/message", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(data)
+    }).then(response => {
+
+        if (response.status == 200) {
+            deleteChargement("chargement_content");
+            swal("Bravo !","Invitation bien envoyée", "success")
+                    .then((value) => {
+                        $("#emailTemplateModal").modal("hide")
+                });         
+        }else{
+            deleteChargement("chargement_content");
+            swal("Erreur !","Erreur 500", "error")
+                    .then((value) => {
+                        $("#emailTemplateModal").modal("hide")
+                });
+            }
+    })
+
+}
+
+function getUserInfoForSharing(isG, dataInfos){
+
+    if(isG ==="1"){
+        let allTr = document.querySelectorAll("#list-tribu-g-partage-agenda> tbody >tr")
+        
+        allTr.forEach(elem => {
+            let isChecked = elem.querySelector("input").checked
+           
+            if(isChecked){
+                let to_id = elem.querySelector(".lastname").dataset.id
+                let lastname = elem.querySelector(".lastname").textContent
+                let firstname = elem.querySelector(".firstname").textContent
+                let email = elem.querySelector(".email").textContent
+                dataInfos.push({
+                    from_id:elem.parentElement.dataset.id,
+                    to_id:to_id,
+                    lastname : lastname,
+                    firstname : firstname,
+                    email : email
+                })
+               
+            }
+        })
+    
+    }else if(isG ==="0"){
+
+        let allTr = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
+        
+        allTr.forEach(elem => {
+            let isChecked = elem.querySelector("input").checked
+            if(isChecked){
+                let to_id = elem.querySelector(".lastname").dataset.id
+                let lastname = elem.querySelector(".lastname").textContent
+                let firstname = elem.querySelector(" .firstname").textContent
+                let email = elem.querySelector(" .email").textContent
+                dataInfos.push({
+                    from_id:elem.parentElement.dataset.id,
+                    to_id:to_id,
+                    lastname : lastname,
+                    firstname : firstname,
+                    email : email
+                })
+            }
+        })
+    
+    }
 }

@@ -13,7 +13,7 @@ class MarckerClusterStation extends MapModule  {
         this.ALREADY_INIT = false;
         try {
             this.createMarkersCluster();
-            this.initMap(null, null, isAddControl);
+            this.initMap(null, null, null, isAddControl);
 
             const response = await fetch("/getLatitudeLongitudeStation/?max=" + this.price_max + "&min=" + this.price_min + "&type=" + this.type + "&nom_dep=" + this.nom_dep + "&id_dep=" + this.id_dep);
             this.default_data = await response.json();

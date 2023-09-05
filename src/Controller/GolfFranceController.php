@@ -202,7 +202,6 @@ class GolfFranceController extends AbstractController
         $user = $this->getUser();
         $userID = ($user) ? intval($user->getId()) : null;
         // dd($golfFranceRepository->getOneGolf(intval($golfID)));
-
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
@@ -230,9 +229,77 @@ class GolfFranceController extends AbstractController
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
         $golfFinished->setUserId($userID);
-
+        $golfFinished->setFait(1);
+        $golfFinished->setAfaire(0);
 
         $entityManager->persist($golfFinished);
+
+        $entityManager->flush();
+
+        return $this->json([
+            "success" => true,
+            "message" => "Golf finished successfully"
+        ], 201);
+    }
+
+    #[Route('user/setGolf/todo', name: 'set_golf_todo', methods: ["POST"])]
+    public function setGolfToDo(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ){
+        $requestContent = json_decode($request->getContent(), true);
+        extract($requestContent); ///$golfID
+
+        
+        ///current user connected
+        $user = $this->getUser();
+        if( !$user ){
+            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        }
+
+        $userID= $user->getId();
+
+        $golfFinished= new GolfFinished();
+        $golfFinished->setGolfId($golfID);
+        $golfFinished->setUserId($userID);
+        $golfFinished->setFait(0);
+        $golfFinished->setAfaire(1);
+
+        $entityManager->persist($golfFinished);
+
+        $entityManager->flush();
+
+        return $this->json([
+            "success" => true,
+            "message" => "Golf finished successfully"
+        ], 201);
+    }
+
+    #[Route('user/setGolf/none', name: 'set_golf_none', methods: ["POST"])]
+    public function setGolfNone(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ){
+        $requestContent = json_decode($request->getContent(), true);
+        extract($requestContent); ///$golfID
+
+        
+        ///current user connected
+        $user = $this->getUser();
+        if( !$user ){
+            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        }
+
+        $userID= $user->getId();
+
+        $golfFinished= new GolfFinished();
+        $golfFinished->setGolfId($golfID);
+        $golfFinished->setUserId($userID);
+        $golfFinished->setFait(0);
+        $golfFinished->setAfaire(0);
+
+        $entityManager->persist($golfFinished);
+
         $entityManager->flush();
 
         return $this->json([
@@ -256,6 +323,7 @@ class GolfFranceController extends AbstractController
         }
 
         $entityManager->remove($isFinished);
+
         $entityManager->flush();
 
         return $this->json([
