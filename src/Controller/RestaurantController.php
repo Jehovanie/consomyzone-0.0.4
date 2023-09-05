@@ -282,6 +282,7 @@ class RestaurantController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
             "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode(),
+            "type" => "resto",
             "codinsee" => $codinsee
 
 

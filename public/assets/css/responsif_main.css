@@ -101,7 +101,32 @@
     .hj-resto {
         margin-left: 0rem !important;
     }
-    
+
+    .close-resto-specific{
+        margin-top: -25px;
+        margin-left: 84vw;
+    }
+
+
+
+    .navleft-mobile{
+        background-color: #fff;
+        width: 100vw;
+        border-radius: 5px;
+        height: 100vh;
+        box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
+        position: fixed;
+        
+        z-index: 1030;
+    }
+
+    .logo-consomyzone-specific img {
+        width: 45vw !important;
+        margin-top: -30px;
+        position: fixed;
+        z-index: 20;
+    }
+        
     /* .card-pub-actu img {
         width: 62vw;
     } */
@@ -407,9 +432,9 @@
     .list-depart-all-specific ul .card-list {
         list-style: none;
         background-color: #e7e7e7;
-        width: 95vw;
-        height: 14vh;
-        margin-left: -40px;
+        width: 84vw;
+        height: 34vh;
+        margin-left: -20px;
         margin-bottom: 20px;
         border-radius: 12px;
         box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
@@ -465,7 +490,7 @@
         position: absolute;
         transition: all 2s ease-in-out !important;
         background-color: #fff;
-        z-index: 407;
+        z-index: 1407;
     }
 
     .content_detail_mobile {
