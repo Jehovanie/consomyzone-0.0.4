@@ -130,7 +130,7 @@ class MailService extends AbstractController {
                 'fullNameTo' => $fullName_to,
                 'link' => $context["link_confirm"],
                 'content' => $context["content_mail"],
-                'Nom'=>$fullName_to
+                
             ]));
 
         $customMailer->send($email);

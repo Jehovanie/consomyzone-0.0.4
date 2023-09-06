@@ -98,7 +98,7 @@
 
         {% if app.user %}
             <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
-                {% if details.user_status == null %}
+                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
                     <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
                     <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}">
                         <option value="0">Aucun</option>
