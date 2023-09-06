@@ -35,6 +35,7 @@ use App\Repository\UserRepository;
 use App\Service\RequestingService;
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
+use App\Repository\DepartementRepository;
 use App\Service\AgendaService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -2363,11 +2364,24 @@ class TributTController extends AbstractController
     }   
 
     #[Route('/tribu/findresto/{quoi}/{ou}', name: 'find_resto_tribu_t')]
-    public function findRestoInBdd($quoi, $ou): Response{
+    public function findRestoInBdd($quoi, $ou, BddRestoRepository $bddRestoRepository): Response{
 
         $resto = $bddRestoRepository->getBySpecificClef($quoi, $ou, 1, 20);
 
-        return $resto;
+        return $this->json($resto);
+    }
+
+    #[Route("/user/all/dep", name:"user_all_dep", methods:["GET"])]
+    public function getAllDepByNanta(DepartementRepository $departementRepository){
+        
+        $allDep = $departementRepository->findAll();
+        $keyValueDep = [];
+        
+        foreach ($allDep as $key) {
+            $keyValueDep[$key->getDepartement()] = $key->getId();
+        }
+
+        return $this->json($keyValueDep);
     }
 
 }
