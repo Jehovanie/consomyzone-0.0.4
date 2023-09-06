@@ -22,16 +22,10 @@
     width: 30px;
     height: 40px;
 }
-.golf_status{
-    font-size: 0.6rem;
-}
 .lead{
     font-size: 0.8rem;
 }
 
-.btn_golf_did {
-    cursor: pointer;
-}
 
 .btn_golf_did:hover {
     transform: scale(1.3);

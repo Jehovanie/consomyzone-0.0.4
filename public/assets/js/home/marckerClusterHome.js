@@ -1,5 +1,3 @@
 ////INSTANCE ///
-window.addEventListener("load", () => {
-    const OBJECT_MARKERS_HOME= new MarckerClusterHome()
-    OBJECT_MARKERS_HOME.onInit();
-})
+const OBJECT_MARKERS_HOME= new MarckerClusterHome()
+OBJECT_MARKERS_HOME.onInit();

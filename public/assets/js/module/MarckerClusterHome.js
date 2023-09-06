@@ -157,7 +157,7 @@ class MarckerClusterHome extends MapModule  {
     settingSingleMarkerStation(item) {
 
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png") , id: item.id });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png") , id: item.id, type: "station" });
 
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
         
@@ -199,7 +199,7 @@ class MarckerClusterHome extends MapModule  {
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
         const title = "<span class='fw-bolder'>Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'> <br> Departement:</span>" + item.departement + "." + adress;
 
-        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') , id: item.id });
+        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') , id: item.id, type: "ferme" });
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
         this.handleClickFerme(marker, item);
@@ -243,7 +243,7 @@ class MarckerClusterHome extends MapModule  {
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
 
         var title = "<span class='fw-bolder'> Restaurant: </span>  " + item.denominationF + " <br><span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png') , id: item.id });
+        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png') , id: item.id, type: "resto" });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
@@ -301,7 +301,7 @@ class MarckerClusterHome extends MapModule  {
             // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
             taille=1
         }
-        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
+        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id, type: "golf"});
         
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
@@ -312,7 +312,7 @@ class MarckerClusterHome extends MapModule  {
     handleClickGolf(golfMarker, item){
         golfMarker.on('click', (e) => {
             const itemID= item.id
-
+            
             const golfUpdate = this.data.golf.find(jtem =>parseInt(jtem.id) === itemID);
             this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
 
@@ -329,7 +329,6 @@ class MarckerClusterHome extends MapModule  {
                     pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
                 }
                 // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
-                taille=1
             }
             
             const icon_R = L.Icon.extend({
@@ -371,7 +370,20 @@ class MarckerClusterHome extends MapModule  {
             } else if (this.marker_last_selected_type === "resto") {
                 icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
             } else if( this.marker_last_selected_type === "golf"){
-                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
+
+                const last_marker= this.data.golf.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+
+                if( last_marker.user_status.a_faire === null &&  last_marker.user_status.fait === null){
+                    icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
+                }else{
+                    if( last_marker.user_status.a_faire == true){
+                        icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png`;
+                    }else if(last_marker.user_status.fait == true ){
+                        icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png`;
+                    }else{
+                        icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
+                    }
+                }
             }
 
             const icon_B = L.Icon.extend({
@@ -680,5 +692,46 @@ class MarckerClusterHome extends MapModule  {
     removeMarker() {
         this.markers.clearLayers();
         this.map.removeLayer(this.markers);
+    }
+
+    updateStateGolf(status, id){
+        let user_status = { "a_faire" : false, "fait" : false }
+        
+        this.markers.eachLayer((marker) => {
+            if (marker.options.type === "golf" && parseInt(marker.options.id) === parseInt(id) ) {
+                let pathIcon= "";
+
+                if( status === "fait"){
+                    pathIcon='/assets/icon/NewIcons/icon-vert-golf-bleu.png';
+                    user_status= { ...user_status , "fait" : true }
+                }else if( status === "afaire"){
+                    pathIcon='/assets/icon/NewIcons/icon-vert-golf-orange.png';
+                    user_status= { ...user_status , "a_faire" : true }
+                }else{ /// aucun 
+                    pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
+                }
+
+                const icon_R = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                        iconSize: [35,55],
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
+                    }
+                })
+                marker.setIcon(new icon_R);
+            }
+        });
+
+        this.markers.refreshClusters();
+
+        this.data.golf = this.data.golf.map(item => {
+            if( parseInt(item.id) === parseInt(id) ){
+                item.user_status = { ...item.user_status , ...user_status }
+            }
+            return item;
+        })
     }
 }

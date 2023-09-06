@@ -1820,3 +1820,11 @@ textarea {
 #editor {
 	min-height: 180px;
 }
+
+
+.golf_status {
+    font-size: 0.6rem !important;
+}
+.btn_golf_did {
+    cursor: pointer;
+}

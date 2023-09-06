@@ -150,13 +150,20 @@ class MarckerClusterGolf extends MapModule {
 
                 if (this.marker_last_selected && this.marker_last_selected != marker ) {
 
-                    const last_marker= this.default_data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+                    const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
 
                     let pathIcon="";
-                    if( last_marker.user_id === null){
+                    if( last_marker.user_status.a_faire === null &&  last_marker.user_status.fait === null){
                         pathIcon='/assets/icon/NewIcons/icon-blanc-golf-vertC.png';
                     }else{
-                        pathIcon= last_marker.user_status === null ? '/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : '/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                        if( last_marker.user_status.a_faire == true){
+                            pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
+                        }else if(last_marker.user_status.fait == true ){
+                            pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png"
+                        }else{
+                            pathIcon='/assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+                        }
+                    
                     }
 
                     const icon_B = L.Icon.extend({

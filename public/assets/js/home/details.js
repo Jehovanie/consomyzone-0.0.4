@@ -1,7 +1,3 @@
-function getDetailFromListLeft(depart_name, depart_code, id) {
-    OBJECT_MARKERS_GOLF.clickOnMarker(id)
-}
-
 function setGolfTodo(goldID){
     fecthGolfAction(goldID, "todo")
 }
@@ -22,16 +18,16 @@ function executeActionForPastGolf(goldID){
     let action = document.querySelector("#selectActionGolf").value
     if(action == "1"){
         setGolfTodo(goldID)
-        OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
+        OBJECT_MARKERS_HOME.updateStateGolf("afaire", goldID)
     }else if(action == "2"){
         setGolfFinished(goldID)
-        OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
+        OBJECT_MARKERS_HOME.updateStateGolf("fait", goldID)
     }else if(action == "0"){
         setGolfNone(goldID)
-        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+        OBJECT_MARKERS_HOME.updateStateGolf("aucun", goldID)
     }else{
         cancelGolfFinished(goldID)
-        // OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+        // OBJECT_MARKERS_HOME.updateStateGolf("aucun", goldID)
     }
 }
 
@@ -129,11 +125,9 @@ function fecthGolfAction(goldID, action){
                                 document.querySelector(".golf_status_jheo_js").innerText= ""
                         }
 
-                        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+                        OBJECT_MARKERS_HOME.updateStateGolf("aucun", goldID)
                     })
-
                 }
             }
         })
-
 }
