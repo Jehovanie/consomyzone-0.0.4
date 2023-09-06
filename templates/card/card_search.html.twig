@@ -1,6 +1,6 @@
 <li class="list_result_search list_item list_item_search_js_jheo">
     <div class="content_element container-depart p-2 element w-100">
-        {% set type = item.station is defined ? "station" : (item.ferme is defined ? "ferme" : "resto" ) %}
+        {% set type = item.station is defined ? "station" : (item.ferme is defined ? "ferme" : (item.golf is defined ? "golf" : "resto") ) %}
         <div class="content_text">
             <div class="cmz-rubrique mb-2">
                 <span class="rubrique small">
@@ -93,7 +93,7 @@
             {% endif %}
             {% if item.email is defined %}
                 {% if item.email %}
-                    <div class="cmz-tel">
+                    <div class="cmz-tel mt-2">
                         <button onclick="displayContact(this)" type="button" class="btn btn-secondary">
                             <i class="bi bi-envelope-plus"></i> Afficher l'email
                         </button>
