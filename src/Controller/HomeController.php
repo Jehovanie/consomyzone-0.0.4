@@ -14,6 +14,7 @@ use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\CommuneGeoCoderRepository;
+use App\Repository\GolfFranceRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -184,7 +185,8 @@ class HomeController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
-        CommuneGeoCoderRepository $communeGeoCoderRepository
+        CommuneGeoCoderRepository $communeGeoCoderRepository,
+        GolfFranceRepository $golfFranceRepository
         
     ){
 
@@ -257,7 +259,7 @@ class HomeController extends AbstractController
         $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
         $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
 
-        $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tous"  );
+        $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "golf" || $cles0 === "tous"  );
         $type= $condition ? $cles0: $type;
         $cles0= $condition ? "": $cles0;
         
@@ -289,7 +291,22 @@ class HomeController extends AbstractController
                 }
                 $results = $resto;
                 break;
+            case "golf":
+                $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($golf[0])>0){
+                    $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $otherResult = true;
+                }
+                $results = $golf;
+                break;
             case "station":
+                $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($station[0])>0){
+                    $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $otherResult = true;
+                }
+                $results = $station;
+                break;
             case "station service":
                 $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($station[0])>0){
@@ -303,6 +320,7 @@ class HomeController extends AbstractController
                 $otherResto = false;
                 $otherFerme = false;
                 $otherStation = false;
+                $otherGolf = false;
                 if($cles0 == "RESTO" || $cles0 == "RESTOS" || $cles0 == "RESTAURANT" || $cles0 == "RESTAURANTS"){
                     $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($resto[0])>0){
@@ -316,6 +334,19 @@ class HomeController extends AbstractController
 
                     $results[0] = array_merge($resto[0]);
                     $results[1] = $resto[1];
+                }elseif($cles0 == "GOLF" || $cles0 == "GOLFS"){
+                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($golf[0])>0){
+                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherGolf = true;
+                    }
+
+                    if($otherGolf){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($golf[0]);
+                    $results[1] = $golf[1];
                 }elseif($cles0 == "FERME" || $cles0 == "FERMES"){
                     $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($ferme[0])>0){
@@ -353,6 +384,12 @@ class HomeController extends AbstractController
                         $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
                         $otherResto = true;
                     }
+
+                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($golf[0])>0){
+                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $otherGolf = true;
+                    }
     
                     $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($station[0])>0){
@@ -360,34 +397,54 @@ class HomeController extends AbstractController
                         $otherStation = true;
                     }
     
-                    if(!$otherFerme && !$otherResto && !$otherStation){
-                        // $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
-                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
-                        $results[1] = $station[1] + $ferme[1] + $resto[1];
-                    }elseif(!$otherFerme && $otherResto && $otherStation){
+                    if(!$otherFerme && !$otherResto && !$otherStation && !$otherGolf){
+                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0]);
+                        $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1];
+                    }elseif(!$otherFerme && $otherResto && $otherStation && $otherGolf){
                         $results[0] = array_merge($ferme[0]);
                         $results[1] = $ferme[1];
-                    }elseif($otherFerme && !$otherResto && $otherStation){
+                    }elseif($otherFerme && !$otherResto && $otherStation && $otherGolf){
                         $results[0] = array_merge($resto[0]);
                         $results[1] = $resto[1];
-                    }elseif($otherFerme && $otherResto && !$otherStation){
+                    }elseif($otherFerme && $otherResto && !$otherStation && $otherGolf){
                         $results[0] = array_merge($station[0]);
                         $results[1] = $station[1];
-                    }elseif(!$otherFerme && !$otherResto && $otherStation){
-                        // $results[0] = array_merge($ferme[0], $resto[0]);
+                    }elseif($otherFerme && $otherResto && $otherStation && !$otherGolf){
+                        $results[0] = array_merge($golf[0]);
+                        $results[1] = $golf[1];
+                    }elseif(!$otherFerme && !$otherResto && $otherStation && $otherGolf){
                         $results[0] = array_merge($resto[0], $ferme[0]);
                         $results[1] = $ferme[1] + $resto[1];
-                    }elseif(!$otherFerme && $otherResto && !$otherStation){
+                    }elseif(!$otherFerme && $otherResto && !$otherStation && $otherGolf){
                         $results[0] = array_merge($station[0] , $ferme[0]);
                         $results[1] = $station[1] + $ferme[1];
-                    }elseif($otherFerme && !$otherResto && !$otherStation){
-                        // $results[0] = array_merge($station[0] , $resto[0]);
+                    }elseif($otherFerme && !$otherResto && !$otherStation && $otherGolf){
                         $results[0] = array_merge($resto[0] , $station[0]);
                         $results[1] = $station[1] + $resto[1];
-                    }else{
-                        // $results[0] = array_merge($station[0] , $ferme[0], $resto[0]);
+                    }elseif(!$otherFerme && $otherResto && $otherStation && !$otherGolf){
+                        $results[0] = array_merge($ferme[0] , $golf[0]);
+                        $results[1] = $ferme[1] + $golf[1];
+                    }elseif($otherFerme && !$otherResto && $otherStation && !$otherGolf){
+                        $results[0] = array_merge($resto[0] , $golf[0]);
+                        $results[1] = $resto[1] + $golf[1];
+                    }elseif($otherFerme && $otherResto && !$otherStation && !$otherGolf){
+                        $results[0] = array_merge($station[0] , $golf[0]);
+                        $results[1] = $station[1] + $golf[1];
+                    }elseif(!$otherFerme && !$otherResto && !$otherStation && $otherGolf){
                         $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
                         $results[1] = $station[1] + $ferme[1] + $resto[1];
+                    }elseif($otherFerme && !$otherResto && !$otherStation && !$otherGolf){
+                        $results[0] = array_merge($resto[0] , $station[0], $golf[0]);
+                        $results[1] = $station[1] + $golf[1] + $resto[1];
+                    }elseif(!$otherFerme && !$otherResto && $otherStation && !$otherGolf){
+                        $results[0] = array_merge($resto[0] , $ferme[0], $golf[0]);
+                        $results[1] = $ferme[1] + $golf[1] + $resto[1];
+                    }elseif(!$otherFerme && $otherResto && !$otherStation && !$otherGolf){
+                        $results[0] = array_merge($station[0] , $ferme[0], $golf[0]);
+                        $results[1] = $ferme[1] + $golf[1] + $station[1];
+                    }else{
+                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0]);
+                        $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1];
                         $otherResult = true;
                     }
 

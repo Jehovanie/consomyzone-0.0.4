@@ -183,29 +183,185 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
+    public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
 
-//    /**
-//     * @return GolfFrance[] Returns an array of GolfFrance objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
 
-//    public function findOneBySomeField($value): ?GolfFrance
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb = $this->createQueryBuilder("p")
+                ->select("p.id,
+                        p.id as id_etab,
+                        p.dep,
+                        p.web,
+                        p.site_web,
+                        p.nom_dep,
+                        p.nom_dep as depName,
+                        p.adr1,
+                        p.adr2,
+                        p.adr3,
+                        p.cp,
+                        p.nom_commune,
+                        p.nom_golf,
+                        p.nom_golf as golf,
+                        p.nom_golf as nom,
+                        p.nom_golf as name,
+                        p.dep as id_dep,
+                        p.nom_dep as departement,
+                        CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune) as adresse,
+                        p.telephone as tel,
+                        p.telephone,
+                        p.e_mail,
+                        p.e_mail as email,
+                        p.longitude as long,
+                        p.latitude as lat,
+                        CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune) as add");
+                        
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.nom_golf LIKE :cles0")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                    $qb = $qb->where("REPLACE(p.nom_golf) LIKE :cles0")
+                            ->setParameter('cles0', '%' . $mot_cles0. '%');
+            }
+                
+        }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("p.dep LIKE :cles1")
+                        ->setParameter('cles1', $mot_cles1 );
+            }else{
+
+                $qb = $qb->where("REPLACE(CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune)) LIKE :cles1")
+                        ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else {
+
+            if(strtolower($mot_cles0) == "golf" || strtolower($mot_cles0) == "golfs"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                            ->setParameter('cles1',  $mot_cles1 );
+                }else{
+                    $qb = $qb->where("REPLACE(CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune)) LIKE :cles1 ")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("REPLACE(p.nom_golf) LIKE :cles0 AND p.dep LIKE :cles1")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+
+                    $qb = $qb->where("(REPLACE(p.nom_golf) LIKE :cles0) AND (REPLACE(CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune)) LIKE :cles1 )")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+                }
+
+            }
+            
+        }
+
+        $qb = $qb->getQuery();
+
+        $results = $qb->execute();
+
+        return [ $results , count($results) , "golf"];
+    }
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+
+        $qb = $this->createQueryBuilder("p")
+                ->select("p.id,
+                        p.id as id_etab,
+                        p.dep,
+                        p.web,
+                        p.site_web,
+                        p.nom_dep,
+                        p.nom_dep as depName,
+                        p.adr1,
+                        p.adr2,
+                        p.adr3,
+                        p.cp,
+                        p.nom_commune,
+                        p.nom_golf,
+                        p.nom_golf as golf,
+                        p.nom_golf as nom,
+                        p.nom_golf as name,
+                        p.dep as id_dep,
+                        p.nom_dep as departement,
+                        CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune) as adresse,
+                        p.telephone as tel,
+                        p.telephone,
+                        p.e_mail,
+                        p.e_mail as email,
+                        p.longitude as long,
+                        p.latitude as lat,
+                        CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune) as add");
+                        
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.nom_golf LIKE :cles0")
+                        ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                    $qb = $qb->where("MATCH_AGAINST(p.nom_golf) AGAINST( :cles0 boolean) > 0")
+                            ->orWhere("p.nom_golf LIKE :cles0")
+                            ->setParameter('cles0', '%' . $mot_cles0. '%');
+            }
+                
+        }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("p.dep LIKE :cles1")
+                        ->setParameter('cles1', $mot_cles1 );
+            }else{
+                $qb = $qb->where("MATCH_AGAINST(p.adr1, p.cp, p.nom_commune) AGAINST( :cles1 boolean) > 0")
+                         ->orWhere("CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else {
+
+            if(strtolower($mot_cles0) == "golf" || strtolower($mot_cles0) == "golfs"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                            ->setParameter('cles1',  $mot_cles1 );
+                }else{
+                    $qb = $qb->where("MATCH_AGAINST(p.adr1, p.cp, p.nom_commune) AGAINST( :cles1 boolean) > 0")
+                            ->setParameter('cles1', $mot_cles1);
+                }
+            }else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("MATCH_AGAINST(p.nom_golf) AGAINST( :cles0 boolean) > 0 AND p.dep LIKE :cles1")
+                             ->orWhere("p.nom_golf LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+
+                    $qb = $qb->where("(MATCH_AGAINST(p.nom_golf) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.adr1, p.cp, p.nom_commune) AGAINST( :cles1 boolean) > 0)")
+                             ->orWhere("(p.nom_golf LIKE :cles0) OR (CONCAT(p.adr1,' ',p.cp, ' ',p.nom_commune) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+                }
+
+            }
+            
+        }
+
+        $qb = $qb->getQuery();
+
+        $results = $qb->execute();
+
+        return [ $results , count($results) , "golf"];
+    }
+
 }
