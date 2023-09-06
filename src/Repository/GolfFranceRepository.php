@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\GolfFrance;
 use Doctrine\ORM\Query\Expr\Join;
+use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\GolfFinishedRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -223,6 +224,12 @@ class GolfFranceRepository extends ServiceEntityRepository
 
         $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
 
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.id as id_etab,
@@ -311,6 +318,12 @@ class GolfFranceRepository extends ServiceEntityRepository
     public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
 
         $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
 
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,

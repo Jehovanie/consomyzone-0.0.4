@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\FermeGeom;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<FermeGeom>
@@ -411,8 +412,15 @@ class FermeGeomRepository extends ServiceEntityRepository
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 1, $size= 20 )
     {
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-        // const { adresseFerme: add , departement: dep , departementName: depName, nomFerme: nom } = item ;
-        // // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+        
         $qb = $this->createQueryBuilder('p')
             ->select(
                 'p.id',
@@ -503,8 +511,15 @@ class FermeGeomRepository extends ServiceEntityRepository
     public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 1, $size= 20 )
     {
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-        // const { adresseFerme: add , departement: dep , departementName: depName, nomFerme: nom } = item ;
-        // // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+        
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
         $qb = $this->createQueryBuilder('p')
             ->select(
                 'p.id',

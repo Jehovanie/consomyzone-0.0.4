@@ -482,7 +482,7 @@ class HomeController extends AbstractController
         array_push($resultSort, [0 => $resultSort0, 1 => $nombreResult, 2 => $type]);
 
         $results = $resultSort[0];
-
+       
         return $this->render("home/search_result.html.twig", [
             "userConnected" => $userConnected,
             "profil" => $profil,

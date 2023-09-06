@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\BddResto;
+use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Service\DicoRestoForSearchService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -237,6 +238,12 @@ class BddRestoRepository extends ServiceEntityRepository
 
         $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
 
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.id as id_etab,
@@ -443,9 +450,13 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
         $dicoResto = new DicoRestoForSearchService();
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-        // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
-        //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
-        // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,

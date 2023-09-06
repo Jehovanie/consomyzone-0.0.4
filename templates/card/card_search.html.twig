@@ -1,5 +1,6 @@
 <li class="list_result_search list_item list_item_search_js_jheo">
     <div class="content_element container-depart p-2 element w-100">
+        
         {% set type = item.station is defined ? "station" : (item.ferme is defined ? "ferme" : (item.golf is defined ? "golf" : "resto") ) %}
         <div class="content_text">
             <div class="cmz-rubrique mb-2">
