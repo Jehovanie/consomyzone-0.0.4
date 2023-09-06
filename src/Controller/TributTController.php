@@ -1579,6 +1579,7 @@ class TributTController extends AbstractController
         $restos = array();
 
         if ($has_restaurant == true) {
+            
             $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
         }
         return $this->json($restos);
@@ -1917,10 +1918,13 @@ class TributTController extends AbstractController
 
     #[Route("/push/comment/resto/pastilled",name:"push_comment_pastilled_resto",methods:["POST"])]
     public function push_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService ){
+
+        $user = $this->getUser();
         $json=json_decode($request->getContent(),true);
         $tableName=$json["tableName"];
         $idResto=$json["idResto"];
-        $idUser=$json["idUser"];
+        $idUser=$user->getId();
+        // $idUser=$json["idUser"];
         $note = $json["note"];
         $commentaire = $json["commentaire"];
 
@@ -1940,16 +1944,19 @@ class TributTController extends AbstractController
 
     }
     #[Route("/up/comment/resto/pastilled", name: "up_comment_pastilled_resto", methods: ["POST"])]
-    public function up_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService)
+    public function up_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService) : Response
     {
+        $my_id = $this->getUser()->getId();
         $json = json_decode($request->getContent(), true);
         $tableName = $json["tableName"];
-        $idRestoComment = $json["idRestoComment"];
+
+        $idRestoComment = strval($json["idRestoComment"]);
+
         // $idUser = $json["idUser"];
         $note = $json["note"];
         $commentaire = $json["commentaire"];
-
-        $result = $tribuTService->upCommentRestoPastilled($tableName, $note, $commentaire,$idRestoComment);
+        
+        $result = $tribuTService->upCommentRestoPastilled($tableName, $note, $commentaire,$idRestoComment, $my_id);
         if ($result) {
             $response = new Response();
             $response->setStatusCode(200);
@@ -1959,6 +1966,7 @@ class TributTController extends AbstractController
             $response->setStatusCode(500);
             return $response;
         }
+
     }
 
     #[Route("/user/tribu/my-tribu-t", name: "app_my_tribu_t")]
