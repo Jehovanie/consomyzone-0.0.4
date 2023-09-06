@@ -95,6 +95,42 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+
+        $query =  $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.web',
+                        'r.nom_golf as name',
+                        'r.dep',
+                        'r.nom_dep',
+                        'r.adr1 as adress',
+                        'r.adr2',
+                        'r.adr3',
+                        'r.cp',
+                        'r.e_mail as email',
+                        'r.site_web',
+                        'r.nom_commune as commune',
+                        'r.latitude',
+                        'r.longitude',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("ABS(r.latitude) >= ABS(:minx) ")
+                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->andWhere("ABS(r.longitude) >= ABS(:miny)")
+                    ->andWhere("ABS(r.longitude) <= ABS(:maxy)")
+                    ->setParameter("minx", floatval($miny))
+                    ->setParameter("maxx", floatval($maxy))
+                    ->setParameter("miny", floatval($minx))
+                    ->setParameter("maxy", floatval($maxx))
+                    ->setMaxResults(200)
+                    ->orderBy('RAND()')
+                    ->getQuery();
+
+        return $query->getResult();
+    }
+
 
     ///jheo : prendre tous les fermes qui appartients dans un departement specifique
     public function getGolfByDep($nom_dep, $id_dep,$userID=null)

@@ -22,6 +22,8 @@ use App\Repository\BddRestoRepository;
 
 use App\Repository\FermeGeomRepository;
 
+use App\Repository\GolfFranceRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Repository\DepartementRepository;
@@ -334,9 +336,9 @@ class ToutsController extends AbstractController
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
+        GolfFranceRepository $golfFranceRepository
     ){
         if($request->query->has("minx") && $request->query->has("miny") ){
-
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");
             $miny = $request->query->get("miny");
@@ -345,15 +347,19 @@ class ToutsController extends AbstractController
             return $this->json([
                 "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
-                "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy)
+                "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
             ]);
         }
 
         $taille= 2000;
+        $userID= $this->getUser() ? $this->getUser()->getId(): null;
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
-            "resto" => $bddRestoRepository->getSomeDataShuffle($taille)
+            "resto" => $bddRestoRepository->getSomeDataShuffle($taille),
+            "golf" => $golfFranceRepository->getSomeDataShuffle($userID, $taille),
+            
         ]);
     }
     

@@ -99,9 +99,9 @@ class MarckerClusterHome extends MapModule  {
     }
 
     addMarker(newData) {
-        const { station, ferme, resto } = newData;
+        const { station, ferme, resto, golf } = newData;
 
-        if (station || ferme || resto) {
+        if (station || ferme || resto || golf ) {
 
             if (station.length > 0) {
                 this.addStation(station);
@@ -115,6 +115,11 @@ class MarckerClusterHome extends MapModule  {
             ///all resto
             if (resto.length > 0) {
                 this.addResto(resto);
+            }
+
+            ///all golf
+            if ( golf.length > 0 ){
+                this.addGolf(golf);
             }
 
             this.map.addLayer(this.markers);
@@ -139,6 +144,12 @@ class MarckerClusterHome extends MapModule  {
     addResto(dataResto) {
         dataResto.forEach(item => {
             this.settingSingleMarkerResto(item);
+        })
+    }
+
+    addGolf(dataGolf){
+        dataGolf.forEach(item => {
+            this.settingSingleMarkerGolf(item)
         })
     }
 
@@ -174,9 +185,9 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(stationMarker, "station");
             
             if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + dataStation.departementCode.toString().trim() + "/" + dataStation.departementName.trim().replace("?", "") + "/details/" + dataStation.id)
+                getDetailHomeForMobile("/station/departement/" + dataStation.departementCode.toString().toString().trim() + "/" + dataStation.departementName.toString().trim().replace("?", "") + "/details/" + dataStation.id)
             } else {
-                getDetailStation( dataStation.departementName.trim().replace("?", ""), dataStation.departementCode.toString().trim(), dataStation.id, true)
+                getDetailStation( dataStation.departementName.toString().trim().replace("?", ""), dataStation.departementCode.toString().toString().trim(), dataStation.id, true)
             }
 
         })
@@ -269,7 +280,87 @@ class MarckerClusterHome extends MapModule  {
     }
 
 
+    settingSingleMarkerGolf(item){
+        // console.log(item)
+        const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
+        let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
+        
+        let pathIcon="";
+        let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+
+        if( item.user_status.a_faire === null &&  item.user_status.fait === null ){
+            pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+        }else{
+            if( item.user_status.a_faire == true ){
+                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
+            }else if( item.user_status.fait == true ){
+                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png";
+            }else{
+                pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+            }
+            // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+            taille=1
+        }
+        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
+        
+        marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+
+        this.handleClickGolf(marker, item);
+        this.markers.addLayer(marker);
+    }
+
+    handleClickGolf(golfMarker, item){
+        golfMarker.on('click', (e) => {
+            const itemID= item.id
+
+            const golfUpdate = this.data.golf.find(jtem =>parseInt(jtem.id) === itemID);
+            this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
+
+
+            let pathIcon="";
+            if( golfUpdate.user_status.a_faire === null &&  golfUpdate.user_status.fait === null ){
+                pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
+            }else{
+                if( golfUpdate.user_status.a_faire == true){
+                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-orange.png";
+                }else if(golfUpdate.user_status.fait == true ){
+                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-bleu.png"
+                }else{
+                    pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
+                }
+                // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                taille=1
+            }
+            
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                    iconSize: [35,55],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
+                }
+            })
+
+            golfMarker.setIcon(new icon_R);
+
+            this.updateLastMarkerSelected(golfMarker, "golf")
+            
+            if (screen.width < 991) {
+                let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
+                getDetailHomeForMobile(pathDetails)
+            } else {
+                // getDetailsFerme(pathDetails, true)getDetailStation
+                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
+            }
+
+        })
+    }
+
+
     updateLastMarkerSelected(marker, type) {
+
         if (this.marker_last_selected && this.marker_last_selected !== marker ) {
 
             let icon_marker = "";
@@ -279,6 +370,8 @@ class MarckerClusterHome extends MapModule  {
                 icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
             } else if (this.marker_last_selected_type === "resto") {
                 icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
+            } else if( this.marker_last_selected_type === "golf"){
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
             }
 
             const icon_B = L.Icon.extend({
@@ -293,6 +386,7 @@ class MarckerClusterHome extends MapModule  {
             })
             this.marker_last_selected.setIcon(new icon_B)
         }
+
         this.markers.refreshClusters();
 
         this.marker_last_selected = marker;
@@ -321,9 +415,9 @@ class MarckerClusterHome extends MapModule  {
             new_data.ferme = new_data.ferme.filter(item => !this.default_data.ferme.some(j => j.id === item.id))
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
+            new_data.golf = new_data.golf.filter(item => !this.default_data.golf.some(j => j.id === item.id))
 
             const result= this.checkeFilterType(new_data);
-
             this.addMarker(result);
 
             this.default_data = {
@@ -331,6 +425,7 @@ class MarckerClusterHome extends MapModule  {
                 ferme: this.default_data.ferme.concat(new_data.ferme),
                 station: this.default_data.station.concat(new_data.station),
                 resto: this.default_data.resto.concat(new_data.resto),
+                golf: this.default_data.golf.concat(new_data.golf),
             }
 
         } catch (e) {
@@ -342,7 +437,7 @@ class MarckerClusterHome extends MapModule  {
         const content_filter = document.createElement("div");
         content_filter.className = "content_filter content_filter_js_jheo";
 
-        // this.generate_checkout_option(content_filter)
+        // this.generate_checkout_option(content_filter) ///// must commented
 
         const content_filter_dep = document.createElement("div");
         content_filter_dep.className = "content_filter_dep";
@@ -357,6 +452,7 @@ class MarckerClusterHome extends MapModule  {
         this.generate_filter(content_filter, "filterFerme", "Ferme")
         this.generate_filter(content_filter, "filterStation", "Station")
         this.generate_filter(content_filter, "filterResto", "Réstaurant")
+        this.generate_filter(content_filter, "filterGolf", "Golf")
         // this.generate_filter(content_filter, "filterVehicule", "Véhicule", true, true)
         // this.generate_filter(content_filter, "filterCommerce", "Commerce", true, true)
 
@@ -468,7 +564,7 @@ class MarckerClusterHome extends MapModule  {
         }
 
         // const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
-        const lists = ["filterFerme", "filterStation", "filterResto"];
+        const lists = ["filterFerme", "filterStation", "filterResto", "filterGolf"];
 
         let result_temp = [];
         let results = null;
@@ -491,7 +587,7 @@ class MarckerClusterHome extends MapModule  {
 
             /// these is id on the option field 
             // const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
-            const lists = ["filterFerme", "filterStation", "filterResto"];
+            const lists = ["filterFerme", "filterStation", "filterResto", "filterGolf"];
 
             let result_temp = [];
             for (let item of lists) {
@@ -503,26 +599,29 @@ class MarckerClusterHome extends MapModule  {
                 { type:"filterFerme", state: 1},
                 { type:"filterStation", state: 1},
                 { type:"filterResto", state: 1},
+                { type:"filterGolf", state: 1},
             ]
         }
 
         const code_dep = document.querySelector(".input_select_dep_js_jheo").value.length < 3 ? document.querySelector(".input_select_dep_js_jheo").value : null;
 
-        let data_ferme = [], data_station = [], data_resto = [];
+        let data_ferme = [], data_station = [], data_resto = [], data_golf= [];
         results.forEach(item => {
             const { type, state } = item;
             if (state === 1) {
                 if (type === "filterFerme") {
-                    data_ferme = code_dep ? data.ferme.filter(({ departement }) =>{  if( parseInt(code_dep) === 20){ return departement.trim() === "2A" || departement.trim() === "2B" || parseInt(departement) === 20 }else{ return parseInt(departement) === parseInt(code_dep)}}) : data.ferme;
+                    data_ferme = code_dep ? data.ferme.filter(({ departement }) =>{  if( parseInt(code_dep) === 20){ return departement.toString().trim() === "2A" || departement.toString().trim() === "2B" || parseInt(departement) === 20 }else{ return parseInt(departement) === parseInt(code_dep)}}) : data.ferme;
                 } else if (type === "filterStation") {
-                    data_station = code_dep ? data.station.filter(({ departementCode }) => { if( parseInt(code_dep) === 20){ return departementCode.trim() === "2A" || departementCode.trim() === "2B" || parseInt(departementCode) === 20 }else{ return parseInt(departementCode) === parseInt(code_dep) }} ) : data.station;
+                    data_station = code_dep ? data.station.filter(({ departementCode }) => { if( parseInt(code_dep) === 20){ return departementCode.toString().trim() === "2A" || departementCode.toString().trim() === "2B" || parseInt(departementCode) === 20 }else{ return parseInt(departementCode) === parseInt(code_dep) }} ) : data.station;
                 } else if (type === "filterResto") {
-                    data_resto = code_dep ? data.resto.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.trim() === "2A" || dep.trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.resto;
+                    data_resto = code_dep ? data.resto.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.toString().trim() === "2A" || dep.toString().trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.resto;
+                }else if( type === "filterGolf"){
+                    data_golf = code_dep ? data.golf.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.toString().trim() === "2A" || dep.toString().trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.golf;
                 }
             }
         })
 
-        return { ferme: data_ferme, station: data_station, resto: data_resto }
+        return { ferme: data_ferme, station: data_station, resto: data_resto, golf: data_golf }
     }
 
     checkStateSelectedDep(e) {
@@ -566,8 +665,8 @@ class MarckerClusterHome extends MapModule  {
 
         this.removeMarker();
 
-        if( data_filtered.ferme.length > 0  || data_filtered.station.length > 0 ||  data_filtered.resto.length > 0 ){
-            this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto }
+        if( data_filtered.ferme.length > 0  || data_filtered.station.length > 0 ||  data_filtered.resto.length > 0 ||  data_filtered.golf.length > 0 ){
+            this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto, "golf" : data_filtered.golf }
             this.addMarker(this.data)
         }
 
