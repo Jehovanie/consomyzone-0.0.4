@@ -220,7 +220,7 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
-    public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+    public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20, $userID= null){
 
         $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
 
@@ -312,10 +312,22 @@ class GolfFranceRepository extends ServiceEntityRepository
 
         $results = $qb->execute();
 
+        for($i=0; $i< count($results); $i++){
+            if(!$userID){
+                $results[$i]["user_status"]= ["a_faire" => null, "fait" => null];
+                $results[$i]["user_id"]=null;
+            }else{
+                $golfFinishedRepository = new GolfFinishedRepository($this->registry);
+                $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $results[$i]["id"]]);
+                $results[$i]["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait()]  : ["a_faire" => null, "fait" => null];
+                $results[$i]["user_id"]=$userID;
+            }
+        }
+
         return [ $results , count($results) , "golf"];
     }
 
-    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20, $userID= null){
 
         $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
 
@@ -409,6 +421,18 @@ class GolfFranceRepository extends ServiceEntityRepository
         $qb = $qb->getQuery();
 
         $results = $qb->execute();
+
+        for($i=0; $i< count($results); $i++){
+            if(!$userID){
+                $results[$i]["user_status"]= ["a_faire" => null, "fait" => null];
+                $results[$i]["user_id"]=null;
+            }else{
+                $golfFinishedRepository = new GolfFinishedRepository($this->registry);
+                $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $results[$i]["id"]]);
+                $results[$i]["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait()]  : ["a_faire" => null, "fait" => null];
+                $results[$i]["user_id"]=$userID;
+            }
+        }
 
         return [ $results , count($results) , "golf"];
     }

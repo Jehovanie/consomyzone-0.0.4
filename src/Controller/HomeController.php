@@ -292,9 +292,9 @@ class HomeController extends AbstractController
                 $results = $resto;
                 break;
             case "golf":
-                $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
                 if(!count($golf[0])>0){
-                    $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
                     $otherResult = true;
                 }
                 $results = $golf;
@@ -335,9 +335,9 @@ class HomeController extends AbstractController
                     $results[0] = array_merge($resto[0]);
                     $results[1] = $resto[1];
                 }elseif($cles0 == "GOLF" || $cles0 == "GOLFS"){
-                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
                     if(!count($golf[0])>0){
-                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
                         $otherGolf = true;
                     }
 
