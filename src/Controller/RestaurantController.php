@@ -541,7 +541,6 @@ class RestaurantController extends AbstractController
             "note" => $global_note ?  $note_temp / count($global_note) : 0 
         ];
 
-        // dd($details["avis"]);
         
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
             return $this->json([

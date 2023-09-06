@@ -324,6 +324,9 @@ function showListAvie() {
         if(btn_modal_avis_resto.classList.contains("non_active")){
             btn_modal_avis_resto.classList.remove("non_active");
         }
+
+        document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "create");
+
     }
 
     ////delete old value on input 
@@ -331,7 +334,6 @@ function showListAvie() {
     document.querySelector(".note_avis_jheo_js").value = "";
 
 
-    document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "create");
     
     const send_Avis = document.querySelector(".send_avis_jheo_js");
     send_Avis.setAttribute("id", "Submit-Avis-resto-tom-js")
