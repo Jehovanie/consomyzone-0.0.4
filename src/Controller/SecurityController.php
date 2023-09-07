@@ -1000,12 +1000,17 @@ class SecurityController extends AbstractController
     public function sendLinkOnEmailAboutAgendaSharing(
         Request $request,
         SerializerInterface $serialize,
-        MailService $mailService){
+        MailService $mailService,
+        AgendaService $agendaService
+        ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         foreach($receivers as $receiver){
+                $agendaID = $receiver["agendaId"];
+                $from_id=$receiver["from_id"];
+                $to_id=$receiver["to_id"];
                 $email_to=$receiver["email"];
                 $nom=$receiver["lastname"];
                 $prenom=$receiver["firstname"];
@@ -1014,6 +1019,11 @@ class SecurityController extends AbstractController
                 $context["link_confirm"]="";
                 $context["content_mail"]=$content;
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+
+                if(!is_null($to_id)){
+                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                }
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');
         return new JsonResponse($r, 200, [], true);

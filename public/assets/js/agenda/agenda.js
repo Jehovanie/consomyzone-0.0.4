@@ -627,7 +627,9 @@ function createLinkRestoPastile(index, resto, isValid = true) {
 
 function activeOnglet(elem) {
     if (!elem.classList.contains("active")) {
+        
         elem.classList.add("active")
+        
         let cmzEtab = ""
 
         if (elem.dataset.name == "golf") {
@@ -650,16 +652,14 @@ function activeOnglet(elem) {
 
 function getListEtabCMZ(element) {
     let tab = document.querySelectorAll("#smallNavInvitationDep > li > a")
-    let cmzEtab = ""
+    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
     if (tab[0].classList.contains("active")) {
 
-        if (tab[0].textContent.toLowerCase().includes("golf")) {
-            cmzEtab = "golf"
+        if (cmzEtab == "golf") {
             tabEtab[0].textContent = "Tous les golfs"
-            tabEtab[1].textContent = "Golfs pastillés"
-        } else if (tab[0].textContent.toLowerCase().includes("restaurant")) {
-            cmzEtab = "restaurant"
+            tabEtab[1].textContent = "Golfs à faire"
+        } else if (cmzEtab == "restaurant") {
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
         }
@@ -674,7 +674,7 @@ function getListEtabCMZ(element) {
 
         tabEtab[1].dataset.name = cmzEtab
 
-        if (element.dataset.id != "75") {
+        if (element.dataset.id != "75" || cmzEtab == "golf") {
 
             $("#listRestoOrGolfModal").modal("show")
             makeLoading()
@@ -689,12 +689,10 @@ function getListEtabCMZ(element) {
 
     } else {
 
-        if (tab[1].textContent.toLowerCase().includes("golf")) {
-            cmzEtab = "golf"
+        if (cmzEtab == "golf") {
             tabEtab[0].textContent = "Tous les golfs"
-            tabEtab[1].textContent = "Golfs pastillés"
-        } else if (tab[1].textContent.toLowerCase().includes("restaurant")) {
-            cmzEtab = "restaurant"
+            tabEtab[1].textContent = "Golfs à faire"
+        } else if (cmzEtab == "restaurant") {
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
         }
@@ -794,11 +792,11 @@ function selectEtab(e) {
  * showing list departement
  * @param {*} radio 
  */
-function showDepModal(radio) {
+function showDepModal() {
 
     let container = document.querySelector('.container_list_dep')
 
-    let cmzEtab = radio.value
+    let cmzEtab = "restaurant"
 
     let navLinksModal = document.querySelectorAll("#smallNavInvitationDep > li > a")
 
@@ -811,16 +809,44 @@ function showDepModal(radio) {
 
     activeOngletForDep(navLinksModal[0])
 
-    if (cmzEtab == "golf") {
-        navLinksModal[0].textContent = "Tous les golfs"
-        navLinksModal[1].textContent = "Golfs pastillés"
-    } else {
-        navLinksModal[0].textContent = "Tous les restaurants"
-        navLinksModal[1].textContent = "Restaurants pastillés"
-    }
+    navLinksModal[0].textContent = "Tous les restaurants"
+    navLinksModal[1].textContent = "Restaurants pastillés"
 
     $("#createAgenda").modal("hide")
 
+    getListDep(container)
+
+    document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
+
+    $("#listDepModal").modal("show")
+
+    makeLoading()
+
+}
+
+function showDepModalGol() {
+
+    let container = document.querySelector('.container_list_dep')
+
+    let cmzEtab = "golf"
+
+    let navLinksModal = document.querySelectorAll("#smallNavInvitationDep > li > a")
+
+    let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
+
+    if (!tabEtab[0].classList.contains("active")) {
+        tabEtab[0].classList.add("active")
+        tabEtab[1].classList.remove("active")
+    }
+
+    activeOngletForDep(navLinksModal[0])
+
+
+    navLinksModal[0].textContent = "Tous les golfs"
+    navLinksModal[1].textContent = "Golfs à faire"
+
+    $("#createAgenda").modal("hide")
+    
     getListDep(container)
 
     document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
@@ -991,6 +1017,7 @@ function getAllEtab(etab, isPast, element) {
             let turnOffLogo=false
             if (results.length > 0) {
                 results.forEach((etablissement, index) => {
+                    console.log(etablissement[0])
                     if (etablissement.tribu) {
                         turnOffLogo=true
                         document.querySelector("#tableEtabCMZ > tbody").appendChild(
@@ -1008,16 +1035,34 @@ function getAllEtab(etab, isPast, element) {
                                 }, true))
                     } else {
                         turnOffLogo=false
-                        document.querySelector("#tableEtabCMZ > tbody").appendChild(
-                            generateTableForEtab(index, {
-                                id: etablissement.id_etab,
-                                nom: etablissement.name,
-                                adresse: etablissement.adresse,
-                                tel: etablissement.tel,
-                                departement: etablissement.departement,
-                                dep: etablissement.dep,
-                                id_etab: etablissement.id_etab
-                            }, true))
+                        
+                        if(etab=== "golf"){
+                            let status="Pas encore pastillé";
+                            if(etablissement[0])
+                             status = etablissement[0].afaire === 1 ? "à faire" : etablissement[0].fait === 1 ? "fait" : "Pas encore pastillé"
+                            document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                                generateTableForEtab(index, {
+                                    id: etablissement.id_etab,
+                                    nom: etablissement.name,
+                                    adresse: etablissement.adresse,
+                                    tel: etablissement.tel,
+                                    departement: etablissement.departement,
+                                    dep: etablissement.dep,
+                                    id_etab: etablissement.id_etab,
+                                    status:status
+                                }, true))
+                        }else{
+                            document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                                generateTableForEtab(index, {
+                                    id: etablissement.id_etab,
+                                    nom: etablissement.name,
+                                    adresse: etablissement.adresse,
+                                    tel: etablissement.tel,
+                                    departement: etablissement.departement,
+                                    dep: etablissement.dep,
+                                    id_etab: etablissement.id_etab
+                                }, true))
+                        }
                     }
                 });
                 document.querySelector(".list_resto_or_golf").style.display = "block";
@@ -1069,7 +1114,6 @@ function generateTableForEtab(index, etab, isValid = true) {
 
             }
 
-
             nomTribu = etab.tribu.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
             nomTribu = nomTribu.charAt(0).toUpperCase() + nomTribu.slice(1)
             // logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
@@ -1096,6 +1140,34 @@ function generateTableForEtab(index, etab, isValid = true) {
                 document.querySelector(".forTribu").remove()
         }
 
+        if(etab.status){
+            if (!document.querySelector(".forGolfStatus")) {
+
+                const forGolfStatus = document.createElement("th");
+
+                forGolfStatus.classList.add("forGolfStatus")
+
+                const textNodeStatus = document.createTextNode("Status");
+
+                forGolfStatus.appendChild(textNodeStatus);
+
+                // Insert before existing child:
+                const thead = document.querySelector("#tableEtabCMZ > thead > tr");
+
+                thead.insertBefore(forGolfStatus, thead.children[0]);
+
+            }
+
+          
+
+            let tdStatus = document.createElement("td")
+            tdStatus.textContent =etab.status
+            tr.appendChild(tdStatus)
+        }else{
+            if (document.querySelector(".forGolfStatus"))
+                document.querySelector(".forGolfStatus").remove()
+        }
+
         let tdDataName = document.createElement("td")
         tdDataName.textContent = etab.nom
        
@@ -1116,6 +1188,7 @@ function generateTableForEtab(index, etab, isValid = true) {
         btnCheck.setAttribute("class", "btn btn-outline-info btn-sm")
         btnCheck.setAttribute("onclick", `setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)`)
         btnCheck.textContent = "Choisir"
+        btnCheck.dataset.idetab = etab.id_etab
         tr.appendChild(tdDataName)
         tr.appendChild(tdDataAdresse)
         tr.appendChild(tdDatel)
@@ -1150,7 +1223,33 @@ function setNameOrAdresseForEtab(etab, element) {
         element.classList.add(classSuccess);
         element.classList.add("resto_pastiled_jheo_js");
 
-        element.innerText = 'Sélectionner';
+        element.innerText = 'Sélectionnée';
+    }
+
+    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
+
+    if(cmzEtab == "golf"){
+        const request = new Request("/user/setGolf/todo", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify({
+                golfID : element.dataset.idetab,
+            })
+        })
+
+        fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            if( response.success){
+                new swal("Bravo !","Vous avez marqué ce golf comme à faire !", "success")
+                    .then((value) => {
+                        
+                    });  
+            }
+        })
     }
 
     document.querySelector("#nomEtabEvent").value = etab.name;
@@ -1555,7 +1654,7 @@ function showPartisanAgenda(tribu_t_name) {
                                 <th scope="col">Rôle</th>
                                 <th scope="col">
                                     <input type="checkbox" class="selectTribuTAll" name="selectionner" id="selectTribuTAll" onchange="selectAllPartisan(this,false)"> 
-                                    <label for="selectionner">Sélectionner tout</label></th>
+                                    <label for="selectionner">Sélectionnée tout</label></th>
                                 </th>
       
                             </tr>
@@ -1774,7 +1873,7 @@ function putInputOnDataTableHeader(selector,colIdx,api){
 }
 
 function findEtabByKey(e){
-    
+    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     let cles0 = ""
     let cles1 = ""
     if(e.target.nextElementSibling){
@@ -1789,7 +1888,7 @@ function findEtabByKey(e){
     
     if(e.code == "Enter" || e.code == 13){
         let param = "?cles0="+cles0+"&cles1="+cles1
-        const request = new Request("/api/search/restaurant" + param, {
+        const request = new Request("/api/search/"+cmzEtab + "/" + param, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -1802,6 +1901,14 @@ function findEtabByKey(e){
 
         $("#listRestoOrGolfModal").modal("show")
 
+        if(cmzEtab == "golf"){
+            document.querySelectorAll("#smallNavInvitation > li > a")[0].textContent = "Tous les golfs"
+            document.querySelectorAll("#smallNavInvitation > li > a")[1].textContent = "Golfs à faire"
+        }else{
+            document.querySelectorAll("#smallNavInvitation > li > a")[0].textContent = "Tous les restaurants"
+            document.querySelectorAll("#smallNavInvitation > li > a")[1].textContent = "Restaurants pastillés"
+        }
+
         fetch(request)
             .then(response => response.json())
             .then(data=>{
@@ -1812,7 +1919,7 @@ function findEtabByKey(e){
                     tabEtab[0].classList.add("active")
                     tabEtab[1].classList.remove("active")
                 }
-                
+               
                 let initTable = `<table class="table table-striped" id="tableEtabCMZ">
                         <thead>
                             <tr>
@@ -1826,6 +1933,7 @@ function findEtabByKey(e){
                     </table>`
 
                 document.querySelector(".list_resto_or_golf").innerHTML = initTable
+
 
                 let turnOffLogo=false
                 if (results.length > 0) {
@@ -1857,38 +1965,3 @@ function findEtabByKey(e){
     }
 
 }
-
-// function shareEvent(){
-//     let data = []
-//     let memberElem = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
-//     memberElem.forEach(tr=>{
-//         let isChecked = tr.querySelector("input").checked
-//         if(isChecked){
-//             let user = {
-//                 id : tr.querySelector(".lastname").dataset.id,
-//                 firstname : tr.querySelector(".firstname").textContent,
-//                 lastname : tr.querySelector(".lastname").textContent,
-//                 email : tr.querySelector(".email").textContent,
-//                 role : tr.querySelector(".role").textContent,
-//                 agenda : sessionStorage.getItem("agenda")
-//             }
-//             data.push(user)
-//         }
-//     })
-
-//     let request = new Request("/api/user/send/event", {
-//         method: "POST",
-//         headers: {
-//             'Accept': 'application/json',
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(data)
-//     })
-//     fetch(request).then(r=>{
-//         if(r.status===200 && r.ok){
-//             //swetalert
-//         }else{
-//             //sweat alert
-//         }
-//     })
-// }

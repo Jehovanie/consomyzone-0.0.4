@@ -98,17 +98,19 @@ class GolfFranceRepository extends ServiceEntityRepository
 
 
     ///jheo : prendre tous les fermes qui appartients dans un departement specifique
-    public function getGolfByDep($nom_dep, $id_dep,$userID=null)
+    public function getGolfByDep($nom_dep="", $id_dep,$userID=null)
     {
         ///lancement de requette
         $data = $this->createQueryBuilder('p')
             ->select(
                 'p.id',
+                'p.id as id_etab',
                 'p.nom_golf as name',
                 'p.nom_golf as nom',
                 'p.adr1',
                 'p.adr1 as add',
                 'p.adr1 as adress',
+                'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as adresse',
                 'p.adr2',
                 'p.adr3',
                 'p.e_mail as email',
@@ -119,6 +121,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                 'p.dep',
                 'p.nom_dep',
                 'p.nom_dep as depName',
+                'p.nom_dep as departement',
                 'p.nom_commune as commune',
                 'p.latitude as lat',
                 'p.longitude as long',
@@ -377,4 +380,35 @@ class GolfFranceRepository extends ServiceEntityRepository
         return [ $results , count($results) , "golf"];
     }
 
+    public function getGolfAfaire() {
+        
+        return $this->createQueryBuilder('g')
+        ->select("g.id as id_etab,".
+                "g.nom_golf as name,".
+                "CONCAT(g.adr1,' ',g.cp, ' ',g.nom_commune) as adresse,".
+                "g.telephone as tel,".
+                "g.nom_dep as departement,".
+                "g.site_web as siteweb","gf"
+        )
+        ->leftJoin("App\Entity\GolfFinished", "gf", Join::WITH, "g.id = gf.golf_id ")
+        ->where('gf.a_faire= 1')
+        ->orderBy('g.id',"ASC")
+        ->getQuery()->getResult();
+    }
+
+    public function getALLWithJoin($id_etab){
+        return $this->createQueryBuilder('g')
+        ->select("g.id as id_etab,".
+                "g.nom_golf as name,".
+                "CONCAT(g.adr1,' ',g.cp, ' ',g.nom_commune) as adresse,".
+                "g.telephone as tel,".
+                "g.nom_dep as departement,".
+                "g.site_web as siteweb","gf"
+        )
+        ->leftJoin("App\Entity\GolfFinished", "gf", Join::WITH, "g.id = gf.golf_id ")
+        ->where('g.dep = :v' )
+        ->setParameter('v', $id_etab)
+        ->orderBy('g.id',"ASC")
+        ->getQuery()->getResult();
+    }
 }

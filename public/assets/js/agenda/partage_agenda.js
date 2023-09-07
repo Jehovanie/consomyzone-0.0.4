@@ -165,7 +165,7 @@ function fromBinary(encoded) {
 function sendInvitation(event){
 
     let data=editor.getData()
-
+    let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     let isG = event.target.dataset.g
     console.log("isG : " + isG);
     let dataInfos = []
@@ -181,6 +181,7 @@ function sendInvitation(event){
                 let email = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexMail]
                 if(validateEmail(email)){
                     dataInfos.push({
+                        agendaId:agenda.id,
                         from_id:null,
                         to_id:null,
                         lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
@@ -323,6 +324,7 @@ function sendEventByMessage(e){
 }
 
 function getUserInfoForSharing(isG, dataInfos){
+    let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     let isValidateEmail = true
     if(isG ==="1"){
         let allTr = document.querySelectorAll("#list-tribu-g-partage-agenda> tbody >tr")
@@ -335,6 +337,7 @@ function getUserInfoForSharing(isG, dataInfos){
                 let email = allTr[i].querySelector(".email").textContent
                 if(validateEmail(email)){
                     dataInfos.push({
+                        agendaId:agenda.id,
                         from_id:allTr[i].parentElement.dataset.id,
                         to_id:to_id,
                         lastname : lastname,

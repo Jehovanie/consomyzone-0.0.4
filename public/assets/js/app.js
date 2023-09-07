@@ -1043,7 +1043,7 @@ CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
     editor.setData(html)
 });
 function showModalEditor(isG, isListeInfile=false){
-
+    let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
     if(isListeInfile){
         document.querySelector("#btnValidate").removeAttribute("data-g")
         document.querySelector("#btnValidateMessage").removeAttribute("data-g")
@@ -1088,5 +1088,9 @@ function showModalEditor(isG, isListeInfile=false){
     <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
     <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
     <button type="btn" disabled>Confirmation</button>
-    <p>Cordialement</p>`
+    <p>Cordialement</p>
+    <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
+           ${fullname} 
+    </span>
+    `
 }
