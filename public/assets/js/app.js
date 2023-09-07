@@ -86,6 +86,68 @@ if( document.querySelector(".form_content_search_navbar_js")){
     const inputs=  [document.querySelector(".input_search_type_js"), document.querySelector(".input_mots_cle_js")];
     inputs.forEach(input => {
         input.addEventListener("input", () => {
+            
+            inputs.forEach(item => {
+                if( item.classList.contains("border_red")){
+                    item.classList.remove("border_red")
+                }
+            })
+        })
+    })
+
+}
+
+if( document.querySelector(".form_content_search_navbar_js_mob")){
+    const search_form = document.querySelector(".form_content_search_navbar_js_mob");
+    if( getDataInLocalStorage("type")){
+        const baseOne = getDataInLocalStorage("type");
+        search_form.setAttribute("action", `${search_form.getAttribute("action")}/${baseOne}`);
+    }
+
+    search_form.addEventListener("submit", (e) => {
+        const cles0 = document.querySelector(".input_search_type_js_mob").value.trim();
+        const cles1= document.querySelector(".input_mots_cle_js_mob").value.trim();
+        
+        if(current_url.includes("/restaurant") || current_url.includes("/ferme") || current_url.includes("/station")){
+            
+            if( cles0=== "" && cles1 === "" ){
+
+                e.preventDefault();
+
+                new swal("Attention !", "Veuillez renseigner au moins l'adresse!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js_mob").classList.add("border_red")
+                    });
+    
+            }else if(cles1 === ""){
+
+                e.preventDefault();
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js_mob").classList.add("border_red")
+                    });
+            }
+        }else{
+
+            if( cles1 === "" ){
+
+                e.preventDefault();
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js_mob").classList.add("border_red")
+                    });
+    
+            }
+        }
+
+    })
+
+    const inputs=  [document.querySelector(".input_search_type_js_mob"), document.querySelector(".input_mots_cle_js_mob")];
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            
             inputs.forEach(item => {
                 if( item.classList.contains("border_red")){
                     item.classList.remove("border_red")
@@ -1082,4 +1144,15 @@ function showModalEditor(isG){
     <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
     <button type="btn" disabled>Confirmation</button>
     <p>Remerciement cordialement</p>`
+}
+
+if (document.querySelector(".open-search-mobil-tomm-js")) {
+    document.querySelector(".open-search-mobil-tomm-js").addEventListener("click", () => {
+        document.querySelector(".search-mobil-tomm-js").classList.remove('search-resto-mobil-none')
+        document.querySelector(".open-search-mobil-tomm-js").classList.add('search-resto-mobil-none')
+    })
+    document.querySelector(".close-search-mob").addEventListener("click", () => { 
+        document.querySelector(".search-mobil-tomm-js").classList.add('search-resto-mobil-none')
+        document.querySelector(".open-search-mobil-tomm-js").classList.remove('search-resto-mobil-none')
+    })
 }

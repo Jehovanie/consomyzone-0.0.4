@@ -34,6 +34,20 @@
         <div class="responsif-none">
             {% include 'shard/navbar.twig' %}
         </div>
+        {% if (app.user) %}
+            <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-golf-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+        {% else %}
+            <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-golf-mobile-tomm-js">
+        {% endif %}
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc " id="open-search-resto-specific-mobil">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="search-resto-mobil search-mobil-tomm-js search-resto-mobil-none vd to/4 to/4/2 wf yf responsif-none-pc" id="search-resto-specific-mobil">
+                    {% include 'shard/search_mobile.html.twig' %}
+                </div>
+                <div id="list-depart-golf-mobile-tomm-js"></div>
         
         {# //// CONTENT CART #}
         <div>

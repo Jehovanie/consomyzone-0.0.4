@@ -203,9 +203,6 @@ class HomeController extends AbstractController
 
         $userConnected = $status->userProfilService($this->getUser());
 
-        $userType = $user->getType();
-
-        $userId = $user->getId();
 
         if ($userType == "consumer") {
 
