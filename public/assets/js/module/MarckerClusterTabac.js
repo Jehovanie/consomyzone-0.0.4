@@ -10,7 +10,7 @@ class MarckerClusterTabac extends MapModule {
             { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
             { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
             // { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
-            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: ["nom_qv", "code_qv", "nom_pole", "pole" ]},       /// YlOrRd
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ]
           
@@ -285,7 +285,7 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
             </div>
-            <div class="chargement_content chargement_tabac chargement_tabac_jheo_js">
+            <div class="d-none chargement_tabac chargement_tabac_jheo_js">
                 <div class="containt">
                     <div class="word word-1">C</div>
                     <div class="word word-2">M</div>
@@ -316,11 +316,13 @@ class MarckerClusterTabac extends MapModule {
             inputCheck_HTML.addEventListener("change", (e) => {
                 const couche= inputCheck_HTML.getAttribute("id")
                 if( e.target.checked){
+                    showChargementTabac()
                     this.addCoucheOnLeaflet(couche) //// param couche name
                 }else{
                     const list = document.querySelector(`.select_${couche.toLowerCase()}_jheo_js`)
                     
                     this.removeCoucheOnLeafled(couche)
+
                     if(list && !list.classList.contains("d-none") ){
                         list.classList.add("d-none")
 
@@ -349,7 +351,7 @@ class MarckerClusterTabac extends MapModule {
                     console.log(reader.result)
                     shp(reader.result)
                         .then((geoJson) =>{
-                            
+                            hideChargementTabac()
                             ///// couche Option, colors, properties
                             const coucheOption= this.tabacOption.find(item => item.couche === COUCHE.toLowerCase());
 
@@ -365,8 +367,13 @@ class MarckerClusterTabac extends MapModule {
 
                 reader.readAsArrayBuffer(file)
             }else{
+                hideChargementTabac()
                 //// generate
-                generateSelect(COUCHE, currentCouche.data , currentCouche.child) //// function in data_tabac
+                if( COUCHE !== "quartier"){
+                    generateSelect(COUCHE, currentCouche.data , currentCouche.child) //// function in data_tabac
+                }else{
+                    this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
+                }
             }
         }catch(e){
             console.log(e.message)
@@ -406,9 +413,13 @@ class MarckerClusterTabac extends MapModule {
             }
         }).addTo(this.map);
 
-        this.objectGeoJson= this.objectGeoJson.map(item => { 
+        this.objectGeoJson= this.objectGeoJson.map((item, index) => { 
             if( item.couche.toLowerCase() === couche ){
-                item.child.push({ index : indexInJson, geoJson : geoJson})
+                if(indexInJson !== -1 ){
+                    item.child.push({ index : indexInJson, geoJson : geoJson})
+                }else{
+                    item.child.push({ index : index, geoJson : geoJson})
+                }
             }
             return item;
         })
@@ -422,11 +433,11 @@ class MarckerClusterTabac extends MapModule {
         data_spec.child.forEach(jtem => jtem.geoJson.clearLayers());
 
         ///// update data remove all children selected in this
-        this.objectGeoJson= this.objectGeoJson.map(item => { 
-            item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
-            return item;
-        })
-
+        // this.objectGeoJson= this.objectGeoJson.map(item => { 
+        //     item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
+        //     return item;
+        // })
+        this.objectGeoJson= this.objectGeoJson.filter(item => item.couche.toLowerCase() !== COUCHE )
     }
 
     removeSpecGeoJson(couche,indexInJson){

@@ -43,15 +43,12 @@
     overflow-x: hidden;
 }
 
-.chargement_content {
+.chargement_tabac{
     height: unset !important;
     width: unset !important;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.chargement_tabac{
     position: absolute;
     right: 13%;
     top: 35%;
