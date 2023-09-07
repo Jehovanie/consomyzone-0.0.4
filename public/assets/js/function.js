@@ -1551,7 +1551,7 @@ function readURL(input) {
                 if(!checkTailleImage(octetMax, e.target.result)){
                     Swal.fire({
                         icon: 'error',
-                        title: 'File is too large. ',
+                        title: 'Le fichier est trop volumineux. ',
                         text: 'La taille de l\'image doit être inférieure à 2Mo',
                         footer: 'Réessayer de télécharger.'
                       })

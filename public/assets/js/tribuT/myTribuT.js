@@ -59,7 +59,7 @@ document.getElementById("form_upload").onchange = (e) => {
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'File is too large. ' + Math.round(taille / 1024000) + 'Mo',
+                    title: 'Le fichier est trop volumineux. ' + Math.round(taille / 1024000) + 'Mo',
                     text: 'La taille de l\'image doit être inférieure à 2Mo',
                     footer: 'Réessayer de télécharger.'
                 })
@@ -178,14 +178,15 @@ function showPartisan() {
     const request = new Request("/user/partisan/tribu_T" + param, {
         method: "GET",
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            // 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            'Content-Type': 'application/json'
         },
     })
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
                 console.log(jsons)
-                jsons.forEach(json => {
+                jsons[0].forEach(json => {
                     profilInfo = JSON.parse(json.infos_profil)
                     let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
                     let lastName = profilInfo.lastName
@@ -1035,7 +1036,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                                 <span style="font-size:12pt;">${denominationsF} </span> 
                             <!--</a>-->
                         </td>
-                        <td>${note}/4</td>
+                        <td class="data-note-${resto.id}">${note}/4</td>
                         <td>
                             <!--<div id="etoile_${id_resto}" class="non_active">
                                 <i class="fa-solid fa-star" data-rank="1"></i>
@@ -1043,11 +1044,11 @@ function showResto(table_rst_pastilled, id_c_u) {
                                 <i class="fa-solid fa-star" data-rank="3"></i>
                                 <i class="fa-solid fa-star" data-rank="4"> </i>-->
                                 <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                <a class="text-secondary" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
                             <!--</div>-->
                         </td>
                         <td>
-                            <button class="btn btn-primary" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
                             <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                             
                             <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
@@ -1186,6 +1187,19 @@ function sendNote(note, commentaire, _idResto) {
     })
     fetch(request).then(response => {
         if (response.status == 200 && response.ok) {
+
+            document.querySelector(".data-note-"+_idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
+
+            let last_avis = parseInt(document.querySelector(".data-avis-"+_idResto).textContent.replaceAll(/[^0-9]/g,""))
+
+            document.querySelector(".data-avis-"+_idResto).innerHTML = parseInt(last_avis + 1)+" Avis";
+
+            document.querySelector(".data-avis-"+_idResto).setAttribute("onclick", "openAvis("+parseInt(last_avis + 1)+","+_idResto+")")
+
+            const openPopup = document.querySelector(".elie-plus-"+_idResto).getAttribute("onclick")
+
+            document.querySelector(".elie-plus-"+_idResto).setAttribute("onclick", openPopup.replaceAll("create","update").replaceAll("Notez","Modifier votre avis"))
+
             Swal.fire(
                 'Noté!',
                 'Note ajouté avec succès',
@@ -1232,6 +1246,9 @@ function updateNote(note, commentaire, id_resto) {
             }
 
         })
+    
+    
+    document.querySelector(".data-note-"+id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
 
     Swal.fire(
         'A jour!',
@@ -2096,10 +2113,13 @@ function listResto() {
 //     }
 //   }
 
-document.querySelector("#btn_open_modal_avis_elie").addEventListener("click", function () {
-    $("#avisRestoPastille").modal("hide")
-    $("#modalAvisRestaurant").modal("show")
-})
+if(document.querySelector("#btn_open_modal_avis_elie")){
+
+    document.querySelector("#btn_open_modal_avis_elie").addEventListener("click", function () {
+        $("#avisRestoPastille").modal("hide")
+        $("#modalAvisRestaurant").modal("show")
+    })
+}
 
 function openAvis(nb_avis, id_resto) {
     // document.querySelector("#staticBackdrop")
@@ -2247,6 +2267,8 @@ function openPopupAction(id_pastille, denomination_f, latitude, longitude, text1
         ) {
 
             //   createRepas(id_pastille,denomination_f, latitude,longitude)
+
+            // setNameOrAdresseForEtab({ name:'0 CHURRASCO',adress:'70 rue fontaine sucree 01170 crozet'} ,this)
 
             swalWithBootstrapButtons.fire(
                 'Crée!',
