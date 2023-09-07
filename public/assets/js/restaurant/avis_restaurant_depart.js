@@ -341,9 +341,6 @@ function showListAvie() {
         send_Avis.setAttribute("onclick", "temporary()")
     }
 
-    //// open modal liste avis
-    document.querySelector(".open_modal_avis_resto_jheo_js").click();
-
     const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
     const userId = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     showAvis(userId, newIdResto) 

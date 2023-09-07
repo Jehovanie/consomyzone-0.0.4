@@ -28,10 +28,13 @@
 				</div>
 			</div>
 
-
 			{% if app.user %}
 				<div class="modal-footer">
 					<button type="button" class="btn btn-warning btn_modal_avis_resto_jheo_js non_active" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
+				</div>
+			{% else %}
+				<div class="modal-footer" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">
+					<button type="button" class="btn btn-warning non_active">Donné votre avis</button>
 				</div>
 			{% endif %}
 		</div>

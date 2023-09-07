@@ -44,8 +44,9 @@ class MarckerClusterSearch extends MapModule  {
         let latLong = memoryCenter ? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom : memoryCenter.zoom } : { lat: null, long: null, zoom: null };
 
         try{
-            if(this.data.origin_cles1.length < 3 && ( parseInt(this.data.origin_cles1) > 0 &&  parseInt(this.data.origin_cles1) < 95 )){
-                latLong=  { lat: centers[parseInt(this.data.origin_cles1)].lat, long: centers[parseInt(this.data.origin_cles1)].lng, zoom : centers[parseInt(this.data.origin_cles1)].zoom };
+            if((this.data.origin_cles1.length < 3 && ( parseInt(this.data.origin_cles1) > 0 &&  parseInt(this.data.origin_cles1) < 95 ) || this.data.origin_cles1.toLowerCase() === "nord")){
+                const depCode= this.data.origin_cles1.toLowerCase() === "nord" ? 59 : parseInt(this.data.origin_cles1) ;
+                latLong=  { lat: centers[depCode].lat, long: centers[depCode].lng, zoom : centers[depCode].zoom };
             }else{
                 const dataLink= [
                     {

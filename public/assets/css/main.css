@@ -1700,7 +1700,7 @@ i.fa-eye-slash, i.fa-eye{
 }
 .see-avis{
     color: #fff !important;
-    width: 150px;
+    /* width: 150px; */
     margin-left: auto;
     margin-right: auto;
 }
