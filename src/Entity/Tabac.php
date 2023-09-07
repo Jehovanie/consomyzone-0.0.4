@@ -19,499 +19,542 @@ class Tabac
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
-    private $activiteSoumise;
+    private $clenum;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
-    private $adresse;
+    private $denomination_f;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
-    private $nom;
+    private $numvoie;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $typevoie;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $nomvoie;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $compvoie;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $codpost;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $villenorm;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $commune;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $codinsee;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $siren;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $tel;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $bureau_tabac;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $tabac_presse;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $bar_tabac;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $hotel_tabac;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $cafe_tabac;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $site_1;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $site_2;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $fonctionalite_1;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $horaires_1;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $prestation_1;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $codens;
+
+    /**
+     *  @ORM\Column(type="decimal", precision=16, scale=14, nullable=true)
+     */
+    private $poi_x;
+
+    /**
+     * @ORM\Column(type="decimal", precision=16, scale=14, nullable=true)
+     */
+    private $poi_y;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $poi_qualitegeorue;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $dcomiris;
+
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
     private $dep;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $barTabac;
 
     /**
-     * @ORM\Column(name="bureau_tabac",type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
-    private $bureauTabac;
+    private $dep_name;
 
     /**
-     * @ORM\Column(name="cave_cigare", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
-    private $caveCigare;
+    private $date_data;
 
     /**
-     * @ORM\Column(name="tabac_presse", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true)
      */
-    private $tabacPresse;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $services;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $telephone;
-
-    /**
-     * @ORM\Column(name="dep_name", type="string", length=255, nullable=true)
-     */
-    private $depName;
-
-    /**
-     * @ORM\Column(type="decimal", precision=16, scale=14, nullable=true)
-     */
-    private $latitude;
-
-    /**
-     * @ORM\Column(type="decimal", precision=16, scale=14, nullable=true)
-     */
-    private $longitude;
-
-    /**
-     * @ORM\Column(name="result_label", type="string", length=255, nullable=true)
-     */
-    private $resultLabel;
-
-    /**
-     * @ORM\Column(name="result_score", type="string", length=255, nullable=true)
-     */
-    private $resultScore;
-
-    /**
-     * @ORM\Column(name="result_score_next", type="string", length=255, nullable=true)
-     */
-    private $resultScoreNext;
-
-    /**
-     * @ORM\Column(name="result_type", type="string", length=255, nullable=true)
-     */
-    private $resultType;
-
-    /**
-     * @ORM\Column(name="result_id", type="integer", nullable=true)
-     */
-    private $resultId;
-
-    /**
-     * @ORM\Column(name="result_housenumber", type="string", length=255, nullable=true)
-     */
-    private $resultHousenumber;
-
-    /**
-     * @ORM\Column(name="result_name", type="string", length=255, nullable=true)
-     */
-    private $resultName;
-
-    /**
-     * @ORM\Column(name="result_street", type="string", length=255, nullable=true)
-     */
-    private $resultStreet;
-
-    /**
-     * @ORM\Column(name="result_postcode", type="string", length=255, nullable=true)
-     */
-    private $resultPostcode;
-
-    /**
-     * @ORM\Column(name="result_city", type="string", length=255, nullable=true)
-     */
-    private $resultCity;
-
-    /**
-     * @ORM\Column(name="result_context", type="string", length=255, nullable=true)
-     */
-    private $resultContext;
-
-    /**
-     * @ORM\Column(name="result_citycode", type="string", length=255, nullable=true)
-     */
-    private $resultCitycode;
-
-    /**
-     * @ORM\Column(name="result_oldcitycode", type="string", length=255, nullable=true)
-     */
-    private $resultOldcitycode;
-
-    /**
-     * @ORM\Column(name="result_oldcity", type="string", length=255, nullable=true)
-     */
-    private $resultOldcity;
-
-    /**
-     * @ORM\Column(name="result_district", type="string", length=255, nullable=true)
-     */
-    private $resultDistrict;
-
-    /**
-     * @ORM\Column(name="result_status", type="string", length=255, nullable=true)
-     */
-    private $resultStatus;
+    private $date_inser;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getActiviteSoumise(): ?string
+    public function getClenum(): ?string
     {
-        return $this->activiteSoumise;
+        return $this->clenum;
     }
 
-    public function setActiviteSoumise(?string $activiteSoumise): self
+    public function setClenum(?string $clenum): self
     {
-        $this->activiteSoumise = $activiteSoumise;
+        $this->clenum = $clenum;
 
         return $this;
     }
 
-    public function getAdresse(): ?string
+    public function getDenominationF(): ?string
     {
-        return $this->adresse;
+        return $this->denomination_f;
     }
 
-    public function setAdresse(?string $adresse): self
+    public function setDenominationF(?string $denomination_f): self
     {
-        $this->adresse = $adresse;
+        $this->denomination_f = $denomination_f;
 
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getNumvoie(): ?string
     {
-        return $this->nom;
+        return $this->numvoie;
     }
 
-    public function setNom(?string $nom): self
+    public function setNumvoie(?string $numvoie): self
     {
-        $this->nom = $nom;
+        $this->numvoie = $numvoie;
 
         return $this;
     }
 
-    public function getDep(): ?string
+    public function getTypevoie(): ?string
     {
-        return $this->dep;
+        return $this->typevoie;
     }
 
-    public function setDep(?string $dep): self
+    public function setTypevoie(?string $typevoie): self
     {
-        $this->dep = $dep;
+        $this->typevoie = $typevoie;
 
         return $this;
     }
 
-    public function getBarTabac(): ?string
+    public function getNomvoie(): ?string
     {
-        return $this->barTabac;
+        return $this->nomvoie;
     }
 
-    public function setBarTabac(?string $barTabac): self
+    public function setNomvoie(?string $nomvoie): self
     {
-        $this->barTabac = $barTabac;
+        $this->nomvoie = $nomvoie;
+
+        return $this;
+    }
+
+    public function getCompvoie(): ?string
+    {
+        return $this->compvoie;
+    }
+
+    public function setCompvoie(?string $compvoie): self
+    {
+        $this->compvoie = $compvoie;
+
+        return $this;
+    }
+
+    public function getCodpost(): ?string
+    {
+        return $this->codpost;
+    }
+
+    public function setCodpost(?string $codpost): self
+    {
+        $this->codpost = $codpost;
+
+        return $this;
+    }
+
+    public function getVillenorm(): ?string
+    {
+        return $this->villenorm;
+    }
+
+    public function setVillenorm(?string $villenorm): self
+    {
+        $this->villenorm = $villenorm;
+
+        return $this;
+    }
+
+    public function getCommune(): ?string
+    {
+        return $this->commune;
+    }
+
+    public function setCommune(?string $commune): self
+    {
+        $this->commune = $commune;
+
+        return $this;
+    }
+
+    public function getCodinsee(): ?string
+    {
+        return $this->codinsee;
+    }
+
+    public function setCodinsee(?string $codinsee): self
+    {
+        $this->codinsee = $codinsee;
+
+        return $this;
+    }
+
+    public function getSiren(): ?string
+    {
+        return $this->siren;
+    }
+
+    public function setSiren(?string $siren): self
+    {
+        $this->siren = $siren;
+
+        return $this;
+    }
+
+    public function getTel(): ?string
+    {
+        return $this->tel;
+    }
+
+    public function setTel(?string $tel): self
+    {
+        $this->tel = $tel;
 
         return $this;
     }
 
     public function getBureauTabac(): ?string
     {
-        return $this->bureauTabac;
+        return $this->bureau_tabac;
     }
 
-    public function setBureauTabac(?string $bureauTabac): self
+    public function setBureauTabac(?string $bureau_tabac): self
     {
-        $this->bureauTabac = $bureauTabac;
-
-        return $this;
-    }
-
-    public function getCaveCigare(): ?string
-    {
-        return $this->caveCigare;
-    }
-
-    public function setCaveCigare(?string $caveCigare): self
-    {
-        $this->caveCigare = $caveCigare;
+        $this->bureau_tabac = $bureau_tabac;
 
         return $this;
     }
 
     public function getTabacPresse(): ?string
     {
-        return $this->tabacPresse;
+        return $this->tabac_presse;
     }
 
-    public function setTabacPresse(?string $tabacPresse): self
+    public function setTabacPresse(?string $tabac_presse): self
     {
-        $this->tabacPresse = $tabacPresse;
+        $this->tabac_presse = $tabac_presse;
 
         return $this;
     }
 
-    public function getServices(): ?string
+    public function getBarTabac(): ?string
     {
-        return $this->services;
+        return $this->bar_tabac;
     }
 
-    public function setServices(?string $services): self
+    public function setBarTabac(?string $bar_tabac): self
     {
-        $this->services = $services;
+        $this->bar_tabac = $bar_tabac;
 
         return $this;
     }
 
-    public function getTelephone(): ?string
+    public function getHotelTabac(): ?string
     {
-        return $this->telephone;
+        return $this->hotel_tabac;
     }
 
-    public function setTelephone(?string $telephone): self
+    public function setHotelTabac(?string $hotel_tabac): self
     {
-        $this->telephone = $telephone;
+        $this->hotel_tabac = $hotel_tabac;
+
+        return $this;
+    }
+
+    public function getCafeTabac(): ?string
+    {
+        return $this->cafe_tabac;
+    }
+
+    public function setCafeTabac(?string $cafe_tabac): self
+    {
+        $this->cafe_tabac = $cafe_tabac;
+
+        return $this;
+    }
+
+    public function getSite1(): ?string
+    {
+        return $this->site_1;
+    }
+
+    public function setSite1(?string $site_1): self
+    {
+        $this->site_1 = $site_1;
+
+        return $this;
+    }
+
+    public function getSite2(): ?string
+    {
+        return $this->site_2;
+    }
+
+    public function setSite2(?string $site_2): self
+    {
+        $this->site_2 = $site_2;
+
+        return $this;
+    }
+
+    public function getFonctionalite1(): ?string
+    {
+        return $this->fonctionalite_1;
+    }
+
+    public function setFonctionalite1(?string $fonctionalite_1): self
+    {
+        $this->fonctionalite_1 = $fonctionalite_1;
+
+        return $this;
+    }
+
+    public function getHoraires1(): ?string
+    {
+        return $this->horaires_1;
+    }
+
+    public function setHoraires1(?string $horaires_1): self
+    {
+        $this->horaires_1 = $horaires_1;
+
+        return $this;
+    }
+
+    public function getPrestation1(): ?string
+    {
+        return $this->prestation_1;
+    }
+
+    public function setPrestation1(?string $prestation_1): self
+    {
+        $this->prestation_1 = $prestation_1;
+
+        return $this;
+    }
+
+    public function getCodens(): ?string
+    {
+        return $this->codens;
+    }
+
+    public function setCodens(?string $codens): self
+    {
+        $this->codens = $codens;
+
+        return $this;
+    }
+
+    public function getPoiX(): ?string
+    {
+        return $this->poi_x;
+    }
+
+    public function setPoiX(?string $poi_x): self
+    {
+        $this->poi_x = $poi_x;
+
+        return $this;
+    }
+
+    public function getPoiY(): ?string
+    {
+        return $this->poi_y;
+    }
+
+    public function setPoiY(?string $poi_y): self
+    {
+        $this->poi_y = $poi_y;
+
+        return $this;
+    }
+
+    public function getPoiQualitegeorue(): ?string
+    {
+        return $this->poi_qualitegeorue;
+    }
+
+    public function setPoiQualitegeorue(?string $poi_qualitegeorue): self
+    {
+        $this->poi_qualitegeorue = $poi_qualitegeorue;
+
+        return $this;
+    }
+
+    public function getDcomiris(): ?string
+    {
+        return $this->dcomiris;
+    }
+
+    public function setDcomiris(?string $dcomiris): self
+    {
+        $this->dcomiris = $dcomiris;
 
         return $this;
     }
 
     public function getDepName(): ?string
     {
-        return $this->depName;
+        return $this->dep_name;
     }
 
-    public function setDepName(?string $depName): self
+    public function setDepName(?string $dep_name): self
     {
-        $this->depName = $depName;
+        $this->dep_name = $dep_name;
 
         return $this;
     }
 
-    public function getLatitude(): ?string
+    public function getDateData(): ?string
     {
-        return $this->latitude;
+        return $this->date_data;
     }
 
-    public function setLatitude(?string $latitude): self
+    public function setDateData(?string $date_data): self
     {
-        $this->latitude = $latitude;
+        $this->date_data = $date_data;
 
         return $this;
     }
 
-    public function getLongitude(): ?string
+    public function getDateInser(): ?string
     {
-        return $this->longitude;
+        return $this->date_inser;
     }
 
-    public function setLongitude(?string $longitude): self
+    public function setDateInser(?string $date_inser): self
     {
-        $this->longitude = $longitude;
+        $this->date_inser = $date_inser;
 
         return $this;
     }
 
-    public function getResultLabel(): ?string
+    /**
+     * Get the value of dep
+     */ 
+    public function getDep()
     {
-        return $this->resultLabel;
+        return $this->dep;
     }
 
-    public function setResultLabel(?string $resultLabel): self
+    /**
+     * Set the value of dep
+     *
+     * @return  self
+     */ 
+    public function setDep($dep)
     {
-        $this->resultLabel = $resultLabel;
-
-        return $this;
-    }
-
-    public function getResultScore(): ?string
-    {
-        return $this->resultScore;
-    }
-
-    public function setResultScore(?string $resultScore): self
-    {
-        $this->resultScore = $resultScore;
-
-        return $this;
-    }
-
-    public function getResultScoreNext(): ?string
-    {
-        return $this->resultScoreNext;
-    }
-
-    public function setResultScoreNext(?string $resultScoreNext): self
-    {
-        $this->resultScoreNext = $resultScoreNext;
-
-        return $this;
-    }
-
-    public function getResultType(): ?string
-    {
-        return $this->resultType;
-    }
-
-    public function setResultType(?string $resultType): self
-    {
-        $this->resultType = $resultType;
-
-        return $this;
-    }
-
-    public function getResultId(): ?int
-    {
-        return $this->resultId;
-    }
-
-    public function setResultId(?int $resultId): self
-    {
-        $this->resultId = $resultId;
-
-        return $this;
-    }
-
-    public function getResultHousenumber(): ?string
-    {
-        return $this->resultHousenumber;
-    }
-
-    public function setResultHousenumber(?string $resultHousenumber): self
-    {
-        $this->resultHousenumber = $resultHousenumber;
-
-        return $this;
-    }
-
-    public function getResultName(): ?string
-    {
-        return $this->resultName;
-    }
-
-    public function setResultName(?string $resultName): self
-    {
-        $this->resultName = $resultName;
-
-        return $this;
-    }
-
-    public function getResultStreet(): ?string
-    {
-        return $this->resultStreet;
-    }
-
-    public function setResultStreet(?string $resultStreet): self
-    {
-        $this->resultStreet = $resultStreet;
-
-        return $this;
-    }
-
-    public function getResultPostcode(): ?string
-    {
-        return $this->resultPostcode;
-    }
-
-    public function setResultPostcode(?string $resultPostcode): self
-    {
-        $this->resultPostcode = $resultPostcode;
-
-        return $this;
-    }
-
-    public function getResultCity(): ?string
-    {
-        return $this->resultCity;
-    }
-
-    public function setResultCity(?string $resultCity): self
-    {
-        $this->resultCity = $resultCity;
-
-        return $this;
-    }
-
-    public function getResultContext(): ?string
-    {
-        return $this->resultContext;
-    }
-
-    public function setResultContext(?string $resultContext): self
-    {
-        $this->resultContext = $resultContext;
-
-        return $this;
-    }
-
-    public function getResultCitycode(): ?string
-    {
-        return $this->resultCitycode;
-    }
-
-    public function setResultCitycode(?string $resultCitycode): self
-    {
-        $this->resultCitycode = $resultCitycode;
-
-        return $this;
-    }
-
-    public function getResultOldcitycode(): ?string
-    {
-        return $this->resultOldcitycode;
-    }
-
-    public function setResultOldcitycode(?string $resultOldcitycode): self
-    {
-        $this->resultOldcitycode = $resultOldcitycode;
-
-        return $this;
-    }
-
-    public function getResultOldcity(): ?string
-    {
-        return $this->resultOldcity;
-    }
-
-    public function setResultOldcity(?string $resultOldcity): self
-    {
-        $this->resultOldcity = $resultOldcity;
-
-        return $this;
-    }
-
-    public function getResultDistrict(): ?string
-    {
-        return $this->resultDistrict;
-    }
-
-    public function setResultDistrict(?string $resultDistrict): self
-    {
-        $this->resultDistrict = $resultDistrict;
-
-        return $this;
-    }
-
-    public function getResultStatus(): ?string
-    {
-        return $this->resultStatus;
-    }
-
-    public function setResultStatus(?string $resultStatus): self
-    {
-        $this->resultStatus = $resultStatus;
+        $this->dep = $dep;
 
         return $this;
     }

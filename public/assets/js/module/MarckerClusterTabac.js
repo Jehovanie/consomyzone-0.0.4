@@ -103,7 +103,7 @@ class MarckerClusterTabac extends MapModule {
     addMarker(newData){
 
         newData.forEach(item => {
-            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>"  + item.adress;
+            const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
             let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
             
             let pathIcon="assets/icon/NewIcons/tabac_black0.png";
