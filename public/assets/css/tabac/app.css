@@ -42,3 +42,21 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+.chargement_content {
+    height: unset !important;
+    width: unset !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chargement_tabac{
+    position: absolute;
+    right: 13%;
+    top: 35%;
+}
+
+.opacity04{
+    opacity: 0.4;
+}

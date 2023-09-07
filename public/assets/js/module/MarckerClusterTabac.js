@@ -285,6 +285,13 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
             </div>
+            <div class="chargement_content chargement_tabac chargement_tabac_jheo_js">
+                <div class="containt">
+                    <div class="word word-1">C</div>
+                    <div class="word word-2">M</div>
+                    <div class="word word-3">Z</div>
+                </div>
+            </div>
         `
         this.handleEventOnCheckBox();
     }
@@ -304,12 +311,13 @@ class MarckerClusterTabac extends MapModule {
                throw new Error(`Selector not found : ${inputCheck}`);
             }
             
+            ///// event handlers
             const inputCheck_HTML= document.querySelector(`.${inputCheck}`)
             inputCheck_HTML.addEventListener("change", (e) => {
+                const couche= inputCheck_HTML.getAttribute("id")
                 if( e.target.checked){
-                    this.addCoucheOnLeaflet(inputCheck_HTML.getAttribute("id"))
+                    this.addCoucheOnLeaflet(couche) //// param couche name
                 }else{
-                    const couche= inputCheck_HTML.getAttribute("id")
                     const list = document.querySelector(`.select_${couche.toLowerCase()}_jheo_js`)
                     
                     this.removeCoucheOnLeafled(couche)
@@ -328,6 +336,7 @@ class MarckerClusterTabac extends MapModule {
 
     async addCoucheOnLeaflet(COUCHE){
         try{
+            ///// check if this is already get...
             const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
             if(!currentCouche){
                 const link = IS_DEV_MODE ? `/assets/shapefile/${COUCHE.toUpperCase()}.zip` : `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
@@ -341,10 +350,15 @@ class MarckerClusterTabac extends MapModule {
                     shp(reader.result)
                         .then((geoJson) =>{
                             
+                            ///// couche Option, colors, properties
                             const coucheOption= this.tabacOption.find(item => item.couche === COUCHE.toLowerCase());
 
                             this.objectGeoJson.push({ couche: COUCHE, data : geoJson.features, color : coucheOption.arrayColor , child : []})
-                            generateSelect(COUCHE, geoJson.features) //// function in data_tabac
+                            if( COUCHE !== "quartier"){
+                                generateSelect(COUCHE, geoJson.features) //// function in data_tabac
+                            }else{
+                                this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
+                            }
                         })
                         .catch(error => console.log(error))
                 };
@@ -367,10 +381,12 @@ class MarckerClusterTabac extends MapModule {
         const styles={
             color: data_spec.color[0],
             fillColor: data_spec.color[1],
-            fillOpacity: 1
+            fillOpacity: 1,
+            weight: 0.5,
         }
 
-        const geoJson = L.geoJson(data_spec.data[parseInt(indexInJson)], {
+        const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
+        const geoJson = L.geoJson( data, {
             style: styles,
             onEachFeature : (feature, layer)  => {
                 const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
@@ -396,7 +412,6 @@ class MarckerClusterTabac extends MapModule {
             }
             return item;
         })
-
     }
 
 
