@@ -2231,3 +2231,29 @@ function addListSpecificTabac(nom_dep, id_dep) {
 function closeDetailGolfMob(nom_dep, id_dep) {
     location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
 }
+
+
+function addListDepartStation() {
+    document.querySelector("#open-navleft-station-mobile-tomm-js").addEventListener("click", () => {
+        document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 0
+        document.querySelector("#open-navleft-station-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+        if (document.querySelector("#list-depart-station-mobile-tomm-js")) {
+            document.querySelector("#list-depart-station-mobile-tomm-js").removeAttribute("style")
+        }
+
+        fetch(`/station-mobile`)
+        .then(response => response.text())
+        .then(r => {
+            if (document.querySelector("#list-depart-station-mobile-tomm-js")) {
+                document.querySelector("#list-depart-station-mobile-tomm-js").innerHTML = null
+                document.querySelector("#list-depart-station-mobile-tomm-js").innerHTML = r
+
+                document.querySelector("#close-station-dep").addEventListener('click', () => {
+                    document.querySelector("#list-depart-station-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 1
+                })
+            }
+        })
+    })
+}

@@ -109,6 +109,43 @@ class StationController extends AbstractController
     }
 
     /**
+     * @Route("/station-mobile", name="app_station_mobile", methods={"GET", "POST"})
+     */
+
+    public function stationMobile(
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        DepartementRepository $departementRepository,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+    ): Response {
+        ///current user connected
+        $user = $this->getUser();
+        $userConnected = $status->userProfilService($this->getUser());
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        
+
+        return $this->render('shard/station/station_navleft_mobile.twig', [
+
+            "departements" => $departementRepository->getDep(),
+
+            "total_number_station" => $stationServiceFrGeomRepository->getCountStation()[0]["1"],
+
+            "profil" => $statusProfile["profil"],
+
+            "statusTribut" => $statusProfile["statusTribut"],
+
+            "codeApes" => $codeApeRep->getCode(),
+            "userConnected" => $userConnected,
+        ]);
+    }
+
+    /**
      * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
      */
      public function getDepartement(DepartementRepository $departementRepository): Response

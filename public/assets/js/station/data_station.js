@@ -163,3 +163,5 @@ function changeDapartLinkCurrent(type){
 	})
 
 }
+
+addListDepartStation()
