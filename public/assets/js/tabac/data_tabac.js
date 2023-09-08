@@ -12,9 +12,8 @@ function generateSelect(couche, data,itemsSelected= []){
             nom_reg = item.properties.nom_reg;
         }else if( couche === "canton"){
             nom_reg = item.properties.nom_reg;
-        }else if( couche === "commune"){
-            console.log("dfqdsqfsd")
-            // nom_reg = item.properties.nom_reg.split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()).join(" ")
+        }else if( couche === "commune"){ 
+            nom_reg = item.properties.depcom + " " + item.properties.nom_com + " " + item.properties.nom_reg.split("-").join(" ")
         }
         all_select_HTML += `
             <div class="form-check">
@@ -73,6 +72,15 @@ function hideChargementTabac(){
     if( right_Side_Tabac){
         if( right_Side_Tabac.classList.contains("opacity04")){
             right_Side_Tabac.classList.remove("opacity04")
+        }
+    }
+}
+
+
+function hideRightSide(){
+    if( document.querySelector(".close_right_side_jheo_js")){
+        if(document.querySelector(".content_legende_jheo_js").getAttribute("style") === "width: 25%; padding: 25px;"){
+            document.querySelector(".close_right_side_jheo_js").click();
         }
     }
 }

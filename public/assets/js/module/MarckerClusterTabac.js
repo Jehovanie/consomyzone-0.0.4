@@ -114,6 +114,9 @@ class MarckerClusterTabac extends MapModule {
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
+
+                hideRightSide();
+
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
                 pathIcon='/assets/icon/NewIcons/tabac_red0.png';
@@ -362,7 +365,11 @@ class MarckerClusterTabac extends MapModule {
                                 this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
                             }
                         })
-                        .catch(error => console.log(error))
+                        .catch(error => {
+                            hideChargementTabac()
+                            console.log(error)
+                            // new swal("Malheureusement, il y a une erreur, veuillez ressayer plus tard.", "error")
+                        })
                 };
 
                 reader.readAsArrayBuffer(file)
@@ -376,6 +383,7 @@ class MarckerClusterTabac extends MapModule {
                 }
             }
         }catch(e){
+            hideChargementTabac()
             console.log(e.message)
         }
 

@@ -203,19 +203,9 @@ class HomeController extends AbstractController
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-        $userConnected = $status->userProfilService($this->getUser());
-
-
-
-        //$userType = $user->getType();
-
-        //$userId = $user->getId();
-
         if ($userType == "consumer") {
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
