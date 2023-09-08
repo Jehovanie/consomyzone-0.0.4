@@ -309,7 +309,6 @@ function setAndShowModal(agenda) {
         document.querySelector("#shareAgendaBtn").classList.remove("d-none")
     }
 
-    let etabCMZ = document.querySelector("#etabCMZ")
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")
 
@@ -322,8 +321,6 @@ function setAndShowModal(agenda) {
     }
 
     if (agenda.isEtabCMZ) {
-
-        document.querySelector("#etabSelectOptions").value = 1
 
         nomEtab.querySelector("input").disabled = true
 
@@ -341,14 +338,11 @@ function setAndShowModal(agenda) {
 
     } else {
 
-        document.querySelector("#etabSelectOptions").value = 2
+        document.querySelector("#autreRadio").checked = true
 
         nomEtab.querySelector("input").disabled = false
 
         adresseContainer.querySelector("input").disabled = false
-
-        if (!document.querySelector("#etabCMZ").classList.contains("d-none"))
-            document.querySelector("#etabCMZ").classList.add("d-none")
 
     }
 
@@ -366,6 +360,50 @@ function setAndShowModal(agenda) {
 
     document.querySelector("#timeEnd").value = agenda.heure_fin;
 
+}
+
+function seletOtherEtab(isEtabCMZ){
+
+    let nomEtab = document.querySelector("#containerNomEtab")
+    let adresseContainer = document.querySelector(".lieuEventContainer")
+
+    if(!isEtabCMZ){
+
+        if (nomEtab.classList.contains("d-none")) {
+            nomEtab.classList.remove("d-none")
+        }
+    
+        if (adresseContainer.classList.contains("d-none")) {
+            adresseContainer.classList.remove("d-none")
+        }
+
+        nomEtab.querySelector("input").value = ""
+
+        adresseContainer.querySelector("input").value = ""
+    
+        nomEtab.querySelector("input").disabled = false
+    
+        adresseContainer.querySelector("input").disabled = false
+
+    }else{
+
+        if (!nomEtab.classList.contains("d-none")) {
+            nomEtab.classList.add("d-none")
+        }
+    
+        if (!adresseContainer.classList.contains("d-none")) {
+            adresseContainer.classList.add("d-none")
+        }
+
+        nomEtab.querySelector("input").value = ""
+
+        adresseContainer.querySelector("input").value = ""
+    
+        nomEtab.querySelector("input").disabled = true
+    
+        adresseContainer.querySelector("input").disabled = true
+
+    }
 }
 
 
@@ -570,6 +608,7 @@ function deleteAgenda() {
         icon: "warning",
         buttons: true,
         dangerMode: true,
+        // allowOutsideClick: false
     })
         .then((willDelete) => {
 
@@ -794,6 +833,8 @@ function selectEtab(e) {
  */
 function showDepModal() {
 
+    seletOtherEtab(true)
+
     let container = document.querySelector('.container_list_dep')
 
     let cmzEtab = "restaurant"
@@ -825,6 +866,8 @@ function showDepModal() {
 }
 
 function showDepModalGol() {
+
+    seletOtherEtab(true)
 
     let container = document.querySelector('.container_list_dep')
 
@@ -1186,7 +1229,7 @@ function generateTableForEtab(index, etab, isValid = true) {
         let btnCheck = document.createElement("button")
         btnCheck.setAttribute("type", "button")
         btnCheck.setAttribute("class", "btn btn-outline-info btn-sm")
-        btnCheck.setAttribute("onclick", `setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)`)
+        btnCheck.setAttribute("onclick", `setNameOrAdresseForEtab({ name:"${etab.nom}",adress:"${etab.adresse.toLowerCase()}"} ,this)`)
         btnCheck.textContent = "Choisir"
         btnCheck.dataset.idetab = etab.id_etab
         tr.appendChild(tdDataName)
@@ -1280,6 +1323,11 @@ function makeLoading() {
     }
 }
 
+/**
+ * @author NANTENAINA
+ * create new egenda
+ * @param {*} agenda 
+ */
 function saveNewAgenda(agenda) {
 
     const param = {
@@ -1292,6 +1340,7 @@ function saveNewAgenda(agenda) {
         "adresse": agenda.adresse,
         "description": agenda.description,
         "participant": agenda.participant,
+        "place_libre":agenda.place_libre,
         "dateStart": agenda.dateStart,
         "dateEnd": agenda.dateEnd,
         "timeStart": agenda.timeStart,
@@ -1343,15 +1392,14 @@ function getObjectForNewAgenda(e) {
 
     let state = true;
 
-    let isEtabCMZ = parseInt(document.querySelector("#etabSelectOptions").value) == 1 ? true : false;
+    let isEtabCMZ = false
 
-    let isGolfCMZ = false
+    let isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
 
-    let isRestoCMZ = false
+    let isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false
 
-    if (isEtabCMZ) {
-        isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
-        isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false
+    if (isGolfCMZ || isRestoCMZ) {
+        isEtabCMZ = true
     }
 
     const agenda = {
@@ -1364,6 +1412,7 @@ function getObjectForNewAgenda(e) {
         "adresse": document.querySelector("#lieuEvent").value,
         "description": document.querySelector("#eventDesc").value,
         "participant": document.querySelector("#nbrParticipant").value,
+        "place_libre": document.querySelector("#nbrParticipant").value,
         "dateStart": document.querySelector("#eventStart").value,
         "dateEnd": document.querySelector("#eventEnd").value,
         "timeStart": document.querySelector("#timeStart").value,
@@ -1465,19 +1514,20 @@ function initInputForm() {
 
     document.querySelector('.eventDesc_jheo_js').value = null
 
-    document.querySelector("#etabSelectOptions").value = 1
+    // document.querySelector("#etabSelectOptions").value = 1
 
     document.querySelector("#golfRadio").checked = false
-    document.querySelector("#restoRadio").checked = false;
+    document.querySelector("#autreRadio").checked = false
+    document.querySelector("#restoRadio").checked = false
 
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")
 
-    let cmzEtab = document.querySelector("#etabCMZ")
+    /*let cmzEtab = document.querySelector("#etabCMZ")
 
     if (cmzEtab.classList.contains("d-none")) {
         cmzEtab.classList.remove("d-none")
-    }
+    }*/
 
     if (!nomEtab.classList.contains("d-none")) {
         nomEtab.classList.add("d-none")

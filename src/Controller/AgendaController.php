@@ -100,6 +100,39 @@ class AgendaController extends AbstractController
         }
     }
 
+    /**
+     * made by NANTENAINA, this function is use actualy to confirm invitation agenda
+     */
+    #[Route('/agenda/confirmation/{fromId}/{toId}/{agendaId}', name: 'agenda_confirmation', methods: ["GET","POST"])]
+    public function setAgendaConfirmation($fromId,$toId,$agendaId){
+
+        $place_libre=$this->agendaService->checkFreePlace(intval($fromId), intval($toId),intval($agendaId));
+       dump(  $place_libre);
+        if( $place_libre["place_libre"]=== 0){
+            return $this->render("agenda/partage/agenda_full_place.html.twig",[
+                "profil" => "",
+            ]);
+        }elseif( $place_libre["place_libre"]>0){
+           
+            return $this->render("agenda/partage/agenda_free_place.html.twig",[
+                "profil" => "",
+            ]);
+        }
+
+        return $this->render("agenda/partage/agenda_full_place.html.twig",[
+            "profil" => "",
+        ]);
+    }
+
+    #[Route('/agenda/make/confirmation/{fromId}/{toId}/{agendaId}/{isYes}', name: 'agenda_make_confirmation', methods: ["GET","POST"])]
+    public function makeConfirmationAgenda($fromId,$toId,$agendaId, $isYes){
+
+        $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
+       
+        return $this->json($confirm);
+      
+    }
+
     #[Route('/user/get_agenda_by_date/{table}/{datetime}', name: 'get_agenda_by_date', methods: ["GET","POST"])]
     public function getAgendaByDate($table, $datetime){
         return  $this->json($this->agendaService->getAgendaByDate($table, $datetime));
@@ -697,6 +730,7 @@ class AgendaController extends AbstractController
             "adresse" => $adresse,
             "description" => $description,
             "participant" => $participant,
+            "place_libre"=>$place_libre,
             "dateStart" => $dateStart,
             "dateEnd" => $dateEnd,
             "heureStart" => $timeStart,
@@ -969,6 +1003,7 @@ class AgendaController extends AbstractController
         ]);
     }
 
+    /**old boakely  */
 
     #[Route("/confirmation/agenda/{userID_sender}/{agendaID}/partager/{userID}/{isAccepted}" , name: "app_agenda_confirmation", methods: "GET")]
     public function agendaConfirmationEmail(

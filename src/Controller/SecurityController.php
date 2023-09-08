@@ -1005,6 +1005,7 @@ class SecurityController extends AbstractController
         ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
+        dump($requestContent);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         foreach($receivers as $receiver){

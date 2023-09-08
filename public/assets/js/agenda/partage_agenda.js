@@ -22,6 +22,7 @@ if(dropZones)
 
     }
 
+
 function makeLoadingEmail(){
     let containerChargement = document.createElement("div")
     containerChargement.classList.add("chargement_content")
@@ -165,13 +166,18 @@ function fromBinary(encoded) {
 function sendInvitation(event){
 
     let data=editor.getData()
+    
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     let isG = event.target.dataset.g
     console.log("isG : " + isG);
     let dataInfos = []
     let isValidateEmail = true
+    let infos={}
     if(isG){
-        isValidateEmail = getUserInfoForSharing(isG, dataInfos)
+         infos = getUserInfoForSharing(isG, dataInfos,data)
+        isValidateEmail =infos.isvalid
+
+        
     }else{
         let contenu = sessionStorage.getItem("csvContent")
         let headerIndex = JSON.parse(sessionStorage.getItem("headerIndex"))
@@ -202,7 +208,7 @@ function sendInvitation(event){
     }
 
     let dataEmail={
-        emailCore:data,
+        emailCore:infos.data,
         receiver:dataInfos
     }
 
@@ -323,7 +329,7 @@ function sendEventByMessage(e){
 
 }
 
-function getUserInfoForSharing(isG, dataInfos){
+function getUserInfoForSharing(isG, dataInfos,data){
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     let isValidateEmail = true
     if(isG ==="1"){
@@ -332,13 +338,20 @@ function getUserInfoForSharing(isG, dataInfos){
             let isChecked = allTr[i].querySelector("input").checked
             if(isChecked){
                 let to_id = allTr[i].querySelector(".lastname").dataset.id
+                let from_id=allTr[i].parentElement.dataset.id
                 let lastname = allTr[i].querySelector(".lastname").textContent
                 let firstname = allTr[i].querySelector(".firstname").textContent
                 let email = allTr[i].querySelector(".email").textContent
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data;
+                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
+                tempDiv.querySelector("a").disabled=false
+                data=tempDiv.querySelector("a").outerHTML
+                console.log(data)
                 if(validateEmail(email)){
                     dataInfos.push({
                         agendaId:agenda.id,
-                        from_id:allTr[i].parentElement.dataset.id,
+                        from_id:from_id,
                         to_id:to_id,
                         lastname : lastname,
                         firstname : firstname,
@@ -387,12 +400,20 @@ function getUserInfoForSharing(isG, dataInfos){
             let isChecked = allTr[i].querySelector("input").checked
             if(isChecked){
                 let to_id = allTr[i].querySelector(".lastname").dataset.id
+                let from_id=allTr[i].parentElement.dataset.id
                 let lastname = allTr[i].querySelector(".lastname").textContent
                 let firstname = allTr[i].querySelector(".firstname").textContent
                 let email = allTr[i].querySelector(".email").textContent
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data;
+                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
+                tempDiv.querySelector("a").removeAttribute("disabled")
+                data=tempDiv.outerHTML
+                console.log(data)
                 if(validateEmail(email)){
                     dataInfos.push({
-                        from_id:allTr[i].parentElement.dataset.id,
+                        agendaId:agenda.id,
+                        from_id:from_id,
                         to_id:to_id,
                         lastname : lastname,
                         firstname : firstname,
@@ -434,7 +455,11 @@ function getUserInfoForSharing(isG, dataInfos){
     
     }
 
-    return isValidateEmail;
+    return {
+        isvalid:isValidateEmail,
+        data:data
+    
+    };
 }
 
 function resetListPartageG(){

@@ -8,6 +8,7 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\JWTService;
 use App\Service\JWTService1;
+use App\Service\AgendaService;
 use App\Service\MessageService;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
@@ -168,8 +169,8 @@ class MessageController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         MessageService $messageService,
-        Filesystem $filesyst
-
+        Filesystem $filesyst,
+        AgendaService $agendaService
     ): Response
     {
         /// get data from front on json format
@@ -225,7 +226,16 @@ class MessageController extends AbstractController
 
         if(isset($dataInfos)){
            foreach ($dataInfos as $key) {
+                //dd($key);
                 $result = $messageService->sendMessageForOne($key["from_id"], $key["to_id"], json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type);
+                $agendaID = $key["agendaId"];
+                $from_id=$key["from_id"];
+                $to_id=$key["to_id"];
+
+                if(!is_null($to_id)){
+                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                }
             }
         }else{
             $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type); /// [ ["last_id_message" => .. ] ]
