@@ -25,9 +25,12 @@ class GolfFinished
 
     /**
      * @var int
+     *  
      *
-     * @ORM\Column(name="golf_id", type="integer", nullable=false)
+     *@ORM\Column(name="golf_id", type="integer", nullable=false)
      */
+    
+    //
     private $golf_id;
 
     /**

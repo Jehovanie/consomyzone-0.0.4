@@ -4,7 +4,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCreateAgendaTitles">Créer un événement</h5>
-        {# <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button> #}
         <button type="button" class="btn-close btn_close_create_agenda_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body custom_modal">
@@ -18,87 +17,31 @@
                   <label for="typeEvent" class="form-label text_black">Type de l'événement</label>
                   <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent"  placeholder="Saisir le type">
                 </div>
-                {# <div>
-                   <div class="form-check form-check-inline">
-                    <input class="form-check-input inputRepas_radio_jheo_js" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                    <label class="form-check-label text_black" for="inlineRadio1">Repas</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input inputOther_radio_jheo_js" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                    <label class="form-check-label text_black" for="inlineRadio2">Autre</label>
-                  </div>
-                </div> #}
             </div>
 
-
-            {# <div class="mb-3">
-                 <label for="repas" class="form-label text_black">Repas</label>
-                 <select id="repas" class="form-select form-select-sm input_black" aria-label=".form-select-sm example">
-                    <option value="Repas déjeuné" selected> Déjeuné</option>
-                    <option value="Repas dîné">Dinné</option>
-                </select>
-            </div> #}
-
-
-
-            {# <div class="mb-3 content_typeEvent_jheo_js">
-                <input type="text" name="typeEvent" class="form-control input_black typeEvent_jheo_js" id="typeEvent"  list="typeEventList" placeholder="Tapez votre type...">
-            </div> #}
-
             <div class="mb-3">
-                <label for="etablissement" class="form-label text_black">Etablissement</label>
-                <select onchange="selectEtab(event)" id="etabSelectOptions" class="form-select form-select-sm input_black" aria-label=".form-select-sm example">
-                    <option value = 1>Choisir parmi les établissements présent dans CMZ</option>
-                    <option value = 2>Entrer votre établissement</option>
-                </select>
                 <div id="etabCMZ">
-
+                  <input type="hidden" name="etabSelectOptions" id="etabSelectOptions">
                   <div class="mt-3">
-                    <label for="etabCMZLabel">Choisir entre les golf et restaurant</label>
+                    <label for="etabCMZLabel" class="text_black" data-bs-toggle="tooltip" data-bs-placement="top" title="Choisissez parmi les rubriques suivants.">Où se passera votre événement ?</label>
                   </div>
                   
-                  <div class="form-check form-check-inline ">
-                      {# <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onchange="handleChangeEtabCMZ(this)"> #}
-                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" disabled>
-                      <label class="form-check-label text-secondary" for="golfRadio">GOLF</label>
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onclick="showDepModalGol()">
+                      <label class="form-check-label text_black" for="golfRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Golf présent dans CMZ">Golf</label>
                   </div>
 
                   <div class="form-check form-check-inline mt-2">
-                    {# <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onchange="handleChangeEtabCMZ(this)"> #}
-                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onclick="showDepModal(this)">
-                    <label class="form-check-label text_black" for="restoRadio">RESTAURANT</label>
+                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onclick="showDepModal()">
+                    <label class="form-check-label text_black" for="restoRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Restaurant présent dans CMZ">Restaurant</label>
+                  </div>
+                  <div class="form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="autreRadio" value="autre" onclick="seletOtherEtab(false)">
+                    <label class="form-check-label text_black" for="autreRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Si votre établissement n'est pas présent dans les rubriques de CMZ">Saisissez votre établissement</label>
                   </div>
 
                 </div>
             </div>
-
-            {# <div class="d-flex justify-content-center align-items-center mb-3 content_searchResto_jheo_js">
-                <div class="flex-fill me-2">
-                  <input type="search" name="searchResto" class="form-control" placeholder="Cherchez dans tous">
-                </div>
-                <div class="flex-fill ms-2">
-                    <button type="button" class="btn btn-info chose_pastil_resto_jheo_js">
-                      Choisir parmi les pastillés
-                    </button>
-                </div>
-            </div> #}
-            
-            {# <div class="d-flex justify-content-center align-items-center mb-3 content_searchResto_jheo_js">
-                <div class="flex-fill me-2">
-                  <label for="searchResto" class="form-label non_active">Recherche</label>
-                  <input type="search" name="searchResto" class="form-control input_block searchResto_jheo_js" id="searchResto"  list="searchRestoList" placeholder="Tapez et Entre." disabled>
-                </div>
-                <div class="flex-fill ms-2">
-                    <button type="button" class="btn btn-info chose_pastil_resto_jheo_js">
-                      Choisir parmit vos restaurants pastillés
-                    </button>
-                </div>
-            </div> #}
-
-            {# <div class="mb-3 d-none content_restoEvent_jheo_js">
-              <label for="restoEvent" class="form-label text_black">Restaurant</label>
-              <input type="text" name="restoEvent" class="form-control input_black restoEvent_jheo_js" id="restoEvent" disabled>
-            </div> #}
 
             <div class="mb-3 d-none" id="containerNomEtab">
               <label for="nomEtabEvent" class="form-label text_black">Nom</label>
@@ -180,12 +123,7 @@
                 </tr>
               </thead>
               <tbody class="list_tr_resto_jheo_js">
-                {# <tr>
-                  <th>1</th>
-                  <td>La debotte</td>
-                  <td>Otto</td>
-                  <td><button type="button" class="btn btn-outline-info" onclick="setRestoAgenda({ name:'La debotte',adress: 'adresse resto la debotte'} ,this)">Pastillé</button></td>
-                </tr> #}
+                
               </tbody>
             </table>
           </div>

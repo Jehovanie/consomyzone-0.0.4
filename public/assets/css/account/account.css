@@ -39,7 +39,7 @@ body{
 
 .content_right_actualite{
     display: block;
-    /* width: 84%; */
+    width: 66%;
     overflow-x: hidden;
     /* position: absolute;
     right: 0;
@@ -1034,8 +1034,7 @@ thead > tr{
 }
 
 .content_right_actualite .exprime-pub {
-    margin-top: 10px;
-    
+    margin-top: 30px;
 }
 
 .pub-t{
@@ -2239,4 +2238,7 @@ img.zoom {
     height: 100vh;
     /* background-color: rgb(0,0,0);  */
     background-color: rgba(0,0,0,0.4); 
+}
+#table-tribuG-member{
+    overflow-y: auto;
 }

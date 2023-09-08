@@ -86,6 +86,68 @@ if( document.querySelector(".form_content_search_navbar_js")){
     const inputs=  [document.querySelector(".input_search_type_js"), document.querySelector(".input_mots_cle_js")];
     inputs.forEach(input => {
         input.addEventListener("input", () => {
+            
+            inputs.forEach(item => {
+                if( item.classList.contains("border_red")){
+                    item.classList.remove("border_red")
+                }
+            })
+        })
+    })
+
+}
+
+if( document.querySelector(".form_content_search_navbar_js_mob")){
+    const search_form = document.querySelector(".form_content_search_navbar_js_mob");
+    if( getDataInLocalStorage("type")){
+        const baseOne = getDataInLocalStorage("type");
+        search_form.setAttribute("action", `${search_form.getAttribute("action")}/${baseOne}`);
+    }
+
+    search_form.addEventListener("submit", (e) => {
+        const cles0 = document.querySelector(".input_search_type_js_mob").value.trim();
+        const cles1= document.querySelector(".input_mots_cle_js_mob").value.trim();
+        
+        if(current_url.includes("/restaurant") || current_url.includes("/ferme") || current_url.includes("/station")){
+            
+            if( cles0=== "" && cles1 === "" ){
+
+                e.preventDefault();
+
+                new swal("Attention !", "Veuillez renseigner au moins l'adresse!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js_mob").classList.add("border_red")
+                    });
+    
+            }else if(cles1 === ""){
+
+                e.preventDefault();
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js_mob").classList.add("border_red")
+                    });
+            }
+        }else{
+
+            if( cles1 === "" ){
+
+                e.preventDefault();
+
+                new swal("Attention !", "L'adresse est obligatoire!", "error")
+                    .then((value) => {
+                        document.querySelector(".input_mots_cle_js_mob").classList.add("border_red")
+                    });
+    
+            }
+        }
+
+    })
+
+    const inputs=  [document.querySelector(".input_search_type_js_mob"), document.querySelector(".input_mots_cle_js_mob")];
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            
             inputs.forEach(item => {
                 if( item.classList.contains("border_red")){
                     item.classList.remove("border_red")
@@ -749,7 +811,7 @@ CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
     editor.setData(html)
 });
 function showModalEditor(isG, isListeInfile=false){
-
+    let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
     if(isListeInfile){
         document.querySelector("#btnValidate").removeAttribute("data-g")
         document.querySelector("#btnValidateMessage").removeAttribute("data-g")
@@ -793,6 +855,24 @@ function showModalEditor(isG, isListeInfile=false){
     <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
     <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
     <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
-    <button type="btn" disabled>Confirmation</button>
-    <p>Cordialement</p>`
+    <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false">Confirmation</button>
+    <p id="free_place" > 
+    Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
+    <p>Cordialement</p>
+    <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
+           ${fullname} 
+    </span>
+    `
 }
+
+if (document.querySelector(".open-search-mobil-tomm-js")) {
+    document.querySelector(".open-search-mobil-tomm-js").addEventListener("click", () => {
+        document.querySelector(".search-mobil-tomm-js").classList.remove('search-resto-mobil-none')
+        document.querySelector(".open-search-mobil-tomm-js").classList.add('search-resto-mobil-none')
+    })
+    document.querySelector(".close-search-mob").addEventListener("click", () => { 
+        document.querySelector(".search-mobil-tomm-js").classList.add('search-resto-mobil-none')
+        document.querySelector(".open-search-mobil-tomm-js").classList.remove('search-resto-mobil-none')
+    })
+}
+

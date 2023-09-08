@@ -7,33 +7,19 @@
 			</div>
 			<div class="list-avis-ferme">
 				<div class="modal-body container-avis all_avis_jheo_js">
-					<div class="card mb-2 card_avis_resto_jheo_js">
-						<div class="card-body">
-							<div class="avis_content">
-								<div class="d-flex justify-content-between align-items-end">
-									<h3>
-										<small class="fw-bolder text-black">With faded secondary text : </small> <br>
-										Fancy display heading
-									</h3>	
-									<p>
-										<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-										<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-										<i class="fa-solid fa-star"></i>
-										<i class="fa-solid fa-star"></i>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
+					{# LIST AVIS CONTENT #}
 				</div>
 			</div>
 
-
-			{% if app.user %}
+			{# {% if app.user %}
 				<div class="modal-footer">
 					<button type="button" class="btn btn-warning btn_modal_avis_resto_jheo_js non_active" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
 				</div>
-			{% endif %}
+			{% else %}
+				<div class="modal-footer" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">
+					<button type="button" class="btn btn-secondary non_active">Donné votre avis</button>
+				</div>
+			{% endif %} #}
 		</div>
 	</div>
 </div>

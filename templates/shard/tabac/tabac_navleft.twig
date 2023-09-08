@@ -20,7 +20,7 @@
             <div class="container list-depart-all" id="Scrollbar">
                 <div class="content_container_list" id="list_departements">
                     <ul>
-                        {% set listDepExist = [75] %}
+                        {% set listDepExist = [75, 94] %}
                         {% for departement in departements %}
                             {% if departement.id|number_format in listDepExist %}
                                 <li>

@@ -1,19 +1,19 @@
 /**
  * global variable 
  */
-var tribu_t_name_0 = ""; 
+var tribu_t_name_0 = "";
 var id_c_u //id du user courant
 // var IS_DEV_MODE = true;
 let image_list = [];
 let dataExtension = [];
-var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') :  new Worker('/public/assets/js/tribuT/worker.js');
+var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
 // var worker = new Worker('/assets/js/tribuT/worker.js') ;
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 // var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
-var workerGetCommentaireTribuT= IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-var workerGetCommentaireTribuT= new Worker('/assets/js/tribuT/worker_cmnt.js')
-var image_tribu_t 
-var descriptionTribuT=""
+var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
+var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
+var image_tribu_t
+var descriptionTribuT = ""
 /**
  * create tribu_t section
  */
@@ -22,29 +22,59 @@ document.getElementById("form_upload").onchange = (e) => {
 
     const imgs = document.querySelectorAll("img.img-uploaded")
     if (imgs.length > 0) {
-        for(let i of imgs)
+        for (let i of imgs)
             i.parentNode.removeChild(i)
     }
-    reader.onload = () => { 
+    reader.onload = () => {
         const uploaded_image = reader.result;
         image_list.push(reader.result);
 
-    
-        let img = document.createElement("img");
-        img.setAttribute("class","img-uploaded");
-        img.src = uploaded_image
-        img.setAttribute("alt","Image upload")
-        // img.setAttribute("style", "width:100px; height:100px");
+        let taille = parseInt(e.target.files[0].size) // En Octets
 
-        const parentImage = document.querySelector("#uploadImage")
-        if(parentImage.querySelector("img")){
-            parentImage.insertBefore(img, parentImage.querySelector("img"))
-        }else{
-            document.querySelector("#uploadImage").appendChild(img)
+        // console.log(e.target.files[0].type.includes("image/"));
+
+        if (!e.target.files[0].type.includes("image/")) {
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image",
+                icon: "error",
+                button: "Ok",
+              });
+
+        } else {
+
+            if (taille <= 2097152) {
+
+                let img = document.createElement("img");
+                img.setAttribute("class", "img-uploaded");
+                img.src = uploaded_image
+                img.setAttribute("alt", "Image upload")
+                // img.setAttribute("style", "width:100px; height:100px");
+
+                const parentImage = document.querySelector("#uploadImage")
+                if (parentImage.querySelector("img")) {
+                    parentImage.insertBefore(img, parentImage.querySelector("img"))
+                } else {
+                    document.querySelector("#uploadImage").appendChild(img)
+                }
+            } else {
+
+                swal({
+                    title: "Le fichier est trop volumineux.",
+                    text: "La taille de l\'image doit être inférieure à 2Mo",
+                    icon: "error",
+                    button: "Ok",
+                  });
+
+            }
+
         }
+
+
     }
     reader.readAsDataURL(e.target.files[0])
-    
+
 
 };
 /*---------------------- end create tribu_t section-----------------------*/
@@ -53,13 +83,13 @@ document.getElementById("form_upload").onchange = (e) => {
  * render tribu_t section
  */
 
-function showBlockPub(){
+function showBlockPub() {
     const arrays = Array.from(document.querySelectorAll(".tribu_t"))
     for (let array of arrays) {
         array.onclick = (async (e) => {
             e.preventDefault();
 
-            if(document.querySelector("#activeTribu")){
+            if (document.querySelector("#activeTribu")) {
                 document.querySelector("#activeTribu").classList.remove("p-2")
                 document.querySelector("#activeTribu").classList.remove("list-nav-left")
                 document.querySelector("#activeTribu").classList.remove("active")
@@ -69,42 +99,42 @@ function showBlockPub(){
             e.target.classList.add("p-2")
             e.target.classList.add("list-nav-left")
             e.target.classList.add("active")//p-2 list-nav-left active
-            const id_c_u=e.target.dataset.tribuRank
+            const id_c_u = e.target.dataset.tribuRank
             const type = e.target.classList[1];
             // const tribu_t_name=e.target.textContent  data-table-name
-            const tribu_t_name=e.target.dataset.tableName; ///  data-table-name
+            const tribu_t_name = e.target.dataset.tableName; ///  data-table-name
             let data = await showdData(tribu_t_name)
-            showdDataContent(data,type,tribu_t_name,id_c_u)
-            
+            showdDataContent(data, type, tribu_t_name, id_c_u)
+
             /**render pastiled resto */
-            if(document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
+            if (document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
                 document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => {
                     e.preventDefault();
-                    if(document.querySelector("li.listNavBarTribu > a.active")){
+                    if (document.querySelector("li.listNavBarTribu > a.active")) {
                         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
                     }
                     document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").classList.add("active")
-                    document.querySelector("#tribu_t_conteuneur").innerHTML=""
-                    showResto(tribu_t_name+"_restaurant",id_c_u)
-                    
+                    document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+                    showResto(tribu_t_name + "_restaurant", id_c_u)
+
                 })
             /**end */
 
             /**render photo gallery*/
-            document.querySelector("#see-gallery").onclick = (e => { 
+            document.querySelector("#see-gallery").onclick = (e => {
                 e.preventDefault();
-                if(document.querySelector("li.listNavBarTribu > a.active")){
+                if (document.querySelector("li.listNavBarTribu > a.active")) {
                     document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
                 }
                 document.querySelector("#see-gallery").classList.add("active")
-                document.querySelector("#tribu_t_conteuneur").innerHTML=""
+                document.querySelector("#tribu_t_conteuneur").innerHTML = ""
                 showPhotos()
 
             })
             /**end */
 
             /**change pdp tribu_t */
-            if(document.querySelector("#fileInputModifTribuT")){
+            if (document.querySelector("#fileInputModifTribuT")) {
 
                 document.querySelector("#fileInputModifTribuT").onchange = (e) => {
                     let files = e.target.files[0]
@@ -112,16 +142,16 @@ function showBlockPub(){
                 }
             }
             /**end */
-            
+
 
             /**render partisant*/
             document.querySelector(".partisantT").onclick = (e) => {
-                if(document.querySelector("li.listNavBarTribu > a.active")){
+                if (document.querySelector("li.listNavBarTribu > a.active")) {
                     document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
                 }
                 document.querySelector(".partisantT > a").classList.add("active")
-                document.querySelector("#tribu_t_conteuneur").innerHTML=""
-                showPartisan()  
+                document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+                showPartisan()
             }
             /**end */
         })
@@ -131,12 +161,12 @@ function showBlockPub(){
 showBlockPub()
 
 /*------------end render tribu_t section--------------*/
-    
+
 /**
  * send publication sectio
  */
 const btnSubmitPublication = document.querySelector("#submit-publication-tribu-t")
-document.querySelector("#publication_photo").addEventListener("change",getBase64V2)
+document.querySelector("#publication_photo").addEventListener("change", getBase64V2)
 btnSubmitPublication.onclick = (e) => {
     e.preventDefault();
     const formData = new FormData(document.querySelector("#form-publication-tribu-t"))
@@ -146,38 +176,79 @@ btnSubmitPublication.onclick = (e) => {
 /*---------------end send publication section--------------------*/
 
 
-/*--------------function section---------------------*/ 
+/*--------------function section---------------------*/
 function showPartisan() {
     const param = "?tbl_tribu_T_name=" + encodeURIComponent(tribu_t_name_0)
-    const request = new Request("/user/partisan/tribu_T"+param, {
+    const request = new Request("/user/partisan/tribu_T" + param, {
         method: "GET",
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            // 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            'Content-Type': 'application/json'
         },
     })
-    fetch(request).then((response) => { 
-        if ( response.ok && response.status == 200) {
+    fetch(request).then((response) => {
+        if (response.ok && response.status == 200) {
             response.json().then(jsons => {
                 console.log(jsons)
-                jsons.forEach(json => {
+
+                let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Profil</th>
+                            <th>Nom du partisan</th>
+                            <th>Tribu G</th>
+                        </tr>
+                    </thead>
+                    <tbody>`
+                let foot_table = `</tbody>
+                </table>`
+                let body_table = ``
+
+                jsons[0].forEach(json => {
                     profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil!=null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
+                    let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
                     let lastName = profilInfo.lastName
                     let firstName = profilInfo.firstName
-                    let tribuG = profilInfo.tribuG.replace("tribug_01_","")
-                    console.log(JSON.parse(json.infos_profil))
-                    document.querySelector("#tribu_t_conteuneur").innerHTML += `
-                        <div class="card-partisons row">
-                            <div class="partisons-pdp col-lg-6">
-                                <img src="${profil/*.replace("/public","")*/}" alt="">
-                            </div>
-                            <div class="partisons-text col-lg-6">
-                                <h4>${lastName} <span> ${firstName}</span></h4>
-                                <p>TribuG : ${tribuG.replaceAll("_", " ")}</p>
-                            </div>
-                        </div>
+                    let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
+
+                    body_table += `
+                        <tr>
+                            <td class="d-flex bd-highlight align-items-center">
+                                <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
+                            </td>
+                            <td>
+                                <a target="_blank" href="/user/profil/1" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                            </td>
+                            <td>
+                                TribuG ${tribuG.replaceAll("_", " ")}
+                            </td>
+                        </tr>
                     `
-                })    
+                    // console.log(JSON.parse(json.infos_profil))
+                    // document.querySelector("#tribu_t_conteuneur").innerHTML += `
+                    //     <div class="card-partisons row">
+                    //         <div class="partisons-pdp col-lg-6">
+                    //             <img src="${profil/*.replace("/public","")*/}" alt="">
+                    //         </div>
+                    //         <div class="partisons-text col-lg-6">
+                    //             <h4>${lastName} <span> ${firstName}</span></h4>
+                    //             <p>TribuG : ${tribuG.replaceAll("_", " ")}</p>
+                    //         </div>
+                    //     </div>
+                    // `
+
+
+                })
+
+                document.querySelector("#tribu_t_conteuneur").classList.add("bg-white")
+
+                document.querySelector("#tribu_t_conteuneur").innerHTML +=head_table+body_table+foot_table
+
+                $('#table_partisan_elie_js').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
             })
         }
     })
@@ -187,28 +258,28 @@ function showPartisan() {
 function convertFileToBlob(file) {
     const reader = new FileReader();
     reader.onload = function (e) {
-        let blob = new Blob([new Uint8Array(e.target.result)], {type: file.type });
+        let blob = new Blob([new Uint8Array(e.target.result)], { type: file.type });
     };
     reader.readAsArrayBuffer(file);
 }
 function getBase64V2() {
     const fR = new FileReader();
-    fR.addEventListener("load", function (evt) { 
-         document.querySelector("#image-publication-tribu-t").src = evt.target.result;
+    fR.addEventListener("load", function (evt) {
+        document.querySelector("#image-publication-tribu-t").src = evt.target.result;
     })
     fR.readAsDataURL(this.files[0]);
-} 
+}
 function updatePdpTribu_T(files) {
-     const fR = new FileReader();
-    fR.addEventListener("load",  (evt) =>{ 
-        
+    const fR = new FileReader();
+    fR.addEventListener("load", (evt) => {
+
         const param = {
             base64: evt.target.result,
             photoName: files.name,
             photoType: files.type,
             photoSize: files.size,
             tribu_t_name: tribu_t_name_0,
-            
+
         }
         console.log(param)
         const request = new Request("/user/tribu/set/pdp", {
@@ -219,21 +290,21 @@ function updatePdpTribu_T(files) {
             },
             body: JSON.stringify(param)
         })
-        fetch(request).then(responses=>{
-            if(responses.ok && responses.status === 200){
-                document.querySelector("#avatarTribuT").src=evt.target.result
+        fetch(request).then(responses => {
+            if (responses.ok && responses.status === 200) {
+                document.querySelector("#avatarTribuT").src = evt.target.result
                 document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
             }
         })
-       
+
     })
     fR.readAsDataURL(files);
 }
 
 function sendPublication(formData) {
     const fR = new FileReader();
-    fR.addEventListener("load",  (evt) =>{ 
-        
+    fR.addEventListener("load", (evt) => {
+
         const param = {
             base64: evt.target.result,
             photoName: formData.get("photo").name,
@@ -241,18 +312,18 @@ function sendPublication(formData) {
             photoSize: formData.get("photo").size,
             contenu: formData.get("contenu"),
             tribu_t_name: tribu_t_name_0,
-            confidentialite:formData.get("confidentialite")
+            confidentialite: formData.get("confidentialite")
         }
         console.log(param)
         const request = new Request("/user/create-one/publication", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'  
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(param)
         })
-        fetch(request) 
+        fetch(request)
     })
     fR.readAsDataURL(formData.get('photo'));
 }
@@ -263,22 +334,22 @@ function sendPublication(formData) {
  * @param {*} type 
  * @param {*} tribu_t_name 
  */
-function showdDataContent(data, type, tribu_t_name,id_c_u) {
+function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let detailsTribuT = null
-   
+
     if (type === "owned")
         detailsTribuT = data.tribu_t_owned
     else
         detailsTribuT = data.tribu_t_joined
 
     // console.log(JSON.parse(detailsTribuT).tribu_t)
-    
+
     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
     tribu_t_name_0 = tribu_t[0].name
-    descriptionTribuT=tribu_t[0].description
+    descriptionTribuT = tribu_t[0].description
     let restExtension = ""
     if (tribu_t[0].extension) {
-        restExtension=` <li class="listNavBarTribu restoNotHide">
+        restExtension = ` <li class="listNavBarTribu restoNotHide">
                             <a style="cursor:pointer;">Restaurants</a>
                         </li>`
     }
@@ -291,8 +362,8 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
     }
 
     let canChangeTribuPicture = "";
-    if(document.querySelector("#activeTribu")){
-        canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other")? `<div class="col-lg-6 col-6" style="height:100px;">
+    if (document.querySelector("#activeTribu")) {
+        canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
                                     <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
@@ -388,22 +459,22 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
         if (data.length > 0)
             var limits = data.length > 5 ? 5 : data.length;
 
-            for (let i = 0; i < limits; i++) {
-                let dataNbr
-                if (data[i].nbr === null) {
-                    dataNbr = 0 + " "
-                } else {
-                    dataNbr = data[i].nbr + " "
-                }
+        for (let i = 0; i < limits; i++) {
+            let dataNbr
+            if (data[i].nbr === null) {
+                dataNbr = 0 + " "
+            } else {
+                dataNbr = data[i].nbr + " "
+            }
 
-                let pub_photo = data[i].photo ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${data[i].photo/*.replace("/public","")*/}" alt="">` :
-                 `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`
+            let pub_photo = data[i].photo ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${data[i].photo/*.replace("/public","")*/}" alt="">` :
+                `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`
 
-                let confidentiality = parseInt(data[i].confidentiality,10);
-                let contentPublication=""
-                if (confidentiality === 1) {
+            let confidentiality = parseInt(data[i].confidentiality, 10);
+            let contentPublication = ""
+            if (confidentiality === 1) {
 
-                    let changeVisibility = parseInt(id_c_u,10)===parseInt(data[i].user_id,10) ? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                let changeVisibility = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                         <div class="btn-group" role="group">
                                             
                                             <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -415,7 +486,7 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             </div>
                                         </div>
                                     </div>` : ""
-                    let canUpdateOrDeletePub = parseInt(id_c_u,10)===parseInt(data[i].user_id,10) ? `<div id="contentUpdateOrDelete">
+                let canUpdateOrDeletePub = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div id="contentUpdateOrDelete">
                                         <span class="float-end dropstart">
                                             <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
                                                 <i class="bi bi-three-dots" style="cursor:pointer"></i>
@@ -434,9 +505,9 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             </ul>
                                         </span>
                                     </div>` : ""
-                    
 
-                    contentPublication = `<div id="${tribu_t_name_0+"_"+data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -498,12 +569,12 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                         </div>
                     </div>
                     `
-                } else if(confidentiality === 2){
-                    //moi uniquement 
-                    // console.log(id_c_u,data[i].user_id)
-                    if (parseInt(id_c_u,10)===parseInt(data[i].user_id,10)) {
-                        contentPublication = `
-                                        <div id="${tribu_t_name_0+"_"+data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+            } else if (confidentiality === 2) {
+                //moi uniquement 
+                // console.log(id_c_u,data[i].user_id)
+                if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
+                    contentPublication = `
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -594,53 +665,53 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             </div>
                                         </div>
                                         `
-                    } else{
-                         contentPublication=""
-                    }
+                } else {
+                    contentPublication = ""
                 }
-                
-               
-                
-                if (document.querySelector("#list-publicatiotion-tribu-t")) {
-                    document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
-                }
+            }
 
-                showComment();
-            
-        
-            
-                //---------after shwo in each scroll ---------------
-                const gen = genDataPubOfAllPartisans(data, 5)
-                const gen_length = (data.length - 5)
-                //const gen_length = (data.length)
-                // console.log("gen_length : "+gen_length)
 
-            
-                let lastId = 0;
 
-                let genCursorPos = 0
-                
-                if (gen_length > 0) {
-                    window.addEventListener("scroll", (e) => {
-                    
-                        const scrollable = document.documentElement.scrollHeight - window.innerHeight
-                        const scrolled = window.scrollY
-                        if (Math.ceil(scrolled) === scrollable) {
+            if (document.querySelector("#list-publicatiotion-tribu-t")) {
+                document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+            }
+
+            showComment();
+
+
+
+            //---------after shwo in each scroll ---------------
+            const gen = genDataPubOfAllPartisans(data, 5)
+            const gen_length = (data.length - 5)
+            //const gen_length = (data.length)
+            // console.log("gen_length : "+gen_length)
+
+
+            let lastId = 0;
+
+            let genCursorPos = 0
+
+            if (gen_length > 0) {
+                window.addEventListener("scroll", (e) => {
+
+                    const scrollable = document.documentElement.scrollHeight - window.innerHeight
+                    const scrolled = window.scrollY
+                    if (Math.ceil(scrolled) === scrollable) {
+                        if (data) {
+                            lastId = data.id
+                            console.log(genCursorPos)
+                            if (genCursorPos === gen_length) {
+
+                                worker.postMessage([tribu_t_name_0, lastId, 20]);
+
+                            }
+
+                            data = gen.next().value
+                            console.log(data)
                             if (data) {
-                                lastId = data.id
-                                console.log(genCursorPos)
-                                if (genCursorPos === gen_length) {
-                                    
-                                    worker.postMessage([tribu_t_name_0, lastId, 20]);
-                                    
-                                }
-                                    
-                                data = gen.next().value
-                                console.log(data)
-                                if (data) {
-                                    console.log("data N°: " + i)
-                                    console.log(data[i])
-                                    const contentPublication = `
+                                console.log("data N°: " + i)
+                                console.log(data[i])
+                                const contentPublication = `
                                     <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
@@ -708,28 +779,28 @@ function showdDataContent(data, type, tribu_t_name,id_c_u) {
                                             <!-- ====== Chart One End -->
                                         </div>
                                     `
-                                    document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
-                                }
-                                genCursorPos++;
-                                
+                                document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
                             }
-                        
+                            genCursorPos++;
+
                         }
-                    })
-                }
+
+                    }
+                })
             }
-        
+        }
+
     }
     //showComment();
 }
 
 
-function showCommentaireTribu_T(event, idmin=0,b ) {
+function showCommentaireTribu_T(event, idmin = 0, b) {
     event.preventDefault();
     console.log(idmin)
     const table_cmmnt = tribu_t_name_0 + "_commentaire"
     const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
-   
+
     const limits = 5
     if (b) {
         if (document.getElementById("center-content-cmnt" + pub_id)) {
@@ -738,24 +809,24 @@ function showCommentaireTribu_T(event, idmin=0,b ) {
     } else
         //console.log(document.getElementById("center-content-cmnt" + pub_id))
         if (document.querySelector("a.voir-plus"))
-           event.target.parentNode.removeChild(event.target)   
-    
+            event.target.parentNode.removeChild(event.target)
+
     workerGetCommentaireTribuT.postMessage([table_cmmnt, pub_id, idmin, limits])
 }
-    
+
 function showComment(id_resto) {
     // alert(id_resto)
-    
+
     workerGetCommentaireTribuT.onmessage = (e) => {
         console.log("afffichage comment");
         console.log(e.data)
-                const datas = e.data[0]
-                const index=e.data[0].length
-              
-                for (let i = 0; i < index; i++) { 
-                    console.log(i)
-                    let lapstime=calculateDurationOfComment(datas[i].datetime)
-                    let commentaire= `<div class="media-comment">
+        const datas = e.data[0]
+        const index = e.data[0].length
+
+        for (let i = 0; i < index; i++) {
+            console.log(i)
+            let lapstime = calculateDurationOfComment(datas[i].datetime)
+            let commentaire = `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
                                                 <img class="avatar" src="https://randomuser.me/api/portraits/men/77.jpg" width="45" height="45"/>
                                             </a>
@@ -782,25 +853,25 @@ function showComment(id_resto) {
                                                 
                                             </div>
                                         </div>`
-                    if (i == (index- 1))
-                        commentaire+= "<a class=\"voir-plus\" data-foo=\"kjjk_"+e.data[1] +"xdjyfvfAAS\" onclick=\" showCommentaireTribu_T(event,"+datas[i].id+",false)\">Voir plus de commentaire</a>"
-                    
-                    document.getElementById("center-content-cmnt"+datas[i].pub_id).innerHTML +=commentaire
-                }
-    } 
-} 
-    
+            if (i == (index - 1))
+                commentaire += "<a class=\"voir-plus\" data-foo=\"kjjk_" + e.data[1] + "xdjyfvfAAS\" onclick=\" showCommentaireTribu_T(event," + datas[i].id + ",false)\">Voir plus de commentaire</a>"
+
+            document.getElementById("center-content-cmnt" + datas[i].pub_id).innerHTML += commentaire
+        }
+    }
+}
 
 
-function putComment(event) { 
+
+function putComment(event) {
     const pubId = event.target.id.replace(/[^0-9]/g, "")
     const commentaire = event.target.parentNode.querySelector("input").value
- 
+
     const param = {
         pubId: pubId,
         commentaire: commentaire,
         tbl_cmnt_name: tribu_t_name_0 + "_commentaire",
-        
+
     }
     const request = new Request("/user/send/comment/pub", {
         method: "POST",
@@ -808,14 +879,14 @@ function putComment(event) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body:JSON.stringify(param)
-    }) 
+        body: JSON.stringify(param)
+    })
     fetch(request).then(response => {
-        if (response.status === 200 && response.ok) { 
+        if (response.status === 200 && response.ok) {
             response.json().then(json => {
                 let div = document.createElement("div")
                 div.classList.add("media-comment")
-                let commentaire= `  <a class="avatar-content" href="javascript://">
+                let commentaire = `  <a class="avatar-content" href="javascript://">
                                         <img class="avatar" src="https://randomuser.me/api/portraits/men/77.jpg" width="45" height="45"/>
                                     </a>
                                     <div class="media-content">
@@ -839,48 +910,48 @@ function putComment(event) {
                                             </div>
                                         </div>
                                     </div>`
-                    div.innerHTML=commentaire
-                
+                div.innerHTML = commentaire
+
                 const firstComment = document.querySelector(`#center-content-cmnt${json.pubId} > div:nth-child(1)`)
-                if(firstComment) 
+                if (firstComment)
                     document.getElementById("center-content-cmnt" + json.pubId).insertBefore(div, firstComment)
                 else
-                    document.getElementById("center-content-cmnt" + json.pubId).appendChild(div) 
+                    document.getElementById("center-content-cmnt" + json.pubId).appendChild(div)
             })
         }
-        
+
     })
-    console.log(pubId,commentaire)
+    console.log(pubId, commentaire)
 }
-    
 
 
-function* genDataPubOfAllPartisans(data,index) {
+
+function* genDataPubOfAllPartisans(data, index) {
     for (let i = index; i < data.length; i++)
-        if (i < data.length) 
+        if (i < data.length)
             yield data[i]
-         
-        
+
+
 }
 
 
 function test() {
-        return new Promise((resolve, reject) => { 
-        setInterval(()=>resolve(),5000)
+    return new Promise((resolve, reject) => {
+        setInterval(() => resolve(), 5000)
     })
 }
 
 async function showdData(tribu_t_name) {
-    
+
     const request1 = new Request(`/user/tribu_one/${tribu_t_name}`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
             "Content-Type": "application/json; charset=utf-8"
         }
-    }) 
-    return await fetch(request1).then(res =>res.json())
- 
+    })
+    return await fetch(request1).then(res => res.json())
+
 }
 
 
@@ -889,9 +960,9 @@ async function showdData(tribu_t_name) {
  * @param {*} table_rst_pastilled 
  * @param {*} id_c_u 
  */
-function showResto(table_rst_pastilled,id_c_u){
+function showResto(table_rst_pastilled, id_c_u) {
 
-    if(document.querySelector("li.listNavBarTribu > a.active")){
+    if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
     }
     document.querySelector("li.listNavBarTribu.restoNotHide > a").classList.add("active")
@@ -903,8 +974,8 @@ function showResto(table_rst_pastilled,id_c_u){
                                         <div id="form_past"></div>
                                         <div class="g-3">
                                             <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech" onkeyup = "findRestoByOnKey(this)">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou" onkeyup = "findRestoByOnKey(this)">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
                                             </div>
                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
@@ -923,18 +994,18 @@ function showResto(table_rst_pastilled,id_c_u){
                                 <!--<div id="result_resto_chr" class="result_resto_chr"></div>-->
                                 `
 
-    
-    if(document.getElementById('list_resto_pastilled')){
-        let childreen=document.getElementById('list_resto_pastilled').children
-        for(let child of childreen)
-             document.getElementById('list_resto_pastilled').
+
+    if (document.getElementById('list_resto_pastilled')) {
+        let childreen = document.getElementById('list_resto_pastilled').children
+        for (let child of childreen)
+            document.getElementById('list_resto_pastilled').
                 removeChild(child)
     }
-    
+
 
     restoContainer.classList.add("bg-white");
     restoContainer.classList.add("p-2");
-       
+
     let head_table = `<h5 class="text-primary mb-4">Liste des restaurants pastillés</h5><table id="table_resto_pastilled" class="display m-2" style="width:100%">
         <thead>
             <tr>
@@ -950,52 +1021,58 @@ function showResto(table_rst_pastilled,id_c_u){
     let body_table = ``
     workerRestoPastilled.postMessage([table_rst_pastilled])
 
-    workerRestoPastilled.onmessage=(e => {
-            let restos=e.data
-            // console.log("workerresto :::::");
-            // console.log(restos);
-            let imgSrc = "";
-            let avatar ="" //"{{avatar}}"
-            if(avatar != null){
-                imgSrc = "/uploads/tribus/photos/"+avatar
-            }else{
-                imgSrc = "uploads/tribus/photos/avatar_tribu.jpg"
-            }
+    workerRestoPastilled.onmessage = (e => {
+        let restos = e.data
+        // console.log("workerresto :::::");
+        // console.log(restos);
+        let imgSrc = "";
+        let avatar = "" //"{{avatar}}"
+        if (avatar != null) {
+            imgSrc = "/uploads/tribus/photos/" + avatar
+        } else {
+            imgSrc = "uploads/tribus/photos/avatar_tribu.jpg"
+        }
 
-            if(restos.length > 0){
+        if (restos.length > 0) {
 
-                for (let resto of restos) {
-                    console.log(resto);
-            
-                    //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
-            
-                    let id = resto.id
-                    let id_resto = resto.id_resto
-                    let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
-            
-                    let id_user = resto.All_user != null ? resto.All_user.split(",") : []
-                    // console.log(id_user)
-                    let denominationsF = resto.denomination_f
-                    let nbrAvis = resto.nbrAvis
-                    let key = 0
-                    let note = resto.globalNote ? resto.globalNote : 0
+            for (let resto of restos) {
+                console.log(resto);
 
-                    for (let [k, v] of id_user.entries()) {
-                        if (v === id_c_u)
-                            key = k
-                    }
-                    if (id_user.includes(id_c_u)) {
-                        // console.log("up " + denominationsF)
-                        text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
-            
-                        text1 = "Modifiez votre avis"
-                    } else {
-                        // console.log("crt " + denominationsF)
-                        text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
-                        text1 = "Notez"
-                    }
+                //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
-                    body_table += `
+                let id = resto.id
+                let id_resto = resto.id_resto
+                let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
+
+                let id_user = resto.All_user != null ? resto.All_user.split(",") : []
+                // console.log(id_user)
+                let denominationsF = resto.denomination_f
+                let nbrAvis = resto.nbrAvis
+                let key = 0
+                let note = resto.globalNote ? resto.globalNote : 0
+
+                let text1 = ""
+
+                let action = ""
+
+                for (let [k, v] of id_user.entries()) {
+                    if (v === id_c_u)
+                        key = k
+                }
+                if (id_user.includes(id_c_u)) {
+                    // console.log("up " + denominationsF)
+                    // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
+                    action = "update"
+
+                    text1 = "Modifiez votre avis"
+                } else {
+                    // console.log("crt " + denominationsF)
+                    // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
+                    action = "create"
+                    text1 = "Notez"
+                }
+
+                body_table += `
                     <tr>
                         <td class="d-flex bd-highlight align-items-center">
                             <div class="elie-img-pastilled">${image_tribu_t}</div>
@@ -1003,7 +1080,7 @@ function showResto(table_rst_pastilled,id_c_u){
                                 <span style="font-size:12pt;">${denominationsF} </span> 
                             <!--</a>-->
                         </td>
-                        <td>${note}/4</td>
+                        <td class="data-note-${resto.id}">${note}/4</td>
                         <td>
                             <!--<div id="etoile_${id_resto}" class="non_active">
                                 <i class="fa-solid fa-star" data-rank="1"></i>
@@ -1011,82 +1088,83 @@ function showResto(table_rst_pastilled,id_c_u){
                                 <i class="fa-solid fa-star" data-rank="3"></i>
                                 <i class="fa-solid fa-star" data-rank="4"> </i>-->
                                 <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                <a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}"> ${nbrAvis} Avis</a>
+                                <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
                             <!--</div>-->
                         </td>
                         <td>
-                            <button class="btn btn-secondary disabled" style="cursor:not-allowed !important;" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}',${resto.id})"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
                             <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                             
                             <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
                         </td>
                     </tr>
                 `
-                }
-
-                restoContainer.innerHTML += head_table+body_table+foot_table
-
-                $('#table_resto_pastilled').DataTable({
-                    "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                    }
-                });
-
-                // document.querySelector("#table_resto_pastilled_wrapper").classList.add("p-2")
-                
             }
-            // else {
-            //     restoContainer.style.textAlign = "center"
-            //     restoContainer.innerHTML = "Aucun restaurant pastillé pour le moment";
-               
-            // }
 
-            restoContainer.style.display = "block"
-            // invitationsContainer.innerHTML = "";               
-            // invitationsContainer.style.display = "none"
-            // photosContainer.innerHTML = "";
-            // photosContainer.style.display = "none"
-            // showCreatePub.style.display = "none"
-            //  showCreatePub_mobile.style.display = "none"
-            // showPub.style.display = "none"
+            restoContainer.innerHTML += head_table + body_table + foot_table
 
-            
+            $('#table_resto_pastilled').DataTable({
+                "language": {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                }
+            });
+
+            // document.querySelector("#table_resto_pastilled_wrapper").classList.add("p-2")
+
+        }
+        else {
+            restoContainer.style.textAlign = "center"
+            // restoContainer.classList.add("mt-5")
+            restoContainer.innerHTML += "Aucun restaurant pastillé pour le moment";
+
+        }
+
+        restoContainer.style.display = "block"
+        // invitationsContainer.innerHTML = "";               
+        // invitationsContainer.style.display = "none"
+        // photosContainer.innerHTML = "";
+        // photosContainer.style.display = "none"
+        // showCreatePub.style.display = "none"
+        //  showCreatePub_mobile.style.display = "none"
+        // showPub.style.display = "none"
+
+
 
     });
 
     let rows = document.querySelectorAll("#restaurants > ul.list-group > li.list-group-item");
 
-    if(document.querySelector("#resto-rech")){
-        document.querySelector("#resto-rech").addEventListener("keyup",  (event) =>{
+    if (document.querySelector("#resto-rech")) {
+        document.querySelector("#resto-rech").addEventListener("keyup", (event) => {
 
             // alert("ato")
             const q = event.target.value.toLowerCase();
 
             if (event.keyCode === 13) {
                 listResto()
-            }else{
-                document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
-                    if(elem.textContent.toLowerCase().includes(q)){
+            } else {
+                document.querySelectorAll("#restaurants > ul > li").forEach(elem => {
+                    if (elem.textContent.toLowerCase().includes(q)) {
                         elem.style = "display : flex!important;"
-                    }else{
+                    } else {
                         elem.style = "display : none !important;"
                     }
                 })
             }
-            
+
         });
     }
 
-    
+
 }
 
 // document.querySelector("#resto-rech")
 
-if(document.querySelector("#resto-rech")){
+if (document.querySelector("#resto-rech")) {
 
     const src_resto = document.querySelector("#resto-rech")
 
-    src_resto.addEventListener("keyup",  function onEvent(event) {
+    src_resto.addEventListener("keyup", function onEvent(event) {
         alert("ato")
         // const q = event.target.value.toLowerCase();
 
@@ -1102,48 +1180,46 @@ if(document.querySelector("#resto-rech")){
         //         }
         //     })
         // }
-        
+
     });
 }
 
 
-function printNodeGlobale(element,globalNote){
+function printNodeGlobale(element, globalNote) {
 
     let rankRange = [1, 2, 3, 4]
     for (let star of element) {
         // console.log(star)
         if (rankRange.includes(parseInt(star.dataset.rank, 10))) {
-            if(parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
-                    star.style.color = "#F5D165"
+            if (parseInt(star.dataset.rank, 10) <= Math.trunc(globalNote))
+                star.style.color = "#F5D165"
             if (globalNote % 1 != 0) {
                 //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
                 if (parseInt(star.dataset.rank, 10) == (Math.trunc(globalNote) + 1)) {
-                      //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
-                    let rateYello = (globalNote % 1) *100
-                    let rateBlack=100 -rateYello
+                    //console.log(parseInt(star.dataset.rank, 10)+" "+(Math.trunc(globalNote) + 1))
+                    let rateYello = (globalNote % 1) * 100
+                    let rateBlack = 100 - rateYello
                     star.style = `
                      background: linear-gradient(90deg, #F5D165 ${rateYello}%, #000 ${rateBlack}%);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                     `
-                    
+
                 }
             }
         }
     }
 }
-function sendNote(event, _idUser, _idResto,_idRestoComment) {
-    const note = parseFloat(document.querySelector(`#text-note-tribu-t-${_idRestoComment}`).value, 10)
-    //console.log(document.querySelector(`#text-note-tribu-t-${_idRestoComment}`))
-    const commentaire =document.querySelector("#message-text-"+_idRestoComment).value
+function sendNote(note, commentaire, _idResto) {
+
     const content = {
-        idUser: _idUser,
+        // idUser: _idUser,
         idResto: _idResto,
-        tableName: tribu_t_name_0+"_restaurant_commentaire",
+        tableName: tribu_t_name_0 + "_restaurant_commentaire",
         note: note,
         commentaire: commentaire
     }
-   
+
     const jsonStr = JSON.stringify(content)
     //  console.log(jsonStr)
     const request = new Request("/push/comment/resto/pastilled", {
@@ -1155,52 +1231,111 @@ function sendNote(event, _idUser, _idResto,_idRestoComment) {
         },
     })
     fetch(request).then(response => {
-        if (response.ok && response.status === 200) {
-           console.log("nety")
-       }
-    } )
-}
-function updateNote(event, _idRestoComment) {
-    const note =parseFloat(document.querySelector("#text-note-tribu-t-"+_idRestoComment).value,10)
-    const commentaire =document.querySelector("#message-text-"+_idRestoComment).value
-    const content = {
-        tableName: table_restaurant_com,
-        note: note,
-        commentaire: commentaire,
-        idRestoComment:_idRestoComment
-    }
-    const jsonStr = JSON.stringify(content)
-    const request = new Request("/up/comment/resto/pastilled", {
-        method: "POST",
-        body: jsonStr,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
+        if (response.status == 200 && response.ok) {
+
+            document.querySelector(".data-note-"+_idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
+
+            let last_avis = parseInt(document.querySelector(".data-avis-"+_idResto).textContent.replaceAll(/[^0-9]/g,""))
+
+            document.querySelector(".data-avis-"+_idResto).innerHTML = parseInt(last_avis + 1)+" Avis";
+
+            document.querySelector(".data-avis-"+_idResto).setAttribute("onclick", "openAvis("+parseInt(last_avis + 1)+","+_idResto+")")
+
+            const openPopup = document.querySelector(".elie-plus-"+_idResto).getAttribute("onclick")
+
+            document.querySelector(".elie-plus-"+_idResto).setAttribute("onclick", openPopup.replaceAll("create","update").replaceAll("Notez","Modifier votre avis"))
+
+            swal({
+                title: "Noté!",
+                text: "Note ajouté avec succès",
+                icon: "success",
+                button: "Ok",
+              });
+
+        } else {
+            swal({
+                title: "Erreur!",
+                text: "Note non envoyé, veuillez réessayer!",
+                icon: "error",
+                button: "Ok",
+              });
+
+        }
     })
-    fetch(request).then(response => {
-        if (response.ok && response.status === 200) {
-           console.log("nety")
-       }
-    } )
+}
+function updateNote(note, commentaire, id_resto) {
+
+    const table_resto_comment = tribu_t_name_0 + "_restaurant_commentaire"
+
+    fetch('/user/comment/tribu/restos-pastilles/' + tribu_t_name_0 + '_restaurant/' + id_resto)
+        .then(response => response.json())
+        .then(avis => {
+
+            if (avis.length > 0) {
+
+                for (let av of avis) {
+                    const content = {
+                        tableName: table_resto_comment,
+                        note: note,
+                        commentaire: commentaire,
+                        idRestoComment: av.id_resto_comment
+                    }
+                    const jsonStr = JSON.stringify(content)
+                    const request = new Request("/up/comment/resto/pastilled", {
+                        method: "POST",
+                        body: jsonStr,
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    fetch(request)
+                }
+
+            }
+
+        })
+    
+    
+    document.querySelector(".data-note-"+id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
+
+    swal({
+        title: "A jour!",
+        text: "Note modifié avec succès!",
+        icon: "success",
+        button: "Ok",
+      });
+
+
 }
 
-function findResto(val, localisation=""){
+function findResto(val, localisation = "") {
 
     const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
-       method: 'GET'
-   }) 
+        method: 'GET'
+    })
 
-//    const request =new Request(`/tribu/findresto/${val}/${ou}`, {
-//         method: 'GET'
-//     })  
+    //    const request =new Request(`/tribu/findresto/${val}/${ou}`, {
+    //         method: 'GET'
+    //     })  
 
-   document.querySelector("#result_resto_past").style.display="block;"
+    document.querySelector("#result_resto_past").style.display = "block;"
+
+
+    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+    document.querySelector("#elie-restou").innerHTML =
+        `<div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        </div>`
+
+
     fetch(request).then(response => response.json()).then(data => {
 
         let jsons = data.results[0]
 
-        jsons.length > 1? document.querySelector("#extModalLabel").innerText = jsons.length +" restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length +" restaurant trouvé"
+        jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
 
         // console.log(jsons.results[0])
 
@@ -1220,9 +1355,11 @@ function findResto(val, localisation=""){
 
         let body_table = "";
 
-        if(jsons.length > 0){
+        if (jsons.length > 0) {
 
-            for (let json of jsons) { 
+
+            for (let json of jsons) {
+
                 const name = json.denominationF;
                 const dep = json.dep;
                 const depName = json.depName;
@@ -1233,17 +1370,17 @@ function findResto(val, localisation=""){
                 const typevoie = json.typevoie;
                 // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
                 const adresse = json.add;
-                const bar = json.bar !="0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : '' 
-                const boulangerie = json.boulangerie !="0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
-                const brasserie = json.brasserie !="0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
-                const cafe = json.cafe !="0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : '' 
-                const cuisineMonde = json.cuisineMonde !="0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : '' 
-                const fastFood = json.fastFood !="0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : '' 
-                const creperie = json.creperie !="0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : '' 
-                const salonThe = json.salonThe !="0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : '' 
-                const pizzeria = json.pizzeria !="0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : '' 
-    
-                body_table +=`
+                const bar = json.bar != "0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : ''
+                const boulangerie = json.boulangerie != "0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
+                const brasserie = json.brasserie != "0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
+                const cafe = json.cafe != "0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : ''
+                const cuisineMonde = json.cuisineMonde != "0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : ''
+                const fastFood = json.fastFood != "0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : ''
+                const creperie = json.creperie != "0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : ''
+                const salonThe = json.salonThe != "0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : ''
+                const pizzeria = json.pizzeria != "0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : ''
+
+                body_table += `
                                 <tr>
                                     <td>${name}</td>
                                     <td>
@@ -1262,21 +1399,21 @@ function findResto(val, localisation=""){
                                     </td>
                                     <td>${adresse}</td>
                                     <td class="d-flex bd-highlight">
-                                        <button class="btn btn-info"><!--<i class="fas fa-plus"></i>--> Détail</button>
+                                        <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
                                         <button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
                                     </td>
                                 </tr>
                             `
-    
+
                 // document.querySelector("#result_resto_chr").innerHTML += `
-                    
+
                 //     <div class="card-result-chr items">
                 //         <div class="header-result">
                 //             <h5>${name}</h5>
-    
+
                 //         </div>
                 //         <div class="body-result">
-                           
+
                 //             <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
                 //              <div class="type-resto-ico row">
                 //                 <div class="col-lg-5">${boulangerie}</div>
@@ -1293,7 +1430,7 @@ function findResto(val, localisation=""){
                 //                 <h5>Adresse: </h5>
                 //                 <p>${adresse}</p>
                 //             </div>
-                            
+
                 //         </div>
                 //         <div class="footer-result">
                 //             <button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
@@ -1306,11 +1443,11 @@ function findResto(val, localisation=""){
                 //         items: 5
                 //     });
                 // });
-    
-                
+
+
             }
 
-            document.querySelector("#elie-restou").innerHTML = head_table+ body_table + foot_table
+            document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
 
             // new DataTable('#resto-a-pastiller-list');
             $('#resto-a-pastiller-list').DataTable({
@@ -1319,12 +1456,12 @@ function findResto(val, localisation=""){
                 }
             });
 
-        }else{
+        } else {
             document.querySelector("#elie-restou").style.display = "block"
-            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value +"</div>"
+            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
         }
     })
-    
+
 }
 
 function showTypeResto(event) {
@@ -1335,12 +1472,12 @@ function showTypeResto(event) {
         b.querySelector("div.type-resto > i").classList.remove("active");
         b.querySelector("div.type-resto-ico").style.display = "none"
     } else {
-       b.classList.add("active");
-       b.querySelector("div.type-resto > i").classList.add("active");
-     b.querySelector("div.type-resto-ico").style.display = "block"
+        b.classList.add("active");
+        b.querySelector("div.type-resto > i").classList.add("active");
+        b.querySelector("div.type-resto-ico").style.display = "block"
     }
-    
-   
+
+
 }
 
 function pastillerPast(element, id, nom) {
@@ -1349,33 +1486,33 @@ function pastillerPast(element, id, nom) {
     // if(modal.id == "modalForExtension"){
     element.classList = "btn btn-success ms-1"
     element.innerText = "Pastillé"
-    if(modal.id == "resto-a-pastiller-list"){
+    if (modal.id == "resto-a-pastiller-list") {
         setRestoForPast(id, nom)
         element.disabled = true;
         // document.querySelector("#successPastille").style.display = ""
         // document.querySelector("#successPastille").textContent = "Le restaurant " + nom + " a été pastillé avec succès !";
 
 
-    }else{
+    } else {
         saveRestaurantPast(id, nom);
     }
 
-    Swal.fire({
-        icon: 'success',
-        title: 'Succès',
+    swal({
+        title: "Succès",
         text: "Le restaurant " + nom + " a été pastillé avec succès !",
-        // footer: '<a href="">Why do I have this issue?</a>'
-      })
- 
+        icon: "success",
+        button: "Ok",
+      });
+
 }
 
 function setRestoForPast(id, nom) {
 
-    if(nom != "" && id != null){
+    if (nom != "" && id != null) {
 
         let item = {
-            denomination_f : nom,
-            id_resto : id
+            denomination_f: nom,
+            id_resto: id
         }
         dataExtension.push(item)
         document.querySelector("#form_extensionData").value = JSON.stringify(dataExtension)
@@ -1385,51 +1522,51 @@ function setRestoForPast(id, nom) {
 }
 
 /**save resto pastilled */
-function saveRestaurantPast(id, nom){
-    let data ={
-        name : nom,
-        id_resto :id
+function saveRestaurantPast(id, nom) {
+    let data = {
+        name: nom,
+        id_resto: id
     }
     //console.log(data);
 
-    fetch(new Request("/user/tribut/save_resto/"+tribu_t_name_0+"_restaurant", {
+    fetch(new Request("/user/tribut/save_resto/" + tribu_t_name_0 + "_restaurant", {
         method: "POST",
         headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })).then(req => {
         // console.log(req.ok , req.status)
         if (req.ok && req.status === 200) {
-                let xmlString = `<div class="alert alert-success mb-2 mt-2" role="alert">
+            let xmlString = `<div class="alert alert-success mb-2 mt-2" role="alert">
                 ${nom} bien pastillé avec succès!
                 </div>`;
-                
-                document.querySelector("#form_past").innerHTML = xmlString;
 
-                setTimeout(()=>{
-                    document.querySelector("#form_past").innerHTML = ""
-                    showResto(tribu_t_name_0+"_restaurant",id_c_u);
-                }, 5000)
+            document.querySelector("#form_past").innerHTML = xmlString;
 
-               
+            setTimeout(() => {
+                document.querySelector("#form_past").innerHTML = ""
+                showResto(tribu_t_name_0 + "_restaurant", id_c_u);
+            }, 5000)
+
+
         }
     })
 
-    document.querySelector("#result_resto_past").style.display="none";
+    document.querySelector("#result_resto_past").style.display = "none";
 }
 
 /**
  * show gallery 
  */
-function showPhotos(){
+function showPhotos() {
 
     // invitationsContainer.innerHTML = "";               
     // invitationsContainer.style.display = "none"
     // restoContainer.style.display = "none"
     // restoContainer.innerHTML += "";
-    let  photosContainer = document.querySelector("#tribu_t_conteuneur")
+    let photosContainer = document.querySelector("#tribu_t_conteuneur")
     // showCreatePub.style.display = "none"
     // showCreatePub_mobile.style.display = "none"
     // showPub.style.display = "none"
@@ -1440,7 +1577,7 @@ function showPhotos(){
             </div>
         </div>`;
 
-    const requete=new Request("/user/tribu/photos/" + tribu_t_name_0+"_publication", {
+    const requete = new Request("/user/tribu/photos/" + tribu_t_name_0 + "_publication", {
         method: "GET",
         headers: {
             'Accept': 'application/json',
@@ -1448,7 +1585,7 @@ function showPhotos(){
         }
     })
     fetch(requete).then(rqt => rqt.json()).then(data => {
-            //console.log(data);
+        //console.log(data);
         photosContainer.innerHTML = `
                 <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
@@ -1458,13 +1595,13 @@ function showPhotos(){
                     
                 </div>`;
 
-            if(data.length > 0){
-                let li_img =''
+        if (data.length > 0) {
+            let li_img = ''
 
-                for (let photo of data) {
-                    let img_src =photo.photo; //replaceAll("/public","");
-                    // li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
-                    li_img +=`
+            for (let photo of data) {
+                let img_src = photo.photo; //replaceAll("/public","");
+                // li_img +=`<img  class="img_gal" src="${img_src}" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick = "setPhotoTribu(this)">`
+                li_img += `
                                     <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
                                         <img
                                         src="${img_src}"
@@ -1473,9 +1610,9 @@ function showPhotos(){
                                         />
                                     </div>
                                     `
-                }
-                setGallerie(document.querySelectorAll(".img_gal"))
-                photosContainer.innerHTML += `<div class="gallery-container">
+            }
+            setGallerie(document.querySelectorAll(".img_gal"))
+            photosContainer.innerHTML += `<div class="gallery-container">
                 <div>
                     <span class="h2">Vos photo</span> 
                     <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
@@ -1486,39 +1623,39 @@ function showPhotos(){
                 </div>
                 <div id="gallery"><div class="row">${li_img}</div></div></div>`
 
-                setGallerie(document.querySelectorAll("#gallery img"))
-                
-            }else{
-                //photosContainer.style.textAlign = "center"
-                photosContainer.innerHTML += `<div class="gallery-container"><div id="gallery">Aucune photo</div></div>`;
-                // invitationsContainer.innerHTML = "";               
-                // invitationsContainer.style.display = "none"
-                // restoContainer.style.display = "none"
-                // restoContainer.innerHTML += "";
-            }
+            setGallerie(document.querySelectorAll("#gallery img"))
 
-        });
+        } else {
+            //photosContainer.style.textAlign = "center"
+            photosContainer.innerHTML += `<div class="gallery-container"><div id="gallery">Aucune photo</div></div>`;
+            // invitationsContainer.innerHTML = "";               
+            // invitationsContainer.style.display = "none"
+            // restoContainer.style.display = "none"
+            // restoContainer.innerHTML += "";
+        }
+
+    });
 
 }
 
 
 function loadFile(event) {
     let new_photo = document.createElement("img")
-    new_photo.setAttribute("data-bs-toggle","modal")
-    new_photo.setAttribute("data-bs-target","#modal_show_photo")
-    new_photo.setAttribute("onclick","setPhotoTribu(this)")
+    new_photo.setAttribute("data-bs-toggle", "modal")
+    new_photo.setAttribute("data-bs-target", "#modal_show_photo")
+    new_photo.setAttribute("onclick", "setPhotoTribu(this)")
     new_photo.src = URL.createObjectURL(event.target.files[0]);
     var div_photo = document.querySelector('#gallery');
 
     let first_photo = document.querySelector("#gallery > img:nth-child(1)")
 
-    if(first_photo){
+    if (first_photo) {
         div_photo.insertBefore(new_photo, first_photo)
-    }else{
+    } else {
         div_photo.innerHTML = ""
         div_photo.appendChild(new_photo);
     }
-    
+
 
     const fileReader = new FileReader();
     fileReader.onload = () => {
@@ -1526,12 +1663,12 @@ function loadFile(event) {
 
         ///public/uploads/tribu_t/photo/tribu_t_1_banane_publication/photo.jpg
         let data = {
-                publication : "",
-                image : srcData,
-                confidentiality : 1
-            }
+            publication: "",
+            image: srcData,
+            confidentiality: 1
+        }
 
-        fetch(new Request("/user/tribu/add_photo/"+tribu_t_name_0+"_publication", {
+        fetch(new Request("/user/tribu/add_photo/" + tribu_t_name_0 + "_publication", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -1539,13 +1676,13 @@ function loadFile(event) {
             },
             body: JSON.stringify(data)
         })).then(x => x.json()).then(response => {
-            document.querySelector("#success_upload").style ="display:block;"
-            setTimeout(function(){
-                 document.querySelector("#success_upload").style ="display:none;"
+            document.querySelector("#success_upload").style = "display:block;"
+            setTimeout(function () {
+                document.querySelector("#success_upload").style = "display:none;"
             }, 5000);
             // console.log(response)
-            }
-        ).catch(error=>{
+        }
+        ).catch(error => {
             console.log(error)
         });
     };
@@ -1553,13 +1690,13 @@ function loadFile(event) {
 }
 /*-----------end------------------*/
 
-function showActualites(){
+function showActualites() {
     document.querySelector("#activeTribu").click();
 }
 
 
-if( document.querySelector("#submit-publication-tribu-t")){
-    document.querySelector("#submit-publication-tribu-t").addEventListener("click" , () => {
+if (document.querySelector("#submit-publication-tribu-t")) {
+    document.querySelector("#submit-publication-tribu-t").addEventListener("click", () => {
         document.querySelector("#form-publication-tribu-t > div > div > div.modal-header > button").click();
         setTimeout(showActualites, 5000);
         //showActualites();
@@ -1568,7 +1705,7 @@ if( document.querySelector("#submit-publication-tribu-t")){
 
 function showInvitations() {
 
-    if(document.querySelector("li.listNavBarTribu > a.active")){
+    if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
     }
     document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
@@ -1750,8 +1887,8 @@ function showInvitations() {
                 form_parent.querySelector(".btn_send_invitation_js_jheo").removeAttribute("disabled")
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
                 document.querySelector("#successSendingMail").style.display = "block"
-        
-                setTimeout(()=>{
+
+                setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
                 }, 3000)
 
@@ -1763,16 +1900,16 @@ function showInvitations() {
     /** END JEHOVANNIE*/
 }
 
-function setActiveTab(elem){
-    if(!elem.classList.contains("active")){
+function setActiveTab(elem) {
+    if (!elem.classList.contains("active")) {
         elem.classList.add("active")
-        document.querySelector("#"+elem.dataset.element).style = "";
-        if(elem.parentElement.nextElementSibling){
+        document.querySelector("#" + elem.dataset.element).style = "";
+        if (elem.parentElement.nextElementSibling) {
             elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
-            document.querySelector("#"+elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
-        }else{
+            document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
+        } else {
             elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
-            document.querySelector("#"+elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+            document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
         }
     }
 }
@@ -1785,23 +1922,23 @@ function fetchAllTribuGMember() {
                         <span class="visually-hidden">Loading...</span>
                         </div>
                     </div></td>`
-    fetch("/user/all_tribu_g/members?tribu_t="+table)
-        .then(response=>response.json())
-        .then(response=>{
+    fetch("/user/all_tribu_g/members?tribu_t=" + table)
+        .then(response => response.json())
+        .then(response => {
             // console.log(response)
-            if(response.length > 0){
+            if (response.length > 0) {
                 tbody.innerHTML = ""
                 for (const item of response) {
                     let ancorOrbutton = ""
-                    if(item.isMember != "not_invited"){
-                        if(item.isMember == "refuse"){
+                    if (item.isMember != "not_invited") {
+                        if (item.isMember == "refuse") {
                             ancorOrbutton = `<button class="btn btn-sm btn-secondary" disabled="true">Invitation refusée</button>`;
-                        }else if(item.isMember == "pending"){
+                        } else if (item.isMember == "pending") {
                             ancorOrbutton = `<button class="btn btn-sm btn-secondary" disabled="true">En attente</button>`;
-                        }else{
+                        } else {
                             ancorOrbutton = `<button class="btn btn-sm btn-secondary" disabled="true">Membre</button>`;
                         }
-                    }else{
+                    } else {
                         ancorOrbutton = `<button data-id="${item.id}" type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
                     }
                     tbody.innerHTML += `<tr>
@@ -1817,29 +1954,29 @@ function fetchAllTribuGMember() {
                         url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
-            }else{
+            } else {
                 tbody.innerHTML = "Aucun tribu G créé pour le moment"
             }
 
         })
-        .catch(error=>console.log(error))
+        .catch(error => console.log(error))
 }
 
-function inviteUser(elem){
-	
+function inviteUser(elem) {
+
     let data = {
-                user_id : elem.dataset.id,
-                table : document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim(),
-            }
-    
+        user_id: elem.dataset.id,
+        table: document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim(),
+    }
+
     // console.log(data);
-    
+
     const http = new XMLHttpRequest()
     http.open('POST', '/user/tribu/send/one-invitation')
     http.setRequestHeader('Content-type', 'application/json')
     http.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     http.send(JSON.stringify(data))
-    http.onload = function() {
+    http.onload = function () {
         elem.style.backgroundColor = "#E4E6EB";
         elem.style.borderColor = "#E4E6EB";
         elem.style.color = "black";
@@ -1862,13 +1999,13 @@ function ondeleteUser(e) {
     email.parentElement.removeChild(email);
 }
 
-function removePublication(){
+function removePublication() {
     let hiddenElement = document.querySelector("#hiddenElement")
     let id = hiddenElement.value;
     let dataId = hiddenElement.dataset.id;
     let dataName = hiddenElement.dataset.name;
-    document.querySelector("#"+dataId).remove();
-    fetch(new Request("/user/tribu/publication/remove/"+dataName+"_publication/" + id, {
+    document.querySelector("#" + dataId).remove();
+    fetch(new Request("/user/tribu/publication/remove/" + dataName + "_publication/" + id, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
@@ -1878,12 +2015,12 @@ function removePublication(){
 
 }
 
-function setHiddenValue(element,update=""){
-    if(update != ""){
+function setHiddenValue(element, update = "") {
+    if (update != "") {
         document.querySelector("#publication_update_confidentiality").value = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.confid
         document.getElementById("publication_update_legend").value = element.parentElement.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText
     }
-    let hiddenElement = document.querySelector("#hiddenElement"+update)
+    let hiddenElement = document.querySelector("#hiddenElement" + update)
     hiddenElement.dataset.id = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.id
     hiddenElement.dataset.name = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.name
     hiddenElement.value = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.id
@@ -1898,22 +2035,22 @@ function updatePublication() {
     let confidentiality = document.querySelector("#publication_update_confidentiality").value;
     let message = document.querySelector("#publication_update_legend").value
 
-    document.querySelector("#"+dataId).querySelector(".text-pub").innerHTML = message
+    document.querySelector("#" + dataId).querySelector(".text-pub").innerHTML = message
 
-    let publicVisibilityElement = document.querySelector("#"+dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[0];
-    let privateVisibilityElement = document.querySelector("#"+dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[1];
-    let btnGroupDropElement = document.querySelector("#"+dataId).querySelector("#btnGroupDrop1")
+    let publicVisibilityElement = document.querySelector("#" + dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[0];
+    let privateVisibilityElement = document.querySelector("#" + dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[1];
+    let btnGroupDropElement = document.querySelector("#" + dataId).querySelector("#btnGroupDrop1")
     let publicIcone = `<i class="fa-solid fa-earth-oceania"></i>`
     let privateIcone = `<i class="bi bi-lock-fill"></i>`
 
-    if(parseInt(confidentiality) == 1){
-        if(!publicVisibilityElement.classList.contains("active")){
+    if (parseInt(confidentiality) == 1) {
+        if (!publicVisibilityElement.classList.contains("active")) {
             btnGroupDropElement.innerHTML = publicIcone
             privateVisibilityElement.classList.remove("active")
             publicVisibilityElement.classList.add("active")
         }
-    }else if(parseInt(confidentiality) == 2){
-        if(!privateVisibilityElement.classList.contains("active")){
+    } else if (parseInt(confidentiality) == 2) {
+        if (!privateVisibilityElement.classList.contains("active")) {
             btnGroupDropElement.innerHTML = privateIcone
             publicVisibilityElement.classList.remove("active")
             privateVisibilityElement.classList.add("active")
@@ -1923,24 +2060,24 @@ function updatePublication() {
     //document.querySelector("#modal_publication_modif img.image-upload-image")
     let imgSrc = null
     let oldSrc = ""
-    if(document.querySelector("#modal_publication_modif .image-upload-content").style.display == "block"){
+    if (document.querySelector("#modal_publication_modif .image-upload-content").style.display == "block") {
         imgSrc = document.querySelector("#modal_publication_modif img.image-upload-image").src
-        if(document.querySelector("#"+dataId+" .publication-picture").style.display == "none"){
-            document.querySelector("#"+dataId).querySelector(".publication-picture").style="cursor:pointer"
-            document.querySelector("#"+dataId).querySelector(".publication-picture").src = imgSrc
-        }else{
-            document.querySelector("#"+dataId+" .publication-picture").src = imgSrc
+        if (document.querySelector("#" + dataId + " .publication-picture").style.display == "none") {
+            document.querySelector("#" + dataId).querySelector(".publication-picture").style = "cursor:pointer"
+            document.querySelector("#" + dataId).querySelector(".publication-picture").src = imgSrc
+        } else {
+            document.querySelector("#" + dataId + " .publication-picture").src = imgSrc
         }
-    }else{
-        if(document.querySelector("#"+dataId+" .publication-picture").style.display == "none"){
+    } else {
+        if (document.querySelector("#" + dataId + " .publication-picture").style.display == "none") {
             console.log("Ok");
-        }else{
-            if(document.querySelector("#"+dataId+" .publication-picture").src.includes("data:image/")){
-                imgSrc = document.querySelector("#"+dataId+" .publication-picture").src
-            }else{
-                oldSrc = document.querySelector("#"+dataId+" .publication-picture").src
+        } else {
+            if (document.querySelector("#" + dataId + " .publication-picture").src.includes("data:image/")) {
+                imgSrc = document.querySelector("#" + dataId + " .publication-picture").src
+            } else {
+                oldSrc = document.querySelector("#" + dataId + " .publication-picture").src
             }
-            
+
         }
     }
 
@@ -1950,19 +2087,19 @@ function updatePublication() {
         "pub_id": id,
         "confidentiality": confidentiality,
         "message": message
-        }
+    }
 
     // console.log(data);
 
-    fetch(new Request("/user/tribu/update_publication/"+dataName+"_publication", {
-    method: "POST",
-    headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-    })).then(response=>response.json())
-       .then(message=>console.log(message));
+    fetch(new Request("/user/tribu/update_publication/" + dataName + "_publication", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })).then(response => response.json())
+        .then(message => console.log(message));
 }
 
 
@@ -1971,10 +2108,10 @@ function checkExtension(element) {
     return element.checked;
 }
 
-function openModalForExtension(element){
-    if(checkExtension(element)){
+function openModalForExtension(element) {
+    if (checkExtension(element)) {
         $("#modalForExtension").modal("show")
-    }else{
+    } else {
         console.log("Unchecked")
     }
 }
@@ -1982,35 +2119,37 @@ function openModalForExtension(element){
 if (document.querySelector("#apropos-tribu-t")) {
     let openClose = document.querySelector("#apropos-tribu-t")
     openClose.addEventListener("click", () => {
-        
+
     })
 }
 
 const searchParams = new URLSearchParams(window.location.search);
-if(searchParams.has('message')){
+if (searchParams.has('message')) {
     showAlertMessageFlash(searchParams.get('message'))
     const url = new URL(window.location.href);
     window.location.replace(url.pathname)
 }
 
 
-function listResto(){
-
-    $("#modalForExtension").modal("show")
+function listResto() {
 
     // document.querySelector(".content-actualite-connected").style ="background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);"
 
     document.querySelector("#elie-restou").innerHTML = ""
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
-    if(inputName.trim() != ""){
-        findResto(inputName,adresse)
-    }else{
+    if (adresse.trim() != "" || inputName.trim() != "") {
+        findResto(inputName, adresse)
+        $("#modalForExtension").modal("show")
+    } else {
 
-        Swal.fire({
-            icon: 'error',
-            text: "Quoi veux-tu trouver? Veuillez remplire ce que vous cherchez.",
-          })
+        swal({
+            // title: "Succès",
+            text: "Champ invalide!",
+            icon: "error",
+            button: "Ok",
+          });
+
     }
 }
 
@@ -2027,44 +2166,222 @@ function listResto(){
 //     }
 //   }
 
-function openPopupAction(id_pastille,denomination_f, latitude,longitude,text1,id_resto_comment_key){
+if(document.querySelector("#btn_open_modal_avis_elie")){
 
-    const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: 'btn btn-secondary me-2',
-          cancelButton: 'btn btn-primary'
-        },
-        buttonsStyling: false
-      })
-      
-      swalWithBootstrapButtons.fire({
-        // title: 'Are you sure?',
-        text: "Quelle action voulez-vous pour ce restaurant?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-edit"></i> '+text1,
-        cancelButtonText: '<i class="fas fa-calendar"></i> Créer un évènement',
-        // reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          swalWithBootstrapButtons.fire(
-            'Noté!',
-            'Note ajouté avec succès',
-            'success'
-          )
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
+    document.querySelector("#btn_open_modal_avis_elie").addEventListener("click", function () {
+        $("#avisRestoPastille").modal("hide")
+        $("#modalAvisRestaurant").modal("show")
+    })
+}
 
-        //   createRepas(id_pastille,denomination_f, latitude,longitude)
+function openAvis(nb_avis, id_resto) {
+    // document.querySelector("#staticBackdrop")
 
-          swalWithBootstrapButtons.fire(
-            'Crée!',
-            'Un évènement crée avec succès',
-            'success'
-          )
+    if (parseInt(nb_avis) > 0) {
+
+        // $("#modalAvisRestaurant").modal("hidden")
+
+        $("#avisRestoPastille").modal("show")
+
+        const table_resto = tribu_t_name_0 + "_restaurant"
+        console.log(table_resto);
+
+        fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
+            .then(response => response.json())
+            .then(avis => {
+                // console.log(avis);
+                for (let avi of avis) {
+
+                    let noteEtoile = ""
+
+                    switch (parseInt(avi.note)) {
+                        case 1:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 2:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 3:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 4:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+                            break;
+                        default:
+                            noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                    }
+
+                    document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
+                        `<div class="card mb-2 card_avis_resto_jheo_js">
+                            <div class="card-body">
+                                <div class="avis_content">
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <h5>
+                                            <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
+                                            ${avi.commentaire}
+                                        </h5>	
+                                        <p>
+                                            ${noteEtoile}
+                                            <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+                                            <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+                                            <i class="fa-solid fa-star"></i>
+                                            <i class="fa-solid fa-star"></i>-->
+                                        </p>
+                                    </div>
+                                    <p>${avi.datetime}</p>
+                                </div>
+                            </div>
+                        </div>
+                        `
+                }
+
+                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+
+                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", "create")
+            })
+
+
+    } else {
+
+        swal({
+            title: "Opps!",
+            text: "Aucun avis pour ce restaurant",
+            icon: "warning",
+            button: "Ok",
+          });
+
+    }
+
+    const myModalEl = document.getElementById('avisRestoPastille')
+    myModalEl.addEventListener('hidden.bs.modal', event => {
+        // do something...
+        document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
+    })
+
+}
+
+function setSendNote(params, id_pastille) {
+
+    const action = params.getAttribute("data-action")
+
+    const avis = params.parentElement.previousElementSibling.querySelector("#message-text")
+    const note = params.parentElement.previousElementSibling.querySelector("#text-note")
+
+    if (action == "create") {
+
+        if (parseFloat(note.value) > 4) {
+            swal({
+                title: "Erreur de saisie de note!",
+                text: "Une note doit être inférieur ou égale à 4",
+                icon: "error",
+                button: "Ok",
+              });
+
+        } else {
+
+            sendNote(parseFloat(note.value), avis.value, id_pastille)
         }
-      })
 
+
+    } else {
+
+        updateNote(parseFloat(note.value), avis.value, id_pastille)
+
+    }
+
+
+}
+
+function openOnNote(id_pastille, action) {
+
+    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
+    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+
+}
+
+function openOnEvent(params) {
+    swal({
+        title: "Succès!",
+        text: "Un évènement crée avec succès",
+        icon: "success",
+        button: "OK",
+      });
+}
+
+function openPopupAction(id_pastille, denomination_f, latitude, longitude, text1, action) {
+
+    $("#detailOptionResto").modal("show")
+
+    document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> `+ text1
+
+    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+ action+"\')")
+      
+    // const swalWithBootstrapButtons = swal.mixin({
+    //     customClass: {
+    //         confirmButton: 'btn btn-primary me-2',
+    //         cancelButton: 'btn btn-secondary non_active disabled'
+    //         // cancelButton: 'btn btn-primary'
+    //     },
+    //     buttonsStyling: false
+    // })
+
+    // swalWithBootstrapButtons.fire({
+    //     // title: 'Are you sure?',
+    //     text: "Quelle action voulez-vous pour ce restaurant?",
+    //     icon: 'question',
+    //     showCancelButton: true,
+    //     confirmButtonText: '<i class="fas fa-edit"></i> ' + text1,
+    //     cancelButtonText: '<i class="fas fa-calendar"></i> Créer un évènement',
+    //     // reverseButtons: true
+    // }).then((result) => {
+    //     if (result.isConfirmed) {
+
+    //         $("#modalAvisRestaurant").modal("show")
+
+    //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
+    //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+
+    //     } else if (
+    //         /* Read more about handling dismissals below */
+    //         result.dismiss === swal.DismissReason.cancel
+    //     ) {
+
+    //         $("#createAgenda").modal("show")
+
+    //         // data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal"
+
+    //         //   createRepas(id_pastille,denomination_f, latitude,longitude)
+
+    //         // setNameOrAdresseForEtab({ name:'0 CHURRASCO',adress:'70 rue fontaine sucree 01170 crozet'} ,this)
+
+    //         // swalWithBootstrapButtons.fire(
+    //         //     'Crée!',
+    //         //     'Un évènement crée avec succès',
+    //         //     'success'
+    //         // )
+    //     }
+    // })
+
+}
+
+
+function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
+
+    fetch("/api/agenda/etab/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
+        .then(response => response.text())
+        .then(result => {
+
+            $("#modalDetailResto").modal("show")
+
+            document.querySelector("#restoModalLabel").innerHTML = `
+        <div>
+        <h1 class="modal-title fs-5">${nom_resto}</h1>
+        <span>${adresse.toLowerCase()}</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        `
+
+            document.querySelector("#elie-resto-detail").innerHTML = result
+        })
 }

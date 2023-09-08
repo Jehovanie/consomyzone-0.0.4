@@ -1,8 +1,8 @@
-<div class="navleft fixed-top cmz-left-container content_navleft_jheo_js">
+<div class="navleft navleft-mobile fixed-top cmz-left-container content_navleft_jheo_js">
 	<div class="container-fluid">
-		<div class="head-left">
+		<div class="head-left mt-3">
 			<div class="row cmz-left-results-indications">
-				<div class="col-md-10">
+				<div class="col-10">
 					<h6 class="modal-title" id="exampleModalLabel">
 						
 						{% if cles0 != "" %}
@@ -22,7 +22,8 @@
 									Cependant ces résultats pourraient vous intéresser<br>
 								{% endif %}
 							{% else %}
-								<b>{{rubrique|upper}}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
+								{# <b>{{rubrique|upper}}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br> #}
+								<b> {{rubrique == "tous" ? "Restaurant,Ferme,Stations-services, Golf et Tabac": rubrique|upper }}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
 							{% endif %}
 						{% endif %}
                         
@@ -37,7 +38,7 @@
 						{% endif %}
                     </h6>
 				</div>
-				<div class="col-md-2">
+				<div class="col-2">
                     <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-station"></i>
                 </div>
 			</div>

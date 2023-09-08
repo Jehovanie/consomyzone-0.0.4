@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
+use App\Entity\Codinsee;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
@@ -268,6 +269,8 @@ class RestaurantController extends AbstractController
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
         $codinsee = $dataRequest["codinsee"];
+        $arrdssm = $dataRequest["arrdssm"];
+        
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
         $resultCount= $bddResto->getAccountRestauranting($codeDep);
         $userConnected = $status->userProfilService($this->getUser());
@@ -282,6 +285,8 @@ class RestaurantController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
             "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode(),
+            "type" => "resto",
+            "arrdssm" => $arrdssm,
             "codinsee" => $codinsee
 
 
@@ -407,6 +412,7 @@ class RestaurantController extends AbstractController
         $codinsee = $dataRequest["codinsee"];
         $arrdssm = $dataRequest["arrdssm"];
 
+
         $datas = $bddResto->getRestoByCodinsee($codinsee, $codeDep);
         $resultCount = count($datas);
         $statusProfile = $status->statusFondateur($this->getUser());
@@ -528,18 +534,26 @@ class RestaurantController extends AbstractController
 
         $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
 
-        // dump(count($global_note) );
-
+        $isAlreadyCommented= false;
+        $avis= ["note" => null, "text" => null  ];
+        
         $note_temp=0;
         foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note->getNote(), "text" => $note->getAvis() ];
+            }
             $note_temp += $note->getNote(); 
         }
 
-        // dump($note_temp);
         $details["avis"] = [
             "nbr" => $nbr_avis_resto,
-            "note" => $global_note ?  $note_temp / count($global_note) : 0 
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
         ];
+
+        // dd($details);
 
         
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
@@ -620,7 +634,7 @@ class RestaurantController extends AbstractController
 
         $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
-        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
+        // $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
         // dd($nbr_avis_resto);
 
         return $this->render("shard/restaurant/detail_resto_navleft.twig", [
@@ -657,10 +671,10 @@ class RestaurantController extends AbstractController
 
         $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
-        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
+        // $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
         // dd($nbr_avis_resto);
 
-        $response = $serializer->serialize(["nombre_avis" => $response], 'json');
+        // $response = $serializer->serialize(["nombre_avis" => $nbr_avis_resto], 'json');
         
         return $this->render("shard/restaurant/details_mobile.js.twig", [
             "details" => $resto,

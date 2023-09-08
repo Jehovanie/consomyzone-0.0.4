@@ -99,9 +99,9 @@ class MarckerClusterHome extends MapModule  {
     }
 
     addMarker(newData) {
-        const { station, ferme, resto, golf } = newData;
+        const { station, ferme, resto, golf, tabac } = newData;
 
-        if (station || ferme || resto || golf ) {
+        if (station || ferme || resto || golf || tabac  ) {
 
             if (station.length > 0) {
                 this.addStation(station);
@@ -120,6 +120,10 @@ class MarckerClusterHome extends MapModule  {
             ///all golf
             if ( golf.length > 0 ){
                 this.addGolf(golf);
+            }
+
+            if( tabac.length > 0 ){
+                this.addTabac(tabac);
             }
 
             this.map.addLayer(this.markers);
@@ -150,6 +154,12 @@ class MarckerClusterHome extends MapModule  {
     addGolf(dataGolf){
         dataGolf.forEach(item => {
             this.settingSingleMarkerGolf(item)
+        })
+    }
+
+    addTabac(dataTabac){
+        dataTabac.forEach(item => {
+            this.settingSingleMarkerTabac(item);
         })
     }
 
@@ -357,6 +367,51 @@ class MarckerClusterHome extends MapModule  {
         })
     }
 
+    settingSingleMarkerTabac(item){
+        const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
+        let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+        
+        let pathIcon="assets/icon/NewIcons/tabac_black0.png";
+        let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+
+        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
+        
+        marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+
+        this.handleClickTabac(marker, item);
+
+        this.markers.addLayer(marker);
+    }
+
+    handleClickTabac(tabacMarker, item){
+        tabacMarker.on('click', (e) => {
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+            let pathIcon='/assets/icon/NewIcons/tabac_red0.png';
+            
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                    iconSize: [35,55],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
+                }
+            })
+            tabacMarker.setIcon(new icon_R);
+
+            this.updateLastMarkerSelected(tabacMarker, "tabac")
+
+            if (screen.width < 991) {
+                let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
+                getDetailHomeForMobile(pathDetails)
+            } else {
+                // getDetailsFerme(pathDetails, true)getDetailStation
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
+            }
+        })
+    }
+
 
     updateLastMarkerSelected(marker, type) {
 
@@ -384,7 +439,10 @@ class MarckerClusterHome extends MapModule  {
                         icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
                     }
                 }
+            } else if( this.marker_last_selected_type === "tabac" ){
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/tabac_black0.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/tabac_black0.png`;
             }
+
 
             const icon_B = L.Icon.extend({
                 options: {
@@ -428,6 +486,7 @@ class MarckerClusterHome extends MapModule  {
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
             new_data.golf = new_data.golf.filter(item => !this.default_data.golf.some(j => j.id === item.id))
+            new_data.tabac = new_data.tabac.filter(item => !this.default_data.tabac.some(j => j.id === item.id))
 
             const result= this.checkeFilterType(new_data);
             this.addMarker(result);
@@ -438,6 +497,7 @@ class MarckerClusterHome extends MapModule  {
                 station: this.default_data.station.concat(new_data.station),
                 resto: this.default_data.resto.concat(new_data.resto),
                 golf: this.default_data.golf.concat(new_data.golf),
+                tabac: this.default_data.tabac.concat(new_data.tabac),
             }
 
         } catch (e) {
@@ -465,6 +525,7 @@ class MarckerClusterHome extends MapModule  {
         this.generate_filter(content_filter, "filterStation", "Station")
         this.generate_filter(content_filter, "filterResto", "Réstaurant")
         this.generate_filter(content_filter, "filterGolf", "Golf")
+        this.generate_filter(content_filter, "filterTabac", "Tabac")
         // this.generate_filter(content_filter, "filterVehicule", "Véhicule", true, true)
         // this.generate_filter(content_filter, "filterCommerce", "Commerce", true, true)
 
@@ -576,7 +637,7 @@ class MarckerClusterHome extends MapModule  {
         }
 
         // const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
-        const lists = ["filterFerme", "filterStation", "filterResto", "filterGolf"];
+        const lists = ["filterFerme", "filterStation", "filterResto", "filterGolf", "filterTabac"];
 
         let result_temp = [];
         let results = null;
@@ -599,7 +660,7 @@ class MarckerClusterHome extends MapModule  {
 
             /// these is id on the option field 
             // const lists = ["filterFerme", "filterStation", "filterResto", "filterVehicule", "filterCommerce"];
-            const lists = ["filterFerme", "filterStation", "filterResto", "filterGolf"];
+            const lists = ["filterFerme", "filterStation", "filterResto", "filterGolf", "filterTabac"];
 
             let result_temp = [];
             for (let item of lists) {
@@ -612,12 +673,13 @@ class MarckerClusterHome extends MapModule  {
                 { type:"filterStation", state: 1},
                 { type:"filterResto", state: 1},
                 { type:"filterGolf", state: 1},
+                { type:"filterTabac", state: 1},
             ]
         }
 
         const code_dep = document.querySelector(".input_select_dep_js_jheo").value.length < 3 ? document.querySelector(".input_select_dep_js_jheo").value : null;
 
-        let data_ferme = [], data_station = [], data_resto = [], data_golf= [];
+        let data_ferme = [], data_station = [], data_resto = [], data_golf= [], data_tabac = [];
         results.forEach(item => {
             const { type, state } = item;
             if (state === 1) {
@@ -629,11 +691,13 @@ class MarckerClusterHome extends MapModule  {
                     data_resto = code_dep ? data.resto.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.toString().trim() === "2A" || dep.toString().trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.resto;
                 }else if( type === "filterGolf"){
                     data_golf = code_dep ? data.golf.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.toString().trim() === "2A" || dep.toString().trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.golf;
+                }else if( type === "filterTabac"){
+                    data_tabac = code_dep ? data.tabac.filter(({ dep }) =>{ if( parseInt(code_dep) === 20){ return dep.toString().trim() === "2A" || dep.toString().trim() === "2B" || parseInt(dep) === 20 }else{ return parseInt(dep) === parseInt(code_dep) }} ) : data.tabac;
                 }
             }
         })
 
-        return { ferme: data_ferme, station: data_station, resto: data_resto, golf: data_golf }
+        return { ferme: data_ferme, station: data_station, resto: data_resto, golf: data_golf, tabac: data_tabac }
     }
 
     checkStateSelectedDep(e) {
@@ -677,8 +741,8 @@ class MarckerClusterHome extends MapModule  {
 
         this.removeMarker();
 
-        if( data_filtered.ferme.length > 0  || data_filtered.station.length > 0 ||  data_filtered.resto.length > 0 ||  data_filtered.golf.length > 0 ){
-            this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto, "golf" : data_filtered.golf }
+        if( data_filtered.ferme.length > 0  || data_filtered.station.length > 0 ||  data_filtered.resto.length > 0 ||  data_filtered.golf.length > 0 || data_filtered.tabac.length > 0 ){
+            this.data = { ...this.data, "ferme": data_filtered.ferme, "station": data_filtered.station, "resto": data_filtered.resto, "golf" : data_filtered.golf, "tabac" : data_filtered.tabac }
             this.addMarker(this.data)
         }
 
