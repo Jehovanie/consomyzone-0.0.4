@@ -368,7 +368,6 @@ class MarckerClusterTabac extends MapModule {
                         .catch(error => {
                             hideChargementTabac()
                             console.log(error)
-                            // new swal("Malheureusement, il y a une erreur, veuillez ressayer plus tard.", "error")
                         })
                 };
 
@@ -395,9 +394,9 @@ class MarckerClusterTabac extends MapModule {
         const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
         const styles={
             color: data_spec.color[0],
-            fillColor: data_spec.color[1],
-            fillOpacity: 1,
-            weight: 0.5,
+            // fillColor: data_spec.color[1],
+            fillOpacity: 0,
+            weight: 2,
         }
 
         const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
