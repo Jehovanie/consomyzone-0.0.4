@@ -34,12 +34,14 @@ document.getElementById("form_upload").onchange = (e) => {
         // console.log(e.target.files[0].type.includes("image/"));
 
         if (!e.target.files[0].type.includes("image/")) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Le format de fichier n\'est pas pris en charge!',
-                text: 'Le fichier autorisé doit être une image',
-                footer: 'Réessayer de télécharger.'
-            })
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image",
+                icon: "error",
+                button: "Ok",
+              });
+
         } else {
 
             if (taille <= 2097152) {
@@ -57,12 +59,14 @@ document.getElementById("form_upload").onchange = (e) => {
                     document.querySelector("#uploadImage").appendChild(img)
                 }
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Le fichier est trop volumineux. ' + Math.round(taille / 1024000) + 'Mo',
-                    text: 'La taille de l\'image doit être inférieure à 2Mo',
-                    footer: 'Réessayer de télécharger.'
-                })
+
+                swal({
+                    title: "Le fichier est trop volumineux.",
+                    text: "La taille de l\'image doit être inférieure à 2Mo",
+                    icon: "error",
+                    button: "Ok",
+                  });
+
             }
 
         }
@@ -186,25 +190,65 @@ function showPartisan() {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
                 console.log(jsons)
+
+                let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Profil</th>
+                            <th>Nom du partisan</th>
+                            <th>Tribu G</th>
+                        </tr>
+                    </thead>
+                    <tbody>`
+                let foot_table = `</tbody>
+                </table>`
+                let body_table = ``
+
                 jsons[0].forEach(json => {
                     profilInfo = JSON.parse(json.infos_profil)
                     let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
                     let lastName = profilInfo.lastName
                     let firstName = profilInfo.firstName
                     let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
-                    console.log(JSON.parse(json.infos_profil))
-                    document.querySelector("#tribu_t_conteuneur").innerHTML += `
-                        <div class="card-partisons row">
-                            <div class="partisons-pdp col-lg-6">
-                                <img src="${profil/*.replace("/public","")*/}" alt="">
-                            </div>
-                            <div class="partisons-text col-lg-6">
-                                <h4>${lastName} <span> ${firstName}</span></h4>
-                                <p>TribuG : ${tribuG.replaceAll("_", " ")}</p>
-                            </div>
-                        </div>
+
+                    body_table += `
+                        <tr>
+                            <td class="d-flex bd-highlight align-items-center">
+                                <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
+                            </td>
+                            <td>
+                                <a target="_blank" href="/user/profil/1" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                            </td>
+                            <td>
+                                TribuG ${tribuG.replaceAll("_", " ")}
+                            </td>
+                        </tr>
                     `
+                    // console.log(JSON.parse(json.infos_profil))
+                    // document.querySelector("#tribu_t_conteuneur").innerHTML += `
+                    //     <div class="card-partisons row">
+                    //         <div class="partisons-pdp col-lg-6">
+                    //             <img src="${profil/*.replace("/public","")*/}" alt="">
+                    //         </div>
+                    //         <div class="partisons-text col-lg-6">
+                    //             <h4>${lastName} <span> ${firstName}</span></h4>
+                    //             <p>TribuG : ${tribuG.replaceAll("_", " ")}</p>
+                    //         </div>
+                    //     </div>
+                    // `
+
+
                 })
+
+                document.querySelector("#tribu_t_conteuneur").classList.add("bg-white")
+
+                document.querySelector("#tribu_t_conteuneur").innerHTML +=head_table+body_table+foot_table
+
+                $('#table_partisan_elie_js').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
             })
         }
     })
@@ -1068,11 +1112,12 @@ function showResto(table_rst_pastilled, id_c_u) {
             // document.querySelector("#table_resto_pastilled_wrapper").classList.add("p-2")
 
         }
-        // else {
-        //     restoContainer.style.textAlign = "center"
-        //     restoContainer.innerHTML = "Aucun restaurant pastillé pour le moment";
+        else {
+            restoContainer.style.textAlign = "center"
+            // restoContainer.classList.add("mt-5")
+            restoContainer.innerHTML += "Aucun restaurant pastillé pour le moment";
 
-        // }
+        }
 
         restoContainer.style.display = "block"
         // invitationsContainer.innerHTML = "";               
@@ -1200,17 +1245,21 @@ function sendNote(note, commentaire, _idResto) {
 
             document.querySelector(".elie-plus-"+_idResto).setAttribute("onclick", openPopup.replaceAll("create","update").replaceAll("Notez","Modifier votre avis"))
 
-            Swal.fire(
-                'Noté!',
-                'Note ajouté avec succès',
-                'success'
-            )
+            swal({
+                title: "Noté!",
+                text: "Note ajouté avec succès",
+                icon: "success",
+                button: "Ok",
+              });
+
         } else {
-            Swal.fire(
-                'Erreur!',
-                'Note non envoyé, veuillez réessayer!',
-                'error'
-            )
+            swal({
+                title: "Erreur!",
+                text: "Note non envoyé, veuillez réessayer!",
+                icon: "error",
+                button: "Ok",
+              });
+
         }
     })
 }
@@ -1250,10 +1299,12 @@ function updateNote(note, commentaire, id_resto) {
     
     document.querySelector(".data-note-"+id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
 
-    Swal.fire(
-        'A jour!',
-        'Note modifié avec succès',
-        'success')
+    swal({
+        title: "A jour!",
+        text: "Note modifié avec succès!",
+        icon: "success",
+        button: "Ok",
+      });
 
 
 }
@@ -1446,12 +1497,12 @@ function pastillerPast(element, id, nom) {
         saveRestaurantPast(id, nom);
     }
 
-    Swal.fire({
-        icon: 'success',
-        title: 'Succès',
+    swal({
+        title: "Succès",
         text: "Le restaurant " + nom + " a été pastillé avec succès !",
-        // footer: '<a href="">Why do I have this issue?</a>'
-    })
+        icon: "success",
+        button: "Ok",
+      });
 
 }
 
@@ -2092,11 +2143,13 @@ function listResto() {
         $("#modalForExtension").modal("show")
     } else {
 
-        Swal.fire({
-            icon: 'error',
-            // text: "Quoi veux-tu trouver? Veuillez remplire ce que vous cherchez.",
+        swal({
+            // title: "Succès",
             text: "Champ invalide!",
-        })
+            icon: "error",
+            button: "Ok",
+          });
+
     }
 }
 
@@ -2190,11 +2243,12 @@ function openAvis(nb_avis, id_resto) {
 
     } else {
 
-        Swal.fire(
-            'Opps!',
-            'Aucun avis pour ce restaurant',
-            'warning'
-        )
+        swal({
+            title: "Opps!",
+            text: "Aucun avis pour ce restaurant",
+            icon: "warning",
+            button: "Ok",
+          });
 
     }
 
@@ -2216,11 +2270,13 @@ function setSendNote(params, id_pastille) {
     if (action == "create") {
 
         if (parseFloat(note.value) > 4) {
-            Swal.fire(
-                'Erreur de saisie de note!',
-                'Une note doit être inférieur ou égale à 4',
-                'error'
-            )
+            swal({
+                title: "Erreur de saisie de note!",
+                text: "Une note doit être inférieur ou égale à 4",
+                icon: "error",
+                button: "Ok",
+              });
+
         } else {
 
             sendNote(parseFloat(note.value), avis.value, id_pastille)
@@ -2235,48 +2291,77 @@ function setSendNote(params, id_pastille) {
 
 
 }
+
+function openOnNote(id_pastille, action) {
+
+    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
+    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+
+}
+
+function openOnEvent(params) {
+    swal({
+        title: "Succès!",
+        text: "Un évènement crée avec succès",
+        icon: "success",
+        button: "OK",
+      });
+}
+
 function openPopupAction(id_pastille, denomination_f, latitude, longitude, text1, action) {
 
-    const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: 'btn btn-secondary me-2',
-            cancelButton: 'btn btn-primary'
-        },
-        buttonsStyling: false
-    })
+    $("#detailOptionResto").modal("show")
 
-    swalWithBootstrapButtons.fire({
-        // title: 'Are you sure?',
-        text: "Quelle action voulez-vous pour ce restaurant?",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-edit"></i> ' + text1,
-        cancelButtonText: '<i class="fas fa-calendar"></i> Créer un évènement',
-        // reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
+    document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> `+ text1
 
-            $("#modalAvisRestaurant").modal("show")
+    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+ action+"\')")
+      
+    // const swalWithBootstrapButtons = swal.mixin({
+    //     customClass: {
+    //         confirmButton: 'btn btn-primary me-2',
+    //         cancelButton: 'btn btn-secondary non_active disabled'
+    //         // cancelButton: 'btn btn-primary'
+    //     },
+    //     buttonsStyling: false
+    // })
 
-            document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
-            document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+    // swalWithBootstrapButtons.fire({
+    //     // title: 'Are you sure?',
+    //     text: "Quelle action voulez-vous pour ce restaurant?",
+    //     icon: 'question',
+    //     showCancelButton: true,
+    //     confirmButtonText: '<i class="fas fa-edit"></i> ' + text1,
+    //     cancelButtonText: '<i class="fas fa-calendar"></i> Créer un évènement',
+    //     // reverseButtons: true
+    // }).then((result) => {
+    //     if (result.isConfirmed) {
 
-        } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-        ) {
+    //         $("#modalAvisRestaurant").modal("show")
 
-            //   createRepas(id_pastille,denomination_f, latitude,longitude)
+    //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
+    //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
 
-            // setNameOrAdresseForEtab({ name:'0 CHURRASCO',adress:'70 rue fontaine sucree 01170 crozet'} ,this)
+    //     } else if (
+    //         /* Read more about handling dismissals below */
+    //         result.dismiss === swal.DismissReason.cancel
+    //     ) {
 
-            swalWithBootstrapButtons.fire(
-                'Crée!',
-                'Un évènement crée avec succès',
-                'success'
-            )
-        }
-    })
+    //         $("#createAgenda").modal("show")
+
+    //         // data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal"
+
+    //         //   createRepas(id_pastille,denomination_f, latitude,longitude)
+
+    //         // setNameOrAdresseForEtab({ name:'0 CHURRASCO',adress:'70 rue fontaine sucree 01170 crozet'} ,this)
+
+    //         // swalWithBootstrapButtons.fire(
+    //         //     'Crée!',
+    //         //     'Un évènement crée avec succès',
+    //         //     'success'
+    //         // )
+    //     }
+    // })
 
 }
 

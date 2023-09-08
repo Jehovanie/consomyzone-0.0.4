@@ -1540,21 +1540,22 @@ function readURL(input) {
 
             if( !checkFileExtension(listExt,e.target.result)){
 
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Le format de fichier n\'est pas pris en charge!',
-                    text: 'Le fichier autorisé doit être une image.',
-                    footer: 'Réessayer de télécharger.'
-                  })
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image.",
+                    icon: "error",
+                    button: "OK",
+                  });
 
             }else{
                 if(!checkTailleImage(octetMax, e.target.result)){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Le fichier est trop volumineux. ',
-                        text: 'La taille de l\'image doit être inférieure à 2Mo',
-                        footer: 'Réessayer de télécharger.'
-                      })
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 2Mo.",
+                        icon: "error",
+                        button: "OK",
+                      });
+                    
                 }else{
                     $('.image-upload-wrap').hide();
                     $('.image-upload-image').attr('src', e.target.result);
