@@ -359,6 +359,7 @@ class TabacRepository extends ServiceEntityRepository
                 
         }elseif ($mot_cles0 === "" && $mot_cles1 !== "" ){
             if( strlen($mot_cles1) <= 2 ){
+                
                 $qb = $qb->where("p.dep LIKE :cles1")
                          ->setParameter('cles1', $mot_cles1 );
             }else{
