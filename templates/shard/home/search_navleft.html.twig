@@ -22,7 +22,8 @@
 									Cependant ces résultats pourraient vous intéresser<br>
 								{% endif %}
 							{% else %}
-								<b>{{rubrique|upper}}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
+								{# <b>{{rubrique|upper}}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br> #}
+								<b> {{rubrique == "tous" ? "Restaurant,Ferme,Stations-services, Golf et Tabac": rubrique|upper }}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
 							{% endif %}
 						{% endif %}
                         
