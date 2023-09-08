@@ -301,6 +301,26 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
+    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/details/{golfID}', name: 'single_golf_france_mobile', methods: ["GET"])]
+    public function oneGolfMobile(
+        $nom_dep,
+        $id_dep,
+        $golfID,
+        GolfFranceRepository $golfFranceRepository,
+        Status $status,
+    ) {
+        ///current user connected
+        $user = $this->getUser();
+        $userID = ($user) ? intval($user->getId()) : null;
+        // dd($golfFranceRepository->getOneGolf(intval($golfID)));
+
+        return $this->render("shard/golf/detail_golf_navleft_mobile.twig", [
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "details" => $golfFranceRepository->getOneGolf(intval($golfID), $userID),
+        ]);
+    }
+
     #[Route('user/setGolf/finished', name: 'set_golf_finished', methods: ["POST"])]
     public function setGolfFinished(
         Request $request,

@@ -3,4 +3,4 @@
 		document.getElementById("remove-detail-golf").setAttribute("class", "hidden")
 	})
 	addListDepartGolf() 
-	// addListSpesificGolf() 
+	

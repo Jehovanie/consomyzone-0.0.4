@@ -1,5 +1,28 @@
 function getDetailFromListLeft(depart_name, depart_code, id) { 
-    OBJECT_MARKERS_GOLF.clickOnMarker(id)
+
+    if (screen.width < 991) {
+        var pathDetails = `/golf-mobile/departement/${depart_name}/${depart_code}/details/${id}`;
+        location.assign(pathDetails)
+    }else{
+        OBJECT_MARKERS_GOLF.clickOnMarker(id)
+    }
+    // if(OBJECT_MARKERS_GOLF.clickOnMarker(id)){
+    //     OBJECT_MARKERS_GOLF.clickOnMarker(id)
+    //     if (screen.width < 991) {
+            
+    //         var pathDetails = `/golf-mobile/departement/${depart_name}/${depart_code}/details/${id}`;
+    //         location.assign(pathDetails)
+    //     }
+    // } else {
+        
+    //     //  else {
+    //     //     const select_dem = document.querySelector("#open-navleft-golf-mobile-specific-tomm-js")
+    //     //     getDetailGolf(depart_code, depart_name, id, false,select_dem)
+    //     // }
+
+    //     /// update card and the markers new
+    //     OBJECT_MARKERS_GOLF.fetchOneData(id)
+    // }
 }
 
 
