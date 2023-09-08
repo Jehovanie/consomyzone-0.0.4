@@ -148,7 +148,7 @@
                                     </table>
                                     <div class="row btn-partage-agenda mt-5">
                                         <div>
-                                            <button class="btn btn-primary btn-second-primary" type="button" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" id="shareAgendaForPartisan" onclick="showModalEditor(1)">Partager</button>
+                                            <button data-usr="{{app.user?app.user.id : "0"}}" class="btn btn-primary btn-second-primary" type="button" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" id="shareAgendaForPartisan" onclick="showModalEditor(1)">Partager</button>
                                             <button class="btn btn-danger" onclick="resetListPartageG()">Annuler</button>
                                         </div>
                                     </div>

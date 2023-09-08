@@ -22,6 +22,7 @@ use App\Repository\CodeinseeRepository;
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\GolfFranceRepository;
 use App\Repository\SupplierRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\GolfFinished;
 
 ini_set('max_execution_time', '600');
 
@@ -96,6 +98,39 @@ class AgendaController extends AbstractController
                 Si vous avez des questions ou des préoccupations, n'hésitez pas à me contacter par e-mail ou par téléphone."
             );
         }
+    }
+
+    /**
+     * made by NANTENAINA, this function is use actualy to confirm invitation agenda
+     */
+    #[Route('/agenda/confirmation/{fromId}/{toId}/{agendaId}', name: 'agenda_confirmation', methods: ["GET","POST"])]
+    public function setAgendaConfirmation($fromId,$toId,$agendaId){
+
+        $place_libre=$this->agendaService->checkFreePlace(intval($fromId), intval($toId),intval($agendaId));
+       dump(  $place_libre);
+        if( $place_libre["place_libre"]=== 0){
+            return $this->render("agenda/partage/agenda_full_place.html.twig",[
+                "profil" => "",
+            ]);
+        }elseif( $place_libre["place_libre"]>0){
+           
+            return $this->render("agenda/partage/agenda_free_place.html.twig",[
+                "profil" => "",
+            ]);
+        }
+
+        return $this->render("agenda/partage/agenda_full_place.html.twig",[
+            "profil" => "",
+        ]);
+    }
+
+    #[Route('/agenda/make/confirmation/{fromId}/{toId}/{agendaId}/{isYes}', name: 'agenda_make_confirmation', methods: ["GET","POST"])]
+    public function makeConfirmationAgenda($fromId,$toId,$agendaId, $isYes){
+
+        $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
+       
+        return $this->json($confirm);
+      
     }
 
     #[Route('/user/get_agenda_by_date/{table}/{datetime}', name: 'get_agenda_by_date', methods: ["GET","POST"])]
@@ -695,6 +730,7 @@ class AgendaController extends AbstractController
             "adresse" => $adresse,
             "description" => $description,
             "participant" => $participant,
+            "place_libre"=>$place_libre,
             "dateStart" => $dateStart,
             "dateEnd" => $dateEnd,
             "heureStart" => $timeStart,
@@ -967,6 +1003,7 @@ class AgendaController extends AbstractController
         ]);
     }
 
+    /**old boakely  */
 
     #[Route("/confirmation/agenda/{userID_sender}/{agendaID}/partager/{userID}/{isAccepted}" , name: "app_agenda_confirmation", methods: "GET")]
     public function agendaConfirmationEmail(
@@ -1442,7 +1479,8 @@ class AgendaController extends AbstractController
     public function getAllEtabForSpecificDep(
         BddRestoRepository $bdd_resto_rep,
         $etab,
-        $id
+        $id,
+        GolfFranceRepository $golfFranceRepository
     ) {
 
         if(!$this->getUser()){
@@ -1452,7 +1490,8 @@ class AgendaController extends AbstractController
         if($etab == "restaurant") {
             $response = $bdd_resto_rep->getEtabForSpecificDep($id);
         }elseif ($etab == "golf") {
-            $response = [];
+            // $response = $golfFranceRepository->getGolfByDep("",$id);
+            $response = $golfFranceRepository->getALLWithJoin($id);
         }else{
             $response = [];
         }
@@ -1510,7 +1549,8 @@ class AgendaController extends AbstractController
         $id,
         Tribu_T_Service $tribuTService,
         BddRestoRepository $bddRestoRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        GolfFranceRepository $golfFranceRepository
     ){
 
         $results= [];
@@ -1521,42 +1561,41 @@ class AgendaController extends AbstractController
 
         if($etab == "restaurant") {
             $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
-        }elseif ($etab == "golf") {
-            $response = [];
-        }else{
-            $response = [];
-        }
+            foreach($response as $result){
 
-        //// add adress
-        foreach($response as $result){
-
-            $resto = $bddRestoRepository->find(intval($result['id_resto']));
-            
-            if($resto){
-                $id_dep = $resto->getDep();
-                if($id_dep == $id){
-                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
-                    $result["id_etab"] = $resto->getId();
-                    $result["tel"] = $resto->getTel();
-                    $result["dep"] = $resto->getDep();
-                    $result["departement"] = $resto->getDepName();
-
-                    $tribu_t_list = $userRepository->getListTableTribuT();
-
-                    foreach ($tribu_t_list as $key) {
-                        $tableTribu = $key["table_name"];
-                        $logo_path = $key["logo_path"];
-                        $tableExtension = $tableTribu . "_restaurant";
-                        if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
-                            if($tribuTService->checkExtensionId($tableExtension, $resto->getId())){
-                                $result["tribu"] = $tableTribu;
-                                $result["logoTribu"] = $logo_path;
+                $resto = $bddRestoRepository->find(intval($result['id_resto']));
+                
+                if($resto){
+                    $id_dep = $resto->getDep();
+                    if($id_dep == $id){
+                        $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                        $result["id_etab"] = $resto->getId();
+                        $result["tel"] = $resto->getTel();
+                        $result["dep"] = $resto->getDep();
+                        $result["departement"] = $resto->getDepName();
+    
+                        $tribu_t_list = $userRepository->getListTableTribuT();
+    
+                        foreach ($tribu_t_list as $key) {
+                            $tableTribu = $key["table_name"];
+                            $logo_path = $key["logo_path"];
+                            $tableExtension = $tableTribu . "_restaurant";
+                            if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
+                                if($tribuTService->checkExtensionId($tableExtension, $resto->getId())){
+                                    $result["tribu"] = $tableTribu;
+                                    $result["logoTribu"] = $logo_path;
+                                }
                             }
                         }
+                        array_push($results, $result);
                     }
-                    array_push($results, $result);
                 }
             }
+        }elseif ($etab == "golf") {
+            $response = $golfFranceRepository->getGolfAfaire();
+            $results= $response;
+        }else{
+            $response = [];
         }
 
         return $this->json([
