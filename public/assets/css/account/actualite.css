@@ -76,3 +76,7 @@
     overflow: scroll;
     overflow-x: hidden;
 }
+
+.uf {
+    max-width: 45.75rem;
+}
