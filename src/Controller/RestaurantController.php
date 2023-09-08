@@ -528,18 +528,26 @@ class RestaurantController extends AbstractController
 
         $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
 
-        // dump(count($global_note) );
-
+        $isAlreadyCommented= false;
+        $avis= ["note" => null, "text" => null  ];
+        
         $note_temp=0;
         foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note->getNote(), "text" => $note->getAvis() ];
+            }
             $note_temp += $note->getNote(); 
         }
 
-        // dump($note_temp);
         $details["avis"] = [
             "nbr" => $nbr_avis_resto,
-            "note" => $global_note ?  $note_temp / count($global_note) : 0 
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
         ];
+
+        // dd($details);
 
         
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
