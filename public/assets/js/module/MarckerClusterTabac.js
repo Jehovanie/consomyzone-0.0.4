@@ -270,8 +270,8 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune">
-                    <label class="form-check-label text-black" for="commune">
+                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune" disabled>
+                    <label class="form-check-label non_active text-black" for="commune">
                         COMMUNE
                     </label>
                     <div class="content_select_commune_jheo_js">
@@ -279,8 +279,8 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris">
-                    <label class="form-check-label text-black" for="iris">
+                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" disabled>
+                    <label class="form-check-label non_active text-black" for="iris">
                         IRIS
                     </label>
                     <div class="content_select_iris_jheo_js">
