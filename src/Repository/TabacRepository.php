@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Tabac;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Tabac>
@@ -288,30 +289,236 @@ class TabacRepository extends ServiceEntityRepository
         return $data;
     }
 
+    public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
 
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
 
-//    /**
-//     * @return Tabac[] Returns an array of Tabac objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+        $departementService = new DepartementService();
 
-//    public function findOneBySomeField($value): ?Tabac
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $departement = $departementService->getDepWithKeyNomDep();
+
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
+        $qb = $this->createQueryBuilder("p")
+                ->select("p.id,
+                        p.id as id_etab,
+                        p.clenum,
+                        p.dep,
+                        p.dep_name,
+                        p.dep_name as nom_dep,
+                        p.dep_name as depName,
+                        p.numvoie,
+                        p.typevoie,
+                        p.commune,
+                        p.codinsee,
+                        p.siren,
+                        p.villenorm,
+                        p.codpost,
+                        p.bureau_tabac,
+                        p.tabac_presse,
+                        p.bar_tabac,
+                        p.hotel_tabac,
+                        p.cafe_tabac,
+                        p.site_1,
+                        p.site_2,
+                        p.fonctionalite_1,
+                        p.horaires_1,
+                        p.prestation_1,
+                        p.codens,
+                        p.poi_qualitegeorue,
+                        p.dcomiris,
+                        p.denomination_f,
+                        p.denomination_f as nom,
+                        p.denomination_f as tabac,
+                        p.nomvoie,
+                        p.compvoie,
+                        p.denomination_f as name,
+                        p.dep as id_dep,
+                        p.dep_name as departement,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
+                        p.tel,
+                        p.date_data,
+                        p.date_inser,
+                        p.poi_x as long,
+                        p.poi_y as lat,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie) as rue,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
+                        
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.denomination_f LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                    $qb = $qb->where("REPLACE(p.denomination_f) LIKE :cles0")
+                             ->setParameter('cles0', '%' . $mot_cles0. '%');
+            }
+                
+        }elseif ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', $mot_cles1 );
+            }else{
+                $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else{
+
+            if(strtolower($mot_cles0) == "tabac" || strtolower($mot_cles0) == "tabacs" || strtolower($mot_cles0) == "bureau tabac"  || strtolower($mot_cles0) == "bureaux tabacs"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                            ->setParameter('cles1',  $mot_cles1 );
+                }else{
+                    $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+
+                if( strlen($mot_cles1) <= 2 ){
+                
+                    $qb = $qb->where("REPLACE(p.denomination_f) LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+    
+                    $qb = $qb->where("(REPLACE(p.denomination_f) LIKE :cles0) AND (REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+                }
+
+            }
+            
+        }
+
+        $qb = $qb->getQuery();
+
+        $results = $qb->execute();
+
+        return [ $results , count($results) , "tabac"];
+    }
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+
+        $departementService = new DepartementService();
+
+        $departement = $departementService->getDepWithKeyNomDep();
+        
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
+        $qb = $this->createQueryBuilder("p")
+                ->select("p.id,
+                        p.id as id_etab,
+                        p.clenum,
+                        p.dep,
+                        p.dep_name,
+                        p.dep_name as nom_dep,
+                        p.dep_name as depName,
+                        p.numvoie,
+                        p.typevoie,
+                        p.commune,
+                        p.codinsee,
+                        p.siren,
+                        p.villenorm,
+                        p.codpost,
+                        p.bureau_tabac,
+                        p.tabac_presse,
+                        p.bar_tabac,
+                        p.hotel_tabac,
+                        p.cafe_tabac,
+                        p.site_1,
+                        p.site_2,
+                        p.fonctionalite_1,
+                        p.horaires_1,
+                        p.prestation_1,
+                        p.codens,
+                        p.poi_qualitegeorue,
+                        p.dcomiris,
+                        p.denomination_f,
+                        p.denomination_f as nom,
+                        p.denomination_f as tabac,
+                        p.nomvoie,
+                        p.compvoie,
+                        p.denomination_f as name,
+                        p.dep as id_dep,
+                        p.dep_name as departement,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
+                        p.tel,
+                        p.date_data,
+                        p.date_inser,
+                        p.poi_x as long,
+                        p.poi_y as lat,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie) as rue,
+                        CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as add");
+                        
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.denomination_f LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                
+                $qb = $qb->where("MATCH_AGAINST(p.denomination_f) AGAINST( :cles0 boolean) > 0")
+                    ->orWhere("p.denomination_f LIKE :cles0")
+                    ->setParameter('cles0', '%' . $mot_cles0. '%');
+            }
+                
+        }elseif ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', $mot_cles1 );
+            }else{
+                $qb = $qb->where("MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0")
+                         ->orWhere("CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else{
+
+            if(strtolower($mot_cles0) == "tabac" || strtolower($mot_cles0) == "tabacs" || strtolower($mot_cles0) == "bureau tabac"  || strtolower($mot_cles0) == "bureaux tabacs"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                            ->setParameter('cles1',  $mot_cles1 );
+                }else{
+                    $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+
+                if( strlen($mot_cles1) <= 2 ){
+
+                    $qb = $qb->where("MATCH_AGAINST(p.denomination_f) AGAINST( :cles0 boolean) > 0 AND p.dep LIKE :cles1")
+                             ->orWhere("p.denomination_f LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+                }else{
+
+                    $qb = $qb->where("(MATCH_AGAINST(p.denomination_f) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0)")
+                             ->orWhere("(p.denomination_f LIKE :cles0) OR (CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+
+                }
+
+            }
+            
+        }
+
+        $qb = $qb->getQuery();
+
+        $results = $qb->execute();
+
+        return [ $results , count($results) , "tabac"];
+    }
+
 }
