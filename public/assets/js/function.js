@@ -1533,26 +1533,60 @@ function readURL(input) {
     if (input.files && input.files[0]) {
         
         const listExt= ['jpg', 'jpeg', 'png'];
-        const octetMax= 4096e+3;
+        // const octetMax= 4096e+3; // 4Mo
+        const octetMax= 2097152; //2Mo
+
         var reader = new FileReader();
+        
         reader.onload = function (e) {
 
-            if( !checkFileExtension(listExt,e.target.result)  || !checkTailleImage(octetMax, e.target.result)){
-                // $('.image-upload-wrap').hide();
-                $(".image-upload-wrap").css("border","2px dashed red");
-                $(".drag_text_jheo_js").html("<p class='text-danger erreur_type_jheo_js'>Le format de fichier ou la taille n'est pas pris en charge.</p>");
-                $('.image_upload_image_jheo_js').hide();
-                $(".remove_image_upload_jheo_js").text("Supprimer et changer ?");
+            if( !checkFileExtension(listExt,e.target.result)){
+
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image.",
+                    icon: "error",
+                    button: "OK",
+                  });
+
             }else{
-                $('.image-upload-wrap').hide();
-                $('.image-upload-image').attr('src', e.target.result);
-                $('.image_upload_image_jheo_js').show();
+                if(!checkTailleImage(octetMax, e.target.result)){
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 2Mo.",
+                        icon: "error",
+                        button: "OK",
+                      });
+                    
+                }else{
+                    $('.image-upload-wrap').hide();
+                    $('.image-upload-image').attr('src', e.target.result);
+                    $('.image_upload_image_jheo_js').show();
+                    $('.image-upload-content').show();
+                }
+                
             }
 
-            $('.image-upload-content').show();
-
-        //   $('.image-title').html(input.files[0].name);
         };
+
+        // reader.onload = function (e) {
+
+        //     if( !checkFileExtension(listExt,e.target.result)  || !checkTailleImage(octetMax, e.target.result)){
+        //         // $('.image-upload-wrap').hide();
+        //         $(".image-upload-wrap").css("border","2px dashed red");
+        //         $(".drag_text_jheo_js").html("<p class='text-danger erreur_type_jheo_js'>Le format de fichier ou la taille n'est pas pris en charge.</p>");
+        //         $('.image_upload_image_jheo_js').hide();
+        //         $(".remove_image_upload_jheo_js").text("Supprimer et changer ?");
+        //     }else{
+        //         $('.image-upload-wrap').hide();
+        //         $('.image-upload-image').attr('src', e.target.result);
+        //         $('.image_upload_image_jheo_js').show();
+        //     }
+
+        //     $('.image-upload-content').show();
+
+        // //   $('.image-title').html(input.files[0].name);
+        // };
 
         reader.readAsDataURL(input.files[0]);
     } else {
