@@ -16,6 +16,8 @@ use App\Repository\UserRepository;
 
 use App\Entity\AdressIpAndPosition;
 
+use App\Repository\TabacRepository;
+
 use App\Repository\CodeapeRepository;
 
 use App\Repository\BddRestoRepository;
@@ -35,7 +37,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Repository\AdressIpAndPositionRepository;
-
 use App\Repository\StationServiceFrGeomRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -336,7 +337,8 @@ class ToutsController extends AbstractController
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
-        GolfFranceRepository $golfFranceRepository
+        GolfFranceRepository $golfFranceRepository,
+        TabacRepository $tabacRepository
     ){
         if($request->query->has("minx") && $request->query->has("miny") ){
             $minx = $request->query->get("minx");
@@ -349,6 +351,7 @@ class ToutsController extends AbstractController
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
             ]);
         }
 
@@ -359,6 +362,7 @@ class ToutsController extends AbstractController
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
             "resto" => $bddRestoRepository->getSomeDataShuffle($taille),
             "golf" => $golfFranceRepository->getSomeDataShuffle($userID, $taille),
+            "tabac" => $tabacRepository->getSomeDataShuffle($taille)
             
         ]);
     }

@@ -119,6 +119,72 @@ class TabacRepository extends ServiceEntityRepository
         return $data;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Tabac
+    */
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+        $results=[];
+        $data=  $this->createQueryBuilder("r")
+                ->select(
+                    'r.id',
+                    'r.clenum',
+                    'r.denomination_f',
+                    'r.denomination_f as name',
+                    'r.numvoie',
+                    'r.typevoie',
+                    'r.nomvoie',
+                    'r.compvoie',
+                    'r.codpost',
+                    'r.villenorm',
+                    'r.commune',
+                    'r.codinsee',
+                    'r.siren',
+                    'r.tel',
+                    'r.tel as telephone',
+                    'r.bureau_tabac',
+                    'r.tabac_presse',
+                    'r.bar_tabac',
+                    'r.hotel_tabac',
+                    'r.cafe_tabac',
+                    'r.site_1',
+                    'r.site_2',
+                    'r.fonctionalite_1',
+                    'r.horaires_1',
+                    'r.prestation_1',
+                    'r.codens',
+                    'r.poi_qualitegeorue',
+                    'r.dcomiris',
+                    'r.dep',
+                    'r.dep_name',
+                    'r.dep_name as nom_dep',
+                    'r.dep_name as depName',
+                    'r.date_data',
+                    'r.date_inser',
+                    'r.poi_x',
+                    'r.poi_y',
+                    'r.poi_x as long',
+                    'r.poi_y as lat',
+                )
+                ->where("ABS(r.poi_x) >=ABS(:minx) ")
+                ->andWhere("ABS(r.poi_x) <= ABS(:maxx)")
+                ->andWhere("ABS(r.poi_y) >=ABS(:miny)")
+                ->andWhere("ABS(r.poi_y) <=ABS(:maxy)")
+                ->setParameter("minx", $minx)
+                ->setParameter("maxx", $maxx)
+                ->setParameter("miny", $miny)
+                ->setParameter("maxy", $maxy)
+                ->orderBy('RAND()')
+                ->getQuery()
+                ->getResult();
+       
+        return $data;
+    }
 
     
     ///jheo : prendre tous les Tabac qui appartients dans un departement specifique

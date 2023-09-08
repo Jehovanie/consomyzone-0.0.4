@@ -124,7 +124,7 @@ class MarckerClusterTabac extends MapModule {
                 const icon_R = L.Icon.extend({
                     options: {
                         iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                        iconSize: [45,55],
+                        iconSize: [35,55],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
                         shadowSize: [68, 95],
