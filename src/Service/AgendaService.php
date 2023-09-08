@@ -738,7 +738,7 @@ class AgendaService extends PDOConnexionService
             "`file_path` varchar(500) DEFAULT NULL,".
             "`status` tinyint(1) NOT NULL DEFAULT 0,".
             "`max_participant` int(11) NOT NULL DEFAULT 0,".
-             "`place_libre` int NOT NULL DEFAULT 0,".
+            "`place_libre` int NOT NULL DEFAULT 0,".
             "`isEtabCMZ` tinyint(1) DEFAULT 0,".
             "`isGolfCMZ` tinyint(1) DEFAULT 0,".
             "`isRestoCMZ` tinyint(1) DEFAULT 0,".

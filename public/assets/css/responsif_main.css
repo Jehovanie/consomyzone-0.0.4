@@ -5,6 +5,8 @@
     /* .leaflet-control-container{
         display: none ;
     } */
+
+    
     .leaflet-control-zoom{
         display: block !important;
     }
@@ -94,8 +96,42 @@
     
     }
 
-    
-    
+
+
+    .hj-resto {
+        margin-left: 0rem !important;
+    }
+
+    .close-resto-specific{
+        margin-top: -25px;
+        margin-left: 84vw;
+    }
+
+
+
+    .navleft-mobile{
+        background-color: #fff;
+        width: 100vw;
+        border-radius: 5px;
+        height: 100vh;
+        box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
+        position: fixed;
+        
+        z-index: 1030;
+    }
+
+    .logo-consomyzone-specific img {
+        width: 45vw !important;
+        margin-top: -30px;
+        position: fixed;
+        z-index: 20;
+    }
+
+    .cmz-left-container {
+        margin-top: 0 !important; 
+        margin-left: 0 !important;
+    }
+        
     /* .card-pub-actu img {
         width: 62vw;
     } */
@@ -321,6 +357,7 @@
         background-color: #fff;
         width: 100vw;
         height: 100vh;
+        padding-top: 25px;
         /* overflow-y: scroll !important; */
     }
 
@@ -337,7 +374,7 @@
         background-color: #e7e7e7;
         width: 90vw;
         height: 10vh;
-        margin-left: -40px;
+        margin-left: 0px;
         margin-bottom: 20px;
         border-radius: 30px;
         box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
@@ -369,19 +406,56 @@
         transform: scale(1.2);
     }
 
-    .open-navleft-mobile svg {
+    .open-navleft-mobile i {
         position: absolute;
         left: 15px;
         top: 15px;
-        fill: #fff;
         z-index: 401;
         background-color: #2343ac;
         width: 50px;
         height: 50px;
         border-radius: 50%;
+        text-align: center;
+        color: #fff;
+        padding-top: 12px;
+        font-size: 18pt;
     }
 
+    .open-search-mobil  i {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        z-index: 401;
+        background-color: #2343ac;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        text-align: center;
+        color: #fff;
+        padding-top: 12px;
+        font-size: 18pt;
+     }
 
+    .search-resto-mobil{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 80% !important;
+        z-index: 401;
+    }
+
+    .content-logo-shearch {
+        width: 300px !important;
+    }
+
+    .search-resto-mobil-none{
+        display: none;
+    }
+
+    .navbar-brand img {
+        width: 6rem !important;
+        margin-top: 0.7rem !important;
+    }
 
     .logo-consomyzone {
         width: 50vw;
@@ -400,9 +474,9 @@
     .list-depart-all-specific ul .card-list {
         list-style: none;
         background-color: #e7e7e7;
-        width: 95vw;
-        height: 14vh;
-        margin-left: -40px;
+        width: 84vw;
+        height: 34vh;
+        margin-left: 0px;
         margin-bottom: 20px;
         border-radius: 12px;
         box-shadow: -5px 10px 15px rgba(49, 49, 49, 0.3);
@@ -458,7 +532,7 @@
         position: absolute;
         transition: all 2s ease-in-out !important;
         background-color: #fff;
-        z-index: 407;
+        z-index: 1407;
     }
 
     .content_detail_mobile {
@@ -505,6 +579,8 @@
         position: relative;
         height: 75vh;
         overflow-y: scroll !important;
+        padding-left: 50px !important;
+        
     }
 
 
@@ -561,6 +637,7 @@
         background-color: #fff;
         width: 100vw;
         height: 100vh;
+        padding-top: 50px;
     }
 
     .content_list_menu {
@@ -1365,7 +1442,12 @@
     }
 }
 
+<<<<<<< HEAD
+@media screen and (min-width:1305px) and (max-width: 1439px) {
+   
+=======
 @media screen and (min-width:1316px) and (max-width: 1439px) {
+>>>>>>> dev
     .width-content-t {
         width: 74%;
     }

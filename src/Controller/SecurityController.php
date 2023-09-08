@@ -996,6 +996,8 @@ class SecurityController extends AbstractController
             "commune" => $communeRepository->findAll(),
         ], 200);
     }
+
+
     #[Route(path:'/agenda/send/invitation', name:"app_agenda_send_invitation", methods:"POST")]
     public function sendLinkOnEmailAboutAgendaSharing(
         Request $request,

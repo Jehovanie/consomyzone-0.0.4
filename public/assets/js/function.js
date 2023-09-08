@@ -42,73 +42,74 @@ function addEventLocation() {
 
 }
 
-function addListFermeMobile() {
-    document.querySelector("#mobil-ferme").addEventListener('click', (event) => {
-        document.querySelector("#map > div.leaflet-control-container").innerHTML =
-            `
-            <div class="content-mobil-ferme">
-                <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
-                width="10px" height="10px" viewBox="0 0 980.000000 982.000000"
-                preserveAspectRatio="xMidYMid meet">
+// function addListFermeMobile() {
+//     document.querySelector("#mobil-ferme").addEventListener('click', (event) => {
+//         alert("Please select")
+//         document.querySelector("#map > div.leaflet-control-container").innerHTML =
+//             `
+//             <div class="content-mobil-ferme">
+//                 <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
+//                 width="10px" height="10px" viewBox="0 0 980.000000 982.000000"
+//                 preserveAspectRatio="xMidYMid meet">
 
-                    <g transform="translate(0.000000,982.000000) scale(0.100000,-0.100000)"
-                    fill="#000000" stroke="none">
-                        <path d="M217 9593 l-217 -218 2232 -2232 2233 -2233 -2233 -2233 -2232 -2232
-                        220 -220 220 -220 2228 2228 c1225 1225 2232 2227 2237 2227 5 0 1010 -1000
-                        2232 -2222 l2223 -2223 220 220 220 220 -2227 2227 -2228 2228 2228 2228 2227
-                        2227 -220 220 -220 220 -2223 -2223 c-1222 -1222 -2227 -2222 -2232 -2222 -6
-                        0 -1011 1001 -2235 2225 -1224 1224 -2227 2225 -2230 2225 -3 0 -103 -98 -223
-                        -217z"/>
-                    </g>
-                </svg>
-                <div>
-                    <p>
-                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
-                        width="6vw" height="6vh" viewbox="0 0 128.000000 128.000000" 
-                        preserveaspectratio="xMidYMid meet">
+//                     <g transform="translate(0.000000,982.000000) scale(0.100000,-0.100000)"
+//                     fill="#000000" stroke="none">
+//                         <path d="M217 9593 l-217 -218 2232 -2232 2233 -2233 -2233 -2233 -2232 -2232
+//                         220 -220 220 -220 2228 2228 c1225 1225 2232 2227 2237 2227 5 0 1010 -1000
+//                         2232 -2222 l2223 -2223 220 220 220 220 -2227 2227 -2228 2228 2228 2228 2227
+//                         2227 -220 220 -220 220 -2223 -2223 c-1222 -1222 -2227 -2222 -2232 -2222 -6
+//                         0 -1011 1001 -2235 2225 -1224 1224 -2227 2225 -2230 2225 -3 0 -103 -98 -223
+//                         -217z"/>
+//                     </g>
+//                 </svg>
+//                 <div>
+//                     <p>
+//                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
+//                         width="6vw" height="6vh" viewbox="0 0 128.000000 128.000000" 
+//                         preserveaspectratio="xMidYMid meet">
 
-                            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
-                                fill="#1111FE" stroke="none">
-                                <path d="M820 965 c-14 -7 -38 -16 -53 -20 -20 -4 -33 -16 -43 -40 -7 -18 -18
-                                -36 -24 -40 -13 -8 -13 -51 0 -75 5 -10 21 -20 34 -24 20 -5 26 -14 31 -50 8
-                                -52 -13 -101 -50 -118 -14 -6 -25 -17 -25 -25 0 -23 31 -14 65 20 44 44 53 91
-                                31 170 -16 58 -16 62 2 86 26 35 67 39 99 9 20 -19 24 -29 19 -59 -5 -31 -2
-                                -39 19 -53 33 -21 76 -98 90 -158 6 -27 15 -48 20 -46 17 5 8 83 -14 126 -12
-                                23 -17 42 -12 42 15 0 32 36 25 55 -4 8 -18 22 -33 29 l-26 14 28 13 c15 7 26
-                                17 24 23 -6 17 -49 36 -85 36 -29 0 -32 2 -26 24 4 19 -1 32 -20 50 -29 30
-                                -41 31 -76 11z m145 -125 c-3 -5 -10 -10 -16 -10 -5 0 -9 5 -9 10 0 6 7 10 16
-                                10 8 0 12 -4 9 -10z"/>
-                                <path d="M855 831 c-7 -12 12 -24 25 -16 11 7 4 25 -10 25 -5 0 -11 -4 -15 -9z"/>
-                                <path d="M246 778 c-69 -40 -109 -153 -72 -204 8 -10 16 -17 18 -14 2 3 12 18
-                                22 33 9 15 28 33 42 39 13 6 24 18 24 26 0 10 4 12 13 5 6 -6 32 -13 56 -16
-                                62 -8 71 -23 13 -23 -142 0 -218 -164 -126 -274 33 -38 74 -60 114 -60 35 0
-                                37 8 10 52 -40 65 -16 159 49 193 44 22 48 20 53 -33 9 -96 91 -205 174 -232
-                                25 -8 34 -18 34 -33 0 -12 7 -30 15 -41 12 -16 12 -20 -1 -33 -7 -8 -14 -21
-                                -14 -29 0 -19 26 -18 34 2 5 14 7 14 22 0 17 -18 50 -21 59 -6 3 6 -5 14 -19
-                                20 -55 21 -9 84 81 110 92 28 189 138 196 224 4 51 -20 40 -37 -17 -55 -189
-                                -300 -252 -439 -113 -47 47 -67 85 -74 144 l-5 47 67 -3 c77 -4 118 4 112 21
-                                -2 8 -24 11 -70 9 -95 -5 -103 -1 -99 52 5 54 -24 115 -70 147 -47 34 -131 37
-                                -182 7z m494 -539 c0 -11 -27 -29 -33 -22 -14 14 -6 32 13 30 11 -1 20 -4 20
-                                -8z"/>
-                                <path d="M865 590 c-4 -6 10 -26 32 -45 21 -19 33 -34 27 -35 -6 0 -17 7 -24
-                                15 -17 20 -54 19 -98 -4 -100 -51 -121 -60 -175 -74 -33 -9 -62 -19 -65 -22
-                                -11 -11 49 -53 97 -70 59 -20 170 -19 221 1 75 30 107 109 72 174 -22 40 -76
-                                77 -87 60z"/>
-                            </g>
-                        </svg>
-                        Ferme dans tous les departements francais.
-                    </p>
-                    <div>
+//                             <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
+//                                 fill="#1111FE" stroke="none">
+//                                 <path d="M820 965 c-14 -7 -38 -16 -53 -20 -20 -4 -33 -16 -43 -40 -7 -18 -18
+//                                 -36 -24 -40 -13 -8 -13 -51 0 -75 5 -10 21 -20 34 -24 20 -5 26 -14 31 -50 8
+//                                 -52 -13 -101 -50 -118 -14 -6 -25 -17 -25 -25 0 -23 31 -14 65 20 44 44 53 91
+//                                 31 170 -16 58 -16 62 2 86 26 35 67 39 99 9 20 -19 24 -29 19 -59 -5 -31 -2
+//                                 -39 19 -53 33 -21 76 -98 90 -158 6 -27 15 -48 20 -46 17 5 8 83 -14 126 -12
+//                                 23 -17 42 -12 42 15 0 32 36 25 55 -4 8 -18 22 -33 29 l-26 14 28 13 c15 7 26
+//                                 17 24 23 -6 17 -49 36 -85 36 -29 0 -32 2 -26 24 4 19 -1 32 -20 50 -29 30
+//                                 -41 31 -76 11z m145 -125 c-3 -5 -10 -10 -16 -10 -5 0 -9 5 -9 10 0 6 7 10 16
+//                                 10 8 0 12 -4 9 -10z"/>
+//                                 <path d="M855 831 c-7 -12 12 -24 25 -16 11 7 4 25 -10 25 -5 0 -11 -4 -15 -9z"/>
+//                                 <path d="M246 778 c-69 -40 -109 -153 -72 -204 8 -10 16 -17 18 -14 2 3 12 18
+//                                 22 33 9 15 28 33 42 39 13 6 24 18 24 26 0 10 4 12 13 5 6 -6 32 -13 56 -16
+//                                 62 -8 71 -23 13 -23 -142 0 -218 -164 -126 -274 33 -38 74 -60 114 -60 35 0
+//                                 37 8 10 52 -40 65 -16 159 49 193 44 22 48 20 53 -33 9 -96 91 -205 174 -232
+//                                 25 -8 34 -18 34 -33 0 -12 7 -30 15 -41 12 -16 12 -20 -1 -33 -7 -8 -14 -21
+//                                 -14 -29 0 -19 26 -18 34 2 5 14 7 14 22 0 17 -18 50 -21 59 -6 3 6 -5 14 -19
+//                                 20 -55 21 -9 84 81 110 92 28 189 138 196 224 4 51 -20 40 -37 -17 -55 -189
+//                                 -300 -252 -439 -113 -47 47 -67 85 -74 144 l-5 47 67 -3 c77 -4 118 4 112 21
+//                                 -2 8 -24 11 -70 9 -95 -5 -103 -1 -99 52 5 54 -24 115 -70 147 -47 34 -131 37
+//                                 -182 7z m494 -539 c0 -11 -27 -29 -33 -22 -14 14 -6 32 13 30 11 -1 20 -4 20
+//                                 -8z"/>
+//                                 <path d="M865 590 c-4 -6 10 -26 32 -45 21 -19 33 -34 27 -35 -6 0 -17 7 -24
+//                                 15 -17 20 -54 19 -98 -4 -100 -51 -121 -60 -175 -74 -33 -9 -62 -19 -65 -22
+//                                 -11 -11 49 -53 97 -70 59 -20 170 -19 221 1 75 30 107 109 72 174 -22 40 -76
+//                                 77 -87 60z"/>
+//                             </g>
+//                         </svg>
+//                         Ferme dans tous les departements francais.
+//                     </p>
+//                     <div>
                         
-                    </div>
-                </div>
-            </div>
-        `
-        document.querySelector("#close").addEventListener('click', () => {
-            document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)"
-        })
-    })
-}
+//                     </div>
+//                 </div>
+//             </div>
+//         `
+//         document.querySelector("#close").addEventListener('click', () => {
+//             document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)"
+//         })
+//     })
+// }
 
 function addControlPlaceholders(map) {
     const corners = map._controlCorners
@@ -762,10 +763,10 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
     fetchDetails(id_selector, pathDetails);
 
 
-    // if (document.querySelector("#open-navleft-resto-mobile")) {
-    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile"))
-    // } else if (document.querySelector("#open-navleft-resto-spec-mobile")) {
-    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile"))
+    // if (document.querySelector("#open-navleft-resto-mobile-tomm-js")) {
+    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile-tomm-js"))
+    // } else if (document.querySelector("#open-navleft-resto-spec-mobile-tomm-js")) {
+    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile-tomm-js"))
     // } else if (document.querySelector("#tout-dem")) {
     //     fetchAvies(idResto,document.querySelector("#tout-dem"))
     // }
@@ -773,24 +774,24 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
 
 
 function addListFermeMobile() {
-    document.querySelector("#open-navleft-mobile").addEventListener('click', () => {
-        document.querySelector("#open-navleft-mobile").style.opacity = 0
-        document.querySelector("#open-navleft-mobile").style.transition = "opacity 0.5s ease-in-out"
-        if (document.querySelector("#list-depart-mobile")) {
-            document.querySelector("#list-depart-mobile").removeAttribute("style")
+    document.querySelector("#open-navleft-mobile-tomm-js").addEventListener('click', () => {
+        document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 0
+        document.querySelector("#open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
+        if (document.querySelector("#list-depart-mobile-tomm-js")) {
+            document.querySelector("#list-depart-mobile-tomm-js").removeAttribute("style")
         }
         fetch(`/ferme-mobile`)
             .then(response => {
                 return response.text()
             }).then(r => {
-                document.querySelector("#list-depart-mobile").innerHTML = null
-                document.querySelector("#list-depart-mobile").innerHTML = r
-                // firstX= document.querySelector("#list-depart-mobile").getBoundingClientRect().x+document.querySelector("#list-depart-mobile").getBoundingClientRect().width
-                // firstY=document.querySelector("#list-depart-mobile").getBoundingClientRect().y
+                document.querySelector("#list-depart-mobile-tomm-js").innerHTML = null
+                document.querySelector("#list-depart-mobile-tomm-js").innerHTML = r
+                // firstX= document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().x+document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().width
+                // firstY=document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().y
 
                 document.querySelector("#close-ferme").addEventListener('click', () => {
-                    document.querySelector("#list-depart-mobile").style.transform = "translateX(-100vw)"
-                    document.querySelector("#open-navleft-mobile").style.opacity = 1
+                    document.querySelector("#list-depart-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
                 })
 
 
@@ -874,22 +875,22 @@ function addListDepartMobile(nom_dep, id_dep) {
 }
 
 function addSpecificFermeMobile(nom_dep, id_dep) {
-    document.querySelector("#open-navleft-mobile-specific").style.opacity = 0
-    document.querySelector("#open-navleft-mobile-specific").style.transition = "opacity 0.5s ease-in-out"
-    if (document.querySelector("#list-specific-depart")) {
-        document.querySelector("#list-specific-depart").removeAttribute("style")
+    document.querySelector("#open-navleft-mobile-tomm-js-specific").style.opacity = 0
+    document.querySelector("#open-navleft-mobile-tomm-js-specific").style.transition = "opacity 0.5s ease-in-out"
+    if (document.querySelector("#list-specific-depart-tomm-js")) {
+        document.querySelector("#list-specific-depart-tomm-js").removeAttribute("style")
     }
     fetch(`/ferme-mobile/departement/${nom_dep}/${id_dep}`)
         .then(response => {
             return response.text()
         }).then(r => {
-            // document.querySelector("#list-specific-depart")
-            document.querySelector("#list-specific-depart").innerHTML = null
-            document.querySelector("#list-specific-depart").innerHTML = r
+            // document.querySelector("#list-specific-depart-tomm-js")
+            document.querySelector("#list-specific-depart-tomm-js").innerHTML = null
+            document.querySelector("#list-specific-depart-tomm-js").innerHTML = r
             document.querySelector("#close-ferme-specific").addEventListener('click', () => {
-                document.querySelector("#list-specific-depart").style.transform = "translateX(-115vw)"
-                document.querySelector("#open-navleft-mobile-specific").style.transition = "opacity 0.5s ease-in-out"
-                document.querySelector("#open-navleft-mobile-specific").style.opacity = 1
+                document.querySelector("#list-specific-depart-tomm-js").style.transform = "translateX(-115vw)"
+                document.querySelector("#open-navleft-mobile-tomm-js-specific").style.transition = "opacity 0.5s ease-in-out"
+                document.querySelector("#open-navleft-mobile-tomm-js-specific").style.opacity = 1
             })
         })
 }
@@ -907,18 +908,18 @@ function closeFermeDetail(nom_dep, id_dep) {
 
 
 let i = 0
-if (document.querySelector("#list-depart-mobile")) {
-    console.log("inside function and #list-depart-mobile")
+if (document.querySelector("#list-depart-mobile-tomm-js")) {
+    console.log("inside function and #list-depart-mobile-tomm-js")
 
-    document.querySelector("#list-depart-mobile").ontouchstart = (e) => {
+    document.querySelector("#list-depart-mobile-tomm-js").ontouchstart = (e) => {
         //e.preventDefault()
         firstX = e.touches[0].clientX;
         firstY = e.touches[0].clientY;
         //console.log(e.touches)
-        /* document.querySelector("#open-navleft-mobile-specific").style.transition = "translateX(-100vw) ease-in-out"*/
+        /* document.querySelector("#open-navleft-mobile-tomm-js-specific").style.transition = "translateX(-100vw) ease-in-out"*/
     }
 
-    document.querySelector("#list-depart-mobile").ontouchend = (e) => {
+    document.querySelector("#list-depart-mobile-tomm-js").ontouchend = (e) => {
         let x = e.changedTouches[0].clientX
         let y = e.changedTouches[0].clientY
         // e.target.getBoundingClientRect().x = firstX - i;
@@ -931,38 +932,39 @@ if (document.querySelector("#list-depart-mobile")) {
 
             if (deltx < 0) { //gauche
                 //document.querySelector("body").style.transition = `all 3s ease-in-out !important`
-                document.querySelector("#list-depart-mobile").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
-                document.querySelector("#open-navleft-mobile").style.opacity = 1
-                // document.querySelector("#open-navleft-mobile").style.transition = "opacity 0.5s ease-in-out"
+                document.querySelector("#list-depart-mobile-tomm-js").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
+                document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
+                // document.querySelector("#open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
             }
         }
     }
 }
 
 function addListDepartRest() {
-    document.querySelector("#open-navleft-resto-mobile").addEventListener('click', () => {
-        alert("Please select")
-        document.querySelector("#open-navleft-resto-mobile").style.opacity = 0
-        document.querySelector("#open-navleft-resto-mobile").style.transition = "opacity 0.5s ease-in-out";
+    if(document.querySelector("#open-navleft-resto-mobile-tomm-js")){
+        document.querySelector("#open-navleft-resto-mobile-tomm-js").addEventListener('click', () => {
+            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 0
+            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
 
-        if (document.querySelector("#list-depart-resto-mobile")) {
-            document.querySelector("#list-depart-resto-mobile").removeAttribute("style")
-        }
+            if (document.querySelector("#list-depart-resto-mobile-tomm-js")) {
+                document.querySelector("#list-depart-resto-mobile-tomm-js").removeAttribute("style")
+            }
 
-        fetch(`/restaurant-mobile`)
-            .then(response => response.text())
-            .then(r => {
-                if (document.querySelector("#list-depart-resto-mobile")) {
-                    document.querySelector("#list-depart-resto-mobile").innerHTML = null
-                    document.querySelector("#list-depart-resto-mobile").innerHTML = r
+            fetch(`/restaurant-mobile`)
+                .then(response => response.text())
+                .then(r => {
+                    if (document.querySelector("#list-depart-resto-mobile-tomm-js")) {
+                        document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = null
+                        document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = r
 
-                    document.querySelector("#close-resto").addEventListener('click', () => {
-                        document.querySelector("#list-depart-resto-mobile").style.transform = "translateX(-100vw)"
-                        document.querySelector("#open-navleft-resto-mobile").style.opacity = 1
-                    })
-                }
-            })
-    })
+                        document.querySelector("#close-resto").addEventListener('click', () => {
+                            document.querySelector("#list-depart-resto-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 1
+                        })
+                    }
+                })
+        })
+    }
 }
 
 function getSpecifictArrond(nom_dep, id_dep) {
@@ -971,23 +973,23 @@ function getSpecifictArrond(nom_dep, id_dep) {
 
 
 function addListSpecResto(nom_dep, id_dep) {
-    document.querySelector("#open-navleft-resto-mobile-arrand").style.opacity = 0
-    document.querySelector("#open-navleft-resto-mobile-arrand").style.transition = "opacity 0.5s ease-in-out"
-    if (document.querySelector("#list-arrand-resto")) {
-        console.log(document.querySelector("#list-arrand-resto"))
-        document.querySelector("#list-arrand-resto").removeAttribute("style")
+    document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.opacity = 0
+    document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.transition = "opacity 0.5s ease-in-out"
+    if (document.querySelector("#list-arrand-resto-tomm-js")) {
+        console.log(document.querySelector("#list-arrand-resto-tomm-js"))
+        document.querySelector("#list-arrand-resto-tomm-js").removeAttribute("style")
     }
     fetch(`/restaurant-mobile/arrondissement?nom_dep=${nom_dep}&id_dep=${id_dep}`)
         .then(response => {
             return response.text()
         }).then(r => {
             // console.log(r)
-            document.querySelector("#list-arrand-resto").innerHTML = null
-            document.querySelector("#list-arrand-resto").innerHTML = r
+            document.querySelector("#list-arrand-resto-tomm-js").innerHTML = null
+            document.querySelector("#list-arrand-resto-tomm-js").innerHTML = r
 
             document.querySelector("#close-resto-arrand").addEventListener('click', () => {
-                document.querySelector("#list-arrand-resto").style.transform = "translateX(-100vw)"
-                document.querySelector("#open-navleft-resto-mobile-arrand").style.opacity = 1
+                document.querySelector("#list-arrand-resto-tomm-js").style.transform = "translateX(-100vw)"
+                document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.opacity = 1
             })
         })
 }
@@ -1001,25 +1003,25 @@ function getSpectResto(nom_dep, id_dep) {
     location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`)
 }
 
-function addListSpecRestoMobile(nom_dep, id_dep, codinsee) {
-    document.querySelector("#open-navleft-resto-spec-mobile").style.opacity = 0
-    document.querySelector("#open-navleft-resto-spec-mobile").style.transition = "opacity 0.5s ease-in-out"
-    if (document.querySelector("#list-spesific-resto")) {
-        console.log(document.querySelector("#list-spesific-resto"))
-        document.querySelector("#list-spesific-resto").removeAttribute("style")
+function addListSpecRestoMobile(nom_dep, id_dep, codinsee, arrdssm) {
+    document.querySelector("#open-navleft-resto-spec-mobile-tomm-js").style.opacity = 0
+    document.querySelector("#open-navleft-resto-spec-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
+    if (document.querySelector("#list-spesific-resto-tomm-js")) {
+        console.log(document.querySelector("#list-spesific-resto-tomm-js"))
+        document.querySelector("#list-spesific-resto-tomm-js").removeAttribute("style")
     }
     // alert(codinsee)
-    fetch(`/restaurant-mobile/specific?nom_dep=${nom_dep}&id_dep=${id_dep}&codinsee=${codinsee}`)
+    fetch(`/restaurant-mobile/specific?nom_dep=${nom_dep}&id_dep=${id_dep}&codinsee=${codinsee}&arrdssm=${arrdssm}`)
         .then(response => {
             return response.text()
         }).then(r => {
             // console.log(r)
-            document.querySelector("#list-spesific-resto").innerHTML = null
-            document.querySelector("#list-spesific-resto").innerHTML = r
+            document.querySelector("#list-spesific-resto-tomm-js").innerHTML = null
+            document.querySelector("#list-spesific-resto-tomm-js").innerHTML = r
 
             document.querySelector("#close-resto-specific").addEventListener('click', () => {
-                document.querySelector("#list-spesific-resto").style.transform = "translateX(-100vw)"
-                document.querySelector("#open-navleft-resto-spec-mobile").style.opacity = 1
+                document.querySelector("#list-spesific-resto-tomm-js").style.transform = "translateX(-100vw)"
+                document.querySelector("#open-navleft-resto-spec-mobile-tomm-js").style.opacity = 1
             })
         })
 }
@@ -2127,8 +2129,7 @@ function slideToRight(elem, html) {
         elem.parentElement.parentElement.innerHTML = html
 }
 
-function validateEmail(mail) 
-{
+function validateEmail(mail){
 let reg = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gmi
  if (reg.test(mail))
   {
@@ -2136,4 +2137,109 @@ let reg = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gmi
   }else{
       return false
   }
+}
+
+
+
+function addListDepartGolf() {
+    if (document.querySelector("#open-navleft-golf-mobile-tomm-js")) {
+        document.querySelector("#open-navleft-golf-mobile-tomm-js").addEventListener("click", () => {
+            document.querySelector("#open-navleft-golf-mobile-tomm-js").style.opacity = 0
+            document.querySelector("#open-navleft-golf-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+            if (document.querySelector("#list-depart-golf-mobile-tomm-js")) {
+                document.querySelector("#list-depart-golf-mobile-tomm-js").removeAttribute("style")
+            }
+
+            fetch(`/golf-mobile`)
+            .then(response => response.text())
+            .then(r => {
+                if (document.querySelector("#list-depart-golf-mobile-tomm-js")) {
+                    document.querySelector("#list-depart-golf-mobile-tomm-js").innerHTML = null
+                    document.querySelector("#list-depart-golf-mobile-tomm-js").innerHTML = r
+
+                    document.querySelector("#close-golf-dep").addEventListener('click', () => {
+                        document.querySelector("#list-depart-golf-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                        document.querySelector("#open-navleft-golf-mobile-tomm-js").style.opacity = 1
+                    })
+                }
+            })
+        })
+    }
+    
+}
+
+function addSpecificgolfMobile(nom_dep, id_dep) {
+    document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 0
+    document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+    if (document.querySelector("#list-depart-golf-specific-mobile-tomm-js")) {
+        document.querySelector("#list-depart-golf-specific-mobile-tomm-js").removeAttribute("style")
+    }
+
+    fetch(`/golf-mobile/departement/${nom_dep}/${id_dep}`)
+    .then(response => response.text())
+    .then(r => {
+        if (document.querySelector("#list-depart-golf-specific-mobile-tomm-js")) {
+            document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = null
+            document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = r
+
+            document.querySelector("#close-golf-specific-tomm-js").addEventListener('click', () => {
+                document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 1
+            })
+        }
+    })
+}
+
+function addListDepartTabac() {
+    document.querySelector("#open-navleft-tabac-mobile-tomm-js").addEventListener("click", () => {
+        document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 0
+        document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+        if (document.querySelector("#list-depart-tabac-mobile-tomm-js")) {
+            document.querySelector("#list-depart-tabac-mobile-tomm-js").removeAttribute("style")
+        }
+
+        fetch(`/tabac-mobile`)
+        .then(response => response.text())
+        .then(r => {
+            if (document.querySelector("#list-depart-tabac-mobile-tomm-js")) {
+                document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = null
+                document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = r
+
+                document.querySelector("#close-tabac-dep").addEventListener('click', () => {
+                    document.querySelector("#list-depart-tabac-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 1
+                })
+            }
+        })
+    })
+}
+
+function addListSpecificTabac(nom_dep, id_dep) {
+    document.querySelector("#open-navleft-tabac-spec-mobile-tomm-js").style.opacity = 0
+    document.querySelector("#open-navleft-tabac-spec-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+    if (document.querySelector("#list-depart-tabac-mobile-spec-tomm-js")) {
+        document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").removeAttribute("style")
+    }
+
+    fetch(`/tabac-mobile/departement/${nom_dep}/${id_dep}`)
+    .then(response => response.text())
+    .then(r => {
+        if (document.querySelector("#list-depart-tabac-mobile-spec-tomm-js")) {
+            document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").innerHTML = null
+            document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").innerHTML = r
+
+            document.querySelector("#close-tabac-spec-dep").addEventListener('click', () => {
+                document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").style.transform = "translateX(-100vw)"
+                document.querySelector("#open-navleft-tabac-spec-mobile-tomm-js").style.opacity = 1
+            })
+        }
+    })
+}
+
+function closeDetailGolfMob(nom_dep, id_dep) {
+    location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
 }
