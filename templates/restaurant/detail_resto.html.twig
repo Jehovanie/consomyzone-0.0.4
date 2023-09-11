@@ -28,7 +28,7 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    <p class="card-text cmz-adresse">
+                    {# <p class="card-text cmz-adresse">
                         <a href="#" class="small">  
                             {{details.numvoie|lower}}
                             {{details.typevoie|lower}}
@@ -36,13 +36,36 @@
                             {{details.codpost|lower}}
                             {{details.villenorm|lower}}
                         </a>
-                    </p>
-                    <span>
-                        <button class="hidden open_modal_avis_resto_jheo_js" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></button>
-                        <a id="see-tom-js" class="see-avis btn btn-warning" onclick="showListAvie()">
-                           <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
+                    </p> #}
+                    <figcaption class="blockquote-footer card-text cmz-adresse">
+                        Adresse :  
+                        <a href="#" class="small text-center ">
+                            {{details.numvoie|lower}}
+                            {{details.typevoie|lower}}
+                            {{details.nomvoie|lower}}
+                            {{details.codpost|lower}}
+                            {{details.villenorm|lower}}
                         </a>
-                    </span>
+                    </figcaption>  
+                    <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+                        <span>
+                            <a id="see-tom-js" class="text-black btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
+                                <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
+                            </a>
+                        </span>
+                        {% if details.avis.isAlreadyCommented %}
+                            <button type="button" class="mx-2 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto()">
+                                Modifier votre avis
+                            </button>
+                        {% else %}
+                            {% if app.user %}
+                                <button type="button" class="mx-2 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
+                            {% else %}
+                                <button type="button" class="mx-2 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
+                            {% endif %}
+                        {% endif %}
+                            <div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}" ></div>
+                    </div>
                 </div>
             </div>
 
@@ -51,12 +74,22 @@
                 {# note avis   #}
                 <hr>
                 <div class="content_note">
-                    <div class="start">
+                    <div class="text-center start start_jheo_js">
+                        {% set rate = details.avis.note != 0 ?  details.avis.note - (details.avis.note|number_format - 1): 0 %}
+
+                        {% set rateYellow = rate * 100  %}
+                        {% set rateBlack = 100 - rateYellow %}
+
                         {% for item in 0..3 %}
-                            {% if item < details.avis.nbr|number_format %}
+                            {% if item < details.avis.note|number_format - 1 %}
                                 <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
                             {% else %}
-                                <i class="fa-solid fa-star" data-rank="1"></i>
+                                {% if rate != 0 %}
+                                    <i class="fa-solid fa-star" data-rank="1" style ="{{ "background: linear-gradient(90deg, #F5D165 " ~  rateYellow ~ "%, #000 " ~ rateBlack ~ "%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>
+                                    {% set rate = 0 %}
+                                {% else %}
+                                    <i class="fa-solid fa-star" data-rank="1"></i>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                     </div>

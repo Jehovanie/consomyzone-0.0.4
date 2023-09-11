@@ -453,300 +453,6 @@ function showResultSearchNavBar(type,nom, adresse, dep, nomDep , id ){
 }
 
 
-///jheo: cart for map station and ferme
-function addMapFermeStation(nom_dep=null, id_dep=null){
-   let geos=[]
-    if (id_dep) {
-        if (id_dep == 20) {
-                for (let corse of ['2A', '2B'])
-                     geos.push(franceGeo.features.find(element => element.properties.code == corse))
-        } else {
-                    geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
-        }  
-    }
-    
-    fetch("/getLatitudeLongitudeForAll/?nom_dep="+ nom_dep +"&id_dep="+id_dep)
-    // fetch("/getLatitudeLongitudeForAll")
-
-        .then(result => result.json())
-
-        .then(parsedResult => {
-
-            ///delete chargement
-
-            // create_map_content();
-
-
-
-            // console.log(parsedResult)
-
-            const stations = parsedResult.station
-
-            const fermes = parsedResult.ferme
-
-
-
-            if( stations && fermes ){
-
-
-
-                /// change the number of result in div
-
-                if( document.getElementById("content_nombre_result_js_jheo")){
-
-                    document.getElementById("content_nombre_result_js_jheo").innerText = stations.length + fermes.length ;
-
-                }
-
-
-
-                var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-
-                    maxZoom: 20,
-
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-
-                })
-
-
-
-                var latlng = L.latLng(46.227638, 2.213749);
-
-
-
-                var map = L.map('map', {center: latlng, zoom: 5, layers: [tiles]});
-                L.geoJson(geos,{style:{
-                                //fillColor: getColor(feature.properties.density),
-                                weight: 2,
-                                opacity: 1,
-                                color: 'red',
-                                dashArray: '3',
-                                fillOpacity: 0
-                            },onEachFeature: function (feature, layer) {
-                            layer.bindTooltip(feature.properties.nom);
-                        }}).addTo(map);
-
-
-                var markers = L.markerClusterGroup({ 
-
-                        chunkedLoading: true
-
-                    });
-
-                ///// 0 -> 4717
-
-
-
-                //// Pour les stations
-
-                stations.forEach(item => {
-
-                    
-
-                    // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
-
-                    var pathDetails = "/station/departement/" + item.departementCode.toString().trim() + "/"+ item.departementName.trim() + "/details/" + item.id;
-
-                   
-
-                    const ad = "<br>Adresse: " + item.adresse + " .";
-
-                    const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-
-
-
-                    var title = "Station: " + item.nom + ". Id: " + item.id + ". Departement: " + item.departementCode +"." + ad + link;
-
-                    
-
-                    var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { title: title,icon: setIcon("assets/icon/icon_essance.png") });
-
-                    marker.bindPopup(title);
-
-                    markers.addLayer(marker);
-
-                } )
-
-
-
-                //// Pour les fermes.
-
-                fermes.forEach(item => {
-
-                    // @Route("ferme/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme" , methods="GET" )
-
-                    const nom_dep = item.departement.split(",")[1]?.toString().trim() ? item.departement.split(",")[1]?.toString().trim() : "unknow";
-
-                    var pathDetails ="/ferme/departement/"+ nom_dep + "/" + item.departement.split(",")[0].toString().trim() +"/details/" + item.id;
-
-            
-
-                    const adress = "<br> Adresse: " + item.adresseFerme;
-
-                    const link = "<br><a href='"+ pathDetails + "'> VOIR DETAILS </a>";
-
-
-
-                    var title = "Ferme: " + item.nomFerme + ". Departement: " + item.departement +"." + adress + link;
-
-
-
-                    var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude )), { title: title,icon: setIcon('assets/icon/ferme-logo.png') });
-
-                    marker.bindPopup(title);
-
-                    markers.addLayer(marker);
-
-                } )
-
-                
-
-                ////affiche les resultats.
-
-                map.addLayer(markers);
-
-
-
-                ////update list on the left.
-
-                if( nom_dep && id_dep ){
-
-                    /// mise a jour de liste
-
-                    const parent_elements= document.querySelector(".list_result")
-
-                    const elements= document.querySelectorAll(".element")
-
-                    elements.forEach(element => {
-
-                        element.parentElement.removeChild(element);
-
-                    })
-
-
-
-                    if(document.querySelector(".plus_result")){
-
-                        parent_elements.removeChild(document.querySelector(".plus_result"))
-
-                    }
-
-
-
-                    fermes.forEach(new_element => {
-
-
-
-                        // <div class="element" id="{{station.id}}">
-
-                        const div_new_element = document.createElement("div");
-
-                        div_new_element.setAttribute("class", "element")
-
-                        div_new_element.setAttribute("id", new_element.id);
-
-
-
-                        // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-
-                        const s_p = document.createElement("p");
-
-                        s_p.innerHTML = "<span class='id_departement'>"+ new_element.nomFerme+" </span>" +  new_element.adresseFerme
-
-
-
-                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-
-                        const a= document.createElement("a");
-
-                        a.setAttribute("class", "plus")
-
-                        a.setAttribute("href", "/ferme/departement/"+ nom_dep +"/"+ id_dep +"/details/" + new_element.id )
-
-                        a.innerText = "Voir details";
-
-
-
-                        /// integre dom under the element
-
-                        div_new_element.appendChild(s_p);
-
-                        div_new_element.appendChild(a);
-
-                        
-
-                        ///integre new element in each element.
-
-                        parent_elements.appendChild(div_new_element);
-
-                    })
-
-
-
-                    stations.forEach(new_element => {
-
-
-
-                        // <div class="element" id="{{station.id}}">
-
-                        const div_new_element = document.createElement("div");
-
-                        div_new_element.setAttribute("class", "element")
-
-                        div_new_element.setAttribute("id", new_element.id);
-
-
-
-                        // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-
-                        const s_p = document.createElement("p");
-
-                        s_p.innerHTML = "<span class='id_departement'>"+ new_element.nom+" </span>" +  new_element.adresse
-
-
-
-                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-
-                        const a= document.createElement("a");
-
-                        a.setAttribute("class", "plus")
-
-                        a.setAttribute("href", "/station/departement/"+ parseInt(id_dep) +"/"+ nom_dep +"/details/" + new_element.id )
-
-                        a.innerText = "Voir details";
-
-
-
-                        /// integre dom under the element
-
-                        div_new_element.appendChild(s_p);
-
-                        div_new_element.appendChild(a);
-
-                        
-
-                        ///integre new element in each element.
-
-                        parent_elements.appendChild(div_new_element);
-
-                    })
-
-
-
-                }
-
-                
-
-            }else{
-
-                console.log("ERREUR : L'erreur se produit par votre réseaux.")
-
-            }
-
-        });
-
-}
-
 
 function setDataInSessionStorage(type , value){
     sessionStorage.setItem(type, value );
@@ -859,7 +565,7 @@ if (document.querySelector(".list-nav-bar")) {
         document.querySelector("#golf-page").classList.add("active");
     }else if( activPage.includes("/tabac")){
         document.querySelector("#tabac-page").classList.add("active");
-    }else if(activPage.length === 1 ){
+    }else if(activPage.length === 1 || activPage.includes("/search/tous") ){
         document.querySelector("#tous-page").classList.add("active");
     }
 }
@@ -921,8 +627,6 @@ if(dropZones.length > 0 && dropZones!=null){
    * @param {File} file
    */
   function updateThumbnail(dropZoneElement, file, customFile) {
-
-    console.log(file.type)
 
     let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
   
@@ -1105,10 +809,19 @@ CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
     editor=newEditor
     let html=showModalEditor()
     editor.setData(html)
-
 });
-function showModalEditor(isG){
-    document.querySelector("#btnValidate").dataset.g = isG
+function showModalEditor(isG, isListeInfile=false){
+    let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
+    if(isListeInfile){
+        document.querySelector("#btnValidate").removeAttribute("data-g")
+        document.querySelector("#btnValidateMessage").removeAttribute("data-g")
+        document.querySelector("#btnValidateMessage").style.display = "none"
+    }else{
+        document.querySelector("#btnValidateMessage").style.display = "block"
+        document.querySelector("#btnValidate").dataset.g = isG
+        document.querySelector("#btnValidateMessage").dataset.g = isG
+    }
+
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité 
 //</span>
@@ -1135,15 +848,21 @@ function showModalEditor(isG){
         </span>  jusqu'à 
         <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
             ${agenda.heure_fin}
-        </span><br></p>
+        </span></p>
     <p >
       <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
     </p>
     <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
     <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
     <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
-    <button type="btn" disabled>Confirmation</button>
-    <p>Remerciement cordialement</p>`
+    <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false">Confirmation</button>
+    <p id="free_place" > 
+    Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
+    <p>Cordialement</p>
+    <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
+           ${fullname} 
+    </span>
+    `
 }
 
 if (document.querySelector(".open-search-mobil-tomm-js")) {

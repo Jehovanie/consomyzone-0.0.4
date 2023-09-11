@@ -3,12 +3,19 @@
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
                 <p> 
-                    {{details.nom | upper}}  
+                    {{details.denomination_f | upper}}  
                 </p>
                
             </blockquote>
             <figcaption class="blockquote-footer">
-               Adresse :  <a href="#" class="small text-center ">{{details.adresse | raw}}</a>
+                Adresse :  
+                <a href="#" class="small text-center ">
+                    {{details.numvoie|lower}}
+                    {{details.typevoie|lower}}
+                    {{details.nomvoie|lower}}
+                    {{details.codpost|lower}}
+                    {{details.villenorm|lower}}
+                </a>
             </figcaption>  
         </figure>
        
@@ -24,15 +31,13 @@
                 <i class="fa-solid fa-star" data-rank="3"></i>
                 <i class="fa-solid fa-star" data-rank="4"></i>
             </div>
-            
-            <div class="nombre_avis">
+            <div class="mt-2 nombre_avis">
                 <button class="btn btn-secondary btn-md see-avis non_active"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
             </div>
         </div>
 
         <hr>
- 
-        {% if details.barTabac %}
+        {% if details.bar_tabac %}
             <div class="content_activite">
                 <p class="activite">
                     Bar Tabac
@@ -41,7 +46,7 @@
             <hr>
         {% endif %}
 
-        {% if details.bureauTabac %}
+        {% if details.bureau_tabac %}
             <div class="content_activite">
                 <p class="activite">
                     Bureau Tabac
@@ -50,16 +55,16 @@
             <hr>
         {% endif %}
 
-        {% if details.caveCigare %}
+        {% if details.cafe_tabac %}
             <div class="content_activite">
                 <p class="activite">
-                    Cave Cigare
+                    Cafe Tabac
                 </p>
             </div>
             <hr>
         {% endif %}
 
-        {% if details.tabacPresse %}
+        {% if details.tabac_presse %}
             <div class="content_activite">
                 <p class="activite">
                     Tabac Presse
@@ -68,50 +73,47 @@
             <hr>
         {% endif %}
 
-        {% if details.dep and details.depName %}
+        {% if details.horaires_1 %}
             <div class="content_activite">
                 <p class="activite">
-                    <span class="fw-bold">Departement:</span>
-                    {{details.dep  | raw}}  {{details.depName  | raw}}
+                    <span class="fw-bold">Horaires:</span>
+                    {{details.horaires_1 | raw}}
                 </p>
             </div>
             <hr>
         {% endif %}
 
 
-        {% if details.telephone %}
+        {% if details.tel %}
             <div class="content_activite">
                 <p class="activite">
                     <span class="fw-bold">Telephone:</span>
-                        {{details.telephone | raw}}
+                    {{details.tel | raw}}
                 </p>
             </div>
             <hr>
         {% endif %}
 
-        {% if details.adresse %}
+        {% if details.codpost %}
             <div class="content_activite">
                 <p class="activite">
-                    <span class="fw-bold">Adress:</span>
-                    {{details.adresse | raw}}
+                    <span class="fw-bold">Code Postal:</span>
+                    {{details.codpost | raw}}
                 </p>
             </div>
             <hr>
         {% endif %}
 
-        {% if details.services %}
+
+        {% if details.commune %}
             <div class="content_activite">
                 <p class="activite">
-                    <span class="fw-bold">Service :</span>
-                </p>
-                <p class="card-text p-2">
-                    {{details.services|replace({"&" : ""})}}
+                    <span class="fw-bold">Commune:</span>
+                    {{details.commune | raw}}
                 </p>
             </div>
             <hr>
         {% endif %}
-
-
 
     </div>
 </div>

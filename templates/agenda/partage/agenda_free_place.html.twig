@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Agenda confirmation
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+    <script src="{{asset('assets/js/agenda/confirm_agenda.js')}}" defer></script>
+{% endblock %}
+
+
+
+{% block body %}
+
+    <div style="position: absolute; top: 50%; left: 50%;transform: translate(-50%, -50%);" id="contentAcceptOrRejectAgenda">
+
+        <h1 style="color: #dc3545; font-weight:bold; font-size: 24px; margin-bottom:5px;">Voulez-vous participer à l'événement?</h1>
+
+        <div>
+            <button class="btn btn-primary" id= "accept_from_page_email_Nantenaina_js_css" type="button">OUI</button>
+            <button class="btn btn-danger" id= "decline_from_page_email_Nantenaina_js_css" >NON</button>
+        </div>
+
+    </div>
+
+{% endblock %}

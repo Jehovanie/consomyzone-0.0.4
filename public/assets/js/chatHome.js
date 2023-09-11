@@ -56,8 +56,8 @@ function endChat() {
 
     document.querySelector("#closeChat").disabled = false
 
-    document.querySelector('#closeChat').style ="display:"
-    document.querySelector('#closevisio').style ="display:none"
+    document.querySelector('#closeChat').style = "display:"
+    document.querySelector('#closevisio').style = "display:none"
 
     document.querySelector("#chat_header").style = "display:none;"
     document.querySelector("#amis_list").style = "display:none;"
@@ -70,7 +70,7 @@ function endChat() {
 
     }
 
-    if(document.querySelector("#chat_container").getAttribute("data-type") == "visio"){
+    if (document.querySelector("#chat_container").getAttribute("data-type") == "visio") {
 
         document.querySelector("#chat_container").classList.remove("chat_container_visio")
         document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat").classList.remove("content_chat_visio")
@@ -153,7 +153,7 @@ function runSuggestion() {
     let sugg = `
         <div class="qf disc_${timestamp}">
             <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                <p>Que veux-tu savoir aujourd'hui ?</p>
+                <p>Comment puis-je vous aider ?</p>
                 <div class="text-center">
                     ${list_sugg}
                 </div>
@@ -187,17 +187,25 @@ function findInDict(elem) {
     let cle = elem.getAttribute("cle")
 
     Object.entries(dico).forEach(([key, value]) => {
-        Object.entries(value).forEach(([key2, value2]) => {
-            if (cle == key2) {
 
-                writeRequest(value2.label)
+        if (value.question) {
 
-                runSpinner()
+            Object.entries(value.question).forEach(([key2, value2]) => {
 
-                writeResponse(value2.response, true)
+                Object.entries(value2).forEach(([key3, value3]) => {
+                    if (cle == key3) {
 
-            }
-        })
+                        writeRequest(value3.label)
+
+                        runSpinner()
+
+                        writeResponse(value3.response, true)
+                    }
+
+                })
+
+            })
+        }
     })
 }
 
@@ -221,27 +229,43 @@ function getResponse(cle, dico) {
 
         if (cle == key) {
 
-            if (typeof value === 'object') {
+            if (value.response) {
 
-                template += `<div class="qf-chat disc_${timestamp}">
-                        <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                            <p> Que veux-tu savoir aujourd'hui ?</p>
-                            <div class="text-center">`
-
-                Object.entries(value).forEach(([key2, value2]) => {
-
-                    template += `<button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 h-100 p-1" cle="${key2}" onclick="findInDict(this)">
-                        ${value2.label}
-                    </button>`
-
-                });
-
-                template += `</div>
-                            </div>
-                            <p class="nn-chat">${date_now}</p>
-                        </div>`
+                writeResponse(value.response)
 
             }
+
+            if (value.question) {
+
+                if (value.question.length > 0) {
+
+                    template += `<div class="qf-chat disc_${timestamp}">
+                                <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                                    <p> Comment puis-je vous aider ?</p>
+                                    <div class="text-center">`
+
+                    for (let question of value.question) {
+                        if (typeof question === 'object') {
+
+                            Object.entries(question).forEach(([key2, value2]) => {
+
+                                template += `<button class="ad-chat lc-chat mg-chat pg-chat th-chat ni-chat bj-chat wr-chat nj-chat yr-chat oq-chat qq-chat _q-chat ks-chat w-100 mb-1 h-100 p-1" cle="${key2}" onclick="findInDict(this)">
+                                    ${value2.label}
+                                </button>`
+
+                            });
+
+                        }
+                    }
+
+                    template += `</div>
+                                        </div>
+                                        <p class="nn-chat">${date_now}</p>
+                                    </div>`
+
+                }
+            }
+
         }
         // else{
         //     //alert("Phrase incorrecte!")
@@ -423,13 +447,13 @@ function menu() {
  * @param {string} user_id - Id of other user
  */
 
-function sendChat(message, files= [], user_id) {
+function sendChat(message, files = [], user_id) {
 
     let data = {
         from: document.querySelector("#amis_list").getAttribute("data-my-id"),
         to: user_id,
         message: message,
-        files : files
+        files: files
     }
 
     console.log(data);
@@ -458,7 +482,7 @@ function sendChat(message, files= [], user_id) {
                     li.remove()
                 })
             }
-            
+
         }
     })
 
@@ -503,10 +527,10 @@ function getChat(user_id) {
 
                     if (content.files && content.files.length > 0) {
 
-                        
+
                         for (let file of content.files) {
-                            
-                            let ext = getExtension(file.split(".")[file.split(".").length -1])
+
+                            let ext = getExtension(file.split(".")[file.split(".").length - 1])
 
                             file_doc += `<div class="mt-2 mb-2" style="display:flex;flex-direction: row;justify-content: space-between">
                                             <a href="${file}" download class="icon_download_file" alt="photo" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-file-text"></i></a>
@@ -571,7 +595,7 @@ function checkNewMessage(user_id) {
 
     if (document.querySelector("div.user-chat-display")) {
 
-       const evtSource = new EventSource("/user/read/message?id=" + user_id);
+        const evtSource = new EventSource("/user/read/message?id=" + user_id);
 
         //// event onmessage
         evtSource.onmessage = function (event) {
@@ -588,22 +612,22 @@ function checkNewMessage(user_id) {
                     let file_doc = ""
 
                     let content = JSON.parse(message.content)
-    
+
                     if (content.images.length > 0) {
-    
+
                         for (let img of content.images) {
-    
+
                             img_doc += `<img src="${img}" class="mb-1" alt="photo" style="height:100px;border-radius:5px;">`
-    
+
                         }
-    
+
                     }
 
                     if (content.files && content.files.length > 0) {
 
                         for (let file of content.files) {
 
-                            let ext = getExtension(file.split(".")[file.split(".").length -1])
+                            let ext = getExtension(file.split(".")[file.split(".").length - 1])
 
                             file_doc += `<div class="mt-2 mb-2" style="display:flex;flex-direction: row;justify-content: space-between">
                                             <a href="${file}" download class="icon_download_file" alt="document" style="cursor: pointer;font-size: 1.6rem;"><i class="fas fa-file-text"></i></a>
@@ -614,9 +638,9 @@ function checkNewMessage(user_id) {
                         }
 
                     }
-    
+
                     if (message.isForMe == 0) {
-    
+
                         document.querySelector("#conversation").innerHTML += `<div class="qf-chat rb-chat disc_${message.id}">
                             <div class="qb-chat vh-chat ii-chat oj-chat el-chat yl-chat">
                             <p class="eo-chat">${content.text}</p>
@@ -625,9 +649,9 @@ function checkNewMessage(user_id) {
                             </div>
                             <p class="in-chat nn-chat">${message.datetime}</p>
                         </div>`
-    
+
                     } else {
-    
+
                         document.querySelector("#conversation").innerHTML += `<div class="qf disc_${message.id}">
                                 <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
                                 <p>${content.text}</p>
@@ -636,11 +660,11 @@ function checkNewMessage(user_id) {
                                 </div>
                                 <p class="nn-chat">${message.datetime}</p>
                             </div>`
-    
+
                     }
-    
+
                     document.querySelector(".disc_" + (message.id)).scrollIntoView();
-    
+
                 }
 
             })
@@ -678,7 +702,7 @@ function getExtension(params) {
 
     let final_ext = params
     Object.entries(file_extension).forEach(([key, value]) => {
-        if(key==params){
+        if (key == params) {
             final_ext = value;
         }
     })
@@ -694,7 +718,7 @@ function getExtension(params) {
  */
 function setStatusMeetById(id, status) {
 
-    fetch("/update/visio/"+id+"/"+status, {
+    fetch("/update/visio/" + id + "/" + status, {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -735,14 +759,14 @@ const home_room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'
 function joinMeet(id, room) {
 
     let user_name = document.querySelector("#my_full_name").textContent.trim()
-            
+
     const options = {
-        roomName: home_room+room,
+        roomName: home_room + room,
         width: "100%",
         height: "95%",
         lang: 'fr',
-        jwt : jwt,
-        configOverwrite: { prejoinPageEnabled: false},
+        jwt: jwt,
+        configOverwrite: { prejoinPageEnabled: false },
         // configOverwrite: { prejoinPageEnabled: false , enableClosePage: false, toolbarButtons : ['microphone', 'camera','tileview','fullscreen', 'desktop', 'closedcaptions','participants-pane','hangup']},
         interfaceConfigOverwrite: { VERTICAL_FILMSTRIP: true },
         parentNode: document.querySelector('#visio'),
@@ -752,7 +776,7 @@ function joinMeet(id, room) {
 
     api.executeCommand('displayName', user_name);
 
-    setStatusMeetById(id,"progress")
+    setStatusMeetById(id, "progress")
 
     const iframe = api.getIFrame();
 
@@ -760,35 +784,35 @@ function joinMeet(id, room) {
 
     api.on('readyToClose', () => {
 
-        fetch("/getVisioByName/"+room)
-        .then(response=>response.json())
-        .then(visios=>{
+        fetch("/getVisioByName/" + room)
+            .then(response => response.json())
+            .then(visios => {
 
-            if(visios.length > 0){
+                if (visios.length > 0) {
 
-                for(let visio of visios){
+                    for (let visio of visios) {
 
-                    setStatusMeetById(visio.id, "finished")
+                        setStatusMeetById(visio.id, "finished")
 
+                    }
                 }
-            }
-            
-        })
-        
-        document.querySelector('#visio').innerHTML =""
-        document.querySelector("#user_name_chat").innerText ="VisioConférence"
-	})
 
-    api.addEventListener('participantJoined', (e)=>{
+            })
 
-        if(!document.querySelector("#user_name_chat").textContent.trim().includes(e.displayName)){
+        document.querySelector('#visio').innerHTML = ""
+        document.querySelector("#user_name_chat").innerText = "VisioConférence"
+    })
 
-            document.querySelector("#user_name_chat").innerText =document.querySelector("#user_name_chat").textContent.trim().replace("VisioConférence", "Vous") +", "+e.displayName
+    api.addEventListener('participantJoined', (e) => {
+
+        if (!document.querySelector("#user_name_chat").textContent.trim().includes(e.displayName)) {
+
+            document.querySelector("#user_name_chat").innerText = document.querySelector("#user_name_chat").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
         }
 
 
     })
-    
+
 }
 
 
@@ -801,36 +825,36 @@ function joinMeet(id, room) {
 function runVisio(roomRandom, user_id) {
 
     let data = {
-        roomName : roomRandom,
-        to : user_id,
-        status : "wait"
+        roomName: roomRandom,
+        to: user_id,
+        status: "wait"
     }
 
     const request = new Request('/create/visio', {
         method: "POST",
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
-    
-    fetch(request)
-        .then(response=>response.json())
-        .then(response =>{
-            // console.log(response.success == true)
-            if(response.success == true){
 
-                fetch("/getVisioByName/"+roomRandom)
-                    .then(response=>response.json())
-                    .then(visio=>{
-                        if(!document.querySelector("#visio").querySelector("iframe")){
+    fetch(request)
+        .then(response => response.json())
+        .then(response => {
+            // console.log(response.success == true)
+            if (response.success == true) {
+
+                fetch("/getVisioByName/" + roomRandom)
+                    .then(response => response.json())
+                    .then(visio => {
+                        if (!document.querySelector("#visio").querySelector("iframe")) {
                             joinMeet(visio.id, roomRandom)
                         }
                     })
             }
         })
-    
+
 }
 
 /**
@@ -843,9 +867,9 @@ function createVisioGroup() {
 
     let htm = "<div class='overflow-auto' style='max-height:50vh;'><ul class='list-group' id='list-group-user-visio'>"
 
-    friend_list_node.forEach(nd=>{
+    friend_list_node.forEach(nd => {
 
-        htm+=`
+        htm += `
             <li class="list-group-item d-flex justify-content-between align-items-center" user_id_visio="${nd.getAttribute("data-toggle-user-id")}">
                 <div class="d-flex justify-content-start align-items-center">
                     <img src="${nd.querySelector("img").src}" alt="profile" class="user-pdp-visio">    
@@ -857,7 +881,7 @@ function createVisioGroup() {
 
     })
 
-    htm+="</ul></div>"
+    htm += "</ul></div>"
 
     Swal.fire({
         title: 'Inviter des amis',
@@ -866,33 +890,33 @@ function createVisioGroup() {
         showCancelButton: true,
         focusConfirm: false,
         confirmButtonText:
-          '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
+            '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
         cancelButtonText:
-          '<i class="fas fa-close"></i> Pas maitenant',
-      }).then(res=>{
-        if (res.isConfirmed){
+            '<i class="fas fa-close"></i> Pas maitenant',
+    }).then(res => {
+        if (res.isConfirmed) {
 
-            let roomGroup = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+            let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
 
-            if(document.querySelectorAll("#list-group-user-visio > li.selected").length>0){
+            if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
 
-                document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li=>{
+                document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
 
                     runVisio(roomGroup, li.getAttribute("user_id_visio"))
 
                 })
-            }else{
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Aucun utilisateur sélectionné!',
                     footer: 'Réunion annulée!'
-                  })
+                })
             }
-            
+
         }
-      })
-    
+    })
+
 }
 
 /**
@@ -902,140 +926,213 @@ function createVisioGroup() {
  */
 function selectOneUser(params) {
 
-    if(params.textContent.trim()=="Inviter"){
+    if (params.textContent.trim() == "Inviter") {
         params.textContent = "Annuler"
         params.classList.remove("text-primary")
         params.classList.add("text-danger")
-        params.parentElement.style ="background-color:#CFF4FC;"
+        params.parentElement.style = "background-color:#CFF4FC;"
         params.parentElement.classList.add("selected")
-    }else{
+    } else {
         params.textContent = "Inviter"
         params.classList.remove("text-danger")
         params.classList.add("text-primary")
-        params.parentElement.style =""
+        params.parentElement.style = ""
         params.parentElement.classList.remove("selected")
 
     }
-    
+
 }
 /***********************Action*************** */
 
 
+// let dico = {
+//     def_cmz: {
+//         definition: {
+//             label: "🌍 Qu'est ce que c'est ConsoMyZone ?",
+//             response: "ConsoMyZone est une application de consommation de service de votre proximité"
+//         },
+//         objectif: {
+//             label: "✍️ Quel est l'objectif de ConsoMyZone ?",
+//             response: "L'objectif de CMZ est de fournir facilement des données aux consommateurs"
+//         },
+//         vision: {
+//             label: "🔍 Quelle est la vision de ConsoMyZone ?",
+//             response: "Aider les consommateurs à créer et entretenir le lien avec les professionnels, où qu'ils se trouvent "
+//         }
+//     },
+//     serv_cmz: {
+//         tribu: {
+//             label: "👨‍👨‍👧‍👦 Comment grouper tous les consommateurs ?",
+//             response: "ConsoMyZone propose de créer votre propre groupe appelé Tribu pour attribuer les consommateurs (clients)"
+//         },
+//         message: {
+//             label: "🖥️ Comment discuter entre consommateur ?",
+//             response: "ConsoMyZone propose d'envoyer et de discuter avec un client ou consommateur par un message privé"
+//         },
+//         api: {
+//             label: "💹 Comment utiliser les données de ConsoMyZone ?",
+//             response: "ConsoMyZone possede sa propre API pour collecter leur données afin d'utiliser dans votre propre application"
+//         }
+//     },
+//     use_cmz: {
+//         resto: {
+//             label: "🥣 A propos des restaurants chez CMZ ?",
+//             response: "On a plus de 75000 restaurants integrés dans ConsoMyZone, CMZ vous suggère le restaurant le plus proche"
+//         },
+//         ferme: {
+//             label: "🏕️ A propos des fermes chez CMZ ?",
+//             response: "On a plus de 6000 fermes qui peut être visiter et afficher"
+//         },
+//         station: {
+//             label: "🚉 A propos des stations chez CMZ ?",
+//             response: "La liste de station service est presque complet dans ConsoMyZone, qui facilite le consommateur au cas où on a manqué de carburant"
+//         }
+//     },
+//     connect_cmz: {
+//         membre: {
+//             label: "👨‍👩‍👦‍👦 Qui peut devenir membre chez ConsoMyZone ?",
+//             response: "Toutes les personnes qui ont besoin de service plus rapide et plus proche peuvent devenir membre chez CMZ. Vous avez une connexion internet? Alors, vous pouvez devenir membre. Inscrire <a class='link-primary' href='/connexion'>ici</a>."
+//         },
+//         pt_fort: {
+//             label: "💵 Quels sont les avantages pour s'inscrire ?",
+//             response: "Si vous avez inscrit chez CMZ, vous pouvez discuter avec d'autres personnes qui sont le même quartier de vous. Vous pouvez créer de votre propre groupe de restauration ou ferme avec votre proche et inviter d'autres personnes pour devenir membre."
+//         }
+//     },
+//     noconnect_cmz: {
+//         recherche: {
+//             label: "🔍 Comment trouver un restaurant ou ferme ou station ?",
+//             response: "Pour trouver rapidement quelque chose, je vous invite à chercher une donnée avec une adresse ou une quartier ce que vous voudrez dans un bar de recherche en haut."
+//         },
+//         map: {
+//             label: "🌐 Comment trouver un rubrique dans le map ?",
+//             response: "Vous pouvez localiser votre appareil pour faciliter la recherche de quelque chose de votre proximité. Ensuite, vous pouvez zoomer ou dezoomer la carte pour voir plus proche le détail de quelque chose."
+//         }
+//     }
+// }
+
 let dico = {
-    def_cmz: {
-        definition: {
-            label: "🌍 Qu'est ce que c'est ConsoMyZone ?",
-            response: "ConsoMyZone est une application de consommation de service de votre proximité"
-        },
-        objectif: {
-            label: "✍️ Quel est l'objectif de ConsoMyZone ?",
-            response: "L'objectif de CMZ est de fournir facilement des données aux consommateurs"
-        },
-        vision: {
-            label: "🔍 Quelle est la vision de ConsoMyZone ?",
-            response: "Aider les consommateurs à créer et entretenir le lien avec les professionnels, où qu'ils se trouvent "
-        }
+    definition: {
+        label: "Qu'est ce que ConsoMyZone ou CMZ pour les intimes ?",
+        response: "ConsoMyZone est une application qui vous aidera à consommer bien et bon près de chez vous.",
+        question: [
+            {
+                description: {
+                    label: "Comment ConsoMyZone peut vous aidez à consommer bien et bon?",
+                    response: "L'application embarque une carte interactive qui vous donne des informations bien qualifiées et mise à jour sur les restaurants," +
+                        "les golfs, les fermes, les stations et bien d'autres encore à venir, et vous donne aussi la possibilité de noter et de donner votre avis."
+                }
+            }
+        ]
     },
-    serv_cmz: {
-        tribu: {
-            label: "👨‍👨‍👧‍👦 Comment grouper tous les consommateurs ?",
-            response: "ConsoMyZone propose de créer votre propre groupe appelé Tribu pour attribuer les consommateurs (clients)"
-        },
-        message: {
-            label: "🖥️ Comment discuter entre consommateur ?",
-            response: "ConsoMyZone propose d'envoyer et de discuter avec un client ou consommateur par un message privé"
-        },
-        api: {
-            label: "💹 Comment utiliser les données de ConsoMyZone ?",
-            response: "ConsoMyZone possede sa propre API pour collecter leur données afin d'utiliser dans votre propre application"
-        }
+    FAQ: {
+        label: "Section FAQ?",
+        question: [
+            {
+                f1: {
+                    label: "ConsoMyZone, a-t-il une partie connectée?",
+                    response: "Oui, ConsoMyZone invoque la notion de tribu dans ses parties connectées."
+                }
+            },
+            {
+                f2: {
+                    label: "C'est quoi une tribu-G?",
+                    response: "Une tribu-G, est une tribu géographique (G pour géographie), qui regroupe tous les partisans qui habitent dans la même commune." +
+                        "Vous serez assigné à un tribu-G lors de votre inscription."
+                }
+            },
+            {
+                f3: {
+                    label: "Comment on vous assigne-t-on à une tribu-G ?",
+                    response: "Lors de votre inscription, vous serez amené à choisir votre commune, et cette commune que vous auriez choisis deviendra votre tribu-G."
+                }
+            },
+            {
+                f4: {
+                    label: "C'est quoi une tribu-T?",
+                    response: "Une tribu-T, est une tribu thématique (T pour thématique). Contrairement aux tribus-g, elle n'est pas assignée automatiquement," +
+                        "mais vous devriez la créer, l'animé, et chercher et inviter des partisans qui auront la même passion que vous à propos du thème de votre tribu-T."
+                }
+            },
+            {
+                f5: {
+                    label: "C'est quoi un fondateur ou fondatrice d'une tribu-G ?",
+                    response: "C'est le partisan, qui aura été le premier a s'inscrire sur ConsoMyZone dans sa commune."
+                }
+            },
+            {
+                f6: {
+                    label: "Quels sont les rôles d'un fondateur ou fondatrice ?",
+                    response: "Votre rôle sera d'animer la tribu et de veiller au bon déroulement des événements de la tribu, pour que tout le monde se sente en sécurité et soit à l'aise."
+                }
+            },
+            {
+                f7: {
+                    label: "Est ce que je peux abandonner mon rôle de fondateur.",
+                    response: "Oui, bien sûr"
+                }
+            },
+            {
+                f8: {
+                    label: "Que peut-on faire dans la partie connectée ?",
+                    response: "Vous pouvez partager vos pensées, des photos, créer des tribus-T, parlez avec d'autres partisans ," +
+                        "faire des appels vidéo ou vocal avec la messagerie de ConsoMyzone et gérer votre agenda et aussi le partager."
+
+                }
+            }
+
+        ]
     },
-    use_cmz: {
-        resto: {
-            label: "🥣 A propos des restaurants chez CMZ ?",
-            response: "On a plus de 75000 restaurants integrés dans ConsoMyZone, CMZ vous suggère le restaurant le plus proche"
-        },
-        ferme: {
-            label: "🏕️ A propos des fermes chez CMZ ?",
-            response: "On a plus de 6000 fermes qui peut être visiter et afficher"
-        },
-        station: {
-            label: "🚉 A propos des stations chez CMZ ?",
-            response: "La liste de station service est presque complet dans ConsoMyZone, qui facilite le consommateur au cas où on a manqué de carburant"
-        }
-    },
-    connect_cmz: {
-        membre: {
-            label: "👨‍👩‍👦‍👦 Qui peut devenir membre chez ConsoMyZone ?",
-            response: "Toutes les personnes qui ont besoin de service plus rapide et plus proche peuvent devenir membre chez CMZ. Vous avez une connexion internet? Alors, vous pouvez devenir membre. Inscrire <a class='link-primary' href='/connexion'>ici</a>."
-        },
-        pt_fort: {
-            label: "💵 Quels sont les avantages pour s'inscrire ?",
-            response: "Si vous avez inscrit chez CMZ, vous pouvez discuter avec d'autres personnes qui sont le même quartier de vous. Vous pouvez créer de votre propre groupe de restauration ou ferme avec votre proche et inviter d'autres personnes pour devenir membre."
-        }
-    },
-    noconnect_cmz: {
-        recherche: {
-            label: "🔍 Comment trouver un restaurant ou ferme ou station ?",
-            response: "Pour trouver rapidement quelque chose, je vous invite à chercher une donnée avec une adresse ou une quartier ce que vous voudrez dans un bar de recherche en haut."
-        },
-        map: {
-            label: "🌐 Comment trouver un rubrique dans le map ?",
-            response: "Vous pouvez localiser votre appareil pour faciliter la recherche de quelque chose de votre proximité. Ensuite, vous pouvez zoomer ou dezoomer la carte pour voir plus proche le détail de quelque chose."
-        }
+    sessions: {
+        label: "Comment gère-t-on vos données clients ?",
+        response: "Nous utilisons des sessions storages, pour stocker vos habitudes sur la carte ConsoMyzone  comme le niveau de zoom, dernier emplacement sur la carte," +
+            "pour vous donnez une meilleure expérience quand vous parcourez la carte."
+
     }
 }
 
+
 let dico_specifique = {
-    "je m'appelle": "Enchanté, je m'appelle ConsoMyZone.",
-    "ca va": "👨‍⚕️ Je vais bien, merci.",
-    "ca va?": "👨‍⚕️ Je vais bien, merci.",
-    "comment ca va?": "👨‍⚕️ Je vais bien, merci.",
-    "au revoir": "👋 Merci, à bientôt.",
-    "va tu": "👨‍⚕️ Je vais bien, merci.",
-    "bye bye": "👋 Merci, à bientôt.",
-    "station service": "L'opérateur station-service est en rapport direct avec la clientèle : service en carburant (si station traditionnelle), encaissement des sommes des marchandises ou services vendus sont ses tâches principales. Pour voir plus dans CMZ, veuillez consulter <a class='link-primary' href='/station'> ici</a>.",
-    "sp 95": "Le SP95-E10 est l'essence sans plomb qui contient jusqu'à 10% d'éthanol en volume. Le SP95 contient 7,5 % d'éthanol (en pur ou en dérivé). Pour voir plus dans CMZ, veuillez consulter <a class='link-primary' href='/station'> ici</a>.",
+    "je m'appelle": "Enchanté et bienvenu sur l'application ConsoMyzone. Comment puis-je vous aider ? ",
+    "ça va": "L'équipe ConsoMyzone se porte merveilleusement bien, nous tenons à vous souhaiter une très bonne santé. Comment puis-je vous aider ?",
+    "ça va?": "L'équipe ConsoMyzone se porte merveilleusement bien, nous tenons à vous souhaiter une très bonne santé. Comment puis-je vous aider ?",
+    "comment ça va?": "L'équipe ConsoMyzone se porte merveilleusement bien, nous tenons à vous souhaiter une très bonne santé. Comment puis-je vous aider ?",
+
+
 }
 
 let dico_response = {
-    "slt, salut, cv, cc, coucou, bjr, bonjour": "🤝 Bonjour.",
-    "merci": "👍 Je vous en prie.",
-    "bye, revoir": "👋 Merci, à bientôt.",
-    "bisous, biz": "😘 Bisous.",
-    "consomyzone, cmz, conso": "ConsoMyZone est une application de consommation de service de votre proximité.",
-    "compte, login, inscrire, connecter, connexion": "Si vous avez déjà un compte, veuillez connecter <a class='link-primary' href='/connexion'>ici</a>. Si vous n'avez pas un compte, je vous propose d'inscrire <a class='link-primary' href='/connexion'>ici</a>, en choisissant le menu inscription.",
-    "resto, restaurant, pizza, pizzeria, creperie, repas": "Dans la restauration, on a plusieurs restaurant qui se representent leurs produits dans notre application CMZ. Veuillez consulter <a class='link-primary' href='/restaurant'> ici</a> pour voir plus de restaurants.",
-    "ferme, fermier, farm, producteur, agriculture, biologie, fruit, produit, leguime, viande, crêmerie": "Visitez la ferme pour avoir le prix de gros et des produits biologiques et sécuritaires. Veuillez consulter <a class='link-primary' href='/ferme'> ici</a> pour voir plus de fermes.",
-    "station, carburant, essence, gazoil, petrole, gazole,sp95, sp98": "Visitez la station service dans notre application CMZ pour trouver la station le plus proche et choisissez le meuilleur prix. Veuillez consulter <a class='link-primary' href='/station'> ici</a> pour voir plus de stations.",
+    "slt, salut, cv, cc, coucou, bjr, bonjour": "Bonjour, comment puis-je vous aider ?",
+    "merci": "L'équipe ConsoMyzone vous remercie de l'intêret que vous portiez à l'application. Comment puis-je vous aider ?",
+    "bye, au revoir": "L'équipe ConsoMyzone vous remercie de l'intêret que vous portiez à l'application. Comment puis-je vous aider ?",
+    "bisous, biz": "L'équipe ConsoMyzone vous remercie de l'intêret que vous portiez à l'application. Comment puis-je vous aider ?",
+
 }
 
 let main_suggestion = {
-    def_cmz: "📌 C'est quoi ConsoMyZone ou CMZ ?",
-    serv_cmz: "♻️ Quelles services chez CMZ ?",
-    use_cmz: "🛠️ Nécessaire pour quel CMZ ?",
-    connect_cmz: "🏘️ Partie connecté de CMZ ?",
-    noconnect_cmz: "💎 Partie non connecté de CMZ ?"
+    definition: "Qu'est ce que ConsoMyZone ou CMZ pour les intimes ?",
+    FAQ: "Section FAQ ?",
+    sessions: "Comment gère-t-on vos données clients ?"
+
 }
 
 let file_extension = {
-    sheet : "xlsx",
-    document : "docx",
-    pdf : "pdf",
-    plain : "txt",
-    csv :"csv",
-    presentation :"pptx",
-    html :"html",
-    xml : "xml"
+    sheet: "xlsx",
+    document: "docx",
+    pdf: "pdf",
+    plain: "txt",
+    csv: "csv",
+    presentation: "pptx",
+    html: "html",
+    xml: "xml"
 }
 
 let image_list = [];
 
-if(document.querySelector("#closevisio")){
+if (document.querySelector("#closevisio")) {
 
     document.querySelector("#closevisio").addEventListener("click", function () {
         endChat()
-        document.querySelector("#chat_container").setAttribute("data-type","")
+        document.querySelector("#chat_container").setAttribute("data-type", "")
     })
 }
 
@@ -1047,7 +1144,7 @@ if (document.querySelector("#openMessage")) {
 
         document.querySelector("#assist_virt").style = "display:none;"
         document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
-        document.querySelector('#visio').style="display:none"
+        document.querySelector('#visio').style = "display:none"
 
         document.querySelector("#amis_list").style = "display:block;"
 
@@ -1066,7 +1163,7 @@ if (document.querySelector("#openMessage")) {
 
         if (first_user) {
             user_id = first_user.getAttribute("data-toggle-user-id")
-        } 
+        }
         // else {
         //     user_id = 0;
         //     runSpinner()
@@ -1076,9 +1173,9 @@ if (document.querySelector("#openMessage")) {
         //     runSuggestion()
         // }
 
-        let user_name = (first_user === undefined ) ? "" : first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
+        let user_name = (first_user === undefined) ? "" : first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
 
-        let user_photo = (first_user === undefined ) ? "" : first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
+        let user_photo = (first_user === undefined) ? "" : first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
 
         document.querySelector("div#user_head").innerHTML = `
                             <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
@@ -1106,7 +1203,7 @@ if (document.querySelector("#openChat")) {
 
         document.querySelector("#assist_virt").style = "display:;"
         document.querySelector(".btn-input-file").style = "display:none;"
-        document.querySelector('#visio').style="display:none"
+        document.querySelector('#visio').style = "display:none"
 
         document.querySelector("#amis_list").style = "display:none;"
 
@@ -1149,7 +1246,7 @@ if (document.querySelector("#openChat")) {
 }
 
 if (document.querySelector("#openVisio")) {
-    
+
 
     document.querySelector("#openVisio").addEventListener("click", function () {
 
@@ -1164,14 +1261,14 @@ if (document.querySelector("#openVisio")) {
         document.querySelector("#assist_virt").style = "display:none;"
         document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
 
-        document.querySelector('#conversation').style ="display:none"
+        document.querySelector('#conversation').style = "display:none"
 
-        document.querySelector('#closeChat').style ="display:none"
-        document.querySelector('#closevisio').style ="display:"
+        document.querySelector('#closeChat').style = "display:none"
+        document.querySelector('#closevisio').style = "display:"
 
-        document.querySelector("#chat_container").setAttribute("data-type","visio")
+        document.querySelector("#chat_container").setAttribute("data-type", "visio")
 
-        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style ="display:none;"
+        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:none;"
 
         document.querySelectorAll("div.user_friends").forEach(user => {
             user.style = "display:";
@@ -1191,7 +1288,7 @@ if (document.querySelector("#openVisio")) {
                             `;
         // document.querySelector('#conversation').innerHTML = ""
 
-        document.querySelector('#visio').style="display:block"
+        document.querySelector('#visio').style = "display:block"
 
         let my_id = document.querySelector("#amis_list").getAttribute("data-my-id")
 
@@ -1202,66 +1299,66 @@ if (document.querySelector("#openVisio")) {
 
             const all_meet = JSON.parse(event.data);
 
-            const last_meet = all_meet[all_meet.length-1]
+            const last_meet = all_meet[all_meet.length - 1]
 
-            if(all_meet.length>0){
+            if (all_meet.length > 0) {
 
                 all_meet.forEach(meet => {
 
-                    if(!document.querySelector('.meet_'+meet.id)){
-    
+                    if (!document.querySelector('.meet_' + meet.id)) {
+
                         let stat = "manqué"
                         let color = ""
                         let btn_join = ""
-                        switch(meet.status) {
+                        switch (meet.status) {
                             case 'wait':
                                 stat = `en attente...`
                                 color = 'info'
                                 btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
-                              break;
+                                break;
                             case 'progress':
                                 stat = `en cours`
                                 color = 'warning'
                                 btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
-                              break;
+                                break;
                             case 'finished':
                                 stat = `términé`
                                 color = 'success'
-                              break;
+                                break;
                             case 'missed':
                                 stat = `manqué`
                                 color = 'danger'
-                              break;
+                                break;
                             default:
                                 stat = "manqué"
-                          }
-    
-                        if(!document.querySelector("#visio > iframe")){
-    
+                        }
+
+                        if (!document.querySelector("#visio > iframe")) {
+
                             document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
                                 <p class="qb-chat mn un mt-4">
-                                    ${my_id==meet.from?meet.username +"(vous)" : meet.username}
+                                    ${my_id == meet.from ? meet.username + "(vous)" : meet.username}
                                 </p>
                                 <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
                                 <p class="text-${color} mb-2">
                                     <i class="fas fa-video-camera me-2 ms-1"></i>
-                                    ${meet.users_number > 1? "Réunion" : "Appel"} ${stat}
+                                    ${meet.users_number > 1 ? "Réunion" : "Appel"} ${stat}
                                     ${btn_join}
                                 </p> 
                                 </div>
                                 <p class="nn-chat float-end">${meet.date}</p>
                             </div>`
                         }
-    
+
                     }
-                    
+
                 })
-    
-                if(last_meet && !document.querySelector("#visio > iframe")){
-                    document.querySelector(".meet_"+last_meet.id).scrollIntoView();
+
+                if (last_meet && !document.querySelector("#visio > iframe")) {
+                    document.querySelector(".meet_" + last_meet.id).scrollIntoView();
                 }
-            }else{
-                document.querySelector("#visio").innerHTML ="<div class='m-4'><p class='text-center'>Aucune visioconférence a été notée.</p></div>";
+            } else {
+                document.querySelector("#visio").innerHTML = "<div class='m-4'><p class='text-center'>Aucune visioconférence a été notée.</p></div>";
             }
 
         }
@@ -1331,64 +1428,64 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
 
         //Assistant virtuel and messagerie container
 
-        if(document.querySelector("#chat_container").getAttribute("data-type") != "visio"){
+        if (document.querySelector("#chat_container").getAttribute("data-type") != "visio") {
 
             document.querySelector("#conversation").innerHTML = ""
 
             document.querySelector(".content_image_input_js_jheo").innerHTML = ""
-    
+
             document.querySelector(".content_image_input_js_jheo_file_name").innerHTML = ""
-    
+
             image_list = [];
-            
+
             let user_name = e.target.textContent.trim()
-    
+
             //let user_id = amis.getAttribute("data-toggle-user-id")
-    
+
             document.querySelector("#user_name_chat").innerText = user_name
-    
+
             if (user_name != "Assistant Virtuel") {
-    
+
                 document.querySelector("#profile-user").src = amis.querySelector("img").src
                 document.querySelector(".mn-chat").style.display = "none"
-    
+
                 document.querySelector("div.user-chat-display").setAttribute("data-user-id", amis.getAttribute("data-toggle-user-id"))
-    
+
                 // get message from other user
-    
+
                 getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-    
+
                 checkNewMessage(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-    
+
                 document.querySelector(".btn-input-file").style = "cursor:pointer;"
-    
+
             } else {
-    
+
                 document.querySelector("#profile-user").src = "https://www.iconpacks.net/icons/1/free-help-icon-1160-thumb.png"
-    
+
                 document.querySelector(".user-chat-display").innerHTML = `
                         <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
                             Assistant Virtuel
                         </h5>
                         <p class="mn-chat">Reponse automatique</p>`
-    
+
                 document.querySelector("div.user-chat-display").setAttribute("data-user-id", "0")
-    
+
                 document.querySelector(".btn-input-file").style = "cursor:not-allowed;"
-    
+
                 runSpinner()
-    
+
                 writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-    
+
                 runSuggestion()
-    
+
             }
 
-        // Visio conference container
+            // Visio conference container
 
-        }else{
+        } else {
 
-            let roomRandom = "Meet"+generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+            let roomRandom = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
 
             runVisio(roomRandom, amis.getAttribute("data-toggle-user-id"))
 
@@ -1400,7 +1497,7 @@ document.querySelectorAll("div.cg-chat").forEach(amis => {
 
 /** Upload image */
 
- ///read file
+///read file
 
 document.querySelector("#input-image").addEventListener("change", (e) => {
 
@@ -1415,8 +1512,8 @@ document.querySelector("#input-image").addEventListener("change", (e) => {
         ///let get multiple images (files)
 
         image_list.push({
-            name : reader.result,
-            type : "image"
+            name: reader.result,
+            type: "image"
         });
 
         //// for the content image above the input message
@@ -1454,8 +1551,8 @@ document.querySelector("#input-file").addEventListener("change", (e) => {
 
         ///let get multiple images (files)
         image_list.push({
-            name : reader_doc.result,
-            type : "file"
+            name: reader_doc.result,
+            type: "file"
         });
 
         const file_name = document.createElement("li")

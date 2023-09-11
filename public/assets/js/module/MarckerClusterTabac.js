@@ -10,7 +10,7 @@ class MarckerClusterTabac extends MapModule {
             { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
             { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
             // { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
-            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: ["nom_qv", "code_qv", "nom_pole", "pole" ]},       /// YlOrRd
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ]
           
@@ -20,7 +20,7 @@ class MarckerClusterTabac extends MapModule {
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
-            this.initMap(null, null, isAddControl);
+            this.initMap(null, null, null, isAddControl);
 
             const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
             const response= await fetch(link);
@@ -103,10 +103,10 @@ class MarckerClusterTabac extends MapModule {
     addMarker(newData){
 
         newData.forEach(item => {
-            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>"  + item.adress;
+            const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
             let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
             
-            let pathIcon="assets/icon/NewIcons/tabac_black.png";
+            let pathIcon="assets/icon/NewIcons/tabac_black0.png";
             let taille= 0 /// 0: min, 1: moyenne, 2 : grand
 
             let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
@@ -114,14 +114,17 @@ class MarckerClusterTabac extends MapModule {
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
+
+                hideRightSide();
+
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
-                pathIcon='/assets/icon/NewIcons/tabac_red.png';
+                pathIcon='/assets/icon/NewIcons/tabac_red0.png';
                
                 const icon_R = L.Icon.extend({
                     options: {
                         iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                        iconSize: [45,55],
+                        iconSize: [35,55],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
                         shadowSize: [68, 95],
@@ -267,8 +270,8 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune">
-                    <label class="form-check-label text-black" for="commune">
+                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune" disabled>
+                    <label class="form-check-label non_active text-black" for="commune">
                         COMMUNE
                     </label>
                     <div class="content_select_commune_jheo_js">
@@ -276,13 +279,20 @@ class MarckerClusterTabac extends MapModule {
                     </div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris">
-                    <label class="form-check-label text-black" for="iris">
+                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" disabled>
+                    <label class="form-check-label non_active text-black" for="iris">
                         IRIS
                     </label>
                     <div class="content_select_iris_jheo_js">
                         <div class="select_region select_iris_jheo_js"></div>
                     </div>
+                </div>
+            </div>
+            <div class="d-none chargement_tabac chargement_tabac_jheo_js">
+                <div class="containt">
+                    <div class="word word-1">C</div>
+                    <div class="word word-2">M</div>
+                    <div class="word word-3">Z</div>
                 </div>
             </div>
         `
@@ -304,15 +314,18 @@ class MarckerClusterTabac extends MapModule {
                throw new Error(`Selector not found : ${inputCheck}`);
             }
             
+            ///// event handlers
             const inputCheck_HTML= document.querySelector(`.${inputCheck}`)
             inputCheck_HTML.addEventListener("change", (e) => {
+                const couche= inputCheck_HTML.getAttribute("id")
                 if( e.target.checked){
-                    this.addCoucheOnLeaflet(inputCheck_HTML.getAttribute("id"))
+                    showChargementTabac()
+                    this.addCoucheOnLeaflet(couche) //// param couche name
                 }else{
-                    const couche= inputCheck_HTML.getAttribute("id")
                     const list = document.querySelector(`.select_${couche.toLowerCase()}_jheo_js`)
                     
                     this.removeCoucheOnLeafled(couche)
+
                     if(list && !list.classList.contains("d-none") ){
                         list.classList.add("d-none")
 
@@ -328,6 +341,7 @@ class MarckerClusterTabac extends MapModule {
 
     async addCoucheOnLeaflet(COUCHE){
         try{
+            ///// check if this is already get...
             const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
             if(!currentCouche){
                 const link = IS_DEV_MODE ? `/assets/shapefile/${COUCHE.toUpperCase()}.zip` : `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
@@ -340,21 +354,35 @@ class MarckerClusterTabac extends MapModule {
                     console.log(reader.result)
                     shp(reader.result)
                         .then((geoJson) =>{
-                            
+                            hideChargementTabac()
+                            ///// couche Option, colors, properties
                             const coucheOption= this.tabacOption.find(item => item.couche === COUCHE.toLowerCase());
 
                             this.objectGeoJson.push({ couche: COUCHE, data : geoJson.features, color : coucheOption.arrayColor , child : []})
-                            generateSelect(COUCHE, geoJson.features) //// function in data_tabac
+                            if( COUCHE !== "quartier"){
+                                generateSelect(COUCHE, geoJson.features) //// function in data_tabac
+                            }else{
+                                this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
+                            }
                         })
-                        .catch(error => console.log(error))
+                        .catch(error => {
+                            hideChargementTabac()
+                            console.log(error)
+                        })
                 };
 
                 reader.readAsArrayBuffer(file)
             }else{
+                hideChargementTabac()
                 //// generate
-                generateSelect(COUCHE, currentCouche.data , currentCouche.child) //// function in data_tabac
+                if( COUCHE !== "quartier"){
+                    generateSelect(COUCHE, currentCouche.data , currentCouche.child) //// function in data_tabac
+                }else{
+                    this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
+                }
             }
         }catch(e){
+            hideChargementTabac()
             console.log(e.message)
         }
 
@@ -366,11 +394,13 @@ class MarckerClusterTabac extends MapModule {
         const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
         const styles={
             color: data_spec.color[0],
-            fillColor: data_spec.color[1],
-            fillOpacity: 1
+            // fillColor: data_spec.color[1],
+            fillOpacity: 0,
+            weight: 2,
         }
 
-        const geoJson = L.geoJson(data_spec.data[parseInt(indexInJson)], {
+        const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
+        const geoJson = L.geoJson( data, {
             style: styles,
             onEachFeature : (feature, layer)  => {
                 const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
@@ -390,13 +420,16 @@ class MarckerClusterTabac extends MapModule {
             }
         }).addTo(this.map);
 
-        this.objectGeoJson= this.objectGeoJson.map(item => { 
+        this.objectGeoJson= this.objectGeoJson.map((item, index) => { 
             if( item.couche.toLowerCase() === couche ){
-                item.child.push({ index : indexInJson, geoJson : geoJson})
+                if(indexInJson !== -1 ){
+                    item.child.push({ index : indexInJson, geoJson : geoJson})
+                }else{
+                    item.child.push({ index : index, geoJson : geoJson})
+                }
             }
             return item;
         })
-
     }
 
 
@@ -407,11 +440,11 @@ class MarckerClusterTabac extends MapModule {
         data_spec.child.forEach(jtem => jtem.geoJson.clearLayers());
 
         ///// update data remove all children selected in this
-        this.objectGeoJson= this.objectGeoJson.map(item => { 
-            item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
-            return item;
-        })
-
+        // this.objectGeoJson= this.objectGeoJson.map(item => { 
+        //     item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
+        //     return item;
+        // })
+        this.objectGeoJson= this.objectGeoJson.filter(item => item.couche.toLowerCase() !== COUCHE )
     }
 
     removeSpecGeoJson(couche,indexInJson){

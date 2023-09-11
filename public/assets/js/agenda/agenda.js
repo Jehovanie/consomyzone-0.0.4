@@ -309,7 +309,6 @@ function setAndShowModal(agenda) {
         document.querySelector("#shareAgendaBtn").classList.remove("d-none")
     }
 
-    let etabCMZ = document.querySelector("#etabCMZ")
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")
 
@@ -322,8 +321,6 @@ function setAndShowModal(agenda) {
     }
 
     if (agenda.isEtabCMZ) {
-
-        document.querySelector("#etabSelectOptions").value = 1
 
         nomEtab.querySelector("input").disabled = true
 
@@ -341,14 +338,11 @@ function setAndShowModal(agenda) {
 
     } else {
 
-        document.querySelector("#etabSelectOptions").value = 2
+        document.querySelector("#autreRadio").checked = true
 
         nomEtab.querySelector("input").disabled = false
 
         adresseContainer.querySelector("input").disabled = false
-
-        if (!document.querySelector("#etabCMZ").classList.contains("d-none"))
-            document.querySelector("#etabCMZ").classList.add("d-none")
 
     }
 
@@ -366,6 +360,50 @@ function setAndShowModal(agenda) {
 
     document.querySelector("#timeEnd").value = agenda.heure_fin;
 
+}
+
+function seletOtherEtab(isEtabCMZ){
+
+    let nomEtab = document.querySelector("#containerNomEtab")
+    let adresseContainer = document.querySelector(".lieuEventContainer")
+
+    if(!isEtabCMZ){
+
+        if (nomEtab.classList.contains("d-none")) {
+            nomEtab.classList.remove("d-none")
+        }
+    
+        if (adresseContainer.classList.contains("d-none")) {
+            adresseContainer.classList.remove("d-none")
+        }
+
+        nomEtab.querySelector("input").value = ""
+
+        adresseContainer.querySelector("input").value = ""
+    
+        nomEtab.querySelector("input").disabled = false
+    
+        adresseContainer.querySelector("input").disabled = false
+
+    }else{
+
+        if (!nomEtab.classList.contains("d-none")) {
+            nomEtab.classList.add("d-none")
+        }
+    
+        if (!adresseContainer.classList.contains("d-none")) {
+            adresseContainer.classList.add("d-none")
+        }
+
+        nomEtab.querySelector("input").value = ""
+
+        adresseContainer.querySelector("input").value = ""
+    
+        nomEtab.querySelector("input").disabled = true
+    
+        adresseContainer.querySelector("input").disabled = true
+
+    }
 }
 
 
@@ -570,6 +608,7 @@ function deleteAgenda() {
         icon: "warning",
         buttons: true,
         dangerMode: true,
+        // allowOutsideClick: false
     })
         .then((willDelete) => {
 
@@ -627,7 +666,9 @@ function createLinkRestoPastile(index, resto, isValid = true) {
 
 function activeOnglet(elem) {
     if (!elem.classList.contains("active")) {
+        
         elem.classList.add("active")
+        
         let cmzEtab = ""
 
         if (elem.dataset.name == "golf") {
@@ -650,16 +691,14 @@ function activeOnglet(elem) {
 
 function getListEtabCMZ(element) {
     let tab = document.querySelectorAll("#smallNavInvitationDep > li > a")
-    let cmzEtab = ""
+    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
     if (tab[0].classList.contains("active")) {
 
-        if (tab[0].textContent.toLowerCase().includes("golf")) {
-            cmzEtab = "golf"
+        if (cmzEtab == "golf") {
             tabEtab[0].textContent = "Tous les golfs"
-            tabEtab[1].textContent = "Golfs pastillés"
-        } else if (tab[0].textContent.toLowerCase().includes("restaurant")) {
-            cmzEtab = "restaurant"
+            tabEtab[1].textContent = "Golfs à faire"
+        } else if (cmzEtab == "restaurant") {
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
         }
@@ -674,7 +713,7 @@ function getListEtabCMZ(element) {
 
         tabEtab[1].dataset.name = cmzEtab
 
-        if (element.dataset.id != "75") {
+        if (element.dataset.id != "75" || cmzEtab == "golf") {
 
             $("#listRestoOrGolfModal").modal("show")
             makeLoading()
@@ -689,12 +728,10 @@ function getListEtabCMZ(element) {
 
     } else {
 
-        if (tab[1].textContent.toLowerCase().includes("golf")) {
-            cmzEtab = "golf"
+        if (cmzEtab == "golf") {
             tabEtab[0].textContent = "Tous les golfs"
-            tabEtab[1].textContent = "Golfs pastillés"
-        } else if (tab[1].textContent.toLowerCase().includes("restaurant")) {
-            cmzEtab = "restaurant"
+            tabEtab[1].textContent = "Golfs à faire"
+        } else if (cmzEtab == "restaurant") {
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
         }
@@ -794,11 +831,13 @@ function selectEtab(e) {
  * showing list departement
  * @param {*} radio 
  */
-function showDepModal(radio) {
+function showDepModal() {
+
+    seletOtherEtab(true)
 
     let container = document.querySelector('.container_list_dep')
 
-    let cmzEtab = radio.value
+    let cmzEtab = "restaurant"
 
     let navLinksModal = document.querySelectorAll("#smallNavInvitationDep > li > a")
 
@@ -811,16 +850,46 @@ function showDepModal(radio) {
 
     activeOngletForDep(navLinksModal[0])
 
-    if (cmzEtab == "golf") {
-        navLinksModal[0].textContent = "Tous les golfs"
-        navLinksModal[1].textContent = "Golfs pastillés"
-    } else {
-        navLinksModal[0].textContent = "Tous les restaurants"
-        navLinksModal[1].textContent = "Restaurants pastillés"
-    }
+    navLinksModal[0].textContent = "Tous les restaurants"
+    navLinksModal[1].textContent = "Restaurants pastillés"
 
     $("#createAgenda").modal("hide")
 
+    getListDep(container)
+
+    document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
+
+    $("#listDepModal").modal("show")
+
+    makeLoading()
+
+}
+
+function showDepModalGol() {
+
+    seletOtherEtab(true)
+
+    let container = document.querySelector('.container_list_dep')
+
+    let cmzEtab = "golf"
+
+    let navLinksModal = document.querySelectorAll("#smallNavInvitationDep > li > a")
+
+    let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
+
+    if (!tabEtab[0].classList.contains("active")) {
+        tabEtab[0].classList.add("active")
+        tabEtab[1].classList.remove("active")
+    }
+
+    activeOngletForDep(navLinksModal[0])
+
+
+    navLinksModal[0].textContent = "Tous les golfs"
+    navLinksModal[1].textContent = "Golfs à faire"
+
+    $("#createAgenda").modal("hide")
+    
     getListDep(container)
 
     document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
@@ -991,6 +1060,7 @@ function getAllEtab(etab, isPast, element) {
             let turnOffLogo=false
             if (results.length > 0) {
                 results.forEach((etablissement, index) => {
+                    console.log(etablissement[0])
                     if (etablissement.tribu) {
                         turnOffLogo=true
                         document.querySelector("#tableEtabCMZ > tbody").appendChild(
@@ -1008,16 +1078,34 @@ function getAllEtab(etab, isPast, element) {
                                 }, true))
                     } else {
                         turnOffLogo=false
-                        document.querySelector("#tableEtabCMZ > tbody").appendChild(
-                            generateTableForEtab(index, {
-                                id: etablissement.id_etab,
-                                nom: etablissement.name,
-                                adresse: etablissement.adresse,
-                                tel: etablissement.tel,
-                                departement: etablissement.departement,
-                                dep: etablissement.dep,
-                                id_etab: etablissement.id_etab
-                            }, true))
+                        
+                        if(etab=== "golf"){
+                            let status="Pas encore pastillé";
+                            if(etablissement[0])
+                             status = etablissement[0].afaire === 1 ? "à faire" : etablissement[0].fait === 1 ? "fait" : "Pas encore pastillé"
+                            document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                                generateTableForEtab(index, {
+                                    id: etablissement.id_etab,
+                                    nom: etablissement.name,
+                                    adresse: etablissement.adresse,
+                                    tel: etablissement.tel,
+                                    departement: etablissement.departement,
+                                    dep: etablissement.dep,
+                                    id_etab: etablissement.id_etab,
+                                    status:status
+                                }, true))
+                        }else{
+                            document.querySelector("#tableEtabCMZ > tbody").appendChild(
+                                generateTableForEtab(index, {
+                                    id: etablissement.id_etab,
+                                    nom: etablissement.name,
+                                    adresse: etablissement.adresse,
+                                    tel: etablissement.tel,
+                                    departement: etablissement.departement,
+                                    dep: etablissement.dep,
+                                    id_etab: etablissement.id_etab
+                                }, true))
+                        }
                     }
                 });
                 document.querySelector(".list_resto_or_golf").style.display = "block";
@@ -1069,7 +1157,6 @@ function generateTableForEtab(index, etab, isValid = true) {
 
             }
 
-
             nomTribu = etab.tribu.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
             nomTribu = nomTribu.charAt(0).toUpperCase() + nomTribu.slice(1)
             // logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
@@ -1096,6 +1183,34 @@ function generateTableForEtab(index, etab, isValid = true) {
                 document.querySelector(".forTribu").remove()
         }
 
+        if(etab.status){
+            if (!document.querySelector(".forGolfStatus")) {
+
+                const forGolfStatus = document.createElement("th");
+
+                forGolfStatus.classList.add("forGolfStatus")
+
+                const textNodeStatus = document.createTextNode("Status");
+
+                forGolfStatus.appendChild(textNodeStatus);
+
+                // Insert before existing child:
+                const thead = document.querySelector("#tableEtabCMZ > thead > tr");
+
+                thead.insertBefore(forGolfStatus, thead.children[0]);
+
+            }
+
+          
+
+            let tdStatus = document.createElement("td")
+            tdStatus.textContent =etab.status
+            tr.appendChild(tdStatus)
+        }else{
+            if (document.querySelector(".forGolfStatus"))
+                document.querySelector(".forGolfStatus").remove()
+        }
+
         let tdDataName = document.createElement("td")
         tdDataName.textContent = etab.nom
        
@@ -1114,8 +1229,9 @@ function generateTableForEtab(index, etab, isValid = true) {
         let btnCheck = document.createElement("button")
         btnCheck.setAttribute("type", "button")
         btnCheck.setAttribute("class", "btn btn-outline-info btn-sm")
-        btnCheck.setAttribute("onclick", `setNameOrAdresseForEtab({ name:'${etab.nom}',adress:'${etab.adresse.toLowerCase()}'} ,this)`)
+        btnCheck.setAttribute("onclick", `setNameOrAdresseForEtab({ name:"${etab.nom}",adress:"${etab.adresse.toLowerCase()}"} ,this)`)
         btnCheck.textContent = "Choisir"
+        btnCheck.dataset.idetab = etab.id_etab
         tr.appendChild(tdDataName)
         tr.appendChild(tdDataAdresse)
         tr.appendChild(tdDatel)
@@ -1150,7 +1266,33 @@ function setNameOrAdresseForEtab(etab, element) {
         element.classList.add(classSuccess);
         element.classList.add("resto_pastiled_jheo_js");
 
-        element.innerText = 'Sélectionner';
+        element.innerText = 'Sélectionnée';
+    }
+
+    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
+
+    if(cmzEtab == "golf"){
+        const request = new Request("/user/setGolf/todo", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify({
+                golfID : element.dataset.idetab,
+            })
+        })
+
+        fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            if( response.success){
+                new swal("Bravo !","Vous avez marqué ce golf comme à faire !", "success")
+                    .then((value) => {
+                        
+                    });  
+            }
+        })
     }
 
     document.querySelector("#nomEtabEvent").value = etab.name;
@@ -1181,6 +1323,11 @@ function makeLoading() {
     }
 }
 
+/**
+ * @author NANTENAINA
+ * create new egenda
+ * @param {*} agenda 
+ */
 function saveNewAgenda(agenda) {
 
     const param = {
@@ -1193,6 +1340,7 @@ function saveNewAgenda(agenda) {
         "adresse": agenda.adresse,
         "description": agenda.description,
         "participant": agenda.participant,
+        "place_libre":agenda.place_libre,
         "dateStart": agenda.dateStart,
         "dateEnd": agenda.dateEnd,
         "timeStart": agenda.timeStart,
@@ -1244,15 +1392,14 @@ function getObjectForNewAgenda(e) {
 
     let state = true;
 
-    let isEtabCMZ = parseInt(document.querySelector("#etabSelectOptions").value) == 1 ? true : false;
+    let isEtabCMZ = false
 
-    let isGolfCMZ = false
+    let isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
 
-    let isRestoCMZ = false
+    let isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false
 
-    if (isEtabCMZ) {
-        isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
-        isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false
+    if (isGolfCMZ || isRestoCMZ) {
+        isEtabCMZ = true
     }
 
     const agenda = {
@@ -1265,6 +1412,7 @@ function getObjectForNewAgenda(e) {
         "adresse": document.querySelector("#lieuEvent").value,
         "description": document.querySelector("#eventDesc").value,
         "participant": document.querySelector("#nbrParticipant").value,
+        "place_libre": document.querySelector("#nbrParticipant").value,
         "dateStart": document.querySelector("#eventStart").value,
         "dateEnd": document.querySelector("#eventEnd").value,
         "timeStart": document.querySelector("#timeStart").value,
@@ -1366,19 +1514,20 @@ function initInputForm() {
 
     document.querySelector('.eventDesc_jheo_js').value = null
 
-    document.querySelector("#etabSelectOptions").value = 1
+    // document.querySelector("#etabSelectOptions").value = 1
 
     document.querySelector("#golfRadio").checked = false
-    document.querySelector("#restoRadio").checked = false;
+    document.querySelector("#autreRadio").checked = false
+    document.querySelector("#restoRadio").checked = false
 
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")
 
-    let cmzEtab = document.querySelector("#etabCMZ")
+    /*let cmzEtab = document.querySelector("#etabCMZ")
 
     if (cmzEtab.classList.contains("d-none")) {
         cmzEtab.classList.remove("d-none")
-    }
+    }*/
 
     if (!nomEtab.classList.contains("d-none")) {
         nomEtab.classList.add("d-none")
@@ -1459,6 +1608,7 @@ if (document.querySelector('#list-tribu-g-partage-agenda')) {
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
+            "emptyTable": "Aucun partisan à part vous dans ce tribu",
 
         },})
 }
@@ -1495,26 +1645,38 @@ function selectAllPartisan(source,isG) {
 
     if(isG){
         var checkboxes = document.querySelectorAll('.select-tribu-g-oui');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source)
-                checkboxes[i].checked = source.checked;
-        }
 
-        if(source.checked){
-            document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+        if(checkboxes.length > 0){
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+            }
+    
+            if(source.checked){
+                document.querySelector("#shareAgendaForPartisan").classList.remove("btn-second-primary")
+            }else{
+                document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
+            }
         }else{
             document.querySelector("#shareAgendaForPartisan").classList.add("btn-second-primary")
         }
 
+
     }else{
         var checkboxes = document.querySelectorAll('.select-tribu-t-oui');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source)
-                checkboxes[i].checked = source.checked;
-        }
 
-        if(source.checked){
-            document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+        if(checkboxes.length > 0){
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+            }
+    
+            if(source.checked){
+                document.querySelector("#shareBtnTribuTForPart").classList.remove("btn-second-primary")
+            }else{
+                document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+            }
         }else{
             document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
         }
@@ -1530,7 +1692,27 @@ function selectAllPartisan(source,isG) {
  */
 function showPartisanAgenda(tribu_t_name) {
 
-    document.querySelector('#list-partisans-tribu-t-agenda').innerHTML = ""
+    document.querySelector("#shareBtnTribuTForPart").classList.add("btn-second-primary")
+
+    document.querySelector("#list-partisans-tribu-t-partage-agenda").innerHTML = `<table id="list-partisans-tribuT" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Profil</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Prénom</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Rôle</th>
+                                <th scope="col">
+                                    <input type="checkbox" class="selectTribuTAll" name="selectionner" id="selectTribuTAll" onchange="selectAllPartisan(this,false)"> 
+                                    <label for="selectionner">Sélectionnée tout</label></th>
+                                </th>
+      
+                            </tr>
+                        </thead>
+                        <tbody id="list-partisans-tribu-t-agenda">
+      
+                        </tbody>
+                      </table>`
 
     const param = "?tbl_tribu_T_name=" + encodeURIComponent(tribu_t_name)
     console.log(param)
@@ -1543,52 +1725,10 @@ function showPartisanAgenda(tribu_t_name) {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-<<<<<<< HEAD
-                jsons.forEach(json => {
-                    console.log(JSON.parse(json.infos_profil));
-                    profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil!=null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
-                    let lastName = profilInfo.lastName
-                    let firstName = profilInfo.firstName
-                    let tribuG = profilInfo.tribuG.replace("tribug_01_","")
-                    
-                    document.querySelector(`#list-partisans-tribu-t-agenda-${tribu_t_name}`).innerHTML += `
-                        <tr class="table-partisans-${tribu_t_name}-${lastName}">
-                            <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
-                            <td>${firstName}</td>
-                            <td>${lastName}</td>
-                            <td></td>
-                            <td>${json.roles}</td>
-                            <td  class="content-checkbox">
-                                <input type="checkbox" name="selectOui" class="select-tribu-t-oui" data-id="${json.user_id}" data-tribu="${tribu_t_name}" data-toggle-last="${lastName}" data-toggle-pdp="${profil}" value="${firstName}" onchange="handleChange(this)">
-                            </td>
-                       </tr>
-                    `
-                    if (document.querySelector(`.btn-close-partisans-${tribu_t_name}`)) {
-                        document.querySelector(`.btn-close-partisans-${tribu_t_name}`).addEventListener('click' , () => {
-                            document.querySelector(`.table-partisans-${tribu_t_name}-${lastName}`).remove()
-                        })
-                    }
-
-                })    
-            })
-        }
-    })
-    if (document.querySelector(".cta_close_list_partisons_t")) {
-        document.querySelector(".cta_close_list_partisons_t").addEventListener('click', () => { 
-            alert('Close')
-            document.querySelector(`#listPartisantInTribu_${tribu_t_name}`).close()
-        })
-    }
-   
-=======
-                // makeLoading()
-                let i = 0
                 jsons[0].forEach(json => {
-                    console.log(json)
-                    if(jsons["curent_user"] != json.id){
 
-                        // console.log(JSON.parse(json.infos_profil));
+                    if(jsons["curent_user"] != json.id){
+                        
                         profilInfo = JSON.parse(json.infos_profil)
                         let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
                         let lastName = profilInfo.lastName
@@ -1598,8 +1738,8 @@ function showPartisanAgenda(tribu_t_name) {
                         document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
                             <tr class="table-partisans-${tribu_t_name}-${lastName}">
                                 <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
-                                <td data-id="${json.user_id}" class="firstname">${firstName}</td>
-                                <td class="lastname">${lastName}</td>
+                                <td data-id="${json.user_id}" class="lastname">${firstName}</td>
+                                <td class="firstname">${lastName}</td>
                                 <td class="content-checkbox email">${profilInfo.email}</td>
                                 <td>${json.roles}</td>
                                 <td>
@@ -1614,18 +1754,10 @@ function showPartisanAgenda(tribu_t_name) {
                             })
                         }
 
-                        i++
-
+                    }else{
+                        document.querySelector("#list-partisans-tribu-t-agenda").dataset.id = json.id
                     }
                 })
-
-                if(i < 1){
-                    document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
-                            <tr class="text-center">
-                                <td colspan="6">Aucun partisan à part vous</td>
-                           </tr>
-                        `
-                }
 
                 $("#listPartisantInTribuT").modal("show")
 
@@ -1633,15 +1765,14 @@ function showPartisanAgenda(tribu_t_name) {
                     language: {
                         url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                         "search": "Recherche global",
+                        "emptyTable": "Aucun partisan à part vous dans ce tribu",
             
-                    },"ordering": true, destroy: true})
+                    }
+                })
 
             })
         }
     })
-
-
->>>>>>> dev
 }
 
 function handleChange(elment,isG) {
@@ -1790,7 +1921,7 @@ function putInputOnDataTableHeader(selector,colIdx,api){
 }
 
 function findEtabByKey(e){
-    
+    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     let cles0 = ""
     let cles1 = ""
     if(e.target.nextElementSibling){
@@ -1805,7 +1936,7 @@ function findEtabByKey(e){
     
     if(e.code == "Enter" || e.code == 13){
         let param = "?cles0="+cles0+"&cles1="+cles1
-        const request = new Request("/api/search/restaurant" + param, {
+        const request = new Request("/api/search/"+cmzEtab + "/" + param, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -1818,6 +1949,14 @@ function findEtabByKey(e){
 
         $("#listRestoOrGolfModal").modal("show")
 
+        if(cmzEtab == "golf"){
+            document.querySelectorAll("#smallNavInvitation > li > a")[0].textContent = "Tous les golfs"
+            document.querySelectorAll("#smallNavInvitation > li > a")[1].textContent = "Golfs à faire"
+        }else{
+            document.querySelectorAll("#smallNavInvitation > li > a")[0].textContent = "Tous les restaurants"
+            document.querySelectorAll("#smallNavInvitation > li > a")[1].textContent = "Restaurants pastillés"
+        }
+
         fetch(request)
             .then(response => response.json())
             .then(data=>{
@@ -1828,7 +1967,7 @@ function findEtabByKey(e){
                     tabEtab[0].classList.add("active")
                     tabEtab[1].classList.remove("active")
                 }
-                
+               
                 let initTable = `<table class="table table-striped" id="tableEtabCMZ">
                         <thead>
                             <tr>
@@ -1842,6 +1981,7 @@ function findEtabByKey(e){
                     </table>`
 
                 document.querySelector(".list_resto_or_golf").innerHTML = initTable
+
 
                 let turnOffLogo=false
                 if (results.length > 0) {
@@ -1873,38 +2013,3 @@ function findEtabByKey(e){
     }
 
 }
-
-// function shareEvent(){
-//     let data = []
-//     let memberElem = document.querySelectorAll("#list-partisans-tribu-t-agenda > tr")
-//     memberElem.forEach(tr=>{
-//         let isChecked = tr.querySelector("input").checked
-//         if(isChecked){
-//             let user = {
-//                 id : tr.querySelector(".lastname").dataset.id,
-//                 firstname : tr.querySelector(".firstname").textContent,
-//                 lastname : tr.querySelector(".lastname").textContent,
-//                 email : tr.querySelector(".email").textContent,
-//                 role : tr.querySelector(".role").textContent,
-//                 agenda : sessionStorage.getItem("agenda")
-//             }
-//             data.push(user)
-//         }
-//     })
-
-//     let request = new Request("/api/user/send/event", {
-//         method: "POST",
-//         headers: {
-//             'Accept': 'application/json',
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(data)
-//     })
-//     fetch(request).then(r=>{
-//         if(r.status===200 && r.ok){
-//             //swetalert
-//         }else{
-//             //sweat alert
-//         }
-//     })
-// }

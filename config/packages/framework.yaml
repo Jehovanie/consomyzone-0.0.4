@@ -17,9 +17,8 @@ framework:
     php_errors:
         log: true
 
-    assets:
-        # base_path: '/public'
-        base_path: '/'
+    # assets:
+    #     base_path: '/public'
 
 when@test:
     framework:

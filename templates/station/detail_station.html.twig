@@ -31,11 +31,11 @@
 
                             <div class="content_essense">
                                 <h5 class="important">
-                                    List des Carburants:
+                                    Liste des Carburants:
                                 </h5>
                                 <ul>
                                     <li>
-                                        <span class="important">
+                                        <span class="important ">
                                             E 85:
                                         </span>
                                         {{station.prixE85 ~ " €" }}
@@ -75,11 +75,9 @@
                                 <li>
                                     {% if station.services %}
                                         <span class="important">Services :</span>
-                                        <br>
                                         {{station.services}}
                                     {% else %}
                                         <span class="important">Services :</span>
-                                        <br>
                                         Non disponible.
                                     {% endif %}
                                     <hr>
@@ -87,11 +85,9 @@
                                 <li>
                                     {% if station.horaies %}
                                         <span class="important">Horaires :</span>
-                                        <br>
                                         {{station.horaies }}
                                     {% else %}
                                         <span class="important">Horaires :</span>
-                                        <br>
                                         Non disponible.
                                     {% endif %}
                                     <hr>
@@ -100,10 +96,9 @@
                                     {% if station.automate2424 %}
                                         <span class="important">Automate</span>
                                         :
-                                        <br>
                                         24/24
                                     {% else %}
-                                        <span class="important">Automate</span>
+                                        <span class="important">Automate : </span>
                                         Non disponible.
                                     {% endif %}
                                     <hr>
@@ -121,10 +116,10 @@
                                 </li>
                                 <li>
                                     {% if station.departementName %}
-                                        <span class="important">Code de departement :</span>
+                                        <span class="important">Nom de departement :</span>
                                         {{station.departementName}}
                                     {% else %}
-                                        <span class="important">Code de departement :</span>
+                                        <span class="important">Nom de departement :</span>
                                         Non reconue.
                                     {% endif %}
                                 </li>

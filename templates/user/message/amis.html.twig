@@ -43,7 +43,7 @@
                                 <!-- Chat List Item -->
                                 {% for item in amisTributG %}
                                     {% if item.id != app.user.id and item.is_online == 1 %}
-                                        <div class="cg lc mg sh ol rl tq is">
+                                        <div class="cg lc mg sh ol rl tq is content-message-nanta-css">
                                             <div class="h mb sc yd of th">
                                                 {# /// photo de profil #}
                                                 
@@ -60,7 +60,7 @@
                                                 {% if item.last_message is defined and item.last_message != false %}
 
                                                     {% if item.last_message.message_type is same as("text") %}
-                                                        <p class="mn">{{item.last_message.text}}</p>
+                                                        <p class="mn">{{item.last_message.text | raw}}</p>
                                                     {% else %}
                                                         <p class="mn">object</p>
                                                     {% endif %}
@@ -145,7 +145,7 @@
                                         <div class="qb vh hi vj yr el yl">
                                             
                                             {% if message.message_type is same as('text') %}
-                                                <p>{{message.content.text}}</p>
+                                                <p>{{message.content.text | raw}}</p>
                                             {# {% elseif (message.message_type is same as('image'))  %}
                                                 <div class="content_image_msg">
                                                     {% for image in message.content.images %}
@@ -153,7 +153,7 @@
                                                     {% endfor %}
                                                 </div> #}
                                             {% else  %}
-                                                <p>{{message.content.text}}</p>
+                                                <p>{{message.content.text | raw}}</p>
                                                 <div class="content_image_msg">
                                                     {% if message.content.images|length > 0 %}
                                                         {% for image in message.content.images %}
@@ -187,9 +187,9 @@
                                     <div class="qf rb" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
                                         <div class="qb vh ii oj el yl">
                                             {% if message.message_type is same as('text') %}
-                                                <p class="eo">{{message.content.text}}</p>
+                                                <p class="eo">{{message.content.text | raw}}</p>
                                             {% else %}
-                                                <p class="eo">{{message.content.text}}</p>
+                                                <p class="eo">{{message.content.text | raw}}</p>
                                                 <div class="content_image_msg">
                                                     {% if message.content.images|length > 0 %}
                                                         {% for image in message.content.images %}

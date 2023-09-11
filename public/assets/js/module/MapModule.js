@@ -53,11 +53,12 @@ class MapModule{
         return false;
     }
 
-    async createMap(lat= null, long=null){
+    async createMap(lat= null, long=null, zoom= null){
 
-        if( lat !=null && long != null){
+        if( lat !=null && long != null && zoom != null ){
             this.latitude = lat;
             this.longitude= long;
+            this.defaultZoom= zoom;
         }
 
         const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
@@ -68,14 +69,14 @@ class MapModule{
         
         this.map = L.map('map', {
                 zoomControl: false,
-                center: ( this.id_dep || ( lat && long ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
-                zoom: this.id_dep ? this.defaultZoom : ( ( lat && long ) ? 14 :  memoryCenter ?  memoryCenter.zoom : this.defaultZoom ),
+                center: ( this.id_dep || ( lat && long && zoom ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
                 layers: [tiles] 
             }
         );
 
-        if( lat && long ){
-            this.updateDataInSessionStorage(lat,long, 13);
+        if( lat && long && zoom ){
+            this.updateDataInSessionStorage(lat, long, zoom);
         }
 
 
@@ -665,8 +666,9 @@ class MapModule{
         });
     }
 
-    initMap(lat= null,long= null, isAddControl=false){
+    initMap(lat= null,long= null, zoom= null , isAddControl=false){
         const content_map= document.querySelector(".cart_map_js");
+
         if( document.querySelector("#toggle_chargement")){
             content_map.removeChild(document.querySelector("#toggle_chargement"))
         }
@@ -680,7 +682,7 @@ class MapModule{
         }
 
 
-        this.createMap(lat,long);
+        this.createMap(lat, long, zoom);
         // this.eventSetPositionOnMap();
 
         this.addGeoJsonToMap();

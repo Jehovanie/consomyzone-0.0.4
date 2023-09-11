@@ -1533,26 +1533,60 @@ function readURL(input) {
     if (input.files && input.files[0]) {
         
         const listExt= ['jpg', 'jpeg', 'png'];
-        const octetMax= 4096e+3;
+        // const octetMax= 4096e+3; // 4Mo
+        const octetMax= 2097152; //2Mo
+
         var reader = new FileReader();
+        
         reader.onload = function (e) {
 
-            if( !checkFileExtension(listExt,e.target.result)  || !checkTailleImage(octetMax, e.target.result)){
-                // $('.image-upload-wrap').hide();
-                $(".image-upload-wrap").css("border","2px dashed red");
-                $(".drag_text_jheo_js").html("<p class='text-danger erreur_type_jheo_js'>Le format de fichier ou la taille n'est pas pris en charge.</p>");
-                $('.image_upload_image_jheo_js').hide();
-                $(".remove_image_upload_jheo_js").text("Supprimer et changer ?");
+            if( !checkFileExtension(listExt,e.target.result)){
+
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image.",
+                    icon: "error",
+                    button: "OK",
+                  });
+
             }else{
-                $('.image-upload-wrap').hide();
-                $('.image-upload-image').attr('src', e.target.result);
-                $('.image_upload_image_jheo_js').show();
+                if(!checkTailleImage(octetMax, e.target.result)){
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 2Mo.",
+                        icon: "error",
+                        button: "OK",
+                      });
+                    
+                }else{
+                    $('.image-upload-wrap').hide();
+                    $('.image-upload-image').attr('src', e.target.result);
+                    $('.image_upload_image_jheo_js').show();
+                    $('.image-upload-content').show();
+                }
+                
             }
 
-            $('.image-upload-content').show();
-
-        //   $('.image-title').html(input.files[0].name);
         };
+
+        // reader.onload = function (e) {
+
+        //     if( !checkFileExtension(listExt,e.target.result)  || !checkTailleImage(octetMax, e.target.result)){
+        //         // $('.image-upload-wrap').hide();
+        //         $(".image-upload-wrap").css("border","2px dashed red");
+        //         $(".drag_text_jheo_js").html("<p class='text-danger erreur_type_jheo_js'>Le format de fichier ou la taille n'est pas pris en charge.</p>");
+        //         $('.image_upload_image_jheo_js').hide();
+        //         $(".remove_image_upload_jheo_js").text("Supprimer et changer ?");
+        //     }else{
+        //         $('.image-upload-wrap').hide();
+        //         $('.image-upload-image').attr('src', e.target.result);
+        //         $('.image_upload_image_jheo_js').show();
+        //     }
+
+        //     $('.image-upload-content').show();
+
+        // //   $('.image-title').html(input.files[0].name);
+        // };
 
         reader.readAsDataURL(input.files[0]);
     } else {
@@ -2129,6 +2163,18 @@ function slideToRight(elem, html) {
         elem.parentElement.parentElement.innerHTML = html
 }
 
+function validateEmail(mail){
+let reg = /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gmi
+ if (reg.test(mail))
+  {
+    return true
+  }else{
+      return false
+  }
+}
+
+
+
 function addListDepartGolf() {
     if (document.querySelector("#open-navleft-golf-mobile-tomm-js")) {
         document.querySelector("#open-navleft-golf-mobile-tomm-js").addEventListener("click", () => {
@@ -2158,51 +2204,55 @@ function addListDepartGolf() {
 }
 
 function addSpecificgolfMobile(nom_dep, id_dep) {
-    document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 0
-    document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.transition = "opacity 0.5s ease-in-out";
-
-    if (document.querySelector("#list-depart-golf-specific-mobile-tomm-js")) {
-        document.querySelector("#list-depart-golf-specific-mobile-tomm-js").removeAttribute("style")
-    }
-
-    fetch(`/golf-mobile/departement/${nom_dep}/${id_dep}`)
-    .then(response => response.text())
-    .then(r => {
+    if(document.querySelector("#open-navleft-golf-mobile-specific-tomm-js")){
+        document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 0
+        document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+    
         if (document.querySelector("#list-depart-golf-specific-mobile-tomm-js")) {
-            document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = null
-            document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = r
-
-            document.querySelector("#close-golf-specific-tomm-js").addEventListener('click', () => {
-                document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style.transform = "translateX(-100vw)"
-                document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 1
-            })
+            document.querySelector("#list-depart-golf-specific-mobile-tomm-js").removeAttribute("style")
         }
-    })
-}
-
-function addListDepartTabac() {
-    document.querySelector("#open-navleft-tabac-mobile-tomm-js").addEventListener("click", () => {
-        document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 0
-        document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
-
-        if (document.querySelector("#list-depart-tabac-mobile-tomm-js")) {
-            document.querySelector("#list-depart-tabac-mobile-tomm-js").removeAttribute("style")
-        }
-
-        fetch(`/tabac-mobile`)
+    
+        fetch(`/golf-mobile/departement/${nom_dep}/${id_dep}`)
         .then(response => response.text())
         .then(r => {
-            if (document.querySelector("#list-depart-tabac-mobile-tomm-js")) {
-                document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = null
-                document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = r
-
-                document.querySelector("#close-tabac-dep").addEventListener('click', () => {
-                    document.querySelector("#list-depart-tabac-mobile-tomm-js").style.transform = "translateX(-100vw)"
-                    document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 1
+            if (document.querySelector("#list-depart-golf-specific-mobile-tomm-js")) {
+                document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = null
+                document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = r
+    
+                document.querySelector("#close-golf-specific-tomm-js").addEventListener('click', () => {
+                    document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 1
                 })
             }
         })
-    })
+    }
+   
+}
+
+function addListDepartTabac() {
+    if( document.querySelector("#open-navleft-tabac-mobile-tomm-js"))
+        document.querySelector("#open-navleft-tabac-mobile-tomm-js").addEventListener("click", () => {
+            document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 0
+            document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+            if (document.querySelector("#list-depart-tabac-mobile-tomm-js")) {
+                document.querySelector("#list-depart-tabac-mobile-tomm-js").removeAttribute("style")
+            }
+
+            fetch(`/tabac-mobile`)
+            .then(response => response.text())
+            .then(r => {
+                if (document.querySelector("#list-depart-tabac-mobile-tomm-js")) {
+                    document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = null
+                    document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = r
+
+                    document.querySelector("#close-tabac-dep").addEventListener('click', () => {
+                        document.querySelector("#list-depart-tabac-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                        document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 1
+                    })
+                }
+            })
+        })
 }
 
 function addListSpecificTabac(nom_dep, id_dep) {
@@ -2230,30 +2280,4 @@ function addListSpecificTabac(nom_dep, id_dep) {
 
 function closeDetailGolfMob(nom_dep, id_dep) {
     location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
-}
-
-
-function addListDepartStation() {
-    document.querySelector("#open-navleft-station-mobile-tomm-js").addEventListener("click", () => {
-        document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 0
-        document.querySelector("#open-navleft-station-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
-
-        if (document.querySelector("#list-depart-station-mobile-tomm-js")) {
-            document.querySelector("#list-depart-station-mobile-tomm-js").removeAttribute("style")
-        }
-
-        fetch(`/station-mobile`)
-        .then(response => response.text())
-        .then(r => {
-            if (document.querySelector("#list-depart-station-mobile-tomm-js")) {
-                document.querySelector("#list-depart-station-mobile-tomm-js").innerHTML = null
-                document.querySelector("#list-depart-station-mobile-tomm-js").innerHTML = r
-
-                document.querySelector("#close-station-dep").addEventListener('click', () => {
-                    document.querySelector("#list-depart-station-mobile-tomm-js").style.transform = "translateX(-100vw)"
-                    document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 1
-                })
-            }
-        })
-    })
 }

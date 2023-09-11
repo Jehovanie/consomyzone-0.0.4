@@ -808,23 +808,23 @@ class UserController extends AbstractController
             $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
 
             $membres = $userService->getMembreTribuT($tribut["table_name"]);
-
             for($j=0; $j< count($membres); $j++ ){
 
                 $partisant= $membres[$j];
-
                 $friendT = $userRepository->find(intval($partisant["user_id"]));
-    
-                $single_user = [
-                    "id" => intval($friendT->getId()),
-                    "email" => $friendT->getEmail(),
-                    "firstname" => $userService->getUserFirstName($friendT->getId()),
-                    "lastname" => $userService->getUserLastName($friendT->getId()),
-                    "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
-                    "role" =>$partisant["roles"],
-                ];
-    
-                array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+
+                if( $friendT ){
+                    $single_user = [
+                        "id" => intval($friendT->getId()),
+                        "email" => $friendT->getEmail(),
+                        "firstname" => $userService->getUserFirstName($friendT->getId()),
+                        "lastname" => $userService->getUserLastName($friendT->getId()),
+                        "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
+                        "role" =>$partisant["roles"],
+                    ];
+        
+                    array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+                }
             }
 
         }

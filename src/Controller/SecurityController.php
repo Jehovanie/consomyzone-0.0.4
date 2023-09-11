@@ -996,24 +996,37 @@ class SecurityController extends AbstractController
             "commune" => $communeRepository->findAll(),
         ], 200);
     }
+
+
     #[Route(path:'/agenda/send/invitation', name:"app_agenda_send_invitation", methods:"POST")]
     public function sendLinkOnEmailAboutAgendaSharing(
         Request $request,
         SerializerInterface $serialize,
-        MailService $mailService){
+        MailService $mailService,
+        AgendaService $agendaService
+        ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
+        dump($requestContent);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         foreach($receivers as $receiver){
+                $agendaID = $receiver["agendaId"];
+                $from_id=$receiver["from_id"];
+                $to_id=$receiver["to_id"];
                 $email_to=$receiver["email"];
                 $nom=$receiver["lastname"];
                 $prenom=$receiver["firstname"];
-                $context["object_mail"]="Invitation à particper à un événement";
+                $context["object_mail"]="Invitation à participer à un événement";
                 $context["template_path"]="emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"]="";
                 $context["content_mail"]=$content;
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+
+                if(!is_null($to_id)){
+                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                }
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');
         return new JsonResponse($r, 200, [], true);

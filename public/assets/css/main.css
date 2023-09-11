@@ -1700,7 +1700,7 @@ i.fa-eye-slash, i.fa-eye{
 }
 .see-avis{
     color: #fff !important;
-    width: 150px;
+    /* width: 150px; */
     margin-left: auto;
     margin-right: auto;
 }
@@ -1819,4 +1819,12 @@ textarea {
 
 #editor {
 	min-height: 180px;
+}
+
+
+.golf_status {
+    font-size: 0.6rem !important;
+}
+.btn_golf_did {
+    cursor: pointer;
 }

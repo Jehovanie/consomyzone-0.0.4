@@ -1,30 +1,20 @@
 <div class="description content_body_details_jheo_js" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomGolf}}">
     <div class="content_titre_details">
-        {# /// nom et propriété #}
-        {# <div class="titre col titre-ferme">
-            <h4 class="text-center">
-                {{details.nomGolf | upper}}
-            </h4>
-        </div>
-        <p class="card-text cmz-adresse ">
-           Adresse :  <a href="#" class="small text-center ">{{details.adr1 | raw}} </a>
-        </p> #}
-
-
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
-                {# <p>   {{details.nomGolf | upper}}  <span class="badge bg-primary golf_status">FAIT</span> </p> #}
                 <p> 
                     {{details.nomGolf | upper}}  
                     {% if app.user %}
-                        {% if details.user_status == null %}
-                            <span class="badge bg-primary golf_status golf_status_jheo_js">A FAIRE</span>
-                            {# <span class="badge bg-primary golf_status"><i class="fa-solid fa-xmark"></i></span> #}
-                            {# <span class="badge bg-primary golf_status"></span> #}
+                        {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
+                            <span class="badge bg-info golf_status golf_status_jheo_js"></span>
                         {% else %}
-                            <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>
-                            {# <span class="badge bg-info  golf_status"><i class="fa-solid fa-check"></i></span> #}
-                            
+                            {% if details.user_status["a_faire"] == 1 %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
+                            {% elseif details.user_status["fait"] == 1 %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
+                            {% else %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 </p>
@@ -38,17 +28,15 @@
     </div>
 
     <div class="p-4">
-        {# note avis   #}
-        {# <hr> #}
-        <div class="content_note text-center mb-3">
-            <div class="start">
+        <div class="content_note mb-3">
+            <div class="start text-center">
                 <i class="fa-solid fa-star" data-rank="1"></i>
                 <i class="fa-solid fa-star" data-rank="2"></i>
                 <i class="fa-solid fa-star" data-rank="3"></i>
                 <i class="fa-solid fa-star" data-rank="4"></i>
             </div>
-            
-            <div class="nombre_avis">
+             <hr>
+            <div class="mt-2 nombre_avis d-flex justify-content-center align-items-center">
                 <button class="btn btn-secondary btn-md see-avis non_active"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
             </div>
         </div>
@@ -101,21 +89,35 @@
 
         {# ///content cta #}
         <div class="content_tow_cta mt-4">
-            <div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
-                <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">
-                    Lien :  Site Web
-                </a>
-            </div>
+            {% if app.user %}
+                <div class="site_web">
+                    <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">
+                        Lien :  Site Web
+                    </a>
+                </div>
+            {% else %}
+                <div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
+                    <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">
+                        Lien :  Site Web
+                    </a>
+                </div>
+            {% endif %}
         </div>
 
         {% if app.user %}
-            <p class="mt-3 lead content_btn_golf_did_jheo_js" data-golf-id="{{details.id}}">
-                {% if details.user_status == null %}
-                    Marquez que ce golf est déjà fait ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="setGolfFinished('{{details.id}}')">Oui</span>
+            <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
+                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
+                    <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                    <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange="executeActionForPastGolf({{details.id}})">
+                        <option value="0">Aucun</option>
+                        <option value="1">A faire</option>
+                        <option value="2">Fait</option>
+                    </select>
+                    {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
                 {% else %}
-                    Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
+                    Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
                 {% endif %}
-            </p>
+            </div>
         {% endif %}
     </div>
 </div>

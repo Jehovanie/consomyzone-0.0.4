@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\BddResto;
+use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Service\DicoRestoForSearchService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -234,6 +235,15 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
         $dicoResto = new DicoRestoForSearchService();
         $page_current =$page > 1 ? $page * 10 +1  : 0;
+
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.id as id_etab,
@@ -318,11 +328,9 @@ class BddRestoRepository extends ServiceEntityRepository
             }
                 
         }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
-            
             if( strlen($mot_cles1) <= 2 ){
-                
                 $qb = $qb->where("p.dep LIKE :cles1")
-                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                         ->setParameter('cles1', $mot_cles1 );
             }else{
 
                 $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1")
@@ -334,7 +342,7 @@ class BddRestoRepository extends ServiceEntityRepository
             if(strtolower($mot_cles0) == "resto" || strtolower($mot_cles0) == "restos" || strtolower($mot_cles0) == "restaurant" || strtolower($mot_cles0) == "restaurants"){
                 if( strlen($mot_cles1) <= 2 ){
                     $qb = $qb->where("p.dep LIKE :cles1")
-                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                             ->setParameter('cles1',  $mot_cles1 );
                 }else{
                     //dd("p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm");
                     $qb = $qb->where("REPLACE(CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm)) LIKE :cles1 ")
@@ -435,15 +443,20 @@ class BddRestoRepository extends ServiceEntityRepository
 
         // const singleMatch = numvoie + " " + typevoie + " " + nomvoie + " " + codpost + " " + villenorm;
         $results = $qb->execute();
+
         return [ $results , count($results) , "resto"];
     }
 
     public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
         $dicoResto = new DicoRestoForSearchService();
         $page_current =$page > 1 ? $page * 10 +1  : 0;
-        // const { dep, depName, nomvoie, typevoie, villenorm, commune, codpost , numvoie } = item;
-        //  showResultSearchNavBar("resto",nomvoie, villenorm,dep, depName, id)
-        // showResultSearchNavBar("ferme", nom, add, dep, depName, id);
+        $mot_cles1 = strlen($mot_cles1) === 1 ? "0". $mot_cles1 : $mot_cles1;
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
         $qb = $this->createQueryBuilder("p")
                 ->select("p.id,
                         p.dep,
