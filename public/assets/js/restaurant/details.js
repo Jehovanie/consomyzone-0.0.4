@@ -8,10 +8,10 @@ function getDetailFromListLeft(nom_dep, id_dep, id_resto) {
         OBJECT_MARKERS_RESTO.clickOnMarker(id_resto)
     }else{
         if (screen.width < 991) {
-            var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+            var pathDetails = `/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_resto}`;
             location.assign(pathDetails)
         } else {
-            const select_dem = document.querySelector("#open-navleft-resto-spec-mobile")
+            const select_dem = document.querySelector("#open-navleft-resto-spec-mobile-tomm-js")
             getDetailResto(id_dep, nom_dep, id_resto, false,select_dem)
         }
 

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Golf ConsoMyZone{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/golf/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/golf/app_specifique.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+{% endblock %}
+
+
+{% block javascripts %}
+
+	<script src="{{asset('assets/js/golf/data_golf.js')}}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterGolf.js') }}" defer></script>
+	 <script type="text/javascript" src="{{ asset('assets/js/golf/marckerClusterGolf_spec.js') }}" defer></script>
+    
+	{# <script type="text/javascript" src="{{ asset('assets/js/golf/filter_a-z_asc_desc.js') }}" defer></script> #}
+	<script src="{{asset('assets/js/golf/details.js')}}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+	<div class="fixed-top" id="remove-detail-golf">
+		<nav>
+			<div class="close_details" id="close-detail-golf-mobile-tomm-js" onclick="closeDetailGolfMob('{{nom_dep}}','{{id_dep}}')">
+				<i class="fa-solid fa-x"></i>
+			</div>
+			<div class="content_description" id="content-details-golf">
+				{% include 'golf/details_golf.html.twig' %}
+
+			</div>
+		</nav>
+	</div>
+{% endblock %}

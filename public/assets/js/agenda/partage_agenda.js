@@ -342,6 +342,7 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 let email = allTr[i].querySelector(".email").textContent
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
+                console.log(data)
                 tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
                 tempDiv.querySelector("a").disabled=false
                 data=tempDiv.outerHTML

@@ -190,6 +190,8 @@ class MarckerClusterSearch extends MapModule  {
                     this.settingSingleMarkerResto(item);
                 }else if (item.golf !== undefined){
                     this.settingSingleMarkerGolf(item);
+                }else if( item.tabac !== undefined){
+                    this.setingSingleMarkerTabac(item);
                 }
             })
 
@@ -418,6 +420,53 @@ class MarckerClusterSearch extends MapModule  {
         this.markers.addLayer(marker);
     }
 
+    setingSingleMarkerTabac(item){
+        const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
+        let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+        
+        let pathIcon="assets/icon/NewIcons/tabac_black0.png";
+        let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+
+        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
+        
+        marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+
+        marker.on('click', (e) => {
+
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+            pathIcon='/assets/icon/NewIcons/tabac_red0.png';
+            
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                    iconSize: [35,55],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
+                }
+            })
+            marker.setIcon(new icon_R);
+
+            this.updateLastMarkerSelected(marker, "tabac");
+
+            this.markers.refreshClusters();
+
+            
+            if (screen.width < 991) {
+                let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
+                getDetailHomeForMobile(pathDetails)
+            } else {
+                // getDetailsFerme(pathDetails, true)getDetailStation
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
+            }
+
+        })
+
+        this.markers.addLayer(marker);
+    }
+
     updateLastMarkerSelected(marker, type) {
 
         if (this.marker_last_selected && this.marker_last_selected != marker) {
@@ -443,6 +492,8 @@ class MarckerClusterSearch extends MapModule  {
                         icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `${this.currentUrl.origin}/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
                     }
                 }
+            } else if( this.marker_last_selected_type === "tabac" ){
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/tabac_black0.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/tabac_black0.png`;
             }
 
             const icon_B = L.Icon.extend({

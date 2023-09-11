@@ -32,6 +32,7 @@ function generateSelect(couche, data,itemsSelected= []){
     if(list && list.classList.contains("d-none") ){
         list.classList.remove("d-none")
     }
+
 }
 
 
@@ -89,3 +90,4 @@ function hideRightSide(){
 document.querySelector(".close_details_jheo_js").addEventListener("click", () => { 
     document.getElementById("remove-detail-tabac").setAttribute("class", "hidden")
 })
+    addListDepartTabac()

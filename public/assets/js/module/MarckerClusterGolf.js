@@ -316,7 +316,7 @@ class MarckerClusterGolf extends MapModule {
 
         this.data = this.data.map(item => {
             if( parseInt(item.id) === parseInt(id) ){
-                item.user_status = { ...item.user_status , ...user_status }
+                item.user_status = { ...item.user_status , ...user_status } /// { "a_faire" : ... , "fait" : ...  }
             }
             return item;
         })

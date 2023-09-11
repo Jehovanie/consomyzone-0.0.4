@@ -1725,7 +1725,6 @@ function showPartisanAgenda(tribu_t_name) {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-                
                 jsons[0].forEach(json => {
 
                     if(jsons["curent_user"] != json.id){
@@ -1768,13 +1767,12 @@ function showPartisanAgenda(tribu_t_name) {
                         "search": "Recherche global",
                         "emptyTable": "Aucun partisan à part vous dans ce tribu",
             
-                    }})
+                    }
+                })
 
             })
         }
     })
-
-
 }
 
 function handleChange(elment,isG) {

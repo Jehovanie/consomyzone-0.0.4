@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link
+	rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	{# <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}"> #}
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
@@ -24,163 +25,217 @@
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
 
+{% endblock %}
+
+{% block sweetalert %}
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}
 
 {% block body %}
 
-<div class="nh">
-	{% include 'shard/account_navleft_new.html.twig' %}
-	{% include 'shard/account_navbar_new.html.twig' %}
-	<!-- ===== Main Content Start ===== -->
-	<main class="gv hm hv content-actualite-connected">
-		<div class="sk bu 2xl:ud-p-11 width-content-t">
-			{# <divclass="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
-				<!-- ====== Chart pub One Start -->
-				<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
-					<div class="head-pub">
-						<div class="pdp-content">
-							<img src="/assets/image/img_avatar3.png" alt="">
-						</div>
-						<div class="name-content-h">
-							<div class="name-content">
-								<p class="form-pub">Partagez ce que vous pensez, Tommy...</p>
-							</div>
-						</div>
-					</div>
-					<hr>
-					<div class="icon-piece-join">
-						<i class="fa-solid fa-camera"></i>
-						<i class="fa-solid fa-paperclip"></i>
-					</div>
+	<div class="nh">
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv hm hv content-actualite-connected">
+			<div
+				class="sk bu 2xl:ud-p-11 width-content-t">
+				{# <divclass="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+								<!-- ====== Chart pub One Start -->
+								<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+									<div class="head-pub">
+										<div class="pdp-content">
+											<img src="/assets/image/img_avatar3.png" alt="">
+										</div>
+										<div class="name-content-h">
+											<div class="name-content">
+												<p class="form-pub">Partagez ce que vous pensez, Tommy...</p>
+											</div>
+										</div>
+									</div>
+									<hr>
+									<div class="icon-piece-join">
+										<i class="fa-solid fa-camera"></i>
+										<i class="fa-solid fa-paperclip"></i>
+									</div>
+				
+								</div>
+								<!-- ====== Chart pub One End -->
+							</div> #}
 
-				</div>
-				<!-- ====== Chart pub One End -->
-			</div> #}
-
-			<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
-				<div id="content-pub-js">
-					{% if publications|length > 0 %}
-						{% for item in publications %}
-							{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
-						{% endfor %}
-					{% else %}
-						<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr mt-3" >
-							<div class="head-pub content_header_pub">
-								<div class="card">
-									<h6  class="text-center alert alert-info"> Information </h6>
-									<div class="card-body">
-										<p class="mx-auto">
-											Nous tenons à vous informer qu'actuellement, <br>
-											Il n'y a pas encore de publication disponible sur notre plateforme.  <br>
-											Si vous avez une histoire intéressante à raconter, des connaissances à partager ou des idées à proposer, 
-											n'hésitez pas à créer votre propre publication dès maintenant. <br>
-											Votre contribution peut inspirer et enrichir la communauté. <br>
-											Cordialement, <br><br><br>
-											CMZ <br>
-										</p>
+				<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
+					<div id="content-pub-js">
+						{% if publications|length > 0 %}
+							{% for item in publications %}
+								{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+							{% endfor %}
+						{% else %}
+							<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr mt-3">
+								<div class="head-pub content_header_pub">
+									<div class="card">
+										<h6 class="text-center alert alert-info">
+											Information
+										</h6>
+										<div class="card-body">
+											<p class="mx-auto">
+												Nous tenons à vous informer qu'actuellement,
+												<br>
+												Il n'y a pas encore de publication disponible sur notre plateforme.
+												<br>
+												Si vous avez une histoire intéressante à raconter, des connaissances à partager ou des idées à proposer, 
+																							n'hésitez pas à créer votre propre publication dès maintenant.
+												<br>
+												Votre contribution peut inspirer et enrichir la communauté.
+												<br>
+												Cordialement,
+												<br><br><br>
+												CMZ
+												<br>
+											</p>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					{% endif %}
-				</div>
-			</div>
-
-			<!-- ====== Chart Two Start -->
-			
-			<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none back-tribu-t" id="apropos-tribu-t">
-				{% include "shard/account_navleft_tribuT.html.twig" %}
-			</div>
-			<!-- ====== Chart Two End -->
-		</div>
-	</main>
-	<!-- ===== Main Content End ===== -->
-
-</div>
-{% include "tribu_t/modal_publication.html.twig" %}
-
-<!-- Modal Créer tribuT -->
-<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title text-black" id="creerTribuTModal">
-					Créer un nouveau tribu-T</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="mini-couvertur-tribu-t">
-					<img src="{{asset('assets/image/mini-couverture.jpg')}}" alt="">
-				</div>
-
-
-				{{ form_start(form, {'method': 'POST'}) }}
-
-				<label for="" class="label" id="uploadImage">
-					{{ form_row(form.upload, {'attr': {'class': 'input'}}) }}
-					<span class="label-uplaod-tribu-t"></span>
-				</label>
-
-				<div class="" style="margin-top: -70px;">
-					{{ form_label(form.tribuTName , "Nom de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
-					{{ form_widget(form.tribuTName, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black','placeholder': "Entrer ici le nom de la tribu"}}) }}
-
-					{{ form_label(form.description , "Description de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
-					{{ form_widget(form.description, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black', 'placeholder': "Entrer ici la description de la tribu"}}) }}
-
-					<p class="text-choisir">Choisir une extension</p>
-
-					<div class="form-check form-switch mt-6">
-						{{ form_row(form.extension, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
+						{% endif %}
 					</div>
-					
 				</div>
 
-				<center class="mt-3">
-					<button class="btn-creer" type="submit">Créer</button>
-				</center>
+				<!-- ====== Chart Two Start -->
 
-				{{form_end(form)}}
+				<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none back-tribu-t" id="apropos-tribu-t">
+					{% include "shard/account_navleft_tribuT.html.twig" %}
+				</div>
+				<!-- ====== Chart Two End -->
+			</div>
+		</main>
+		<!-- ===== Main Content End ===== -->
+
+	</div>
+	{% include "tribu_t/modal_publication.html.twig" %}
+
+	<!-- Modal Créer tribuT -->
+	<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-black" id="creerTribuTModal">
+						Créer un nouveau tribu-T</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mini-couvertur-tribu-t">
+						<img src="{{asset('assets/image/mini-couverture.jpg')}}" alt="">
+					</div>
+
+
+					{{ form_start(form, {'method': 'POST'}) }}
+
+					<label for="" class="label" id="uploadImage">
+						{{ form_row(form.upload, {'attr': {'class': 'input','accept' : 'image/*'}}) }}
+						<span class="label-uplaod-tribu-t"></span>
+					</label>
+
+					<div class="" style="margin-top: -70px;">
+						{{ form_label(form.tribuTName , "Nom de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+						{{ form_widget(form.tribuTName, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black','placeholder': "Entrer ici le nom de la tribu"}}) }}
+
+						{{ form_label(form.description , "Description de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+						{{ form_widget(form.description, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black', 'placeholder': "Entrer ici la description de la tribu"}}) }}
+
+						<p class="text-choisir">Choisir une extension</p>
+
+						<div class="form-check form-switch mt-6">
+							{{ form_row(form.extension, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
+						</div>
+
+					</div>
+
+					<center class="mt-3">
+						<button class="btn-creer" type="submit">Créer</button>
+					</center>
+
+					{{form_end(form)}}
+
+				</div>
+
 
 			</div>
-
-
 		</div>
 	</div>
-</div>
-{% include 'shard/modal/alert_flash.html.twig' %}
-<!-- End Modal -->
+	{% include 'shard/modal/alert_flash.html.twig' %}
+	{% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+	{% include 'shard/modal/new_agenda.html.twig' %}
+	<!-- End Modal -->
 
-<!-- Modal For Extension -->
+	<!-- Modal For Extension -->
 
-<div class="modal fade" id="modalForExtension" tabindex="-1" aria-labelledby="extModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-xl">
-    <div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5 text-primary" id="extModalLabel">Resultat de recherche restaurant</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="elie-restou"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- End Modal -->
-{# <div class="main-search-resto">
-	<div style="" class="elie-div-resto-search border border-dark">
-		<div class="d-flex justify-content-between">
-			<h6 class="text-primary m-2">Resultat de recherche restaurant</h6>
-			<button class="border border-secondary pe-2 ps-2 me-2 rounded-1" onclick="closeModal()"><i class="fas fa-close text-danger fa-2x"></i></button>
+		<div class="modal fade" id="modalForExtension" tabindex="-1" aria-labelledby="extModalLabel" aria-hidden="true"> <div class="modal-dialog modal-dialog-scrollable modal-xl">
+			<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5 text-primary" id="extModalLabel">Resultat de recherche restaurant</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="elie-restou"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+				</div>
+			</div>
 		</div>
-		<div id="elie-restou"></div>
 	</div>
-</div> #}
+
+	<div class="modal fade" id="modalDetailResto" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+				<div class="modal-header" id="restoModalLabel"></div>
+				<div class="modal-body">
+					<div id="elie-resto-detail"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" tabindex="-1" id="detailOptionResto">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Plus d'options</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center">
+						<i class="fas fa-question-circle fs-1 text-info"></i><br>
+						<p class="">Quelle action voulez-vous pour ce restaurant?</p>
+						<div class="container mb-4 mt-5">
+							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+							<button type="button" id="data-event-elie-js" class="btn btn-secondary disabled" data-bs-toggle="modal" data-bs-target="#createAgenda"><i class="fas fa-calendar"></i> Créer un évènement</button>
+						</div>
+				</div>
+
+				</div>
+				{# <div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div> #}
+			</div>
+		</div>
+	</div>
+
+	<!-- End Modal -->
+	{# <div class="main-search-resto">
+		<div style="" class="elie-div-resto-search border border-dark">
+			<div class="d-flex justify-content-between">
+				<h6 class="text-primary m-2">Resultat de recherche restaurant</h6>
+				<button class="border border-secondary pe-2 ps-2 me-2 rounded-1" onclick="closeModal()"><i class="fas fa-close text-danger fa-2x"></i></button>
+			</div>
+			<div id="elie-restou"></div>
+		</div>
+	</div> #}
 
 {% endblock %}
