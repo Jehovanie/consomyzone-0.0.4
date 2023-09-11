@@ -421,7 +421,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
-                    <div class="  2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
+                    <div class="2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
@@ -448,7 +448,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             </div>
             
     `
-    //2xl:ud-max-w-230
+    //
     worker.postMessage([tribu_t_name_0, 0, 20]);
     // console.log('Message envoyé au worker');
     worker.onmessage = (event) => {
@@ -510,7 +510,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                 contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
-                                            <div class="yd uffv 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
+                                            <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
                                                         <img src="/assetss/image/img_avatar3.png" alt="">

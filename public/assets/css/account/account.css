@@ -39,7 +39,7 @@ body{
 
 .content_right_actualite{
     display: block;
-    width: 66%;
+    width: 100%;
     overflow-x: hidden;
     /* position: absolute;
     right: 0;
