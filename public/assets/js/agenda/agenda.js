@@ -305,6 +305,12 @@ function setAndShowModal(agenda) {
         document.querySelector("#deleteAgendaBtn").classList.remove("d-none")
     }
 
+    if (agenda.user_id == document.querySelector("#createOrEditBtn").dataset.usi) {
+        document.querySelector("#createOrEditBtn").disabled = false
+    }else{
+        document.querySelector("#createOrEditBtn").disabled = true
+    }
+
     if (document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#shareAgendaBtn").classList.remove("d-none")
     }

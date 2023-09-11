@@ -275,7 +275,10 @@ function sendInvitation(event){
             }
         })
     }else{
-        $("#emailTemplateModal").modal("hide")
+        swal("Erreur !","Il y a un adresse email non valide !", "error")
+            .then((value) => {
+                $("#emailTemplateModal").modal("hide")
+        });
     }
 
 }
@@ -346,21 +349,18 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
                 tempDiv.querySelector("a").disabled=false
                 data=tempDiv.outerHTML
+                dataInfos.push({
+                    agendaId:agenda.id,
+                    from_id:from_id,
+                    to_id:to_id,
+                    lastname : lastname,
+                    firstname : firstname,
+                    email : email
+                })
                 if(validateEmail(email)){
-                    dataInfos.push({
-                        agendaId:agenda.id,
-                        from_id:from_id,
-                        to_id:to_id,
-                        lastname : lastname,
-                        firstname : firstname,
-                        email : email
-                    })
+                    isValidateEmail = true
                 }else{
-                    swal("Erreur !","Il y a un adresse email non valide !", "error")
-                        .then((value) => {
-                    });
                     isValidateEmail = false
-                    break;
                 }
             }
         }
@@ -382,21 +382,18 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
                 tempDiv.querySelector("a").removeAttribute("disabled")
                 data=tempDiv.outerHTML
+                dataInfos.push({
+                    agendaId:agenda.id,
+                    from_id:from_id,
+                    to_id:to_id,
+                    lastname : lastname,
+                    firstname : firstname,
+                    email : email
+                })
                 if(validateEmail(email)){
-                    dataInfos.push({
-                        agendaId:agenda.id,
-                        from_id:from_id,
-                        to_id:to_id,
-                        lastname : lastname,
-                        firstname : firstname,
-                        email : email
-                    })
+                    isValidateEmail = true
                 }else{
-                    swal("Erreur !","Il y a un adresse email non valide !", "error")
-                        .then((value) => {
-                    });
                     isValidateEmail = false
-                    break;
                 }
             }
         }
