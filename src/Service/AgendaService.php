@@ -468,7 +468,6 @@ class AgendaService extends PDOConnexionService
      */
 
     public function createEvent($nom_table_agenda,$agenda) {
-
         extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
         $statement = $this->getPDO()->prepare(

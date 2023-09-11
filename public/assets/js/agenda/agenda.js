@@ -260,7 +260,8 @@ function bindEventForAllDay(info) {
     ///show modal
     //document.querySelector('.show_modal_createAgenda_jheo_js').click()
     $("#createAgenda").modal("show")
-
+    document.querySelector("#createOrEditBtn").disabled = false
+    document.querySelector("#deleteAgendaBtn").disabled = false
     if (document.querySelector('#createOrEditBtn').textContent.toLowerCase().trim() == "modifier") {
         initInputForm()
     }
@@ -307,8 +308,10 @@ function setAndShowModal(agenda) {
 
     if (agenda.user_id == document.querySelector("#createOrEditBtn").dataset.usi) {
         document.querySelector("#createOrEditBtn").disabled = false
+        document.querySelector("#deleteAgendaBtn").disabled = false
     }else{
         document.querySelector("#createOrEditBtn").disabled = true
+        document.querySelector("#deleteAgendaBtn").disabled = true
     }
 
     if (document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
@@ -635,6 +638,8 @@ function deleteAgenda() {
                     .then(response => response.json())
                     .then(response => {
                         $("#createAgenda").modal("hide")
+                        document.querySelector("#createOrEditBtn").disabled = false
+                        document.querySelector("#deleteAgendaBtn").disabled = false
                         swal("Bravo !", response.message, "success")
                             .then((value) => {
                                 location.reload();
@@ -861,6 +866,9 @@ function showDepModal() {
 
     $("#createAgenda").modal("hide")
 
+    document.querySelector("#createOrEditBtn").disabled = false
+    document.querySelector("#deleteAgendaBtn").disabled = false
+
     getListDep(container)
 
     document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
@@ -895,6 +903,9 @@ function showDepModalGol() {
     navLinksModal[1].textContent = "Golfs à faire"
 
     $("#createAgenda").modal("hide")
+
+    document.querySelector("#createOrEditBtn").disabled = false
+    document.querySelector("#deleteAgendaBtn").disabled = false
     
     getListDep(container)
 
