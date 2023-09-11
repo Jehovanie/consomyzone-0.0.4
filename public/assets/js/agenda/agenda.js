@@ -1471,29 +1471,35 @@ function getListArrondissement(container, dep) {
 
 }
 
-function showEtabDetail( event,nom_dep, id_dep, id_restaurant) {
-
-    const request = new Request(`/api/agenda/etab/${nom_dep}/${id_dep}/detail/${id_restaurant}`)
-
-    fetch(request)
-        .then(res => res.text()).then(html => {
-            $("#listRestoOrGolfModal").modal("hide")
-            $("#detailEtabModal").modal("show")
-            //content_titre_details
-            let dataName = event.target.dataset.name
-            let dataAdresse = event.target.dataset.adresse
-            document.querySelector(".content_etab_detail").innerHTML = `<div>
-                                        <div class="mb-2">
-                                            <span class="mt-2 ms-3"><b>${dataName}</b></span>
-                                        </div>
-                                        <p style="text-align:padding-left:4% !important;">
-                                            <a href="#" class="small" style="margin-left:4%#19a8d8 !important;">
-                                                ${dataAdresse}
-                                            </a>
-                                        </p>
-                                    </div>`
-            document.querySelector("#detailEtabModal .modal-body").innerHTML = html
+function showEtabDetail(event,nom_dep, id_dep, id_restaurant) {
+    if(document.querySelector("#hiddenListDep").dataset.etab == "golf"){
+        swal("Message !", "Cette fonctionnalité est en construction", "error")
+            .then((value) => {
+                
         });
+    }else{
+        const request = new Request(`/api/agenda/etab/${nom_dep}/${id_dep}/detail/${id_restaurant}`)
+
+        fetch(request)
+            .then(res => res.text()).then(html => {
+                $("#listRestoOrGolfModal").modal("hide")
+                $("#detailEtabModal").modal("show")
+                //content_titre_details
+                let dataName = event.target.dataset.name
+                let dataAdresse = event.target.dataset.adresse
+                document.querySelector(".content_etab_detail").innerHTML = `<div>
+                                            <div class="mb-2">
+                                                <span class="mt-2 ms-3"><b>${dataName}</b></span>
+                                            </div>
+                                            <p style="text-align:padding-left:4% !important;">
+                                                <a href="#" class="small" style="margin-left:4%#19a8d8 !important;">
+                                                    ${dataAdresse}
+                                                </a>
+                                            </p>
+                                        </div>`
+                document.querySelector("#detailEtabModal .modal-body").innerHTML = html
+            });
+        }
 }
 
 function initInputForm() {
@@ -1549,12 +1555,6 @@ function initInputForm() {
 if(document.querySelector("#shareAgendaBtn")){
     document.querySelector("#shareAgendaBtn").addEventListener("click", (e)=>{
         e.preventDefault()
-        // console.log(e.target.dataset.agenda);
-        // let data = JSON.parse(e.target.dataset.agenda)
-        // console.log(data);
-        // console.log("id = " + data.id);
-        // console.log("title = " + data.title);
-        // console.log("description = " + data.description);
         sessionStorage.setItem("agenda", e.target.dataset.agenda);
     })
 }

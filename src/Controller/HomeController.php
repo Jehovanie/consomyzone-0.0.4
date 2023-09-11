@@ -514,8 +514,6 @@ class HomeController extends AbstractController
                 break;
         }
 
-        // dd($communeGeoCoderRepository->findBy(["nom_com" => $cles1]));
-
         if(str_contains($request->getPathInfo(), '/api/search')){
             return $this->json([
                 "results" => $results,
@@ -526,13 +524,9 @@ class HomeController extends AbstractController
             ], 200);
         }
 
-        //dd($results[0]);
-
         $resultSort = array();
 
         $resultSort0 = $sortResultService->shortResult($cles0, $cles1, $results);
-
-        //dd($resultSort0);
 
         $nombreResult = $results[1];
 
@@ -541,8 +535,6 @@ class HomeController extends AbstractController
         array_push($resultSort, [0 => $resultSort0, 1 => $nombreResult, 2 => $type]);
 
         $results = $resultSort[0];
-
-        // dd($results);
        
         return $this->render("home/search_result.html.twig", [
             "userConnected" => $userConnected,
