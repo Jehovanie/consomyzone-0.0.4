@@ -633,7 +633,7 @@
 
     .content-mobil-ferme {
         position: relative;
-        z-index: 400 !important;
+        z-index: 401 !important;
         background-color: #fff;
         width: 100vw;
         height: 100vh;
@@ -2142,7 +2142,7 @@
 
 
 @media screen and (min-width: 1900px){
-
+   
    .right_full{
            right: -445px !important;
    }
@@ -2284,9 +2284,10 @@
 	    padding-top: 70px !important;
     } */
 
-    .navbar-light-left .fa-x {
+    .navbar-light-left i.fa-x {
         margin-left: 230px !important;
     }
+
 
     .nav__toggler {
         margin-left: 1280px !important;

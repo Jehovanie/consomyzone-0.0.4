@@ -136,6 +136,7 @@ class GolfFranceRepository extends ServiceEntityRepository
     ///jheo : prendre tous les fermes qui appartients dans un departement specifique
     public function getGolfByDep($nom_dep="", $id_dep,$userID=null)
     {
+        $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
         ///lancement de requette
         $data = $this->createQueryBuilder('p')
             ->select(
@@ -144,9 +145,9 @@ class GolfFranceRepository extends ServiceEntityRepository
                 'p.nom_golf as name',
                 'p.nom_golf as nom',
                 'p.adr1',
-                'p.adr1 as add',
                 'p.adr1 as adress',
                 'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as adresse',
+                'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as add',
                 'p.adr2',
                 'p.adr3',
                 'p.e_mail as email',

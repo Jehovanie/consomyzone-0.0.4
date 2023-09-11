@@ -459,7 +459,7 @@ class MarckerClusterSearch extends MapModule  {
                 getDetailHomeForMobile(pathDetails)
             } else {
                 // getDetailsFerme(pathDetails, true)getDetailStation
-                getDetailTabac(item.dep, item.nom_dep, item.id)
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
             }
 
         })
