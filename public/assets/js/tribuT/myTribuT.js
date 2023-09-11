@@ -358,7 +358,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
         image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
         // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
     } else {
-        image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribus/photos/avatar_tribu.jpg" alt="123">`
+        image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`
     }
 
     let canChangeTribuPicture = "";
@@ -421,7 +421,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
-                    <div class=" 2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
+                    <div class="  2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
@@ -448,6 +448,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             </div>
             
     `
+    //2xl:ud-max-w-230
     worker.postMessage([tribu_t_name_0, 0, 20]);
     // console.log('Message envoyé au worker');
     worker.onmessage = (event) => {
@@ -509,7 +510,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                 contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
                                             <!-- ====== Chart One Start -->
-                                            <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
+                                            <div class="yd uffv 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
                                                         <img src="/assetss/image/img_avatar3.png" alt="">
@@ -1030,7 +1031,7 @@ function showResto(table_rst_pastilled, id_c_u) {
         if (avatar != null) {
             imgSrc = "/uploads/tribus/photos/" + avatar
         } else {
-            imgSrc = "uploads/tribus/photos/avatar_tribu.jpg"
+            imgSrc = "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
         }
 
         if (restos.length > 0) {
