@@ -42,8 +42,11 @@
         <div class="responsive-navbar responsif-none">
             {% include 'shard/navbar.twig' %}
         </div>
+        <div class="responsif-none-pc navbar-mobile-all">
+            {% include 'shard/navbar_mobile.twig' %}
+        </div>
 		<div class="">
-			<div class="open-navleft-mobile  responsif-none-pc" id="open-navleft-resto-mobile-tomm-js-arrand"  onclick="addListSpecResto('{{nom_dep}}', '{{id_dep}}')">
+			{# <div class="open-navleft-mobile  responsif-none-pc" id="open-navleft-resto-mobile-tomm-js-arrand"  onclick="addListSpecResto('{{nom_dep}}', '{{id_dep}}')">
                  <i class="fa-solid fa-bars"></i>
             </div>
             <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc ">
@@ -51,7 +54,7 @@
             </div>
             <div class="search-resto-mobil search-mobil-tomm-js search-resto-mobil-none vd to/4 to/4/2 wf yf responsif-none-pc">
                 {% include 'shard/search_mobile.html.twig' %}
-            </div>
+            </div> #}
             <div id="remove-detail-spec-resto" class="hidden responsif-none">
                 <div class="list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
             </div>

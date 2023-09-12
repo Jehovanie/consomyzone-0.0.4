@@ -790,7 +790,7 @@ function addListFermeMobile() {
                 // firstY=document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().y
 
                 document.querySelector("#close-ferme").addEventListener('click', () => {
-                    document.querySelector("#list-depart-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#list-depart-mobile-tomm-js").style ="transform: translateX(-100vw);display: none;"
                     document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
                 })
 
@@ -888,7 +888,7 @@ function addSpecificFermeMobile(nom_dep, id_dep) {
             document.querySelector("#list-specific-depart-tomm-js").innerHTML = null
             document.querySelector("#list-specific-depart-tomm-js").innerHTML = r
             document.querySelector("#close-ferme-specific").addEventListener('click', () => {
-                document.querySelector("#list-specific-depart-tomm-js").style.transform = "translateX(-115vw)"
+                document.querySelector("#list-specific-depart-tomm-js").style = "transform: translateX(-115vw);display: none;"
                 document.querySelector("#open-navleft-mobile-tomm-js-specific").style.transition = "opacity 0.5s ease-in-out"
                 document.querySelector("#open-navleft-mobile-tomm-js-specific").style.opacity = 1
             })
@@ -958,7 +958,7 @@ function addListDepartRest() {
                         document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = r
 
                         document.querySelector("#close-resto").addEventListener('click', () => {
-                            document.querySelector("#list-depart-resto-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                            document.querySelector("#list-depart-resto-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                             document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 1
                         })
                     }
@@ -980,18 +980,16 @@ function addListSpecResto(nom_dep, id_dep) {
         document.querySelector("#list-arrand-resto-tomm-js").removeAttribute("style")
     }
     fetch(`/restaurant-mobile/arrondissement?nom_dep=${nom_dep}&id_dep=${id_dep}`)
-        .then(response => {
-            return response.text()
-        }).then(r => {
-            // console.log(r)
-            document.querySelector("#list-arrand-resto-tomm-js").innerHTML = null
-            document.querySelector("#list-arrand-resto-tomm-js").innerHTML = r
-
-            document.querySelector("#close-resto-arrand").addEventListener('click', () => {
-                document.querySelector("#list-arrand-resto-tomm-js").style.transform = "translateX(-100vw)"
-                document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.opacity = 1
-            })
+    .then(response => {
+        return response.text()
+    }).then(r => {
+        document.querySelector("#list-arrand-resto-tomm-js").innerHTML = null
+        document.querySelector("#list-arrand-resto-tomm-js").innerHTML = r
+        document.querySelector("#close-resto-arrand").addEventListener('click', () => {
+            document.querySelector("#list-arrand-resto-tomm-js").style.transform = "translateX(-100vw)"
+            document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.opacity = 1
         })
+    })
 }
 
 
@@ -2193,7 +2191,7 @@ function addListDepartGolf() {
                     document.querySelector("#list-depart-golf-mobile-tomm-js").innerHTML = r
 
                     document.querySelector("#close-golf-dep").addEventListener('click', () => {
-                        document.querySelector("#list-depart-golf-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                        document.querySelector("#list-depart-golf-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                         document.querySelector("#open-navleft-golf-mobile-tomm-js").style.opacity = 1
                     })
                 }
@@ -2202,6 +2200,8 @@ function addListDepartGolf() {
     }
     
 }
+
+
 
 function addSpecificgolfMobile(nom_dep, id_dep) {
     if(document.querySelector("#open-navleft-golf-mobile-specific-tomm-js")){
@@ -2220,8 +2220,33 @@ function addSpecificgolfMobile(nom_dep, id_dep) {
                 document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = r
     
                 document.querySelector("#close-golf-specific-tomm-js").addEventListener('click', () => {
-                    document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                     document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 1
+                })
+            }
+        })
+    }
+   
+}
+function addSpecificStationMobile(nom_dep, id_dep) {
+    if(document.querySelector("#open-navleft-station-mobile-specific-tomm-js")){
+        document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.opacity = 0
+        document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+    
+        if (document.querySelector("#list-depart-station-specific-mobile-tomm-js")) {
+            document.querySelector("#list-depart-station-specific-mobile-tomm-js").removeAttribute("style")
+        }
+    
+        fetch(`/station-mobile/departement/${nom_dep}/${id_dep}`)
+        .then(response => response.text())
+        .then(r => {
+            if (document.querySelector("#list-depart-station-specific-mobile-tomm-js")) {
+                document.querySelector("#list-depart-station-specific-mobile-tomm-js").innerHTML = null
+                document.querySelector("#list-depart-station-specific-mobile-tomm-js").innerHTML = r
+    
+                document.querySelector("#close-station-specific-tomm-js").addEventListener('click', () => {
+                    document.querySelector("#list-depart-station-specific-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
+                    document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.opacity = 1
                 })
             }
         })
@@ -2247,7 +2272,7 @@ function addListDepartTabac() {
                     document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = r
 
                     document.querySelector("#close-tabac-dep").addEventListener('click', () => {
-                        document.querySelector("#list-depart-tabac-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                        document.querySelector("#list-depart-tabac-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                         document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 1
                     })
                 }
@@ -2271,7 +2296,7 @@ function addListSpecificTabac(nom_dep, id_dep) {
             document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").innerHTML = r
 
             document.querySelector("#close-tabac-spec-dep").addEventListener('click', () => {
-                document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").style.transform = "translateX(-100vw)"
+                document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").style = "transform: translateX(-100vw);display: none;"
                 document.querySelector("#open-navleft-tabac-spec-mobile-tomm-js").style.opacity = 1
             })
         }
@@ -2280,4 +2305,69 @@ function addListSpecificTabac(nom_dep, id_dep) {
 
 function closeDetailGolfMob(nom_dep, id_dep) {
     location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
+}
+
+function selectDepartRestoMobile() {
+    if (document.querySelector("#selectDepartRestoTommJs")) {
+        const selectOption = document.getElementById("selectDepartRestoTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/restaurant`) 
+        } else {
+            location.assign(`/restaurant/specific?nom_dep=${selectDepName}&id_dep=${selectId}`) 
+        }
+    }
+}
+
+function selectDepartFermeMobile() {
+    if (document.querySelector("#selectDepartFermeTommJs")) {
+        const selectOption = document.getElementById("selectDepartFermeTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/ferme`) 
+        } else {
+            location.assign(`/ferme/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
+
+function selectDepartStationMobile() {
+    if (document.querySelector("#selectDepartStationTommJs")) {
+        const selectOption = document.getElementById("selectDepartStationTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/station`) 
+        } else {
+            location.assign(`/station/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
+
+function selectDepartGolfMobile() {
+    if (document.querySelector("#selectDepartGolfTommJs")) {
+        const selectOption = document.getElementById("selectDepartGolfTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/golf`) 
+        } else {
+            location.assign(`/golf/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
+
+function selectDepartTabacMobile() {
+    if (document.querySelector("#selectDepartTabacTommJs")) {
+        const selectOption = document.getElementById("selectDepartTabacTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/tabac`) 
+        } else {
+            location.assign(`/tabac/departement/${selectDepName}/${selectId}`) 
+        }
+    }
 }

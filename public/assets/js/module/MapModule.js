@@ -694,8 +694,8 @@ class MapModule{
         }
 
 
-        this.bindControlOnLeaflet(this.map);
-        this.bindEventLocationForMobile();
+        // this.bindControlOnLeaflet(this.map);
+        // this.bindEventLocationForMobile();
     }
     
     getMax(max,min){

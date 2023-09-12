@@ -555,16 +555,23 @@ if (document.querySelector(".tribu_t")) {
 if (document.querySelector(".list-nav-bar")) {
     const activPage = window.location.pathname;
     
-    if( activPage.includes("/ferme")){
+    if (document.querySelector(".tout-dem-tomm-js")) {
+        document.querySelector(".tous-page-mobile").classList.add("active-mobile");
+    }else if (activPage.includes("/ferme")) {
         document.querySelector("#ferme-page").classList.add("active");
+        document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/restaurant")){
         document.querySelector("#resto-page").classList.add("active");
+        document.querySelector(".resto-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/station")){
         document.querySelector("#station-page").classList.add("active");
+        document.querySelector(".station-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/golf")){
         document.querySelector("#golf-page").classList.add("active");
+        document.querySelector(".golf-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/tabac")){
         document.querySelector("#tabac-page").classList.add("active");
+        document.querySelector(".tabac-page-mobile").classList.add("active-mobile");
     }else if(activPage.length === 1 || activPage.includes("/search/tous") ){
         document.querySelector("#tous-page").classList.add("active");
     }
@@ -875,4 +882,6 @@ if (document.querySelector(".open-search-mobil-tomm-js")) {
         document.querySelector(".open-search-mobil-tomm-js").classList.remove('search-resto-mobil-none')
     })
 }
+
+
 
