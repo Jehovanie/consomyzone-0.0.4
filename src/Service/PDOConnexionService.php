@@ -21,4 +21,15 @@ class PDOConnexionService
         }
         return $this->pdo;
     }
+
+
+    protected function isTableExist($tableName){
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like '$tableName'";
+        $sql = $this->getPDO()->query($query);
+        $resultat = $sql->rowCount();
+
+        return $resultat > 0 ? true : false;
+    }
 }

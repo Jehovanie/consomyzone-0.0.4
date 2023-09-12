@@ -366,7 +366,7 @@ class TribuGAgendaController extends AbstractController
             $content = $this->tributGService->getFullName($user_id)." ". $verbe ." votre ".$membre["type"]." que vous avez créé.
             <a href='/user/tribut/get-detail-agenda/" .$agenda_table. "/" .$id. "'> Voir plus...</a>";
 
-            $notif_service -> sendNotificationForOne($user_id, $membre["user_id"], "Action agenda", $content );
+            $notif_service->sendNotificationForOne($user_id, $membre["user_id"], "Action agenda", $content );
 
         }
 

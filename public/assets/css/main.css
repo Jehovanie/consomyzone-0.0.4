@@ -1828,3 +1828,10 @@ textarea {
 .btn_golf_did {
     cursor: pointer;
 }
+.gray400{
+    background-color: #ced4da;
+}
+
+.fontSize07{
+    font-size: 0.7rem;
+}

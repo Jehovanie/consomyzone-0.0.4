@@ -1041,7 +1041,7 @@ class AgendaController extends AbstractController
         if( intval($result) === 0 ){
             /// max participant atteint
             if( !!$isAccepted ){
-                $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheusement le nombre maximum de participant est atteint.";
+                $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheureusement le nombre maximum de participants est atteint.";
 
                 ////send email que le nombre maximun est atteint.
 

@@ -418,7 +418,6 @@ class UserController extends AbstractController
         }
 
         $tableTribuGName = $profil[0]->getTributG();
-
         $allUsers = $tributGService->getAllTributG($tableTribuGName);
 
         ///ferme/departement/Ain/01/details/4726
@@ -427,19 +426,21 @@ class UserController extends AbstractController
 
         if ($req["ask"] == "update") {
 
-            $constent = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
+            // $content = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
+            //     "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de modifier des informations sur son établissement</a>";
+            $content= $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . " vient de modifier des informations sur son établissement.";
 
-                "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de modifier des informations sur son établissement</a>";
+
         } else if ($req["ask"] == "create") {
 
-            $constent = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
+            // $content = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
+            //     "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de créer une nouvelle établissement</a>";
 
-                "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de créer une nouvelle établissement</a>";
+            $content= $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . " vient de créer une nouvelle établissement.";
+
         }
 
-
-
-        $notificationService->sendNotificationForMany($userId, $allUsers, "nouvelle etablissement", $constent);
+        $notificationService->sendNotificationForMany($userId, $allUsers, "Nouvelle etablissement", $content);
 
         return $this->json("succes", 200);
     }
@@ -526,65 +527,41 @@ class UserController extends AbstractController
 
 
         // $content = $profilPoster[0]->getFirstName() . " " . $profilPoster[0]->getLastName() . "<a href=\"{{path('app_invitation')}}\">vient de vous envoyer une invitation pour devenir moderateur</a>";
+        // $content = $profilPoster[0]->getFirstName() . " " . $profilPoster[0]->getLastName() . "<a href='/user/invitation'>vient de vous envoyer une invitation pour devenir modérateur</a>";
 
-        $content = $profilPoster[0]->getFirstName() . " " . $profilPoster[0]->getLastName() . "<a href='/user/invitation'>vient de vous envoyer une invitation pour devenir modérateur</a>";
+        $content = $profilPoster[0]->getFirstName() . " " . $profilPoster[0]->getLastName() . " vient de vous envoyer une invitation pour devenir modérateur.";
 
 
 
         $notificationService->sendNotificationForOne(
-
             $userPosterId,
-
             $id_receiver,
-
-            "invitation",
-
+            "Invitation",
             $content
-
         );
-
-
 
         $balise = str_replace(" ", "", $tableTribuGName . $id_receiver . $userPosterId);
 
-
-
         //send request to user receiver
-
         $requesting->setRequesting(
-
             $tableRequestingReceiver,
-
             $userPosterId,
-
             $id_receiver,
-
             "invitation",
-
             "Invitation pour devenir modérateur",
-
             $balise
-
         );
 
 
 
         //send request to user poster
-
         $requesting->setRequesting(
-
             $tableRequestingPoster,
-
             $userPosterId,
-
             $id_receiver,
-
             "demande",
-
             "Invitation pour devenir modérateur",
-
             $balise
-
         );
 
 
@@ -1184,18 +1161,13 @@ class UserController extends AbstractController
 
             $profil->setIsVerifiedTributGAdmin(true);
 
-            $message_notification = "Nous vous informons que l'administrateur de cette plateforme a valider que votre rôle en tant qu'administrateur dans notre tribu G." .
+            $message_notification = "Nous vous informons que l'administrateur de cette plateforme a valider que votre rôle en tant qu'administrateur dans notre tribu G.";
 
-                "<br/> <a class='d-block w-50 mx-auto mt-3 btn btn-primary text-center' href='/user/dashboard-fondateur' alt='Administration tributG'>Voir</a>";
+                // "<br/> <a class='d-block w-50 mx-auto mt-3 btn btn-primary text-center' href='/user/dashboard-fondateur' alt='Administration tributG'>Voir</a>";
         }
 
-
-
         $entityManagerInterface->persist($profil);
-
         $entityManagerInterface->flush();
-
-
 
         ////send notification to the fondateur tributG
 
@@ -1203,33 +1175,12 @@ class UserController extends AbstractController
 
         $type = "Validation d'administrer le tribu G";
 
-
-
-        // $notificationService->sendNotificaticationValidationTribug(
-
-        //     $admin->getId(),  ///// id super admin
-
-        //     intVal($user_id), ///// id fondateur
-
-        //     intVal($value) === 1 ? true : false
-
-        // );
-
         $notificationService->sendNotificationForOne(
-
             $admin->getId(),  /// user dispatch an action and send notification
-
             intval($user_id), /// user to receive notification
-
             $type,            /// type de messagge
-
             $message_notification
-
         );
-
-
-
-
 
         return $this->json($value);
     }
@@ -1243,29 +1194,20 @@ class UserController extends AbstractController
     public function DashboardFondateur(
         Status $status,
         UserRepository $userRepository,
-
         TributGService $tributGService,
-
         EntityManagerInterface $entityManager,
-
         UserService $userService
-
     ): Response {
+
         $userConnected= $status->userProfilService($this->getUser());
-
         $user = $this->getUser();
-
         $userType = $user->getType();
-
         $userId = $user->getId();
 
         $profil = "";
-
         if ($userType == "consumer") {
-
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
         } else {
-
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
@@ -1273,46 +1215,25 @@ class UserController extends AbstractController
 
         $results = [];
 
-
-
         $table_name = $profil[0]->getTributg();
-
-
 
         $all_member = $tributGService->getAllUserWithRoles($table_name);
 
-
-
         foreach ($all_member  as $member) {
 
-
-
             $user_temp = $userRepository->find(intval($member["user_id"]));
-
             $profil_temp =  $userService->getUserProfileFromId(intval($member["user_id"]));
-
-
 
             if ($user_temp &&  $profil_temp) {
 
-
-
                 $result = [
-
                     "id" => $member["user_id"],
-
                     "roles" => $member["roles"],
-
                     "email" => $user_temp->getEmail(),
-
                     "firstname" => $profil_temp->getFirstname(),
-
                     "lastname" => $profil_temp->getLastname(),
-
                     "commune" => $profil_temp->getCommune(),
-
                     "isVerified" => $profil_temp->getIsVerifiedTributGAdmin()
-
                 ];
 
 
@@ -1586,32 +1507,38 @@ class UserController extends AbstractController
 
 
     #[Route("/user/notification/show", name: "app_set_notification_to_show", methods: "POST")]
-
     public function setNotificationToShow(
-
         Request $request,
-
         NotificationService $notificationService
-
-    ) {
-
+    ){
         /// [ { "notif_id": "1"}, { "user_id":2 } , ... ]
-
         $data = json_decode($request->getContent(), true);
 
+        ///get the name the table notification from the user.
+        $table = $this->getUser()->getTablenotification();
 
+        ////set notif to already show
+        $notificationService->setShowNotif($table, $data);
+
+        return $this->json(true);
+    }
+
+
+    #[Route("/user/notification/readAll", name: "app_set_notification_to_read_all", methods: "POST")]
+
+    public function setNotificationToReadAll(
+        Request $request,
+        NotificationService $notificationService
+    ){
+        /// [ { "notif_id": "1"}, { "user_id":2 } , ... ]
+        $data = json_decode($request->getContent(), true);
 
         ///get the name the table notification from the user.
-
         $table = $this->getUser()->getTablenotification();
 
 
-
         ////set notif to already show
-
-        $notificationService->setShowNotif($table, $data);
-
-
+        $notificationService->setReadNotif($table, $data);
 
         return $this->json(true);
     }
@@ -1619,26 +1546,16 @@ class UserController extends AbstractController
 
 
     #[Route("/user/notification/read", name: "app_read_notification")]
-
     public function readNotification(
-
         Request $request,
-
         NotificationService $notificationService,
-
         UserRepository $userRepository
-
-    ) {
-
+    ){
         $notification_id = $request->query->get("notif_id");
-
         $table = $this->getUser()->getTablenotification();
-
         $singleNotification = $notificationService->updateNotificationIsread($notification_id, $this->getUser()->getId());
 
-        return $this->json([
-            "result" => "success"
-        ]);
+        return $this->json("Setting notification, ok");
     }
 
 
