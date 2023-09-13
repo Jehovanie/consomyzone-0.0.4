@@ -37,6 +37,10 @@ class Status {
         ];
     }
 
+    public function convertUtf8ToUnicode($str){
+        return json_encode($str);
+    }
+
 
     public function userProfilService(
         $user
