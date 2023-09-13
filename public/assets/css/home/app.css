@@ -15,7 +15,7 @@ body{
 }
 
 .content_filter_dep {
-    display: block;
+    display: none;
     position: absolute;
     top: 15px;
     left: 15px;

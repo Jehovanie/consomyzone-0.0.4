@@ -377,10 +377,14 @@
     }
 
     .close-ferme {
-        margin-top: -100px;
+        margin-top: -40px;
         margin-left: 90vw;
+        
     }
-
+    
+    .text-point-9{
+        font-size: 9pt;
+    }
     .swipe-me-reverse {
 
         transform: translateX(-50vh);
@@ -405,6 +409,10 @@
         position: relative;
         height: 47vh;
         overflow-y: scroll !important;
+    }
+
+    .list-depart-all-mobile {
+        height: 60vh;
     }
 
 
@@ -459,7 +467,18 @@
         color: #fff;
         padding-top: 12px;
         font-size: 18pt;
+        animation: 1s linear 1s infinite alternate slidein;
     }
+
+        @keyframes slidein {
+            from {
+                transform: scale(100%);
+            }
+    
+            to {
+                transform: scale(80%);
+            }
+        }
 
     .open-search-mobil  i {
         position: absolute;
@@ -498,11 +517,11 @@
         margin-top: 0.7rem !important;
     }
 
-    .navbar-brand-mobile img {
+    .navbar-brand-mobile svg {
         width: 10rem !important;
         position: absolute;
-        top: 150px;
-        left: 5px;
+        top: 90vh;
+        left: -45px;
         z-index: 401;
     }
 
@@ -520,11 +539,15 @@
         overflow-x: hidden;
     }
 
+    .list-depart-golf-specific {
+        height: 60vh;
+    }
+
     .list-depart-all-specific ul .card-list {
         list-style: none;
         background-color: #e7e7e7;
         width: 84vw;
-        height: 34vh;
+        height: auto !important;
         margin-left: 0px;
         margin-bottom: 20px;
         border-radius: 12px;
@@ -632,6 +655,10 @@
         
     }
 
+    .list-depart-arrand{
+        height: 60vh;
+    }
+
 
 
 
@@ -687,7 +714,7 @@
         width: 100vw;
         height: 80vh;
         margin-top: 155px;
-        padding-top: 50px;
+        padding-top: 10px;
     }
 
     .content_list_menu {
@@ -1158,11 +1185,17 @@
         background-color: #1111fe;
         color: #fff !important;
         border-radius: 5px;
+        width: 75px;
+        height: 55px;
     }
 
     .active-mobile svg{
         fill: #fff !important;
         border: 2px solid #fff !important;
+    }
+
+    .spec-dep {
+        margin-top: 20px;
     }
 
 }

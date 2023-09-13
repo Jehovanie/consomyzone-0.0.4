@@ -46,8 +46,8 @@
                 {% include 'shard/navbar_mobile.twig' %}
             </div>
 		<div>
-            <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-resto-spec-mobile-tomm-js" onclick="{% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}','{{arrdssm}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}"><i class="fa-solid fa-bars"></i> Restaurants à {{nom_dep}}</button>
-            {# {% if (app.user) %}
+            {# <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-resto-spec-mobile-tomm-js" onclick="{% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}','{{arrdssm}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}"><i class="fa-solid fa-bars"></i> Restaurants à {{nom_dep}}</button> #}
+            {% if (app.user) %}
                 <div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-spec-mobile-tomm-js"  onclick="{% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}','{{arrdssm}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt"> 
                     <i class="fa-solid fa-bars"></i>
                 </div>
@@ -55,7 +55,7 @@
                 <div class="open-navleft-mobile responsif-none-pc" id="open-navleft-resto-spec-mobile-tomm-js"  onclick=" {% if id_dep is same as('75') %} addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}','{{codinsee}}','{{arrdssm}}') {% else %}addListSpecRestoMobile('{{nom_dep}}', '{{id_dep}}') {% endif %}" > 
                     <i class="fa-solid fa-bars"></i>
                 </div>
-            {% endif %}  #}
+            {% endif %} 
             {# <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc " id="open-search-resto-specific-mobil">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>

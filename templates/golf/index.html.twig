@@ -37,23 +37,23 @@
         <div class="responsif-none-pc navbar-mobile-all">
             {% include 'shard/navbar_mobile.twig' %}
         </div>
-        <div class="content_filter_dep liste-depart-tomm responsif-none-pc">
-                <select class="form-select" aria-label="Sélectionnez un département" style="" id="selectDepartGolfTommJs" onchange="selectDepartGolfMobile()">
-                    <option value="Tous">Liste des departements</option>
-                    {% for departement in departements %}
-                        <option value="{{departement.id }}" data-dep-name="{{departement.departement}}">
-                                {{departement.id }} {{departement.departement}}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        {# {% if (app.user) %}
+        {# <div class="content_filter_dep liste-depart-tomm responsif-none-pc">
+            <select class="form-select" aria-label="Sélectionnez un département" style="" id="selectDepartGolfTommJs" onchange="selectDepartGolfMobile()">
+                <option value="Tous">Liste des departements</option>
+                {% for departement in departements %}
+                    <option value="{{departement.id }}" data-dep-name="{{departement.departement}}">
+                            {{departement.id }} {{departement.departement}}
+                    </option>
+                {% endfor %}
+            </select>
+        </div> #}
+        {% if (app.user) %}
             <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-golf-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
         {% else %}
             <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-golf-mobile-tomm-js">
         {% endif %}
-                    <i class="fa-solid fa-bars"></i>
-                </div> #}
+                <i class="fa-solid fa-bars"></i>
+            </div>
                 
                 <div id="list-depart-golf-mobile-tomm-js"></div> 
         
