@@ -764,7 +764,7 @@ li.nav-item.avatar-account-pdp > a > img{
 }
 
 .content_cart_map {
-    display: block;
+    display: flex;
     width: 100%;
     margin: 0 auto;
     border-radius: 5px;
