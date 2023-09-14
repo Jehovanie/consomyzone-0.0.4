@@ -687,6 +687,10 @@ class TributGService extends PDOConnexionService{
      */
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){
 
+        if( !$this->isTableExist($table_pub)){
+            return false;
+        }
+
         $statement = $this->getPDO()->prepare(
             "INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) 
             values (:user_id, :publication, :confidentiality, :photo, :userfullname)"
@@ -1095,6 +1099,9 @@ class TributGService extends PDOConnexionService{
      public function handlePublicationCommentUpdate($table_name,$userID, $publication_id, $comment, $audioname ){
 
         $table_comment = $table_name. "_commentaire";
+        if(!$this->isTableExist($table_comment)){
+            return false;
+        }
 
         $userfullname = $this->getFullName($userID);
 

@@ -78,7 +78,7 @@ class NotificationService extends PDOConnexionService{
      * 
      * @return void
      */
-    public function sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content ){
+    public function sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null ){
 
         ///get the name of the table notification for $user_id_post to send new notification
         $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id );
@@ -88,23 +88,17 @@ class NotificationService extends PDOConnexionService{
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         //// check if this table notification exists
-        $db = $_ENV["DATABASENAME"];
-        $query = "SHOW TABLES FROM $db like '" . $result["tablenotification"] . "'";
-        $sql = $this->getPDO()->query($query);
-        if( $sql->rowCount() === 0 ){
+        $tableNotification = $result["tablenotification"];
+        if(!$this->isTableExist($tableNotification)){
             return false;
         }
-
+        
         ///insert notification
-        $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
-
-        $this->getPDO()->prepare($sql)->execute([$user_id, $user_id_post, $type, $content,0,0]);
+        $this->getPDO()
+             ->prepare("INSERT INTO  $tableNotification  (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)")
+             ->execute([$user_id, $user_id_post, $type, $content,0,0]);
 
     }
-
-
-
-
 
     /**
 
@@ -279,15 +273,10 @@ class NotificationService extends PDOConnexionService{
 
         foreach($data as $notif){
             // UPDATE `tablenotification_1` SET `isShow` = '1' WHERE `tablenotification_1`.`id` = 2
-
-            $statement = $this->getPDO()->prepare('SELECT isShow FROM '. $table . ' WHERE id= ' . intval($notif["notif_id"]));
-            $statement->execute();
-            $result = $statement->fetch(PDO::FETCH_ASSOC);
-
-            if( intval($result["isShow"]) !== 1 ){
-                $sql = "UPDATE " . $table . " SET isShow = 1  WHERE id = " . intval($notif["notif_id"]);
-                $this->getPDO()->prepare($sql)->execute();
-            }
+            $notifID= intval($notif["notif_id"]);
+            $this->getPDO()
+                 ->prepare("UPDATE $table SET isShow = 1 WHERE id = $notifID")
+                 ->execute();
         }
     }
 
@@ -309,15 +298,9 @@ class NotificationService extends PDOConnexionService{
 
 
     public function readAllNotifications(string $table, int $user_id ){
-
-
-
         $sql = "UPDATE " . $table . " SET isShow = 1, isRead = 1  WHERE user_id = " . $user_id;
-
-
-
+        
         return $this->getPDO()->prepare($sql)->execute();
-
     }
 
 
@@ -325,16 +308,12 @@ class NotificationService extends PDOConnexionService{
 
 
     /**
-
      * User this function to get all notification order by descendent
-
      * @param $table : this is the name of the table
-
      */
-
     public function fetchAllNotification($table){
         // $statement = getPDO()->prepare("SELECT * FROM " . $table . " WHERE isShow=0");
-        $statement = $this->getPDO()->prepare("SELECT t.id, t.user_id, t.user_post, t.type, t.content, t.isShow, t.isRead, t.datetime, t.tribu, u.type, u.is_connected FROM `tablenotification_1` as t inner join user as u on t.user_post = u.id");
+        $statement = $this->getPDO()->prepare("SELECT t.id, t.user_id, t.user_post, t.type, t.content, t.isShow, t.isRead, t.datetime, t.tribu, u.type, u.is_connected FROM $table as t inner join user as u on t.user_post = u.id");
         $statement->execute();
         $notifications = $statement->fetchAll(PDO::FETCH_ASSOC);
         $results = [];
@@ -342,40 +321,28 @@ class NotificationService extends PDOConnexionService{
         foreach( $notifications as $item ){
             $userType= $item["type"];
             $userId= $item["user_post"];
-            if( $item["type"] === "consumer"){
-                $profil = $this->entityManager->getRepository(Consumer::class)->find($userId);
-            }else{
-                $profil = $this->entityManager->getRepository(Supplier::class)->find($userId);
-            }
 
+            if( $item["type"] === "consumer"){
+                $profil = $this->entityManager->getRepository(Consumer::class)->findOneBy([ "userId" => $userId ] );
+            }else{
+                $profil = $this->entityManager->getRepository(Supplier::class)->findOneBy([ "userId" => $userId ] );
+            }
+            
             if( $profil ){
                 $item["photoDeProfil"] = $profil->getPhotoProfil();
                 $item["fullname"] =  $profil->getFirstname() . " " . $profil->getLastname();
             }
-
             array_push($results, $item);
         }
         return $results;
-
     }
-
-
-
 
 
     public function getSingleNotification($table, $notif_id ){
 
-
-
         $statement = $this->getPDO()->prepare('SELECT isRead FROM '. $table . ' WHERE id= ' . intval($notif_id));
-
-
-
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-
-
 
         if( $result["isRead"] !== "1" ){
 

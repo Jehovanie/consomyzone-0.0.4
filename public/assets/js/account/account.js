@@ -101,7 +101,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
         if( event.data != ""){
             /// all notifications
             const all_notification = JSON.parse(event.data);
-            
+            console.log(all_notification)
             //// update number notifications and show red badge when there is new notification don't show
             updateNbrNotificationAndShowBadge(all_notification)
           

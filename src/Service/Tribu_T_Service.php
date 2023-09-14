@@ -267,7 +267,6 @@ class Tribu_T_Service extends PDOConnexionService
 
 
     public function addMember($tableName, $user_id)
-
     {
 
         $query = "Insert into $tableName (id, user_id, roles) values (UUID(), $user_id, 'Membre')";
@@ -1575,6 +1574,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param int $id:  publication id
      */
     public function getCommentsPublication($table_name, $pubID){
+
         $results= [];
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" . "_commentaire " . "WHERE pub_id= $pubID;");
         $statement->execute();
@@ -1584,7 +1584,7 @@ class Tribu_T_Service extends PDOConnexionService
         foreach ($comments as $comment){
             $user_id= $comment["user_id"];
 
-            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id");
+            $statement_photos = $this->getPDO()->prepare("SELECT tab.photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id");
             $statement_photos->execute();
             $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
 
@@ -1595,6 +1595,7 @@ class Tribu_T_Service extends PDOConnexionService
                 "user" => [
                     "fullname" => $comment["userfullname"],
                     "photo" => $photo_profil["photo_profil"],
+                    "is_connected" => true
                 ]
             ];
 

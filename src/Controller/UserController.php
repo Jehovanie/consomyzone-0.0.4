@@ -93,7 +93,8 @@ class UserController extends AbstractController
         TributGService $tribuGService,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
-        SortResultService $sortResultService
+        SortResultService $sortResultService,
+        NotificationService $notificationService
     ): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
@@ -176,12 +177,20 @@ class UserController extends AbstractController
 
             if ($legend || $photo) {
                 if( $type_tribu === "Tribu G"){
+                    $tribu= $tribuG;
                     $tribuGService->createOnePub($tribuG. "_publication", $userId, $legend, intval($confid), $newFilename);
                 }else{
                     $tribu = $new_publication['tribu']->getData();
                     $tribuTService->createOnePub($tribu . '_publication', $userId, $legend, intval($confid), $newFilename);
                 }
             }
+
+            ///send notification
+            $notificationService->sendNotificationForOne($userId, $userId, "Une nouvelle notification.", "Votre publication est publiée.");
+
+            ///send notification for all partisant in tribu.
+            
+
             return $this->redirect($request->getUri());
         }
 
@@ -2451,14 +2460,13 @@ class UserController extends AbstractController
         $data = json_decode($request->getContent(), true);
         extract($data); /// $tablePub, $pubID, $authorID, $comment, $audioname
 
-        $tribut->handlePublicationCommentUpdate(
+        $result = $tribut->handlePublicationCommentUpdate(
             $tablePub,
             $this->getUser()->getId(),
             $pubID,
             $comment,
             $audioname
         );
-
 
         $full_name = $tribut->getFullName($this->getUser()->getId());
 
@@ -2468,7 +2476,7 @@ class UserController extends AbstractController
                 $this->getUser()->getId(),
                 $authorID,
                 "Comment publication.",
-                $full_name . " a commenté votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#publication_" . $pubID . "_jheo_js'>Voir la publication</a>"
+                $full_name . " a commenté votre publication."
             );
         }
 
@@ -2509,12 +2517,4 @@ class UserController extends AbstractController
         ], 200);
 
     }
-
-    // #[Route('/user/getPartisans', name: 'app_getpartisan_user', methods: ["GET"])]
-    // public function getPartisantUser(Request $request): Response
-    // {
-    //     $userId = $request->query->get("id")
-
-    // }
-
 }
