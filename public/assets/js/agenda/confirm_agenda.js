@@ -17,14 +17,26 @@ if(document.querySelector("#accept_from_page_email_Nantenaina_js_css")){
         fetch(request)
             .then(response => response.json())
             .then(response => {
-                document.querySelector("#contentAcceptOrRejectAgenda").style.display = "none"
-                swal("Message !", "Votre choix a été bien pris en compte.\r\n" +
-                                " L'événement devrait s'afficher dans votre agenda et"+
-                                "vous recevrez un email de présence le jour de l'événement.\r\n"+
-                                "Vous allez être redirigé vers CONSOMYZONE.", "success")
-                            .then((value) => {
-                                location.href = "/";
-                            });
+                console.log(response)
+                if(response.response === "accepted"){
+                    document.querySelector("#contentAcceptOrRejectAgenda").style.display = "none"
+                    swal("Message !", "Votre choix a été bien pris en compte.\r\n" +
+                                    " L'événement devrait s'afficher dans votre agenda et"+
+                                    "vous recevrez un email de présence le jour de l'événement.\r\n"+
+                                    "Vous allez être redirigé vers CONSOMYZONE.", "success")
+                                .then((value) => {
+                                    location.href = "/";
+                                });
+                }else if(response.response === "already_accepted"){
+                    document.querySelector("#contentAcceptOrRejectAgenda").style.display = "none"
+                    swal("Message !", "Vous avez déjà accepté votre invitation à l'événement.\r\n" +
+                                    " L'événement devrait déjà s'afficher dans votre agenda et "+
+                                    "vous recevrez un email de présence le jour de l'événement.\r\n"+
+                                    "Vous allez être redirigé vers CONSOMYZONE.", "success")
+                                .then((value) => {
+                                    location.href = "/";
+                                });
+                }
             })
      
     }

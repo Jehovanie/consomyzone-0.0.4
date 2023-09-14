@@ -199,22 +199,32 @@ function acceptInvitation(e){
     const idReceiverNotif = e.classList[3].replace(/[^0-9]/g, "")
     const balise = e.dataset.b
     const tbt = e.dataset.tbt
+	let nomTribu = e.parentElement.parentElement.previousElementSibling.querySelector(".profile-usertitle-job > p").textContent.split("invitation de rejoindre la tribu")[1]
     console.log("balise" + balise)
+	let data = {nomTribu:nomTribu}
+	console.log(nomTribu)
     const url = `/user/invitations/confirm/${id}/${idReceiverNotif}/${balise}/${tbt}`
-    fetch(url)
-        .then(res => {
-            console.log(res.json())
-            if (res.ok && res.status == 200) {
-                //document.querySelector(".remove_invitation").parentElement.removeChild(document.querySelector(".remove_invitation"));
-				e.parentElement.parentElement.parentElement.remove();
-                if(tbt == 1){
-                    document.querySelector("#succesMessageContent").textContent = "Félicitation ! Vous êtes maintenant membre de ce tribu"
-                    document.querySelector("#succesMessage").style.display="block";
-                    setTimeout(()=>{
-                        document.querySelector("#succesMessage").style.display="none";
-                    }, 5000)
-                }
-            }
+    fetch(new Request(url, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }))
+	.then(res => {
+		console.log(res.json())
+		if (res.ok && res.status == 200) {
+			//document.querySelector(".remove_invitation").parentElement.removeChild(document.querySelector(".remove_invitation"));
+			e.parentElement.parentElement.parentElement.remove();
+			if(tbt == 1){
+				document.querySelector("#succesMessageContent").textContent = "Félicitation ! Vous êtes maintenant membre de ce tribu"
+				document.querySelector("#succesMessage").style.display="block";
+				setTimeout(()=>{
+					document.querySelector("#succesMessage").style.display="none";
+				}, 5000)
+			}
+		}
     })
 }
 

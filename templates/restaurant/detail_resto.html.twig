@@ -28,15 +28,7 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    {# <p class="card-text cmz-adresse">
-                        <a href="#" class="small">  
-                            {{details.numvoie|lower}}
-                            {{details.typevoie|lower}}
-                            {{details.nomvoie|lower}}
-                            {{details.codpost|lower}}
-                            {{details.villenorm|lower}}
-                        </a>
-                    </p> #}
+                    
                     <figcaption class="blockquote-footer card-text cmz-adresse">
                         Adresse :  
                         <a href="#" class="small text-center ">
@@ -64,14 +56,17 @@
                                 <button type="button" class="mx-2 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
                             {% endif %}
                         {% endif %}
+                        {% if app.user %}
+                                <button type="button" data-name="{{details.denominationF | raw}}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js" data-status="pastille" data-bs-dismiss="modal" 
+                                onclick="showPastillTable(event,'{{id_restaurant}}')">Pastiller</button>
+                        {% endif %}
                             <div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}" ></div>
                     </div>
                 </div>
             </div>
 
             <div class="p-4">
-                    
-                {# note avis   #}
+
                 <hr>
                 <div class="content_note">
                     <div class="text-center start start_jheo_js">
@@ -261,7 +256,7 @@
                         <button class="btn btn-success " id="givs-avis-resto-tom-js" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
                     </div>
 
-                    <div class="pastileThisResto p-3 mt-3">
+                    <div class="pastileThisResto p-3 mt-3 d-none">
                         {% if tribu_t_resto_pastille|length > 0 %}
                             <div class="containerPastilleResto">
                                 {% for item in tribu_t_resto_pastille %}
@@ -313,6 +308,86 @@
                         {% endif %}
                     </div>
 
+                    <table class="table table-striped d-none" id="restoPastilleTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Logo</th>
+                                <th scope="col">Tribu T</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# {% if tribu_t_resto_pastille|length > 0 %}
+                                {% for item in tribu_t_resto_pastille %}
+                                    <tr style="vertical-align: middle;">
+                                        <td class="col-logo">
+                                        </td>
+                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                        <td class="col-tribuT">{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</td>
+                                         <td class="col-note">
+                                            <span class="lioTe non_active">
+                                                <i class="fa-solid fa-star checked starNote"></i>
+                                                <i class="fa-solid fa-star checked starNote"></i>
+                                                <i class="fa-solid fa-star checked starNote"></i>
+                                                <i class="fa-solid fa-star checked starNote"></i>
+                                                <b>0</b>/4
+                                            </span>
+                                        </td>
+                                        <td class="col-avis">
+                                            <a href="#" class="text-secondary non_active">Voir</a>
+                                        </td> 
+                                        <td class="col-action">
+                                            <button type="button" class="mx-2 btn btn-secondary" disabled>Pastillé</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %} #}
+
+                            {# {% if tribu_t_resto_joined_pastille|length > 0 %}
+                                {% for item in tribu_t_resto_joined_pastille %}
+                                    <tr style="vertical-align: middle;">
+                                        <td class="col-logo">
+                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                        </td>
+                                        <td class="col-tribuT">{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</td>
+                                        <td class="col-note">
+                                            <span class="lioTe non_active">
+                                                <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
+                                            </span>
+                                        </td>
+                                        <td class="col-avis">
+                                            <a href="#" class="text-secondary non_active">Voir</a>
+                                        </td> 
+                                        <td class="col-action">
+                                            <button type="button" class="mx-2 btn btn-secondary" disabled>Pastillé</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %} #}
+
+                            {# {% if tribu_t_can_pastille|length > 0 %}
+                                {% for item in tribu_t_can_pastille %}
+                                    <tr style="vertical-align: middle;">
+                                        <td class="col-logo">
+                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
+                                        </td>
+                                        <td class="col-tribuT">{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</td>
+                                         <td class="col-note">
+                                            <span class="lioTe non_active">
+                                                <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
+                                            </span>
+                                        </td>
+                                        <td class="col-avis">
+                                            <a href="#" class="text-secondary non_active">Voir</a>
+                                        </td> 
+                                        <td class="col-action">
+                                            <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" class="btn btn-success" onclick="pastilleRestoForTribuT(this)" type="button" data-velona="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}">Pastiller</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %} #}
+                        </tbody>
+                    </table>
                 {% endif %}
             </div>
         </div>

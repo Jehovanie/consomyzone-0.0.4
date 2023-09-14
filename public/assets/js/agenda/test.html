@@ -1,23 +1,19 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Calendar API Quickstart</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <p>Google Calendar API Quickstart</p>
 
-{% block title %}
-	ConsoMyZone : Agenda
-{% endblock %}
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
-{% block stylesheets %}
+    <pre id="content" style="white-space: pre-wrap;"></pre>
 
-    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/core/main.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/daygrid/main.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
-	{# <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}"> #}
-{% endblock %}
-
-
-{% block javascripts %}
-        <script>
-        
+    <script type="text/javascript">
       /* exported gapiLoaded */
       /* exported gisLoaded */
       /* exported handleAuthClick */
@@ -32,7 +28,7 @@
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      const SCOPES = 'https://www.googleapis.com/auth/calendar';
+      const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
       let tokenClient;
       let gapiInited = false;
@@ -58,7 +54,7 @@
           discoveryDocs: [DISCOVERY_DOC],
         });
         gapiInited = true;
-        
+        maybeEnableButtons();
       }
 
       /**
@@ -71,7 +67,7 @@
           callback: '', // defined later
         });
         gisInited = true;
-       console.log(tokenClient)
+        maybeEnableButtons();
       }
 
       /**
@@ -153,52 +149,8 @@
             'Events:\n');
         document.getElementById('content').innerText = output;
       }
-   
-</script>
-        {# ----------------------agendea-------------------- #}
-        {# <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script> #}
-        <script src="{{asset('assets/js/agenda/fullCalandar/core/main.js')}}" defer></script>
-        <script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
-        <script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
-        <script src="{{asset('assets/js/agenda/googleCalendarAPI.js')}}" defer></script>
-        <script   async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()" ></script>
-        <script  async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()" ></script>
-        <script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
-        <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
-{% endblock %}
-
-
-{% block body %}
-    <div class="nh">
-        {% include 'shard/account_navleft_new.html.twig' %}
-        {% include 'shard/account_navbar_new.html.twig' %}
-        <!-- ===== Main Content Start ===== -->
-        <main class="gv hm hv">
-            <div class="sk bu 2xl:ud-p-11">
-                <!-- ====== Calendar Section Start -->
-                <div class="content">
-                    <div id='calendar' class="fc fc-ltr fc-unthemed"></div>
-                </div>
-                <!-- ====== Calendar Section End -->
-              
-            </div>
-        </main>
-        <!-- ===== Main Content End ===== -->
-        <button type="button" class=" d-none show_modal_createAgenda_jheo_js" data-bs-toggle="modal" data-bs-target="#createAgenda"></button>
-        <button type="button" class=" d-none show_modal_showAgenda_jheo_js" data-bs-toggle="modal" data-bs-target="#showAgenda"></button>
-    </div>
-
-    {# <div class="content_loader_agenda hidden content_loader_agenda_js_jheo">
-        <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-        </div>
-    </div>
-
-    <div class="content_response_share_agenda">
-        
-    </div> #}
-    {% include 'shard/modal/new_agenda.html.twig' %}
-    {% include 'shard/modal/show_agenda.html.twig' %}
-    {% include 'shard/modal/partage_agenda.html.twig' %}
-    {% include 'shard/modal/alert_flash.html.twig' %}
-{% endblock %}
+    </script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+  </body>
+</html>

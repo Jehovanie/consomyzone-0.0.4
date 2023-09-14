@@ -80,6 +80,36 @@ if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
     cta_cancel_create_agenda.forEach(item => {
         item.addEventListener("click", () => {
             initInputForm()
+            //gisLoaded()
+            //gapiLoaded()
+            eev = {
+                'summary': 'Google I/O 2015',
+                'location': '800 Howard St., San Francisco, CA 94103',
+                'description': 'A chance to hear more about Google\'s developer products.',
+                'start': {
+                  'dateTime': '2023-09-28T09:00:00-07:00',
+                  'timeZone': 'America/Los_Angeles',
+                },
+                'end': {
+                  'dateTime': '2023-09-28T17:00:00-07:00',
+                  'timeZone': 'America/Los_Angeles',
+                },
+                                
+                }
+                tokenClient.requestAccessToken({prompt: ''});
+              
+              const request = gapi.client.calendar.events.insert({
+                  'calendarId': 'primary',
+                  'resource': eev
+                });
+                
+                request.execute(function(event) {
+                  console.log('Event created: ' + event.htmlLink);
+                });
+            
+          
+            
+              
         })
     })
 }

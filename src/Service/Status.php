@@ -68,4 +68,14 @@ class Status {
             "isSuperAdmin" => in_array("ROLE_GODMODE",$user->getRoles()),
         ];
     }
+
+    public function convertUnicodeToUTF8($str){
+       
+        return mb_convert_encoding($str, "UTF-8", mb_detect_encoding($str));
+
+    }
+
+    public function convertUtf8ToUnicode($str){
+        return json_encode($str);
+    }
 }

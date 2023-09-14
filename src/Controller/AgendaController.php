@@ -107,7 +107,7 @@ class AgendaController extends AbstractController
     public function setAgendaConfirmation($fromId,$toId,$agendaId){
 
         $place_libre=$this->agendaService->checkFreePlace(intval($fromId), intval($toId),intval($agendaId));
-       dump(  $place_libre);
+
         if( $place_libre["place_libre"]=== 0){
             return $this->render("agenda/partage/agenda_full_place.html.twig",[
                 "profil" => "",
@@ -808,7 +808,7 @@ class AgendaController extends AbstractController
     public function createEvent(Request $request,AgendaService $agendaService, Filesystem $fs){
         $agendaTableName=$this->getUser()->getNomTableAgenda();
         $req=json_decode($request->getContent(),true);
-        dump($req);
+
         if( str_contains($req["fileType"],"image"))
             $path="/public/uploads/users/agenda/files/img/";
         else if(str_contains($req["fileType"], "application"))
@@ -884,7 +884,7 @@ class AgendaController extends AbstractController
             $date = array_column($final[$i], 'heure_debut');
             array_multisort($date, SORT_ASC, $final[$i]);
        }
-        //dump($final);
+
         $json=$ser->serialize($final,"json");
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }

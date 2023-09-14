@@ -2000,8 +2000,13 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         TributGService $tr,
         $is_tribu,
-        Tribu_T_Service $tribut
+        Tribu_T_Service $tribut,
+        // Request $request
     ): Response {
+
+        // $requestContent = json_decode($request->getContent(), true);
+
+        // $nomTribuT =  $requestContent["nomTribu"];
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
 
@@ -2036,7 +2041,7 @@ class UserController extends AbstractController
             
             $tributName  = $balise;
 
-            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined");
+            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $tributName);
 
             $tribut->updateMember($balise, $userPosterId, 1);
 

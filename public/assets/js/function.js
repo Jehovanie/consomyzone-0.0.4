@@ -2086,37 +2086,7 @@ function scrollBottom(element) {
     element.scrollTop = element.scrollHeight;
 }
 
-/*function pastilleRestoForTribuT(e){
-    let id = e.target.dataset.id
-    let name = e.target.dataset.name
-    let tbl = e.target.dataset.tbname
-    let data = {
-        id : id,
-        name : name,
-        tbl : tbl
-    }
-    const request = new Request("/user/tribu_t/pastille/resto", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(data)
-    })
-    fetch(request)
-            .then(response=>response.json())
-            .then(message=>{
-                document.querySelector("#containerPastilleResto").style.display = "none"
-                let successElem = document.querySelector(".successPastille")
-                successElem.style.display = "block"
-                successElem.textContent = message
-                setTimeout(function () {
-                    successElem.style.display = "none"
-                    successElem.innerHTML = ""
-                }, 5000)
-            })
-            .catch(error=>console.log(error))
-}*/
+
 function pastilleRestoForTribuT(element){
     let id = element.dataset.id
     let name = element.dataset.name
@@ -2126,7 +2096,7 @@ function pastilleRestoForTribuT(element){
         name : name,
         tbl : tbl
     }
-    
+   
     const request = new Request("/user/tribu_t/pastille/resto", {
         method: "POST",
         headers: {
@@ -2140,27 +2110,36 @@ function pastilleRestoForTribuT(element){
             .then(message=>{
                 tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
                 tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
-                let html = `<div class="nomTribuTPastilleResto col-6">
-                                <b>Tribu T ${tbl}</b>
-                            </div>
-                            <div class="me-auto col-6">
-                                <span class="lioTe non_active">
-                                    <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
-                                </span>
-                                <a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
-                            </div>`
+
+                let html = `<td class="col-action">
+                                <button type="button" class="mx-2 btn btn-secondary" disabled="">Pastillé</button>
+                            </td>`
+
                 let img = document.createElement("img")
                 img.src = element.dataset.velona
                 img.classList.add("ms-1")
-                document.querySelector(".restoNameWithLogoTribu").appendChild(img);
-                slideToRight(element, html)
+                new swal("Succès !", "Restaurant pastillé avec succès", "success")
+                .then((value) => { 
+                    updateBtnStatus(element, html)
+                    document.querySelector(".restoNameWithLogoTribu").appendChild(img);
+                });
+                
             })
             .catch(error=>console.log(error))
 }
 
+
 function slideToRight(elem, html) {
         elem.parentElement.style.display = "none"
         elem.parentElement.parentElement.innerHTML = html
+}
+
+function updateBtnStatus(elem, html) {
+    elem.parentElement.innerHTML = html
+}
+
+function updateTr(elem, html) {
+    elem.parentElement.parentElement.innerHTML = html
 }
 
 function validateEmail(mail){
@@ -2281,3 +2260,49 @@ function addListSpecificTabac(nom_dep, id_dep) {
 function closeDetailGolfMob(nom_dep, id_dep) {
     location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
 }
+
+function convertUnicodeToUtf8(str){
+    return unescape(str);
+}
+
+/**
+ * @author Nantenaina
+ */
+function showPastillTable(e,id){
+    document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML=""
+    fetch("/restaurant/pastilled/checking/"+parseInt(id)).then(response=>{
+        if(response.status=200 && response.ok){
+            response.json().then(data=>{
+                data.forEach(item=>{
+                    console.log(item)
+                    let status=item.isPastilled ? "Pastillé" :"Pastiller";
+                    let logoPath=item.logo_path ? item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+                    let tableTribuT=item.table_name; 
+                    let nomTribuPars = tableTribuT.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+                    nomTribuPars = nomTribuPars.charAt(0).toUpperCase() + nomTribuPars.slice(1)
+                    let nomTribuT = item.name_tribu_t_muable ? item.name_tribu_t_muable : nomTribuPars
+                    let restaurant = e.target.dataset.name
+                                    
+                    let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
+                                                `<button type="button" data-id="${id}" data-name="${restaurant}" data-tbname="${tableTribuT}"
+                                                class="mx-2 btn btn-success" onclick="pastilleRestoForTribuT(this)">${status}</button>`
+                    let tr=`<tr style="vertical-align: middle;">
+                                <td class="col-logo">
+                                    <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
+                                        src="${logoPath}"
+                                    alt="">
+                                </td>
+                                <td class="col-tribuT">${nomTribuT}</td>
+                                <td class="col-action">
+                                   ${btn}
+                                </td>
+                            </tr>`
+                    $("#restoPastilleModal").modal("show")
+                    document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML+=tr
+                })
+            })
+        }
+    })
+    
+}
+
