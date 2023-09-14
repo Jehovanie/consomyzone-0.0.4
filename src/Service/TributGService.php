@@ -14,7 +14,7 @@ use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
 
 class TributGService extends PDOConnexionService{
 
- 
+
 
     /**
      * 
@@ -31,39 +31,21 @@ class TributGService extends PDOConnexionService{
     public function createTableTributG($name_table_tribuG, $user_id)
     {
 
-
-
-        
-
-
-
         $db = $_ENV["DATABASENAME"];
-
-        
 
         $query = "SHOW TABLES FROM $db like '$name_table_tribuG'";
 
         $sql = $this->getPDO()->query($query);
 
-        
-
         $resultat=$sql->rowCount();
-
-
 
         if($resultat>0){
 
-
-
             // $data = "Insert into tributg_".$commun_code_postal." (id, user_id, roles) values (UUID(), $user_id,'[\"Utilisateur\"]')";
-
             $data = "Insert into " . $name_table_tribuG . " (user_id, roles) values ( $user_id,'utilisateur')";
 
             $this->getPDO()->exec($data);
-
         }else {
-
-
 
             ///Formatage name
 
@@ -1102,6 +1084,8 @@ class TributGService extends PDOConnexionService{
         if(!$this->isTableExist($table_comment)){
             return false;
         }
+
+        $comment = $this->convertUtf8ToUnicode($comment);
 
         $userfullname = $this->getFullName($userID);
 

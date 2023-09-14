@@ -2317,3 +2317,7 @@ function addListSpecificTabac(nom_dep, id_dep) {
 function closeDetailGolfMob(nom_dep, id_dep) {
     location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
 }
+
+function convertUnicodeToUtf8(str){
+    return unescape(str);
+}

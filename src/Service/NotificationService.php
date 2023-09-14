@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\PDOConnexionService;
+use App\Service\Status;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
 
@@ -92,6 +93,8 @@ class NotificationService extends PDOConnexionService{
         if(!$this->isTableExist($tableNotification)){
             return false;
         }
+
+        $content= $this->convertUtf8ToUnicode($content);
         
         ///insert notification
         $this->getPDO()
@@ -520,6 +523,8 @@ class NotificationService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id );
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $content= $this->convertUtf8ToUnicode($content);
 
         ///insert notification
         if($result &&  $this->isTableExist($result["tablenotification"])){

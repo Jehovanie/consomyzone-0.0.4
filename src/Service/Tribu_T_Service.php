@@ -1591,7 +1591,7 @@ class Tribu_T_Service extends PDOConnexionService
             $temp= [
                 "pub_id" => $comment["pub_id"],
                 "dateTime" => $comment["datetime"],
-                "text_comment" => $comment["commentaire"],
+                "text_comment" => $this->convertUnicodeToUtf8($comment["commentaire"]) ? $this->convertUnicodeToUtf8($comment["commentaire"]) : $comment["commentaire"],
                 "user" => [
                     "fullname" => $comment["userfullname"],
                     "photo" => $photo_profil["photo_profil"],

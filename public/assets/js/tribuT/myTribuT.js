@@ -454,7 +454,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     worker.onmessage = (event) => {
         // console.log(event.data)
         let data = event.data
-
+        console.log(data);
 
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
@@ -508,7 +508,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                     </div>` : ""
 
 
-                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uffv 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -536,9 +536,13 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
+                                                    <p class="text-comment content_nbr_comment_jheo_js">
+                                                        <span class="nbr_comment_jheo_js"> ${ data[i].nbr}  ${ data[i].nbr > 0 ?  " commentaires" : " commentaire" } </span>
+                                                    </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
-                                                        <i class="fa-regular fa-comment comment non_active" ></i>
+                                                        <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                            onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -575,7 +579,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
                     contentPublication = `
-                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -634,9 +638,13 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
+                                                    <p class="text-comment content_nbr_comment_jheo_js">
+                                                        <span class="nbr_comment_jheo_js"> ${ data[i].nbr}  ${ data[i].nbr > 0 ?  " commentaires" : " commentaire" } </span>
+                                                    </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
-                                                        <i class="fa-regular fa-comment comment non_active" ></i>
+                                                        <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                        onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -713,7 +721,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                 console.log("data N°: " + i)
                                 console.log(data[i])
                                 const contentPublication = `
-                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -770,9 +778,14 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
+                                                    <p class="text-comment content_nbr_comment_jheo_js">
+                                                        <span class="nbr_comment_jheo_js"> ${ data[i].nbr}  ${ data[i].nbr > 0 ?  " commentaires" : " commentaire" } </span>
+                                                    </p>
+
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
-                                                        <i class="fa-regular fa-comment comment non_active" ></i>
+                                                        <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                        onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 

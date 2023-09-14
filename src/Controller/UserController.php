@@ -97,6 +97,11 @@ class UserController extends AbstractController
         NotificationService $notificationService
     ): Response
     {
+        // $w= "En France, le département est à la fois : une circonscription administrative et le territoire de compétence des services de l'État";
+        // $m= $status->convertUtf8ToUnicode($w);
+        // dump( "before: " . $w);
+        // dd( "After: " . $m );
+
         $userConnected= $status->userProfilService($this->getUser());
         //dd($userConnected);
         $userId= $this->getUser()->getId();

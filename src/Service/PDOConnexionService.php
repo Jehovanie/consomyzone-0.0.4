@@ -32,4 +32,12 @@ class PDOConnexionService
 
         return $resultat > 0 ? true : false;
     }
+
+    protected function convertUtf8ToUnicode($str){
+        return json_encode($str);
+    }
+
+    protected function convertUnicodeToUtf8($str){
+        return json_decode($str, true);
+    }
 }

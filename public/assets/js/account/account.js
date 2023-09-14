@@ -101,7 +101,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
         if( event.data != ""){
             /// all notifications
             const all_notification = JSON.parse(event.data);
-            console.log(all_notification)
+
             //// update number notifications and show red badge when there is new notification don't show
             updateNbrNotificationAndShowBadge(all_notification)
           
@@ -168,33 +168,6 @@ if( document.querySelector(".notification_jheo_js")){
         }
     })
 }
-
-if( document.querySelector(".tous_marquer_comme_lu_js_jheo")){
-
-    document.querySelector(".tous_marquer_comme_lu_js_jheo").addEventListener("click" , () => {
-
-        fetch("/user/notification/tous_marquer_lu",{
-
-            method: "POST",
-
-            headers: {
-
-                "content-type": "application/json; charset=utf",
-
-            }
-
-        }).then(response => response.json())
-
-        .then(response =>{
-
-            console.log(response)
-
-        })
-
-    })
-
-}
-
 
 //// delete the all input in form is the user cancelled the publication.
 if(document.querySelector('.annulation_pub_js_jheo')){
@@ -382,6 +355,7 @@ function updateNbrNotificationAndShowBadge(allNotifications){
             contentNbrNotification.innerText= (array_notificationNotRead.length > 9 || array_notificationNotRead.length === 0) ? array_notificationNotRead.length : `0${array_notificationNotRead.length}`;
         }
     }
+
 }
 
 function injectNewCardNotification(allNotifications){
@@ -588,7 +562,7 @@ function createAndAddCardNotification(
                             ${user.fullname}
                         </h6>
                         <p class="mn hc">
-                            ${notification.textContent.length > 45 ? notification.textContent.substring(0, 40 ) + '...' : notification.textContent}
+                            ${notification.textContent.length > 45 ? convertUnicodeToUtf8( notification.textContent.substring(0, 40 ) + '...') : convertUnicodeToUtf8(notification.textContent)}
                         </p>
                     </blockquote>
                     <figcaption class="blockquote-footer" style="float: right;">
@@ -618,8 +592,8 @@ function setShowNotifications(notificationID){
             }
 
             const nbr = document.querySelector(".nbr_notification_jheo_js")
-            nbr.innerText =  nbr && parseInt(nbr.innerText) != 0 ? parseInt(nbr.innerText)-1 : nbr.innerText;
-
+            const nbr_final =  nbr && parseInt(nbr.innerText) != 0 ? parseInt(nbr.innerText)-1 : nbr.innerText;
+            nbr.innerText = parseInt(nbr_final) < 10 &&  parseInt(nbr_final) !=0 ? `0${nbr_final}` : nbr_final;
         })
 }
 
