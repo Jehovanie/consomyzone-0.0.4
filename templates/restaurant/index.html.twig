@@ -45,9 +45,9 @@
             
             <div>
             {% if (app.user) %}
-                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-resto-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+                <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
             {% else %}
-                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-resto-mobile-tomm-js">
+                <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js">
             {% endif %}
                     <i class="fa-solid fa-bars"></i>
                 </div>
@@ -76,7 +76,7 @@
                     {% include 'shard/search_mobile.html.twig' %}
                 </div> #}
 
-                <div id="list-depart-resto-mobile-tomm-js"></div>
+                <div class="list-depart-resto-mobile-tomm-js" id="list-depart-resto-mobile-tomm-js"></div>
 
                 <div class="content_cart_map">
                     <div class="cart_map cart_map_js_jheo cart_map_js">

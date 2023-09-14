@@ -773,25 +773,26 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
 }
 
 
+
 function addListFermeMobile() {
-    document.querySelector("#open-navleft-mobile-tomm-js").addEventListener('click', () => {
-        document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 0
-        document.querySelector("#open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
-        if (document.querySelector("#list-depart-mobile-tomm-js")) {
-            document.querySelector("#list-depart-mobile-tomm-js").removeAttribute("style")
+    document.querySelector(".open-navleft-mobile-tomm-js").addEventListener('click', () => {
+        document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 0
+        document.querySelector(".open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
+        if (document.querySelector(".list-depart-mobile-tomm-js")) {
+            document.querySelector(".list-depart-mobile-tomm-js").removeAttribute("style")
         }
         fetch(`/ferme-mobile`)
             .then(response => {
                 return response.text()
             }).then(r => {
-                document.querySelector("#list-depart-mobile-tomm-js").innerHTML = null
-                document.querySelector("#list-depart-mobile-tomm-js").innerHTML = r
-                // firstX= document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().x+document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().width
-                // firstY=document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().y
+                document.querySelector(".list-depart-mobile-tomm-js").innerHTML = null
+                document.querySelector(".list-depart-mobile-tomm-js").innerHTML = r
+                // firstX= document.querySelector(".list-depart-mobile-tomm-js").getBoundingClientRect().x+document.querySelector(".list-depart-mobile-tomm-js").getBoundingClientRect().width
+                // firstY=document.querySelector(".list-depart-mobile-tomm-js").getBoundingClientRect().y
 
                 document.querySelector("#close-ferme").addEventListener('click', () => {
-                    document.querySelector("#list-depart-mobile-tomm-js").style ="transform: translateX(-100vw);display: none;"
-                    document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
+                    document.querySelector(".list-depart-mobile-tomm-js").style ="transform: translateX(-100vw);display: none;"
+                    document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 1
                 })
 
 
@@ -932,34 +933,34 @@ if (document.querySelector("#list-depart-mobile-tomm-js")) {
 
             if (deltx < 0) { //gauche
                 //document.querySelector("body").style.transition = `all 3s ease-in-out !important`
-                document.querySelector("#list-depart-mobile-tomm-js").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
-                document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
-                // document.querySelector("#open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
+                document.querySelector(".list-depart-mobile-tomm-js").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
+                document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 1
+                // document.querySelector(".open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
             }
         }
     }
 }
 
 function addListDepartRest() {
-    if(document.querySelector("#open-navleft-resto-mobile-tomm-js")){
-        document.querySelector("#open-navleft-resto-mobile-tomm-js").addEventListener('click', () => {
-            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 0
-            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+    if(document.querySelector(".open-navleft-resto-mobile-tomm-js")){
+        document.querySelector(".open-navleft-resto-mobile-tomm-js").addEventListener('click', () => {
+            document.querySelector(".open-navleft-resto-mobile-tomm-js").style.opacity = 0
+            document.querySelector(".open-navleft-resto-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
 
-            if (document.querySelector("#list-depart-resto-mobile-tomm-js")) {
-                document.querySelector("#list-depart-resto-mobile-tomm-js").removeAttribute("style")
+            if (document.querySelector(".list-depart-resto-mobile-tomm-js")) {
+                document.querySelector(".list-depart-resto-mobile-tomm-js").removeAttribute("style")
             }
 
             fetch(`/restaurant-mobile`)
                 .then(response => response.text())
                 .then(r => {
-                    if (document.querySelector("#list-depart-resto-mobile-tomm-js")) {
-                        document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = null
-                        document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = r
+                    if (document.querySelector(".list-depart-resto-mobile-tomm-js")) {
+                        document.querySelector(".list-depart-resto-mobile-tomm-js").innerHTML = null
+                        document.querySelector(".list-depart-resto-mobile-tomm-js").innerHTML = r
 
                         document.querySelector("#close-resto").addEventListener('click', () => {
-                            document.querySelector("#list-depart-resto-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
-                            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 1
+                            document.querySelector(".list-depart-resto-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
+                            document.querySelector(".open-navleft-resto-mobile-tomm-js").style.opacity = 1
                         })
                     }
                 })

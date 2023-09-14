@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block body %}
-	
+	{% include 'shard/ferme/specific_mobile_departement.js.twig' %}
 	<div class="">
 		<div class=" responsif-none" id="tous">
 			{% include 'shard/ferme/specific_ferme_navleft.twig' %}
@@ -40,10 +40,13 @@
         </div>
         
 		<div class="ferme-mobile">
-			{# <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-mobile-tomm-js-specific" onclick="addSpecificFermeMobile('{{nom_dep}}', '{{id_dep}}')"><i class="fa-solid fa-bars"></i> Ferme à {{nom_dep}}</button> #}
-			<div class="open-navleft-mobile responsif-none-pc" id="open-navleft-mobile-tomm-js-specific" onclick="addSpecificFermeMobile('{{nom_dep}}','{{id_dep}}')">
+			<div class="open-navleft-mobile responsif-none-pc open-navleft-mobile-tomm-js" id="open-navleft-mobile-tomm-js">
                  <i class="fa-solid fa-bars"></i>
             </div>
+			{# <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-mobile-tomm-js-specific" onclick="addSpecificFermeMobile('{{nom_dep}}', '{{id_dep}}')"><i class="fa-solid fa-bars"></i> Ferme à {{nom_dep}}</button> #}
+			{# <div class="open-navleft-mobile responsif-none-pc" id="open-navleft-mobile-tomm-js-specific" onclick="addSpecificFermeMobile('{{nom_dep}}','{{id_dep}}')">
+                 <i class="fa-solid fa-bars"></i>
+            </div> #}
 			{# <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc " id="open-search-resto-specific-mobil">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
@@ -60,7 +63,8 @@
                             <div class="word word-3">Z</div>
                         </div>
 					</div>
-					<div id="list-specific-depart-tomm-js"></div>
+					{# <div id="list-specific-depart-tomm-js"></div> #}
+					<div class="list-depart-mobile-tomm-js" id="list-depart-mobile-tomm-js"></div>
 					{# <div id="map" class="map"></div> #}
 				</div>
 			</div>

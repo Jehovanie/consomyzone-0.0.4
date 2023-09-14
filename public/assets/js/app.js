@@ -882,6 +882,3 @@ if (document.querySelector(".open-search-mobil-tomm-js")) {
         document.querySelector(".open-search-mobil-tomm-js").classList.remove('search-resto-mobil-none')
     })
 }
-
-
-

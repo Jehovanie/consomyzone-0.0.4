@@ -201,7 +201,7 @@ class FermeController extends AbstractController
                 }
             }
         }
-
+        // dd($fermeGeomRepository->getFermByDep($nom_dep, $id_dep, 0));
         return $this->render("ferme/specific_departement.html.twig", [
 
             "id_dep" => $id_dep,

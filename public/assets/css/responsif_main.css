@@ -383,7 +383,13 @@
     }
     
     .text-point-9{
-        font-size: 9pt;
+        font-size: 9pt !important;
+    }
+    .text-point-10{
+        font-size: 10pt !important;
+    }
+    .text-point-12{
+        font-size: 12pt !important;
     }
     .swipe-me-reverse {
 
@@ -503,9 +509,13 @@
         z-index: 401;
     }
 
+    .content-search-mob{
+        width: 100%;
+    }
+
     .content-logo-shearch {
         width: 100% !important;
-        margin-left: 1px !important;
+        margin-left: 0px !important;
     }
 
     .search-resto-mobil-none{
@@ -520,8 +530,8 @@
     .navbar-brand-mobile svg {
         width: 10rem !important;
         position: absolute;
-        top: 90vh;
-        left: -45px;
+        top: 25vh;
+        left: 70vw;
         z-index: 401;
     }
 
@@ -709,7 +719,7 @@
 
     .content-mobil-ferme {
         position: relative;
-        z-index: 401 !important;
+        z-index: 10401 !important;
         background-color: #fff;
         width: 100vw;
         height: 80vh;
@@ -1178,7 +1188,7 @@
     }
 
     .leaflet-control-zoom.leaflet-bar.leaflet-control{
-        margin-top: 375px !important;
+        margin-top: 200px !important;
     }
 
     .active-mobile{
@@ -1196,6 +1206,70 @@
 
     .spec-dep {
         margin-top: 20px;
+    }
+
+    .specific-detail{
+        width: 100%;
+        position: absolute;
+        bottom: 10px;
+    }
+
+    
+
+    .containt-specific{
+        
+        background-color: #fff;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        width: 85vw;
+        height: 28vh;
+        z-index: 401;
+        padding: 5px;
+    }
+
+    .containt-specific p{
+        /* margin-bottom: -5px; */
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .containt-specific-detail{
+        background-color: #fff;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        width: 85vw;
+        height: 28vh;
+        z-index: 402;
+        padding: 5px;
+    }
+
+    #form {
+        height: 60vh !important;
+        margin-top: 10px !important;
+    }
+
+    .all-z-index{
+        z-index: 1401 !important;
+    }
+    #modalAvisRestaurant {
+        margin-top: 0 !important;
+    }
+
+    .content_home_detail_mobile{
+        margin-top: 10rem !important;
+    }
+
+    .list-depart-resto-mobile-tomm-js{
+        position: absolute;
+        z-index: 10000;
+    }
+
+    .ferme-genre{
+        font-size: 8pt !important;
+        background-color: #b1b1b1;
+        padding: 2px;
     }
 
 }
