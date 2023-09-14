@@ -34,7 +34,7 @@
       // included, separated by spaces.
       const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
-      let tokenClient;
+      var tokenClient;
       let gapiInited = false;
       let gisInited = false;
 
@@ -74,6 +74,10 @@
        console.log(tokenClient)
       }
 
+     function openModalForConfirmAddToGoogleCalendar(){
+        if(document.querySelector("#btnClickModal"))
+          document.querySelector("#btnClickModal").click()
+     }
       /**
        * Enables user interaction after all libraries are loaded.
        */
@@ -114,9 +118,9 @@
         if (token !== null) {
           google.accounts.oauth2.revoke(token.access_token);
           gapi.client.setToken('');
-          document.getElementById('content').innerText = '';
-          document.getElementById('authorize_button').innerText = 'Authorize';
-          document.getElementById('signout_button').style.visibility = 'hidden';
+          // document.getElementById('content').innerText = '';
+          // document.getElementById('authorize_button').innerText = 'Authorize';
+          // document.getElementById('signout_button').style.visibility = 'hidden';
         }
       }
 
@@ -161,7 +165,7 @@
         <script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
         <script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
-        <script src="{{asset('assets/js/agenda/googleCalendarAPI.js')}}" defer></script>
+        
         <script   async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()" ></script>
         <script  async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()" ></script>
         <script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>

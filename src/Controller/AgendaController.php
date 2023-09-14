@@ -1452,7 +1452,8 @@ class AgendaController extends AbstractController
     public function getAllEtab(
         SerializerInterface $serializer,
         BddRestoRepository $bdd_resto_rep,
-        $etab
+        $etab,
+        GolfFranceRepository $golfFranceRepository
     ) {
 
         $results= [];
@@ -1464,7 +1465,8 @@ class AgendaController extends AbstractController
         if($etab == "restaurant") {
             $response = $bdd_resto_rep->getAllEtab();
         }elseif ($etab == "golf") {
-            $response = [];
+            $response = $golfFranceRepository->getALLGolf();
+            //$response = [];
         }else{
             $response = [];
         }
@@ -1507,7 +1509,8 @@ class AgendaController extends AbstractController
     public function getAllRestoPastille(
         $etab,
         Tribu_T_Service $tribuTService,
-        BddRestoRepository $bddRestoRepository
+        BddRestoRepository $bddRestoRepository,
+        GolfFranceRepository $golfFranceRepository
     ){
 
         $results= [];
@@ -1518,23 +1521,23 @@ class AgendaController extends AbstractController
 
         if($etab == "restaurant") {
             $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+            //// add adress
+            foreach($response as $result){
+
+                $resto = $bddRestoRepository->find(intval($result['id_resto']));
+                
+                if( $resto ){
+                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["tel"] = $resto->getTel();
+                    $result["id_etab"] = $resto->getId();
+                    array_push($results, $result);
+                }
+            }
         }elseif ($etab == "golf") {
-            $response = [];
+            $response = $golfFranceRepository->getGolfAfaire();
+            $results= $response;
         }else{
             $response = [];
-        }
-
-        //// add adress
-        foreach($response as $result){
-
-            $resto = $bddRestoRepository->find(intval($result['id_resto']));
-            
-            if( $resto ){
-                $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
-                $result["tel"] = $resto->getTel();
-                $result["id_etab"] = $resto->getId();
-                array_push($results, $result);
-            }
         }
 
         return $this->json([
@@ -1749,6 +1752,13 @@ class AgendaController extends AbstractController
             "allTribuG" => $allTribuG,
             "results" => $results,
         ]);
+    }
+
+
+    #[Route('/set/in/google/agenda', name: 'set_in_google_agenda', methods: ["GET","POST"])]
+    public function showTemplateForConfirmAddGoogleAgenda(){
+
+        return $this->render("agenda/partage/google_agenda_sign_in.twig");
     }
 
 }

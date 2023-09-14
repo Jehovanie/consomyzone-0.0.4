@@ -80,39 +80,43 @@ if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
     cta_cancel_create_agenda.forEach(item => {
         item.addEventListener("click", () => {
             initInputForm()
-            //gisLoaded()
-            //gapiLoaded()
-            eev = {
-                'summary': 'Google I/O 2015',
-                'location': '800 Howard St., San Francisco, CA 94103',
-                'description': 'A chance to hear more about Google\'s developer products.',
-                'start': {
-                  'dateTime': '2023-09-28T09:00:00-07:00',
-                  'timeZone': 'America/Los_Angeles',
-                },
-                'end': {
-                  'dateTime': '2023-09-28T17:00:00-07:00',
-                  'timeZone': 'America/Los_Angeles',
-                },
-                                
-                }
-                tokenClient.requestAccessToken({prompt: ''});
-              
-              const request = gapi.client.calendar.events.insert({
-                  'calendarId': 'primary',
-                  'resource': eev
-                });
-                
-                request.execute(function(event) {
-                  console.log('Event created: ' + event.htmlLink);
-                });
-            
-          
-            
               
         })
     })
 }
+
+function signinWithGoogleService(){
+    tokenClient.requestAccessToken({prompt: 'consent',callback:alert("Terminer")})
+    console.log(tokenClient)
+}
+// handleSignoutClick()
+function addToGoogleCalendar(){
+    eev = {
+        'summary': 'Google I/O 2015',
+        'location': '800 Howard St., San Francisco, CA 94103',
+        'description': 'A chance to hear more about Google\'s developer products.',
+        'start': {
+          'dateTime': '2023-09-15T09:00:00-07:00',
+          'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+          'dateTime': '2023-09-20T17:00:00-07:00',
+          'timeZone': 'America/Los_Angeles',
+        },
+                        
+        }
+    
+        const request = gapi.client.calendar.events.insert({
+            'calendarId': 'primary',
+            'resource': eev
+          });
+          
+          request.execute(function(event) {
+            console.log('Event created: ' + event.htmlLink);
+          });
+}
+
+handleSignoutClick()
 
 
 //// PUSH NEW AGENT -----------------------------------------------------------
@@ -710,13 +714,15 @@ function activeOnglet(elem) {
         
         elem.classList.add("active")
         
-        let cmzEtab = ""
+        /*let cmzEtab = ""
 
         if (elem.dataset.name == "golf") {
             cmzEtab = "golf"
         } else if (elem.dataset.name == "restaurant") {
             cmzEtab = "restaurant"
-        }
+        }*/
+
+        let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
 
         if (elem.parentElement.nextElementSibling) {
             elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
@@ -1060,27 +1066,50 @@ function getAllEtab(etab, isPast, element) {
 
     let request = "";
     let id = element.dataset.id
+
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
     if (isPast) {
-        request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
+        if(id !=""){
+            request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+            console.log("id: "+id)
+        }else{
+            console.log("id: Tsisy")
+            request = new Request(`/api/user/agenda/get/${etab}/pastille`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+        }
         if (!tabEtab[1].classList.contains("active")) {
             tabEtab[1].classList.add("active")
             tabEtab[0].classList.remove("active")
         }
     } else {
-        request = new Request(`/api/user/agenda/get/${etab}/dep/${id}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
+        if(id !=""){
+            request = new Request(`/api/user/agenda/get/${etab}/dep/${id}`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+        }else{
+            request = new Request(`/api/user/agenda/get/all/${etab}`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+        }
         if (!tabEtab[0].classList.contains("active")) {
             tabEtab[0].classList.add("active")
             tabEtab[1].classList.remove("active")
@@ -1969,6 +1998,9 @@ function putInputOnDataTableHeader(selector,colIdx,api){
 
 function findEtabByKey(e){
     let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
+    // element.dataset.id
+    document.querySelectorAll("#smallNavInvitation > li > a")[0].dataset.id = ""
+    document.querySelectorAll("#smallNavInvitation > li > a")[1].dataset.id = ""
     let cles0 = ""
     let cles1 = ""
     if(e.target.nextElementSibling){
