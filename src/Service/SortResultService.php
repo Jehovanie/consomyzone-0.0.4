@@ -58,26 +58,7 @@ class SortResultService extends StringTraitementService
                 }
 
                 $levTotal = floatval($levAdresse);
-    
-                /*if(array_key_exists("commune", $key)) {
-                    
-                    $commune = $this->removeWhiteSpace($key["commune"]);
-                    $commune = $this->normalizedString($commune);
-                    $levCommune = levenshtein($cle1, $commune);
-    
-                    if(str_contains($key["commune"], $cle1) || floatval($levCommune) <= 3){
-                        $levAdresse = $levCommune;
-                    }
-                }
-    
-                if(array_key_exists("rue", $key)) {
-                    $rue = $this->removeWhiteSpace($key["rue"]);
-                    $rue = $this->normalizedString($rue);
-                    $levRue = levenshtein($cle1, $rue);
-                    if(floatval($levAdresse) > floatval($levRue)){
-                        $levAdresse = $levRue;
-                    }
-                }*/
+
 
             }else{
 
@@ -106,20 +87,6 @@ class SortResultService extends StringTraitementService
                 }else{
                     $levAdresse = levenshtein($cle1, $add);
                 }
-                
-                /** Déduction lev total */
-                /*if(floatval($levNom) <= 0.5 && floatval($levAdresse) >= 1){
-                    $levTotal = floatval($levNom);
-                }elseif(floatval($levNom) >= 0.5 && floatval($levAdresse) == 0){
-                    $levTotal = floatval($levAdresse);
-                }elseif(floatval($levNom) >= 0.5 && floatval($levAdresse) == 0){
-                    $levTotal = floatval($levAdresse);
-                }elseif(floatval($levNom) > 1 && floatval($levAdresse) <= 1){
-                    $levTotal = floatval($levAdresse);
-                }else{
-                    $levTotal = floatval($levNom) + floatval($levAdresse);
-                }*/
-
                 
                 if(floatval($levNom) == 0 && floatval($levAdresse) == 0){
                     $levTotal = 0;
@@ -155,28 +122,6 @@ class SortResultService extends StringTraitementService
 
         return $results;
     }
-
-    /*function permute(&$boolean,$str, $l, $r, $str2) 
-    {
-
-        if($l == $r){
-            if(str_contains($str2, $str)){       
-                $boolean= true;
-            }
-
-        }
-        else{
-            for ($i = $l; $i <= $r; $i++) { 
-                $str = $this->swap($str, $l, $i); 
-                $this->permute($boolean,$str, $l + 1, $r, $str2);
-                if ($boolean == true) {
-                    break;
-                }
-                
-            } 
-        }
-        return  $boolean;
-    } */
 
     function permute(&$decision,$str, $l, $r, $str2) 
     {

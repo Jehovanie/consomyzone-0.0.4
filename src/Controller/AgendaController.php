@@ -107,7 +107,7 @@ class AgendaController extends AbstractController
     public function setAgendaConfirmation($fromId,$toId,$agendaId){
 
         $place_libre=$this->agendaService->checkFreePlace(intval($fromId), intval($toId),intval($agendaId));
-       dump(  $place_libre);
+
         if( $place_libre["place_libre"]=== 0){
             return $this->render("agenda/partage/agenda_full_place.html.twig",[
                 "profil" => "",
@@ -808,7 +808,7 @@ class AgendaController extends AbstractController
     public function createEvent(Request $request,AgendaService $agendaService, Filesystem $fs){
         $agendaTableName=$this->getUser()->getNomTableAgenda();
         $req=json_decode($request->getContent(),true);
-        dump($req);
+
         if( str_contains($req["fileType"],"image"))
             $path="/public/uploads/users/agenda/files/img/";
         else if(str_contains($req["fileType"], "application"))
@@ -884,7 +884,7 @@ class AgendaController extends AbstractController
             $date = array_column($final[$i], 'heure_debut');
             array_multisort($date, SORT_ASC, $final[$i]);
        }
-        //dump($final);
+
         $json=$ser->serialize($final,"json");
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -1452,7 +1452,8 @@ class AgendaController extends AbstractController
     public function getAllEtab(
         SerializerInterface $serializer,
         BddRestoRepository $bdd_resto_rep,
-        $etab
+        $etab,
+        GolfFranceRepository $golfFranceRepository
     ) {
 
         $results= [];
@@ -1464,7 +1465,8 @@ class AgendaController extends AbstractController
         if($etab == "restaurant") {
             $response = $bdd_resto_rep->getAllEtab();
         }elseif ($etab == "golf") {
-            $response = [];
+            $response = $golfFranceRepository->getALLGolf();
+            //$response = [];
         }else{
             $response = [];
         }
@@ -1507,7 +1509,9 @@ class AgendaController extends AbstractController
     public function getAllRestoPastille(
         $etab,
         Tribu_T_Service $tribuTService,
-        BddRestoRepository $bddRestoRepository
+        BddRestoRepository $bddRestoRepository,
+        UserRepository $userRepository,
+        GolfFranceRepository $golfFranceRepository
     ){
 
         $results= [];
@@ -1518,23 +1522,44 @@ class AgendaController extends AbstractController
 
         if($etab == "restaurant") {
             $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+            //// add adress
+            foreach($response as $result){
+
+                $resto = $bddRestoRepository->find(intval($result['id_resto']));
+                
+                if( $resto ){
+                    /*$result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["tel"] = $resto->getTel();
+                    $result["id_etab"] = $resto->getId();
+                    array_push($results, $result);*/
+
+                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["id_etab"] = $resto->getId();
+                    $result["tel"] = $resto->getTel();
+                    $result["dep"] = $resto->getDep();
+                    $result["departement"] = $resto->getDepName();
+    
+                    $tribu_t_list = $userRepository->getListTableTribuT();
+
+                    foreach ($tribu_t_list as $key) {
+                        $tableTribu = $key["table_name"];
+                        $logo_path = $key["logo_path"];
+                        $tableExtension = $tableTribu . "_restaurant";
+                        if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
+                            if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
+                                $result["tribu"] = $tableTribu;
+                                $result["logoTribu"] = $logo_path;
+                            }
+                        }
+                    }
+                    array_push($results, $result);
+                }
+            }
         }elseif ($etab == "golf") {
-            $response = [];
+            $response = $golfFranceRepository->getGolfAfaire();
+            $results= $response;
         }else{
             $response = [];
-        }
-
-        //// add adress
-        foreach($response as $result){
-
-            $resto = $bddRestoRepository->find(intval($result['id_resto']));
-            
-            if( $resto ){
-                $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
-                $result["tel"] = $resto->getTel();
-                $result["id_etab"] = $resto->getId();
-                array_push($results, $result);
-            }
         }
 
         return $this->json([
@@ -1581,7 +1606,7 @@ class AgendaController extends AbstractController
                             $logo_path = $key["logo_path"];
                             $tableExtension = $tableTribu . "_restaurant";
                             if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
-                                if($tribuTService->checkExtensionId($tableExtension, $resto->getId())){
+                                if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
                                     $result["tribu"] = $tableTribu;
                                     $result["logoTribu"] = $logo_path;
                                 }

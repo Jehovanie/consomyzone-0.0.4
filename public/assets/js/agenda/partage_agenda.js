@@ -175,9 +175,7 @@ function sendInvitation(event){
     let infos={}
     if(isG){
          infos = getUserInfoForSharing(isG, dataInfos,data)
-        isValidateEmail =infos.isvalid
-
-        
+        isValidateEmail =infos.isvalid 
     }else{
         let contenu = sessionStorage.getItem("csvContent")
         let headerIndex = JSON.parse(sessionStorage.getItem("headerIndex"))
@@ -212,7 +210,6 @@ function sendInvitation(event){
         receiver:dataInfos
     }
 
-    console.log(JSON.stringify(dataEmail))
     let request =new Request("/agenda/send/invitation",{
         method: "POST",
         headers: {
@@ -278,7 +275,10 @@ function sendInvitation(event){
             }
         })
     }else{
-        $("#emailTemplateModal").modal("hide")
+        swal("Erreur !","Il y a un adresse email non valide !", "error")
+            .then((value) => {
+                $("#emailTemplateModal").modal("hide")
+        });
     }
 
 }
@@ -289,17 +289,18 @@ function sendEventByMessage(e){
 
     makeLoadingEmail()
 
-    let content = "<div class=\"bloc-text-message text-white\">"+editor.getData()+"</div>"
+    let data = editor.getData();
 
     let isG = e.target.dataset.g
-
+    let isValidateEmail = true
     let dataInfos = []
+    let infos={}
+    infos = getUserInfoForSharing(isG, dataInfos,data)
+    isValidateEmail =infos.isvalid 
 
-    getUserInfoForSharing(isG, dataInfos)
-
-    let data = {
+    let body = {
         dataInfos: dataInfos,
-        message: content,
+        message: "<div class=\"bloc-text-message text-white\">"+infos.data+"</div>",
         files : [], 
     }
 
@@ -309,7 +310,7 @@ function sendEventByMessage(e){
             'Content-Type': 'application/json'
         },
         method: "POST",
-        body: JSON.stringify(data)
+        body: JSON.stringify(body)
     }).then(response => {
 
         if (response.status == 200) {
@@ -348,50 +349,21 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
                 tempDiv.querySelector("a").disabled=false
                 data=tempDiv.outerHTML
-                console.log(data)
+                dataInfos.push({
+                    agendaId:agenda.id,
+                    from_id:from_id,
+                    to_id:to_id,
+                    lastname : lastname,
+                    firstname : firstname,
+                    email : email
+                })
                 if(validateEmail(email)){
-                    dataInfos.push({
-                        agendaId:agenda.id,
-                        from_id:from_id,
-                        to_id:to_id,
-                        lastname : lastname,
-                        firstname : firstname,
-                        email : email
-                    })
+                    isValidateEmail = true
                 }else{
-                    swal("Erreur !","Il y a un adresse email non valide !", "error")
-                        .then((value) => {
-                    });
                     isValidateEmail = false
-                    break;
                 }
             }
         }
-        /*allTr.forEach(elem => {
-            let isChecked = elem.querySelector("input").checked
-           
-            if(isChecked){
-                let to_id = elem.querySelector(".lastname").dataset.id
-                let lastname = elem.querySelector(".lastname").textContent
-                let firstname = elem.querySelector(".firstname").textContent
-                let email = elem.querySelector(".email").textContent
-                if(validateEmail(email)){
-                    dataInfos.push({
-                        from_id:elem.parentElement.dataset.id,
-                        to_id:to_id,
-                        lastname : lastname,
-                        firstname : firstname,
-                        email : email
-                    })
-                }else{
-                    swal("Erreur !","Il y a un adresse email non valide !", "error")
-                        .then((value) => {
-                    });
-                    isValidateEmail = false
-                }
-               
-            }
-        })*/
     
     }else if(isG ==="0"){
 
@@ -410,49 +382,21 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
                 tempDiv.querySelector("a").removeAttribute("disabled")
                 data=tempDiv.outerHTML
-                console.log(data)
+                dataInfos.push({
+                    agendaId:agenda.id,
+                    from_id:from_id,
+                    to_id:to_id,
+                    lastname : lastname,
+                    firstname : firstname,
+                    email : email
+                })
                 if(validateEmail(email)){
-                    dataInfos.push({
-                        agendaId:agenda.id,
-                        from_id:from_id,
-                        to_id:to_id,
-                        lastname : lastname,
-                        firstname : firstname,
-                        email : email
-                    })
+                    isValidateEmail = true
                 }else{
-                    swal("Erreur !","Il y a un adresse email non valide !", "error")
-                        .then((value) => {
-                    });
                     isValidateEmail = false
-                    break;
                 }
             }
         }
-
-        /*allTr.forEach(elem => {
-            let isChecked = elem.querySelector("input").checked
-            if(isChecked){
-                let to_id = elem.querySelector(".lastname").dataset.id
-                let lastname = elem.querySelector(".lastname").textContent
-                let firstname = elem.querySelector(" .firstname").textContent
-                let email = elem.querySelector(" .email").textContent
-                if(validateEmail(email)){
-                    dataInfos.push({
-                        from_id:elem.parentElement.dataset.id,
-                        to_id:to_id,
-                        lastname : lastname,
-                        firstname : firstname,
-                        email : email
-                    })
-                }else{
-                    swal("Erreur !","Il y a un adresse email non valide !", "error")
-                        .then((value) => {
-                    });
-                    isValidateEmail = false
-                }
-            }
-        })*/
     
     }
 

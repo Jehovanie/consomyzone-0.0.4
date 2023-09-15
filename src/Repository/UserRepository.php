@@ -94,13 +94,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $json_tribuT_owned= $this->sec->getUser()->getTribuT();
         if( $json_tribuT_owned ){
             $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
-            if( !array_key_exists("name", $decode_tribuT_owned['tribu_t']) ){
-                foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
+            $arrayTribu_T_Owned = $decode_tribuT_owned['tribu_t'];
+            if(!array_key_exists("name", $arrayTribu_T_Owned)){
+                foreach($arrayTribu_T_Owned as $tribuT){
                     extract($tribuT);  /// $name
-                    array_push($results,["table_name" => $name, "logo_path" => $logo_path] );
+                    $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
+                    array_push($results,["table_name" => $name, 
+                    "name_tribu_t_muable" => $name_tribu_t_muable,
+                    "logo_path" => $logo_path] );
                 }
             }else{
-                array_push($results, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'] ] );
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Owned) ? $arrayTribu_T_Owned["name_tribu_t_muable"]:null;
+                array_push($results, 
+                ["table_name" => $arrayTribu_T_Owned['name'],
+                "name_tribu_t_muable" => $name_tribu_t_muable,
+                 "logo_path" => $arrayTribu_T_Owned['logo_path']]);
             }
             
         }
@@ -116,14 +124,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         if( $json_tribuT_joined ){
 
             $decode_tribuT_joined = json_decode($json_tribuT_joined , true);
+
+            $arrayTribu_T_Joined = $decode_tribuT_joined['tribu_t'];
            
-            if( !array_key_exists("name", $decode_tribuT_joined['tribu_t']) ){
-                foreach($decode_tribuT_joined["tribu_t"] as $tribuT){
+            if( !array_key_exists("name", $arrayTribu_T_Joined) ){
+                foreach($arrayTribu_T_Joined as $tribuT){
                     extract($tribuT);  /// $name
-                    array_push($results, ["table_name" => $name , "logo_path" => $logo_path] );
+                    $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
+                    array_push($results, ["table_name" => $name ,
+                    "name_tribu_t_muable" => $name_tribu_t_muable, 
+                    "logo_path" => $logo_path] );
                 }
             }else{
-                array_push($results, ["table_name" => $decode_tribuT_joined['tribu_t']['name'], "logo_path" => $decode_tribuT_joined['tribu_t']['logo_path'] ] );
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Joined) ? $arrayTribu_T_Joined["name_tribu_t_muable"]:null;
+                array_push($results, ["table_name" => $arrayTribu_T_Joined['name'], 
+                "name_tribu_t_muable" => $name_tribu_t_muable,
+                "logo_path" => $arrayTribu_T_Joined['logo_path']]);
             }
 
         }

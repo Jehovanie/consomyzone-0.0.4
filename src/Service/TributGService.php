@@ -75,7 +75,7 @@ class TributGService extends PDOConnexionService{
 
                 name VARCHAR(250) NOT NULL DEFAULT '".$depart_tributG_name."',
 
-                description VARCHAR(250) NOT NULL DEFAULT '$description',
+                description VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '$description',
 
                 avatar VARCHAR(250) NULL,
 
@@ -89,7 +89,7 @@ class TributGService extends PDOConnexionService{
 
                 isModerate  tinyint(1) DEFAULT 0 NOT NULL
 
-                )ENGINE=InnoDB";
+                )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
 
 
@@ -125,13 +125,13 @@ class TributGService extends PDOConnexionService{
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) DEFAULT NULL,
+                    publication VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
                     photo VARCHAR(250),
 
-                    userfullname VARCHAR(250) NOT NULL,
+                    userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
                     datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
@@ -141,7 +141,7 @@ class TributGService extends PDOConnexionService{
 
                     ON UPDATE CASCADE
 
-                    )ENGINE=InnoDB";
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
                 
 
@@ -157,9 +157,9 @@ class TributGService extends PDOConnexionService{
 
                         pub_id int(11) NOT NULL,
 
-                        commentaire VARCHAR(250) NULL,
+                        commentaire VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
 
-                        userfullname VARCHAR(250) NOT NULL,
+                        userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inconnu',
 
                         audioname VARCHAR(250) NULL,
 
@@ -173,7 +173,7 @@ class TributGService extends PDOConnexionService{
 
                         ON UPDATE CASCADE
 
-                        )ENGINE=InnoDB";
+                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
 
 
@@ -191,7 +191,7 @@ class TributGService extends PDOConnexionService{
 
                         reaction TINYINT(1) DEFAULT 0,
 
-                        userfullname VARCHAR(250) NOT NULL,
+                        userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inconnu',
 
                         datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
@@ -203,7 +203,7 @@ class TributGService extends PDOConnexionService{
 
                         ON UPDATE CASCADE
 
-                        )ENGINE=InnoDB";
+                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
 
 

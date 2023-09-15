@@ -12,6 +12,10 @@ use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
 {
+    
+    /**
+     * create data_base table tribu-T
+     */
     public function createTribuTable($tableName, $user_id, $name, $description)
 
     {
@@ -39,9 +43,6 @@ class Tribu_T_Service extends PDOConnexionService
 
 
         if ($resultat > 0) {
-
-
-
             $output = 0;
 
         } else {
@@ -86,13 +87,13 @@ class Tribu_T_Service extends PDOConnexionService
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) NULL,
+                    publication VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
                     photo VARCHAR(250),
 
-                    userfullname VARCHAR(250) NOT NULL,
+                    userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inconnu',
 
                     datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
@@ -102,7 +103,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                     ON UPDATE CASCADE
 
-                    )ENGINE=InnoDB";
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
 
 
@@ -120,11 +121,11 @@ class Tribu_T_Service extends PDOConnexionService
 
                         pub_id int(11) NOT NULL,
 
-                        commentaire VARCHAR(250) NOT NULL,
+                        commentaire VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
                         audioname VARCHAR(250) NULL,
 
-                        userfullname VARCHAR(250) NOT NULL,
+                        userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inconnu',
 
                         datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
@@ -136,7 +137,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                         ON UPDATE CASCADE
 
-                        )ENGINE=InnoDB";
+                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
 
 
@@ -154,7 +155,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                         reaction TINYINT(1) DEFAULT 0,
 
-                        userfullname VARCHAR(250) NOT NULL,
+                        userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inconnu',
 
                         datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
@@ -166,7 +167,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                         ON UPDATE CASCADE
 
-                        )ENGINE=InnoDB";
+                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
                     $this->getPDO()->exec($sql);
 
@@ -469,39 +470,46 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function setTribuT($tribu_T_name, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join)
+    /**
+     * @author tommyramihoatrarivo@gmail.com <email>
+     * createjson for tribu-t
+     * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
+     * @param string $description it's can be change. This is the description of the tribu T
+     * @param string $path  it's can be change. This is the logo path of the tribu T
+     * @param string $extenstion it's can be change. This is the extension we can associate with the tribu T
+     * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
+     * @param string $nomTribuT it's can be change. The name of the tribu T
+     */
+    function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join,$nomTribuT)
 
     {
 
-
-
         $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
-
-        
 
         $fetch->execute();
 
-
-
         $result = $fetch->fetch(PDO::FETCH_ASSOC);
-
 
         $date = \getdate();
         $list = $result[$tribu_t_owned_or_join];
    
         if (!isset($list)) {
-            $array=array("tribu_t"=>array("name"=> $tribu_T_name,"description"=> $description,"extension"=> $extenstion,"logo_path"=>$path,"date"=>  $date));
+            $array=array(
+                "tribu_t"=>array(
+                    "name"=> $tribu_T_name_table,
+                    "name_tribu_t_muable"=>$nomTribuT,
+                    "description"=> $description,
+                    "extension"=> $extenstion,
+                    "logo_path"=>$path,
+                    "date"=>  $date,
+                    ));
+            //use these param if don't wont escape unicode JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
             $array1= json_encode($array);
-
-            //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t = CONCAT(tribu_t, ';$tableTribut') WHERE id  = $userId");
-
-            //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='".$tableTribut."' WHERE id  = $userId");
 
             $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array1 ."' WHERE id  = $userId");
 
         } else {
             $array1= json_decode($list, true);
-           
             $tmp = [];
             $array =[];
             
@@ -510,7 +518,10 @@ class Tribu_T_Service extends PDOConnexionService
             }catch(ArgumentCountError $e){
                 array_push($tmp, $array1["tribu_t"]);
             }finally{
-                array_push($tmp, array("name" => $tribu_T_name, "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
+                array_push($tmp, 
+                array("name" => $tribu_T_name_table,  
+                "name_tribu_t_muable"=>$nomTribuT, 
+                "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
                 $array = array("tribu_t" => $tmp);
             }
 
@@ -518,17 +529,96 @@ class Tribu_T_Service extends PDOConnexionService
             if ($_ENV['APP_ENV'] == 'dev') 
                 dump($array);
             
-            $array2 = json_encode($array);
-            //$statement = $this->getPDO()->prepare("UPDATE user SET tribu_t ='".$list.";".$tableTribut."' WHERE id  = $userId");
-
-            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array2."' WHERE id  = $userId");
+            //use these param if don't wont escape unicode JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
+            $jsontribuT = json_encode($array);
+            $jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
+            // dd($jsontribuT);
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $jsontribuT."' WHERE id  = $userId");
 
         }
 
-
-
         $statement->execute();
 
+    }
+
+    /**
+     * @author nantenainasoa39@gmail.com <email>
+     * createjson for tribu-t
+     * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
+     * @param string $description it's can be change. This is the description of the tribu T
+     * @param string $path  it's can be change. This is the logo path of the tribu T
+     * @param string $extenstion it's can be change. This is the extension we can associate with the tribu T
+     * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
+     * @param string $nomTribuT it's can be change. The name of the tribu T
+     */
+    function updateTribuTInfos($tribu_T_name_table, $description, $path, $extension, $userId, $tribu_t_owned_or_join, $nomTribuT)
+
+    {
+
+        $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
+
+        $fetch->execute();
+
+        $result = $fetch->fetch(PDO::FETCH_ASSOC);
+
+        $date = \getdate();
+        $list = $result[$tribu_t_owned_or_join];
+
+        $tmp = [];
+   
+        if (isset($list)) {
+
+            $jsonInitial= json_decode($list, true);
+            
+            $array1 = $jsonInitial["tribu_t"];
+
+            if(array_key_exists("name", $array1)){
+                $table = $array1["name"];
+                if($tribu_T_name_table == $table){
+                    array_push($tmp, 
+                    array("name" => $table,  
+                    "name_tribu_t_muable"=> $nomTribuT, 
+                    "description" => $description, 
+                    "extension" => $extension, 
+                    "logo_path" => $path != null ? $path : $array1["logo_path"], 
+                    "date" =>  $date));
+                }else{
+                    array_push($tmp, $array1);
+                }
+            }else{
+                for ($i=0; $i < count($array1); $i++) {
+                    
+                    $table = $array1[$i]["name"];
+
+                    if($tribu_T_name_table == $table){
+                        array_push($tmp, 
+                        array("name" => $table,  
+                        "name_tribu_t_muable"=> $nomTribuT, 
+                        "description" => $description, 
+                        "extension" => $extension, 
+                        "logo_path" => $path != null ? $path : $array1[$i]["logo_path"], 
+                        "date" =>  $date));
+                    }else{
+                        array_push($tmp, $array1[$i]);
+                    }
+    
+                }
+            }
+
+            $array = array("tribu_t" => $tmp);
+
+            if ($_ENV['APP_ENV'] == 'dev')
+                dump($tmp);
+            
+            $jsontribuT = json_encode($array);
+
+            $jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
+
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $jsontribuT."' WHERE id  = $userId");
+
+            $statement->execute();
+
+        }
 
 
     }
@@ -1190,19 +1280,20 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function createExtensionDynamicTable($tribu_t, $extension){
-        $sql = "CREATE TABLE " . $tribu_t . "_" . $extension . " (
+
+        $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
 
             id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
             id_resto VARCHAR(250) NOT NULL,
 
-            denomination_f VARCHAR(250) NOT NULL,
+            denomination_f VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
             datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
             CONSTRAINT cst_id_resto UNIQUE (id_resto)
             
-            )ENGINE=InnoDB";
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -1210,7 +1301,7 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function createTableComment($tribu_t, $extension){
-        $sql = "CREATE TABLE  IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
+        $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . "(
 
             id_resto_comment int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
@@ -1220,9 +1311,9 @@ class Tribu_T_Service extends PDOConnexionService
 
             note decimal(3,2),
 
-            commentaire TEXT,
+            commentaire TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
 
-            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB";
+            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -1744,7 +1835,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param int $idResto: l'extension
      * @return number $result: 0 or if(not exists) else positive number
      */
-    public function checkExtensionId($tableNameExtension, int $idResto){
+    public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto){
 
         
         $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
@@ -1760,6 +1851,7 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
     }
+  
 
 }
 

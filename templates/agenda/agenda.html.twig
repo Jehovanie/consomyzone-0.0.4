@@ -26,6 +26,7 @@
         <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
 {% endblock %}
 
+
 {% block body %}
     <div class="nh">
         {% include 'shard/account_navleft_new.html.twig' %}
@@ -46,17 +47,8 @@
         <button type="button" class=" d-none show_modal_showAgenda_jheo_js" data-bs-toggle="modal" data-bs-target="#showAgenda"></button>
     </div>
 
-    {# <div class="content_loader_agenda hidden content_loader_agenda_js_jheo">
-        <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-        </div>
-    </div>
-
-    <div class="content_response_share_agenda">
-        
-    </div> #}
     {% include 'shard/modal/new_agenda.html.twig' %}
     {% include 'shard/modal/show_agenda.html.twig' %}
     {% include 'shard/modal/partage_agenda.html.twig' %}
     {% include 'shard/modal/alert_flash.html.twig' %}
 {% endblock %}
-

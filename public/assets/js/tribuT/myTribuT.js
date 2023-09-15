@@ -74,14 +74,80 @@ document.getElementById("form_upload").onchange = (e) => {
 
     }
     reader.readAsDataURL(e.target.files[0])
-
-
 };
 /*---------------------- end create tribu_t section-----------------------*/
 
 /**sendPublication
  * render tribu_t section
  */
+
+document.getElementById("form_upload_update").onchange = (e) => {
+    const reader = new FileReader();
+
+    const imgs = document.querySelectorAll("img.img-update-tribu-t")
+    if (imgs.length > 0) {
+        for (let i of imgs)
+            i.parentNode.removeChild(i)
+    }
+    reader.onload = () => {
+        const uploaded_image = reader.result;
+        image_list.push(reader.result);
+        let taille = parseInt(e.target.files[0].size) // En Octets
+
+        // console.log(e.target.files[0].type.includes("image/"));
+
+        if (!e.target.files[0].type.includes("image/")) {
+
+            document.querySelector("#updateTribuInfo").dataset.name = ""
+            document.querySelector("#updateTribuInfo").dataset.url = ""
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image",
+                icon: "error",
+                button: "Ok",
+              });
+
+        } else {
+
+            if (taille <= 2097152) {
+
+                let img = document.createElement("img");
+                img.setAttribute("class", "img-update-tribu-t");
+                img.src = uploaded_image
+                img.setAttribute("alt", "Image upload")
+                // img.setAttribute("style", "width:100px; height:100px");
+
+                const parentImage = document.querySelector("#uploadImageForUpdate")
+                if (parentImage.querySelector("img")) {
+                    parentImage.insertBefore(img, parentImage.querySelector("img"))
+                } else {
+                    document.querySelector("#uploadImageForUpdate").appendChild(img)
+                }
+
+                document.querySelector("#updateTribuInfo").dataset.name = e.target.files[0].name
+                document.querySelector("#updateTribuInfo").dataset.url = uploaded_image
+
+            } else {
+
+                document.querySelector("#updateTribuInfo").dataset.name = ""
+                document.querySelector("#updateTribuInfo").dataset.url = ""
+
+                swal({
+                    title: "Le fichier est trop volumineux.",
+                    text: "La taille de l\'image doit être inférieure à 2Mo",
+                    icon: "error",
+                    button: "Ok",
+                  });
+
+            }
+
+        }
+
+
+    }
+    reader.readAsDataURL(e.target.files[0])
+};
 
 function showBlockPub() {
     const arrays = Array.from(document.querySelectorAll(".tribu_t"))
@@ -279,7 +345,6 @@ function updatePdpTribu_T(files) {
             photoType: files.type,
             photoSize: files.size,
             tribu_t_name: tribu_t_name_0,
-
         }
         console.log(param)
         const request = new Request("/user/tribu/set/pdp", {
@@ -364,12 +429,16 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let canChangeTribuPicture = "";
     if (document.querySelector("#activeTribu")) {
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT">
+                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier le logo de la tribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
                                 </div>` : ""
     }
+
+    let canUpdateTribuInfo = !document.querySelector("#activeTribu").classList.contains("other") ? `<li class="listNavBarTribu">
+                                <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
+                            </li>` : "";
 
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
@@ -384,7 +453,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                             </div>
                         </div>
                         <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${ tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
                             <p class="ms-2 text-white">
                             ${tribu_t[0].description}
                             </p>
@@ -414,6 +483,8 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                             <a style="cursor:pointer;" id="see-gallery">Photos</a>
                         </li>
 
+                        ${canUpdateTribuInfo}
+
                     </ul>
                 </nav>
             </div>
@@ -421,7 +492,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             <div id="tribu_t_conteuneur" class="exprime-pub">
                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
                     <!-- ====== Chart pub One Start -->
-                    <div class="  2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
+                    <div class="2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
                         <div class="head-pub">
                             <div class="pdp-content">
                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
@@ -448,7 +519,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             </div>
             
     `
-    //2xl:ud-max-w-230
+    //
     worker.postMessage([tribu_t_name_0, 0, 20]);
     // console.log('Message envoyé au worker');
     worker.onmessage = (event) => {
@@ -510,7 +581,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                 contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
-                                            <div class="yd uffv 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
+                                            <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
                                                         <img src="/assetss/image/img_avatar3.png" alt="">
@@ -1981,6 +2052,7 @@ function inviteUser(elem) {
     let data = {
         user_id: elem.dataset.id,
         table: document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim(),
+        nom: document.querySelector("#tribu_t_name_main_head").textContent.trim(),
     }
 
     // console.log(data);
@@ -2398,4 +2470,92 @@ function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
 
             document.querySelector("#elie-resto-detail").innerHTML = result
         })
+}
+
+function settingTribuT(e, tribuTName){
+    // if (document.querySelector("li.listNavBarTribu > a.active")) {
+    //     document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    // }
+    let data = showdData(tribuTName)
+    data.then(response=>{
+     
+        let tbt = JSON.parse(response.tribu_t_owned)
+        let selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
+        let currentTribuT = selectTribuOwned[0]
+        console.log(currentTribuT)
+        // e.target.classList.add("active")
+        // document.querySelector("#tribu_t_conteuneur").innerHTML = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Modifier les informations de la tribu T</h5>
+        //                                                                 <button type="button" class="btn btn-primary mt-4 float-end">Modifier</button>`
+        $("#ModalUpdateTribuT").modal("show")
+
+        document.querySelector("#updateTribuInfo").dataset.name = ""
+        document.querySelector("#updateTribuInfo").dataset.url = ""
+
+        document.querySelector("#updateTribuTName").value = currentTribuT.name_tribu_t_muable ? currentTribuT.name_tribu_t_muable : currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ") //currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+        document.querySelector("#update_description").value = currentTribuT.description
+        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg"
+
+        if(currentTribuT.extension != null){
+            document.querySelector("#update_form_extension").checked = true
+        }else{
+            document.querySelector("#update_form_extension").checked = false
+        }
+
+        document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
+    
+    })
+   
+}
+
+function showModalInfo(){
+    $("#ModalUpdateTribuT").modal("show")
+}
+
+function updateTribuTInfos(e){
+
+    let tableTribuT = e.target.dataset.tbttbl
+    let description = document.querySelector("#update_description").value.trim()
+    let nomTribuT = document.querySelector("#updateTribuTName").value.trim()
+    let path = null
+    let extension = document.querySelector("#update_form_extension").checked == true ? "on" : null
+    let photoName = e.target.dataset.name
+    let base64 = e.target.dataset.url
+
+    let data={
+        tableTribuT:tableTribuT,
+        description:description,
+        nomTribuT:nomTribuT,
+        path:path,
+        photoName : photoName,
+        base64 : base64,
+        extension:extension
+    }
+
+    let request =new Request("/user/tribu/update-tribu_t-info",{
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request).then(r=>r.json())
+                  .then(res=>{
+                    console.log(res)
+                    $("#ModalUpdateTribuT").modal("hide")
+                    document.querySelector("#activeTribu").textContent = "Tribu T " + nomTribuT
+                    swal({
+                        title: "Bravo !",
+                        text: "Information modifiée avec succès",
+                        icon: "success",
+                        button: "Fermer",
+                      }).then((value) => {
+                        if(photoName != ""){
+                            document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.querySelector('img').src = base64
+                        }
+                        document.querySelector("#activeTribu").click()
+                      });
+                })
+
 }

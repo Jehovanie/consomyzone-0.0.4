@@ -40,7 +40,7 @@ class NotificationService extends PDOConnexionService{
 
                 type VARCHAR(200) NOT NULL,
 
-                content VARCHAR(350) NOT NULL,
+                content VARCHAR(350) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
                 isShow tinyint(1) NOT NULL  DEFAULT '0',
 
@@ -48,7 +48,8 @@ class NotificationService extends PDOConnexionService{
 
                 datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
-                tribu VARCHAR(255) NULL)";
+                tribu VARCHAR(255) NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
 
             
 
