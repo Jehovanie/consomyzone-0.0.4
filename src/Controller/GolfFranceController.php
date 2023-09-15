@@ -7,6 +7,7 @@ use App\Entity\GolfFinished;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
 use App\Service\GolfFranceService;
+use App\Service\NotificationService;
 use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
@@ -386,7 +387,7 @@ class GolfFranceController extends AbstractController
         $entityManager->flush();
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf parmit les à faire.");
+        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf à faire.");
 
         return $this->json([
             "success" => true,
@@ -434,6 +435,9 @@ class GolfFranceController extends AbstractController
         EntityManagerInterface $entityManager,
         NotificationService $notificationService
     ){
+        if(!$this->getUser()){
+            return $this->json([ "success" => false, "message" => "Unauthorized" ], 403);
+        }
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
@@ -447,7 +451,8 @@ class GolfFranceController extends AbstractController
         $entityManager->flush();
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez annulé un golf parmit les à faire.");
+        $userID = $this->getUser()->getId();
+        $notificationService->sendNotificationForOne($userID, $userID, "Golf a refaire.", "Vous avez annulé un golf terminé.");
 
 
         return $this->json([
