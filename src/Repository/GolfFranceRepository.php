@@ -480,7 +480,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                 "CONCAT(g.adr1,' ',g.cp, ' ',g.nom_commune) as adresse,".
                 "g.telephone as tel,".
                 "g.nom_dep as departement,".
-                "g.site_web as siteweb","gf"
+                "g.site_web as siteweb"
         )
         ->getQuery()->getResult();
     }

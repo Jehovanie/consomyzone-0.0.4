@@ -1510,6 +1510,7 @@ class AgendaController extends AbstractController
         $etab,
         Tribu_T_Service $tribuTService,
         BddRestoRepository $bddRestoRepository,
+        UserRepository $userRepository,
         GolfFranceRepository $golfFranceRepository
     ){
 
@@ -1527,9 +1528,30 @@ class AgendaController extends AbstractController
                 $resto = $bddRestoRepository->find(intval($result['id_resto']));
                 
                 if( $resto ){
-                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    /*$result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
                     $result["tel"] = $resto->getTel();
                     $result["id_etab"] = $resto->getId();
+                    array_push($results, $result);*/
+
+                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["id_etab"] = $resto->getId();
+                    $result["tel"] = $resto->getTel();
+                    $result["dep"] = $resto->getDep();
+                    $result["departement"] = $resto->getDepName();
+    
+                    $tribu_t_list = $userRepository->getListTableTribuT();
+
+                    foreach ($tribu_t_list as $key) {
+                        $tableTribu = $key["table_name"];
+                        $logo_path = $key["logo_path"];
+                        $tableExtension = $tableTribu . "_restaurant";
+                        if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
+                            if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
+                                $result["tribu"] = $tableTribu;
+                                $result["logoTribu"] = $logo_path;
+                            }
+                        }
+                    }
                     array_push($results, $result);
                 }
             }
@@ -1584,7 +1606,7 @@ class AgendaController extends AbstractController
                             $logo_path = $key["logo_path"];
                             $tableExtension = $tableTribu . "_restaurant";
                             if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
-                                if($tribuTService->checkExtensionId($tableExtension, $resto->getId())){
+                                if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
                                     $result["tribu"] = $tableTribu;
                                     $result["logoTribu"] = $logo_path;
                                 }

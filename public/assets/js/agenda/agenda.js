@@ -1962,11 +1962,14 @@ function putInputOnDataTableHeader(selector,colIdx,api){
         });
 }
 
-function findEtabByKey(e){
+function findEtabByKey(e,isHasDep){
+    makeLoading()
     let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     // element.dataset.id
-    document.querySelectorAll("#smallNavInvitation > li > a")[0].dataset.id = ""
-    document.querySelectorAll("#smallNavInvitation > li > a")[1].dataset.id = ""
+    if(!isHasDep){
+        document.querySelectorAll("#smallNavInvitation > li > a")[0].dataset.id = ""
+        document.querySelectorAll("#smallNavInvitation > li > a")[1].dataset.id = ""
+    }
     let cles0 = ""
     let cles1 = ""
     if(e.target.nextElementSibling){
