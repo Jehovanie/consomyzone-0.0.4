@@ -2,7 +2,7 @@
     <div class="head-pub content_header_pub">
         <div class="content_pub_info">
             <div class="pdp-content">
-                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil|replace({ "/public" : "" }) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
             </div>
             <div class="name-content-h">
                 <div class="name-content">
@@ -69,7 +69,7 @@
     <div class="card-pub-actu">
         <p class="text-pub mb-3 pub_description_jheo_js">{{publication.description}}</p>
         {% if publication.image is defined and publication.image is not same as("") %}
-            <img class="image_publication pub_image_jheo_js"  src="{{publication.image|replace({ "/public" : "" })}}" alt="image publication">
+            <img class="image_publication pub_image_jheo_js"  src="{{publication.image}}" alt="image publication">
         {% endif %}
     </div>
 
