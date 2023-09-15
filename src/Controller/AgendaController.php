@@ -1754,11 +1754,4 @@ class AgendaController extends AbstractController
         ]);
     }
 
-
-    #[Route('/set/in/google/agenda', name: 'set_in_google_agenda', methods: ["GET","POST"])]
-    public function showTemplateForConfirmAddGoogleAgenda(){
-
-        return $this->render("agenda/partage/google_agenda_sign_in.twig");
-    }
-
 }

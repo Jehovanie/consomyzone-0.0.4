@@ -85,40 +85,6 @@ if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
     })
 }
 
-function signinWithGoogleService(){
-    tokenClient.requestAccessToken({prompt: 'consent',callback:alert("Terminer")})
-    console.log(tokenClient)
-}
-// handleSignoutClick()
-function addToGoogleCalendar(){
-    eev = {
-        'summary': 'Google I/O 2015',
-        'location': '800 Howard St., San Francisco, CA 94103',
-        'description': 'A chance to hear more about Google\'s developer products.',
-        'start': {
-          'dateTime': '2023-09-15T09:00:00-07:00',
-          'timeZone': 'America/Los_Angeles',
-        },
-        'end': {
-          'dateTime': '2023-09-20T17:00:00-07:00',
-          'timeZone': 'America/Los_Angeles',
-        },
-                        
-        }
-    
-        const request = gapi.client.calendar.events.insert({
-            'calendarId': 'primary',
-            'resource': eev
-          });
-          
-          request.execute(function(event) {
-            console.log('Event created: ' + event.htmlLink);
-          });
-}
-
-handleSignoutClick()
-
-
 //// PUSH NEW AGENT -----------------------------------------------------------
 if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
 
