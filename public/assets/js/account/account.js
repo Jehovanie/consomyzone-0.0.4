@@ -541,7 +541,7 @@ function createAndAddCardNotification(
 ){
 
     const notification_item = document.createElement('li');
-    notification_item.className = `nr cg h lc mg qg qh sq js yk ${!notification.isRead ? 'gray400' : ''} single_notif_jheo_js`
+    notification_item.className = `nr cg h lc kg qg qh sq js yk ${!notification.isRead ? 'gray400' : ''} single_notif_jheo_js`
  
     notification_item.setAttribute('id',`notificationID_${notification.notificationID}_jheo_js`)
     notification_item.setAttribute('data-toggle-notif-id',`${notification.notificationID}`)
@@ -550,7 +550,7 @@ function createAndAddCardNotification(
     const badge_isConnected = !!user.isConnected === true ? `<span class="g l m xe qd th pi jj sj ra"></span>` : "";
     notification_item.innerHTML = `
         <a class="lc kg ug" href="#">
-            <div class="h sa wf uk th ni ej">
+            <div class="h sa wf uk th ni ej cb">
                 <img class="image_profil_navbar_msg" src="${user.photo ? user.photo.replace("/public" , "") : '/uploads/users/photos/img_avatar.png'}" alt="User"/>
                 ${badge_isConnected}
             </div>

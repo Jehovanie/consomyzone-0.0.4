@@ -138,6 +138,7 @@ class NotificationService extends PDOConnexionService{
             ///insert notification
             $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
+            $content= $this->convertUtf8ToUnicode($content);
             $this->getPDO()->prepare($sql)->execute([$user_id, $user_id_post, $type, $content,0,0]);
         }
 
@@ -190,12 +191,9 @@ class NotificationService extends PDOConnexionService{
 
                     }else{///////////////////other persone
                         $content = $content_notification_for_other_person;
-
                     }
-
                 }else{ /// current user connected is  fondateur
                     $content = $content_notification_for_fondateur;
-
                 }
             }
 
@@ -209,63 +207,41 @@ class NotificationService extends PDOConnexionService{
             ////set notification
             $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
+            $content= $this->convertUtf8ToUnicode($content);
+
             $this->getPDO()->prepare($sql)->execute([intval($user_id), intval($user_current_id), $type, $content,0,0]);
         }
 
     }
 
 
-
     /**
 
      * @param $user_id_super_admin: user admin id ( connected )
-
      * @param $user_id_fondateur_tributg: user fondateur id
-
      * @param $value: the way to know the message status (accept or refuse the administrator)
-
      */
 
     public function sendNotificaticationValidationTribug($user_id_super_admin, $user_id_fondateur_tributg, $value){
 
-
-
         $type="Validation d'administer le tributG";
 
-
-
         if( $value ){
-
             $content= "Nous vous informons que l'administrateur de cette plateforme a validé que votre rôle en tant qu'administrateur dans le tribu G.";
-
         }else{
-
             $content= "Dommage, l'administrateur de cette plateforme ne pas accepter que vous êtes l'administrateur de cette Tribu G.";
-
         }
 
-
-
-
-
         //// get the table notification for this user from their id
-
         $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id_fondateur_tributg );
-
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
-
-            
-
+        
+        $content= $this->convertUtf8ToUnicode($content);
         $this->getPDO()->prepare($sql)->execute([intval($user_id_fondateur_tributg), intval($user_id_super_admin), $type, $content,0,0]);
-
     }
-
 
 
     /**
@@ -300,15 +276,11 @@ class NotificationService extends PDOConnexionService{
     }
 
 
-
     public function readAllNotifications(string $table, int $user_id ){
         $sql = "UPDATE " . $table . " SET isShow = 1, isRead = 1  WHERE user_id = " . $user_id;
         
         return $this->getPDO()->prepare($sql)->execute();
     }
-
-
-
 
 
     /**
@@ -344,7 +316,6 @@ class NotificationService extends PDOConnexionService{
         return $results;
     }
 
-
     public function getSingleNotification($table, $notif_id ){
 
         $statement = $this->getPDO()->prepare('SELECT isRead FROM '. $table . ' WHERE id= ' . intval($notif_id));
@@ -352,75 +323,45 @@ class NotificationService extends PDOConnexionService{
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if( $result["isRead"] !== "1" ){
-
             $sql = "UPDATE " . $table . " SET isRead = 1  WHERE id = " . intval($notif_id);
-
             $this->getPDO()->prepare($sql)->execute();
-
         }
 
-        
-
         // $statement = getPDO()->prepare("SELECT * FROM " . $table . " WHERE isShow=0");
-
         $statement = $this->getPDO()->prepare("SELECT * FROM " . $table . " WHERE id= ". intval($notif_id));
-
         $statement->execute();
 
-    
-
         return $statement->fetchAll(PDO::FETCH_ASSOC);
-
     }
-
-
 
     public function sendNotificationForTribuGmember(int $user_id_post,int $user_id,string $type, string $content){
 
         ///get the name of the table notification for $user_id_post to send new notification
-
         $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id );
-
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         ///insert notification
-
         $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
 
-            
-
+        $content= $this->convertUtf8ToUnicode($content);
         $this->getPDO()->prepare($sql)->execute([$user_id, $user_id_post, $type, $content,0,0]);
-
     }
-
 
 
     public function sendNotificationForTribuGmemberOrOneUser(int $user_id_post,int $user_id,string $type, string $content, string $tribu = null){
 
         ///get the name of the table notification for $user_id_post to send new notification
-
         $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id );
-
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         ///insert notification
-
         $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead, tribu) VALUES (?,?,?,?,?,?,?)";
 
-            
-
+        $content= $this->convertUtf8ToUnicode($content);
         $this->getPDO()->prepare($sql)->execute([$user_id, $user_id_post, $type, $content,0,0,$tribu]);
-
     }
-
 
 
     /**
@@ -433,63 +374,27 @@ class NotificationService extends PDOConnexionService{
 
     public function acceptNotification($table, $notif_id ){
 
-
-
         $statement = $this->getPDO()->prepare('SELECT is_accepted FROM '. $table . ' WHERE id= ' . intval($notif_id));
-
-
-
         $statement->execute();
-
-
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         if( $result["is_accepted"] !== "1" ){
-
             $sql = "UPDATE " . $table . " SET is_accepted = 1  WHERE id = " . intval($notif_id);
-
             $this->getPDO()->prepare($sql)->execute();
-
         }
-
-        
-
     }
-
-
 
     public function rejectNotification($table, $notif_id ){
 
-
-
         $statement = $this->getPDO()->prepare('SELECT is_accepted FROM '. $table . ' WHERE id= ' . intval($notif_id));
-
-
-
         $statement->execute();
-
-
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         if( $result["is_accepted"] !== "2" ){
-
             $sql = "UPDATE " . $table . " SET is_accepted = 2  WHERE id = " . intval($notif_id);
-
             $this->getPDO()->prepare($sql)->execute();
-
         }
-
-        
-
     }
-
-
 
     public function updateNotificationIsread($notif_id, $userId){
         $tableName= "tablenotification_" . $userId;
@@ -501,8 +406,6 @@ class NotificationService extends PDOConnexionService{
         }
         return false;
     }
-
-
 
     public function getUserPostIdForFeedBack($notif_id, $userId){
         $tableName= "tablenotification_" . $userId;
@@ -518,8 +421,6 @@ class NotificationService extends PDOConnexionService{
         return false;
     }
 
-
-
     public function sendForwardNotificationForUser(int $user_id_post,int $user_id,string $type, string $content){
 
         ///get the name of the table notification for $user_id_post to send new notification
@@ -533,6 +434,8 @@ class NotificationService extends PDOConnexionService{
         ///insert notification
         if($result &&  $this->isTableExist($result["tablenotification"])){
             $sql = "INSERT INTO " . $result["tablenotification"] . " (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)";
+
+            $content= $this->convertUtf8ToUnicode($content);
             $this->getPDO()->prepare($sql)->execute([$user_id, $user_id_post, $type, $content,0,0]);
             return true;
         }
@@ -540,33 +443,15 @@ class NotificationService extends PDOConnexionService{
         return false;
     }
 
-
-
     public function getNotificationId($table, $tribu){
 
-
-
         $statement = $this->getPDO()->prepare("SELECT id FROM $table WHERE tribu like '%$tribu%'");
-
-
-
         $statement->execute();
-
-
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         return $result["id"];
-
-
-
     }
-
-
-
-
 
 }
 

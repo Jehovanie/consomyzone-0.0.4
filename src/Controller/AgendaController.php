@@ -214,7 +214,8 @@ class AgendaController extends AbstractController
     #[Route('/api_old/user/agenda/{id}', name: 'api_one_agenda', methods: ["GET"])]
     public function createAgenda(
         $tribut_name,
-        Request $request
+        Request $request,
+        NotificationService $notif_service
     ){
         $user = $this->getUser();
         $user_id = $user->getId();
@@ -244,8 +245,6 @@ class AgendaController extends AbstractController
         $table_tribu = preg_replace($regex, "", $tribut_name);
 
         $membre = $tribu_t_service -> getUserIdInTribu($table_tribu , $user_id);
-
-        $notif_service = new NotificationService();
 
         $content = $tribu_t_service->getFullName($user_id). " a crée un ".$type." à partir du ".$from." au ".$to . " 
         si vous avez interéssé. <a href='/user/tribut/get-detail-agenda/" .$tribut_name. "/" .$id_agenda. "'>Voir plus...</a>";
@@ -449,7 +448,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function setActionAgenda($table_name, $id, Request $request){
+    public function setActionAgenda($table_name, $id, Request $request, NotificationService $notif_service){
 
         $user = $this->getUser();
 
@@ -505,8 +504,6 @@ class AgendaController extends AbstractController
         $table_agenda = preg_replace($regex, "", $table_name);
 
         $membre = $this->agendaService->getUserIdAndTypeBy($table_agenda , $id);
-
-        $notif_service = new NotificationService();
 
         if($user_id != $membre["user_id"]){
 
@@ -597,7 +594,7 @@ class AgendaController extends AbstractController
 
      */
 
-     public function shareAgenda($type , $table_origin, $id_agenda, $table_dest){
+     public function shareAgenda($type , $table_origin, $id_agenda, $table_dest, NotificationService $notif_service){
         $user = $this->getUser();
 
         $user_id = $user ->getId();
@@ -622,8 +619,6 @@ class AgendaController extends AbstractController
 
         $tribu_t_name = $tribu_t_service->showRightTributName($table_dest)["name"];
 
-        $notif_service = new NotificationService();
-
         if($type=="tribu_g"){
             //$table = $tribu_g;
             $membre = $tribu_t_service -> getUserIdInTribu($tribu_g, $user_id);
@@ -645,8 +640,7 @@ class AgendaController extends AbstractController
             
         }
 
- 
-         return $this->json("Agenda partagé");
+        return $this->json("Agenda partagé");
      }
      
      /**
@@ -665,7 +659,6 @@ class AgendaController extends AbstractController
         $avatar = $tribut_serv->showAvatar($table_tribu, $this->getUser()->getId())["avatar"];
 
         return $this->json(["list"=>$list,"avatar"=>$avatar]);
-
     }
 
     /** 
