@@ -319,9 +319,12 @@ class NotificationService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("SELECT t.id, t.user_id, t.user_post, t.type, t.content, t.isShow, t.isRead, t.datetime, t.tribu, u.type, u.is_connected FROM $table as t inner join user as u on t.user_post = u.id");
         $statement->execute();
         $notifications = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         $results = [];
 
         foreach( $notifications as $item ){
+            $item["content"] = json_decode($item["content"], true) != null ? json_decode($item["content"], true) : $item["content"];
+
             $userType= $item["type"];
             $userId= $item["user_post"];
 

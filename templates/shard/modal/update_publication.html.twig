@@ -8,7 +8,12 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="pub_id_modif"> Dans le tribu</label>
-                    <input type="text" id="pub_id_modif" class="form-control" placeholder="Tribu T" disabled>
+                    <input type="text" id="pub_id_modif" class="form-control input_disable_tribu_jheo_js" disabled>
+                </div>
+
+                <div class="mb-3 d-none content_input_name_tribuT_jheo_js">
+                    <label for="pub_id_modif"> Tribu T</label>
+                    <input type="text" id="pub_id_modif" class="form-control input_name_tribuT_jheo_js"  disabled>
                 </div>
 
                 <div class="mb-3">
@@ -20,12 +25,22 @@
                     <label for="formFileMultiple" class="form-label">Confidentialité</label>
                     <select class="form-control" id="option_modif">
                         <option class="config_update_jheo_js" value="1">Tous le monde</option>
-                        <option class="config_update_jheo_js" value="2">Moi uniquement</option>
+                        <option class="config_update_jheo_js" value="0">Moi uniquement</option>
                     </select>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 d-none content_image_upload_jheo_js">
                     <label for="formFileMultiple" class="form-label">Photo</label>
-                    {% include 'shard/input/inputImageDragDrop.html.twig' %}
+                    <div class="image-upload image_upload_jheo_js" id="imageUploadTribu">
+                        <div>
+                            <img class="image-upload-image image_upload_update_jheo_js" src="#" alt="your image"/>
+                            <div class="image-title-wrap">
+                                <button type="button" class="remove-image-uplaod remove_image_upload_jheo_js">
+                                    Change l'image
+                                    {# <span class="image-title">Uploaded Image</span> #}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

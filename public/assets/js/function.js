@@ -1880,16 +1880,16 @@ function getAllComment(pubId, tablePub, userOwnID){
             comments.forEach(comment => {
                 const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
                 listLIcomment += `
-                    <li id='45' class="nr h lc rg mg qh sq js yk gray400 mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
+                    <li id='pub_${comment.pub_id}_comment_${comment.comment_id}' class="nr h lc rg mg qh sq js yk mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
                         <div class="h sa wf uk th ni ej">
                             <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
                             <span class="g l m xe qd th pi jj sj ra"></span>
                         </div>
                         <div>
                             <h6 class="un zn gs">
-                               ${comment.user.fullname}
+                               <p>${comment.user.fullname}</p>-<cite class="fontSize06">${comment.dateTime}</cite>
                             </h6>
-                            <p class="mn hc">
+                            <p class="hc">
                                ${comment.text_comment}
                             </p>
                         </div>
@@ -2120,7 +2120,47 @@ function bindDataUpdatePub(table, id){
     }
 
     document.querySelector(".desc_update_jheo_js").value = publication.querySelector(".pub_description_jheo_js").innerText;
-    document.querySelector(".desc_update_jheo_js").value = publication.querySelector(".pub_description_jheo_js").innerText;
+
+    const tribu_Name= publication.querySelector(".tribu_name_jheo_js").innerText;
+    const content_input_tribuT_name= document.querySelector(".content_input_name_tribuT_jheo_js");
+    let tribuType= "";
+    if( tribu_Name.includes("Tribu T") ){
+        if(content_input_tribuT_name.classList.contains("d-none")){
+            content_input_tribuT_name.classList.remove("d-none")
+        }
+        tribuType= "Tribu T";
+        document.querySelector(".input_name_tribuT_jheo_js").value= tribu_Name;
+
+    }else{
+        if(!content_input_tribuT_name.classList.contains("d-none")){
+            content_input_tribuT_name.classList.add("d-none")
+        }
+        tribuType= "Tribu G";
+    }
+    document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
+
+    const config_pub= publication.querySelector(".config_jheo_js").getAttribute("data-confid");
+    document.querySelectorAll(".config_update_jheo_js").forEach(item => {
+        if(parseInt(item.getAttribute("value")) === parseInt(config_pub) ){
+            item.setAttribute("selected" , "");
+        }
+    })
+
+
+    if( publication.querySelector(".pub_image_jheo_js")){
+        const link_image= publication.querySelector(".pub_image_jheo_js").getAttribute("src");
+        document.querySelector(".image_upload_update_jheo_js").setAttribute("src", link_image);
+        
+        if(document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_image_upload_jheo_js").classList.remove("d-none")
+        }
+    }else{
+        if(!document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_image_upload_jheo_js").classList.add("d-none")
+            document.querySelector(".image_upload_update_jheo_js").setAttribute("src","#");
+        }
+    }
+
 }
 /*function pastilleRestoForTribuT(e){
     let id = e.target.dataset.id
@@ -2320,4 +2360,15 @@ function closeDetailGolfMob(nom_dep, id_dep) {
 
 function convertUnicodeToUtf8(str){
     return unescape(str);
+}
+
+function tryDecodeURLComponent(str, maxInterations = 30, iterations = 0) {
+    console.log(iterations)
+    if (iterations >= maxInterations) {
+        return str;
+    } else if (typeof str === 'string' && (str.indexOf('%3D') !== -1 || str.indexOf('%25') !== -1)) {
+        return tryDecodeURLComponent(decodeURIComponent(str), maxInterations, iterations + 1)
+    }
+    
+    return decodeURIComponent(str);
 }

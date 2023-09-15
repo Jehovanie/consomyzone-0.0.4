@@ -1589,6 +1589,7 @@ class Tribu_T_Service extends PDOConnexionService
             $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
 
             $temp= [
+                "comment_id" => $comment["id"],
                 "pub_id" => $comment["pub_id"],
                 "dateTime" => $comment["datetime"],
                 "text_comment" => $this->convertUnicodeToUtf8($comment["commentaire"]) ? $this->convertUnicodeToUtf8($comment["commentaire"]) : $comment["commentaire"],

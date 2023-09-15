@@ -8,7 +8,7 @@
                 <div class="name-content">
                     <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
                     <div class="">
-                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{tribu.name}}</span></p>
+                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="tribu_name_jheo_js">{{tribu.name}}</span></p>
                         {# <div class="dropdown-menu" aria-labelledby="btnGroupDrop0">
                             <p class="dropdown-item" >{{tribu.name}}</p>
                             <p class="dropdown-item" >{{tribu.description}}</p>
@@ -46,8 +46,10 @@
                         <i class="bi bi-three-dots" style="cursor:pointer"></i>
                     </span>
                     <ul class="dropdown-menu">
-                        <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')">
-                            <button class="text-primary dropdown-item">
+                        {# <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')"> #}
+                        <li class="non_active">
+                            {# <button class="text-primary dropdown-item"> #}
+                            <button class="text-secondary dropdown-item">
                                 <i class="fas fa-edit"></i>
                                 Modifier
                             </button>

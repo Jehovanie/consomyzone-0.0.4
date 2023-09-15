@@ -548,7 +548,6 @@ function createAndAddCardNotification(
     notification_item.setAttribute('onclick',`setShowNotifications(${notification.notificationID})`)
 
     const badge_isConnected = !!user.isConnected === true ? `<span class="g l m xe qd th pi jj sj ra"></span>` : "";
-
     notification_item.innerHTML = `
         <a class="lc kg ug" href="#">
             <div class="h sa wf uk th ni ej">
@@ -562,7 +561,7 @@ function createAndAddCardNotification(
                             ${user.fullname}
                         </h6>
                         <p class="mn hc">
-                            ${notification.textContent.length > 45 ? convertUnicodeToUtf8( notification.textContent.substring(0, 40 ) + '...') : convertUnicodeToUtf8(notification.textContent)}
+                            ${notification.textContent}
                         </p>
                     </blockquote>
                     <figcaption class="blockquote-footer" style="float: right;">

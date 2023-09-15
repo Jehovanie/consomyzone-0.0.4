@@ -677,9 +677,12 @@ class TributGService extends PDOConnexionService{
             "INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) 
             values (:user_id, :publication, :confidentiality, :photo, :userfullname)"
         );
+        
+        //// convert text publication
+        $publication = $this->convertUtf8ToUnicode($publication);
 
         $userfullname = $this->getFullName($user_id);
-
+        $publication=str_replace("\u","\\u",$publication);
         $statement->bindParam(':user_id', $user_id);
         $statement->bindParam(':publication', $publication);
         $statement->bindParam(':confidentiality', $confid);
@@ -858,7 +861,7 @@ class TributGService extends PDOConnexionService{
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $d_pub['publication'],
+                        "description" => json_decode($d_pub['publication'], true ), //// when get, must decode
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,
