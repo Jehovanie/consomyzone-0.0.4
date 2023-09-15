@@ -164,6 +164,9 @@ class GolfFranceController extends AbstractController
             }
         }
 
+        $golfs = $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
+   
+
         return $this->render("golf/specific_departement.html.twig", [
 
             "id_dep" => $id_dep,
@@ -172,7 +175,7 @@ class GolfFranceController extends AbstractController
 
             "type" => "golf",
 
-            "golf" => $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID),
+            "golfs" => $golfs,
 
             "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
 

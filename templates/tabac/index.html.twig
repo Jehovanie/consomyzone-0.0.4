@@ -39,19 +39,19 @@
         <div class="responsif-none-pc navbar-mobile-all">
             {% include 'shard/navbar_mobile.twig' %}
         </div>
-        {# {% if (app.user) %}
+        {% if (app.user) %}
             <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-tabac-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
         {% else %}
             <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-tabac-mobile-tomm-js">
         {% endif %}
                 <i class="fa-solid fa-bars"></i>
-            </div> #}
+            </div>
            
         <div id="list-depart-tabac-mobile-tomm-js"></div> 
         
         {# //// CONTENT CART #}
         <div>
-            <div class="content_filter_dep liste-depart-tomm responsif-none-pc">
+            {# <div class="content_filter_dep liste-depart-tomm responsif-none-pc">
                 <select class="form-select" aria-label="Sélectionnez un département" style="" id="selectDepartTabacTommJs" onchange="selectDepartTabacMobile()">
                     <option value="Tous">Liste des departements</option>
                     {% set listDepExist = [75, 94] %}
@@ -63,7 +63,7 @@
                         {% endif %}
                     {% endfor %}
                 </select>
-            </div>
+            </div> #}
             <div class="d-flex content_cart_map content_cart_map_jheo_js">
                 <div class="cart_map cart_map_js cart_map_jheo_js">
                     {# content chargement  #}

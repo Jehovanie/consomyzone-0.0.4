@@ -140,8 +140,16 @@
         margin-top: 200px;
     }
 
-    .form-select {
-        font-size: 9pt !important;
+    .form-select.select_action_golf_nanta_js {
+        font-size: 7pt !important;
+        width: 20% !important;
+        margin-top: -31px;
+        padding: 3px;
+        margin-left: 243px;
+    }
+
+    .swal2-popup{
+        margin-top: -160px;
     }
 
     .navleft-mobile{
@@ -152,7 +160,7 @@
         margin-top: 155px;
         box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
         position: fixed;
-        z-index: 1030;
+        z-index: 10402;
     }
 
     .scroll-mobile .navbar-nav .nav-item .nav-link{
@@ -528,10 +536,9 @@
     }
 
     .navbar-brand-mobile svg {
-        width: 10rem !important;
         position: absolute;
         top: 25vh;
-        left: 70vw;
+        left: 85vw;
         z-index: 401;
     }
 
@@ -662,7 +669,7 @@
         height: 55vh;
         overflow-y: scroll !important;
         padding-left: 50px !important;
-        
+        overflow-x: hidden;
     }
 
     .list-depart-arrand{

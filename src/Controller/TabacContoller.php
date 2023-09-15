@@ -171,7 +171,6 @@ class TabacContoller extends AbstractController
                 }
             }
         }
-
         return $this->render("tabac/specific_departement.html.twig", [
 
             "id_dep" => $id_dep,
@@ -180,7 +179,7 @@ class TabacContoller extends AbstractController
 
             "type" => "tabac",
 
-            "tabac" => $tabacRepository->getGolfByDep($nom_dep, $id_dep),
+            "tabacs" => $tabacRepository->getGolfByDep($nom_dep, $id_dep),
 
             "nomber_tabac" => $tabacRepository->getCount($nom_dep, $id_dep),
 

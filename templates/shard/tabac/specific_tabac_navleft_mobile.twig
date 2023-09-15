@@ -1,80 +1,71 @@
-<div class="navleft-mobile  result_container_tabac_spec content_navleft_jheo_js">
-    <div class="logo-consomyzone-specific mt-5">
-        <a class="logo" href="{{path('app_home') | raw}}">
-            <img src="{{asset('assets/image/logo.png') | raw}}" alt="logo">
-        </a>
-    </div>
-    <div class="mt-5">
-        <svg class="close-resto-specific" id="close-tabac-spec-dep" version="1.0" xmlns="http://www.w3.org/2000/svg" width="10vw" height="10vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
+<div class="specific-detail responsif-none-pc">
+	<nav class="navbar navbar-light d-flex content-spec-resto ">
+		<div class="container-fluid scroll-mobile">
+			<ul class="navbar-nav mt-3 d-flex flex-row">
+				{% for tabac in tabacs %}
+					<li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" onclick="getDetailFromListLeft('{{tabac.depName}}', '{{tabac.dep}}', '{{tabac.id}}')">
+									<p class="text-point-12 fw-bold">{{tabac.name | raw }}
 
-            <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" stroke="none">
-                <path d="M634 986 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M857 994 c-4 -4 -7 -22 -7 -40 0 -37 21 -49 76 -42 27 3 29 6 29 43
-                                                                                                    l0 40 -45 3 c-25 2 -49 0 -53 -4z"/>
-                <path d="M534 886 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M754 886 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M414 776 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M634 776 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M304 676 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M532 682 c-8 -6 -12 -23 -10 -43 3 -34 3 -34 53 -34 l50 0 0 40 c0
-                                                                                                    40 0 40 -40 43 -22 1 -46 -2 -53 -6z"/>
-                <path d="M414 556 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M642 562 c-8 -6 -12 -23 -10 -43 3 -34 3 -34 53 -34 l50 0 0 40 c0
-                                                                                                    40 0 40 -40 43 -22 1 -46 -2 -53 -6z"/>
-                <path d="M524 466 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M752 471 c-8 -5 -12 -22 -10 -42 3 -34 3 -34 53 -34 50 0 50 0 53 34
-                                                                                                    4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
-                <path d="M644 356 c-3 -8 -4 -27 -2 -43 3 -27 6 -28 53 -28 l50 0 0 40 0 40
-                                                                                                    -48 3 c-34 2 -49 -1 -53 -12z"/>
-                <path d="M872 361 c-8 -5 -12 -22 -10 -42 3 -34 3 -34 53 -34 50 0 50 0 53 34
-                                                                                4 39 -9 51 -53 51 -16 0 -36 -4 -43 -9z"/>
-            </g>
-        </svg>
-    </div>
-    
-    <div class="container-fluid">
-        <div class="head-left">
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-2">
-                    <img class="icon_tabac" src="{{asset('assets/icon/NewIcons/tabac.png')}}" alt="Icon tabac">
-                </div>
-                <div class="col-9">
-                  
-                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
-                        Tabac à <span class="fw-bolder">{{nom_dep}}</span>
-                        departement <span class="fw-bolder">{{id_dep}},</span> <br>
-                        <span class="fw-bolder content_nombre_result_js_jheo">{{nomber_tabac}}</span> résultats.
-                    </p>
-                </div>
-                <div class="content_filter_trie content_filter_trie_jheo_js">
-                    <div class="pagination_alphabet pagination_alphabet_jheo_js">
-                        <ul>
-                            {# CONTENT LIST ALPHABET generate by js #}
-                        </ul>
-                    </div>
-				</div>
-            </div>
-            <div class="container list-depart-all-specific" id="Scrollbar">
-                <div class="list_result content_container_list" id="all_tabac_in_dep"  data-toggle-id-dep="{{id_dep}}" data-toggle-dep-name="{{nom_dep}}">
-                    <ul class="content_list_ferme_spec_js_jheo">
-                        {% for  rubrique in tabac %}
-                            {% include "card/card_rubrique.html.twig" %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            
-        </div>
-    </div>
+									</p>
+
+
+									<div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse :
+										</span>
+										<span class="small  ">{{tabac.add | raw}}</span>
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">{{tabac.tel | raw}}</span>
+									</p>
+									<div class="text-point-9">
+                                        {% if tabac.bar_tabac > 0 %}
+                                            <span class="btn btn-outline-success text-point-9">Bar Tabac</span>
+                                        {% endif %}
+                                        {% if tabac.bureau_tabac > 0 %}
+                                            <span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>
+                                        {% endif %}
+                                        {% if tabac.cafe_tabac > 0 %}
+                                            <span class="btn btn-outline-success text-point-9">Cafe Tabac</span>
+                                        {% endif %}
+                                        {% if tabac.tabac_presse > 0 %}
+                                            <span class="btn btn-outline-success text-point-9">Tabac presse</span>
+                                        {% endif %}
+                                    </div>
+
+								</div>
+							
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									{% if app.user %}
+										<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>
+									{% else %}
+										<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
+									{% endif %}
+								</div>
+							</div>
+						</a>
+					</li>
+				{% endfor %}
+
+			</ul>
+		</div>
+	</nav>
 </div>
-{% include 'shard/tabac/detail_tabac_navleft.twig' %}
 

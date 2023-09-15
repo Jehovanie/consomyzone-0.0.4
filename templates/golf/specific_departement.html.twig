@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block body %}
-	
+	{% include 'shard/golf/specific_golf_navleft_mobile.twig' %}
 	<div class="content_cart_body">
 
         {# //// NAV LEFT #}
@@ -39,15 +39,25 @@
         <div class="responsif-none-pc navbar-mobile-all">
             {% include 'shard/navbar_mobile.twig' %}
         </div>
+
         
 		<div class="golf-mobile">
 		    {# <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-golf-mobile-specific-tomm-js" onclick="addSpecificgolfMobile('{{nom_dep}}', '{{id_dep}}')"><i class="fa-solid fa-bars"></i> Golf à {{nom_dep}}</button> #}
-			<div class="open-navleft-mobile responsif-none-pc" id="open-navleft-golf-mobile-specific-tomm-js" onclick="addSpecificgolfMobile('{{nom_dep}}','{{id_dep}}')">
+			{# <div class="open-navleft-mobile responsif-none-pc" id="open-navleft-golf-mobile-specific-tomm-js" onclick="addSpecificgolfMobile('{{nom_dep}}','{{id_dep}}')">
                 <i class="fa-solid fa-bars"></i>
-            </div>
+            </div> #}
+            {% if (app.user) %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-golf-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+            {% else %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-golf-mobile-tomm-js">
+            {% endif %}
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                
+                <div id="list-depart-golf-mobile-tomm-js"></div> 
            
            
-            <div id="list-depart-golf-specific-mobile-tomm-js"></div>
+            {# <div id="list-depart-golf-specific-mobile-tomm-js"></div> #}
 			<div class="d-flex content_cart_map content_cart_map_jheo_js">
 				<div class="cart_map cart_map_js cart_map_jheo_js">
 

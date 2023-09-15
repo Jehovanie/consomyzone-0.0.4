@@ -1,70 +1,73 @@
-<div class="navleft-mobile responsif-none-pc result_container_golf_spec content_navleft_jheo_js">
-    <div class="logo-consomyzone-specific mt-5">
-        <a class="logo" href="{{path('app_home') | raw}}">
-            {# <img src="{{asset('assets/image/logo.png') | raw}}" alt="logo"> #}
-            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 400.000000 400.000000" preserveaspectratio="xMidYMid meet">
-                <g transform="translate(0.000000,400.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
-                    <path fill="#1111FE" d="M585 2515 c-157 -35 -275 -126 -345 -265 -76 -153 -74 -365 7 -524
-                        35 -68 135 -166 203 -198 115 -54 296 -72 433 -43 136 29 260 124 318 245 41
-                        85 43 95 17 107 -13 6 -57 27 -99 46 l-77 36 -22 -62 c-59 -162 -242 -242
-                        -387 -169 -184 94 -220 416 -63 573 131 131 364 93 437 -72 l17 -39 88 0 88 0
-                        0 180 0 180 -85 0 -85 0 0 -35 c0 -19 -2 -35 -5 -35 -3 0 -29 13 -58 30 -100
-                        56 -251 74 -382 45z"/>
-                    <path fill="#000000" d="M1320 2425 l0 -85 65 0 65 0 0 -340 0 -340 -65 0 -65 0 0 -85 0 -85
-                        215 0 215 0 0 85 0 85 -65 0 -65 0 0 341 c0 267 3 340 12 337 7 -3 77 -175
-                        155 -384 78 -208 150 -398 159 -422 l16 -43 56 3 56 3 156 419 c85 231 161
-                        421 168 424 9 3 12 -69 12 -337 l0 -341 -60 0 -60 0 0 -85 0 -85 255 0 255 0
-                        0 85 0 85 -65 0 -65 0 0 340 0 340 65 0 65 0 0 85 0 85 -261 -2 -262 -3 -109
-                        -289 c-59 -159 -110 -291 -112 -293 -1 -2 -52 129 -112 292 l-109 295 -257 0
-                        -258 0 0 -85z"/>
-                    <path fill="#51C94B" d="M2940 2330 l0 -180 90 0 90 0 0 95 0 95 135 0 c74 0 135 -3 135 -6 0
-                    -3 -108 -157 -240 -342 l-240 -337 0 -82 0 -83 415 0 415 0 0 185 0 185 -85 0
-                    -85 0 0 -100 0 -100 -170 0 -169 0 249 350 250 351 0 74 0 75 -395 0 -395 0 0
-                    -180z"/>
-                </g>
-            </svg>
-        </a>
-    </div>
-    <div class="mt-5">
-        <svg  class="close-ferme" id="close-golf-specific-tomm-js"  xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-			<path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
-		</svg>
-        
-    </div>
-    <div class="container-fluid">
-        <div class="head-left spec-dep">
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-2">
-                    <img class="icon_golf" src="{{asset('assets/icon/NewIcons/golf.png')}}" alt="Icon Golf">
-                </div>
-                <div class="col-9">
-                    <p  class="titre text-point-9" data-toggle-deparement="{{nom_dep}}">
-                        Golf à <span class="fw-bolder">{{nom_dep}}</span>
-                        departement <span class="fw-bolder">{{id_dep}},</span> <br>
-                        <span class="fw-bolder content_nombre_result_js_jheo">{{nomber_golf}}</span> résultats.
-                    </p>
-                </div>
-                <div class="content_filter_trie content_filter_trie_jheo_js">
-                    <div class="pagination_alphabet pagination_alphabet_jheo_js">
-                        <ul>
-                            {# CONTENT LIST ALPHABET generate by js #}
-                        </ul>
-                    </div>
-				</div>
-            </div>
-            <div class="container list-depart-all-specific list-depart-golf-specific" id="Scrollbar">
-                <div class="list_result content_container_list" id="all_golf_in_dep"  data-toggle-id-dep="{{id_dep}}" data-toggle-dep-name="{{nom_dep}}">
-                    <ul class="content_list_ferme_spec_js_jheo">
-                        {% for  rubrique in golf %}
-                            {% include "card/card_rubrique.html.twig" %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            
-        </div>
-    </div>
+<div class="specific-detail responsif-none-pc">
+	<nav class="navbar navbar-light d-flex content-spec-resto ">
+		<div class="container-fluid scroll-mobile">
+			<ul class="navbar-nav mt-3 d-flex flex-row">
+				{% for golf in golfs %}
+					<li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail"  onclick="getDetailFromListLeft('{{golf.depName}}', '{{golf.dep}}', '{{golf.id}}')">
+									<p class="text-point-12 fw-bold">{{golf.name | raw }} 
+                                        
+									</p>
+
+									
+                                    <div class="start">
+                                        <i class="fa-solid fa-star" data-rank="1"></i>
+                                        <i class="fa-solid fa-star" data-rank="2"></i>
+                                        <i class="fa-solid fa-star" data-rank="3"></i>
+                                        <i class="fa-solid fa-star" data-rank="4"></i>
+                                    </div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse : </span> <span class="small  ">{{golf.adresse | raw}}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Tél : </span> <span class="small  ">{{golf.tel | raw}}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email : </span> <span class="small  ">{{golf.email | raw}}</span>
+									</p>
+                                    
+								</div>
+								{% if app.user %}
+										<div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
+											{% if golf.user_status["a_faire"] == null and  golf.user_status["fait"] == null %}
+												<label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+												<select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="{{golf.id}}" onchange="executeActionForPastGolf({{golf.id}})">
+													<option value="0">Aucun</option>
+													<option value="1">A faire</option>
+													<option value="2">Fait</option>
+												</select>
+												{# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{golf.id}})">Terminer</button> #}
+											{% else %}
+												Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{golf.id}}')">Oui</span>
+											{% endif %}
+										</div>
+									{% endif %}
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js">
+											</span>
+											avis
+										</a>
+									</span>
+										{% if app.user %}
+											<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>
+										{% else %}
+											<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
+										{% endif %}
+								</div>
+							</div>
+						</a>
+					</li>
+				{% endfor %}
+
+			</ul>
+		</div>
+	</nav>
 </div>
-{% include 'shard/golf/detail_golf_navleft.twig' %}
+
+
 
