@@ -532,7 +532,7 @@ class Tribu_T_Service extends PDOConnexionService
             
             //use these param if don't wont escape unicode JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
             $jsontribuT = json_encode($array);
-            $jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
+            $jsontribuT=str_replace("\\u","\\u",$jsontribuT);
             // dd($jsontribuT);
             $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $jsontribuT."' WHERE id  = $userId");
 
@@ -613,7 +613,7 @@ class Tribu_T_Service extends PDOConnexionService
             
             $jsontribuT = json_encode($array);
 
-            $jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
+            $jsontribuT=str_replace("\\u","\\u",$jsontribuT);
 
             $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $jsontribuT."' WHERE id  = $userId");
 

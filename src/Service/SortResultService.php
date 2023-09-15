@@ -31,6 +31,8 @@ class SortResultService extends StringTraitementService
 
                 if($nom == $cle0){
                     $levNom = 0;
+                }elseif($this->containsWord($nom, $cle0)){
+                    $levNom = 0.2;
                 }elseif(str_contains($nom, $cle0)){
                     $levNom = 0.5;
                 }elseif($this->permute($decision_nom, $cle0, 0, $n0 - 1, $nom) == 1) {
@@ -47,6 +49,8 @@ class SortResultService extends StringTraitementService
 
                 if($add == $cle1){
                     $levAdresse = 0;
+                }elseif($this->containsWord($add, $cle1)){
+                    $levAdresse = 0.2;
                 }elseif(str_contains($add, $cle1)){
                     $levAdresse = 1;
                 }elseif ($this->permute($decision_addresse, $cle1, 0, $n - 1, $add) == 1) {
@@ -63,8 +67,14 @@ class SortResultService extends StringTraitementService
             }else{
 
                 /** Classifier % au nom */
-                if(str_contains($nom, $cle0) && $nom == $cle0){
+                /*if($cle0 === "station" || $cle0 === "stations" || $cle0 === "station service" || $cle0 === "stations services" || $cle0 === "ferme" || $cle0 === "fermes" 
+                || $cle0 === "resto" || $cle0 === "restos" || $cle0 === "restaurant" || $cle0 === "restaurants" 
+                || $cle0 === "tabac" || $cle0 === "tabacs" || $cle0 === "golf" || $cle0 === "golfs"){
                     $levNom = 0;
+                }else*/if(str_contains($nom, $cle0) && $nom == $cle0){
+                    $levNom = 0;
+                }elseif($this->containsWord($nom, $cle0)){
+                    $levNom = 0.2;
                 }elseif(str_contains($nom, $cle0)  && $nom != $cle0){
                     $levNom = 0.5;
                 }elseif($this->permute($decision_nom, $cle0, 0, $n0 - 1, $nom) == 1) {
@@ -78,6 +88,8 @@ class SortResultService extends StringTraitementService
                 /** Classifier % à l'adresse */
                 if(str_contains($add, $cle1) && $add == $cle1){
                     $levAdresse = 0;
+                }elseif($this->containsWord($add, $cle1)){
+                    $levAdresse = 0.2;
                 }elseif(str_contains($add, $cle1)  && $add != $cle1){
                     $levAdresse = 1;
                 }elseif ($this->permute($decision_addresse, $cle1, 0, $n - 1, $add) == 1) {
@@ -175,4 +187,10 @@ class SortResultService extends StringTraitementService
         }
         return $array;
     }
+
+    function containsWord($haystack, $needle)
+    {
+        return preg_match("/\b{$needle}\b/", $haystack) === 1;
+    }
+
 }

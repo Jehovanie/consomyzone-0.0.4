@@ -1670,31 +1670,37 @@ class AgendaController extends AbstractController
     /** 
      *
      * 
-     * @Route("/api/agenda/etab/{nom_dep}/{id_dep}/detail/{id_restaurant}", name="api_agenda_detail_etab", methods="GET" )
+     * @Route("/api/agenda/{etab}/{nom_dep}/{id_dep}/detail/{id_etab}", name="api_agenda_detail_etab", methods="GET" )
      */
-    public function detailRestaurant(
-        Request $request,
+    public function detailEtabCMZ(
         BddRestoRepository $bddResto,
+        GolfFranceRepository $golfFranceRepository,
+        $etab,
         $nom_dep,
         $id_dep,
-        $id_restaurant
+        $id_etab
     ): Response {
-        
-        $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
-        if(str_contains($request->getPathInfo(), '/api/restaurant')){
-            return $this->json([
+        $user = $this->getUser();
+        $userID = ($user) ? intval($user->getId()) : null;
+        
+        if($etab == "restaurant") {
+
+            $details= $bddResto->getOneRestaurant($id_dep, $id_etab)[0];
+
+            return $this->render("agenda/detail_resto.html.twig", [
                 "details" => $details,
                 "id_dep" => $id_dep,
                 "nom_dep" => $nom_dep,
-            ], 200);
-        }
+            ]);
 
-        return $this->render("agenda/detail_resto.html.twig", [
-            "details" => $details,
-            "id_dep" => $id_dep,
-            "nom_dep" => $nom_dep,
-        ]);
+        }elseif($etab == "golf"){
+            return $this->render("agenda/details_golf.html.twig", [
+                "id_dep" => $id_dep,
+                "nom_dep" => $nom_dep,
+                "details" => $golfFranceRepository->getOneGolf(intval($id_etab),$userID),
+            ]);
+        }
     }
 
     #[Route("/user/tribu/partage/agenda", name: 'app_partage_agenda')]
