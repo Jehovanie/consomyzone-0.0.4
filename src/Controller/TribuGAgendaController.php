@@ -58,7 +58,7 @@ class TribuGAgendaController extends AbstractController
     }
 
     #[Route("user/tribug/newAgenda" , name: "app_tribuG_new_agenda")]
-    public function newAgenda(Request $request):Response
+    public function newAgenda(Request $request, NotificationService $notif_service):Response
     {
         $user = $this->getUser();
         $user_id = $user->getId();
@@ -79,7 +79,6 @@ class TribuGAgendaController extends AbstractController
 
         $membre = $this->tributGService->getAllTributG($tributG); // [ [ "user_id" => ... ], ... ]
 
-        $notif_service = new NotificationService();
 
         $content = $this->tributGService->getFullName($user_id). " a crée un ".$type." à partir du ".$from." au ".$to . " 
         si vous avez interéssé. <a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='#'>Voir plus...</a>";
@@ -312,7 +311,7 @@ class TribuGAgendaController extends AbstractController
 
 
     #[Route("user/tribuG/agenda/set-action/{id}" , name: "app_tribuG_set_action" , methods: "POST")]
-    public function setActionAgenda($id, Request $request)
+    public function setActionAgenda($id, Request $request, NotificationService $notif_service)
     {
         $user = $this->getUser();
         $user_id = $user->getId();
@@ -359,15 +358,12 @@ class TribuGAgendaController extends AbstractController
 
         $membre = $this->agendaService->getUserIdAndTypeBy($agenda_table , $id);
 
-        $notif_service = new NotificationService();
-
         if($user_id != $membre["user_id"]){
 
             $content = $this->tributGService->getFullName($user_id)." ". $verbe ." votre ".$membre["type"]." que vous avez créé.
             <a href='/user/tribut/get-detail-agenda/" .$agenda_table. "/" .$id. "'> Voir plus...</a>";
 
-            $notif_service -> sendNotificationForOne($user_id, $membre["user_id"], "Action agenda", $content );
-
+            $notif_service->sendNotificationForOne($user_id, $membre["user_id"], "Action agenda", $content );
         }
 
         return $this->json("Action bien fait!");

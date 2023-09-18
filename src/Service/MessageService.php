@@ -21,14 +21,15 @@ class MessageService extends PDOConnexionService{
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
                 user_id int(11) NOT NULL,
                 user_post int(11) NOT NULL,
-                content LONGTEXT NOT NULL,
+                content LONGTEXT  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 message_type VARCHAR(100) NOT NULL DEFAULT 'text',
                 isForMe tinyint(1) NOT NULL  DEFAULT '0',
                 isShow tinyint(1) NOT NULL  DEFAULT '0',
                 isRead tinyint(1) NOT NULL  DEFAULT '0',
                 datetime timestamp NOT NULL DEFAULT current_timestamp(),
                 INDEX user_id_index (user_id),
-                INDEX user_post_index (user_post))";
+                INDEX user_post_index (user_post)
+                )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
             
         try {
             $this->getPDO()->exec($sql);

@@ -472,4 +472,16 @@ class GolfFranceRepository extends ServiceEntityRepository
         ->orderBy('g.id',"ASC")
         ->getQuery()->getResult();
     }
+
+    public function getALLGolf(){
+        return $this->createQueryBuilder('g')
+        ->select("g.id as id_etab,".
+                "g.nom_golf as name,".
+                "CONCAT(g.adr1,' ',g.cp, ' ',g.nom_commune) as adresse,".
+                "g.telephone as tel,".
+                "g.nom_dep as departement,".
+                "g.site_web as siteweb"
+        )
+        ->getQuery()->getResult();
+    }
 }

@@ -107,7 +107,7 @@ class AgendaController extends AbstractController
     public function setAgendaConfirmation($fromId,$toId,$agendaId){
 
         $place_libre=$this->agendaService->checkFreePlace(intval($fromId), intval($toId),intval($agendaId));
-       dump(  $place_libre);
+
         if( $place_libre["place_libre"]=== 0){
             return $this->render("agenda/partage/agenda_full_place.html.twig",[
                 "profil" => "",
@@ -214,7 +214,8 @@ class AgendaController extends AbstractController
     #[Route('/api_old/user/agenda/{id}', name: 'api_one_agenda', methods: ["GET"])]
     public function createAgenda(
         $tribut_name,
-        Request $request
+        Request $request,
+        NotificationService $notif_service
     ){
         $user = $this->getUser();
         $user_id = $user->getId();
@@ -244,8 +245,6 @@ class AgendaController extends AbstractController
         $table_tribu = preg_replace($regex, "", $tribut_name);
 
         $membre = $tribu_t_service -> getUserIdInTribu($table_tribu , $user_id);
-
-        $notif_service = new NotificationService();
 
         $content = $tribu_t_service->getFullName($user_id). " a crée un ".$type." à partir du ".$from." au ".$to . " 
         si vous avez interéssé. <a href='/user/tribut/get-detail-agenda/" .$tribut_name. "/" .$id_agenda. "'>Voir plus...</a>";
@@ -449,7 +448,7 @@ class AgendaController extends AbstractController
 
      */
 
-    public function setActionAgenda($table_name, $id, Request $request){
+    public function setActionAgenda($table_name, $id, Request $request, NotificationService $notif_service){
 
         $user = $this->getUser();
 
@@ -505,8 +504,6 @@ class AgendaController extends AbstractController
         $table_agenda = preg_replace($regex, "", $table_name);
 
         $membre = $this->agendaService->getUserIdAndTypeBy($table_agenda , $id);
-
-        $notif_service = new NotificationService();
 
         if($user_id != $membre["user_id"]){
 
@@ -597,7 +594,7 @@ class AgendaController extends AbstractController
 
      */
 
-     public function shareAgenda($type , $table_origin, $id_agenda, $table_dest){
+     public function shareAgenda($type , $table_origin, $id_agenda, $table_dest, NotificationService $notif_service){
         $user = $this->getUser();
 
         $user_id = $user ->getId();
@@ -622,8 +619,6 @@ class AgendaController extends AbstractController
 
         $tribu_t_name = $tribu_t_service->showRightTributName($table_dest)["name"];
 
-        $notif_service = new NotificationService();
-
         if($type=="tribu_g"){
             //$table = $tribu_g;
             $membre = $tribu_t_service -> getUserIdInTribu($tribu_g, $user_id);
@@ -645,8 +640,7 @@ class AgendaController extends AbstractController
             
         }
 
- 
-         return $this->json("Agenda partagé");
+        return $this->json("Agenda partagé");
      }
      
      /**
@@ -665,7 +659,6 @@ class AgendaController extends AbstractController
         $avatar = $tribut_serv->showAvatar($table_tribu, $this->getUser()->getId())["avatar"];
 
         return $this->json(["list"=>$list,"avatar"=>$avatar]);
-
     }
 
     /** 
@@ -808,7 +801,7 @@ class AgendaController extends AbstractController
     public function createEvent(Request $request,AgendaService $agendaService, Filesystem $fs){
         $agendaTableName=$this->getUser()->getNomTableAgenda();
         $req=json_decode($request->getContent(),true);
-        dump($req);
+
         if( str_contains($req["fileType"],"image"))
             $path="/public/uploads/users/agenda/files/img/";
         else if(str_contains($req["fileType"], "application"))
@@ -884,7 +877,7 @@ class AgendaController extends AbstractController
             $date = array_column($final[$i], 'heure_debut');
             array_multisort($date, SORT_ASC, $final[$i]);
        }
-        //dump($final);
+
         $json=$ser->serialize($final,"json");
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -1041,7 +1034,7 @@ class AgendaController extends AbstractController
         if( intval($result) === 0 ){
             /// max participant atteint
             if( !!$isAccepted ){
-                $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheusement le nombre maximum de participant est atteint.";
+                $message= "Vous venez d'accepter un agenda créé par " . $user_sender_fullname . ", malheureusement le nombre maximum de participants est atteint.";
 
                 ////send email que le nombre maximun est atteint.
 
@@ -1452,7 +1445,8 @@ class AgendaController extends AbstractController
     public function getAllEtab(
         SerializerInterface $serializer,
         BddRestoRepository $bdd_resto_rep,
-        $etab
+        $etab,
+        GolfFranceRepository $golfFranceRepository
     ) {
 
         $results= [];
@@ -1464,7 +1458,8 @@ class AgendaController extends AbstractController
         if($etab == "restaurant") {
             $response = $bdd_resto_rep->getAllEtab();
         }elseif ($etab == "golf") {
-            $response = [];
+            $response = $golfFranceRepository->getALLGolf();
+            //$response = [];
         }else{
             $response = [];
         }
@@ -1507,7 +1502,9 @@ class AgendaController extends AbstractController
     public function getAllRestoPastille(
         $etab,
         Tribu_T_Service $tribuTService,
-        BddRestoRepository $bddRestoRepository
+        BddRestoRepository $bddRestoRepository,
+        UserRepository $userRepository,
+        GolfFranceRepository $golfFranceRepository
     ){
 
         $results= [];
@@ -1518,23 +1515,44 @@ class AgendaController extends AbstractController
 
         if($etab == "restaurant") {
             $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+            //// add adress
+            foreach($response as $result){
+
+                $resto = $bddRestoRepository->find(intval($result['id_resto']));
+                
+                if( $resto ){
+                    /*$result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["tel"] = $resto->getTel();
+                    $result["id_etab"] = $resto->getId();
+                    array_push($results, $result);*/
+
+                    $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
+                    $result["id_etab"] = $resto->getId();
+                    $result["tel"] = $resto->getTel();
+                    $result["dep"] = $resto->getDep();
+                    $result["departement"] = $resto->getDepName();
+    
+                    $tribu_t_list = $userRepository->getListTableTribuT();
+
+                    foreach ($tribu_t_list as $key) {
+                        $tableTribu = $key["table_name"];
+                        $logo_path = $key["logo_path"];
+                        $tableExtension = $tableTribu . "_restaurant";
+                        if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
+                            if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
+                                $result["tribu"] = $tableTribu;
+                                $result["logoTribu"] = $logo_path;
+                            }
+                        }
+                    }
+                    array_push($results, $result);
+                }
+            }
         }elseif ($etab == "golf") {
-            $response = [];
+            $response = $golfFranceRepository->getGolfAfaire();
+            $results= $response;
         }else{
             $response = [];
-        }
-
-        //// add adress
-        foreach($response as $result){
-
-            $resto = $bddRestoRepository->find(intval($result['id_resto']));
-            
-            if( $resto ){
-                $result["adresse"]= $resto->getNumvoie() . " " . $resto->getNomvoie() . " " . $resto->getCodpost() . " " . $resto->getVillenorm();
-                $result["tel"] = $resto->getTel();
-                $result["id_etab"] = $resto->getId();
-                array_push($results, $result);
-            }
         }
 
         return $this->json([
@@ -1581,7 +1599,7 @@ class AgendaController extends AbstractController
                             $logo_path = $key["logo_path"];
                             $tableExtension = $tableTribu . "_restaurant";
                             if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
-                                if($tribuTService->checkExtensionId($tableExtension, $resto->getId())){
+                                if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
                                     $result["tribu"] = $tableTribu;
                                     $result["logoTribu"] = $logo_path;
                                 }
@@ -1645,31 +1663,37 @@ class AgendaController extends AbstractController
     /** 
      *
      * 
-     * @Route("/api/agenda/etab/{nom_dep}/{id_dep}/detail/{id_restaurant}", name="api_agenda_detail_etab", methods="GET" )
+     * @Route("/api/agenda/{etab}/{nom_dep}/{id_dep}/detail/{id_etab}", name="api_agenda_detail_etab", methods="GET" )
      */
-    public function detailRestaurant(
-        Request $request,
+    public function detailEtabCMZ(
         BddRestoRepository $bddResto,
+        GolfFranceRepository $golfFranceRepository,
+        $etab,
         $nom_dep,
         $id_dep,
-        $id_restaurant
+        $id_etab
     ): Response {
-        
-        $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
-        if(str_contains($request->getPathInfo(), '/api/restaurant')){
-            return $this->json([
+        $user = $this->getUser();
+        $userID = ($user) ? intval($user->getId()) : null;
+        
+        if($etab == "restaurant") {
+
+            $details= $bddResto->getOneRestaurant($id_dep, $id_etab)[0];
+
+            return $this->render("agenda/detail_resto.html.twig", [
                 "details" => $details,
                 "id_dep" => $id_dep,
                 "nom_dep" => $nom_dep,
-            ], 200);
-        }
+            ]);
 
-        return $this->render("agenda/detail_resto.html.twig", [
-            "details" => $details,
-            "id_dep" => $id_dep,
-            "nom_dep" => $nom_dep,
-        ]);
+        }elseif($etab == "golf"){
+            return $this->render("agenda/details_golf.html.twig", [
+                "id_dep" => $id_dep,
+                "nom_dep" => $nom_dep,
+                "details" => $golfFranceRepository->getOneGolf(intval($id_etab),$userID),
+            ]);
+        }
     }
 
     #[Route("/user/tribu/partage/agenda", name: 'app_partage_agenda')]

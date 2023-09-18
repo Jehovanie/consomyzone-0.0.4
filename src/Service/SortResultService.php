@@ -31,6 +31,8 @@ class SortResultService extends StringTraitementService
 
                 if($nom == $cle0){
                     $levNom = 0;
+                }elseif($this->containsWord($nom, $cle0)){
+                    $levNom = 0.2;
                 }elseif(str_contains($nom, $cle0)){
                     $levNom = 0.5;
                 }elseif($this->permute($decision_nom, $cle0, 0, $n0 - 1, $nom) == 1) {
@@ -47,6 +49,8 @@ class SortResultService extends StringTraitementService
 
                 if($add == $cle1){
                     $levAdresse = 0;
+                }elseif($this->containsWord($add, $cle1)){
+                    $levAdresse = 0.2;
                 }elseif(str_contains($add, $cle1)){
                     $levAdresse = 1;
                 }elseif ($this->permute($decision_addresse, $cle1, 0, $n - 1, $add) == 1) {
@@ -58,32 +62,19 @@ class SortResultService extends StringTraitementService
                 }
 
                 $levTotal = floatval($levAdresse);
-    
-                /*if(array_key_exists("commune", $key)) {
-                    
-                    $commune = $this->removeWhiteSpace($key["commune"]);
-                    $commune = $this->normalizedString($commune);
-                    $levCommune = levenshtein($cle1, $commune);
-    
-                    if(str_contains($key["commune"], $cle1) || floatval($levCommune) <= 3){
-                        $levAdresse = $levCommune;
-                    }
-                }
-    
-                if(array_key_exists("rue", $key)) {
-                    $rue = $this->removeWhiteSpace($key["rue"]);
-                    $rue = $this->normalizedString($rue);
-                    $levRue = levenshtein($cle1, $rue);
-                    if(floatval($levAdresse) > floatval($levRue)){
-                        $levAdresse = $levRue;
-                    }
-                }*/
+
 
             }else{
 
                 /** Classifier % au nom */
-                if(str_contains($nom, $cle0) && $nom == $cle0){
+                /*if($cle0 === "station" || $cle0 === "stations" || $cle0 === "station service" || $cle0 === "stations services" || $cle0 === "ferme" || $cle0 === "fermes" 
+                || $cle0 === "resto" || $cle0 === "restos" || $cle0 === "restaurant" || $cle0 === "restaurants" 
+                || $cle0 === "tabac" || $cle0 === "tabacs" || $cle0 === "golf" || $cle0 === "golfs"){
                     $levNom = 0;
+                }else*/if(str_contains($nom, $cle0) && $nom == $cle0){
+                    $levNom = 0;
+                }elseif($this->containsWord($nom, $cle0)){
+                    $levNom = 0.2;
                 }elseif(str_contains($nom, $cle0)  && $nom != $cle0){
                     $levNom = 0.5;
                 }elseif($this->permute($decision_nom, $cle0, 0, $n0 - 1, $nom) == 1) {
@@ -97,6 +88,8 @@ class SortResultService extends StringTraitementService
                 /** Classifier % à l'adresse */
                 if(str_contains($add, $cle1) && $add == $cle1){
                     $levAdresse = 0;
+                }elseif($this->containsWord($add, $cle1)){
+                    $levAdresse = 0.2;
                 }elseif(str_contains($add, $cle1)  && $add != $cle1){
                     $levAdresse = 1;
                 }elseif ($this->permute($decision_addresse, $cle1, 0, $n - 1, $add) == 1) {
@@ -106,20 +99,6 @@ class SortResultService extends StringTraitementService
                 }else{
                     $levAdresse = levenshtein($cle1, $add);
                 }
-                
-                /** Déduction lev total */
-                /*if(floatval($levNom) <= 0.5 && floatval($levAdresse) >= 1){
-                    $levTotal = floatval($levNom);
-                }elseif(floatval($levNom) >= 0.5 && floatval($levAdresse) == 0){
-                    $levTotal = floatval($levAdresse);
-                }elseif(floatval($levNom) >= 0.5 && floatval($levAdresse) == 0){
-                    $levTotal = floatval($levAdresse);
-                }elseif(floatval($levNom) > 1 && floatval($levAdresse) <= 1){
-                    $levTotal = floatval($levAdresse);
-                }else{
-                    $levTotal = floatval($levNom) + floatval($levAdresse);
-                }*/
-
                 
                 if(floatval($levNom) == 0 && floatval($levAdresse) == 0){
                     $levTotal = 0;
@@ -155,28 +134,6 @@ class SortResultService extends StringTraitementService
 
         return $results;
     }
-
-    /*function permute(&$boolean,$str, $l, $r, $str2) 
-    {
-
-        if($l == $r){
-            if(str_contains($str2, $str)){       
-                $boolean= true;
-            }
-
-        }
-        else{
-            for ($i = $l; $i <= $r; $i++) { 
-                $str = $this->swap($str, $l, $i); 
-                $this->permute($boolean,$str, $l + 1, $r, $str2);
-                if ($boolean == true) {
-                    break;
-                }
-                
-            } 
-        }
-        return  $boolean;
-    } */
 
     function permute(&$decision,$str, $l, $r, $str2) 
     {
@@ -230,4 +187,10 @@ class SortResultService extends StringTraitementService
         }
         return $array;
     }
+
+    function containsWord($haystack, $needle)
+    {
+        return preg_match("/\b{$needle}\b/", $haystack) === 1;
+    }
+
 }

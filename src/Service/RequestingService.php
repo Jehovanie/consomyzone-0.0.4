@@ -27,7 +27,7 @@ class RequestingService extends PDOConnexionService
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
                 user_post int(11) NOT NULL,
                 user_received int(11) NOT NULL,
-                content TEXT NULL,
+                content TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
                 types VARCHAR(200) NOT NULL,
                 is_wait TINYINT(1) DEFAULT '1',
                 is_accepted TINYINT(1) DEFAULT '0',
@@ -36,7 +36,7 @@ class RequestingService extends PDOConnexionService
                 is_tribu TINYINT(1) DEFAULT '0',
                 is_friend TINYINT(1) DEFAULT '0',
                 balise VARCHAR(200) NOT NULL
-               ) ENGINE=InnoDB";
+               ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
         try {
             $this->getPDO()->exec($sql);

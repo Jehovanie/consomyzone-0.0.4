@@ -1112,7 +1112,7 @@ class BddRestoRepository extends ServiceEntityRepository
                 CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as adresse"
             )
             ->orderBy('RAND()')
-            ->setMaxResults(20)
+            ->setMaxResults(100)
             ->getQuery()
             ->getResult();
     }

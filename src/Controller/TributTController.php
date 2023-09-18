@@ -164,8 +164,6 @@ class TributTController extends AbstractController
 
         }
 
-
-
         return $this->render('tribu_t/add-member.html.twig', [
 
             "message" => $flushMessage, "isSuccess" => $isSuccess, "profil" => $profil, "tribu" => $tribu,
@@ -186,10 +184,6 @@ class TributTController extends AbstractController
         $json = $serializer->serialize($results, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
-
-
-    
-
 
 
     #[Route('/user/get/comment/pub', name: "user_get_comment_pubss",methods:["GET"])]
@@ -250,8 +244,6 @@ class TributTController extends AbstractController
         $fileUtils = new FilesUtils();
         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
 
-
-        
         foreach ($userTribu_T["tribu_t"] as $k =>$v) {
             if(is_array($v)){
                 if (in_array($tribu_t_name, $v)) {
@@ -317,18 +309,13 @@ class TributTController extends AbstractController
 
         $tableName,
 
-        RequestingService $requestingService
-
+        RequestingService $requestingService,
+        NotificationService $notif_service
     ): Response
 
     {
 
         $tribut = new Tribu_T_Service();
-
-
-
-        $notif_service = new NotificationService();
-
 
 
         $tableNotif = "tablenotification_" . $user_id;
@@ -400,23 +387,11 @@ class TributTController extends AbstractController
 
     #[Route('/user/tribu/reject/{tableName}/{user_id}/{notif_id}', name: 'reject_invitation')]
 
-    public function rejectInvitation($tableName, $user_id, $notif_id): Response
-
+    public function rejectInvitation($tableName, $user_id, $notif_id, NotificationService $notif_service): Response
     {
-
-
-
-        $notif_service = new NotificationService();
-
-
-
         $tableNotif = "tablenotification_" . $user_id;
 
-
-
         $notif_service->rejectNotification($tableNotif, $notif_id);
-
-
 
         $tribut = new Tribu_T_Service();
 
@@ -663,6 +638,7 @@ class TributTController extends AbstractController
 
     }
 
+    
     #[Route('/user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
     public function showTribu_T_specifique($name_tribu_t,
     Tribu_T_Service $tribu_t_serv,
@@ -673,9 +649,12 @@ class TributTController extends AbstractController
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * 
+     */
     #[Route('/user/tribu/publication/{table}', name: 'publication_tribu')]
 
-    public function index($table, Request $request, TributGService $tributGService): Response
+    public function index($table, Request $request, TributGService $tributGService, NotificationService $notifService): Response
 
     {
 
@@ -717,11 +696,6 @@ class TributTController extends AbstractController
 
 
         $notif_id = $request->query->get("notif_id");
-
-
-
-        $notifService = new NotificationService();
-
 
 
         $notifService->updateNotificationIsread($notif_id, $user_id);
@@ -776,7 +750,7 @@ class TributTController extends AbstractController
 
                 "table_pub" => $table,
 
-                "publication" => $key["publication"],
+                "publication" => json_decode($key["publication"],true),
 
                 "confidentiality" => $key["confidentiality"],
 
@@ -955,7 +929,7 @@ class TributTController extends AbstractController
 
      */
 
-    public function saveComment(Request $request)
+    public function saveComment(Request $request, NotificationService $notification)
 
     {
 
@@ -1022,19 +996,9 @@ class TributTController extends AbstractController
 
         $tribut->createComent($table_com, $user_id, $pub_id, $new_comment, $audioname);
 
-
-
-        $notification = new NotificationService();
-
-
-
         $type = "commentaire";
 
-
-
         $publicationUrl = "#pub_number_".$pub_id;
-
-
 
         $contentForDestinator = $tribut->getFullName($user_id) . " a commenté votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
 
@@ -1128,7 +1092,7 @@ class TributTController extends AbstractController
 
      */
 
-    public function saveReaction(Request $request)
+    public function saveReaction(Request $request, NotificationService $notification)
 
     {
 
@@ -1148,31 +1112,15 @@ class TributTController extends AbstractController
 
         $table_reaction = $requestContent["table_reaction"];
 
-
-
         $user_id_pub = $requestContent["user_id_pub"];
-
-
 
         $regex = "/\_reaction+$/";
 
-
-
         $tribuTable = preg_replace($regex, "", $table_reaction);
-
-
 
         $tribut = new Tribu_T_Service();
 
-
-
-        $notification = new NotificationService();
-
-
-
         $type = "reaction";
-
-
 
         $publicationUrl = "#pub_number_".$pub_id;
 
@@ -1329,28 +1277,19 @@ class TributTController extends AbstractController
     /**
      * @Route("user/tribu/send/invitation" , name="invitation_tribu_g")
      */
-    public function sendInvitation(Request $request): Response
+    public function sendInvitation(Request $request, NotificationService $notification, TributGService $tribu_g, Tribu_T_Service $tribu_t ): Response
     {
         $user = $this->getUser();
-
         $userId = $user->getId();
         
         $requestContent = json_decode($request->getContent(), true);
-
         $table = $requestContent["table"];
 
-        $notification = new NotificationService();
-
-        $tribu_g = new TributGService();
-
         $tribu_g_table = $tribu_g->getTribuGtableForNotif($userId);
-
         $members = $tribu_g->getAllTributG($tribu_g_table);
 
-        $tribu_t = new Tribu_T_Service();
 
         $userFullname = $tribu_t->getFullName($userId);
-
         $tribu_name = $tribu_t->showRightTributName($table);
 
         $type = "invitation";
@@ -1393,19 +1332,19 @@ class TributTController extends AbstractController
     /**
      * @Route("user/tribu/send/one-invitation" , name="invitation_partisan")
      */
-    public function sendOneInvitation(Request $request): Response
+    public function sendOneInvitation(Request $request, NotificationService $notification ): Response
     {
         $requestContent = json_decode($request->getContent(), true);
 
         $table = $requestContent["table"];
+        
+        $nomTribu = $requestContent["nom"];
 
         $id_receiver = $requestContent["user_id"];
 
         $user = $this->getUser();
 
         $userId = $user->getId();
-
-        $notification = new NotificationService();
 
         $tribu_t = new Tribu_T_Service();
 
@@ -1414,7 +1353,7 @@ class TributTController extends AbstractController
         //$tribu_name = $tribu_t->showRightTributName($table);
 
         // $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]) . "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
-        $contentForDestinator = " vous a envoyé une invitation de rejoindre la tribu " . $table;
+        $contentForDestinator = " vous a envoyé une invitation de rejoindre la tribu " . $nomTribu;
         
         $type = "invitation";
 
@@ -1423,7 +1362,7 @@ class TributTController extends AbstractController
         $isMembre = $tribu_t->testSiMembre($table, $id_receiver);
 
         if ($isMembre == "not_invited") {
-            $contentForSender = "Vous avez envoyé une invitation à " .$tribu_t->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+            $contentForSender = "Vous avez envoyé une invitation à " .$tribu_t->getFullName($id_receiver). " de rejoindre la tribu ". $nomTribu;
             $tribu_t->addMember($table, $id_receiver);
             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
@@ -1438,7 +1377,7 @@ class TributTController extends AbstractController
 
     #[Route('/user/tribu/invitation', name: 'show_invitation')]
 
-    public function showInvitation(Request $request, TributGService $tributGService)
+    public function showInvitation(Request $request, TributGService $tributGService, NotificationService $notifService)
 
     {
 
@@ -1476,19 +1415,9 @@ class TributTController extends AbstractController
         $isMember = $tribu_t->testSiMembre($tribu, $userId);
 
 
-
-        $notifService = new NotificationService();
-
-
-
         $notifService->updateNotificationIsread($notif_id, $userId);
 
-
-
         $profil = "";
-
-
-
         if ($userType == "consumer") {
 
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
@@ -2046,8 +1975,13 @@ class TributTController extends AbstractController
                 "extensionData"=>$data["extensionData"]
             );
           
-            $this->createTribu_T($body, $stringTraitementService);
-            $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
+            $bool=$this->createTribu_T($body, $stringTraitementService);
+            if($bool){
+                $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
+            }else{
+                $message = "Tribu " . $data["tribuTName"] . " existe déjà.";
+            }
+            
             
             return $this->redirectToRoute("app_my_tribu_t" ,["message" => $message]);
       
@@ -2172,10 +2106,14 @@ class TributTController extends AbstractController
         
         $result=$bddResto->findRestoByName($name);
         $json=$serializer->serialize($result,'json');
-        // dd($json);
+        
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
-    //,  TributGService $tributGService
+    
+    /**
+     * @author  Tommy <tommyramihoatrarivo@gmail.com>
+     * create  tribu-t
+     */
     public function createTribu_T($body, $stringTraitementService)
 
     {
@@ -2187,11 +2125,20 @@ class TributTController extends AbstractController
         if (!is_null($body)) {
            
                 $resto = $body['extension'];
+                
                 $path  =   $body['path'];
-                $nom = $body["tribu_t_name"];
+                /*$nom est une variable qui designe une table dans la  base de donneé de CMZ, 
+                Elle ne peut pas être modifier par l'user ou par le devellopeur , sous risque d'un grand systemique.
+                Au début $nom et $nomTribuT on la même valeur*/
+                $nom = $body["tribu_t_name"]; 
                 $nom = str_replace("'", "$", $nom);
+                
+                /*$nomTribuT est une varibale mutable c-a-d peut être modifier par l'user et le dev 
+                  Au début $nom et $nomTribuT on la même valeur
+                */
+                $nomTribuT=$body["tribu_t_name"]; 
                 $description = str_replace("'", "$", $body["description"]);
-
+               
                 $tableName = $stringTraitementService->normalizedString($nom);
                 $tableName = str_replace(" ","_", strtolower($tableName));
                 $tableName = strlen($tableName) > 30 ? substr($tableName,0,30) : $tableName;
@@ -2205,8 +2152,8 @@ class TributTController extends AbstractController
                 if ($output != 0) {
 
                     $restoExtension = ($resto == "on") ? "restaurant" : null;
-
-                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned");
+                   
+                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned", $nomTribuT);
 
                     $isSuccess = true;
 
@@ -2241,6 +2188,56 @@ class TributTController extends AbstractController
                 }
             
         }
+
+    }
+
+    #[Route("/user/tribu/update-tribu_t-info", name: "update_my_tribu_t")]
+    public function updateTribuTInfos
+    (Tribu_T_Service $tribu_T_Service, 
+    Request $request,
+    Filesystem $filesyst,
+    UserRepository $userRepository
+    ){
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $jsonParsed=json_decode($request->getContent(),true);
+
+        extract($jsonParsed);
+
+        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
+
+        $imgURL = null;
+        if($photoName != ""){
+            if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    
+            $fileUtils = new FilesUtils();
+    
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $base64, time().$photoName);
+
+            $imgURL = $path.time().$photoName;
+        }
+
+        $member = $tribu_T_Service->showMember($tableTribuT);
+        
+        foreach ($member as $user) {
+            if($user["user_id"] == $userId){
+                $tribu_T_Service->updateTribuTInfos($tableTribuT, $description, $imgURL, $extension, $userId, "tribu_t_owned", $nomTribuT);
+            }else{
+                $tribu_T_Service->updateTribuTInfos($tableTribuT, $description, $imgURL, $extension, $user["user_id"], "tribu_t_joined", $nomTribuT);
+            }
+        }
+
+        if ($extension == "on") {
+
+            $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "restaurant");
+
+            $tribu_T_Service->createTableComment($tableTribuT, "restaurant_commentaire");
+        }
+
+        return $this->json("Information modifié avec succès");
 
     }
 
@@ -2391,6 +2388,8 @@ class TributTController extends AbstractController
 
         return $this->json($keyValueDep);
     }
+
+    
 
 }
 

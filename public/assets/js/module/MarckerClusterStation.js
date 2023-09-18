@@ -126,9 +126,10 @@ class MarckerClusterStation extends MapModule  {
 
     addMarker(newData) {
         newData.forEach(item => {
+           
             let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
             let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id });
-
+            
             ////================ POPUP WHEN OPEN =================================================================
             // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 

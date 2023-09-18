@@ -138,6 +138,7 @@ class RestaurantController extends AbstractController
         }
 
         $datas = $serialize->serialize($bddResto->getSomeDataShuffle(2000), 'json');
+
         return new JsonResponse($datas, 200, [], true);
     }
 
@@ -675,7 +676,7 @@ class RestaurantController extends AbstractController
                 $logo_path = $key["logo_path"];
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                    if(!$tribu_T_Service->checkExtensionId($tableExtension, $details["id"])){
+                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"])){
                         array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path]);
                     }else{
                         array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path]);
@@ -690,7 +691,7 @@ class RestaurantController extends AbstractController
                 $logo_path = $key["logo_path"];
                 $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
-                    if($tribu_T_Service->checkExtensionId($tableExtensionTbtJoined, $details["id"])){
+                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"])){
                         array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path]);
                     }
                 }
@@ -699,6 +700,7 @@ class RestaurantController extends AbstractController
         }
 
         return $this->render("restaurant/detail_resto.html.twig", [
+            "id_restaurant"=>$id_restaurant,
             "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
@@ -711,7 +713,39 @@ class RestaurantController extends AbstractController
         ]);
     }
 
+    /*
+    *use this API to know what tribu T had pastilled an rastaurant or not
+    *DON'T CHANGE THIS ROUTE: It's use in js file.
+    */
+    #[Route("/restaurant/pastilled/checking/{idRestaurant}", name:"app_resto_pastilled_checked",methods:["GET"])]
+    public function checkedIfRestaurantIsPastilled($idRestaurant,
+    UserRepository $userRepository,
+    Tribu_T_Service $tribu_T_Service,
+    SerializerInterface $serializerInterface
+    ){
+        $arrayTribu = [];
+        if($this->getUser()){
 
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+            
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"]:null;
+                $tableExtension = $tableTribu . "_restaurant";
+                if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
+                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant)){
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path,"isPastilled"=>false]);
+                    }else{
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled"=>true]);
+                    }
+                }
+            }
+        }
+
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
+    }
 
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 

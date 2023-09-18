@@ -1,4 +1,4 @@
-<div id="{{tribu.table ~ '_' ~ publication.id}}" data-name = "{{tribu.table}}" data-id="{{publication.id}}" data-confid="{{publication.confidentiality}}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+<div id="{{tribu.table ~ '_' ~ publication.id}}" data-name = "{{tribu.table}}" data-id="{{publication.id}}" data-confid="{{publication.confidentiality}}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5  pub_{{tribu.table}}_{{publication.id}}_jheo_js">
     <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" >
         <div class="head-pub content_header_pub">
             <div class="content_pub_info">
@@ -71,11 +71,16 @@
         </div>
 
         <div class="card-reaction">
+            <p class="text-comment content_nbr_comment_jheo_js">
+                <span class="nbr_comment_jheo_js">{{ publication.comments|length ~ (publication.comments|length > 1 ? " commentaires" : " commentaire" ) }} </span>
+            </p>
+
             {# <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p> #}
             <div class="reaction-icon d-flex">
                 <i class="bi-heart like non_active"></i>
                 {# <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i> #}
-                <i class="fa-regular fa-comment comment non_active"></i>
+                {# <i class="fa-regular fa-comment comment non_active"></i> #}
+                <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i>
             </div>
         </div>
         

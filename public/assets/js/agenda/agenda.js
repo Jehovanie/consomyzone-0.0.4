@@ -80,10 +80,10 @@ if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.quer
     cta_cancel_create_agenda.forEach(item => {
         item.addEventListener("click", () => {
             initInputForm()
+              
         })
     })
 }
-
 
 //// PUSH NEW AGENT -----------------------------------------------------------
 if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
@@ -260,7 +260,8 @@ function bindEventForAllDay(info) {
     ///show modal
     //document.querySelector('.show_modal_createAgenda_jheo_js').click()
     $("#createAgenda").modal("show")
-
+    document.querySelector("#createOrEditBtn").disabled = false
+    document.querySelector("#deleteAgendaBtn").disabled = false
     if (document.querySelector('#createOrEditBtn').textContent.toLowerCase().trim() == "modifier") {
         initInputForm()
     }
@@ -303,6 +304,14 @@ function setAndShowModal(agenda) {
 
     if (document.querySelector("#deleteAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#deleteAgendaBtn").classList.remove("d-none")
+    }
+
+    if (agenda.user_id == document.querySelector("#createOrEditBtn").dataset.usi) {
+        document.querySelector("#createOrEditBtn").disabled = false
+        document.querySelector("#deleteAgendaBtn").disabled = false
+    }else{
+        document.querySelector("#createOrEditBtn").disabled = true
+        document.querySelector("#deleteAgendaBtn").disabled = true
     }
 
     if (document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
@@ -629,6 +638,8 @@ function deleteAgenda() {
                     .then(response => response.json())
                     .then(response => {
                         $("#createAgenda").modal("hide")
+                        document.querySelector("#createOrEditBtn").disabled = false
+                        document.querySelector("#deleteAgendaBtn").disabled = false
                         swal("Bravo !", response.message, "success")
                             .then((value) => {
                                 location.reload();
@@ -669,13 +680,15 @@ function activeOnglet(elem) {
         
         elem.classList.add("active")
         
-        let cmzEtab = ""
+        /*let cmzEtab = ""
 
         if (elem.dataset.name == "golf") {
             cmzEtab = "golf"
         } else if (elem.dataset.name == "restaurant") {
             cmzEtab = "restaurant"
-        }
+        }*/
+
+        let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
 
         if (elem.parentElement.nextElementSibling) {
             elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
@@ -855,6 +868,9 @@ function showDepModal() {
 
     $("#createAgenda").modal("hide")
 
+    document.querySelector("#createOrEditBtn").disabled = false
+    document.querySelector("#deleteAgendaBtn").disabled = false
+
     getListDep(container)
 
     document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
@@ -889,6 +905,9 @@ function showDepModalGol() {
     navLinksModal[1].textContent = "Golfs à faire"
 
     $("#createAgenda").modal("hide")
+
+    document.querySelector("#createOrEditBtn").disabled = false
+    document.querySelector("#deleteAgendaBtn").disabled = false
     
     getListDep(container)
 
@@ -1013,27 +1032,50 @@ function getAllEtab(etab, isPast, element) {
 
     let request = "";
     let id = element.dataset.id
+
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
     if (isPast) {
-        request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
+        if(id !=""){
+            request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+            console.log("id: "+id)
+        }else{
+            console.log("id: Tsisy")
+            request = new Request(`/api/user/agenda/get/${etab}/pastille`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+        }
         if (!tabEtab[1].classList.contains("active")) {
             tabEtab[1].classList.add("active")
             tabEtab[0].classList.remove("active")
         }
     } else {
-        request = new Request(`/api/user/agenda/get/${etab}/dep/${id}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
+        if(id !=""){
+            request = new Request(`/api/user/agenda/get/${etab}/dep/${id}`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+        }else{
+            request = new Request(`/api/user/agenda/get/all/${etab}`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+        }
         if (!tabEtab[0].classList.contains("active")) {
             tabEtab[0].classList.add("active")
             tabEtab[1].classList.remove("active")
@@ -1471,9 +1513,11 @@ function getListArrondissement(container, dep) {
 
 }
 
-function showEtabDetail( event,nom_dep, id_dep, id_restaurant) {
+function showEtabDetail(event,nom_dep, id_dep, id_etab) {
 
-    const request = new Request(`/api/agenda/etab/${nom_dep}/${id_dep}/detail/${id_restaurant}`)
+    let etab = document.querySelector("#hiddenListDep").dataset.etab
+    
+    const request = new Request(`/api/agenda/${etab}/${nom_dep}/${id_dep}/detail/${id_etab}`)
 
     fetch(request)
         .then(res => res.text()).then(html => {
@@ -1494,6 +1538,7 @@ function showEtabDetail( event,nom_dep, id_dep, id_restaurant) {
                                     </div>`
             document.querySelector("#detailEtabModal .modal-body").innerHTML = html
         });
+    
 }
 
 function initInputForm() {
@@ -1549,12 +1594,6 @@ function initInputForm() {
 if(document.querySelector("#shareAgendaBtn")){
     document.querySelector("#shareAgendaBtn").addEventListener("click", (e)=>{
         e.preventDefault()
-        // console.log(e.target.dataset.agenda);
-        // let data = JSON.parse(e.target.dataset.agenda)
-        // console.log(data);
-        // console.log("id = " + data.id);
-        // console.log("title = " + data.title);
-        // console.log("description = " + data.description);
         sessionStorage.setItem("agenda", e.target.dataset.agenda);
     })
 }
@@ -1920,8 +1959,14 @@ function putInputOnDataTableHeader(selector,colIdx,api){
         });
 }
 
-function findEtabByKey(e){
+function findEtabByKey(e,isHasDep){
+    makeLoading()
     let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
+    // element.dataset.id
+    if(!isHasDep){
+        document.querySelectorAll("#smallNavInvitation > li > a")[0].dataset.id = ""
+        document.querySelectorAll("#smallNavInvitation > li > a")[1].dataset.id = ""
+    }
     let cles0 = ""
     let cles1 = ""
     if(e.target.nextElementSibling){

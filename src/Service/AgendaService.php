@@ -468,7 +468,6 @@ class AgendaService extends PDOConnexionService
      */
 
     public function createEvent($nom_table_agenda,$agenda) {
-
         extract($agenda); //// $title, $message, $type, $status, $restaurant, $adresse, $file_type, $file_path, $dateStart, $dateEnd, $heureStart, $heureEnd, $participant
 
         $statement = $this->getPDO()->prepare(
@@ -723,8 +722,8 @@ class AgendaService extends PDOConnexionService
     public function createTableAgenda($table_agenda_name){
         $sql= "CREATE TABLE $table_agenda_name (".
             "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
-            "`title` varchar(255) NOT NULL,".
-            "`description` text NOT NULL,".
+            "`title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
+            "`description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
             "`type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
             "`adresse` varchar(255) NOT NULL,".
@@ -907,13 +906,17 @@ class AgendaService extends PDOConnexionService
 
         foreach($arrayAssUserId as $ass_userID ){
             $sql = "INSERT INTO $table_agenda_partage_name (`agenda_id`, `user_id`) VALUES (?,?)";
-           
+            $sql= "INSERT INTO  $table_agenda_partage_name (agenda_id,user_id)
+            SELECT agenda_id,user_id 
+            FROM (SELECT :agenda_id as agenda_id,:user_id as user_id)  as tmp
+            WHERE NOT EXISTS (SELECT 1 FROM $table_agenda_partage_name ag WHERE ag.agenda_id = tmp.agenda_id and ag.user_id=tmp.user_id);";
             $stmt = $this->getPDO()->prepare($sql);
             $userReceiverId=intval($ass_userID);
-            $stmt->bindParam(1, $agendaID, PDO::PARAM_INT);
-            $stmt->bindParam(2, $userReceiverId ,PDO::PARAM_INT);
+            $stmt->bindParam(":agenda_id", $agendaID, PDO::PARAM_INT);
+            $stmt->bindParam(":user_id", $userReceiverId ,PDO::PARAM_INT);
 
             $stmt->execute();
+
         }
     }
 
@@ -932,31 +935,30 @@ class AgendaService extends PDOConnexionService
      *                      0 : max participant attteint
      *                      1 : agenda accepter;
      */
-    public function setConfirmPartageAgenda( $userID_sender, $userID_receiver, $agendaID,$response){
+    public function setConfirmPartageAgenda($userID_sender, $userID_receiver, $agendaID,$response){
 
         $agenda_tabl_sender= "agenda_" . $userID_sender;
         $agenda_tabl_receiver= "agenda_" . $userID_receiver;
         $agenda_partage_table= "partage_agenda_" . $userID_sender;
         $accepted=intval($response);
+        $isAllReadyAccepted=$this->isAlreadyAccepted($userID_sender, $userID_receiver, $agendaID);
         $userID_receiver=intval($userID_receiver);
         $agendaID=intval($agendaID);
-        if(intval($response) === 1){
-            
-            
+        if(intval($response) === 1 && !$isAllReadyAccepted){
+                        
             $place_Libre=$this->checkFreePlace($userID_sender, $userID_receiver,  $agendaID)["place_libre"];
             
             $place_libre_new=$place_Libre-1;
             
-
-            $sql1="UPDATE $agenda_tabl_sender set place_libre= :place_libre WHERE id = :agenda_id ";
+            $sql1="UPDATE $agenda_tabl_sender set place_libre= :place_libre WHERE id = :agenda_id";
             $stmnt=$this->getPDO()->prepare($sql1);
             $stmnt->bindParam(":place_libre",$place_libre_new);
             $stmnt->bindParam(":agenda_id", $agendaID);
             $stmnt->execute();
-            
-           
             $rowInAgenda=$this->getAgendaBYIDPartage($agenda_tabl_sender,$agendaID);
-            dump($rowInAgenda);
+
+            
+
             $this->createEvent($agenda_tabl_receiver,$rowInAgenda);
             
             
@@ -968,8 +970,11 @@ class AgendaService extends PDOConnexionService
             $stmnt2->bindParam(":user_id", $userID_receiver, PDO::PARAM_INT);
             $stmnt2->execute();
 
-            return array("response"=>"Accepted");
-        }else if (intval($response) === 0){
+            return array("response"=>"accepted");
+
+        }elseif(intval($response) === 1 &&  $isAllReadyAccepted){
+            return array("response"=>"already_accepted");
+        }elseif (intval($response) === 0){
 
             $sql2="UPDATE $agenda_partage_table set accepted= :accepted WHERE agenda_id = :agenda_id AND user_id = :user_id";
             $stmnt2=$this->getPDO()->prepare($sql2);
@@ -982,6 +987,25 @@ class AgendaService extends PDOConnexionService
             return array("response"=>"Rejected");
         }
        
+    }
+
+    /**
+     * @author NANTENAINA <email>
+     * check if accepted
+     */
+    function isAlreadyAccepted($userID_sender, $userID_receiver, $agendaID){
+        $agenda_partage_table= "partage_agenda_" . $userID_sender;
+        
+        // check if already
+        $sql="SELECT accepted FROM $agenda_partage_table WHERE agenda_id = :agenda_id AND user_id = :user_id";
+        $agendaID = intval($agendaID);
+        $userID_receiver = intval($userID_receiver);
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->bindParam(":agenda_id", $agendaID, PDO::PARAM_INT);
+        $stmt->bindParam(":user_id", $userID_receiver, PDO::PARAM_INT);
+        $stmt->execute();
+        $isAccepted =  $stmt->fetch(PDO::FETCH_ASSOC);
+        return intval($isAccepted["accepted"]) === 1 ? true: false;
     }
 
 
