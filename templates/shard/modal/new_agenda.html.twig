@@ -89,7 +89,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="signinWithGoogleService()">Ajouter à votre Google Agenda</button>
         <button type="button" class="btn btn-info d-none" id="shareAgendaBtn"  data-bs-target="#confirmPartageAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Partager</button>
         <button type="button" class="btn btn-danger d-none" id="deleteAgendaBtn" onclick="deleteAgenda()">Supprimer</button>
         <button type="button" data-action="create" class="btn btn-primary" onclick="getObjectForNewAgenda(event)" id="createOrEditBtn" data-usi="{{app.user.id}}" >Créer</button>
@@ -327,26 +326,6 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{# MODAL CONFIRM ADD AGENDA TO GOOGLE CALENDAR #}
-<button id="btnClickModal" class="d-none" data-bs-target="#openModalForGoogleCalendar" data-bs-toggle="modal" data-bs-dismiss="modal"></button>
-<div class="modal fade" id="openModalForGoogleCalendar" aria-hidden="true" aria-labelledby="openModalForGoogleCalendar_label" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Voulez-vous ajouter cet événement à votre google agenda</h5>
-        <button type="button" class="btn-close" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          Si vous cliquez sur "Oui", l'événement sera ajouté dans votre google agenda
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="addToGoogleCalendar()">Oui</button>
-        <button type="button" class="btn btn-danger" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Non</button>
       </div>
     </div>
   </div>
