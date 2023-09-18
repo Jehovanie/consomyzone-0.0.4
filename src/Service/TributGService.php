@@ -861,7 +861,7 @@ class TributGService extends PDOConnexionService{
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => json_decode($d_pub['publication'], true ), //// when get, must decode
+                        "description" => $this->convertUnicodeToUtf8($d_pub['publication'] ), //// when get, must decode
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,
@@ -1050,7 +1050,7 @@ class TributGService extends PDOConnexionService{
 
 
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname) values (:user_id, :pub_id, :commentaire, :userfullname)");
 
 
 
@@ -1062,7 +1062,7 @@ class TributGService extends PDOConnexionService{
 
         $statement->bindParam(':userfullname', $userfullname);
 
-        $statement->bindParam(':audioname', $audioname);
+        // $statement->bindParam(':audioname', $audioname);
 
         
 
@@ -1092,13 +1092,13 @@ class TributGService extends PDOConnexionService{
 
         $userfullname = $this->getFullName($userID);
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname) values (:user_id, :pub_id, :commentaire, :userfullname)");
 
         $statement->bindParam(':user_id', $userID);
         $statement->bindParam(':pub_id', $publication_id);
         $statement->bindParam(':commentaire', $comment);
         $statement->bindParam(':userfullname', $userfullname);
-        $statement->bindParam(':audioname', $audioname);
+      
 
         return $statement->execute();
     }

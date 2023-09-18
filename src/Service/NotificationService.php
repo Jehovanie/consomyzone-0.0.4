@@ -296,7 +296,7 @@ class NotificationService extends PDOConnexionService{
         $results = [];
 
         foreach( $notifications as $item ){
-            $item["content"] = json_decode($item["content"], true) != null ? json_decode($item["content"], true) : $item["content"];
+            $item["content"] = $this->convertUnicodeToUtf8($item["content"]);
 
             $userType= $item["type"];
             $userId= $item["user_post"];

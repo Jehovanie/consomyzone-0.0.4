@@ -11,7 +11,7 @@ var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worke
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 // var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
+// var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t
 var descriptionTribuT = ""
 /**
@@ -544,6 +544,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
             let confidentiality = parseInt(data[i].confidentiality, 10);
             let contentPublication = ""
+           
             if (confidentiality === 1) {
 
                 let changeVisibility = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -578,7 +579,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                         </span>
                                     </div>` : ""
 
-
+               
                 contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
@@ -608,7 +609,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js"> ${ data[i].nbr}  ${ data[i].nbr > 0 ?  " commentaires" : " commentaire" } </span>
+                                                        <span class="nbr_comment_jheo_js"> ${ dataNbr} commentaire(s)</span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
@@ -710,7 +711,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js"> ${ data[i].nbr}  ${ data[i].nbr > 0 ?  " commentaires" : " commentaire" } </span>
+                                                        <span class="nbr_comment_jheo_js">  ${ dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
@@ -850,7 +851,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js"> ${ data[i].nbr}  ${ data[i].nbr > 0 ?  " commentaires" : " commentaire" } </span>
+                                                        <span class="nbr_comment_jheo_js"> ${ dataNbr} commentaire(s) </span>
                                                     </p>
 
                                                     <div class="reaction-icon d-flex">

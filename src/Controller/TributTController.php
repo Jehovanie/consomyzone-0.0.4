@@ -638,6 +638,7 @@ class TributTController extends AbstractController
 
     }
 
+    
     #[Route('/user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
     public function showTribu_T_specifique($name_tribu_t,
     Tribu_T_Service $tribu_t_serv,
@@ -648,6 +649,9 @@ class TributTController extends AbstractController
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * 
+     */
     #[Route('/user/tribu/publication/{table}', name: 'publication_tribu')]
 
     public function index($table, Request $request, TributGService $tributGService, NotificationService $notifService): Response
@@ -746,7 +750,7 @@ class TributTController extends AbstractController
 
                 "table_pub" => $table,
 
-                "publication" => $key["publication"],
+                "publication" => json_decode($key["publication"],true),
 
                 "confidentiality" => $key["confidentiality"],
 

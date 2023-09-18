@@ -13,8 +13,12 @@ use App\Repository\BddRestoRepository;
 class Tribu_T_Service extends PDOConnexionService
 {
     
+
+    
+    
     /**
      * create data_base table tribu-T
+     * 
      */
     public function createTribuTable($tableName, $user_id, $name, $description)
 
@@ -506,7 +510,12 @@ class Tribu_T_Service extends PDOConnexionService
             //use these param if don't wont escape unicode JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
             $array1= json_encode($array);
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array1 ."' WHERE id  = $userId");
+            // $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $array1 ."' WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
+            $statement->bindParam(":jsonArray",$array1);
+            $statement->bindParam(":userid",$userId);
+
+            
 
         } else {
             $array1= json_decode($list, true);
@@ -531,10 +540,13 @@ class Tribu_T_Service extends PDOConnexionService
             
             //use these param if don't wont escape unicode JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
             $jsontribuT = json_encode($array);
-            $jsontribuT=str_replace("\\u","\\u",$jsontribuT);
+            // $jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
             // dd($jsontribuT);
-            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $jsontribuT."' WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
+            $statement->bindParam(":jsonArray",$jsontribuT);
+            $statement->bindParam(":userid",$userId);
 
+          
         }
 
         $statement->execute();
@@ -612,9 +624,15 @@ class Tribu_T_Service extends PDOConnexionService
             
             $jsontribuT = json_encode($array);
 
-            $jsontribuT=str_replace("\\u","\\u",$jsontribuT);
+            //$jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join ='". $jsontribuT."' WHERE id  = $userId");
+            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
+            $statement->bindParam(":jsonArray",$jsontribuT);
+            $statement->bindParam(":userid",$userId);
+
+            // $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = `".$jsontribuT."` WHERE id  = $userId");
+            // // $statement->bindParam(":jsonArray",$jsontribuT);
+            // $statement->bindParam(":userid",$userId);
 
             $statement->execute();
 
@@ -624,12 +642,17 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
+    /**
+     * TODO
+     */
     function getTribuTInfo($tribu_t_name){
 
         $sql="SELECT *,tribu.roles as tribu_t_roles FROM $tribu_t_name as tribu LEFT JOIN user as u ON u.id=tribu.user_id WHERE tribu.roles = 'Fondateur'" ;
         $exec=$this->getPDO()->prepare($sql);
         $exec->execute();
         return $resultat = $exec->fetch(PDO::FETCH_ASSOC);
+        
+       
 
     }
 
@@ -1457,15 +1480,18 @@ class Tribu_T_Service extends PDOConnexionService
     }
     
     public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits){
+        $resultF=[];
         if($idMin == 0){
+            //id,user_id,confidentiality,photo,userfullname,datetime, publication 
             $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
             . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
            
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $result;
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            
         }else{
             $sql = "SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)"
             . "as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id < :idmin ORDER BY id DESC LIMIT :limits";
@@ -1473,10 +1499,15 @@ class Tribu_T_Service extends PDOConnexionService
             $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $result;
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+           
         }
-       
+
+        foreach($results as $result){
+            $result["publication"]=$this->convertUnicodeToUtf8($result["publication"]);
+            array_push($resultF,$result);
+        }
+        return $resultF;
     }
 
     public function putCommentOnPublication($tableCommentaireName, 
@@ -1772,17 +1803,19 @@ class Tribu_T_Service extends PDOConnexionService
                 $statement = $this->getPDO()->prepare("SELECT * FROM $table_name"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
                 $statement->execute();
                 $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
-    
+                
+              
                 $data= [
                     "userOwnPub" => [
                         "id" => $d_pub["user_id"],
                         "profil" => $photo_profil["photo_profil"],
                         "fullName" => $d_pub["userfullname"],
                     ],
+                    
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $d_pub['publication'],
+                        "description" => $this->convertUnicodeToUtf8($d_pub['publication']),
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,
@@ -1799,6 +1832,7 @@ class Tribu_T_Service extends PDOConnexionService
     
                 array_push($resultats, $data);
             }
+            //dd();
         }
 
         return $resultats; 
