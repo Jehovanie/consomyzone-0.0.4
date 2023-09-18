@@ -11,18 +11,18 @@
                             {% if tribu_t_resto_pastille|length > 0 %}
                                 {% for item in tribu_t_resto_pastille %}
                                     {% if item["logo_path"] != "" %}
-                                        <img class="ms-1" width="20" src="{{asset(item["logo_path"])}}" alt="">
+                                        <img class="ms-1" width="20" src="/public{{asset(item["logo_path"])}}" alt="">
                                     {% else %}
-                                        <img  width="20" src="/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                        <img  width="20" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}
                             {% if tribu_t_resto_joined_pastille|length > 0 %}
                                     {% for item in tribu_t_resto_joined_pastille %}
                                         {% if item["logo_path"] != "" %}
-                                            <img class="ms-1" width="20" src="{{asset(item["logo_path"])}}" alt="">
+                                            <img class="ms-1" width="20" src="/public{{asset(item["logo_path"])}}" alt="">
                                         {% else %}
-                                            <img class="ms-1" width="20" src="/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                            <img class="ms-1" width="20" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
                                         {% endif %}
                                     {% endfor %}
                             {% endif %}

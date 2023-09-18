@@ -79,6 +79,33 @@
 			</div>
 		</div>
 	</div>
+    <div class="modal fade" id="restoPastilleModal" aria-hidden="true" aria-labelledby="restoPastilleModal_label" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title listResto_title_jheo_js" id="restoPastilleModal_label">Choisir une tribu via laquelle vous allez pastiller le restaurant</h5>
+                        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body custom_modal">
+                        <div class="content_list_resto content_list_resto_js">
+                            <div class="list_resto_detail_for_pastille">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Logo</th>
+                                            <th scope="col">Tribu T</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{ include('shard/chatBot.html.twig') }}
     {{ include('shard/restaurant/list_avis.html.twig') }}
     {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
