@@ -7,7 +7,7 @@
 					<li class="nav-item icon-tabac me-3">
 						<a class="nav-link d-block">
 							<div class="containt-specific">
-								<div class="click-detail"  onclick="getDetailFromListLeft('{{restaurant.depName}}', '{{restaurant.dep}}', '{{restaurant.id}}')">
+								<div class="click-detail"  data-bs-toggle="modal" data-bs-target="#ModalDetailMobile{{restaurant.id}}" > {# onclick="getDetailFromListLeft('{{restaurant.depName}}', '{{restaurant.dep}}', '{{restaurant.id}}')"> #}
 									<p class="text-point-12 fw-bold">{{restaurant.nom | raw }}	</p>
 									<div class="content_note">
 										<div class=" start start_jheo_js">
@@ -107,7 +107,7 @@
 										</a>
 									</span>
 									{% if restaurant.avis.isAlreadyCommented %}
-										<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto()">
+										<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant{{restaurant.id}}" onclick="settingAvisResto()">
 											Modifier votre avis
 										</button>
 									{% else %}
@@ -123,6 +123,255 @@
 							</div>
 						</a>
 					</li>	
+					
+					{# modal restaurant  #}
+					<div class="modal fade" id="ModalDetailMobile{{restaurant.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content modal-content-mobile">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">{{restaurant.nom | raw }}</h5>
+									
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body ">
+									<div class="modal-body-mobile">
+										<div class="content_note">
+											<div class=" start start_jheo_js">
+												{% set rate = restaurant.avis.note != 0 ?  restaurant.avis.note - (restaurant.avis.note|number_format - 1): 0 %}
+
+												{% set rateYellow = rate * 100  %}
+												{% set rateBlack = 100 - rateYellow %}
+
+												{% for item in 0..3 %}
+													{% if item < restaurant.avis.note|number_format - 1 %}
+														<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+													{% else %}
+														{% if rate != 0 %}
+															<i class="fa-solid fa-star" data-rank="1" style ="{{ "background: linear-gradient(90deg, #F5D165 " ~  rateYellow ~ "%, #000 " ~ rateBlack ~ "%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>
+															{% set rate = 0 %}
+														{% else %}
+															<i class="fa-solid fa-star" data-rank="1"></i>
+														{% endif %}
+													{% endif %}
+												{% endfor %}
+											</div>
+											<div class="nombre_avis"></div>
+										</div>
+										<figcaption class="blockquote-footer card-text cmz-adresse mt-2">
+											Adresse :  
+											<a href="#" class="small text-center ">
+												{{restaurant.numvoie|lower | raw}}
+												{{restaurant.typevoie|lower | raw}}
+												{{restaurant.nomvoie|lower | raw}}
+												{{restaurant.codpost|lower | raw}}
+												{{restaurant.villenorm|lower | raw}}
+											</a>
+										</figcaption> 
+
+										<div class="content_activite">
+											<p class="activite">
+												<span class="fw-bold">Type restaurant:</span>
+												{% if restaurant.restaurant %}
+													<i class="fa-solid fa-utensils"></i>
+													restaurant
+												{% endif %}
+												{% if restaurant.brasserie %}
+													<i class="fa-solid fa-beer-mug-empty"></i>
+													Brasserie
+												{% endif %}
+												{% if restaurant.creperie %}
+													<i class="fa-solid fa-pancakes"></i>
+													creperie
+												{% endif %}
+												{% if restaurant.fastFood %}
+													<i class="fa-solid fa-burger"></i>
+													fastFood
+												{% endif %}
+												{% if restaurant.pizzeria %}
+													<i class="fa-solid fa-pizza-slice"></i>
+													pizzeria
+												{% endif %}
+												{% if restaurant.boulangerie %}
+													<i class="fa-solid fa-pie"></i>
+													boulangerie
+												{% endif %}
+												{% if restaurant.bar %}
+													<i class="fa-solid fa-martini-glass-empty"></i>
+													bar
+												{% endif %}
+												{% if restaurant.cuisineMonde %}
+													<i class="fa-solid fa-hat-chef"></i>
+													cuisine du monde
+												{% endif %}
+												{% if restaurant.cafe %}
+													<i class="fa-solid fa-coffee-pot"></i>
+													café
+												{% endif %}
+												{% if restaurant.salonThe %}
+													<i class="fa-solid fa-mug-tea"></i>
+													salon de thé
+												{% endif %}
+											</p>
+										</div>
+
+										{# ///content cta #}
+										<div class="content_tow_cta">
+											{% if restaurant.site1 != "" %}
+												<div class="site_web non_active">
+													<a class="btn btn-success" href="{{restaurant.site1 | raw}}" target="_blank">Lien :  site Web</a>
+												</div>
+											{% endif %}
+										</div>
+
+										<hr>
+
+										<div class="fonctionnalite">
+											{#ancien class produit#}
+											<h5>
+												Fonctionalités:
+											</h5>
+											<ul>
+												{% if restaurant.fonctionalite1 %}
+													<li>{{restaurant.fonctionalite1 | raw}}</li>
+												{% endif %}
+
+											</ul>
+
+
+										</div>
+
+										<hr>
+
+										<div class="fourchette_de_prix">
+											<h5>
+												Fourchette de prix:
+											</h5>
+											<ul>
+												{% if restaurant.fourchettePrix1 %}
+													<li>{{restaurant.fourchettePrix1 | raw}}</li>
+												{% endif %}
+
+											</ul>
+										</div>
+
+										<hr>
+
+										<div class="horaire">
+											<h5>
+												Horaires :
+											</h5>
+											<ul>
+												{% if restaurant.horaires1 %}
+													<li>{{restaurant.horaires1 | raw}}</li>
+												{% endif %}
+											</ul>
+											<hr>
+
+										</div>
+
+										<div class="prestation">
+											<h5>
+												Prestation :
+											</h5>
+											<ul>
+												{% if restaurant.prestation1 %}
+													<li>{{restaurant.prestation1 | raw}}</li>
+												{% endif %}
+											</ul>
+											<hr>
+
+										</div>
+
+										<div class="regime_speciaux">
+											<h5>
+												Régime spécial :
+											</h5>
+											<ul>
+												{% if restaurant.regimeSpeciaux1 %}
+													<li>{{restaurant.regimeSpeciaux1 | raw}}</li>
+												{% endif %}
+											</ul>
+											<hr>
+
+										</div>
+
+										<div class="repas">
+											<h5>
+												Repas :
+											</h5>
+											<ul>
+												{% if restaurant.repas1 %}
+													<li>{{restaurant.repas1 | raw}}</li>
+												{% endif %}
+											</ul>
+											<hr>
+
+										</div>
+
+										<div class="tel">
+											<h5>
+												Téléphone :
+											</h5>
+											<ul>
+												{% if restaurant.tel %}
+													<li>{{restaurant.tel | raw}}</li>
+												{% endif %}
+											</ul>
+											<hr>
+
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+										<span>
+											<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
+												<span class="nbr_avis_resto_jheo_js">{{restaurant.avis.nbr}} </span> 
+												avis
+											</a>
+										</span>
+										{% if restaurant.avis.isAlreadyCommented %}
+											<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto()">
+												Modifier votre avis
+											</button>
+										{% else %}
+											{% if app.user %}
+												<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
+											{% else %}
+												<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
+											{% endif %}
+										{% endif %}
+										<div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{restaurant.avis.avisPerso.note ? restaurant.avis.avisPerso.note : 0 }}" data-avis-text="{{ restaurant.avis.avisPerso.text ? restaurant.avis.avisPerso.text : 0 }}"></div>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+
+					<div class="modal fade" id="modalAvisRestaurant{{restaurant.id}}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()"></button>
+								</div>
+								<div class="modal-body">
+									<form>
+										{# <div class="mb-3"> #}
+										<label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+										<textarea class="form-control note_number_jheo_js" id="text-note"></textarea>
+										<label for="message-text" class="col-form-label">Commentaire:</label>
+										<textarea class="form-control note_avis_jheo_js" id="message-text"></textarea>
+										{# </div> #}
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-warning send_avis_jheo_js" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="Submit-Avis-resto-tom-js" onclick="addAvisResto()">Envoyer</button>
+								</div>
+							</div>
+						</div>
+					</div>
 				{% endfor %}
 				
 			</ul>
@@ -143,6 +392,8 @@
 		</div>
 	</div>
 </div>
+
+
 
 
 

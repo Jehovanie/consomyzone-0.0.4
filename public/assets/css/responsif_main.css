@@ -140,6 +140,18 @@
         margin-top: 200px;
     }
 
+    .modal-content-mobile{
+        height: 98vh;
+
+    }
+
+    .modal-body-mobile{
+        height: 75vh;
+        overflow-y: scroll;
+    }
+
+    
+
     .form-select.select_action_golf_nanta_js {
         font-size: 7pt !important;
         width: 20% !important;
@@ -1195,7 +1207,7 @@
     }
 
     .leaflet-control-zoom.leaflet-bar.leaflet-control{
-        margin-top: 200px !important;
+        margin-top: 130px !important;
     }
 
     .active-mobile{

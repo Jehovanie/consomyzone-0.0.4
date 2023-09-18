@@ -210,6 +210,7 @@ class StationController extends AbstractController
                 }
             }
         }
+        // dd($stationServiceFrGeomRepository->getAllStationInDepartement($depart_code, $depart_name));
 
         return $this->render("station/specificStationDepartement.html.twig", [
 

@@ -28,6 +28,7 @@
 {% endblock %}
 
 {% block body %}
+	{% include 'shard/station/specific_station_navleft_mobile.twig' %}
 	<div class="responsif-none-pc navbar-mobile-all">
 		{% include 'shard/navbar_mobile.twig' %}
 	</div>
@@ -40,12 +41,21 @@
 			<div class="responsif-none">
 				{% include 'shard/navbar.twig' %}
 			</div>
+			{% if (app.user) %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+            {% else %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-tomm-js">
+            {% endif %}
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                    
+                <div id="list-depart-station-mobile-tomm-js"></div>
 			
-			<div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-specific-tomm-js"  onclick="addSpecificStationMobile('{{departCode}}', '{{departName}}')">
+			{# <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-specific-tomm-js"  onclick="addSpecificStationMobile('{{departCode}}', '{{departName}}')">
 				<i class="fa-solid fa-bars"></i>
 			</div>
 
-			<div id="list-depart-station-specific-mobile-tomm-js"></div>
+			<div id="list-depart-station-specific-mobile-tomm-js"></div> #}
 
 			<div class="content_info_js" data-dep-code="{{departCode}}" data-dep-name="{{departName}}" >
 				{# <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-station-mobile-specific-tomm-js" onclick="addSpecificStationMobile('{{departCode}}', '{{departName}}')"><i class="fa-solid fa-bars"></i> Stations à {{departCode}}</button> #}

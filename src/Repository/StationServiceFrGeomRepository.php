@@ -96,6 +96,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.prixSp98',
                      'p.prixGasoil',
                      'p.departementName',
+                     'p.services',
                      'p.departementName depName',
                      'p.departementCode',
                      'p.departementCode as dep')
