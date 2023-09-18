@@ -15,8 +15,8 @@ class MessageService extends PDOConnexionService{
      * We use this function to create table dynamique for TributG.
      * @param  $table_name : this is the name of the table to create.
      */
-    public function createTable($table_name)
-    {
+    public function createTable($table_name){
+
         $sql = "CREATE TABLE " . $table_name . "(
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
                 user_id int(11) NOT NULL,
@@ -75,7 +75,6 @@ class MessageService extends PDOConnexionService{
 
         $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $result_sender[0]["tablemessage"]);
         $max_id->execute();
-
         return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -148,7 +147,7 @@ class MessageService extends PDOConnexionService{
      * @param string $table_name: my table name  message
      */
     public function setShowMessageAction($table_name){
-        $statement = $this->getPDO()->prepare(" UPDATE " . $table_name . "  SET isShow = '1' WHERE isShow = 0" );
+        $statement = $this->getPDO()->prepare("UPDATE " . $table_name . "  SET isShow = '1' WHERE isShow = 0" );
         $statement->execute();
     
         return $statement->fetchAll(PDO::FETCH_ASSOC);
