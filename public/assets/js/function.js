@@ -2391,11 +2391,11 @@ function showPastillTable(e,id){
                                     
                     let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
                                                 `<button type="button" data-id="${id}" data-name="${restaurant}" data-tbname="${tableTribuT}"
-                                                class="mx-2 btn btn-success" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
+                                                class="mx-2 btn btn-success" data-velona='/public${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
                     let tr=`<tr style="vertical-align: middle;">
                                 <td class="col-logo">
                                     <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
-                                        src="${logoPath}"
+                                        src="/public${logoPath}"
                                     alt="">
                                 </td>
                                 <td class="col-tribuT">${nomTribuT}</td>
