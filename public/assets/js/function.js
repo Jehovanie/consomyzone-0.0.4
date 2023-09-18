@@ -1847,7 +1847,11 @@ function deletePublication(pubId, tablePub){
 
 
 function getAllComment(pubId, tablePub, userOwnID){
-    
+
+    const content_comments = document.querySelector('.content_all_comment_jheo_js');
+
+    content_comments.innerHTML =  createMiniCMZloading();
+
     //// initialize all event for new comment
     pushNewComment(pubId, tablePub, userOwnID );
 
@@ -1868,25 +1872,24 @@ function getAllComment(pubId, tablePub, userOwnID){
     .then(response=>response.json())
     .then(response =>{
         // console.log(response.comments)
-        const content_comments = document.querySelector('.content_all_comment_jheo_js')
+
         if( response.comments.length > 0 ){
             let listLIcomment = "";
-            const comments = response.comments;
+            const comments = response.comments.reverse();
 
             comments.forEach(comment => {
                 const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
                 listLIcomment += `
-                    <li id='45' class="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
+                    <li id='pub_${comment.pub_id}_comment_${comment.comment_id}' class="nr h lc rg mg qh sq js yk mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
                         <div class="h sa wf uk th ni ej">
                             <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
                             <span class="g l m xe qd th pi jj sj ra"></span>
                         </div>
-
                         <div>
                             <h6 class="un zn gs">
-                               ${comment.user.fullname}
+                               <p>${comment.user.fullname}</p>-<cite class="fontSize06">${comment.dateTime}</cite>
                             </h6>
-                            <p class="mn hc">
+                            <p class="hc">
                                ${comment.text_comment}
                             </p>
                         </div>
@@ -1899,8 +1902,8 @@ function getAllComment(pubId, tablePub, userOwnID){
 
         }else{
             content_comments.innerHTML = `
-                <li id='45' class="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
-                    <p> Il n'y pas encore de commentaire sur cette publication </p
+                <li id='45' class="nr h lc rg mg qh sq js yk bg-light text-danger alert_comment_not_exist_jheo_js" data-toggle-other-id='10000'>
+                    <p>Il n'y pas encore de commentaires sur cette publication.</p
                 </li>
             `
         }
@@ -1912,86 +1915,105 @@ function getAllComment(pubId, tablePub, userOwnID){
 
 function pushNewComment(pubId, tablePub, userOwnID){
 
-    if(checkIfExist('textarea_content_jheo_js')){/// return false if textarea_content_jheo_js is not found
-        return false;
-    }
+    // const publicationItems= document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`)
+    const btn_persitNewComment = document.querySelector('.cta_persitNewComment_jheo_js');
 
     document.querySelector('.textarea_content_jheo_js').addEventListener('input',() => {
         document.querySelector('.textarea_content_jheo_js').style.border= '1px solid black';
-    })
-
-    document.querySelector('.cta_persitNewComment_jheo_js').addEventListener('click',() => {
-        if(document.querySelector('.textarea_content_jheo_js').value.length > 1 ){
-            persistCommment(pubId, tablePub, userOwnID)
-        }else {
-            document.querySelector('.textarea_content_jheo_js').style.border= '1px solid red';
+        if( document.querySelector(".invalid_jheo_js").classList.contains("d-block")){
+            document.querySelector(".invalid_jheo_js").classList.remove("d-block")
         }
     })
 
-    document.querySelector('.textarea_content_jheo_js').addEventListener('keyup', (e) => {
-        if (e.code === "Enter" || e.code === "NumpadEnter") {
-            if(document.querySelector('.textarea_content_jheo_js').value.length > 1 ){
-                persistCommment(pubId, tablePub, userOwnID)
-            }
-        }
-    })
+    if(btn_persitNewComment){
+        btn_persitNewComment.setAttribute('onclick',`persistCommment('${pubId}', '${tablePub}', '${userOwnID}')`)
+    }
+
+    // btn_persitNewComment.addEventListener('click',() => {
+    //     if(document.querySelector('.textarea_content_jheo_js').value.length > 1 ){
+    //         persistCommment(pubId, tablePub, userOwnID)
+    //     }
+    //     // else {
+    //     //     document.querySelector('.textarea_content_jheo_js').style.border= '1px solid red';
+    //     // }
+    // })
+
+    // document.querySelector('.textarea_content_jheo_js').addEventListener('keyup', (e) => {
+    //     if (e.code === "Enter" || e.code === "NumpadEnter") {
+    //         btn_persitNewComment.click();
+    //     }
+    // })
 
 }
 
 
 function persistCommment(pubId, tablePub, userOwnID){
     const text= document.querySelector('.textarea_content_jheo_js').value;
+    
+    if( text.length > 1){
 
-    const currentUser= document.querySelector('.information_user_conected_jheo_js')
-    const userInformations= {
-        "fullName" : currentUser.getAttribute('data-userFullName'),
-        "profil" : currentUser.getAttribute('data-profil')
+        if(!document.querySelector('.information_user_conected_jheo_js')){
+            console.log("Selector not found: 'information_user_conected_jheo_js'")
+            return false
+        }
+
+        const currentUser= document.querySelector('.information_user_conected_jheo_js')
+        const userInformations= {
+            "fullName" : currentUser.getAttribute('data-userFullName'),
+            "profil" : currentUser.getAttribute('data-profil')
+        }
+    
+        handleNewComment(userInformations,text)
+    
+        document.querySelector('.textarea_content_jheo_js').value= null
+    
+        const param = { /// $tablePub, $pubID, $authorID, $comment, $audioname
+            tablePub : tablePub,
+            pubID : pubId,
+            authorID: userOwnID,
+            comment: text,
+            audioname : "",
+        }
+        const request = new Request('/user/publication/tribu/push_comment', {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(param)
+        })
+    
+        fetch(request)
+        .then(response=>response.json())
+        .then(response =>{
+            ///change status comment
+            const content_loading = document.querySelector(".content_loading_jheo_js");
+            content_loading.innerHTML = "<i class='fa-solid fa-check'></i>";
+
+            const publicationItems= document.querySelector(`.pub_${tablePub}_${pubId}_jheo_js`);
+            const old_nbr_comment=  publicationItems.querySelector(".nbr_comment_jheo_js").innerText.split(" ")[0];
+            const new_nbr_comment= parseInt(old_nbr_comment, 10) + 1
+            publicationItems.querySelector(".nbr_comment_jheo_js").innerText= new_nbr_comment > 1  ? `${new_nbr_comment} commentaires` : `${new_nbr_comment} commentaire`;
+
+            setTimeout(() => {
+                content_loading.parentElement.removeChild(content_loading);
+            }, 2000);
+        }).catch(error => {
+            console.log(error)
+            const content_loading = document.querySelector(".content_loading_jheo_js");
+            content_loading.innerHTML = "<i class='fa-solid fa-circle-exclamation loading error_message_status'></i>";
+        })
+    }else{
+        document.querySelector('.textarea_content_jheo_js').style.border= '1px solid red';
+        document.querySelector(".invalid_jheo_js").classList.add("d-block")
     }
-
-    handleNewComment(userInformations,text)
-
-    document.querySelector('.textarea_content_jheo_js').value= null
-
-    const param = { /// $tablePub, $pubID, $authorID, $comment, $audioname
-        tablePub : tablePub,
-        pubID : pubId,
-        authorID: userOwnID,
-        comment: text,
-        audioname : "",
-    }
-    const request = new Request('/user/publication/tribu/push_comment', {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(param)
-    })
-
-    fetch(request)
-    .then(response=>response.json())
-    .then(response =>{
-        console.log(response)
-
-        ///change status comment
-        const content_loading = document.querySelector(".content_loading_jheo_js");
-        content_loading.innerHTML = "<i class='fa-solid fa-check'></i>";
-      
-        setTimeout(() => {
-            content_loading.parentElement.removeChild(content_loading);
-        }, 2000);
-    }).catch(error => {
-        console.log(error)
-        const content_loading = document.querySelector(".content_loading_jheo_js");
-        content_loading.innerHTML = "<i class='fa-solid fa-circle-exclamation loading error_message_status'></i>";
-    })
 
 }
 
 function handleNewComment(userInformations, comment){
     
     const content_comment= document.createElement('li');
-    content_comment.className="nr h lc rg mg qh sq js yk show_single_msg_popup_jheo_js";
+    content_comment.className="nr h lc rg mg qh sq js yk mb-2 gray400 show_single_msg_popup_jheo_js";
     content_comment.setAttribute('id', 'tempID');
     content_comment.setAttribute('title', userInformations.fullname);
 
@@ -2003,18 +2025,21 @@ function handleNewComment(userInformations, comment){
 
         <div>
             <h6 class="un zn gs">
-            ${userInformations.fullName}
+                ${userInformations.fullName}
             </h6>
             <p class="mn hc">
-            ${comment}
+                ${comment}
             </p>
         </div>
         <div class="content_loading content_loading_jheo_js">
             <i class='fa-solid fa-spinner loading'></i>
         </div>
     `
-    document.querySelector('.content_all_comment_jheo_js').prepend(content_comment);
+    if(document.querySelector(".alert_comment_not_exist_jheo_js")){
+        document.querySelector(".alert_comment_not_exist_jheo_js").remove();
+    }
 
+    document.querySelector('.content_all_comment_jheo_js').prepend(content_comment);
     document.querySelector(".content_all_comment_jheo_js").scrollTop=0;
 }
 
@@ -2086,7 +2111,88 @@ function scrollBottom(element) {
     element.scrollTop = element.scrollHeight;
 }
 
+function bindDataUpdatePub(table, id){
+    
+    const publication= document.querySelector(`.pub_${table}_${id}_jheo_js`)
+    if(!publication){
+        console.log(`Selector not found: pub_${table}_${id}_jheo_js`)
+        return false;
+    }
 
+    document.querySelector(".desc_update_jheo_js").value = publication.querySelector(".pub_description_jheo_js").innerText;
+
+    const tribu_Name= publication.querySelector(".tribu_name_jheo_js").innerText;
+    const content_input_tribuT_name= document.querySelector(".content_input_name_tribuT_jheo_js");
+    let tribuType= "";
+    if( tribu_Name.includes("Tribu T") ){
+        if(content_input_tribuT_name.classList.contains("d-none")){
+            content_input_tribuT_name.classList.remove("d-none")
+        }
+        tribuType= "Tribu T";
+        document.querySelector(".input_name_tribuT_jheo_js").value= tribu_Name;
+
+    }else{
+        if(!content_input_tribuT_name.classList.contains("d-none")){
+            content_input_tribuT_name.classList.add("d-none")
+        }
+        tribuType= "Tribu G";
+    }
+    document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
+
+    const config_pub= publication.querySelector(".config_jheo_js").getAttribute("data-confid");
+    document.querySelectorAll(".config_update_jheo_js").forEach(item => {
+        if(parseInt(item.getAttribute("value")) === parseInt(config_pub) ){
+            item.setAttribute("selected" , "");
+        }
+    })
+
+
+    if( publication.querySelector(".pub_image_jheo_js")){
+        const link_image= publication.querySelector(".pub_image_jheo_js").getAttribute("src");
+        document.querySelector(".image_upload_update_jheo_js").setAttribute("src", link_image);
+        
+        if(document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_image_upload_jheo_js").classList.remove("d-none")
+        }
+    }else{
+        if(!document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+            document.querySelector(".content_image_upload_jheo_js").classList.add("d-none")
+            document.querySelector(".image_upload_update_jheo_js").setAttribute("src","#");
+        }
+    }
+
+}
+/*function pastilleRestoForTribuT(e){
+    let id = e.target.dataset.id
+    let name = e.target.dataset.name
+    let tbl = e.target.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+    const request = new Request("/user/tribu_t/pastille/resto", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                document.querySelector("#containerPastilleResto").style.display = "none"
+                let successElem = document.querySelector(".successPastille")
+                successElem.style.display = "block"
+                successElem.textContent = message
+                setTimeout(function () {
+                    successElem.style.display = "none"
+                    successElem.innerHTML = ""
+                }, 5000)
+            })
+            .catch(error=>console.log(error))
+}*/
 function pastilleRestoForTribuT(element){
     let id = element.dataset.id
     let name = element.dataset.name
@@ -2285,7 +2391,7 @@ function showPastillTable(e,id){
                                     
                     let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
                                                 `<button type="button" data-id="${id}" data-name="${restaurant}" data-tbname="${tableTribuT}"
-                                                class="mx-2 btn btn-success" onclick="pastilleRestoForTribuT(this)">${status}</button>`
+                                                class="mx-2 btn btn-success" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
                     let tr=`<tr style="vertical-align: middle;">
                                 <td class="col-logo">
                                     <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 

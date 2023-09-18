@@ -6,4 +6,4 @@ const codinsee= content_data.getAttribute("data-resto-codinsee") !== "null" ? co
 
 ////INSTANCE ///
 const OBJECT_MARKERS_RESTO= new MarckerClusterResto(dep_name,id_dep, codinsee)
-OBJECT_MARKERS_RESTO.onInit(isAddControl=false);
+OBJECT_MARKERS_RESTO.onInit(isAddControl=true);

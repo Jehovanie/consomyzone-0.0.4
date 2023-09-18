@@ -764,7 +764,7 @@ li.nav-item.avatar-account-pdp > a > img{
 }
 
 .content_cart_map {
-    display: block;
+    display: flex;
     width: 100%;
     margin: 0 auto;
     border-radius: 5px;
@@ -1827,4 +1827,15 @@ textarea {
 }
 .btn_golf_did {
     cursor: pointer;
+}
+.gray400{
+    background-color: #ced4da;
+}
+
+.fontSize07{
+    font-size: 0.7rem;
+}
+
+.fontSize06 {
+    font-size: 0.6rem;
 }

@@ -14,7 +14,7 @@ use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
 
 class TributGService extends PDOConnexionService{
 
- 
+
 
     /**
      * 
@@ -31,39 +31,21 @@ class TributGService extends PDOConnexionService{
     public function createTableTributG($name_table_tribuG, $user_id)
     {
 
-
-
-        
-
-
-
         $db = $_ENV["DATABASENAME"];
-
-        
 
         $query = "SHOW TABLES FROM $db like '$name_table_tribuG'";
 
         $sql = $this->getPDO()->query($query);
 
-        
-
         $resultat=$sql->rowCount();
-
-
 
         if($resultat>0){
 
-
-
             // $data = "Insert into tributg_".$commun_code_postal." (id, user_id, roles) values (UUID(), $user_id,'[\"Utilisateur\"]')";
-
             $data = "Insert into " . $name_table_tribuG . " (user_id, roles) values ( $user_id,'utilisateur')";
 
             $this->getPDO()->exec($data);
-
         }else {
-
-
 
             ///Formatage name
 
@@ -687,13 +669,20 @@ class TributGService extends PDOConnexionService{
      */
     public function createOnePub($table_pub, $user_id, $publication, $confid, $photo){
 
+        if( !$this->isTableExist($table_pub)){
+            return false;
+        }
+
         $statement = $this->getPDO()->prepare(
             "INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) 
             values (:user_id, :publication, :confidentiality, :photo, :userfullname)"
         );
+        
+        //// convert text publication
+        $publication = $this->convertUtf8ToUnicode($publication);
 
         $userfullname = $this->getFullName($user_id);
-
+        $publication=str_replace("\u","\\u",$publication);
         $statement->bindParam(':user_id', $user_id);
         $statement->bindParam(':publication', $publication);
         $statement->bindParam(':confidentiality', $confid);
@@ -872,7 +861,7 @@ class TributGService extends PDOConnexionService{
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $d_pub['publication'],
+                        "description" => $this->convertUnicodeToUtf8($d_pub['publication'] ), //// when get, must decode
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,
@@ -1061,7 +1050,7 @@ class TributGService extends PDOConnexionService{
 
 
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname) values (:user_id, :pub_id, :commentaire, :userfullname)");
 
 
 
@@ -1073,7 +1062,7 @@ class TributGService extends PDOConnexionService{
 
         $statement->bindParam(':userfullname', $userfullname);
 
-        $statement->bindParam(':audioname', $audioname);
+        // $statement->bindParam(':audioname', $audioname);
 
         
 
@@ -1095,16 +1084,21 @@ class TributGService extends PDOConnexionService{
      public function handlePublicationCommentUpdate($table_name,$userID, $publication_id, $comment, $audioname ){
 
         $table_comment = $table_name. "_commentaire";
+        if(!$this->isTableExist($table_comment)){
+            return false;
+        }
+
+        $comment = $this->convertUtf8ToUnicode($comment);
 
         $userfullname = $this->getFullName($userID);
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname, audioname) values (:user_id, :pub_id, :commentaire, :userfullname, :audioname)");
+        $statement = $this->getPDO()->prepare("INSERT INTO $table_comment (user_id, pub_id, commentaire, userfullname) values (:user_id, :pub_id, :commentaire, :userfullname)");
 
         $statement->bindParam(':user_id', $userID);
         $statement->bindParam(':pub_id', $publication_id);
         $statement->bindParam(':commentaire', $comment);
         $statement->bindParam(':userfullname', $userfullname);
-        $statement->bindParam(':audioname', $audioname);
+      
 
         return $statement->execute();
     }

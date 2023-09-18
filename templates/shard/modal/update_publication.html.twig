@@ -6,21 +6,42 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" id="pub_id_modif">
+                <div class="mb-3">
+                    <label for="pub_id_modif"> Dans le tribu</label>
+                    <input type="text" id="pub_id_modif" class="form-control input_disable_tribu_jheo_js" disabled>
+                </div>
+
+                <div class="mb-3 d-none content_input_name_tribuT_jheo_js">
+                    <label for="pub_id_modif"> Tribu T</label>
+                    <input type="text" id="pub_id_modif" class="form-control input_name_tribuT_jheo_js"  disabled>
+                </div>
 
                 <div class="mb-3">
                     <label for="message-text" class="col-form-label">Message</label>
-                    <textarea class="form-control" id="message-text_modif" maxlength="3000"></textarea>
+                    <textarea class="form-control desc_update_jheo_js" id="message-text_modif" maxlength="3000"></textarea>
                 </div>
+
                 <div class="mb-3">
                     <label for="formFileMultiple" class="form-label">Confidentialité</label>
                     <select class="form-control" id="option_modif">
-                        <option value="1">Publique</option>
-                        <option value="2">Ami(e)s</option>
-                        <option value="3">Moi uniquement</option>
+                        <option class="config_update_jheo_js" value="1">Tous le monde</option>
+                        <option class="config_update_jheo_js" value="0">Moi uniquement</option>
                     </select>
                 </div>
-
+                <div class="mb-3 d-none content_image_upload_jheo_js">
+                    <label for="formFileMultiple" class="form-label">Photo</label>
+                    <div class="image-upload image_upload_jheo_js" id="imageUploadTribu">
+                        <div>
+                            <img class="image-upload-image image_upload_update_jheo_js" src="#" alt="your image"/>
+                            <div class="image-title-wrap">
+                                <button type="button" class="remove-image-uplaod remove_image_upload_jheo_js">
+                                    Change l'image
+                                    {# <span class="image-title">Uploaded Image</span> #}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
@@ -29,3 +50,4 @@
         </div>
     </div>
 </div>
+

@@ -24,16 +24,22 @@ class MapModule{
         this.isRightSideAlreadyOpen = false;
 
         this.objectGeoJson = [];
-    }
 
-    initTales(){
-        const tiles = L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-            attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
-            minZoom: 1,
-            maxZoom: 20
-        })
-        return tiles;
+        this.tab_tales = [];
+        this.listTales= [
+            { name: "Esri WorldStreetMap", link : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", id: "osm_esri_jheo_js", isCurrent: true },
+            { name: "Openstreetmap.org", link : "https://tile.openstreetmap.org/{z}/{x}/{y}.png", id: "osm_org_jheo_js", isCurrent: false },
+            { name: "Openstreetmap.fr Osmfr", link : "//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png" , id: "osm_fr_jheo_js", isCurrent: false },
+        ]
     }
+    initTales(){
+        this.tiles = L.tileLayer(this.listTales[0].link, {
+            // attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            minZoom: 1,
+            maxZoom: 19
+        })
+    } /// - //{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png
 
 
     getUserLocation(){
@@ -62,7 +68,7 @@ class MapModule{
         }
 
         const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-        const tiles= this.initTales();
+        this.initTales();
 
         /// if there is departementSpecified
         this.settingLatLong();
@@ -71,7 +77,7 @@ class MapModule{
                 zoomControl: false,
                 center: ( this.id_dep || ( lat && long && zoom ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
                 zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
-                layers: [tiles] 
+                layers: [this.tiles] 
             }
         );
 
@@ -694,8 +700,8 @@ class MapModule{
         }
 
 
-        this.bindControlOnLeaflet(this.map);
-        this.bindEventLocationForMobile();
+        // this.bindControlOnLeaflet(this.map);
+        // this.bindEventLocationForMobile();
     }
     
     getMax(max,min){
@@ -706,17 +712,22 @@ class MapModule{
     }
 
     bindOtherControles(){
-        let htmlControl = '';
+        let htmlControl = `
+            <button class="btn btn-warning" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
+                <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
+            </button>
+        
+        `;
         if( this.mapForType === "golf"){
-            htmlControl= `
-                <button class="btn btn-info" data-type="info_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-info"></i>
+            htmlControl += `
+                <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
                 </button>
             `
         }else if( this.mapForType === "tabac") {
-            htmlControl= `
-                <button class="btn btn-primary" data-type="couche_jheo_js">
-                    <i class="fa-solid fa-layer-group"></i>
+            htmlControl += `
+                <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
                 </button>
             `
         }
@@ -737,9 +748,9 @@ class MapModule{
                 click: (data) => {
                     this.openRightSide(data.srcElement.dataset.type);
                 },
-                // dblclick: function(data){
-                //     closeRightSide();
-                // },
+                dblclick: function(){
+                    closeRightSide();
+                },
                 contextmenu: function(data){
                     console.log('wrapper div element contextmenu');
                     console.log(data);
@@ -844,6 +855,7 @@ class MapModule{
     }
 
     openRightSide(rightSideContentType){
+
         if( document.querySelector(".close_details_jheo_js")){
             document.querySelector(".close_details_jheo_js").click();
         }
@@ -856,11 +868,21 @@ class MapModule{
         const cont_legent_width= '25%';
         
         if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+
+            if( !document.querySelector(".title_right_side_jheo_js")){
+                console.log("Selector not found: '.title_right_side_jheo_js'")
+                return false;
+            }
     
-            if( rightSideContentType === "info_jheo_js"){
+            if( rightSideContentType === "info_golf_jheo_js"){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
                 injectStatusGolf();
-            }else{
+            }else if( rightSideContentType === "couche_tabac_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.".toUpperCase();
                 this.injectChooseCouche();
+            }else{ //// default tiles type
+                document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de map".toUpperCase();
+                this.injectTilesType();
             }
     
             document.querySelector(".cart_map_jheo_js").style.width= cart_width;
@@ -891,8 +913,59 @@ class MapModule{
         }
     }
 
+    injectTilesType(){
+        if( !document.querySelector(".content_right_side_body_jheo_js")){
+            console.log("Selector not found : '.content_right_side_body_body'")
+            return false;
+        }
+
+        let tilesSelectHTML = "";
+        
+        this.listTales.forEach(item => {
+            tilesSelectHTML +=  `
+                <div class="form-check">
+                    <span class="leaflet-minimap-label">
+                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${item.id}" name="leaflet-base-layers" ${item.isCurrent ? 'checked' : '' }>
+                        <label class="" for="${item.id}">${item.name.toUpperCase() }</label>
+                    </span>
+                </div>
+            `
+        })
+        document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+            <div class="right_side_body right_side_body_jheo_js">
+                ${tilesSelectHTML}
+            </div>
+            <div class="d-none chargement_tabac chargement_tabac_jheo_js">
+                <div class="containt">
+                    <div class="word word-1">C</div>
+                    <div class="word word-2">M</div>
+                    <div class="word word-3">Z</div>
+                </div>
+            </div>
+        `
+        this.bindEventChangeTiles();
+    }
+
     injectChooseCouche(){
         throw new Error("The function 'injectChooseCouche' must be redefined on child.")
     }
 
+    bindEventChangeTiles(){
+        this.listTales.forEach(item => {
+            document.querySelector(`.ID_${item.id}`).addEventListener('change', () => {
+                this.changeTiles(item.id)
+            })
+        })
+    }
+
+
+    changeTiles(tilesID){
+        const newTiles= this.listTales.find(item => item.id === tilesID);
+        this.tiles.setUrl(newTiles.link, false)
+
+        this.listTales= this.listTales.map(item => {
+            item.isCurrent = item.id === tilesID ? true : false
+            return item
+        });
+    }
 }

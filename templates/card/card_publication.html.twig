@@ -1,14 +1,14 @@
-<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" >
+<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" id="ID_{{tribu.table}}_{{publication.id}}_jheo_js" >
     <div class="head-pub content_header_pub">
         <div class="content_pub_info">
             <div class="pdp-content">
-                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil: asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
             </div>
             <div class="name-content-h">
                 <div class="name-content">
                     <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
                     <div class="">
-                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{tribu.name}}</span></p>
+                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="tribu_name_jheo_js">{{tribu.name}}</span></p>
                         {# <div class="dropdown-menu" aria-labelledby="btnGroupDrop0">
                             <p class="dropdown-item" >{{tribu.name}}</p>
                             <p class="dropdown-item" >{{tribu.description}}</p>
@@ -23,9 +23,9 @@
                             <div class="btn-group" role="group">
                                 <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {% if publication.confidentiality is same as(1) %}
-                                        <i class="fa-solid fa-earth-oceania"></i>
+                                        <i class="fa-solid fa-earth-oceania config_jheo_js" data-confid="1"></i>
                                     {% else %}
-                                        <i class="bi bi-lock-fill"></i>
+                                        <i class="bi bi-lock-fill config_jheo_js" data-confid="0"></i>
                                     {% endif %}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
@@ -46,8 +46,10 @@
                         <i class="bi bi-three-dots" style="cursor:pointer"></i>
                     </span>
                     <ul class="dropdown-menu">
-                        <li  data-bs-toggle="modal" data-bs-target="#modal_publication_modif" >
-                            <button class="non_active text-primary dropdown-item">
+                        {# <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')"> #}
+                        <li class="non_active">
+                            {# <button class="text-primary dropdown-item"> #}
+                            <button class="text-secondary dropdown-item">
                                 <i class="fas fa-edit"></i>
                                 Modifier
                             </button>
@@ -65,18 +67,20 @@
     </div>
         
     <div class="card-pub-actu">
-        <p class="text-pub mb-3">{{publication.description}}</p>
+        <p class="text-pub mb-3 pub_description_jheo_js">{{publication.description}}</p>
         {% if publication.image is defined and publication.image is not same as("") %}
-            <img class="image_publication"  src="{{publication.image}}" alt="image publication">
+            <img class="image_publication pub_image_jheo_js"  src="{{publication.image}}" alt="image publication">
         {% endif %}
     </div>
 
     <div class="card-reaction">
-        {# <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p> #}
+        <p class="text-comment content_nbr_comment_jheo_js">
+            <span class="nbr_comment_jheo_js">{{ publication.comments|length ~ (publication.comments|length > 1 ? " commentaires" : " commentaire" ) }} </span>
+        </p>
         <div class="reaction-icon d-flex">
-            <i class="non_active bi-heart like"></i>
-            {# <i class=" fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i> #}
-            <i class="non_active fa-regular fa-comment comment"></i>
+            <i class="bi-heart like"></i>
+            <i class=" fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i>
+            {# <i class="non_active fa-regular fa-comment comment"></i> #}
         </div>
     </div>
     

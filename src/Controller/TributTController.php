@@ -309,18 +309,13 @@ class TributTController extends AbstractController
 
         $tableName,
 
-        RequestingService $requestingService
-
+        RequestingService $requestingService,
+        NotificationService $notif_service
     ): Response
 
     {
 
         $tribut = new Tribu_T_Service();
-
-
-
-        $notif_service = new NotificationService();
-
 
 
         $tableNotif = "tablenotification_" . $user_id;
@@ -392,23 +387,11 @@ class TributTController extends AbstractController
 
     #[Route('/user/tribu/reject/{tableName}/{user_id}/{notif_id}', name: 'reject_invitation')]
 
-    public function rejectInvitation($tableName, $user_id, $notif_id): Response
-
+    public function rejectInvitation($tableName, $user_id, $notif_id, NotificationService $notif_service): Response
     {
-
-
-
-        $notif_service = new NotificationService();
-
-
-
         $tableNotif = "tablenotification_" . $user_id;
 
-
-
         $notif_service->rejectNotification($tableNotif, $notif_id);
-
-
 
         $tribut = new Tribu_T_Service();
 
@@ -655,6 +638,7 @@ class TributTController extends AbstractController
 
     }
 
+    
     #[Route('/user/tribu_one/{name_tribu_t}', name: 'show_tribu_tribu_t')]
     public function showTribu_T_specifique($name_tribu_t,
     Tribu_T_Service $tribu_t_serv,
@@ -665,9 +649,12 @@ class TributTController extends AbstractController
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * 
+     */
     #[Route('/user/tribu/publication/{table}', name: 'publication_tribu')]
 
-    public function index($table, Request $request, TributGService $tributGService): Response
+    public function index($table, Request $request, TributGService $tributGService, NotificationService $notifService): Response
 
     {
 
@@ -709,11 +696,6 @@ class TributTController extends AbstractController
 
 
         $notif_id = $request->query->get("notif_id");
-
-
-
-        $notifService = new NotificationService();
-
 
 
         $notifService->updateNotificationIsread($notif_id, $user_id);
@@ -768,7 +750,7 @@ class TributTController extends AbstractController
 
                 "table_pub" => $table,
 
-                "publication" => $key["publication"],
+                "publication" => json_decode($key["publication"],true),
 
                 "confidentiality" => $key["confidentiality"],
 
@@ -947,7 +929,7 @@ class TributTController extends AbstractController
 
      */
 
-    public function saveComment(Request $request)
+    public function saveComment(Request $request, NotificationService $notification)
 
     {
 
@@ -1014,19 +996,9 @@ class TributTController extends AbstractController
 
         $tribut->createComent($table_com, $user_id, $pub_id, $new_comment, $audioname);
 
-
-
-        $notification = new NotificationService();
-
-
-
         $type = "commentaire";
 
-
-
         $publicationUrl = "#pub_number_".$pub_id;
-
-
 
         $contentForDestinator = $tribut->getFullName($user_id) . " a commenté votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
 
@@ -1120,7 +1092,7 @@ class TributTController extends AbstractController
 
      */
 
-    public function saveReaction(Request $request)
+    public function saveReaction(Request $request, NotificationService $notification)
 
     {
 
@@ -1140,31 +1112,15 @@ class TributTController extends AbstractController
 
         $table_reaction = $requestContent["table_reaction"];
 
-
-
         $user_id_pub = $requestContent["user_id_pub"];
-
-
 
         $regex = "/\_reaction+$/";
 
-
-
         $tribuTable = preg_replace($regex, "", $table_reaction);
-
-
 
         $tribut = new Tribu_T_Service();
 
-
-
-        $notification = new NotificationService();
-
-
-
         $type = "reaction";
-
-
 
         $publicationUrl = "#pub_number_".$pub_id;
 
@@ -1321,28 +1277,19 @@ class TributTController extends AbstractController
     /**
      * @Route("user/tribu/send/invitation" , name="invitation_tribu_g")
      */
-    public function sendInvitation(Request $request): Response
+    public function sendInvitation(Request $request, NotificationService $notification, TributGService $tribu_g, Tribu_T_Service $tribu_t ): Response
     {
         $user = $this->getUser();
-
         $userId = $user->getId();
         
         $requestContent = json_decode($request->getContent(), true);
-
         $table = $requestContent["table"];
 
-        $notification = new NotificationService();
-
-        $tribu_g = new TributGService();
-
         $tribu_g_table = $tribu_g->getTribuGtableForNotif($userId);
-
         $members = $tribu_g->getAllTributG($tribu_g_table);
 
-        $tribu_t = new Tribu_T_Service();
 
         $userFullname = $tribu_t->getFullName($userId);
-
         $tribu_name = $tribu_t->showRightTributName($table);
 
         $type = "invitation";
@@ -1385,7 +1332,7 @@ class TributTController extends AbstractController
     /**
      * @Route("user/tribu/send/one-invitation" , name="invitation_partisan")
      */
-    public function sendOneInvitation(Request $request): Response
+    public function sendOneInvitation(Request $request, NotificationService $notification ): Response
     {
         $requestContent = json_decode($request->getContent(), true);
 
@@ -1398,8 +1345,6 @@ class TributTController extends AbstractController
         $user = $this->getUser();
 
         $userId = $user->getId();
-
-        $notification = new NotificationService();
 
         $tribu_t = new Tribu_T_Service();
 
@@ -1432,7 +1377,7 @@ class TributTController extends AbstractController
 
     #[Route('/user/tribu/invitation', name: 'show_invitation')]
 
-    public function showInvitation(Request $request, TributGService $tributGService)
+    public function showInvitation(Request $request, TributGService $tributGService, NotificationService $notifService)
 
     {
 
@@ -1470,19 +1415,9 @@ class TributTController extends AbstractController
         $isMember = $tribu_t->testSiMembre($tribu, $userId);
 
 
-
-        $notifService = new NotificationService();
-
-
-
         $notifService->updateNotificationIsread($notif_id, $userId);
 
-
-
         $profil = "";
-
-
-
         if ($userType == "consumer") {
 
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);

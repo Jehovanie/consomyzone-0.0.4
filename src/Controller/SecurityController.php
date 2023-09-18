@@ -69,45 +69,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 class SecurityController extends AbstractController
 
 {
-
-    private $mailService;
-
-    private $verifyEmailHelper;
-
-    private $tributGService;
-
-    private $notificationService;
-
-
-
     private $requesting;
 
-
-
     function __construct(
-
-        MailService $mailService,
-
-        VerifyEmailHelperInterface $verifyEmailHelper_service,
-
-        TributGService $tributGService,
-
-        NotificationService $notificationService,
-
         RequestingService $requesting
-
-
-
-    ) {
-
-        $this->mailService = $mailService;
-
-        $this->verifyEmailHelper = $verifyEmailHelper_service;
-
-        $this->tributGService = $tributGService;
-
-        $this->notificationService = $notificationService;
-
+    ){
         $this->requesting = $requesting;
     }
 

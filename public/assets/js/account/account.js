@@ -99,93 +99,17 @@ if( document.querySelector(".information_user_conected_jheo_js")){
     event_source_notification.onmessage = function(event) {
         
         if( event.data != ""){
-            const new_notification = JSON.parse(event.data);
-            if( document.querySelector(".nbr_notification_jheo_js")){
+            /// all notifications
+            const all_notification = JSON.parse(event.data);
 
-                const nbr_actual_notification = document.querySelector(".nbr_notification_jheo_js").innerText;
+            //// update number notifications and show red badge when there is new notification don't show
+            updateNbrNotificationAndShowBadge(all_notification)
+          
+            //// generate new notification 
+            injectNewCardNotification(all_notification);
 
-                if(parseInt(nbr_actual_notification) < new_notification.length){
-
-                    const notification_unshow = new_notification.filter(item => {
-                        if( item.isShow == "0" ){
-                            return item
-                        }
-                    })
-
-                    if( notification_unshow.length !== 0 ){
-
-                        document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity="1"
-                        document.querySelector(".nbr_notification_jheo_js").innerText= notification_unshow.length > 9 ? notification_unshow.length : `0${notification_unshow.length}` ;
-                    }else{
-                        document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity="0"
-                    }
-
-                    if( document.querySelector(".content_card_notification_jheo_js")){
-
-                        ////delete old card
-
-                        //deleteCardElement();
-
-                        document.querySelector(".content_card_notification_jheo_js").innerHTML ="";
-
-
-
-                        ////show new notification
-
-                        new_notification.forEach(item => {
-
-                            // notif_id,parent_card, card_title_content, card_text_content,card_text_date, is_show, is_read, link, type invitation, isAccepted
-
-                            createAndAddCardNotification(
-
-                                item.id,
-                                document.querySelector(".content_card_notification_jheo_js"),
-                                "Une nouvelle notification.",
-                                item.content,
-                                item.datetime,
-                                item.isShow,
-                                item.isRead,
-                                item.type,
-                                "?tribu_name="+item.tribu+"&notif_id="+item.id,
-                                item.tribu/*,
-                                item.invitation,
-                                item.is_accepted*/
-
-                            )
-
-                        })
-
-                        
-
-                        if( document.querySelector(".content_card_notification_jheo_js")){
-
-                            document.querySelectorAll(".card_js_jheo").forEach(card =>{
-
-                                card.addEventListener("click", () => {
-
-                                    const notification_id = card.getAttribute("data-toggle-notif-id");
-
-                                    
-
-                                    fetch("/user/notification/read?notif_id="+ notification_id)
-
-                                        .then(response => response.text())
-
-                                        .then(html => {
-
-                                            //document.querySelector(".content_text_js_jheo").innerHTML = html
-
-                                        })
-
-                                } )
-
-                            })
-
-                        }
-
-                    }
-                }
-            }
+            //// update all sse
+            updateAllWhenStateChange(all_notification);
         }
     }
 }
@@ -196,9 +120,9 @@ if( document.querySelector(".notification_jheo_js")){
 
     notif_icon.addEventListener("click", () => {
 
-        if( document.querySelectorAll(".card_js_jheo")){
+        if( document.querySelectorAll(".single_notif_jheo_js")){
 
-            const all_card_message= document.querySelectorAll(".card_js_jheo")
+            const all_card_message= document.querySelectorAll(".single_notif_jheo_js")
 
             const data = []
 
@@ -217,12 +141,19 @@ if( document.querySelector(".notification_jheo_js")){
                 },
                 body: JSON.stringify(data)
             })
-            .then(res => res.json())
             .then(res => {
-
+                //// show badge red notification
+                const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js")
+                if( alert_new_notification && !alert_new_notification.classList.contains("d-none")){
+                    alert_new_notification.classList.add("d-none");
+                }
+                return res.json();
+            })
+            .then(res => {
                 if( res){
+                    console.log(res)
                     // document.querySelector(".nbr_notification_jheo_js").innerText="0";
-                    document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity= "0"
+                    // document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity= "0"
 
                     // const all_card=document.querySelectorAll(".card_js_jheo")
                     // all_card.forEach(item => {
@@ -237,33 +168,6 @@ if( document.querySelector(".notification_jheo_js")){
         }
     })
 }
-
-if( document.querySelector(".tous_marquer_comme_lu_js_jheo")){
-
-    document.querySelector(".tous_marquer_comme_lu_js_jheo").addEventListener("click" , () => {
-
-        fetch("/user/notification/tous_marquer_lu",{
-
-            method: "POST",
-
-            headers: {
-
-                "content-type": "application/json; charset=utf",
-
-            }
-
-        }).then(response => response.json())
-
-        .then(response =>{
-
-            console.log(response)
-
-        })
-
-    })
-
-}
-
 
 //// delete the all input in form is the user cancelled the publication.
 if(document.querySelector('.annulation_pub_js_jheo')){
@@ -426,7 +330,86 @@ if (document.querySelector("#send-request")) {
 
 
 
+function updateNbrNotificationAndShowBadge(allNotifications){
 
+    /// notification have a state not show
+    const array_notificationNotShow = allNotifications.filter(item => parseInt(item.isShow) === 0)
+    const array_notificationNotRead = allNotifications.filter(item => parseInt(item.isRead) === 0)
+    
+    //// show badge red notification
+    if( array_notificationNotShow.length > 0 ){
+        const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js")
+        if( alert_new_notification && alert_new_notification.classList.contains("d-none")){
+            alert_new_notification.classList.remove("d-none");
+        }
+    }
+    
+    ///content nbr of notification
+    const contentNbrNotification = document.querySelector(".nbr_notification_jheo_js");
+    if( contentNbrNotification ){
+        /// old number
+        const nbr_actual_notification = contentNbrNotification.innerText;
+        /// if there is a notification not read
+        if(parseInt(nbr_actual_notification) < array_notificationNotRead.length){
+            //// change the old number notification
+            contentNbrNotification.innerText= (array_notificationNotRead.length > 9 || array_notificationNotRead.length === 0) ? array_notificationNotRead.length : `0${array_notificationNotRead.length}`;
+        }
+    }
+
+}
+
+function injectNewCardNotification(allNotifications){
+    /// notification not in card
+    const array_notificationToShow = allNotifications.filter(item => !document.querySelector(`#notificationID_${item.id}_jheo_js`) )
+    if( array_notificationToShow.length > 0 ){
+
+        //// content list notification
+        const contentNotificationHtml = document.querySelector(".content_card_notification_jheo_js")
+        if( contentNotificationHtml){
+
+            array_notificationToShow.length === allNotifications.length ? contentNotificationHtml.innerHTML= "" : null ;
+
+            ////show new notification
+            array_notificationToShow && array_notificationToShow.forEach(item => {
+                // notif_id,parent_card, card_title_content, card_text_content,card_text_date, is_show, is_read, link, type invitation, isAccepted
+                // user= { "photo": null, "fullname": null, "userID" : null}, notification= { "notificationID" : null, "title": null, "textContent" : null, "dateTime" : null } 
+                createAndAddCardNotification(
+                    contentNotificationHtml,
+                    {
+                        "notificationID" : item.id,
+                        "title" : "Une nouvelle notification",
+                        "textContent" : item.content,
+                        "dateTime" : item.datetime,
+                        "isShow" : !!parseInt(item.isShow),
+                        "isRead" : !!parseInt(item.isRead)
+                    },{
+                        photo :  item.photoDeProfil,
+                        userID : item.user_post,
+                        fullname : item.fullname,
+                        isConnected : item.is_connected
+                    }
+                )
+            })
+        }
+    }
+}
+
+function updateAllWhenStateChange(allNotifications){
+
+    /// notification have a state not show
+    const array_notificationNotShow = allNotifications.filter(item => parseInt(item.isShow) === 0)
+    const array_notificationNotRead = allNotifications.filter(item => parseInt(item.isRead) === 0)
+
+    allNotifications.forEach(item => {
+        if( parseInt(item.isRead) === 1 ){
+            const notif_card_item= document.querySelector(`#notificationID_${item.id}_jheo_js`);
+            if( notif_card_item.classList.contains("gray400")){
+                notif_card_item.classList.remove("gray400")
+            }
+        }
+        
+    })
+}
 
 function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForMe, isRead, profil){
 
@@ -551,61 +534,100 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
     // })
 }
 
+function createAndAddCardNotification(
+    contentNotificationHtml, 
+    notification= { "notificationID" : null, "title": null, "textContent" : null, "dateTime" : null, "isShow" : false, "isRead" : false },
+    user= { "photo": null, "fullname": null, "userID" : null, "isConnected" : null} 
+){
 
+    const notification_item = document.createElement('li');
+    notification_item.className = `nr cg h lc kg qg qh sq js yk ${!notification.isRead ? 'gray400' : ''} single_notif_jheo_js`
+ 
+    notification_item.setAttribute('id',`notificationID_${notification.notificationID}_jheo_js`)
+    notification_item.setAttribute('data-toggle-notif-id',`${notification.notificationID}`)
+    notification_item.setAttribute('onclick',`setShowNotifications(${notification.notificationID})`)
 
-function createAndAddCardNotification(notif_id,parent_card, card_title_content, card_text_content,card_text_date, is_show, is_read, type, link, tribu){
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.classList.add("my-2");
-    
-    card.classList.add("card_js_jheo");
-
-    card.setAttribute("data-toggle-notif-id" , notif_id)
-
-    if(parseInt(is_read) === 0){
-        card.classList.add("back_gray");
+    const badge_isConnected = !!user.isConnected === true ? `<span class="g l m xe qd th pi jj sj ra"></span>` : "";
+    notification_item.innerHTML = `
+        <a class="lc kg ug" href="#">
+            <div class="h sa wf uk th ni ej cb">
+                <img class="image_profil_navbar_msg" src="${user.photo ? user.photo.replace("/public" , "") : '/uploads/users/photos/img_avatar.png'}" alt="User"/>
+                ${badge_isConnected}
+            </div>
+            <div>
+                <figure>
+                    <blockquote class="blockquote">
+                        <h6 class="un zn gs">
+                            ${user.fullname}
+                        </h6>
+                        <p class="mn hc">
+                            ${notification.textContent}
+                        </p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer" style="float: right;">
+                        <cite class="fontSize07">${notification.dateTime}</cite>
+                    </figcaption>
+                </figure>
+            </div>
+        </a>
+    `
+    if( contentNotificationHtml.firstChild){
+        contentNotificationHtml.insertBefore(notification_item, contentNotificationHtml.firstChild);
+    }else{
+        contentNotificationHtml.appendChild(notification_item)
     }
+    // contentNotificationHtml.appendChild(notification_item)
 
-    const card_body = document.createElement("div");
-    card_body.classList.add("card-body");
-
-    const h5 = document.createElement("h5");
-    h5.classList.add("card-title");
-    h5.setAttribute("lng-tag","nouvelle_notification")
-    h5.innerText = card_title_content;
-
-    card_body.appendChild(h5);
-
-    const p = document.createElement("p");
-    p.classList.add("card-text");
-    p.innerHTML = card_text_content
-
-    let url = "";
-    let ancor = p.querySelector("a");
-    if(ancor){
-        href = ancor.dataset.ancre;
-        if(type == "commentaire" || type == "reaction"){
-            url = "/user/tribu/publication/" + tribu + "_publication" + link;
-            ancor.setAttribute("href", url+href);
-            ancor.textContent = "Voir la publication";
-        }
-    }
-    
-    card_body.appendChild(p);
-
-    const p_date = document.createElement("p");
-
-    p_date.classList.add("text-right");
-    p_date.innerHTML = "<footer class='blockquote-footer'><cite>"+ card_text_date + " </cite></footer>";
-
-    card_body.appendChild(p_date);
-
-    card.appendChild(card_body);
-
-    parent_card.appendChild(card)
 }
 
+function setShowNotifications(notificationID){
 
+    fetch(`/user/notification/read?notif_id=${notificationID}`)
+        .then(response => response.json())
+        .then(response => { 
+            const cardNotification= document.querySelector(`#notificationID_${notificationID}_jheo_js`)
+            if(cardNotification.classList.contains('gray400')){
+                cardNotification.classList.remove('gray400')
+            }
+
+            const nbr = document.querySelector(".nbr_notification_jheo_js")
+            const nbr_final =  nbr && parseInt(nbr.innerText) != 0 ? parseInt(nbr.innerText)-1 : nbr.innerText;
+            nbr.innerText = parseInt(nbr_final) < 10 &&  parseInt(nbr_final) !=0 ? `0${nbr_final}` : nbr_final;
+        })
+}
+
+function setReadAll(){
+    if( document.querySelectorAll(".single_notif_jheo_js")){
+        const data = [], all_card_notification= document.querySelectorAll(".single_notif_jheo_js")
+
+        all_card_notification.forEach(card => {
+            const single_data = { notif_id: card.getAttribute("data-toggle-notif-id")}
+            data.push(single_data);
+        })
+
+        fetch("/user/notification/readAll" , {
+            method: "POST",
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res =>res.json())
+        .then(res => {
+            if( res){
+                document.querySelector(".nbr_notification_jheo_js").innerText="0";
+
+                all_card_notification.forEach(item => {
+                    if( item.classList.contains("gray400")){
+                        setTimeout(() => {
+                            item.classList.remove("gray400")
+                        }, 1000)
+                    }
+                })
+            }
+        })
+    }
+}
 
 function deleteCardElement(){
 
@@ -619,6 +641,7 @@ function deleteCardElement(){
         parent_card.removeChild(item)
     })
 }
+
 
 
 
@@ -693,7 +716,7 @@ fileInputProfils.forEach(fileInputProfil=>{
                 cancelButtonText: 'Non, pas maintenant'
               }).then((result) => {
                 if (result.isConfirmed) {
-                  fetch(new Request("/user/profil/update/avatar", {
+                fetch(new Request("/user/profil/update/avatar", {
                     method: "POST",
                     headers: {
                         'Accept': 'application/json',
@@ -735,7 +758,6 @@ fileInputProfils.forEach(fileInputProfil=>{
                     });
                 }
               })
-
         });
 
         ///run event load in file reader.
@@ -744,7 +766,6 @@ fileInputProfils.forEach(fileInputProfil=>{
 })
 
 let icons_eye = document.querySelectorAll("i.pwd-eye")
-
 icons_eye.forEach(icon_eye=>{
 
     icon_eye.addEventListener("click",function(){
@@ -782,6 +803,8 @@ function toggleClass(element) {
         element.classList = "fas fa-plus-circle";
     }
 }
+
+
 // active nav left
 if (document.querySelector(".list-nav-left")) {
     const activPage = window.location.pathname

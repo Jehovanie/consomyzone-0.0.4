@@ -61,6 +61,12 @@
     padding-left: 5px;
 }
 
+.content_right_actualite {
+    display: block;
+    width: unset  !important;
+    overflow-x: hidden;
+}
+
 #modalForExtension .modal-content{
     /* border-color: grey; */
     max-width: 480px;
