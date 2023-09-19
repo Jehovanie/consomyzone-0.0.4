@@ -20,7 +20,7 @@ class InscriptionType extends AbstractType
                 ->add('Consommateur', CheckboxType::class,array(
                     'required' => false
                 ))
-                ->add('Fournisseur', CheckboxType::class, array(
+                ->add('Fournisseur', HiddenType::class, array(
                     'required' => false,
                     'label' => 'Partenaire'
                 ))

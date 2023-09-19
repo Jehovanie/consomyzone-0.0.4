@@ -242,8 +242,6 @@ if(document.querySelector('.annulation_pub_js_jheo')){
 
 }
 
-
-
 /**
 
  *@author Tommy
