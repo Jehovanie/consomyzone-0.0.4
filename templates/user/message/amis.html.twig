@@ -37,48 +37,60 @@
                             </button>
                         </form>
                         <div class="vd mh ip ch ib">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item" data-type="tribuG" onclick="toggleAmisTribu(this)">
+                                    <a class="nav-link linkToActive_jheo_js active" data-selector-list="content_list_tribuG_jheo_js">Tribu G</a>
+                                </li>
+                                <li class="nav-item" data-type="tribuT"  onclick="toggleAmisTribu(this)">
+                                    <a class="nav-link linkToActive_jheo_js" data-selector-list="content_list_tribuT_jheo_js" href="#">Tribu T</a>
+                                </li>
+                            </ul>
 
-                            {% if amisTributG|length > 1 %}
-
-                                <!-- Chat List Item -->
-                                {% for item in amisTributG %}
-                                    {% if item.id != app.user.id and item.is_online == 1 %}
-                                        <div class="cg lc mg sh ol rl tq is content-message-nanta-css">
-                                            <div class="h mb sc yd of th">
-                                                {# /// photo de profil #}
-                                                
-                                                <img src="{{(item.photo) ? item.photo  : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{item.firstname}}" class="vc yd qk rk elie-pdp-modif"/>
-                                                
-                                                {# //// state blue if in contact  #}
-                                                <span class="g l m jc wc ce th pi ij xj"></span>
-
-                                            </div>
-                                            <a href="{{path('app_message', { 'user_id' : item.id })}}" class="yd">
-                                                <h5 class="mn un zn gs">
-                                                    {{item.firstname ~ " " ~ item.lastname }}
-                                                </h5>
-                                                {% if item.last_message is defined and item.last_message != false %}
-
-                                                    {% if item.last_message.message_type is same as("text") %}
-                                                        <p class="mn">{{item.last_message.text | raw}}</p>
-                                                    {% else %}
-                                                        <p class="mn">object</p>
-                                                    {% endif %}
-                                                {% else %}
-                                                    <p>Nouvelle discussion</p>
-                                                {% endif %}
-                                            </a>
+                            <div class="content_list_tribuG_jheo_js">
+                                {% if amisTributG|length > 1 %}
+                                    <!-- Chat List Item -->
+                                    {% for item in amisTributG %}
+                                        {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                    {% endfor %}
+                                    <!-- end List Chat -->
+                                {% else %}
+                                    <div class="cg lc mg sh ol rl tq is">
+                                        <div class="bg-light bg-gradient p-3">
+                                            <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu G.</p>
                                         </div>
-                                    {% endif %}
-                                {% endfor %}
-                                <!-- end List Chat -->
-                            {% else %}
-                                <div class="cg lc mg sh ol rl tq is">
-                                    <div class="bg-light bg-gradient p-3">
-                                        <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu G.</p>
                                     </div>
-                                </div>
-                            {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <div class="content_list_tribuT_jheo_js d-none">
+                                <ul class="list-group list-group-flush">
+                                    {% for jtem in allTribuT %}
+                                        <li class="list-group-item">
+                                            <p class="text-primary d-flex justify-content-between align-items-center">
+                                                {{jtem.name_tribu_t_muable}}
+                                                <i class="fas fa-plus-circle" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
+                                            </p>
+                                            <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
+                                                <ul class="list-group">
+                                                    {% if jtem.amis|length > 0 %}
+                                                        <!-- Chat List Item -->
+                                                        {% for ktem in jtem.amis %}
+                                                            {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message  } %}
+                                                        {% endfor %}
+                                                        <!-- end List Chat -->
+                                                    {% else %}
+                                                        <div class="cg lc mg sh ol rl tq is">
+                                                            <div class="bg-light bg-gradient p-3">
+                                                                <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu T.</p>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <!-- ====== Chat List End -->
