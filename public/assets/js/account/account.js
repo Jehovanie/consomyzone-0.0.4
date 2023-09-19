@@ -133,44 +133,42 @@ if( document.querySelector(".information_user_conected_jheo_js")){
     }
 }
 
-// if( document.querySelector(".message_jheo_js")){
-//     const message_icon = document.querySelector(".message_jheo_js");
+if( document.querySelector(".message_jheo_js")){
+    const message_icon = document.querySelector(".message_jheo_js");
 
-//     message_icon.addEventListener("click", () => {
+    message_icon.addEventListener("click", () => {
 
-//         if( document.querySelectorAll(".single_notif_jheo_js")){
+        if( document.querySelectorAll(".show_single_msg_popup_jheo_js")){
 
-//             const all_card_message= document.querySelectorAll(".single_notif_jheo_js")
-//             const data = []
-//             all_card_message.forEach(card => {
-//                 const single_data = { notif_id: card.getAttribute("data-toggle-notif-id")}
+            const all_card_message= document.querySelectorAll(".show_single_msg_popup_jheo_js")
+            const data = []
+            all_card_message.forEach(card => {
+                const single_data = { notif_id: card.getAttribute("data-toggle-other-id")}
+                data.push(single_data);
+            })
 
-//                 data.push(single_data);
-//             })
-
-//             fetch("/user/notification/show" , {
-//                 method: "POST",
-//                 headers:{
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify(data)
-//             })
-//             .then(res => {
-//                 //// show badge red notification
-//                 const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js")
-//                 if( alert_new_notification && !alert_new_notification.classList.contains("d-none")){
-//                     alert_new_notification.classList.add("d-none");
-//                 }
-//                 return res.json();
-//             })
-//             .then(res => {
-//                 if( res){
-//                     console.log(res)
-//                 }
-//             })
-//         }
-//     })
-// }
+            fetch("/user/setshow/messages" , {
+                method: "GET",
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(res => {
+                //// show badge red notification
+                const badge_message= document.querySelector(".badge_message_jheo_js")
+                if( badge_message && !badge_message.classList.contains("hidden")){
+                    badge_message.classList.add("hidden");
+                }
+                return res.json();
+            })
+            .then(res => {
+                if( res){
+                    console.log(res)
+                }
+            })
+        }
+    })
+}
 
 if( document.querySelector(".notification_jheo_js")){
 
