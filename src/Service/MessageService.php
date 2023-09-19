@@ -112,7 +112,7 @@ class MessageService extends PDOConnexionService{
         $sql = "SELECT DISTINCT user_post from ".$table_name;
         $exec_other_user_id = $this->getPDO()->query($sql);
         $other_user_id= $exec_other_user_id->fetchAll(PDO::FETCH_ASSOC);
-        // dd($other_user_id);
+        // dd($other_user_id),
 
         ///get the last message that we talk to there
         $results = [];

@@ -340,11 +340,8 @@ class MessageController extends AbstractController
         $all_message = $messageService->getMessageForEveryUser(
             $this->getUser()->getTablemessage()
         );
-
         ///last message for each user and their profil .
         $results = [];
-
-        
         foreach ( $all_message as $message ){
             ///get id user post the message
             $id_user_send_message = $message[0]["user_post"];
@@ -370,8 +367,6 @@ class MessageController extends AbstractController
             //// push in the results
             array_push($results, $result);
         }
-
-
         /// send ssevent
         $response = new StreamedResponse();
         $response->setCallback(function () use (&$results) {
