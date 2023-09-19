@@ -11,9 +11,13 @@
 
 {% block javascripts %}
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+    <script src='https://8x8.vc/external_api.js'></script>
+    <script  src="{{ asset('assets/js/chatHome.js') }}" defer></script>
     {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
     <script  src="{{ asset('assets/js/message/message.js') }}" defer></script>
     <script  src="{{ asset('assets/js/message/eventStrem_message.js') }}" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 {% endblock %}
 
 {% block body %}
@@ -27,7 +31,7 @@
                 <div class="pc sv vv/4">
                     <!-- ====== Chat List Start -->
                     <div class="vc xk">
-                        <form class="h ib">
+                        {# <form class="h ib">
                             <input type="text" class="yd sh ni bj wr wj yr nl mm pm mn vo fr non_active" placeholder="Search..." disabled />
                             <button class="g j/2 i -ud-translate-y-1/2">
                                 <svg width="18" height="18" viewbox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +39,9 @@
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M11.957 11.958C12.2499 11.6651 12.7247 11.6651 13.0176 11.958L16.2801 15.2205C16.573 15.5133 16.573 15.9882 16.2801 16.2811C15.9872 16.574 15.5124 16.574 15.2195 16.2811L11.957 13.0186C11.6641 12.7257 11.6641 12.2508 11.957 11.958Z" fill="#637381"/>
                                 </svg>
                             </button>
-                        </form>
+                        </form> #}
+                        <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 w-100" onclick="createVisioGroupFromMessage()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>
+                        
                         <div class="vd mh ip ch ib">
 
                             {% if amisTributG|length > 1 %}
@@ -101,7 +107,10 @@
                         </div>
                         <div>
                             {# <div x-data="{openDropDown: false}" class="h"> #}
-                            <div class="h">
+                            <div class="h d-flex">
+                                <button class="lc yc zd mg pg sh bj wr wj yr me-1" id="elie-btn-visio">
+                                    <i class="fas fa-video-camera" style="font-size:28px;color:#0d6efd;"></i>
+                                </button>
                                 <button @click="openDropDown = !openDropDown" class="lc yc zd mg pg sh ni bj wr wj yr non_active">
                                     <svg width="18" height="18" viewbox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_3019_3034)">
@@ -129,14 +138,15 @@
                     </div>
 
                     {# ================== CONTENCT DISCUSSION ================== #}
-                    <div class="vd mh ip fh ql wl content_discussion_jheo_js">
+                    <div class="vd mh ip fh ql wl content_discussion_jheo_js" id="content_discussion_elie">
                         {% if userToProfil.messages|length > 0  %}
 
                             {% set defaultFile = "/assets/image/type_file.png" %}
 
                             {% for message in userToProfil.messages %}
 
-                                {% if message.isForMe is same as("1") %}
+                                {# {% if message.isForMe is same as("1") %} #}
+                                {% if message.isForMe == "1" %}
 
                                     <div class="qf" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
                                         <p class="qb mn un">
@@ -272,7 +282,7 @@
                 </div>
 
 
-                <div class="pc sv vv/4">
+                <div class="pc sv vv/4 my-profile-id-elie" data-my-id="{{userToProfil.id}}">
 
                     <!-- ====== Profile Section Start -->
                     <div class="zl">

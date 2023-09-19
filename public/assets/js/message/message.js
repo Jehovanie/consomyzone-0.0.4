@@ -308,3 +308,29 @@ imgs.forEach(img => {
     fullPage.style.display = 'block';
   });
 });
+
+// let y = document.querySelector("span.jc.un.mn.zn.gs.use-in-agd-nanta_js_css").textContent.trim()
+// console.log(y)
+
+if(document.querySelector("#elie-btn-visio")){
+
+    document.querySelector("#elie-btn-visio").addEventListener("click", function(){
+
+        let roomRandom_msg = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
+
+        let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+        <p class="text-info mb-2">
+            <i class="fas fa-video-camera me-2 ms-1"></i>
+            Appel en attente...
+            <span onclick="joinMeet(4,'${roomRandom_msg}', 'content_discussion_elie')" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+        </p> 
+        </div>`
+
+        sendMessage(msg_txt, [])
+
+
+        let amis = document.querySelector("div.content_entete_msg_jheo_js")
+
+        runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'content_discussion_elie')
+    })
+}

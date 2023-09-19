@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * StationServiceFrGeom
  *
- * @ORM\Table(name="station_service_fr_geom_new")
+ * @ORM\Table(name="station_service_fr_geom")
  * @ORM\Entity(repositoryClass="App\Repository\StationServiceFrGeomRepository")
  */
 class StationServiceFrGeom

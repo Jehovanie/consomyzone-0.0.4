@@ -6,12 +6,12 @@ var id_c_u //id du user courant
 // var IS_DEV_MODE = true;
 let image_list = [];
 let dataExtension = [];
-var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
-// var worker = new Worker('/assets/js/tribuT/worker.js') ;
-var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-// var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
-var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-// var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
+// var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
+var worker = new Worker('/assets/js/tribuT/worker.js') ;
+// var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
+var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
+// var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
+var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t
 var descriptionTribuT = ""
 /**
@@ -1137,6 +1137,8 @@ function showResto(table_rst_pastilled, id_c_u) {
                 let key = 0
                 let note = resto.globalNote ? resto.globalNote : 0
 
+                let adresse = resto.numvoie +" "+resto.nomvoie+" "+resto.codpost+" "+resto.dep_name
+
                 let text1 = ""
 
                 let action = ""
@@ -1178,7 +1180,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                             <!--</div>-->
                         </td>
                         <td>
-                            <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
                             <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                             
                             <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
@@ -2386,23 +2388,39 @@ function openOnNote(id_pastille, action) {
 
 }
 
-function openOnEvent(params) {
-    swal({
-        title: "Succès!",
-        text: "Un évènement crée avec succès",
-        icon: "success",
-        button: "OK",
-      });
+function openOnEvent(id, nom, adresse, action) {
+
+    document.querySelector("#nomEtabEvent").value = nom
+
+    document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
+
+    let date = new Date();
+    let currentDate = date.toISOString().substring(0,10);
+    // let currentTime = date.toISOString().substring(11,16);
+
+    document.getElementById('eventStart').value = currentDate;
+    document.getElementById('eventEnd').value = currentDate;
+    document.getElementById('timeStart').value = '00:00';
+    document.getElementById('timeEnd').value = '23:00';
+
+
+    // document.querySelector("#eventEnd").value = new Date().toLocaleDateString()
+    // swal({
+    //     title: "Succès!",
+    //     text: "Un évènement crée avec succès",
+    //     icon: "success",
+    //     button: "OK",
+    //   });
 }
 
-function openPopupAction(id_pastille, denomination_f, latitude, longitude, text1, action) {
+function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
 
     $("#detailOptionResto").modal("show")
 
     document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> `+ text1
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
-    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+ action+"\')")
+    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
       
     // const swalWithBootstrapButtons = swal.mixin({
     //     customClass: {
