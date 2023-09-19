@@ -1,14 +1,13 @@
-//let scroll_to_bottom = document.querySelector('.content_message');
-//scroll_to_bottom.scrollTop = scroll_to_bottom.scrollHeight;
-
-//// ON THE PAGE CHAT BOX
-// if(screen.width > 1000){
-
-// document.querySelector(".mode_mobile").remove()
-
-// }else{
-//     document.querySelector(".mode_pc").remove()
-// }
+const urlParams = new URLSearchParams(window.location.search);
+const myParam = urlParams.get('tribuT');
+if(myParam){
+    console.log(myParam);
+    if( document.querySelector(`.${myParam}_jheo_js`)){
+        document.querySelector(`.${myParam}_jheo_js`).click();
+    }else{
+        console.log(`Selector not found : '${myParam}_jheo_js'`);
+    }
+}
 
 if (document.querySelector(".content-message-nanta-css .bloc-text-message")) {
     document.querySelector(".content-message-nanta-css .bloc-text-message").classList.remove("text-white")

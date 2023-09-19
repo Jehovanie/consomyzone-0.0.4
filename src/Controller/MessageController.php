@@ -99,7 +99,7 @@ class MessageController extends AbstractController
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     $amis = [
-                        "id" => $id_amis["user_id"],
+                        "id" => $result["user_id"],
                         "photo" => $profil_amis->getPhotoProfil(),
                         "email" => $user_amis->getEmail(),
                         "firstname" => $profil_amis->getFirstname(),
@@ -185,7 +185,8 @@ class MessageController extends AbstractController
             ),
             "userToProfil" => $user_to_profil,
             "amisTributG" => $amis_in_tributG,
-            "allTribuT" => $all_tribuT_user
+            "allTribuT" => $all_tribuT_user,
+            "isInTribut" => $request->query->get("tribuT") ? true : false
         ]);
     }
 

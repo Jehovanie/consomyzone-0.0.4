@@ -9,7 +9,9 @@
         {% endif %}
 
     </div>
-    <a href="{{path('app_message', { 'user_id' : id })}}" class="yd">
+
+    {% set linkParam = tribuT is defined ?  { 'user_id' : id, 'tribuT' : tribuT } : { 'user_id' : id } %}
+    <a href="{{path('app_message', linkParam )}}" class="yd">
         <h5 class="mn un zn gs">
             {{firstname ~ " " ~ lastname }}
         </h5>

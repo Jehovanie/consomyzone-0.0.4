@@ -36,17 +36,18 @@
                                 </svg>
                             </button>
                         </form>
+                        
                         <div class="vd mh ip ch ib">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item" data-type="tribuG" onclick="toggleAmisTribu(this)">
-                                    <a class="nav-link linkToActive_jheo_js active" data-selector-list="content_list_tribuG_jheo_js">Tribu G</a>
+                                    <a class="nav-link linkToActive_jheo_js {{ isInTribut is same as(true) ? '' : 'active' }}" data-selector-list="content_list_tribuG_jheo_js">Tribu G</a>
                                 </li>
                                 <li class="nav-item" data-type="tribuT"  onclick="toggleAmisTribu(this)">
-                                    <a class="nav-link linkToActive_jheo_js" data-selector-list="content_list_tribuT_jheo_js" href="#">Tribu T</a>
+                                    <a class="nav-link linkToActive_jheo_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_tribuT_jheo_js" href="#">Tribu T</a>
                                 </li>
                             </ul>
 
-                            <div class="content_list_tribuG_jheo_js">
+                            <div class="content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
                                 {% if amisTributG|length > 1 %}
                                     <!-- Chat List Item -->
                                     {% for item in amisTributG %}
@@ -62,20 +63,20 @@
                                 {% endif %}
                             </div>
 
-                            <div class="content_list_tribuT_jheo_js d-none">
+                            <div class="content_list_tribuT_jheo_js  {{ isInTribut is same as(true) ? '' : 'd-none' }}">
                                 <ul class="list-group list-group-flush">
                                     {% for jtem in allTribuT %}
                                         <li class="list-group-item">
                                             <p class="text-primary d-flex justify-content-between align-items-center">
                                                 {{jtem.name_tribu_t_muable}}
-                                                <i class="fas fa-plus-circle" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
+                                                <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
                                             </p>
                                             <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
                                                 <ul class="list-group">
                                                     {% if jtem.amis|length > 0 %}
                                                         <!-- Chat List Item -->
                                                         {% for ktem in jtem.amis %}
-                                                            {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message  } %}
+                                                            {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
                                                         {% endfor %}
                                                         <!-- end List Chat -->
                                                     {% else %}
