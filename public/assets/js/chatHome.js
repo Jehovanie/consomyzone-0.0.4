@@ -980,7 +980,18 @@ function createVisioGroup() {
  */
 function createVisioGroupFromMessage() {
 
-    let friend_list_node = document.querySelectorAll("div.content-message-nanta-css")
+    let div = document.querySelector("div.user_profile_list_elie")
+
+    let div_tribuG = div.querySelector(".content_list_tribuG_jheo_js")
+    let div_tribuT = div.querySelector(".content_list_tribuT_jheo_js")
+
+    let final_div = div_tribuT.outerHTML.replaceAll("ID_","ID_elie_")
+
+    final_div = final_div.replaceAll("content_list_tribuT_jheo_js", "content_list_tribuT_elie_js")
+    final_div = final_div.replaceAll("yd", "")
+
+    let friend_list_node_tribuG = document.querySelectorAll("div.content_list_tribuG_jheo_js > div.content-message-nanta-css")
+    let friend_list_node_tribuT = div_tribuT.querySelectorAll("ul > div.content-message-nanta-css")
 
     let tabs = `
         <ul class="nav nav-tabs user-tabs-profile-elie">
@@ -995,7 +1006,7 @@ function createVisioGroupFromMessage() {
 
     let htm = tabs + "<div class='overflow-auto mt-2' style='max-height:50vh;'><ul class='list-group' id='list-group-user-visio'>"
 
-    friend_list_node.forEach(nd => {
+    friend_list_node_tribuG.forEach(nd => {
 
         htm += `
             <li class="list-group-item d-flex justify-content-between align-items-center user_t_g" user_id_visio="${nd.getAttribute("data-toggle-user-id")}">
@@ -1009,7 +1020,11 @@ function createVisioGroupFromMessage() {
 
     })
 
+    
     htm += "</ul></div>"
+
+    // console.log(htm);
+    htm +=final_div
 
     Swal.fire({
         title: 'Inviter des amis',
@@ -1035,15 +1050,45 @@ function createVisioGroupFromMessage() {
             </p> 
             </div>`
 
+            
             if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
+
+                let unique = [];
 
                 document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
 
-                    sendMessage(msg_txt, [])
+                    let to_user = li.getAttribute("user_id_visio")
 
-                    runVisio(roomGroup, li.getAttribute("user_id_visio"), 'content_discussion_elie')
-
+                    if (!unique.includes(to_user)) {
+                        unique.push(to_user);
+                    }
+                   
                 })
+
+                for(let user_id of unique){
+                    fetch("/user/push/message", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify( {
+                
+                            /// current connecter
+                            from: document.querySelector(".content_image_input_jheo_js").getAttribute("data-toggle-userfrom-id"),
+                            
+                            /// user to talk
+                            to: user_id,
+                
+                            ///message content
+                            message: msg_txt.replace("\n", ""),
+                            files: []
+                        })
+                    })
+    
+                    runVisio(roomGroup, user_id, 'content_discussion_elie')
+                }
+
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -1063,29 +1108,35 @@ function createVisioGroupFromMessage() {
             })
             e.target.classList.add("active")
 
-            console.log(e.target.classList.contains("_t_g"));
+            document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a=>{
+                if(a.querySelector("p")) a.querySelector("p").remove()
+                a.classList.add("d-flex")
+                a.classList.add("bd-highlight")
+                let span = document.createElement("span")
+                span.classList = "rounded-pill text-primary cursor-pointer flex-shrink-1 bd-highlight"
+                span.setAttribute("onclick","selectOneUser(this)")
+                span.textContent = "Inviter"
+                if(!a.querySelector("span")) a.appendChild(span)
+            })
 
             if(e.target.classList.contains("_t_g")){
-                document.querySelectorAll(".user_t_t").forEach(user=>{
-                    user.style.display ="none"
-                })
+
+                document.querySelector(".content_list_tribuT_elie_js").classList.add("d-none")
+
                 document.querySelectorAll(".user_t_g").forEach(user=>{
-                    user.style.display ="flex"
+                    user.style ="display:flex !important"
                 })
             }else{
                 document.querySelectorAll(".user_t_g").forEach(user=>{
-                    user.style.display ="none"
+                    user.style ="display:none !important"
                 })
-                document.querySelectorAll(".user_t_t").forEach(user=>{
-                    user.style.display ="flex"
-                })
+                document.querySelector(".content_list_tribuT_elie_js").classList.remove("d-none")
+
             }
         })
     })
 
 }
-
-// document.querySelectorAll("")
 
 /**
  * Function selecting one or more user to meeting
@@ -1110,6 +1161,7 @@ function selectOneUser(params) {
     }
 
 }
+
 /***********************Action*************** */
 
 
