@@ -6,7 +6,7 @@
 					<li class="nav-item icon-tabac me-3">
 						<a class="nav-link d-block">
 							<div class="containt-specific">
-								<div class="click-detail" onclick="	('{{ferme.depName}}', '{{ferme.dep}}', '{{ferme.id}}')">
+								<div class="click-detail"  data-bs-toggle="modal" data-bs-target="#detailModalMobil{{ferme.id}}" onclick="	getDetailFromListLeft('{{ferme.depName}}', '{{ferme.dep}}', '{{ferme.id}}')">
 									<p class="text-point-12 fw-bold">{{ferme.nomFerme | raw }} 
                                         {% if ferme.genre %}
                                             <span class="ferme-genre"> {{ferme.genre | raw}}</span>
@@ -71,6 +71,237 @@
 							</div>
 						</a>
 					</li>
+
+					<div class="modal fade" id="detailModalMobil{{ferme.id}}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+							<div class="modal-content  modal-content-mobile">
+								<div class="modal-header">
+									<h5 class="modal-title" id="detailModalMobilLabel">
+										{{ferme.nomFerme | raw }} 
+										<figcaption class="blockquote-footer mt-2">
+											<a href="#" class="small text-center ">{{ferme.nomProprietaire | raw}} </a>
+										</figcaption>
+									</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<div class="modal-body-mobile">
+										<div class="start">
+											<i class="fa-solid fa-star" data-rank="1"></i>
+											<i class="fa-solid fa-star" data-rank="2"></i>
+											<i class="fa-solid fa-star" data-rank="3"></i>
+											<i class="fa-solid fa-star" data-rank="4"></i>
+										</div>
+										{# ///activiter #}
+										{% if ferme.activite %}
+											<div class="content_activite">
+												<p class="activite">
+													<span class="fw-bold">Activite:</span>
+													{{ferme.activite | raw}}
+												</p>
+											</div>
+										{% endif %}
+
+										{% if ferme.agricultureBio %}
+											<div class="row">
+												<div class="col-8">
+													<p class="agribio fw-bold">
+														Agri biologie
+													</p>
+												</div>
+												<div class="col-2">
+													<img src="{{asset('assets/icon/icon-agri.png') | raw}}" alt="icon" width="50">
+												</div>
+												<div class="col-2">
+													<i class="fa-solid fa-check" aria-hidden="true"></i>
+												</div>
+											</div>
+
+											<hr>
+										{% endif %}
+
+
+										{# ///codePostal #}
+										{% if ferme.codePostal %}
+											<div class="content_activite">
+												<p class="activite">
+													<span class="fw-bold">Code Postal:</span>
+													{{ferme.codePostal  | raw}}
+												</p>
+											</div>
+											<hr>
+										{% endif %}
+
+										{% if ferme.ville %}
+											<div class="content_activite">
+												<p class="activite">
+													<span class="fw-bold">Ville:</span>
+													{{ferme.ville  | raw}}
+												</p>
+											</div>
+											<hr>
+										{% endif %}
+
+
+										{# genre  #}
+										<div class="content_genre">
+											<p class="genre">
+												<span class="fw-bold">Genre:</span>
+												{{ferme.genre | raw}}
+											</p>
+										</div>
+
+										<hr>
+										<div class="produit">
+											<h5>
+												<span class="fw-bold">Produit:</span>
+											</h5>
+											<ul>
+												{% if ferme.produit1 %}
+													<li>{{ferme.produit1 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit2 %}
+													<li>{{ferme.produit2 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit3 %}
+													<li>{{ferme.produit3 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit4 %}
+													<li>{{ferme.produit4 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit5 %}
+													<li>{{ferme.produit5 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit6 %}
+													<li>{{ferme.produit6 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit7 %}
+													<li>{{ferme.produit7 | raw}}</li>
+												{% endif %}
+												{% if ferme.produit8 %}
+													<li>{{ferme.produit8 | raw}}</li>
+												{% endif %}
+											</ul>
+
+											<p>{{ferme.produitFerme | raw}}</p>
+										</div>
+
+										<hr>
+
+										<div class="particularite">
+											<h5>
+												Particularité:
+											</h5>
+											<ul>
+												{% if ferme.carteBancaire %}
+													<li>Carte Bancaire possible.</li>
+												{% endif %}
+												{% if ferme.chequeVacance %}
+													<li>Accepter les chèques de Vacance.</li>
+												{% endif %}
+												{% if ferme.degustation %}
+													<li>Dégustation possible.</li>
+												{% endif %}
+												{% if ferme.animauxAutoriser %}
+													<li>Autorise de porte des animaux.</li>
+												{% endif %}
+												{% if ferme.venteEnLigne %}
+													<li>Vente en ligne possible.</li>
+												{% endif %}
+
+											</ul>
+										</div>
+
+										<hr>
+
+										<div class="content_tel">
+											<h5>
+												Contact rapide:
+											</h5>
+											<ul>
+												{% if ferme.telephoneDomicile %}
+													<li>
+														<span class="fw-bold">Tel Domicile:</span>
+														{{ferme.telephoneDomicile | raw}}</li>
+												{% endif %}
+												{% if ferme.telephoneMobile %}
+													<li>
+														<span class="fw-bold">Tel Mobile:</span>
+														{{ferme.telephoneMobile | raw}}</li>
+												{% endif %}
+												{% if ferme.telephoneTravail %}
+													<li>
+														<span class="fw-bold">Tel Travail:</span>
+														{{ferme.telephoneTravail | raw}}</li>
+												{% endif %}
+											</ul>
+											<hr>
+
+										</div>
+
+										<hr>
+										{% if ferme.horairesVenteAuMarche or ferme.horairesVenteMagasinProd or ferme.horairesVenteAFerme  %}
+											<div class="mb-3">
+												<h3>
+													Horaires:
+												</h3>
+												<ul class="horaires">
+													{% if ferme.horairesVenteAuMarche %}
+														<li>
+															<h5>Horaires vente au marché</h5>
+															<span>{{ferme.horairesVenteAuMarche | raw}}
+															</span>
+														</li>
+													{% endif %}
+													{% if ferme.horairesVenteMagasinProd %}
+														<li>
+															<h5>Horaires vente du magasin prod</h5>
+															<span>{{ferme.horairesVenteMagasinProd | raw}}
+															</span>
+														</li>
+													{% endif %}
+													{% if ferme.horairesVenteAFerme %}
+														<li>
+															<h5>Horaires vente à la ferme</h5>
+															<span>{{ferme.horairesVenteAFerme | raw}}
+															</span>
+														</li>
+													{% endif %}
+												</ul>
+											</div>
+										{% endif %}
+
+										{# ///content cta #}
+										<div class="content_tow_cta mb-3">
+											<div class="site_web non_active">
+												<a class="btn btn-outline-success" href="{{'https://'}}{{ferme.lienSiteWeb | raw}}" target="_blank">Lien :  site Web</a>
+											</div>
+
+										</div>
+										<hr>
+
+									</div>
+								</div>
+								<div class="modal-footer">
+									<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+										<span>
+											<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+												<span class="nbr_avis_resto_jheo_js">
+												</span>
+												avis
+											</a>
+										</span>
+											{% if app.user %}
+												<button class="btn btn-primary" id="givs-avis-ferme-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
+											{% else %}
+												<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
+											{% endif %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
 				{% endfor %}
 
 			</ul>

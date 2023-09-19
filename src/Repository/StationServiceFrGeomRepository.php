@@ -84,6 +84,8 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             ->select('p.id',
                      'p.nom',
                      'p.latitude',
+                     'p.horaies',
+                     'p.automate2424',
                      'p.latitude as lat',
                      'p.longitude',
                      'p.longitude as long',

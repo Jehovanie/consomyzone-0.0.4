@@ -150,7 +150,41 @@
         overflow-y: scroll;
     }
 
-    
+    .content-type-mobile{
+        width: 100%;
+        height: 75vh !important;
+        z-index: 10401;
+        margin-top: 160px;
+    }
+
+    .content_header_right_side{
+        margin-top: 0 !important;
+    }
+
+    .content_legende{
+        height: 80vh;
+        margin-top: 151px;
+        z-index: 10401;
+    }
+
+    .form-check{
+        font-size: 6pt !important;
+    }
+    .leaflet-control-layers-selector {
+        top: 3px !important;
+    }
+
+    .title_right_side{
+        font-size: 9pt !important;
+    }
+
+    .right_side_body .table thead{
+        font-size: 9pt !important;
+    }
+
+    .right_side_body .table tbody{
+        font-size: 6pt !important;
+    }
 
     .form-select.select_action_golf_nanta_js {
         font-size: 7pt !important;
@@ -159,6 +193,19 @@
         padding: 3px;
         margin-left: 243px;
     }
+    .icon_golf_legend {
+        width: 20px !important;
+        height: 0 !important;
+    }
+
+    .right_side_body {
+        margin-top: 30px !important;
+    }
+
+    .right_side_body .form-check-input{
+        margin-top: 8px;
+    }
+
 
     .swal2-popup{
         margin-top: -160px;
