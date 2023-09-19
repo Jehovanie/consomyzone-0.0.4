@@ -1,14 +1,13 @@
-//let scroll_to_bottom = document.querySelector('.content_message');
-//scroll_to_bottom.scrollTop = scroll_to_bottom.scrollHeight;
-
-//// ON THE PAGE CHAT BOX
-// if(screen.width > 1000){
-
-// document.querySelector(".mode_mobile").remove()
-
-// }else{
-//     document.querySelector(".mode_pc").remove()
-// }
+const urlParams = new URLSearchParams(window.location.search);
+const myParam = urlParams.get('tribuT');
+if(myParam){
+    console.log(myParam);
+    if( document.querySelector(`.${myParam}_jheo_js`)){
+        document.querySelector(`.${myParam}_jheo_js`).click();
+    }else{
+        console.log(`Selector not found : '${myParam}_jheo_js'`);
+    }
+}
 
 if (document.querySelector(".content-message-nanta-css .bloc-text-message")) {
     document.querySelector(".content-message-nanta-css .bloc-text-message").classList.remove("text-white")
@@ -333,4 +332,40 @@ if(document.querySelector("#elie-btn-visio")){
 
         runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'content_discussion_elie')
     })
+}
+
+function toggleClick(domHtml){
+    domHtml.classList.toggle("fa-minus-circle")
+    domHtml.classList.toggle("fa-plus-circle")
+}
+
+function toggleAmisTribu(domHtml){
+    if(!domHtml.querySelector(".linkToActive_jheo_js")){
+        console.log("Selector not found: 'linkToActive_jheo_js'")
+        return false;
+    }
+
+    const activeSwitch= domHtml.querySelector(".linkToActive_jheo_js");
+    if( !activeSwitch.classList.contains('active')){
+        activeSwitch.classList.add('active')
+    }
+
+    const selector_list = activeSwitch.getAttribute("data-selector-list")
+    if( document.querySelector(`.${selector_list}`).classList.contains('d-none')){
+        document.querySelector(`.${selector_list}`).classList.remove('d-none')
+    }
+
+    const allSwitches= document.querySelectorAll(".linkToActive_jheo_js")
+    allSwitches.forEach(item => {
+        if( item != activeSwitch ){
+            const selector_list_other = item.getAttribute("data-selector-list")
+            if( item.classList.contains('active')){
+                item.classList.remove('active')
+            }
+            if( !document.querySelector(`.${selector_list_other}`).classList.contains('d-none')){
+                document.querySelector(`.${selector_list_other}`).classList.add('d-none')
+            }
+        }
+    })
+
 }

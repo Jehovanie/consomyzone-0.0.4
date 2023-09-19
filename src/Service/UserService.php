@@ -25,17 +25,14 @@ class UserService  extends PDOConnexionService{
         $this->supplierRepository = $supplierRepository;
     }
 
-    public function getUserFirstName($userId)
-    {
+    public function getUserFirstName($userId){
         $statement = $this->getPDO()->prepare("select * from (select firstname,user_id  from consumer union select firstname,user_id from supplier) as tab where tab.user_id = $userId");
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result["firstname"];
     }
 
-    public function getUserLastName($userId)
-    {
-
+    public function getUserLastName($userId){
         $statement = $this->getPDO()->prepare("select * from (select lastname,user_id  from consumer union select lastname,user_id from supplier) as tab where tab.user_id = $userId");
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -75,7 +72,6 @@ class UserService  extends PDOConnexionService{
             }else{
                 array_push($all_tribuT, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'] , "role"=>"Fondateur"] );
             }
-            
         }
 
         $json_tribuT_joined = $profil_user->getTribuTJoined();
@@ -105,6 +101,4 @@ class UserService  extends PDOConnexionService{
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-
-    
 }
