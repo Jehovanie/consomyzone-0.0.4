@@ -1572,7 +1572,7 @@ class Tribu_T_Service extends PDOConnexionService
     public function getAllPartisanProfil($tableTribuT){
         
         if($this->isTableExist($tableTribuT)){
-            $sql= "SELECT id, user_id, roles  FROM $tableTribuT";
+            $sql= "SELECT id, user_id, roles  FROM $tableTribuT WHERE status LIKE '1'";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);

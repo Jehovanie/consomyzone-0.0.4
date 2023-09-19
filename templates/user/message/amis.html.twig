@@ -57,7 +57,7 @@
                                 {% else %}
                                     <div class="cg lc mg sh ol rl tq is">
                                         <div class="bg-light bg-gradient p-3">
-                                            <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu G.</p>
+                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -82,7 +82,7 @@
                                                     {% else %}
                                                         <div class="cg lc mg sh ol rl tq is">
                                                             <div class="bg-light bg-gradient p-3">
-                                                                <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu T.</p>
+                                                                <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu T.</p>
                                                             </div>
                                                         </div>
                                                     {% endif %}
@@ -159,12 +159,6 @@
                                             
                                             {% if message.message_type is same as('text') %}
                                                 <p>{{message.content.text | raw}}</p>
-                                            {# {% elseif (message.message_type is same as('image'))  %}
-                                                <div class="content_image_msg">
-                                                    {% for image in message.content.images %}
-                                                        <img class="message_image_item" src="{{image}}" alt="image">
-                                                    {% endfor %}
-                                                </div> #}
                                             {% else  %}
                                                 <p>{{message.content.text | raw}}</p>
                                                 <div class="content_image_msg">
