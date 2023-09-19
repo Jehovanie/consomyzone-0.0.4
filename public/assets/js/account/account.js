@@ -70,13 +70,27 @@ if( document.querySelector(".information_user_conected_jheo_js")){
             const tab_id_msg_already_show = [];
 
             div_message_already_show.forEach(element => {
-                tab_id_msg_already_show.push(parseInt(element.getAttribute("data-toggle-other-id")))
+                const dataOtherId= parseInt(element.getAttribute("data-toggle-other-id"))
+                if( new_message.some(jtem => parseInt(jtem.message.user_post) === dataOtherId)) {
+                    const dataMsg= new_message.find(jtem => parseInt(jtem.message.user_post) === dataOtherId)
+
+                    // card_msg.className= ` ... show_single_msg_popup_jheo_js ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${other_id}_js_jheo`;
+                    if( dataMsg ){
+                        if( parseInt(dataMsg.message.isRead)  !== 1 ){
+                            console.log(dataMsg.message.user_post)
+                            const divMsg = document.querySelector(`.msg_${dataMsg.message.user_post}_js_jheo`);
+    
+                            if( divMsg && !divMsg.classList.contains('gray400')){
+                                divMsg.classList.add('gray400');
+                            }
+                        }
+                    }
+                }
+                tab_id_msg_already_show.push(dataOtherId)
             })
 
             //// filter new message from server and show the message don't show
-            const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            console.log('new_msg')
-            console.log(new_msg)
+            const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(parseInt(item.message.user_post)))
 
             if( new_msg.length > 0 ) {
                 /// for each rest message let's show
@@ -96,11 +110,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                 })
             }
 
-            //// update card exist
-            const old_msg = new_message.filter( item => tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            console.log('old_msg')
-            console.log(old_msg)
- 
         }
     }
 
@@ -475,11 +484,9 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
 
     ///create card message and add in the message modal popup
     const card_msg = document.createElement("li");
-    card_msg.className= `nr cg h lc mg qg qh sq js yk ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${id}_js_jheo show_single_msg_popup_jheo_js`;
-
+    card_msg.className= `nr cg h lc mg qg qh sq js yk show_single_msg_popup_jheo_js ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${other_id}_js_jheo`;
     /// user author
     card_msg.setAttribute("data-toggle-other-id", other_id);
-
     /// set the id of the card_msg message
     card_msg.setAttribute("id",id);
 
