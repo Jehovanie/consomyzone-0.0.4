@@ -986,39 +986,52 @@ function createVisioGroup() {
 
     htm += "</ul></div>"
 
-    Swal.fire({
-        title: 'Inviter des amis',
-        html: htm,
-        showCloseButton: true,
-        showCancelButton: true,
-        focusConfirm: false,
-        confirmButtonText:
-            '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
-        cancelButtonText:
-            '<i class="fas fa-close"></i> Pas maintenant',
-    }).then(res => {
-        if (res.isConfirmed) {
+    if(friend_list_node.length <= 0){
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Aucun utilisateur connecté pour le moment!',
+            footer: 'Réunion annulée!'
+        })
+        
+    }else{
 
-            let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-
-            if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
-
-                document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
-
-                    runVisio(roomGroup, li.getAttribute("user_id_visio"), 'visio')
-
-                })
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Aucun utilisateur sélectionné!',
-                    footer: 'Réunion annulée!'
-                })
+        Swal.fire({
+            title: 'Inviter des amis',
+            html: htm,
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
+            cancelButtonText:
+                '<i class="fas fa-close"></i> Pas maintenant',
+        }).then(res => {
+            if (res.isConfirmed) {
+    
+                let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+    
+                
+                    if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
+    
+                        document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
+        
+                            runVisio(roomGroup, li.getAttribute("user_id_visio"), 'visio')
+        
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Aucun utilisateur sélectionné!',
+                            footer: 'Réunion annulée!'
+                        })
+                    }
+        
+                
             }
-
-        }
-    })
+        })
+    }
 
 }
 
