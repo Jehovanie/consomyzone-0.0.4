@@ -179,9 +179,9 @@ outer_icon_message_mobile {
 .message_image_item {
   display: block;
   width: 145px;
-  ;
   height: 145px;
   border-radius: 5px !important;
+  clip-path: circle(100%) !important;
 }
 
 .cta_profil_message {
