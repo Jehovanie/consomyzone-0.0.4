@@ -315,13 +315,24 @@ if(document.querySelector("#elie-btn-visio")){
 
     document.querySelector("#elie-btn-visio").addEventListener("click", function(){
 
+        $("#visioMessageElie").modal("show")
+
+        document.querySelector("#bodyVisioMessageElie").innerHTML = `<div class="d-flex justify-content-center mt-5">
+            <div class="containt">
+                <div class="word word-1">C</div>
+                <div class="word word-2">M</div>
+                <div class="word word-3">Z</div>
+            </div>
+        </div>
+        `   
+
         let roomRandom_msg = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
 
         let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
         <p class="text-info mb-2">
             <i class="fas fa-video-camera me-2 ms-1"></i>
             Appel en attente...
-            <span onclick="joinMeet(4,'${roomRandom_msg}', 'content_discussion_elie')" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+            <span onclick="joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
         </p> 
         </div>`
 
@@ -330,7 +341,10 @@ if(document.querySelector("#elie-btn-visio")){
 
         let amis = document.querySelector("div.content_entete_msg_jheo_js")
 
-        runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'content_discussion_elie')
+        document.querySelector("#bodyVisioMessageElie").innerHTML =""
+
+        runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'bodyVisioMessageElie')
+        // runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'content_discussion_elie')
     })
 }
 
@@ -369,3 +383,32 @@ function toggleAmisTribu(domHtml){
     })
 
 }
+
+window.addEventListener("load", (event) => {
+
+    const currentUrl = window.location.href;
+
+    let url= new URL(currentUrl);
+    let params = new URLSearchParams(url.search);
+
+    let user_id = 0;
+
+    if(params.has("user_id")){
+        user_id = params.get("user_id");
+    }else{
+        user_id = document.querySelector(".content_entete_msg_jheo_js").getAttribute("data-toggle-id-user-to")
+    }
+
+    document.querySelectorAll("div.content-message-nanta-css").forEach(div=>{
+        if(div.getAttribute('data-toggle-user-id') == user_id){
+            div.classList.add("message-active")
+        }
+    })
+
+    // document.querySelectorAll(".rb > div > div > p")
+    document.querySelectorAll(".rb > div > div > p").forEach(p=>{
+        console.log(p);
+        p.classList.add("text-white")
+    })
+
+  });

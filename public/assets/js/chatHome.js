@@ -727,6 +727,32 @@ function setStatusMeetById(id, status) {
     })
 }
 
+
+/**
+ * Function updating a status of visio
+ * @constructor
+ * @param {string} name 
+ * @param {string} status 
+ */
+function setStatusMeetByName(roomname, status) {
+
+    fetch("/getVisioByName/" + roomname)
+        .then(response => response.json())
+        .then(visios => {
+
+            if (visios.length > 0) {
+
+                for (let visio of visios) {
+
+                    setStatusMeetById(visio.id, status)
+
+                }
+            }
+
+        })
+
+}
+
 /**
  * Function gerating a UID
  * @constructor
@@ -757,10 +783,22 @@ let user_name = document.querySelector("#my_full_name") ? document.querySelector
  * @constructor
  * @param {integer} id : id of meet
  * @param {string} room : roomname of meet
+ * @param {node} nodeElement : node of button of meeting
  */
-function joinMeet(id, room, parentNodeId) {
+function joinMeet(...args) {
 
+    let room = args[0]
+    let parentNodeId = args[1]
+    
     // let user_name = document.querySelector("#my_full_name").textContent.trim()
+
+    if(document.querySelector("#visioMessageElie")){
+        $("#visioMessageElie").modal("show")
+    }
+
+    if (document.querySelector('#'+parentNodeId).querySelector("iframe")) {
+        document.querySelector('#'+parentNodeId).querySelector("iframe").remove()
+    }
 
     const options = {
         roomName: home_room + room,
@@ -778,7 +816,7 @@ function joinMeet(id, room, parentNodeId) {
 
     api.executeCommand('displayName', user_name);
 
-    setStatusMeetById(id, "progress")
+    setStatusMeetByName(room, "progress")
 
     const iframe = api.getIFrame();
 
@@ -786,21 +824,7 @@ function joinMeet(id, room, parentNodeId) {
 
     api.on('readyToClose', () => {
 
-        fetch("/getVisioByName/" + room)
-            .then(response => response.json())
-            .then(visios => {
-
-                if (visios.length > 0) {
-
-                    for (let visio of visios) {
-
-                        setStatusMeetById(visio.id, "finished")
-
-                    }
-                }
-
-            })
-        
+        setStatusMeetByName(room, "finished")
         
         //document.querySelector('#'+parentNodeId).innerHTML = ""
         
@@ -808,11 +832,10 @@ function joinMeet(id, room, parentNodeId) {
 
         if(currentUrl.includes("user/message")){
 
-            let msg_len = document.querySelectorAll("#content_discussion_elie > div").length
+            $("#visioMessageElie").modal("hide")
 
-            let last_message_id = document.querySelectorAll("#content_discussion_elie > div")[msg_len-1].getAttribute("id").replaceAll(/[^0-9]/g,"")
-            
-            let last_message_elem = document.querySelectorAll("#content_discussion_elie > div")[msg_len-1]
+            let node = ""
+            let message_id = 0;
 
             let content = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
                 <p class="text-success mb-2">
@@ -821,7 +844,11 @@ function joinMeet(id, room, parentNodeId) {
                 </p> 
             </div>`
 
-            last_message_elem.innerHTML = content
+            if(args[2]){
+                node = args[2]
+                message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
+                node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
+            }
 
             let msg = {
                 text : content,
@@ -829,7 +856,7 @@ function joinMeet(id, room, parentNodeId) {
                 files :[]
             }
             
-            fetch('/update/oneMessage/'+last_message_id, {
+            fetch('/update/oneMessage/'+message_id, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
@@ -852,6 +879,9 @@ function joinMeet(id, room, parentNodeId) {
         if(document.querySelector("#user_name_chat")){
             document.querySelector("#user_name_chat").innerText = "VisioConférence"
         }
+        if(document.querySelector("#visioMessageElieLabel")){
+            document.querySelector("#visioMessageElieLabel").innerText = "VisioConférence"
+        }
     })
 
     api.addEventListener('participantJoined', (e) => {
@@ -861,6 +891,14 @@ function joinMeet(id, room, parentNodeId) {
             if (!document.querySelector("#user_name_chat").textContent.trim().includes(e.displayName)) {
 
                 document.querySelector("#user_name_chat").innerText = document.querySelector("#user_name_chat").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
+            }
+            
+        }
+        if(document.querySelector("#visioMessageElieLabel")){
+
+            if (!document.querySelector("#visioMessageElieLabel").textContent.trim().includes(e.displayName)) {
+
+                document.querySelector("#visioMessageElieLabel").innerText = document.querySelector("#visioMessageElieLabel").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
             }
         }
         
@@ -877,6 +915,15 @@ function joinMeet(id, room, parentNodeId) {
  * @param {integer} user_id : user_id of user
  */
 function runVisio(roomRandom, user_id, parentNodeId) {
+
+    document.querySelector("#"+parentNodeId).innerHTML += `<div class="d-flex justify-content-center mt-5 chargement-visio">
+        <div class="containt">
+            <div class="word word-1">C</div>
+            <div class="word word-2">M</div>
+            <div class="word word-3">Z</div>
+        </div>
+    </div>
+    `   
 
     let data = {
         roomName: roomRandom,
@@ -903,7 +950,9 @@ function runVisio(roomRandom, user_id, parentNodeId) {
                     .then(response => response.json())
                     .then(visio => {
                         if (!document.querySelector('#'+parentNodeId).querySelector("iframe")) {
-                            joinMeet(visio.id, roomRandom, parentNodeId)
+                            document.querySelector(".chargement-visio").remove()
+                            joinMeet(roomRandom, parentNodeId, this)
+
                         }
                     })
             }
@@ -987,7 +1036,7 @@ function createVisioGroupFromMessage() {
 
     let final_div = div_tribuT.outerHTML.replaceAll("ID_","ID_elie_")
 
-    final_div = final_div.replaceAll("content_list_tribuT_jheo_js", "content_list_tribuT_elie_js")
+    final_div = final_div.replaceAll("content_list_tribuT_jheo_js", "content_list_tribuT_elie_js d-none")
     final_div = final_div.replaceAll("yd", "")
 
     let friend_list_node_tribuG = document.querySelectorAll("div.content_list_tribuG_jheo_js > div.content-message-nanta-css")
@@ -1023,7 +1072,6 @@ function createVisioGroupFromMessage() {
     
     htm += "</ul></div>"
 
-    // console.log(htm);
     htm +=final_div
 
     Swal.fire({
@@ -1046,16 +1094,16 @@ function createVisioGroupFromMessage() {
             <p class="text-info mb-2">
                 <i class="fas fa-video-camera me-2 ms-1"></i>
                 Appel en attente...
-                <span onclick="joinMeet(4,'${roomGroup}', 'content_discussion_elie')" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+                <span onclick="joinMeet('${roomGroup}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
             </p> 
             </div>`
 
             
-            if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
+            if (document.querySelectorAll(".elie-user-selected").length > 0) {
 
                 let unique = [];
 
-                document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
+                document.querySelectorAll(".elie-user-selected").forEach(li => {
 
                     let to_user = li.getAttribute("user_id_visio")
 
@@ -1084,9 +1132,12 @@ function createVisioGroupFromMessage() {
                             message: msg_txt.replace("\n", ""),
                             files: []
                         })
-                    })
+                    }).then(response=>response.json())
+                    .then(res=>console.log(res))
+
+                    document.querySelector("#bodyVisioMessageElie").innerHTML =""
     
-                    runVisio(roomGroup, user_id, 'content_discussion_elie')
+                    runVisio(roomGroup, user_id, 'bodyVisioMessageElie')
                 }
 
             } else {
@@ -1102,6 +1153,7 @@ function createVisioGroupFromMessage() {
     })
 
     document.querySelectorAll("ul.user-tabs-profile-elie > li").forEach(li=>{
+        
         li.addEventListener("click",function(e){
             document.querySelectorAll("ul.user-tabs-profile-elie > li > a").forEach(a=>{
                 a.classList.remove("active")
@@ -1109,14 +1161,10 @@ function createVisioGroupFromMessage() {
             e.target.classList.add("active")
 
             document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a=>{
-                if(a.querySelector("p")) a.querySelector("p").remove()
-                a.classList.add("d-flex")
-                a.classList.add("bd-highlight")
-                let span = document.createElement("span")
-                span.classList = "rounded-pill text-primary cursor-pointer flex-shrink-1 bd-highlight"
-                span.setAttribute("onclick","selectOneUser(this)")
-                span.textContent = "Inviter"
-                if(!a.querySelector("span")) a.appendChild(span)
+                a.href = "#"
+                if(a.parentElement.querySelector("span")){
+                    a.parentElement.querySelector("span").remove()
+                }
             })
 
             if(e.target.classList.contains("_t_g")){
@@ -1126,11 +1174,27 @@ function createVisioGroupFromMessage() {
                 document.querySelectorAll(".user_t_g").forEach(user=>{
                     user.style ="display:flex !important"
                 })
+
             }else{
                 document.querySelectorAll(".user_t_g").forEach(user=>{
                     user.style ="display:none !important"
                 })
                 document.querySelector(".content_list_tribuT_elie_js").classList.remove("d-none")
+
+                document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a=>{
+                    if(a.querySelector("p")) a.querySelector("p").remove()
+
+                    let span = document.createElement("span")
+                    span.classList = "rounded-pill text-primary cursor-pointer ms-auto"
+                    span.setAttribute("onclick","selectOneUser(this)")
+                    span.textContent = "Inviter"
+                    a.previousElementSibling.parentElement.appendChild(span)
+
+                    a.parentElement.classList = "cg lc mg sh ol rl tq is content-message-nanta-css d-flex align-items-center"
+
+                    a.parentElement.querySelector("img").classList = "user-pdp-visio"
+                    
+                })
 
             }
         })
@@ -1150,13 +1214,13 @@ function selectOneUser(params) {
         params.classList.remove("text-primary")
         params.classList.add("text-danger")
         params.parentElement.style = "background-color:#CFF4FC;"
-        params.parentElement.classList.add("selected")
+        params.parentElement.classList.add("elie-user-selected")
     } else {
         params.textContent = "Inviter"
         params.classList.remove("text-danger")
         params.classList.add("text-primary")
         params.parentElement.style = ""
-        params.parentElement.classList.remove("selected")
+        params.parentElement.classList.remove("elie-user-selected")
 
     }
 
@@ -1534,12 +1598,12 @@ if (document.querySelector("#openVisio")) {
                             case 'wait':
                                 stat = `en attente...`
                                 color = 'info'
-                                btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}', 'visio')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
+                                btn_join = `<span onclick="joinMeet('${meet.nom}', 'visio')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
                                 break;
                             case 'progress':
                                 stat = `en cours`
                                 color = 'warning'
-                                btn_join = `<span onclick="joinMeet(${meet.id},'${meet.nom}', 'visio')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
+                                btn_join = `<span onclick="joinMeet('${meet.nom}', 'visio')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
                                 break;
                             case 'finished':
                                 stat = `términé`

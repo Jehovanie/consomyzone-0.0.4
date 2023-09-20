@@ -75,8 +75,8 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
             //// filter new message from server and show the message don't show
             const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            console.log('new_msg')
-            console.log(new_msg)
+            // console.log('new_msg')
+            // console.log(new_msg)
 
             if( new_msg.length > 0 ) {
                 /// for each rest message let's show
@@ -98,8 +98,8 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
             //// update card exist
             const old_msg = new_message.filter( item => tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            console.log('old_msg')
-            console.log(old_msg)
+            // console.log('old_msg')
+            // console.log(old_msg)
  
         }
     }
