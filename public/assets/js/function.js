@@ -1177,6 +1177,16 @@ function calculateDurationOfComment(dateOfComment) {
     }
 
 }
+
+
+function settingDateToStringMonthDayAndYear(dateToTransform){
+    const all_months= ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    const current_date = new Date(dateToTransform);
+    
+    return `${all_months[current_date.getMonth()]} ${current_date.getDate()}, ${current_date.getUTCFullYear()}` ;
+}
+
+
 /**
  * 
  * @param {string} type , 
@@ -1377,6 +1387,8 @@ function pagginationModule(parentSelector, childSelector, numberPerPage){
     }
 
 }
+
+
 function openMenu(){
 
 		let leftInvitation = document.querySelector("#container-mobile")

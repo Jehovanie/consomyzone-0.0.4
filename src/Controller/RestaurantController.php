@@ -540,11 +540,11 @@ class RestaurantController extends AbstractController
         
         $note_temp=0;
         foreach ($global_note as $note ) {
-            if($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()){
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
                 $isAlreadyCommented = true;
-                $avis = [ "note" => $note->getNote(), "text" => $note->getAvis() ];
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
             }
-            $note_temp += $note->getNote(); 
+            $note_temp += $note["note"]; 
         }
 
         $details["avis"] = [
@@ -766,7 +766,6 @@ class RestaurantController extends AbstractController
         $idRestaurant,
         SerializerInterface $serializer
     ) {
-
         $response = $avisRestaurantRepository->getNoteGlobale($idRestaurant);
         $response = $serializer->serialize($response, 'json');
         return new JsonResponse($response, 200, [], true);

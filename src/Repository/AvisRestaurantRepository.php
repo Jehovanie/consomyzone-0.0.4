@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\AvisRestaurant;
+use App\Service\UserService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,9 +17,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AvisRestaurantRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, UserService $userService)
     {
         parent::__construct($registry, AvisRestaurant::class);
+        $this->userService = $userService;
     }
 
     public function add(AvisRestaurant $entity, bool $flush = false): void
@@ -71,11 +73,34 @@ class AvisRestaurantRepository extends ServiceEntityRepository
 
     public function getNoteGlobale($idrestaurant)
     {
-        return $this->createQueryBuilder("r")
-            ->where("r.restaurant = :idResto ")
-            ->setParameter("idResto", $idrestaurant)
-            ->getQuery()
-            ->getResult();
+        $all_avis= $this->createQueryBuilder("r")
+                ->where("r.restaurant = :idResto ")
+                ->setParameter("idResto", $idrestaurant)
+                ->getQuery()
+                ->getResult();
+
+        $results = [];
+
+        foreach ($all_avis as $avis){
+            $user_id = $avis->getUser()->getId();
+            $user_item = $this->userService->getUserProfileFromId($user_id);
+            $data = [
+                "id" => $avis->getId(),
+                "note" => $avis->getNote(),
+                "avis" => $avis->getAvis(),
+                "datetime" => $avis->getDatetime(),
+                "user" => [
+                    "id" => $user_id,
+                    "email" => $avis->getUser()->getEmail(),
+                    "pseudo" => $avis->getUser()->getPseudo(),
+                    "fullname" => $user_item->getFirstname() . " " . $user_item->getLastname(),
+                    "photo" => $user_item->getPhotoProfil(),
+                ]
+            ];
+
+            array_push($results, $data);
+        }
+        return $results;
     }
 
     public function getNote($idrestaurant,$user)
