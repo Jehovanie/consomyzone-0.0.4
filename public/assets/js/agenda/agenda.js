@@ -1960,7 +1960,6 @@ function putInputOnDataTableHeader(selector,colIdx,api){
 }
 
 function findEtabByKey(e,isHasDep){
-    makeLoading()
     let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     // element.dataset.id
     if(!isHasDep){
@@ -1994,6 +1993,22 @@ function findEtabByKey(e,isHasDep){
 
         $("#listRestoOrGolfModal").modal("show")
 
+        makeLoading()
+
+        let initTable = `<table class="table table-striped" id="tableEtabCMZ">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Adresse</th>
+                                <th scope="col">Téléphone</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>`
+
+        document.querySelector(".list_resto_or_golf").innerHTML = initTable
+
         if(cmzEtab == "golf"){
             document.querySelectorAll("#smallNavInvitation > li > a")[0].textContent = "Tous les golfs"
             document.querySelectorAll("#smallNavInvitation > li > a")[1].textContent = "Golfs à faire"
@@ -2012,21 +2027,6 @@ function findEtabByKey(e,isHasDep){
                     tabEtab[0].classList.add("active")
                     tabEtab[1].classList.remove("active")
                 }
-               
-                let initTable = `<table class="table table-striped" id="tableEtabCMZ">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nom</th>
-                                <th scope="col">Adresse</th>
-                                <th scope="col">Téléphone</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>`
-
-                document.querySelector(".list_resto_or_golf").innerHTML = initTable
-
 
                 let turnOffLogo=false
                 if (results.length > 0) {
