@@ -13,17 +13,19 @@
 {% endblock %}
 
 {% block javascripts %}
-
 	<script type="text/javascript" src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
 
-	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/data_resto.js') }}" defer></script>
 
-	{# <script type="text/javascript" src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script> #}
+    <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
+    <script src="{{asset('assets/js/module/shp.js')}}" defer></script>
+    
+
     <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterResto.js') }}" defer></script>
 	<script type="text/javascript" src="{{asset('assets/js/restaurant/marckerClusterResto_spec.js')}}" defer></script>
 
+    <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/filter_a-z_asc_desc.js') }}" defer></script>
 
 	<script type="text/javascript" src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
