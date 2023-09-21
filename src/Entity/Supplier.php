@@ -151,7 +151,37 @@ class Supplier
      *
      * @ORM\Column(name="is_verified_tribuG_admin", type="boolean", nullable=false)
      */
-    private $isVerifiedTributGAdmin;
+    private $isVerifiedTributGAdmin=false;
+
+    /**
+     *
+     * @ORM\Column(name="nomCommerce", type="string", length=255,  nullable=true)
+     */
+    private $nomCommerce;
+
+    /**
+     *
+     * @ORM\Column(name="emailPro", type="string", length=255,  nullable=true)
+     */
+    private $emailPro;
+
+    /**
+     *
+     * @ORM\Column(name="linkedin", type="string", length=255,  nullable=true)
+     */
+    private $linkedin;
+
+    /**
+     *
+     * @ORM\Column(name="siret", type="string", length=20,  nullable=true)
+     */
+    private $siret;
+
+    /**
+     *
+     * @ORM\Column(name="siren", type="string", length=20,  nullable=true)
+     */
+    private $siren;
 
     public function getId(): ?int
     {
@@ -428,6 +458,106 @@ class Supplier
     public function setQuartier($quartier)
     {
         $this->quartier = $quartier;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nomCommerce
+     */ 
+    public function getNomCommerce()
+    {
+        return $this->nomCommerce;
+    }
+
+    /**
+     * Set the value of nomCommerce
+     *
+     * @return  self
+     */ 
+    public function setNomCommerce($nomCommerce)
+    {
+        $this->nomCommerce = $nomCommerce;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of emailPro
+     */ 
+    public function getEmailPro()
+    {
+        return $this->emailPro;
+    }
+
+    /**
+     * Set the value of emailPro
+     *
+     * @return  self
+     */ 
+    public function setEmailPro($emailPro)
+    {
+        $this->emailPro = $emailPro;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of linkedin
+     */ 
+    public function getLinkedin()
+    {
+        return $this->linkedin;
+    }
+
+    /**
+     * Set the value of linkedin
+     *
+     * @return  self
+     */ 
+    public function setLinkedin($linkedin)
+    {
+        $this->linkedin = $linkedin;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of siret
+     */ 
+    public function getSiret()
+    {
+        return $this->siret;
+    }
+
+    /**
+     * Set the value of siret
+     *
+     * @return  self
+     */ 
+    public function setSiret($siret)
+    {
+        $this->siret = $siret;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of siren
+     */ 
+    public function getSiren()
+    {
+        return $this->siren;
+    }
+
+    /**
+     * Set the value of siren
+     *
+     * @return  self
+     */ 
+    public function setSiren($siren)
+    {
+        $this->siren = $siren;
 
         return $this;
     }
