@@ -53,7 +53,7 @@
                             {% if app.user %}
                                 <button type="button" class="mx-2 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
                             {% else %}
-                                <button type="button" class="mx-2 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
+                                <button type="button" class="mx-2 btn btn-secondary btn_gris_actif_js_Elie" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                             {% endif %}
                         {% endif %}
                         {% if app.user %}
@@ -144,7 +144,7 @@
                 {# ///content cta #}
                 <div class="content_tow_cta">
                     {% if details.site1 != "" %}
-                        <div class="site_web non_active">
+                        <div class="site_web">
                             <a class="btn btn-success" href="{{details.site1 | raw}}" target="_blank">Lien :  site Web</a>
                         </div>
                     {% endif %}
