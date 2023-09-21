@@ -109,7 +109,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                 })
             }
-
         }
     }
 

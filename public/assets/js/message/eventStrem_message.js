@@ -58,7 +58,13 @@ function createDivMessage(id,isForMe,date, message,images){
     const userToLastname= document.querySelector(".content_entete_msg_jheo_js").getAttribute('data-userToLastname')
 
     const card_msg= document.createElement("div");
+    // if(isForMe== "1"){
+    //     card_msg.classList= "qf rb";
+    // }else{
+    //     card_msg.className= "qf";
+    // }
     card_msg.className= "qf";
+    
     card_msg.setAttribute("id", `message_${id}_jheo_js`);
 
     let image_html_list= "";
@@ -67,6 +73,7 @@ function createDivMessage(id,isForMe,date, message,images){
             image_html_list += `<img class="message_image_item" src="${image}" alt="image">`
         });
     }
+
 
     card_msg.innerHTML= `
         <p class="qb mn un">

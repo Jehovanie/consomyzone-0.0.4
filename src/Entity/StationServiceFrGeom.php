@@ -49,7 +49,7 @@ class StationServiceFrGeom
     /**
      * @var string|null
      *
-     * @ORM\Column(name="horaies", type="string", nullable=true)
+     * @ORM\Column(name="horaires", type="string", nullable=true)
      */
     private $horaies;
 

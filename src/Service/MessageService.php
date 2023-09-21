@@ -217,7 +217,29 @@ class MessageService extends PDOConnexionService{
 
         $stmt = $this->getPDO()->prepare($sql);
 
-        $stmt->execute([$status, $id]);
+        $stmt->bindParam(1, $status);
+
+        $stmt->bindParam(2, $id);
+
+        $stmt->execute();
+
+        // $stmt->execute([$status, $id]);
+
+    }
+
+    public function updateOneMessageById($id, $myTableMessage, $content_msg)
+
+    {
+
+        $sql = "UPDATE $myTableMessage set content = ? WHERE id = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $content_msg);
+
+        $stmt->bindParam(2, $id);
+
+        $stmt->execute();
 
     }
 
@@ -258,6 +280,15 @@ class MessageService extends PDOConnexionService{
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
+    }
+
+    public function getOneMessage($myTableMessage,$id){
+
+        $sql = "SELECT * FROM ".$myTableMessage." WHERE id = " . $id ;
+        $result = $this->getPDO()->query($sql);
+        $msg=  $result->fetch(PDO::FETCH_ASSOC);
+
+        return $msg;
     }
 
 }

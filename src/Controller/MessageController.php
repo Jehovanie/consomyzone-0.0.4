@@ -597,4 +597,22 @@ class MessageController extends AbstractController
         return $this->json($token);
     }
 
+    #[Route('/update/oneMessage/{id}', name: 'app_update_by_id_message')]
+    public function updateOneMessageById($id, MessageService $messageService, Request $request): Response
+    {
+
+        $user = $this->getUser();
+
+        $table_message = $user->getTablemessage();
+
+        $msg = $messageService->getOneMessage($table_message,$id);
+
+        $messageService->updateOneMessageById($id, $table_message, $request->getContent());
+
+        return $this->json([
+            "success" => true
+        ]);
+       
+    }
+
 }
