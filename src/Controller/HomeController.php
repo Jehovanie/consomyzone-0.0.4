@@ -543,4 +543,13 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[Route("/user/demande/devenir/partenaire",name:"app_get_partenaire",methods:["POST","GET"])]
+    public function askToGetPartenaire(Status $status){
+
+        $userConnected= $status->userProfilService($this->getUser());
+        return $this->render("user/devenir_partenaire.html.twig",[
+            "userConnected" => $userConnected
+    ]);
+    }
+
 }

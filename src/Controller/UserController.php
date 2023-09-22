@@ -63,6 +63,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends AbstractController
 {
@@ -741,11 +743,11 @@ class UserController extends AbstractController
         $type = "";
         if ($userType == "consumer") {
 
-            $type = "Consommateur";
+            $type = "Partisan";
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
         }elseif ($userType == "supplier") {
 
-            $type = "Fournisseur";
+            $type = "Partenaire";
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
         }
 
@@ -2526,5 +2528,17 @@ class UserController extends AbstractController
             "success" => true,
         ], 200);
 
+    }
+
+    #[Route("/user/liste/demande/partenariat", name:"app_liste_demande_partenaire", methods:["GET"])]
+    public function getListeDemandePartenariat(
+        SupplierRepository $suplierRepo,
+        SerializerInterface $serializerInterface
+    ){
+        $fields = $suplierRepo->findBy(
+            ['isVerifiedTributGAdmin' => false]
+        );
+        $json = $serializerInterface->serialize($fields, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

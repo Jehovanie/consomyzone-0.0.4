@@ -540,11 +540,11 @@ class RestaurantController extends AbstractController
         
         $note_temp=0;
         foreach ($global_note as $note ) {
-            if($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()){
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
                 $isAlreadyCommented = true;
-                $avis = [ "note" => $note->getNote(), "text" => $note->getAvis() ];
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
             }
-            $note_temp += $note->getNote(); 
+            $note_temp += $note["note"]; 
         }
 
         $details["avis"] = [
@@ -578,12 +578,13 @@ class RestaurantController extends AbstractController
             foreach ($tribu_t_owned as $key) {
                 $tableTribu = $key["table_name"];
                 $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
                     if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"])){
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
                     }else{
-                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path]);
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
                     }
                 }
             }
@@ -593,10 +594,11 @@ class RestaurantController extends AbstractController
             foreach ($tribu_t_joined as $key) {
                 $tbtJoined = $key["table_name"];
                 $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
                 $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
                     if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"])){
-                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path]);
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
                     }
                 }
             }
@@ -766,7 +768,6 @@ class RestaurantController extends AbstractController
         $idRestaurant,
         SerializerInterface $serializer
     ) {
-
         $response = $avisRestaurantRepository->getNoteGlobale($idRestaurant);
         $response = $serializer->serialize($response, 'json');
         return new JsonResponse($response, 200, [], true);
@@ -784,8 +785,9 @@ class RestaurantController extends AbstractController
         $response = $avisRestaurantRepository->updateAvis(
             $idRestaurant,
             $userId,
+            $rJson["avisID"],
             $rJson["note"],
-            $rJson["avis"]
+            $rJson["avis"],
         );
         $response = $serializer->serialize($response, 'json');
         return new JsonResponse($response, 200, [], true);

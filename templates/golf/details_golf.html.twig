@@ -37,7 +37,7 @@
             </div>
              <hr>
             <div class="mt-2 nombre_avis d-flex justify-content-center align-items-center">
-                <button class="btn btn-secondary btn-md see-avis non_active"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
+                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
             </div>
         </div>
 
@@ -96,7 +96,7 @@
                     </a>
                 </div>
             {% else %}
-                <div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
+                <div class="site_web btn_gris_actif_js_Elie" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf." onclick="openSwalActif()">
                     <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">
                         Lien :  Site Web
                     </a>
