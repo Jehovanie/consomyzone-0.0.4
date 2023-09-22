@@ -101,6 +101,41 @@
             </div>
         </div>
 
+        <!-- Modal CREATE POP UP-->
+        <div class="modal fade" id="modalCreatePopUp" tabindex="-1" aria-labelledby="modalCreatePopUpLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-1"><i class="bi bi-info-circle"></i> <span class="textInfos"></span></div>
+                    <h3 class="mb-3" style="color: #6c668d;text-decoration: underline;">Partager votre avis et consulter les avis des autres partisans dans la tribu T <span class="tbtName"></span> : </h3>
+                    <div class="btnAvis">
+                        <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Avis</button>
+                        <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Donner votre avis</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- Modal SHOW TRIBUS INFOS -->
+        <div class="modal fade" id="modalShowTribusInfos" tabindex="-1" aria-labelledby="modalShowTribusInfosLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalShowTribusInfosLabel">Vous avez pastillé ce restaurant avec ces tribus T</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="height:450px;">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {# <div class="row content_left_side_mobile">
             {% include 'shard/home/fetchLeftSide.html.twig' %}
         </div> #}

@@ -26,21 +26,22 @@
 	<div class="nh">
 		{% include 'shard/account_navleft_new.html.twig' %}
 		{% include 'shard/account_navbar_new.html.twig' %}
+		{% import 'shard/input/textEditor.twig' as editor %}
 		<!-- ===== Main Content Start ===== -->
 		<main class="gv hm hv dashbord-super-admin">
 			<div class="sk bu 2xl:ud-p-11">
-				<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 w-50">
+				<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 w-75">
 					<div class="container-fluid">
 						<div class="collapse navbar-collapse" id="navbarSuperAdmin">
 							<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 								<li class="nav-item">
 									<a class="nav-link list-tribu-g text-primary" data-target="list-tribu-g">Liste des tribus G</a>
 								</li>
-								<li class="nav-item non_active">
-									<a class="nav-link list-tribu-g disabled-link" data-target="list-tribu-t">Liste des tribus T</a>
-								</li>
-								<li class="nav-item non_active">
-									<a class="nav-link list-fournisseur disabled-link" data-target="list-fournisseur">Liste des Partenaires</a>
+								{# <li class="nav-item non_active">
+									<a class="nav-link list-tribu-t disabled-link" data-target="list-tribu-t">Liste des tribus T</a>
+								</li> #}
+								<li class="nav-item">
+									<a class="nav-link list-partenaire" data-target="list-demande-partenaire" onclick="getListeDemandePartenariat(event)">Liste des demande de partenariats</a>
 								</li>
 								
 							</ul>
@@ -59,15 +60,13 @@
 						</div>
 						<div class="container content_global_super_admin content_global_super_admin_js_jheo">
 							<div class="content_chargement">
-								<div class="spinner-border spinner-border text-info" role="status">
-									<span class="visually-hidden">Loading...</span>
-								</div>
+								
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div class="row content_right_actualite content-super-admin mb-4" id="list-tribu-t">
+				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-tribu-t">
 					<div class="content_list">
 						<div class="entete mb-2 ms-3">
 							<h5>
@@ -85,12 +84,128 @@
 						</div>
 					</div>
 				</div>
-				<div class="row content_right_actualite content-super-admin mb-4" id="list-fournisseur">
-					{% include 'user/dashboard_super_admin/admin_fournisseur.html.twig' %}
+				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-demande-partenaire">
+					{# {% include 'user/dashboard_super_admin/admin_fournisseur.html.twig' %} #}
+					<div class="content_list">
+						<div class="entete mb-2 ms-3">
+							<h5>
+								<i class="fa-solid  fa-list"></i>
+								Liste des demande de partenariats
+							</h5>
+						</div>
+						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
+							<div class="content_chargement_liste_partenaire_nanta_js">
+								<div class="spinner-border spinner-border text-info" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					
 				</div>
 			</div>
 		</main>
 		<!-- ===== Main Content End ===== -->
+	</div>
+
+	<!-- Modal Liste Demande de Partenariat -->
+	<div class="modal fade" id="modalDetailListeDemandePartenaire" tabindex="-1" aria-labelledby="ListeDemandePartenaireLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="ListeDemandePartenaireLabel">Informations professionnelles</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="card mb-4 mb-lg-0">
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush rounded-3">
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Prénom <i class="bi bi-person-circle"></i> : </span>
+								<p class="mb-0"><span class="fnameD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Nom <i class="bi bi-people-fill"></i> : </span>
+								<p class="mb-0"><span class="lnameD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Email <i class="bi bi-envelope-fill"></i> : </span>
+								<p class="mb-0"><span class="emailD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Téléphone <i class="bi bi-telephone-fill"></i> : </span>
+								<p class="mb-0"><span class="telD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span style="min-width: 100px;">Adresse <i class="bi bi-geo-alt"></i> : </span>
+								<p class="mb-0"><span class="adresseD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Type commerce <i class="bi bi-briefcase"></i> : </span>
+								<p class="mb-0"><span class="commerceD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Nom de l'établissement <i class="bi bi-briefcase"></i> : </span>
+								<p class="mb-0"><span class="nomCommerceD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Code APE <i class="bi bi-briefcase"></i> : </span>
+								<p class="mb-0"><span class="codeapeD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Siret <i class="bi bi-briefcase"></i> : </span>
+								<p class="mb-0"><span class="siretD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Siren <i class="bi bi-briefcase"></i> : </span>
+								<p class="mb-0"><span class="sirenD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Site web <i class="fas fa-globe fa-lg text-warning"></i> : </span>
+								<p class="mb-0"><span class="websiteD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Facebook <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i> : </span>
+								<p class="mb-0"><span class="facebookD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Twitter <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i> : </span>
+								<p class="mb-0"><span class="twitterD"></span></p>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+								<span>Linkedin <i class="bi bi-linkedin" style="color: blue;"></i> : </span>
+								<p class="mb-0"><span class="linkedinD"></span></p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	{# Start modal to become partenaire #}
+	<div class="modal fade" tabindex="-1" id="reponsePartenaireModal" aria-labelledby="titlereponsePartenaireModal" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="titlereponsePartenaireModal">Reponse demande de partenariat</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				{{ editor.textEditor(2)}}
+				<div class="container_list"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="sendFeedBackForPartenariat()">Envoyer</button>
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+			</div>
+			</div>
+		</div>
 	</div>
 
 {% endblock %}

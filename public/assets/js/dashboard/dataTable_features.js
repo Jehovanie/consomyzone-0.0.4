@@ -58,15 +58,19 @@ window.addEventListener('load', () => {
                 url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             }
         });
+
         const label= document.querySelector("#myTable_filter label")
         const input_search= document.querySelector("#myTable_filter label input");
-        input_search.setAttribute('placeholder','Recherche de tribu G');
+        if(input_search){
+            input_search.setAttribute('placeholder','Recherche de tribu G');
         
-        while (label.firstChild) {
-            label.removeChild(label.firstChild);
-        }
+            while (label.firstChild) {
+                label.removeChild(label.firstChild);
+            }
 
-        label.appendChild(input_search)
+            label.appendChild(input_search)
+
+        }
 
     })
 
@@ -116,13 +120,16 @@ window.addEventListener('load', () => {
         });
         const label= document.querySelector("#myTable_filter_tribu_t label")
         const input_search= document.querySelector("#myTable_filter_tribu_t label input");
-        input_search.setAttribute('placeholder','Recherche de tribu T');
+        if(input_search){
+            input_search.setAttribute('placeholder','Recherche de tribu T');
         
-        while (label.firstChild) {
-            label.removeChild(label.firstChild);
-        }
+            while (label.firstChild) {
+                label.removeChild(label.firstChild);
+            }
 
-        label.appendChild(input_search)
+            label.appendChild(input_search)
+
+        }
 
     })
 })

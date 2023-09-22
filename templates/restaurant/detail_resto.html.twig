@@ -2,30 +2,37 @@
 	<div class="left_content_home">
         <div class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
             <div class="content_titre_details">
-               
-                {# /// nom et propriété #}
                 <div class="titre text-center">
-                    <div class="mb-2 restoNameWithLogoTribu" style="display:flex;justify-content:center">
-                        <span class="mt-2 ms-3 me-1 text-center"><b>{{details.denominationF | raw}}</b></span>
+                    <div class="mb-2 restoNameWithLogoTribu">
+                        <div class="mt-2 ms-3 me-1 text-center"><b>{{details.denominationF | raw}}</b></div>
                         {% if (app.user) %}
-                            {% if tribu_t_resto_pastille|length > 0 %}
-                                {% for item in tribu_t_resto_pastille %}
-                                    {% if item["logo_path"] != "" %}
-                                        <img class="ms-1" width="20" src="/public{{asset(item["logo_path"])}}" alt="">
-                                    {% else %}
-                                        <img  width="20" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                            <div class="super_container_js_nantenaina">
+                                <div class="mainContainerLogoTribu">
+                                    {% if tribu_t_resto_pastille|length > 0 %}
+                                        {% for item in tribu_t_resto_pastille %}
+                                            {% if item["logo_path"] != "" %}
+                                                {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
+                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                            {% else %}
+                                                {# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
+                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                            {% endif %}
+                                        {% endfor %}
                                     {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            {% if tribu_t_resto_joined_pastille|length > 0 %}
-                                    {% for item in tribu_t_resto_joined_pastille %}
-                                        {% if item["logo_path"] != "" %}
-                                            <img class="ms-1" width="20" src="/public{{asset(item["logo_path"])}}" alt="">
-                                        {% else %}
-                                            <img class="ms-1" width="20" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
-                                        {% endif %}
-                                    {% endfor %}
-                            {% endif %}
+                                    {% if tribu_t_resto_joined_pastille|length > 0 %}
+                                        {% for item in tribu_t_resto_joined_pastille %}
+                                            {% if item["logo_path"] != "" %}
+                                                {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
+                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                            {% else %}
+                                                {# <img class="ms-1" width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
+                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>
                         {% endif %}
                     </div>
                     
@@ -58,6 +65,7 @@
                             <button type="button" class="mx-2 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                             <button type="button" class="mx-2 btn btn-secondary btn_gris_actif_js_Elie" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalActifPastille()">Pastiller</button>
                         {% endif %}
+
                         <div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}" ></div>
                     </div>
                 </div>
