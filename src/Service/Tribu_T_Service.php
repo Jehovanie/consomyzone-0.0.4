@@ -417,6 +417,18 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
+    public function getAllIdRestoPastille($table){
+
+        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+
 
     public function showAllUsers()
 

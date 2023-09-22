@@ -122,8 +122,20 @@ class RestaurantController extends AbstractController
     public function getAllRestCoor(
         Request $request,
         BddRestoRepository $bddResto,
-        SerializerInterface $serialize
+        SerializerInterface $serialize,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service
     ) {
+        $arrayIdResto = [];
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+        foreach ($tribu_t_owned as $key) {
+            $tableTribu = $key["table_name"];
+            $tableExtension = $tableTribu . "_restaurant";
+            if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
+                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension);
+                $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
+            }
+        }
       
         if($request->query->has("minx") && $request->query->has("miny") ){
 
@@ -132,14 +144,19 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy), 'json');
+            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
-            return new JsonResponse($datas, 200, [], true);
+            return $this->json([
+                "data" => $datas,
+                "allIdRestoPastille" => $arrayIdResto
+            ], 200);
         }
 
-        $datas = $serialize->serialize($bddResto->getSomeDataShuffle(2000), 'json');
-
-        return new JsonResponse($datas, 200, [], true);
+        $datas= $bddResto->getSomeDataShuffle(2000);
+        return $this->json([
+            "data" => $datas,
+            "allIdRestoPastille" => $arrayIdResto
+        ], 200);
     }
 
     #[Route("/Coord/All/Restaurant/specific/arrondissement/{dep}/{codinsee}", name: "app_coord_restaurant_sepcific_arrond", methods: ["GET"])]
@@ -167,11 +184,23 @@ class RestaurantController extends AbstractController
 
     #[Route("/Coord/Spec/Restaurant/{dep}", name: "app_coord_spec_restaurant", methods: ["GET"])]
     public function getSpecificRestCoor(
+        $dep,
         Request $request,
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
-        $dep
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service
     ) {
+        $arrayIdResto = [];
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+        foreach ($tribu_t_owned as $key) {
+            $tableTribu = $key["table_name"];
+            $tableExtension = $tableTribu . "_restaurant";
+            if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
+                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension);
+                $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
+            }
+        }
 
         if($request->query->has("minx") && $request->query->has("miny") ){
 
@@ -180,12 +209,18 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep), 'json');
-
-            return new JsonResponse($datas, 200, [], true);
+            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep);
+            return $this->json([
+                    "data" => $datas,
+                    "allIdRestoPastille" => $arrayIdResto
+            ], 200);
         }
-        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep), 'json');
-        return new JsonResponse($datas, 200, [], true);
+        // $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep), 'json');
+        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep);
+        return $this->json([
+            "data" => $datas,
+            "allIdRestoPastille" => $arrayIdResto
+        ], 200);
     }
 
     #[Route("/restaurant/specific", name: "app_specific_dep_restaurant", methods: ["GET"])]
