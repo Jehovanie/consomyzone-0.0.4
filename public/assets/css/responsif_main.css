@@ -215,11 +215,15 @@
         background-color: #fff;
         width: 100vw;
         border-radius: 5px;
-        height: 80vh;
+        height: 100vh;
         margin-top: 155px;
         box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
         position: fixed;
         z-index: 10402;
+    }
+
+    #restoPastilleModal{
+        z-index: 10401;
     }
 
     .scroll-mobile .navbar-nav .nav-item .nav-link{

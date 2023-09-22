@@ -10,39 +10,86 @@ window.addEventListener('load', () => {
     if(document.querySelector(".content_one_cta"))
         currentUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
 
-    document.querySelector("#text-note").onkeyup = (e) => { 
-        if (document.querySelector(".flash-msg-ERREUR")) {
-            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
-        }
-        const value = e.target.value
-        mustBeInferior4(value, e.target)
-        
-        
-        setTimeout(() => {
-            e.target.style="border:2px solid black;" 
-            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
-                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+    
+
+    if (screen.width < 991) {
+        const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
+
+        contentModalAvieResto.forEach(items => {
+            items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => { 
+                if (items.querySelector(".flash-msg-ERREUR")) {
+                    items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
+                }
+                const value = e.target.value
+                mustBeInferior4(value, e.target)
                 
-            })
-        }, 5000)   
+                
+                setTimeout(() => {
+                    e.target.style="border:2px solid black;" 
+                    items.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                        i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                        
+                    })
+                }, 5000)   
+            }
+        })
+        
+
+        // document.querySelector("#text-note-modif-mobile").onkeyup = (e) => { 
+        //     if (document.querySelector(".flash-msg-ERREUR")) {
+        //         document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        //     }
+        //     const value = e.target.value
+        //     mustBeInferior4(value, e.target)
+            
+            
+        //     setTimeout(() => {
+        //         e.target.style="border:2px solid black;" 
+        //         document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+        //             i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                    
+        //         })
+        //     }, 5000)   
+        // }
+    } else {
+        document.querySelector("#text-note").onkeyup = (e) => { 
+            if (document.querySelector(".flash-msg-ERREUR")) {
+                document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+            }
+            const value = e.target.value
+            mustBeInferior4(value, e.target)
+            console.log(value, e.target)
+            
+            
+            setTimeout(() => {
+                e.target.style="border:2px solid black;" 
+                document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                    i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                    
+                })
+            }, 5000)   
+        }
+
+        document.querySelector("#text-note-modif").onkeyup = (e) => { 
+            if (document.querySelector(".flash-msg-ERREUR")) {
+                document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+            }
+            const value = e.target.value
+            mustBeInferior4(value, e.target)
+            
+            
+            setTimeout(() => {
+                e.target.style="border:2px solid black;" 
+                document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                    i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                    
+                })
+            }, 5000)   
+        }
     }
 
-    document.querySelector("#text-note-modif").onkeyup = (e) => { 
-        if (document.querySelector(".flash-msg-ERREUR")) {
-            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
-        }
-        const value = e.target.value
-        mustBeInferior4(value, e.target)
-        
-        
-        setTimeout(() => {
-            e.target.style="border:2px solid black;" 
-            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
-                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
-                
-            })
-        }, 5000)   
-    }
+    
+
 
     /// Send note post
     // document.querySelector("#Submit-Avis-resto-tom-js").onclick = () => {
@@ -173,6 +220,8 @@ window.addEventListener('load', () => {
 })
 
 
+
+
 /**
  * Create new avis resto in first time
  */
@@ -262,6 +311,93 @@ function addAvisResto(){
     }
 }
 
+function addAvisRestoMobile(newIdResto, newUserId){
+    
+    ///// remove alert card and add chargement spinner
+    if( document.querySelector(".all_avis_jheo_js")){
+        document.querySelector(".all_avis_jheo_js").innerHTML = `
+            <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                <div class="spinner-border m-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `
+    }
+
+    // let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+    // let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+    let note = document.querySelector(`#text-note-mobile-${newIdResto}`).value
+    note=note.replace(/,/g,".")
+    const avis = document.querySelector(`#message-text-mobile-${newIdResto}`).value
+    try {
+        mustBeInferior4(note, document.querySelector(`#text-note-mobile-${newIdResto}`), true)  
+        const requestParam = {
+            note: parseFloat(note),
+            avis:avis
+        }
+
+        deleteOldValueInputAvis(); //// delet input and text 
+
+        ///// remove alert card empty avis and add chargement spinner
+        if( document.querySelector(".card_avis_resto_empty_jheo_js")){
+            document.querySelector(".card_avis_resto_empty_jheo_js").remove();
+
+            document.querySelector(".all_avis_jheo_js").innerHTML = `
+                <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                    <div class="spinner-border m-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `
+        }
+
+        ////send data to the backend server
+        const request = new Request(`/avis/restaurant/${newIdResto}`, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(requestParam)
+        })
+        fetch(request).then(r => {
+            if (r.ok && r.status === 200) {
+
+                //// Update state of the btn send avis resto
+                document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis';
+                document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "update");
+                document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("onclick", "settingAvisResto()");
+
+                ///// generate list avis in modal
+                showModifArea(newIdResto, newUserId)
+
+                //// update number avis in details resto
+                if (document.querySelector(`#see-tom-js${newIdResto}`)) {
+
+                    ////get total number avis and update
+                    showNemberOfAvis(newIdResto, document.querySelector(`#see-tom-js${newIdResto}`))
+
+                    /// get global note and update global notes in details resto
+                    showNoteGlobale(newIdResto)
+                }
+
+
+                if(document.querySelector(".content_avis_person_hidden_jheo_js")){
+                    document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-note", note )
+                    document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-text", avis )
+                }
+            }
+        })
+    } catch (e) {
+        if (e.message == "note sup à 4") {
+            alert("la note que vous aviez donnés est supérieur à 4")
+        } else if(e.message == "non numerique") {
+            alert("la note que vous aviez donnés n'est pas du type numeric ")
+        }
+    }
+}
+
+
 /**
  * Prepare update avis resto
  */
@@ -281,13 +417,44 @@ function settingAvisResto(){
             note = hiddenData.getAttribute('data-avis-note')
             text = hiddenData.getAttribute('data-avis-text')
         }
-        
+
         document.querySelector(".note_number_jheo_js").value = parseFloat(note);
         document.querySelector(".note_avis_jheo_js").value = text;
 
         const btn_update = document.querySelector(".send_avis_jheo_js");
 
         btn_update.setAttribute("onclick","updateAvisResto()")
+
+    }else{
+        console.log(`Selector not found : "btn_modal_avis_resto_jheo_js"`)
+    }
+}
+
+
+
+function settingAvisRestoMobile(id_resto, id_user) {
+    const modifyAvis = document.querySelector(".btn_modal_avis_resto_jheo_js")
+    if( modifyAvis.getAttribute("data-status") === "update" ){
+        console.log(document.querySelector(`.content_avis_person_hidden_${id_resto}_jheo_js`))
+        // data-avis-note="${json.note}" data-avis-text="${json.avis}> my_comment_jheo_js
+        let note= 0, text= "";
+        if( document.querySelector(`.content_avis_person_hidden_${id_resto}_jheo_js`)){ //// in details html
+            const hiddenData=  document.querySelector(`.content_avis_person_hidden_${id_resto}_jheo_js`)
+            note = hiddenData.getAttribute('data-avis-note')
+            text = hiddenData.getAttribute('data-avis-text')
+
+        }else{ //// in list avis
+            const hiddenData=  document.querySelector(".my_comment_jheo_js")
+            note = hiddenData.getAttribute('data-avis-note')
+            text = hiddenData.getAttribute('data-avis-text')
+        }
+        
+        document.querySelectorAll(`.note_number_${id_resto}_jheo_js`).value = parseFloat(note);
+        document.querySelectorAll(`.note_avis_jheo_${id_resto}_js`).value = text;
+
+        const btn_update = document.querySelector(`.send_avis_${id_resto}_jheo_js`);
+
+        btn_update.setAttribute(`onclick","updateAvisRestoMobile(${id_resto}, ${id_user})`)
 
     }else{
         console.log(`Selector not found : "btn_modal_avis_resto_jheo_js"`)
@@ -347,6 +514,71 @@ function updateAvisResto(){
                     }
 
                     document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvisResto()");
+                }
+            })
+    } catch (e) {
+        if (e.message == "note sup à 4") {
+            alert("la note que vous aviez donnés est supérieur à 4")
+        } else if(e.message == "non numerique") {
+            alert("la note que vous aviez donnés n'est pas du type numeric ")
+        } else {
+            console.log(e)
+        }
+    }
+}
+/**
+ * Change avis resto
+ */
+function updateAvisRestoMobile(newIdResto,newUserId){
+
+    ///// remove alert card and add chargement spinner
+    if( document.querySelector(`.all_avis_jheo_${newIdResto}_js`)){
+        document.querySelector(`.all_avis_jheo_${newIdResto}_js`).innerHTML = `
+            <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                <div class="spinner-border m-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `
+    }
+
+    // let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+    // let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+    // let note = document.querySelector("#text-note-modif").value
+    let note = document.querySelector(`#text-note-mobile-${newIdResto}`).value
+    note = note.replace(/,/g, ".")
+    // const avis = document.querySelector("#message-text-kidje3").value
+    const avis = document.querySelector(`#message-text-mobile-${newIdResto}`).value
+    try {
+            mustBeInferior4(note, document.querySelector(`#text-note-mobile-${newIdResto}`), true)  
+            const requestParam = {
+                note: parseFloat(note),
+                avis:avis
+            }
+
+            deleteOldValueInputAvis(); //// delet input and text 
+            
+            //const idRestaurant=location.href.toString().split("/")[8]
+            const request = new Request(`/change/restaurant/${newIdResto}`, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(requestParam)
+            })
+            fetch(request).then(r => {
+                if (r.ok && r.status === 200) {
+                    document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis'
+                    
+                    showModifArea(newIdResto, newUserId)
+                    // if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
+                    if (document.querySelector("#see-tom-js")) {
+                        showNemberOfAvis(newIdResto, document.querySelector("#see-tom-js"))
+                        showNoteGlobale(newIdResto)
+                    }
+
+                    document.querySelector(`.send_avis_${newIdResto}_jheo_js`).setAttribute(`onclick", "addAvisRestoMobile(${newIdResto},${newUserId})`);
                 }
             })
     } catch (e) {
@@ -426,6 +658,38 @@ function showListAvie() {
     const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
     const userId = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     showAvis(userId, newIdResto) 
+}
+
+function showListAvieMobile(newIdResto, userId) {
+    // const listAvieMobile = document.querySelectorAll(".list-avis-ferme-global-mobile")
+
+    // listAvieMobile.forEach(items => {
+        ////delete all avis inside and add chargement
+        if( document.querySelectorAll(".card_avis_resto_jheo_js")){
+            document.querySelectorAll(".card_avis_resto_jheo_js").forEach(item => item.remove())
+
+            document.querySelector(".all_avis_jheo_js").innerHTML = `
+                <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                    <div class="spinner-border m-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `
+        }
+
+        if( document.querySelector(".send_avis_jheo_js")){ //// reset function add avis resto
+            if(document.querySelector(".send_avis_jheo_js").hasAttribute("onclick")){
+                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", `addAvisRestoMobile(${newIdResto}, ${userId})`);
+            }
+
+            deleteOldValueInputAvis(); //// delet input and text 
+        }
+
+        // const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+        // const userId = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+        showAvisMobile(userId, newIdResto) 
+    // })
+    
 }
 
 
@@ -579,6 +843,50 @@ function showAvis(currentUserId, idRestaurant) {
     })
 }
 
+function showAvisMobile(currentUserId, idRestaurant) {
+
+    const btn_update = document.querySelector(".send_avis_jheo_js");
+
+    if( !btn_update.classList.contains("btn-warning")){
+        btn_update.classList.add("btn-warning")
+    }
+
+    fetch(`/avis/restaurant/global/${idRestaurant}`, {
+        methode:"GET"
+    }).then(r => r.json())
+    .then(jsons => {
+
+        ////delete chargement ... 
+        document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML = "";
+
+       
+
+
+        if (jsons.length > 0 ) {
+            if( document.querySelector(".card_avis_resto_empty_jheo_js")){
+                document.querySelector(".card_avis_resto_empty_jheo_js").remove();
+            }
+
+            for (let json of jsons) {
+                createShowAvisAreas(json, currentUserId,idRestaurant)
+            }
+        }else{
+            document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML= `
+                <div class="card mb-2 card_avis_resto_empty_jheo_js">
+                    <div class="card-body">
+                        <div class="avis_content">
+                            <div class="text-danger text-center">
+                                Actuellement, il n'y a pas encore d'avis sur cette restaurant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        }
+
+    })
+}
+
 
 /**
  * Get all avis resto and check if the current connected is already send avis
@@ -682,77 +990,10 @@ function createModifArea(json,b) {
 /*
 *show comment without btn modification
 */
-function createShowAvisAreas(json,currentUserId) {
+function createShowAvisAreas(json,currentUserId,idRestaurant= 0) {
 
     console.log(json)
-    // const divEtAndModf=document.createElement("div")
-    // divEtAndModf.setAttribute("class", "fIQYlfMOP row")
-    
-    // const divContentAvis = document.createElement("div")
-    // divContentAvis.setAttribute("class", "fIQYlf card mt-4")
-    // const divNom = document.createElement("div")
-    // divNom.setAttribute("class", "TSUbDb")
-    // const pNom = document.createElement("p")
-    // pNom.setAttribute("class" , " text-muted")
-    // pNom.textContent = json["user"]["pseudo"]
-    // const hr = document.createElement("hr")
-    // const divEtoile=document.createElement("div")
-    // divEtoile.setAttribute("class", "lioTe  ms-5 col-6")
-
-
-    // const iStars1 = document.createElement("i")
-    // const iStars2 = document.createElement("i")
-    // const iStars3 = document.createElement("i")
-    // const iStars4 = document.createElement("i")
-    // const iStars5 = document.createElement("i")
-    // iStars1.setAttribute("class", "fa-solid fa-star")
-    // iStars2.setAttribute("class", "fa-solid fa-star")
-    // iStars3.setAttribute("class", "fa-solid fa-star")
-    // iStars4.setAttribute("class", "fa-solid fa-star")
-  
-
-    // const divBtn = document.createElement("button")
-    // divBtn.setAttribute("class" , "kidje3 btn btn-outline-primary")
-    // divBtn.setAttribute("onclick","_kidMo(event)")
-    // divBtn.dataset.bsToggle = "modal"
-    // divBtn.setAttribute("href" , "#exampleModalToggle")
-    // divBtn.textContent = "Modifier"
-
-
-    // a=[iStars1, iStars2 , iStars3 ,iStars4];
-
-
-    // for(let i=0; i<a.length; i++){
-    //     if( i < json["note"]){
-    //         a[i].classList.add("checked")
-    //         a[i].style.color="#F5D165"
-    //     }
-            
-    //     divEtoile.appendChild(a[i])
-    // }
-
-    // divEtAndModf.appendChild(divEtoile)
-
-    // if(currentUserId == json["user"]["id"] && currentUserId!=null){
-    //     divEtoile.after(divBtn)
-    // }
-    // const divComment = document.createElement("div")
-    // divComment.setAttribute("class", "tnEmMeco text-center")
-
-    // const pComment = document.createElement("p")
-    // pComment.textContent = json["avis"]
-    
-    // divComment.appendChild(pComment)
-    
-    // divNom.appendChild(pNom)
-
-    
-    // divContentAvis.appendChild(divNom)
-    // divContentAvis.appendChild(hr)
-    // divContentAvis.appendChild(divEtAndModf)
-    // divContentAvis.appendChild(divComment)
-    // document.querySelector("#staticBackdrop > div > div > div.list-avis-ferme > div").appendChild(divContentAvis)
-
+   
     let startIcon = "";
     let rate= parseFloat(json.note) - Math.trunc(parseFloat(json.note));
     let rateYellow = rate * 100;
@@ -786,7 +1027,11 @@ function createShowAvisAreas(json,currentUserId) {
         </div>
     `
 
-    document.querySelector(".all_avis_jheo_js").innerHTML += singleAvisHtml;
+    if (idRestaurant != 0) {
+        document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML += singleAvisHtml;
+    }else{
+        document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
+    }
 }
 
 function _kidMo(event) {

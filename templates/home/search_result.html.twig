@@ -29,21 +29,25 @@
         {% include 'shard/navbar.twig' %}
     </div>
     {% include 'shard/modalSearch.twig' %}
+    <div class="responsif-none-pc navbar-mobile-all">
+        {% include 'shard/navbar_mobile.twig' %}
+    </div>
     <div class="content_main">
-        {% if (app.user) %}
+
+        {# {% if (app.user) %}
             <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-search-mobile" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
         {% else %}
             <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-search-mobile">
         {% endif %}
                 <i class="fa-solid fa-bars"></i>
-            </div>
+            </div> #}
 
-            <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc " id="open-search-home-mobil">
+            {# <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc " id="open-search-home-mobil">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
             <div class="search-resto-mobil search-mobil-tomm-js search-resto-mobil-none vd to/4 to/4/2 wf yf responsif-none-pc" id="search-resto-mobil">
                 {% include 'shard/search_mobile.html.twig' %}
-            </div>
+            </div> #}
         <div class="row">
             <div class="" id="tous">
                 {% include 'shard/home/search_navleft.html.twig' %}
