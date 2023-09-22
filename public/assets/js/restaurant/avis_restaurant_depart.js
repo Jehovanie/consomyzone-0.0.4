@@ -101,6 +101,13 @@ window.addEventListener('load', () => {
         console.log("never executed")
     }
 
+
+    if( document.querySelector(".close_modal_input_avis_jheo_js")){
+        document.querySelector(".close_modal_input_avis_jheo_js").addEventListener('click' , () => {
+            document.querySelector(".title_modal_jheo_js").innerHTML = "Donnée votre avis."
+        })
+    }
+
 })
 
 
@@ -195,18 +202,7 @@ function addAvisResto(){
  */
 function settingAvisResto(avisID, avisNote, avisText){
 
-    // const modifyAvis = document.querySelector(".btn_modal_avis_resto_jheo_js")
-    // data-avis-note="${json.note}" data-avis-text="${json.avis}> my_comment_jheo_js
-    // let note= 0, text= "";
-    // if( document.querySelector(".content_avis_person_hidden_jheo_js")){ //// in details html
-    //     const hiddenData=  document.querySelector(".content_avis_person_hidden_jheo_js")
-    //     note = hiddenData.getAttribute('data-avis-note')
-    //     text = hiddenData.getAttribute('data-avis-text')
-    // }else{ //// in list avis
-    //     const hiddenData=  document.querySelector(".my_comment_jheo_js")
-    //     note = hiddenData.getAttribute('data-avis-note')
-    //     text = hiddenData.getAttribute('data-avis-text')
-    // }
+    document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis."
     
     document.querySelector(".note_number_jheo_js").value = parseFloat(avisNote);
     document.querySelector(".note_avis_jheo_js").value = avisText;
@@ -267,6 +263,7 @@ function updateAvisResto(avisID){
                     }
 
                     // document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvisResto()");
+                    document.querySelector(".title_modal_jheo_js").innerHTML = "Donnée votre avis."
                 }
             })
     } catch (e) {
