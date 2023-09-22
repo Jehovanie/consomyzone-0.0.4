@@ -902,6 +902,33 @@ function openSwalActif() {
       });
 }
 
+/**
+ * Function opening a sweet alert on click button actif without event
+ * @author Elie Fenohasina <eliefenohasina@gmail.com>
+ * @constructor
+ */
+function openSwalActifPastille() {
+
+    swal("Veuillez vous connecter et puis créée une tribu-T avec l'extension restaurant activée.\nVoulez-vous vous connecter?", {
+        buttons: {
+          cancel: "Pas maintenant",
+          connect: {
+            text: "Se connecter",
+            value: "connect",
+          },
+        },
+        icon : "info",
+      })
+      .then((value) => {
+
+        if(value == "connect"){
+            window.open("/connexion", "_blank");
+        }
+
+      });
+}
+
+
 
 /**
  * Function opening a sweet alert on click button inactif
