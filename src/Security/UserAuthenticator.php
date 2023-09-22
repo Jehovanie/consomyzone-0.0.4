@@ -202,7 +202,13 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         $this->entityManager->flush();
 
         // return new RedirectResponse($this->urlGenerator->generate('app_account'));
-        return new RedirectResponse($this->urlGenerator->generate('app_actualite'));
+        $session = $request->getSession();
+        if($session->get("demande-partenariat")){
+            return new RedirectResponse($this->urlGenerator->generate('inscription_partenaire'));
+        }else{
+            return new RedirectResponse($this->urlGenerator->generate('app_actualite'));
+        }
+        
     }
 
 

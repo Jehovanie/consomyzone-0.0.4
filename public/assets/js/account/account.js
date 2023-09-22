@@ -858,16 +858,16 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
             const pageId = event.target.dataset.target;
                 if (dataLink === 'list-tribu-g') {
                     document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.add('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.remove('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
+                    // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
                 } else if (dataLink === 'list-tribu-t') {
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
+                    // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
                     document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.remove('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
                 }else if (dataLink === 'list-fournisseur') {
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.add('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.add('text-primary')
                     document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+                    // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
                 }
                 showPage(pageId);
         });

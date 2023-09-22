@@ -9,8 +9,7 @@ use PDO;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
-
-
+use Exception;
 
 class TributGService extends PDOConnexionService{
 
@@ -1300,11 +1299,16 @@ class TributGService extends PDOConnexionService{
         $all_tables = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($all_tables as $table ){
-            $tab= $table["table_name"];
-            $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
-            $statement->execute();
-            $temp = $statement->fetch(PDO::FETCH_ASSOC);
-            array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
+            try{
+                $tab= $table["table_name"];
+                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
+                $statement->execute();
+                $temp = $statement->fetch(PDO::FETCH_ASSOC);
+                array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
+             }catch(Exception $e){
+                 continue;
+            }
+           
         }
         
         return $results;

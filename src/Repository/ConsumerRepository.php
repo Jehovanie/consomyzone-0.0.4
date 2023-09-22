@@ -39,6 +39,8 @@ class ConsumerRepository extends ServiceEntityRepository
         }
     }
 
+    
+
 //    /**
 //     * @return Consumer[] Returns an array of Consumer objects
 //     */

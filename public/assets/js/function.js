@@ -621,7 +621,7 @@ function fetchDetails(selector,linkGetDetail) {
                 }
 
                 document.querySelector(selector).innerHTML = r
-                
+                reorganisePastille()
             }else{
                 document.querySelector(selector).innerHTML = `
                     <div class="alert alert-danger d-flex align-items-center alert_details_marker_position" role="alert">
@@ -2162,37 +2162,7 @@ function bindDataUpdatePub(table, id){
     }
 
 }
-/*function pastilleRestoForTribuT(e){
-    let id = e.target.dataset.id
-    let name = e.target.dataset.name
-    let tbl = e.target.dataset.tbname
-    let data = {
-        id : id,
-        name : name,
-        tbl : tbl
-    }
-    const request = new Request("/user/tribu_t/pastille/resto", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(data)
-    })
-    fetch(request)
-            .then(response=>response.json())
-            .then(message=>{
-                document.querySelector("#containerPastilleResto").style.display = "none"
-                let successElem = document.querySelector(".successPastille")
-                successElem.style.display = "block"
-                successElem.textContent = message
-                setTimeout(function () {
-                    successElem.style.display = "none"
-                    successElem.innerHTML = ""
-                }, 5000)
-            })
-            .catch(error=>console.log(error))
-}*/
+
 function pastilleRestoForTribuT(element){
     let id = element.dataset.id
     let name = element.dataset.name
@@ -2220,14 +2190,26 @@ function pastilleRestoForTribuT(element){
                 let html = `<td class="col-action">
                                 <button type="button" class="mx-2 btn btn-secondary" disabled="">Pastillé</button>
                             </td>`
-
+                let tribuName = element.dataset.tribu
                 let img = document.createElement("img")
                 img.src = element.dataset.velona
-                img.classList.add("ms-1")
+                img.dataset.name = tribuName
+                img.setAttribute("alt",tribuName)
+                let div = document.createElement("div")
+                div.setAttribute("onclick","createPopUp(event)")
+                div.setAttribute("onmouseout","resetImage(event)")
+                div.setAttribute("onmouseover","agrandirImage(event)")
+                div.setAttribute("class","img_nantenaina")
+                div.setAttribute("title","Tribu T " + tribuName)
+                div.setAttribute("data-bs-toggle","tooltip")
+                div.setAttribute("data-bs-placement","top")
+                div.dataset.name = tribuName
+                div.appendChild(img)
                 new swal("Succès !", "Restaurant pastillé avec succès", "success")
-                .then((value) => { 
+                .then((value) => {
                     updateBtnStatus(element, html)
-                    document.querySelector(".restoNameWithLogoTribu").appendChild(img);
+                    document.querySelector(".mainContainerLogoTribu").appendChild(div);
+                    reorganisePastille()
                 });
                 
             })
@@ -2390,7 +2372,7 @@ function showPastillTable(e,id){
                     let restaurant = e.target.dataset.name
                                     
                     let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
-                                                `<button type="button" data-id="${id}" data-name="${restaurant}" data-tbname="${tableTribuT}"
+                                                `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}"
                                                 class="mx-2 btn btn-success" data-velona='/public${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
                     let tr=`<tr style="vertical-align: middle;">
                                 <td class="col-logo">

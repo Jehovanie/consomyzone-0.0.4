@@ -1647,13 +1647,39 @@ i.fa-eye-slash, i.fa-eye{
 .lioTe > b{
     font-size: 1.1rem;
 } 
-
-.restoNameWithLogoTribu img {
-    max-height: 20px;
-    max-width: 20px;
-    margin-top: 10px;
+.img_nantenaina{
+    float: left;
+    height:50px ;
+    /* margin-left: -10px; */
+    cursor: pointer;
 }
+.super_container_js_nantenaina{
+    width:40.3%;
+    height:50px ;
+    overflow: hidden;
+}
+.mainContainerLogoTribu{
+    height: 43px;
+    position:relative
+}
+.mainContainerLogoTribu:after{
+    content: "";
+    clear: both;
+   
+    display: table;
+}
+.restoNameWithLogoTribu .img_nantenaina img {
+    height: 43px; 
+    width: 35px;      
+    /* margin-top: -7px; */
+    clip-path: circle();
+ 
 
+}
+.restoNameWithLogoTribu{
+    display:flex;
+    justify-content:center
+}
 #modalAvisRestaurant, #staticBackdrop{
     margin-top: 150px;
 }
@@ -1838,4 +1864,49 @@ textarea {
 
 .fontSize06 {
     font-size: 0.6rem;
+}
+
+.to-say-it-new{
+    position: absolute;
+    top: -6px;
+    right: 0%;
+    background-color: #FFCA08;
+    font-size: xx-small;
+    padding-left: 7px;
+    padding-right: 7px;
+    border-radius: 100px;
+}
+.what-means-partenaire-Nantenaina_css{
+    padding: 15px;
+   
+}
+
+.linkOndetail:hover{
+    color: #0D6EFD;
+}
+
+.iconePlus_nanta_js > a > i{
+    font-size: 35px;
+    color: blue;
+    font-weight: bolder;
+}
+
+.divContainerImgOnModal{
+    display: flex;
+    vertical-align: middle;
+}
+
+.divContainerImgOnModal img{
+    clip-path: circle();
+    width:50px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.divContainerImgOnModal > .tribuTName{
+    margin-left: 4%;
+    margin-top: 3%;
+    color: #0D6EFD;
+    font-weight: bolder;
+    cursor: pointer;
 }

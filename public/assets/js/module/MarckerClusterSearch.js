@@ -335,10 +335,10 @@ class MarckerClusterSearch extends MapModule  {
             } else {
                 getDetailResto(item.dep, item.depName, item.id, true)
             }
-
+            
             this.markers.refreshClusters();
         })
-
+        //reorganisePastille()
         this.markers.addLayer(marker);
     }
 
