@@ -41,22 +41,22 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         }
     }
     
-    public function updateAvis($idrestaurant,$iduser,$note,$comment)
+    public function updateAvis($idrestaurant, $iduser, $avisID, $note, $comment)
     {
         return $this->createQueryBuilder("")
-        ->update(AvisRestaurant::class,"a")
-        ->set("a.note",":note")
-        ->set("a.avis",":comment")
-        ->set("a.datetime",":date")
-        ->where("a.restaurant = :idResto")
-        ->andWhere("a.user = :iduser")
-        ->setParameter("note", $note)
-        ->setParameter("comment", $comment)
-        ->setParameter("idResto",$idrestaurant)
-        ->setParameter("iduser", $iduser)
-       ->setParameter("date", new \DateTimeImmutable())
-        ->getQuery()
-        ->execute();
+                ->update(AvisRestaurant::class,"a")
+                ->set("a.note",":note")
+                ->set("a.avis",":comment")
+                ->where("a.restaurant = :idResto")
+                ->andWhere("a.user = :iduser")
+                ->andWhere("a.id = :id")
+                ->setParameter("note", $note)
+                ->setParameter("comment", $comment)
+                ->setParameter("idResto",$idrestaurant)
+                ->setParameter("iduser", $iduser)
+                ->setParameter("id", $avisID)
+                ->getQuery()
+                ->execute();
     }
 
     public function deleteAvis($idrestaurant, $iduser,)
@@ -76,6 +76,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         $all_avis= $this->createQueryBuilder("r")
                 ->where("r.restaurant = :idResto ")
                 ->setParameter("idResto", $idrestaurant)
+                ->orderBy("r.datetime", "DESC")
                 ->getQuery()
                 ->getResult();
 
@@ -84,11 +85,15 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         foreach ($all_avis as $avis){
             $user_id = $avis->getUser()->getId();
             $user_item = $this->userService->getUserProfileFromId($user_id);
+            $resto_id= $avis->getRestaurant()->getId();
             $data = [
                 "id" => $avis->getId(),
                 "note" => $avis->getNote(),
                 "avis" => $avis->getAvis(),
                 "datetime" => $avis->getDatetime(),
+                "resto" => [
+                    "id" => $resto_id
+                ],
                 "user" => [
                     "id" => $user_id,
                     "email" => $avis->getUser()->getEmail(),

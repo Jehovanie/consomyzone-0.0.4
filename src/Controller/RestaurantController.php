@@ -783,8 +783,9 @@ class RestaurantController extends AbstractController
         $response = $avisRestaurantRepository->updateAvis(
             $idRestaurant,
             $userId,
+            $rJson["avisID"],
             $rJson["note"],
-            $rJson["avis"]
+            $rJson["avis"],
         );
         $response = $serializer->serialize($response, 'json');
         return new JsonResponse($response, 200, [], true);
