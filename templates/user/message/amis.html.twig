@@ -53,7 +53,7 @@
                             </ul>
 
                             <div class="content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
-                                {% if amisTributG|length > 1 %}
+                                {% if amisTributG|length > 0 %}
                                     <!-- Chat List Item -->
                                     {% for item in amisTributG %}
                                         {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
