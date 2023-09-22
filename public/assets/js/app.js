@@ -908,13 +908,16 @@ function openSwalActif() {
  * @constructor
  */
 function openSwalNonActif(){
-    swal("Cette fonctionnalité est en cours de développement, merci de votre compréhension.",
-    icon : "info",);
+
+    swal({
+        text: "Cette fonctionnalité est en cours de développement, merci de votre compréhension.",
+        icon: "info",
+      });
 }
 
 document.querySelectorAll(".btn_gris_actif_js_Elie").forEach(btn_gris=>{
 
-    console.log(btn_gris);
+    //console.log(btn_gris);
 
     btn_gris.addEventListener("click", function(){
 
