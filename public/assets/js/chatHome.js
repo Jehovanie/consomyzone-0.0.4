@@ -1487,7 +1487,31 @@ if (document.querySelector("#openMessage")) {
                                 </h5>
                             </div>
                             `
-        getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+        if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") != 0){
+
+            getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+
+        }else{
+            document.querySelector("#footer_chat").classList.add("non_active")
+        }
+
+        /** Adding active message for user */
+
+        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i=>{
+            i.classList.remove("message-active")
+        })
+
+        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user=>{
+            if(user.getAttribute("data-toggle-user-id")==document.querySelector("div.user-chat-display").getAttribute("data-user-id")){
+                user.classList.add("message-active")
+            }
+            user.addEventListener("click",function(){
+                document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i=>{
+                    i.classList.remove("message-active")
+                })
+                user.classList.add("message-active")
+            })
+        })
 
     })
 }
@@ -1657,6 +1681,18 @@ if (document.querySelector("#openVisio")) {
             } else {
                 document.querySelector("#visio").innerHTML = "<div class='m-4'><p class='text-center'>Aucune visioconférence a été notée.</p></div>";
             }
+
+            /** Adding active visio for user */
+
+            document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user=>{
+
+                user.addEventListener("click",function(){
+                    document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i=>{
+                        i.classList.remove("message-active")
+                    })
+                    user.classList.add("message-active")
+                })
+            })
 
         }
 
