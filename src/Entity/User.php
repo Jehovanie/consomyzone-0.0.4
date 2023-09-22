@@ -143,8 +143,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $isConnected;
 
-    
-
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="status_demande_partenariat", nullable=false)
+     */
+    private $statusDemandePartenariat = 0;
 
     public function getId(): ?int
     {
@@ -504,9 +508,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return  self
      */ 
-    public function setIsConnected(bool $isConnected)
+    public function setIsConnected($isConnected)
     {
         $this->isConnected = $isConnected;
+
+        return $this;
+    }
+
+
+    public function getStatusDemandePartenariat()
+    {
+        return $this->statusDemandePartenariat;
+    }
+
+    public function setStatusDemandePartenariat($statusDemandePartenariat)
+    {
+        $this->statusDemandePartenariat = $statusDemandePartenariat;
 
         return $this;
     }
