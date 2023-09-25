@@ -58,12 +58,14 @@
 					<div class="col-lg-8 col-md-10 col-sm-10 col-xs-12 mx-auto pb-5">
 						<div class="row">
 							<div class="col">
-								{# <input type="checkbox" name="consumer"  id="consumer" checked> #}
-								{{ form_widget(form_inscription.Consommateur, {'attr': {'checked': 'checked'}}) }}
-								{# <label for="consumer"> Consommateur</label> #}
-								{{ form_label(form_inscription.Consommateur , "Consommateur", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+								<input type="checkbox" name="consumer"  id="consumer" checked disabled>
+								<label class='form_label fw-bolder' for="consumer"> Consommateur</label>
+								<div class="d-none">
+									{{ form_widget(form_inscription.Consommateur, {'attr': {'checked': 'checked'}}) }}
+									{{ form_label(form_inscription.Consommateur , "Consommateur") }}
+								</div>
 							</div>
-							<div class="col">
+							<div class="col hidden">
 								{# <input type="checkbox"  name="supplier"  id="supplier" > #}
 								{{ form_widget(form_inscription.Fournisseur, {'attr': {'id':'supplier'}}) }}
 								{# <label for="supplier">Fournisseur </label> #}

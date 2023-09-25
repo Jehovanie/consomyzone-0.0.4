@@ -18,97 +18,68 @@ class AgendaService extends PDOConnexionService
 
     public function getAgendaByDate($table, $datetime){
 
+        // $membre = "SELECT * FROM $table where (from_date like '%$datetime%' or to_date like '%$datetime%') and isActive = 1";
 
-
-        $membre = "SELECT * FROM $table where (from_date like '%$datetime%' or to_date like '%$datetime%') and isActive = 1";
-
-
-
+        $membre = "SELECT * FROM $table where (from_date like :datetime   or to_date like :datetime ) and isActive = :isActive";
         $stm = $this->getPDO()->prepare($membre);
 
-
+        $stm->bindParam(":datetime",  '%' . $datetime . '%');
+        $stm->bindParam(":isActive", 1);
 
         $stm->execute();
-
-
-
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result;
-
     }
 
 
-
     public function getAgendaByType($tableName, $type){
+        // $membre = "SELECT * FROM $tableName where type = '$type' and isActive = 1";
 
-
-
-        $membre = "SELECT * FROM $tableName where type = '$type' and isActive = 1";
-
-
-
+        $membre = "SELECT * FROM $tableName where type = :type and isActive = :isActive";
         $stm = $this->getPDO()->prepare($membre);
 
-
+        $stm->bindParam(":type", $type);
+        $stm->bindParam(":isActive", 1);
 
         $stm->execute();
-
-
-
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result;
-
     }
 
 
 
     public function createAgenda($tableName, $title, $type, $resto, $participant, $from, $to, $lat, $lng, $user_id, $description){
 
-        
-
         $sql = "INSERT INTO $tableName (`title`, `type`, `restaurant`, `participant`, `from_date`, `to_date`, `lat`, `lng`, `user_id`, `description`) VALUES (?, ?, ?, ?,?,?,?,?,?,?)";
-
         $stmt = $this->getPDO()->prepare($sql);
 
         $stmt->bindParam(1, $title);
-
         $stmt->bindParam(2, $type);
-
         $stmt->bindParam(3, $resto);
-
         $stmt->bindParam(4, $participant);
-
         $stmt->bindParam(5, $from);
-
         $stmt->bindParam(6, $to);
-
         $stmt->bindParam(7, $lat);
-
         $stmt->bindParam(8, $lng);
-
         $stmt->bindParam(9, $user_id);
-
         $stmt->bindParam(10, $description);
 
         $stmt->execute();
 
         // getting id of last agenda created
-
-        $agenda_rqt = "SELECT id FROM $tableName where title like '%$title%' and type like '%$type%' and description like '%$description%' and user_id = $user_id";
-
+        // $agenda_rqt = "SELECT id FROM $tableName where title like '%$title%' and type like '%$type%' and description like '%$description%' and user_id = $user_id";
+        $agenda_rqt = "SELECT id FROM $tableName where title like :title and type like :type and description like :description and user_id = :user_id";
         $stm = $this->getPDO()->prepare($agenda_rqt);
 
+        $stm->bindParam(":title", '%' . $title . '%');
+        $stm->bindParam(":type", '%' . $type . '%');
+        $stm->bindParam(":description", '%' . $description . '%');
+        $stm->bindParam(":user_id", $user_id);
+
         $stm->execute();
-
         return $stm->fetch(PDO::FETCH_ASSOC)["id"];
-
-
     }
 
 
@@ -131,184 +102,111 @@ class AgendaService extends PDOConnexionService
 
     public function hasAgenda($tableName, $date){
 
-        $agenda = "SELECT * FROM $tableName where (from_date like '%$date%' or to_date like '%$date%') and isActive =1";
-
+        // $agenda = "SELECT * FROM $tableName where (from_date like '%$date%' or to_date like '%$date%') and isActive =1";
+        $agenda = "SELECT * FROM $tableName where (from_date like :date or to_date like :date ) and isActive =1";
         $stm = $this->getPDO()->prepare($agenda);
 
-
+        $stm->bindParam(":date", '%' . $date . '%');
+        $stm->bindParam(":isActive", 1);
 
         $stm->execute();
-
-
-
-        $valiny = "";
-
-
-
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($result) > 0) {
-
-            $valiny = true;
-
-        } else {
-
-            $valiny = false;
-
-        }
-
-
-
-        return $valiny;
-
+        return  (count($result) > 0) ? true : false;
     }
 
 
 
     public function getActionAgenda($tableName, $id, $user_id){
 
-        
-
-        $action_agenda = "SELECT * FROM $tableName WHERE user_id = $user_id and agenda_id = $id and status = 1";
-
-
-
+        // $action_agenda = "SELECT * FROM $tableName WHERE user_id = $user_id and agenda_id = $id and status = 1";
+        $action_agenda = "SELECT * FROM $tableName WHERE user_id = :user_id and agenda_id = :id and status = :status";
         $stm_a = $this->getPDO()->prepare($action_agenda);
 
-
+        $stm->bindParam(":user_id", $user_id);
+        $stm->bindParam(":id", $id);
+        $stm->bindParam(":status", 1);
 
         $stm_a->execute();
-
-
-
         $result_a = $stm_a->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result_a;
-
     }
 
 
 
     public function detailAgenda($table_name, $id){
 
-        
-
-        $agenda = "SELECT * FROM $table_name WHERE id = $id and isActive = 1";
-
-
-
+        // $agenda = "SELECT * FROM $table_name WHERE id = $id and isActive = 1";
+        $agenda = "SELECT * FROM $table_name WHERE id = :id and isActive = :isActive";
         $stm = $this->getPDO()->prepare($agenda);
 
-
+        $stm->bindParam(":id", $id);
+        $stm->bindParam(":isActive", 1);
 
         $stm->execute();
-
-
-
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result;
-
     }
 
 
 
     public function getStatusAgenda($table_name, $id, $user_id, $type){
 
-
-
-        $action_agenda = "SELECT status FROM $table_name WHERE user_id = $user_id and agenda_id = $id and type_action ='$type'";
-
-
-
+        // $action_agenda = "SELECT status FROM $table_name WHERE user_id = $user_id and agenda_id = $id and type_action ='$type'";
+        $action_agenda = "SELECT status FROM $table_name WHERE user_id = :user_id and agenda_id = :id and type_action = :type";
         $stm_a = $this->getPDO()->prepare($action_agenda);
-
-
+        
+        $stm->bindParam(":user_id", $user_id);
+        $stm->bindParam(":id", $id);
+        $stm->bindParam(":type", $type);
 
         $stm_a->execute();
-
-
-
         $result_a = $stm_a->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result_a;
-
     }
-
 
 
     public function insertActionAgenda($table_name, $type, $user_id, $id, $status_ok){
 
-
-
         $sql = "INSERT INTO $table_name (`type_action`, `user_id`, `agenda_id`, `status`) VALUES (?, ?, ?, ?)";
-
-
-
         $stmt = $this->getPDO()->prepare($sql);
 
         $stmt->bindParam(1, $type);
-
         $stmt->bindParam(2, $user_id);
-
         $stmt->bindParam(3, $id);
-
         $stmt->bindParam(4, $status_ok);
 
         $stmt->execute();
-
-
-
     }
-
 
 
     public function updateActionAgenda($tableName, $status_final, $user_id, $id, $type){
 
-
-
         $sql2 = "UPDATE $tableName SET status =? WHERE user_id =? and agenda_id =? and type_action =?";
-
         $stm2 = $this->getPDO()->prepare($sql2);
 
         $stm2->bindParam(1, $status_final);
-
         $stm2->bindParam(2, $user_id);
-
         $stm2->bindParam(3, $id);
-
         $stm2->bindParam(4, $type);
 
         $stm2->execute();
-
-        
-
     }
-
 
 
     public function deleteAgenda($table_name,$val,$user_id,$id){
 
-        
-
         $sql2 = "UPDATE $table_name SET isActive = ? WHERE user_id =? and id =?";
-
         $stm2 = $this->getPDO()->prepare($sql2);
 
         $stm2->bindParam(1, $val);
-
         $stm2->bindParam(2, $user_id);
-
         $stm2->bindParam(3, $id);
 
         $stm2->execute();
-
     }
 
 
@@ -316,111 +214,94 @@ class AgendaService extends PDOConnexionService
     public function modifyAgenda($table_name,$title,$desc,$from,$to,$lat,$lng, $resto, $participant,$id){
 
         $sql2 = "UPDATE $table_name SET title = ?, description =?, from_date =? , to_date =? , lat =?, lng =?, restaurant=?, participant=? WHERE id =?";
-
         $stm2 = $this->getPDO()->prepare($sql2);
 
         $stm2->bindParam(1, $title);
-
         $stm2->bindParam(2, $desc);
-
         $stm2->bindParam(3, $from);
-
         $stm2->bindParam(4, $to);
-
         $stm2->bindParam(5, $lat);
-
         $stm2->bindParam(6, $lng);
-
         $stm2->bindParam(7, $resto);
-
         $stm2->bindParam(8, $participant);
-
         $stm2->bindParam(9, $id);
 
         $stm2->execute();
-
     }
 
 
 
     public function getListUser($table_name, $id, $type){
 
-
-
-        $agenda = "SELECT user_id, count(user_id) as nombre FROM $table_name WHERE agenda_id = $id and type_action like '%$type%' and status =1 group by user_id";
-
-
-
+        // $agenda = "SELECT user_id, count(user_id) as nombre FROM $table_name WHERE agenda_id = $id and type_action like '%$type%' and status =1 group by user_id";
+        $agenda = "SELECT user_id, count(user_id) as nombre FROM $table_name WHERE agenda_id = :id and type_action like :type and status = :status group by user_id";
         $stm = $this->getPDO()->prepare($agenda);
 
-
+        $stm->bindParam(":id", $id);
+        $stm->bindParam(":type", '%' . $type . '%' );
+        $stm->bindParam(":status", 1);
 
         $stm->execute();
-
-
-
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result;
-
     }
 
     public function getNumberOfParticipant($table_agenda_action, $id){
 
-        $agenda = "SELECT count(*) as NB FROM $table_agenda_action WHERE agenda_id = $id and type_action like '%Participer%' and status =1";
-
+        // $agenda = "SELECT count(*) as NB FROM $table_agenda_action WHERE agenda_id = $id and type_action like '%Participer%' and status =1";
+        $agenda = "SELECT count(*) as NB FROM $table_agenda_action WHERE agenda_id = :id and type_action like :type_action and status = :status";
         $stm = $this->getPDO()->prepare($agenda);
 
-        $stm->execute();
+        $stm->bindParam(":id", $id);
+        $stm->bindParam(":type_action", '%Participer%' );
+        $stm->bindParam(":status", 1);
 
+        $stm->execute();
         $result = $stm->fetch(PDO::FETCH_ASSOC);
 
         return intval($result["NB"]);
-
     }
 
     public function getMaxOfParticipant($table_agenda, $id){
 
-        $agenda = "SELECT participant as NB FROM $table_agenda WHERE id = $id and isActive =1";
-
+        // $agenda = "SELECT participant as NB FROM $table_agenda WHERE id = $id and isActive =1";
+        $agenda = "SELECT participant as NB FROM $table_agenda WHERE id = :id and isActive = :isActive";
         $stm = $this->getPDO()->prepare($agenda);
 
-        $stm->execute();
+        $stm->bindParam(":id", $id);
+        $stm->bindParam(":status", 1);
 
+        $stm->execute();
         $result = $stm->fetch(PDO::FETCH_ASSOC);
 
         return intval($result["NB"]);
-
     }
 
     public function getTypeBy($table_agenda, $id){
 
-        $agenda = "SELECT type as typ FROM $table_agenda WHERE id = $id";
-
+        $agenda = "SELECT type as typ FROM $table_agenda WHERE id = :id";
         $stm = $this->getPDO()->prepare($agenda);
 
-        $stm->execute();
+        $stm->bindParam(":id", $id);
 
+        $stm->execute();
         $result = $stm->fetch(PDO::FETCH_ASSOC);
         
         return $result["typ"];
-
     }
 
     public function getUserIdAndTypeBy($table_agenda, $id){
 
-        $agenda = "SELECT user_id, type FROM $table_agenda WHERE id = $id";
-
+        $agenda = "SELECT user_id, type FROM $table_agenda WHERE id = :id";
         $stm = $this->getPDO()->prepare($agenda);
 
-        $stm->execute();
+        $stm->bindParam(":id", $id);
 
+        $stm->execute();
         $result = $stm->fetch(PDO::FETCH_ASSOC);
 
         return $result;
-
     }
 
     /*
@@ -752,20 +633,6 @@ class AgendaService extends PDOConnexionService
      * @author Jehovanie RAMANDRIJOEL   <jehovanieram@gmail.com>
      * 
      */
-    public function createTableEventFollowed($table_event_followed_name){
-        $sql= "CREATE TABLE $table_event_followed_name (".
-            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
-            "`user_id` int(11) NOT NULL,".
-            "`agenda_id` int(11) NOT NULL".
-           " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
-        $stmt = $this->getPDO()->prepare($sql);
-        $stmt->execute();
-    }
-
-    /**
-     * @author Jehovanie RAMANDRIJOEL   <jehovanieram@gmail.com>
-     * 
-     */
     public function createTablePartageAgenda($table_partage_agenda_name){
         $sql= "CREATE TABLE $table_partage_agenda_name (".
             "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
@@ -789,7 +656,6 @@ class AgendaService extends PDOConnexionService
         $statement = $this->getPDO()->prepare("SELECT user_id FROM $partage_agenda_table WHERE accepted  = 1 AND agenda_id  = $agenda_id");
 
         $statement->execute();
-
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
@@ -905,18 +771,18 @@ class AgendaService extends PDOConnexionService
     public function setPartageAgenda($table_agenda_partage_name, $agendaID, $arrayAssUserId){
 
         foreach($arrayAssUserId as $ass_userID ){
-            $sql = "INSERT INTO $table_agenda_partage_name (`agenda_id`, `user_id`) VALUES (?,?)";
-            $sql= "INSERT INTO  $table_agenda_partage_name (agenda_id,user_id)
-            SELECT agenda_id,user_id 
-            FROM (SELECT :agenda_id as agenda_id,:user_id as user_id)  as tmp
-            WHERE NOT EXISTS (SELECT 1 FROM $table_agenda_partage_name ag WHERE ag.agenda_id = tmp.agenda_id and ag.user_id=tmp.user_id);";
-            $stmt = $this->getPDO()->prepare($sql);
             $userReceiverId=intval($ass_userID);
+
+            $sql= "INSERT INTO  $table_agenda_partage_name (agenda_id,user_id)
+            SELECT agenda_id,user_id  FROM (SELECT :agenda_id as agenda_id, :user_id as user_id)  as tmp 
+            WHERE NOT EXISTS (SELECT 1 FROM $table_agenda_partage_name ag WHERE ag.agenda_id = tmp.agenda_id and ag.user_id=tmp.user_id);";
+
+            $stmt = $this->getPDO()->prepare($sql);
+            
             $stmt->bindParam(":agenda_id", $agendaID, PDO::PARAM_INT);
             $stmt->bindParam(":user_id", $userReceiverId ,PDO::PARAM_INT);
 
             $stmt->execute();
-
         }
     }
 
@@ -940,27 +806,29 @@ class AgendaService extends PDOConnexionService
         $agenda_tabl_sender= "agenda_" . $userID_sender;
         $agenda_tabl_receiver= "agenda_" . $userID_receiver;
         $agenda_partage_table= "partage_agenda_" . $userID_sender;
+
         $accepted=intval($response);
-        $isAllReadyAccepted=$this->isAlreadyAccepted($userID_sender, $userID_receiver, $agendaID);
         $userID_receiver=intval($userID_receiver);
         $agendaID=intval($agendaID);
+
+        $isAllReadyAccepted=$this->isAlreadyAccepted($userID_sender, $userID_receiver, $agendaID);
+
         if(intval($response) === 1 && !$isAllReadyAccepted){
-                        
             $place_Libre=$this->checkFreePlace($userID_sender, $userID_receiver,  $agendaID)["place_libre"];
             
             $place_libre_new=$place_Libre-1;
             
             $sql1="UPDATE $agenda_tabl_sender set place_libre= :place_libre WHERE id = :agenda_id";
             $stmnt=$this->getPDO()->prepare($sql1);
+
             $stmnt->bindParam(":place_libre",$place_libre_new);
             $stmnt->bindParam(":agenda_id", $agendaID);
+
             $stmnt->execute();
+
             $rowInAgenda=$this->getAgendaBYIDPartage($agenda_tabl_sender,$agendaID);
 
-            
-
             $this->createEvent($agenda_tabl_receiver,$rowInAgenda);
-            
             
             $sql2="UPDATE $agenda_partage_table set accepted= :accepted WHERE agenda_id = :agenda_id AND user_id = :user_id";
             $stmnt2=$this->getPDO()->prepare($sql2);
@@ -968,8 +836,8 @@ class AgendaService extends PDOConnexionService
             $stmnt2->bindParam(":accepted",$accepted,PDO::PARAM_INT);
             $stmnt2->bindParam(":agenda_id", $agendaID, PDO::PARAM_INT);
             $stmnt2->bindParam(":user_id", $userID_receiver, PDO::PARAM_INT);
-            $stmnt2->execute();
 
+            $stmnt2->execute();
             return array("response"=>"accepted");
 
         }elseif(intval($response) === 1 &&  $isAllReadyAccepted){
@@ -982,8 +850,8 @@ class AgendaService extends PDOConnexionService
             $stmnt2->bindParam(":accepted",$accepted,PDO::PARAM_INT);
             $stmnt2->bindParam(":agenda_id", $agendaID, PDO::PARAM_INT);
             $stmnt2->bindParam(":user_id", $userID_receiver, PDO::PARAM_INT);
-            $stmnt2->execute();
 
+            $stmnt2->execute();
             return array("response"=>"Rejected");
         }
        
@@ -1024,8 +892,6 @@ class AgendaService extends PDOConnexionService
         $stmt->execute();
         $place_Libre=  $stmt->fetch(PDO::FETCH_ASSOC);
        
-       
-
         return $place_Libre;
     }
 
@@ -1162,19 +1028,19 @@ class AgendaService extends PDOConnexionService
             array_push($finalResult, array("path" => $a["logo_path"], $r));
         }
     }
+
+
     public function isNesterArray($v,$servTribuT, &$finalResult)
     {
-        
         foreach ($v as $k1=>$v2) {
             if ($k1 === "extension" && $v2 == "restaurant") {
                 $r=$servTribuT->getRestoPastilles($v["name"] . "_restaurant", $v["name"] . "_restaurant_commentaire");
                 array_push($finalResult,array("path"=>$v["logo_path"],$r));
             }
-            
         }
-        
-        
     }
+
+
     /**
      * @param string $tableAgendaUser table agenda user
      * @param string $tableAgendaUser table publication of tribu_T ot tribu_G user

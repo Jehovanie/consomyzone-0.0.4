@@ -129,14 +129,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="nom_table_event_followed", type="string", length=200, nullable=true)
-     */
-    private $nomTableEventFollowed;
-
-
-    /**
      * @var bool
      *
      * @ORM\Column(name="is_connected", type="boolean", nullable=false)
@@ -467,29 +459,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get the value of nomTableEventFollowed
-     *
-     * @return  string
-     */ 
-    public function getNomTableEventFollowed()
-    {
-        return $this->nomTableEventFollowed;
-    }
-
-    /**
-     * Set the value of nomTableEventFollowed
-     *
-     * @param  string  $nomTableEventFollowed
-     *
-     * @return  self
-     */ 
-    public function setNomTableEventFollowed(string $nomTableEventFollowed)
-    {
-        $this->nomTableEventFollowed = $nomTableEventFollowed;
-
-        return $this;
-    }
 
     /**
      * Get the value of isActive

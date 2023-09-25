@@ -21,12 +21,18 @@ class MarckerClusterResto extends MapModule  {
                 const { minx, miny, maxx, maxy }= lastSearchPosition.position;
                 param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
             }
- 
+
+            // "data" => $datas,
+            // "allIdRestoPastille" => $arrayIdResto
 
             const response= await fetch(`${this.api_data}${param}`);
-            this.default_data= await response.json();
-            this.data= this.default_data; 
+            const responseJson = await response.json();
+
+            this.default_data= responseJson.data;
+            this.data=  this.default_data; 
             
+            this.listRestoPastille= responseJson.allIdRestoPastille;
+
             this.initMap(null, null, null, isAddControl);
             this.bindAction();
 
@@ -103,17 +109,22 @@ class MarckerClusterResto extends MapModule  {
 
 
     settingSingleMarker(item, isSelected= false){
-
+        
         const departementName = item.depName
         const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
 
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
         const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
 
+        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
+
+        let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
+        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
+        
         const marker = L.marker(
             L.latLng(parseFloat(item.lat), parseFloat(item.long)),
             {
-                icon: isSelected ? setIconn('assets/icon/NewIcons/icon-resto-new-Rr.png') : setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),
+                icon: isSelected ? setIconn(poi_icon_Selected) : setIconn(poi_icon),
                 cleNom: item.denominationF,
                 id: item.id
             }
@@ -124,9 +135,10 @@ class MarckerClusterResto extends MapModule  {
         marker.on('click', (e) => {
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
+
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon_Selected  : this.currentUrl.origin + "/public/" + poi_icon_Selected,
                     iconSize: [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
@@ -138,9 +150,13 @@ class MarckerClusterResto extends MapModule  {
             marker.setIcon(new icon_R);
 
             if (this.marker_last_selected && this.marker_last_selected != marker ) {
+                
+                resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(this.marker_last_selected.options.id)) : [];
+                poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
+
                 const icon_B = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-B.png" :  this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon :  this.currentUrl.origin + "/public/" + poi_icon,
                         iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
@@ -277,7 +293,8 @@ class MarckerClusterResto extends MapModule  {
 
             // const api_data= (this.id_dep) ? `/Coord/Spec/Restaurant/${this.id_dep}/${param}` : `/Coord/All/Restaurant${param}`;
             const response = await fetch(`${this.api_data}${param}`);
-            let new_data = await response.json();
+            const responseJson = await response.json();
+            let new_data = responseJson.data;
             
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)))

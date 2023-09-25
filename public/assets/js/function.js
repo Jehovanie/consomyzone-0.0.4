@@ -1177,6 +1177,16 @@ function calculateDurationOfComment(dateOfComment) {
     }
 
 }
+
+
+function settingDateToStringMonthDayAndYear(dateToTransform){
+    const all_months= ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    const current_date = new Date(dateToTransform);
+    
+    return `${all_months[current_date.getMonth()]} ${current_date.getDate()}, ${current_date.getUTCFullYear()}` ;
+}
+
+
 /**
  * 
  * @param {string} type , 
@@ -1377,6 +1387,8 @@ function pagginationModule(parentSelector, childSelector, numberPerPage){
     }
 
 }
+
+
 function openMenu(){
 
 		let leftInvitation = document.querySelector("#container-mobile")
@@ -1757,6 +1769,48 @@ function injectStatusGolf(){
                         <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
                         
                         <td>Inconnu</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `
+}
+
+
+function injectStatusResto(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icon</th>
+                    
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><img class="icon_resto_legend" src="/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
+                        
+                        <td>Les restaurants non pastillés</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-org-single.png" alt="Icon Resto"></td>
+
+                        <td>Les restaurants pastillés par une seule tribu T.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-vert-multi.png" alt="Icon Resto"></td>
+
+                        <td>Les restaurants pastillés par plusieurs tribus T.</td>
                     </tr>
                 </tbody>
             </table>

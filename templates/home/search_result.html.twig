@@ -12,12 +12,17 @@
 {% block javascripts %}
     {# <script src="{{asset('assets/js/home/fetchLeftSide.js')}}" defer></script>  #}
     {# <script type="text/javascript" src="{{asset('assets/js/home/data_home.js')}}" defer></script> #}
-    <script src="{{asset('assets/js/home/data_search.js')}}" type="text/javascript" defer></script>
-	
+    <script type="text/javascript"  src="{{asset('assets/js/home/data_search.js')}}"defer></script>
+
+    <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
+    <script src="{{asset('assets/js/module/shp.js')}}" defer></script>
+    
+    
     <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterSearch.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/home/marckerClusterSearch.js') }}" defer></script>
     
+    <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
     <script type="text/javascript" src="{{asset('assets/js/home/detail_search.js')}}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
 
@@ -102,7 +107,7 @@
                 <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-toggle="modal" data-bs-target="#modalShowTribusInfos"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-1"><i class="bi bi-info-circle"></i> <span class="textInfos"></span></div>

@@ -417,6 +417,18 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
+    public function getAllIdRestoPastille($table){
+
+        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+
 
     public function showAllUsers()
 
@@ -682,7 +694,6 @@ class Tribu_T_Service extends PDOConnexionService
 
 
     function fetchJsonDataTribuT($userId,$tribu_t_owned_or_join)
-
     {
 
 
@@ -1511,10 +1522,10 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function putCommentOnPublication($tableCommentaireName, 
-    $user_id,
-    $pub_id,
-    $commentaire,
-    $userFullname,
+        $user_id,
+        $pub_id,
+        $commentaire,
+        $userFullname,
     ){
         
         $datetime = new \DateTime();
@@ -1568,6 +1579,19 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    public function getAllPartisanProfil($tableTribuT){
+        
+        if($this->isTableExist($tableTribuT)){
+            $sql= "SELECT id, user_id, roles  FROM $tableTribuT WHERE status LIKE '1'";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $results;
+        }
+        return [];
     }
 
 
@@ -1655,7 +1679,6 @@ class Tribu_T_Service extends PDOConnexionService
             }
         }
 
-       
         return $apropos;
     }
 

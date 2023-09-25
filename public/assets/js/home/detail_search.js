@@ -37,8 +37,6 @@ function executeActionForPastGolf(goldID){
 }
 
 function fecthGolfAction(goldID, action){
-
-    // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
     let url = ""
     
     if(action === "finished"){

@@ -2242,3 +2242,12 @@ img.zoom {
 #table-tribuG-member{
     overflow-y: auto;
 }
+.input_black{
+    border: 1.9px solid black;
+}
+
+.text_black{
+    font-weight: 500;
+    color: black;
+
+}

@@ -22,6 +22,7 @@
 
 {% block javascripts %}
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
@@ -195,7 +196,7 @@
 
 	{% include 'shard/modal/alert_flash.html.twig' %}
 	{% include 'shard/restaurant/modal_avis_resto.html.twig' %}
-	{% include 'shard/modal/new_agenda.html.twig' %}
+	{% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
 	<!-- End Modal -->
 
 	<!-- Modal For Extension -->
@@ -243,7 +244,7 @@
 						<p class="">Quelle action voulez-vous pour ce restaurant?</p>
 						<div class="container mb-4 mt-5">
 							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
-							<button type="button" id="data-event-elie-js" class="btn btn-secondary disabled" data-bs-toggle="modal" data-bs-target="#createAgenda"><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
 						</div>
 				</div>
 

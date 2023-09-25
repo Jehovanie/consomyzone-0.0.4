@@ -35,37 +35,25 @@ class TributGService extends PDOConnexionService{
         $query = "SHOW TABLES FROM $db like '$name_table_tribuG'";
 
         $sql = $this->getPDO()->query($query);
-
         $resultat=$sql->rowCount();
 
         if($resultat>0){
-
             // $data = "Insert into tributg_".$commun_code_postal." (id, user_id, roles) values (UUID(), $user_id,'[\"Utilisateur\"]')";
             $data = "Insert into " . $name_table_tribuG . " (user_id, roles) values ( $user_id,'utilisateur')";
 
             $this->getPDO()->exec($data);
         }else {
-
             ///Formatage name
-
             $depart_tributG = explode("_",$name_table_tribuG); /// ["tribug", (departement code) , (...departement name ) ]
-
             $depart_tributG_name = mb_convert_case( $depart_tributG[count($depart_tributG) - 1 ] , MB_CASE_TITLE, "UTF-8");
 
-            
-
             for($i = 2; $i < count($depart_tributG) - 1 ; $i++) {
-
                 $depart_tributG_name .= " "  .  mb_convert_case( $depart_tributG[$i] , MB_CASE_TITLE, "UTF-8");
-
             }
 
             $description = "Département " . $depart_tributG[1] . ", " . $depart_tributG_name;
 
-            
-
             //// creation de table tribut G.
-
             $sql = "CREATE TABLE " . $name_table_tribuG . " (
 
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY , 
@@ -88,33 +76,19 @@ class TributGService extends PDOConnexionService{
 
                 isModerate  tinyint(1) DEFAULT 0 NOT NULL
 
-                )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
-
-
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
             try {
-
                 $this->getPDO()->exec($sql);
-
             }catch(Error $error ){
-
                 throw $error;
-                
             }
-
-
 
             $this->getPDO()->exec("Insert into tribu_g_list (table_name) values ('$name_table_tribuG')");
 
-
-
             $data = "Insert into " . $name_table_tribuG . " (user_id, roles) values ($user_id,'fondateur')";
 
-
-
             $final = $this->getPDO()->exec($data);
-
-
 
             if($final > 0){
 
@@ -128,7 +102,7 @@ class TributGService extends PDOConnexionService{
 
                     confidentiality TINYINT(1) NOT NULL,
 
-                    photo VARCHAR(250),
+                    photo VARCHAR(250) NULL,
 
                     userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
@@ -140,10 +114,8 @@ class TributGService extends PDOConnexionService{
 
                     ON UPDATE CASCADE
 
-                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
-
+                )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
                 
-
                 $final2 = $this->getPDO()->exec($query);
 
                 if ($final2 == 0) {
@@ -172,7 +144,7 @@ class TributGService extends PDOConnexionService{
 
                         ON UPDATE CASCADE
 
-                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
 
 
@@ -202,11 +174,7 @@ class TributGService extends PDOConnexionService{
 
                         ON UPDATE CASCADE
 
-                        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
-
-
-
-
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
                     $this->getPDO()->exec($sql);
 
@@ -214,88 +182,81 @@ class TributGService extends PDOConnexionService{
                     // Create table agenda for  tribu G
 
                     ///agenda table
-                    $sql = "CREATE TABLE " . $name_table_tribuG . "_agenda(
+                    // $sql = "CREATE TABLE " . $name_table_tribuG . "_agenda(
 
-                        `id` int(11) NOT NULL AUTO_INCREMENT,
+                    //     `id` int(11) NOT NULL AUTO_INCREMENT,
 
-                        `title` varchar(255) NOT NULL,
+                    //     `title` varchar(255) NOT NULL,
 
-                        `type` varchar(255) NOT NULL,
+                    //     `type` varchar(255) NOT NULL,
 
-                        `restaurant` varchar(255) DEFAULT NULL,
+                    //     `restaurant` varchar(255) DEFAULT NULL,
 
-                        `participant` int(10) DEFAULT NULL,
+                    //     `participant` int(10) DEFAULT NULL,
 
-                        `from_date` datetime NOT NULL,
+                    //     `from_date` datetime NOT NULL,
 
-                        `to_date` datetime NOT NULL,
+                    //     `to_date` datetime NOT NULL,
 
-                        `status` tinyint(1) NOT NULL DEFAULT 0,
+                    //     `status` tinyint(1) NOT NULL DEFAULT 0,
 
-                        `lat` float NOT NULL DEFAULT 0,
+                    //     `lat` float NOT NULL DEFAULT 0,
 
-                        `lng` float NOT NULL DEFAULT 0,
+                    //     `lng` float NOT NULL DEFAULT 0,
 
-                        `user_id` int(11) NOT NULL,
+                    //     `user_id` int(11) NOT NULL,
 
-                        `description` varchar(255) DEFAULT NULL,
+                    //     `description` varchar(255) DEFAULT NULL,
 
-                        `isActive` tinyint(1) NOT NULL DEFAULT 1,
+                    //     `isActive` tinyint(1) NOT NULL DEFAULT 1,
 
-                        `datetime` timestamp NOT NULL DEFAULT current_timestamp(),
+                    //     `datetime` timestamp NOT NULL DEFAULT current_timestamp(),
 
-                        PRIMARY KEY (`id`),
+                    //     PRIMARY KEY (`id`),
 
-                        FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) 
+                    //     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) 
 
-                        ON DELETE CASCADE
+                    //     ON DELETE CASCADE
 
-                        ON UPDATE CASCADE
+                    //     ON UPDATE CASCADE
 
-                    ) ENGINE=InnoDB";
-                    $this->getPDO()->exec($sql);
+                    // ) ENGINE=InnoDB";
+                    // $this->getPDO()->exec($sql);
                     
                     ///agenda action
-                    $sql = "CREATE TABLE " . $name_table_tribuG . "_agenda_action(
+                    // $sql = "CREATE TABLE " . $name_table_tribuG . "_agenda_action(
 
-                        `id` int(11) NOT NULL AUTO_INCREMENT,
+                    //     `id` int(11) NOT NULL AUTO_INCREMENT,
 
-                        `user_id` int(11) NOT NULL,
+                    //     `user_id` int(11) NOT NULL,
 
-                        `agenda_id` int(11) NOT NULL,
+                    //     `agenda_id` int(11) NOT NULL,
 
-                        `type_action` varchar(255) NOT NULL,
+                    //     `type_action` varchar(255) NOT NULL,
 
-                        `status` int(1) NOT NULL DEFAULT 1,
+                    //     `status` int(1) NOT NULL DEFAULT 1,
 
-                        `datetime` datetime NOT NULL DEFAULT current_timestamp(),
+                    //     `datetime` datetime NOT NULL DEFAULT current_timestamp(),
 
-                        PRIMARY KEY (`id`),
+                    //     PRIMARY KEY (`id`),
 
-                        FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+                    //     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
 
-                        FOREIGN KEY (`agenda_id`) REFERENCES " . $name_table_tribuG . "_agenda (`id`)
+                    //     FOREIGN KEY (`agenda_id`) REFERENCES " . $name_table_tribuG . "_agenda (`id`)
 
-                        ON DELETE CASCADE 
+                    //     ON DELETE CASCADE 
 
-                        ON UPDATE CASCADE
+                    //     ON UPDATE CASCADE
 
-                      ) ENGINE=InnoDB";
+                    //   ) ENGINE=InnoDB";
 
-                    $this->getPDO()->exec($sql);
-
+                    // $this->getPDO()->exec($sql);
                 }
-
             }
-
         }
 
-        
-
         return $resultat;
-
     }
-
 
 
     /**
@@ -309,22 +270,15 @@ class TributGService extends PDOConnexionService{
 
     public function changeProfilTribuG($table_name, $image_file){
 
-
-
         $sql = "UPDATE " . $table_name . " set avatar = '" . $image_file . "';";
 
         $statement = $this->getPDO()->prepare($sql);
-
         $statement->execute();
 
-
-
         $sql_set_default = "ALTER TABLE  $table_name CHANGE avatar avatar VARCHAR(250) NOT NULL DEFAULT   '$image_file'";
-
         $statement = $this->getPDO()->prepare($sql_set_default);
 
         return $statement->execute();
-
     }
 
 
@@ -337,15 +291,11 @@ class TributGService extends PDOConnexionService{
      */
     public function getFullName($userId)
     {
-
         $statement = $this->getPDO()->prepare("select * from (select concat(firstname, ' ', lastname) as fullname, user_id from consumer union select concat(firstname, ' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id = $userId");
-
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         return $result["fullname"];
-
     }
 
 
@@ -358,17 +308,12 @@ class TributGService extends PDOConnexionService{
      */
     public function getTableNameTributG($userId)
     {
-
         $statement = $this->getPDO()->prepare("select * from (select tributg, user_id from consumer union select tributg, user_id from supplier) as tab where tab.user_id = $userId");
 
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-
-
         return $result["tributg"];
-
     }
 
 
@@ -427,14 +372,11 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare($sql);
 
         return $statement->execute();
-
     }
 
 
 
-    public function setIsModerateur($table_name, $user_id, $val)
-
-    {
+    public function setIsModerateur($table_name, $user_id, $val){
 
         $sql = "UPDATE " . $table_name . " set isModerate = " . $val . " where user_id  =" . $user_id;
 
@@ -1267,16 +1209,14 @@ class TributGService extends PDOConnexionService{
     }
 
 
-    public function showRightTributName($table)
-    {
+    public function showRightTributName($table){
+
         $statement = $this->getPDO()->prepare("c");
 
         $statement->execute();
-
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         return $result;
-
     }
 
 
@@ -1317,11 +1257,9 @@ class TributGService extends PDOConnexionService{
     public function fetchAllTribuGMember(){
 
         $rqt = "SELECT table_name FROM tribu_g_list";
-
         $stmt = $this->getPDO()->prepare($rqt);
 
         $stmt->execute();
-
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if(count($result)>0){
@@ -1347,7 +1285,6 @@ class TributGService extends PDOConnexionService{
         }
 
         return $result_final;
-
     }
 
     /**
@@ -1381,7 +1318,7 @@ class TributGService extends PDOConnexionService{
 
         // $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
         // . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
-        
+
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $pub = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
@@ -1401,7 +1338,6 @@ class TributGService extends PDOConnexionService{
         $pub[0]["reactions"] = $reactions; /// [ ...reactions ]
         return $pub;
     }
-
 
     public function getNextPubID($table_publication, $last_pubID){
         $next_pubID=0;
@@ -1469,18 +1405,14 @@ class TributGService extends PDOConnexionService{
      * @author Elie Fenohasina <eliefenohasina@gmail.com>
      * @return array : list of tribu G exists
      */
-
-     public function getAllTribuGExists(){
+    public function getAllTribuGExists(){
 
         $sql = "SELECT tributg FROM `consumer` UNION SELECT tributg FROM `supplier`";
-
         $statement = $this->getPDO()->prepare($sql);
-        
-        $statement->execute();
 
+        $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $results;
-     }
-
+    }
 }

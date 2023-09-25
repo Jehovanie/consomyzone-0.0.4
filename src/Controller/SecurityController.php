@@ -432,7 +432,6 @@ class SecurityController extends AbstractController
         $user->setTablenotification("tablenotification");
         $user->setTablerequesting("tablerequesting");
         $user->setNomTableAgenda("agenda");
-        $user->setNomTableEventFollowed("event_followed");
         $user->setNomTablePartageAgenda("partage_agenda");
 
         ///hash password
@@ -467,7 +466,6 @@ class SecurityController extends AbstractController
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
-        $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
         
 
         ///keep the change in the user information
@@ -510,9 +508,9 @@ class SecurityController extends AbstractController
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-        if( strtolower($_ENV["APP_ENV"]) === "dev"){
-            return $this->redirect($signatureComponents->getSignedUrl());
-        }
+        // if( strtolower($_ENV["APP_ENV"]) === "dev"){
+        //     return $this->redirect($signatureComponents->getSignedUrl());
+        // }
         ///-------------------------------------------------------///
 
 
@@ -634,7 +632,6 @@ class SecurityController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
-
             ///get the data
             extract($form->getData());
 
@@ -747,8 +744,8 @@ class SecurityController extends AbstractController
                         $message_notification = $notification["current"];
                     }
                 } else {
-
-                    $message_notification = $notification["other"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/profil/" .  $request->query->get('id') . "' alt='Nouvelle membre'>Voir son profil</a>";
+                    // $message_notification = $notification["other"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/profil/" .  $request->query->get('id') . "' alt='Nouvelle membre'>Voir son profil</a>";
+                    $message_notification = $notification["other"];
                 }
 
 
@@ -767,7 +764,8 @@ class SecurityController extends AbstractController
             if ($userRepository->findByRolesUserSuperAdmin() && $resultat == 0) {
 
                 $super_admin = $userRepository->findByRolesUserSuperAdmin();
-                $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
+                // $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
+                $message_notification = $notification["admin"];
 
                 $notificationService->sendNotificationForOne(
                     $userToVerifie->getId(),
@@ -880,7 +878,6 @@ class SecurityController extends AbstractController
             $user->setTablenotification("tablenotification");
             $user->setTablerequesting("tablerequesting");
             $user->setNomTableAgenda("agenda");
-            $user->setNomTableEventFollowed("event_followed");
             $user->setNomTablePartageAgenda("partage_agenda");
 
             ///hash password
@@ -900,7 +897,6 @@ class SecurityController extends AbstractController
             $user->setTablenotification("tablenotification_" . $numero_table);
             $user->setTablerequesting("tablerequesting_" . $numero_table);
             $user->setNomTableAgenda("agenda_" . $numero_table);
-            $user->setNomTableEventFollowed("event_followed_" . $numero_table);
             $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
 
 
@@ -911,7 +907,6 @@ class SecurityController extends AbstractController
             $this->requesting->createTable("tablerequesting_" . $numero_table);
             $agendaService->createTableAgenda("agenda_" . $numero_table);
             $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
-            $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
 
 
             $entityManager->persist($user);
