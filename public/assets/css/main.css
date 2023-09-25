@@ -1934,3 +1934,20 @@ textarea {
     font-weight: bolder;
     cursor: pointer;
 }
+
+.fa-search-elie{
+    padding: 15px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    /* background-color: #0D6EFD; */
+    color: #0D6EFD;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+..fa-search-elie:hover{
+    background-color: #0D6EFD;
+    color: #fff;
+    scale: 1.2;
+}

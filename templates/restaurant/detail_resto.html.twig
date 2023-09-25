@@ -46,6 +46,10 @@
                             {{details.villenorm|lower}}
                         </a>
                     </figcaption>  
+
+                    {% set adresse = details.numvoie|lower ~" "~ details.typevoie|lower ~" "~ details.nomvoie|lower ~" "~ details.codpost|lower ~" "~ details.villenorm|lower %}
+                    <button class="btn btn-outline-primary mx-auto w-50 mb-2" onclick="openVoirPlusChearch('{{details.denominationF | raw}}','{{adresse | trim}}')">Voir plus</button>
+
                     <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                         <span>
                             <a id="see-tom-js" class="text-black btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">

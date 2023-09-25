@@ -989,6 +989,32 @@ document.querySelectorAll(".btn_grise_non_actif_js_Elie").forEach(btn_gris=>{
         openSwalNonActif()
     })
 })
+
+
+function openVoirPlusChearch(denomination_f, adresse){
+
+    let html = `<div class="container mt-3 mb-3"><div class="d-flex justify-content-evenly">
+    <div class="d-flex flex-column align-items-center"><i class="fa-brands fa-google fa-search-elie"></i>Google</div>
+    <div class="d-flex flex-column align-items-center"><i class="fa-solid fa-location-dot fa-search-elie"></i>Google Maps</div>
+    <div class="d-flex flex-column align-items-center"><i class="fa-solid fa-utensils fa-search-elie"></i>The fork</div>
+    <div class="d-flex flex-column align-items-center"><i class="fa-brands fa-cc-visa fa-search-elie"></i>Tripadvisor</div>
+    <div class="d-flex flex-column align-items-center"><i class="fa-brands fa-guilded fa-search-elie"></i>Guide Michelin</div>
+    <div class="d-flex flex-column align-items-center"></div></div>`
+
+    Swal.fire({
+        title: 'Vous voulez chercher dans...',
+        icon: 'question',
+        html: html,
+        showConfirmButton: false,
+        showCancelButton: false,
+        confirmButtonText:
+          '<i class="fa-solid fa-magnifying-glass"></i> Rechercher',
+        cancelButtonText:
+          '<i class="fa-solid fa-xmark"></i> Pas maintenant',
+      })
+
+}
+
 function showPartenairAsk(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
     return html=`

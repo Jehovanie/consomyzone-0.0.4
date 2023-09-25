@@ -845,9 +845,16 @@ function joinMeet(...args) {
             </div>`
 
             if(args[2]){
-                node = args[2]
-                message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
-                node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
+                if(args[3]){
+                    node = args[2]
+                    message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
+                    node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
+                }else{
+                    const lastElementChild = document.querySelector("#content_discussion_elie").lastElementChild
+                    message_id = lastElementChild.getAttribute("id").replaceAll(/[^0-9]/g,"");
+                    lastElementChild.innerHTML = content
+                }
+                
             }
 
             let msg = {

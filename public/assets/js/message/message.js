@@ -328,7 +328,7 @@ if(document.querySelector("#elie-btn-visio")){
         <p class="text-info mb-2">
             <i class="fas fa-video-camera me-2 ms-1"></i>
             Appel en attente...
-            <span onclick="joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+            <span onclick="joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this, 'old')" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
         </p> 
         </div>`
 
