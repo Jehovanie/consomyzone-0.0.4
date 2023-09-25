@@ -1776,6 +1776,48 @@ function injectStatusGolf(){
     `
 }
 
+
+function injectStatusResto(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icon</th>
+                    
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><img class="icon_resto_legend" src="/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
+                        
+                        <td>Les restaurants non pastillés</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-org-single.png" alt="Icon Resto"></td>
+
+                        <td>Les restaurants pastillés par une seule tribu T.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-vert-multi.png" alt="Icon Resto"></td>
+
+                        <td>Les restaurants pastillés par plusieurs tribus T.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `
+}
+
 function injectChooseCouch(){
     if( !document.querySelector(".content_right_side_body_jheo_js")){
         console.log("Selector not found : '.content_right_side_body_body'")

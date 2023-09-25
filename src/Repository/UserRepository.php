@@ -93,7 +93,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getListTableTribuT_owned(){
 
         $results= [ ];
-        $json_tribuT_owned= $this->sec->getUser()->getTribuT();
+        $json_tribuT_owned= $this->sec->getUser() ? $this->sec->getUser()->getTribuT() : false;
         if( $json_tribuT_owned ){
             $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
             $arrayTribu_T_Owned = $decode_tribuT_owned['tribu_t'];
@@ -122,7 +122,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getListTalbeTribuT_joined(){
         $results= [ ];
 
-        $json_tribuT_joined = $this->sec->getUser()->getTribuTJoined();
+        $json_tribuT_joined = $this->sec->getUser() ?  $this->sec->getUser()->getTribuTJoined() : false;
         if( $json_tribuT_joined ){
 
             $decode_tribuT_joined = json_decode($json_tribuT_joined , true);

@@ -737,6 +737,12 @@ class MapModule{
                     <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
                 </button>
             `
+        }else if( this.mapForType === "resto" ){ 
+            htmlControl += `
+                <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
+                </button>
+            `
         }
         // else if( this.mapForType === "tabac") {
         //     htmlControl += `
@@ -891,6 +897,10 @@ class MapModule{
             if( rightSideContentType === "info_golf_jheo_js"){
                 document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
                 injectStatusGolf();
+
+            }else if( rightSideContentType === "info_resto_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
+                injectStatusResto();
 
             }else if( rightSideContentType === "couche_tabac_jheo_js" ){
                 document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.".toUpperCase();

@@ -940,7 +940,7 @@ function openSwalActif() {
  */
 function openSwalActifPastille() {
 
-    swal("Veuillez vous connecter et puis créée une tribu-T avec l'extension restaurant activée.\nVoulez-vous vous connecter?", {
+    swal("Pour pastiller veuillez vous connecter et puis créée une tribu-T avec l'extension restaurant activée.\nVoulez-vous vous connecter?", {
         buttons: {
           cancel: "Pas maintenant",
           connect: {
