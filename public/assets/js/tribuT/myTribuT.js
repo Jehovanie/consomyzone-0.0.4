@@ -2473,7 +2473,7 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
 function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
 
-    fetch("/api/agenda/etab/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
+    fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
         .then(response => response.text())
         .then(result => {
 
