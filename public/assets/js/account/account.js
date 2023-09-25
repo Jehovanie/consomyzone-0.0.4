@@ -70,13 +70,27 @@ if( document.querySelector(".information_user_conected_jheo_js")){
             const tab_id_msg_already_show = [];
 
             div_message_already_show.forEach(element => {
-                tab_id_msg_already_show.push(parseInt(element.getAttribute("data-toggle-other-id")))
+                const dataOtherId= parseInt(element.getAttribute("data-toggle-other-id"))
+                if( new_message.some(jtem => parseInt(jtem.message.user_post) === dataOtherId)) {
+                    const dataMsg= new_message.find(jtem => parseInt(jtem.message.user_post) === dataOtherId)
+
+                    // card_msg.className= ` ... show_single_msg_popup_jheo_js ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${other_id}_js_jheo`;
+                    if( dataMsg ){
+                        if( parseInt(dataMsg.message.isRead)  !== 1 ){
+                            console.log(dataMsg.message.user_post)
+                            const divMsg = document.querySelector(`.msg_${dataMsg.message.user_post}_js_jheo`);
+    
+                            if( divMsg && !divMsg.classList.contains('gray400')){
+                                divMsg.classList.add('gray400');
+                            }
+                        }
+                    }
+                }
+                tab_id_msg_already_show.push(dataOtherId)
             })
 
             //// filter new message from server and show the message don't show
-            const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            // console.log('new_msg')
-            // console.log(new_msg)
+            const new_msg = new_message.filter( item => !tab_id_msg_already_show.includes(parseInt(item.message.user_post)))
 
             if( new_msg.length > 0 ) {
                 /// for each rest message let's show
@@ -95,12 +109,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                 })
             }
-
-            //// update card exist
-            const old_msg = new_message.filter( item => tab_id_msg_already_show.includes(parseInt(item.message.id)))
-            // console.log('old_msg')
-            // console.log(old_msg)
- 
         }
     }
 
@@ -124,44 +132,42 @@ if( document.querySelector(".information_user_conected_jheo_js")){
     }
 }
 
-// if( document.querySelector(".message_jheo_js")){
-//     const message_icon = document.querySelector(".message_jheo_js");
+if( document.querySelector(".message_jheo_js")){
+    const message_icon = document.querySelector(".message_jheo_js");
 
-//     message_icon.addEventListener("click", () => {
+    message_icon.addEventListener("click", () => {
 
-//         if( document.querySelectorAll(".single_notif_jheo_js")){
+        if( document.querySelectorAll(".show_single_msg_popup_jheo_js")){
 
-//             const all_card_message= document.querySelectorAll(".single_notif_jheo_js")
-//             const data = []
-//             all_card_message.forEach(card => {
-//                 const single_data = { notif_id: card.getAttribute("data-toggle-notif-id")}
+            const all_card_message= document.querySelectorAll(".show_single_msg_popup_jheo_js")
+            const data = []
+            all_card_message.forEach(card => {
+                const single_data = { notif_id: card.getAttribute("data-toggle-other-id")}
+                data.push(single_data);
+            })
 
-//                 data.push(single_data);
-//             })
-
-//             fetch("/user/notification/show" , {
-//                 method: "POST",
-//                 headers:{
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify(data)
-//             })
-//             .then(res => {
-//                 //// show badge red notification
-//                 const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js")
-//                 if( alert_new_notification && !alert_new_notification.classList.contains("d-none")){
-//                     alert_new_notification.classList.add("d-none");
-//                 }
-//                 return res.json();
-//             })
-//             .then(res => {
-//                 if( res){
-//                     console.log(res)
-//                 }
-//             })
-//         }
-//     })
-// }
+            fetch("/user/setshow/messages" , {
+                method: "GET",
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(res => {
+                //// show badge red notification
+                const badge_message= document.querySelector(".badge_message_jheo_js")
+                if( badge_message && !badge_message.classList.contains("hidden")){
+                    badge_message.classList.add("hidden");
+                }
+                return res.json();
+            })
+            .then(res => {
+                if( res){
+                    console.log(res)
+                }
+            })
+        }
+    })
+}
 
 if( document.querySelector(".notification_jheo_js")){
 
@@ -234,8 +240,6 @@ if(document.querySelector('.annulation_pub_js_jheo')){
     }
 
 }
-
-
 
 /**
 
@@ -475,11 +479,9 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
 
     ///create card message and add in the message modal popup
     const card_msg = document.createElement("li");
-    card_msg.className= `nr cg h lc mg qg qh sq js yk ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${id}_js_jheo show_single_msg_popup_jheo_js`;
-
+    card_msg.className= `nr cg h lc mg qg qh sq js yk show_single_msg_popup_jheo_js ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${other_id}_js_jheo`;
     /// user author
     card_msg.setAttribute("data-toggle-other-id", other_id);
-
     /// set the id of the card_msg message
     card_msg.setAttribute("id",id);
 
@@ -828,16 +830,16 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
             const pageId = event.target.dataset.target;
                 if (dataLink === 'list-tribu-g') {
                     document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.add('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.remove('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
+                    // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
                 } else if (dataLink === 'list-tribu-t') {
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
+                    // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
                     document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.remove('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
                 }else if (dataLink === 'list-fournisseur') {
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-fournisseur").classList.add('text-primary')
+                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.add('text-primary')
                     document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
-                    document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+                    // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
                 }
                 showPage(pageId);
         });

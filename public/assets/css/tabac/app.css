@@ -42,18 +42,3 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
-
-.chargement_tabac{
-    height: unset !important;
-    width: unset !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    right: 13%;
-    top: 35%;
-}
-
-.opacity04{
-    opacity: 0.4;
-}

@@ -8,6 +8,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 
+use App\Service\Status;
+
 use App\Entity\Consumer;
 
 use App\Entity\Supplier;
@@ -33,17 +35,23 @@ use App\Service\RequestingService;
 use App\Security\UserAuthenticator;
 
 use App\Service\NotificationService;
-
 use App\Repository\CodeapeRepository;
 use App\Repository\CommuneRepository;
+
+use App\Form\InscriptionPartenaireType;
+use App\Repository\ConsumerRepository;
+use App\Repository\SupplierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Routing\Annotation\Route;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+use Symfony\Component\Serializer\SerializerInterface;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -56,15 +64,12 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class SecurityController extends AbstractController
 
@@ -427,7 +432,6 @@ class SecurityController extends AbstractController
         $user->setTablenotification("tablenotification");
         $user->setTablerequesting("tablerequesting");
         $user->setNomTableAgenda("agenda");
-        $user->setNomTableEventFollowed("event_followed");
         $user->setNomTablePartageAgenda("partage_agenda");
 
         ///hash password
@@ -462,7 +466,6 @@ class SecurityController extends AbstractController
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
-        $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
         
 
         ///keep the change in the user information
@@ -505,9 +508,9 @@ class SecurityController extends AbstractController
 
 
         /// IN DEVELOPMENT----- delete this when PROD ------------///
-        if( strtolower($_ENV["APP_ENV"]) === "dev"){
-            return $this->redirect($signatureComponents->getSignedUrl());
-        }
+        // if( strtolower($_ENV["APP_ENV"]) === "dev"){
+        //     return $this->redirect($signatureComponents->getSignedUrl());
+        // }
         ///-------------------------------------------------------///
 
 
@@ -591,7 +594,8 @@ class SecurityController extends AbstractController
         EntityManagerInterface $entityManager,
         UserAuthenticatorInterface $authenticator,
         UserAuthenticator $loginAuth,
-        VerifyEmailHelperInterface $verifyEmailHelper
+        VerifyEmailHelperInterface $verifyEmailHelper,
+        Filesystem $filesyst
     ) {
         ///to get info
         ///id de l'utilisateur.
@@ -628,7 +632,6 @@ class SecurityController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
-
             ///get the data
             extract($form->getData());
 
@@ -687,7 +690,7 @@ class SecurityController extends AbstractController
                 file_put_contents($path ."/". $image_name, file_get_contents($profil));
                 
                 ///set use profile
-                $user_profil->setPhotoProfil( $path . $image_name);
+                $user_profil->setPhotoProfil( '/uploads/users/photos/photo_user_' . $userToVerifie->getId() . "/" . $image_name);
             }
 
             // $user_profil->setPhotoCouverture("photo de couverture");
@@ -741,8 +744,8 @@ class SecurityController extends AbstractController
                         $message_notification = $notification["current"];
                     }
                 } else {
-
-                    $message_notification = $notification["other"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/profil/" .  $request->query->get('id') . "' alt='Nouvelle membre'>Voir son profil</a>";
+                    // $message_notification = $notification["other"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/profil/" .  $request->query->get('id') . "' alt='Nouvelle membre'>Voir son profil</a>";
+                    $message_notification = $notification["other"];
                 }
 
 
@@ -761,7 +764,8 @@ class SecurityController extends AbstractController
             if ($userRepository->findByRolesUserSuperAdmin() && $resultat == 0) {
 
                 $super_admin = $userRepository->findByRolesUserSuperAdmin();
-                $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
+                // $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
+                $message_notification = $notification["admin"];
 
                 $notificationService->sendNotificationForOne(
                     $userToVerifie->getId(),
@@ -874,7 +878,6 @@ class SecurityController extends AbstractController
             $user->setTablenotification("tablenotification");
             $user->setTablerequesting("tablerequesting");
             $user->setNomTableAgenda("agenda");
-            $user->setNomTableEventFollowed("event_followed");
             $user->setNomTablePartageAgenda("partage_agenda");
 
             ///hash password
@@ -894,7 +897,6 @@ class SecurityController extends AbstractController
             $user->setTablenotification("tablenotification_" . $numero_table);
             $user->setTablerequesting("tablerequesting_" . $numero_table);
             $user->setNomTableAgenda("agenda_" . $numero_table);
-            $user->setNomTableEventFollowed("event_followed_" . $numero_table);
             $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
 
 
@@ -905,7 +907,6 @@ class SecurityController extends AbstractController
             $this->requesting->createTable("tablerequesting_" . $numero_table);
             $agendaService->createTableAgenda("agenda_" . $numero_table);
             $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
-            $agendaService->createTableEventFollowed("event_followed_" . $numero_table);
 
 
             $entityManager->persist($user);
@@ -997,4 +998,195 @@ class SecurityController extends AbstractController
         $r = $serialize->serialize(["response"=>"0k"], 'json');
         return new JsonResponse($r, 200, [], true);
     }
+
+    #[Route(path: "/inscription/partenaire", name:"inscription_partenaire", methods: ["GET", "POST"])]
+    public function inscriptionPartenaire(
+        Request $request,
+        Status $status,
+        SupplierRepository $supplierRepo,
+        UserRepository $userRepo,
+        ConsumerRepository $consumerClient,
+        Filesystem $filesyst,
+        MailService $mailService
+    ) {
+
+
+        if ($this->getUser()) {
+           
+            ////CREATE NEW FORM TO COMPLETE USER PROFIL
+            $flash = [];
+    
+            $form = $this->createForm(InscriptionPartenaireType::class);
+    
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted()) {
+    
+                ///set the data to table supplier
+                extract($form->getData());
+                $cusmerEntity=$consumerClient->findBy(['userId'=>$this->getUser()]);
+                //dd( $cusmerEntity);
+                $user_profil = new Supplier();
+                $user_profil->setFirstname($cusmerEntity[0]->getFirstname());
+
+                $user_profil->setLastname($cusmerEntity[0]->getLastname());
+                $user_profil->setTributG($cusmerEntity[0]->getTributG());
+                $user_profil->setCommerce($commerce);
+                $user_profil->setCodeape($code_ape);
+                $user_profil->setWebsite($site_web);
+                $user_profil->setFacebook($facebook);
+                $user_profil->setTwitter($twitter);
+                $user_profil->setNumRue($num_rue);
+                $user_profil->setTelephone($telephone);
+                $user_profil->setCodePostal($code_postal);
+                $user_profil->setCommune($nom_commune);
+                $user_profil->setQuartier($quartier);
+                $user_profil->setPays($pays);
+                $user_profil->setTelFixe($telephone);
+                $user_profil->setNomCommerce($nomCommerce);
+                $user_profil->setEmailPro($mail_pro);
+                $user_profil->setLinkedin($linkedin);
+                $user_profil->setSiret($siret);
+                $user_profil->setSiren($siren);
+    
+                ////set profil
+                if( $profil){
+                    ///path file folder
+                    $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $this->getUser()->getId() . "/";
+                    $dir_exist = $filesyst->exists($path);
+    
+                    if ($dir_exist == false) {
+                        $filesyst->mkdir($path, 0777);
+                    }
+    
+                    $temp = explode(";", $profil );
+                    $extension = explode("/", $temp[0])[1];
+                    $image_name = "profil_". $cusmerEntity[0]->getFirstname() . "." . $extension;
+    
+                    ///save image in public/uploader folder
+                    file_put_contents($path ."/". $image_name, file_get_contents($profil));
+                    
+                    ///set use profile
+                    $user_profil->setPhotoProfil( '/uploads/users/photos/photo_user_' . $this->getUser()->getId() . "/" . $image_name);
+
+                  
+                }
+    
+                // $user_profil->setPhotoCouverture("photo de couverture");
+                $user_profil->setUserId($this->getUser());
+                $supplierRepo->add($user_profil,true);
+
+                //update rôle of this user in user table after got supplier
+               
+              
+                $session = $request->getSession();
+                $session->set('demande-partenariat', false);
+                $fullName = $cusmerEntity[0]->getLastname() . " " . $cusmerEntity[0]->getFirstname();
+                $contenu = $fullName . " a terminé de remplir le formulaire de demande de partenariat.<br>
+                Veuillez s'il vous plait approuver sa demande. Vous pouvez approuver sa demande dans le menu Super Admin de 
+                CMZ puis dans la liste de demande de partenariat";
+                $context["object_mail"] = "Demande d'approbation de partenariat";
+                $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                $context["link_confirm"] = "" ;
+                $context["content_mail"] = $contenu;
+                $emailAdmin = $_ENV["SUPER_ADMIN_MAIL"];
+                $nomComplet = $_ENV["FULLNAME"];
+                $mailService->sendLinkOnEmailAboutAgendaSharing($emailAdmin, $nomComplet, $context);
+                return $this->redirectToRoute('app_login');
+
+            }
+
+            $userConnected = $status->userProfilService($this->getUser());
+    
+            // return $this->redirectToRoute("connection");
+            return $this->render("user/inscriptionPartenaire.html.twig", [
+                "form_inscription" => $form->createView(),
+                "last_email" => $this->getUser()->getEmail(),
+                "flash" => $flash,
+                "userConnected" => $userConnected,
+                "pseudo" => $this->getUser()->getPseudo()
+            ]);
+        }else {
+            $session = $request->getSession();
+            $session->set('demande-partenariat', true);
+            return $this->redirectToRoute('app_login');
+        }
+    }
+
+    #[Route(path:'/proposition/partenariat/send/email', name:"proposition_partenariat_send_email", methods:"POST")]
+    public function sendEmailPropositionPartenariat(
+        Request $request,
+        SerializerInterface $serialize,
+        MailService $mailService,
+        UserRepository $userRepository
+        ){
+
+        $context=[];
+
+        $requestContent = json_decode($request->getContent(), true);
+        $isAuto = $requestContent["generateAuto"];
+
+        if($isAuto){
+
+            $emailAdmin = $_ENV["SUPER_ADMIN_MAIL"];
+            $nomComplet = $_ENV["FULLNAME"];
+            $context["object_mail"] = $requestContent["objectEmail"];
+            // $context["object_mail"] = "Demande de partenariat refusée";
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = "" ;
+            $context["content_mail"] = $requestContent["emailCore"];
+            $mailService->sendLinkOnEmailAboutAgendaSharing($emailAdmin, $nomComplet, $context);
+    
+        }else{
+            $content=$requestContent["emailCore"]; 
+            if(isset($requestContent["email"])){
+                $email_to = $requestContent["email"];
+                $fullname = $requestContent["fullname"];
+            } else{
+                $email_to = $_ENV["SUPER_ADMIN_MAIL"];
+                $fullname = $_ENV["FULLNAME"];
+            }
+            $context["object_mail"] = $requestContent["objectEmail"];
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = "" ;
+            $context["content_mail"] = $content;
+
+            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, $fullname, $context);
+
+            if(isset($requestContent["proposition"]) && $requestContent["proposition"] == true)
+                $userRepository->updateByNameWhereIdis("statusDemandePartenariat",1,$this->getUser()->getId());
+        }
+
+        $r = $serialize->serialize(["response"=>"0k"], 'json');
+
+        return new JsonResponse($r, 200, [], true);
+    }
+
+    #[Route(path:'/accept/proposition/partenariat/{isYes}', name:"accept_proposition_partenariat", methods:"POST")]
+    public function acceptPropositionPartenariat(
+        $isYes,
+        Request $request,
+        SerializerInterface $serialize,
+        SupplierRepository $supplierRepository,
+        UserRepository $userRepository
+        ){
+
+        $requestContent = json_decode($request->getContent(), true);
+
+        $userId = $requestContent["userId"];
+
+        if($isYes == 1){
+            $supplierRepository->updateByNameWhereIdis("isVerifiedTributGAdmin",1,$userId);
+            $userRepository->updateByNameWhereIdis("type","supplier",$userId);
+            $userRepository->updateByNameWhereIdis("statusDemandePartenariat",2,$userId);
+        }else{
+            $supplierRepository->updateByNameWhereIdis("isVerifiedTributGAdmin",-1,$userId);
+            $userRepository->updateByNameWhereIdis("statusDemandePartenariat",0,$userId);
+        }
+
+        $r = $serialize->serialize(["response"=>"0k"], 'json');
+
+        return new JsonResponse($r, 200, [], true);
+    }
+
 }

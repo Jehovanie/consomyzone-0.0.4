@@ -68,7 +68,8 @@ class MessageController extends AbstractController
             if( intval($id_amis["user_id"]) !== intval($userId) ){
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                if( $user_amis){
+
+                if( $user_amis && $user_amis->getIsConnected()){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -97,19 +98,22 @@ class MessageController extends AbstractController
             foreach($results as $result){
                 if( intval($result["user_id"]) !== intval($userId) ){
                     $user_amis = $userRepository->find(intval($result["user_id"]));
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                    $amis = [
-                        "id" => $result["user_id"],
-                        "photo" => $profil_amis->getPhotoProfil(),
-                        "email" => $user_amis->getEmail(),
-                        "firstname" => $profil_amis->getFirstname(),
-                        "lastname" => $profil_amis->getLastname(),
-                        "image_profil" => $profil_amis->getPhotoProfil(),
-                        "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
-                        "is_online" => $user_amis->getIsConnected(),
-                    ];
-                    ///get it
-                    array_push($tribuT['amis'] , $amis);
+                    
+                    if( $user_amis && $user_amis->getIsConnected()){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
+                            "is_online" => $user_amis->getIsConnected(),
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'] , $amis);
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -252,8 +256,7 @@ class MessageController extends AbstractController
         }
 
         if(isset($dataInfos)){
-           foreach ($dataInfos as $key) {
-                //dd($key);
+            foreach ($dataInfos as $key) {
                 $result = $messageService->sendMessageForOne($key["from_id"], $key["to_id"], json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type);
                 $agendaID = $key["agendaId"];
                 $from_id=$key["from_id"];

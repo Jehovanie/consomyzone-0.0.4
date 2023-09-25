@@ -156,11 +156,7 @@ if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector
 }
 
 
-
-
-
 /// THIS FUNCTION SHOW AND SEND MESSAGE TO THE SERVER ////////////////
-
 function sendMessage(message, file_list){
 
     //// format date now 

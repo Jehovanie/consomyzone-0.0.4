@@ -34,8 +34,8 @@
 						<div class="author-card-profile">
 
 							{# image profil default #}
-							<div class="author-card-avatar">
-								<img class="image_profil_js_jheo"  src={{asset('uploads/users/photos/img_avatar.png')}} alt={{pseudo}}>
+							<div class="author-card-avatar" style="max-width:85px; max-heigth:85px">
+								<img class="image_profil_js_jheo"  src={{asset('uploads/users/photos/img_avatar.png')}} alt={{pseudo}} width="85" height="85">
 							</div>
 
 							{# pseudo  #}
@@ -43,9 +43,10 @@
 								<h5 class="author-card-name text-lg">{{pseudo}}</h5>
 
 								{# icon change profile  #}
-								<label style="margin-left:10%;" for="fileInputProfil">
-									<i style="margin-top:5px;cursor:pointer;background-image: url(&quot;https://static.xx.fbcdn.net/rsrc.php/v3/yB/r/0vR9H8iux5G.png?_nc_eui2=AeEvcr8vVXq0wxEnW6d-U2x6Cr_QprbGjx4Kv9CmtsaPHugo3hZW-h0b0iFoxO3NohAeoro_KXocl2rFKLxrU5ui&quot;); background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+								<label style="transform:translate(-20px,6px)" for="fileInputProfil">
+									<i class="bi bi-camera-fill" style="cursor:pointer;"></i>
 								</label>
+								
 								<input type="file" name="fileInputProfil" id="fileInputProfil" style="display:none;visibility:none;" accept="image/*">
 			
 							</div>
@@ -57,12 +58,14 @@
 					<div class="col-lg-8 col-md-10 col-sm-10 col-xs-12 mx-auto pb-5">
 						<div class="row">
 							<div class="col">
-								{# <input type="checkbox" name="consumer"  id="consumer" checked> #}
-								{{ form_widget(form_inscription.Consommateur, {'attr': {'checked': 'checked'}}) }}
-								{# <label for="consumer"> Consommateur</label> #}
-								{{ form_label(form_inscription.Consommateur , "Consommateur", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+								<input type="checkbox" name="consumer"  id="consumer" checked disabled>
+								<label class='form_label fw-bolder' for="consumer"> Consommateur</label>
+								<div class="d-none">
+									{{ form_widget(form_inscription.Consommateur, {'attr': {'checked': 'checked'}}) }}
+									{{ form_label(form_inscription.Consommateur , "Consommateur") }}
+								</div>
 							</div>
-							<div class="col">
+							<div class="col hidden">
 								{# <input type="checkbox"  name="supplier"  id="supplier" > #}
 								{{ form_widget(form_inscription.Fournisseur, {'attr': {'id':'supplier'}}) }}
 								{# <label for="supplier">Fournisseur </label> #}

@@ -53,7 +53,7 @@
                             </ul>
 
                             <div class="content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
-                                {% if amisTributG|length > 1 %}
+                                {% if amisTributG|length > 0 %}
                                     <!-- Chat List Item -->
                                     {% for item in amisTributG %}
                                         {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
@@ -62,7 +62,7 @@
                                 {% else %}
                                     <div class="cg lc mg sh ol rl tq is">
                                         <div class="bg-light bg-gradient p-3">
-                                            <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu G.</p>
+                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -87,7 +87,7 @@
                                                     {% else %}
                                                         <div class="cg lc mg sh ol rl tq is">
                                                             <div class="bg-light bg-gradient p-3">
-                                                                <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu T.</p>
+                                                                <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu T.</p>
                                                             </div>
                                                         </div>
                                                     {% endif %}
@@ -166,12 +166,6 @@
                                             
                                             {% if message.message_type is same as('text') %}
                                                 <p>{{message.content.text | raw}}</p>
-                                            {# {% elseif (message.message_type is same as('image'))  %}
-                                                <div class="content_image_msg">
-                                                    {% for image in message.content.images %}
-                                                        <img class="message_image_item" src="{{image}}" alt="image">
-                                                    {% endfor %}
-                                                </div> #}
                                             {% else  %}
                                                 <p>{{message.content.text | raw}}</p>
                                                 <div class="content_image_msg">

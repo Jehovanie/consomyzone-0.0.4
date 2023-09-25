@@ -12,28 +12,12 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
-class InscriptionType extends AbstractType
+class InscriptionPartenaireType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-                ->add('Consommateur', CheckboxType::class,array(
-                    'required' => false
-                ))
-                ->add('Fournisseur', HiddenType::class, array(
-                    'required' => false,
-                    'label' => 'Partenaire'
-                ))
-                
-                ->add('profil', HiddenType::class) /// i do it later
 
-
-                ->add('nom', TextType::class,array(
-                    'required' => false
-                ))
-                ->add('prenom', TextType::class,array(
-                    'required' => false
-                ))
                 // ->add('pseudo', TextType::class,array(
                 //     'required' => false
                 // ))
@@ -47,11 +31,11 @@ class InscriptionType extends AbstractType
                 // ->add('ville', TextType::class)
 
                 ->add('code_postal', TextType::class, array(
-                    'required' => false
+                    'required' => true
                 ))
 
                 ->add("faux_commune", ChoiceType::class, array(
-                    'required'   => false,
+                    'required'   => true,
                     'empty_data' => '',
                 ))
 
@@ -61,21 +45,19 @@ class InscriptionType extends AbstractType
                 ->add('pays', TextType::class)
 
                 ->add('faux_quartier', ChoiceType::class,array(
-                    'required'   => false,
+                    'required'   => true,
                     'empty_data' => '',
                 ))
-
+                ->add('profil', HiddenType::class)
                 ->add('quartier', HiddenType::class)
                 
                 ->add('commerce', TextType::class,array(
-                    'required' => false
+                    'required' => true
                 ))
                 ->add('code_ape', TextType::class,array(
-                    'required' => false
+                    'required' => true
                 ))
-                ->add('adresse', TextType::class,array(
-                    'required' => false
-                ))
+
                 ->add('site_web', TextType::class,array(
                     'required' => false
                 ))
@@ -89,6 +71,15 @@ class InscriptionType extends AbstractType
                     'required' => false
                 ))
                 ->add('mail_pro', TextType::class,array(
+                    'required' => false
+                ))
+                ->add('nomCommerce', TextType::class,array(
+                    'required' => false
+                ))
+                ->add('siret', TextType::class,array(
+                    'required' => false
+                ))
+                ->add('siren', TextType::class,array(
                     'required' => false
                 ))
                 ->getForm();

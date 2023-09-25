@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Supplier;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -9,6 +10,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use App\Repository\RepositoryDev;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -18,7 +20,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface,RepositoryDev
 {
     /**
      * @var Security
@@ -153,4 +155,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return  array_merge($tab_owned, $tab_joined);
     }
+
+    public function updateByNameWhereIdis($column,$value,$idValue){
+        return $this->createQueryBuilder("")
+        ->update(User::class, "s")
+        ->set("s.".$column,":column")
+        ->setParameter("column",$value)
+        ->where("s.id=:id")
+        ->setParameter("id",$idValue)
+        ->getQuery()
+        ->execute();
+    }
+    
 }

@@ -2500,19 +2500,22 @@ function settingTribuT(e, tribuTName){
     data.then(response=>{
      
         let tbt = JSON.parse(response.tribu_t_owned)
-        let selectTribuOwned = []
-
-        if(Array.isArray(tbt.tribu_t)){
-            selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
-        }else{
-            selectTribuOwned.push(tbt.tribu_t)
-        }
-        // selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
+        let selectTribuOwned = Array.isArray(tbt.tribu_t) ? tbt.tribu_t.filter((tribu) => tribu.name == tribuTName) : [tbt.tribu_t] ;
         let currentTribuT = selectTribuOwned[0]
-        // console.log(currentTribuT)
+        // let selectTribuOwned = []
+
+        // if(Array.isArray(tbt.tribu_t)){
+        //     selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
+        // }else{
+        //     selectTribuOwned.push(tbt.tribu_t)
+        // }
+        // // selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
+        // let currentTribuT = selectTribuOwned[0]
+        // // console.log(currentTribuT)
         // e.target.classList.add("active")
         // document.querySelector("#tribu_t_conteuneur").innerHTML = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Modifier les informations de la tribu T</h5>
-        //                                                                 <button type="button" class="btn btn-primary mt-4 float-end">Modifier</button>`
+        //    <button type="button" class="btn btn-primary mt-4 float-end">Modifier</button>
+        // `
         $("#ModalUpdateTribuT").modal("show")
 
         document.querySelector("#updateTribuInfo").dataset.name = ""
@@ -2527,7 +2530,6 @@ function settingTribuT(e, tribuTName){
         }else{
             document.querySelector("#update_form_extension").checked = false
         }
-
         document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
     
     })

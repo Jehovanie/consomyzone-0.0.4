@@ -30,6 +30,17 @@ class MapModule{
             { name: "Esri WorldStreetMap", link : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", id: "osm_esri_jheo_js", isCurrent: true },
             { name: "Openstreetmap.org", link : "https://tile.openstreetmap.org/{z}/{x}/{y}.png", id: "osm_org_jheo_js", isCurrent: false },
             { name: "Openstreetmap.fr Osmfr", link : "//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png" , id: "osm_fr_jheo_js", isCurrent: false },
+        ];
+
+        // REFERENCES : https://gist.github.com/frankrowe/9007567
+        this.contourOption = [
+            { couche : "canton", arrayColor :["#1b9e77","#d95f02","#7570b3"], properties: ["cv", "dep","nom_cv", "nom_dep", "nom_reg", "reg"]},         /// Dark2
+            { couche : "commune", arrayColor :["#e0f3db","#a8ddb5","#43a2ca"], properties: []},        /// GnBu
+            { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
+            { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
+            // { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
+            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: ["nom_qv", "code_qv", "nom_pole", "pole" ]},       /// YlOrRd
+            { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ]
     }
     initTales(){
@@ -716,7 +727,9 @@ class MapModule{
             <button class="btn btn-warning" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
                 <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
             </button>
-        
+            <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
+                <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
+            </button>
         `;
         if( this.mapForType === "golf"){
             htmlControl += `
@@ -724,13 +737,20 @@ class MapModule{
                     <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
                 </button>
             `
-        }else if( this.mapForType === "tabac") {
+        }else if( this.mapForType === "resto" ){ 
             htmlControl += `
-                <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
+                <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
                 </button>
             `
         }
+        // else if( this.mapForType === "tabac") {
+        //     htmlControl += `
+        //         <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
+        //             <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
+        //         </button>
+        //     `
+        // }
         L.control.custom({
             // position: 'topright',
             content : htmlControl,
@@ -877,9 +897,15 @@ class MapModule{
             if( rightSideContentType === "info_golf_jheo_js"){
                 document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
                 injectStatusGolf();
+
+            }else if( rightSideContentType === "info_resto_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
+                injectStatusResto();
+
             }else if( rightSideContentType === "couche_tabac_jheo_js" ){
                 document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.".toUpperCase();
                 this.injectChooseCouche();
+
             }else{ //// default tiles type
                 document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de map".toUpperCase();
                 this.injectTilesType();
@@ -935,7 +961,7 @@ class MapModule{
             <div class="right_side_body right_side_body_jheo_js">
                 ${tilesSelectHTML}
             </div>
-            <div class="d-none chargement_tabac chargement_tabac_jheo_js">
+            <div class="d-none chargement_right_side chargement_right_side_jheo_js">
                 <div class="containt">
                     <div class="word word-1">C</div>
                     <div class="word word-2">M</div>
@@ -947,7 +973,246 @@ class MapModule{
     }
 
     injectChooseCouche(){
-        throw new Error("The function 'injectChooseCouche' must be redefined on child.")
+        if( !document.querySelector(".content_right_side_body_jheo_js")){
+            console.log("Selector not found : '.content_right_side_body_body'")
+            return false;
+        }
+        document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+            <div class="right_side_body right_side_body_jheo_js">
+                <div class="form-check">
+                    <div class="content_input">
+                        <input class="form-check-input check_tabac_region_jheo_js" type="checkbox" value="" id="region">
+                        <label class="form-check-label text-black" for="region">
+                            REGION
+                        </label>
+                        <!-- <span class="badge bg-info show_list_select">AFFICHER</span> -->
+                    </div>
+                    <div class="content_select_region_jheo_js">
+                        <div class="select_region select_region_jheo_js"></div>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_departement_jheo_js" type="checkbox" value="" id="departement">
+                    <label class="form-check-label text-black" for="departement">
+                        DEPARTEMENT
+                    </label>
+                    <div class="content_select_departement_jheo_js">
+                        <div class="select_region select_departement_jheo_js"></div>
+                    </div>
+                </div>
+                
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_quartier_jheo_js" type="checkbox" value="" id="quartier" >
+                    <label class="form-check-label text-black" for="quartier">
+                        QUARTIER DE VIE
+                    </label>
+                       <div class="content_select_region_jheo_js">
+                        <div class="select_region select_region_jheo_js"></div>
+                    </div>
+                    <div class="content_select_quartier_jheo_js">
+                        <div class="select_region select_quartier_jheo_js"></div>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_canton_jheo_js" type="checkbox" value="" id="canton" >
+                    <label class="form-check-label text-black" for="canton">
+                        CANTON
+                    </label>
+                    <div class="content_select_canton_jheo_js">
+                        <div class="select_region select_canton_jheo_js"></div>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_commune_jheo_js" type="checkbox" value="" id="commune" disabled>
+                    <label class="form-check-label non_active text-black" for="commune">
+                        COMMUNE
+                    </label>
+                    <div class="content_select_commune_jheo_js">
+                        <div class="select_region select_commune_jheo_js"></div>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input check_tabac_iris_jheo_js" type="checkbox" value="" id="iris" disabled>
+                    <label class="form-check-label non_active text-black" for="iris">
+                        IRIS
+                    </label>
+                    <div class="content_select_iris_jheo_js">
+                        <div class="select_region select_iris_jheo_js"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-none chargement_right_side chargement_right_side_jheo_js">
+                <div class="containt">
+                    <div class="word word-1">C</div>
+                    <div class="word word-2">M</div>
+                    <div class="word word-3">Z</div>
+                </div>
+            </div>
+        `
+        this.handleEventOnCheckBox();
+    }
+
+    handleEventOnCheckBox(){
+        const allCheckBox= [
+            "check_tabac_region_jheo_js", 
+            "check_tabac_commune_jheo_js",
+            "check_tabac_departement_jheo_js",
+            "check_tabac_iris_jheo_js",
+            "check_tabac_quartier_jheo_js",
+            "check_tabac_canton_jheo_js"
+        ];
+
+        allCheckBox.forEach(inputCheck => {
+            if(!document.querySelector(`.${inputCheck}`)){
+               throw new Error(`Selector not found : ${inputCheck}`);
+            }
+            
+            ///// event handlers
+            const inputCheck_HTML= document.querySelector(`.${inputCheck}`)
+            inputCheck_HTML.addEventListener("change", (e) => {
+                const couche= inputCheck_HTML.getAttribute("id")
+                if( e.target.checked){
+                    showChargementRightSide()
+                    this.addCoucheOnLeaflet(couche) //// param couche name
+                }else{
+                    const list = document.querySelector(`.select_${couche.toLowerCase()}_jheo_js`)
+                    
+                    this.removeCoucheOnLeafled(couche)
+
+                    if(list && !list.classList.contains("d-none") ){
+                        list.classList.add("d-none")
+
+                        while (list.firstChild) {
+                          list.removeChild(list.firstChild);
+                        }
+                    }
+                }
+            })
+        })
+    }
+
+    async addCoucheOnLeaflet(COUCHE){
+        try{
+            ///// check if this is already get...
+            const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
+            if(!currentCouche){
+                const link = IS_DEV_MODE ? `/assets/shapefile/${COUCHE.toUpperCase()}.zip` : `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
+                const response= await fetch(link)
+                const blob= await response.blob()
+                const file=new File([blob], "xxx.zip",{type:"application/x-zip-compressed"})
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    console.log(reader.result)
+                    shp(reader.result)
+                        .then((geoJson) =>{
+                            hideChargementRightSide() 
+                            ///// couche Option, colors, properties
+                            const coucheOption= this.contourOption.find(item => item.couche === COUCHE.toLowerCase());
+
+                            this.objectGeoJson.push({ couche: COUCHE, data : geoJson.features, color : coucheOption.arrayColor , child : []})
+                            if( COUCHE !== "quartier"){
+                                generateSelectContoursGeographie(COUCHE, geoJson.features) //// function in data_tabac
+                            }else{
+                                this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
+                            }
+
+                            console.log(this.objectGeoJson)
+                        })
+                        .catch(error => {
+                            hideChargementRightSide()
+                            console.log(error)
+                        })
+                };
+
+                reader.readAsArrayBuffer(file)
+            }else{
+                hideChargementRightSide()
+                //// generate
+                if( COUCHE !== "quartier"){
+                    generateSelectContoursGeographie(COUCHE, currentCouche.data , currentCouche.child) //// function in data_tabac
+                }else{
+                    this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
+                }
+            }
+        }catch(e){
+            hideChargementRightSide()
+            console.log(e.message)
+        }
+
+    }
+
+    updateGeoJson(couche,indexInJson){
+        // this.geoJSONLayer.clearLayers();
+        console.log(this.objectGeoJson)
+        const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
+        const styles={
+            color: data_spec.color[0],
+            // fillColor: data_spec.color[1],
+            fillOpacity: 0,
+            weight: 2,
+        }
+
+        const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
+        const geoJson = L.geoJson( data, {
+            style: styles,
+            onEachFeature : (feature, layer)  => {
+                const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
+                const lat= (feature.geometry.bbox[1] + feature.geometry.bbox[3]) / 2 ;
+
+                this.updateCenter(lat, lng, 8);
+
+                const coucheOption= this.contourOption.find(item => item.couche === couche.toLowerCase());
+
+                let description = "";
+                coucheOption.properties.forEach(propertie => {
+                    const desc = feature.properties[propertie].split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()).join(" ")
+                    description += propertie.toUpperCase() + " : " + desc + " </br>";
+                })
+
+                layer.bindPopup(description);
+            }
+        }).addTo(this.map);
+
+        this.objectGeoJson= this.objectGeoJson.map((item, index) => { 
+            if( item.couche.toLowerCase() === couche ){
+                if(indexInJson !== -1 ){
+                    item.child.push({ index : indexInJson, geoJson : geoJson})
+                }else{
+                    item.child.push({ index : index, geoJson : geoJson})
+                }
+            }
+            return item;
+        })
+    }
+
+    
+    removeSpecGeoJson(couche,indexInJson){
+        
+        const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
+        const jsonIndex = data_spec.child.find(jtem => jtem.index === indexInJson );
+
+        //// remove this child
+        jsonIndex.geoJson.clearLayers()
+
+        this.objectGeoJson= this.objectGeoJson.map(item => { 
+            item.child = ( item.couche.toLowerCase() === couche ) ?  item.child.filter(ktem => ktem.index !== indexInJson) : item.child;
+            return item;
+        })
+    }
+
+    removeCoucheOnLeafled(COUCHE){
+        const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === COUCHE.toLowerCase());
+
+        //// remove geoJsom
+        data_spec.child.forEach(jtem => jtem.geoJson.clearLayers());
+
+        ///// update data remove all children selected in this
+        // this.objectGeoJson= this.objectGeoJson.map(item => { 
+        //     item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
+        //     return item;
+        // })
+        this.objectGeoJson= this.objectGeoJson.filter(item => item.couche.toLowerCase() !== COUCHE )
     }
 
     bindEventChangeTiles(){
@@ -957,7 +1222,6 @@ class MapModule{
             })
         })
     }
-
 
     changeTiles(tilesID){
         const newTiles= this.listTales.find(item => item.id === tilesID);

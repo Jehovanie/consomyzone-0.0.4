@@ -417,6 +417,18 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
+    public function getAllIdRestoPastille($table){
+
+        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+
 
     public function showAllUsers()
 
@@ -1572,7 +1584,7 @@ class Tribu_T_Service extends PDOConnexionService
     public function getAllPartisanProfil($tableTribuT){
         
         if($this->isTableExist($tableTribuT)){
-            $sql= "SELECT id, user_id, roles  FROM $tableTribuT";
+            $sql= "SELECT id, user_id, roles  FROM $tableTribuT WHERE status LIKE '1'";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -58,7 +58,7 @@ class MessageService extends PDOConnexionService{
         ///insert message
         $sql_receive = "INSERT INTO " . $result_receive[0]["tablemessage"] . " (user_id,user_post,content,message_type,isForMe, isShow,isRead) VALUES (?,?,?,?,?,?,?)";
             
-        $this->getPDO()->prepare($sql_receive)->execute([$user_id_post, $user_id, $content,$message_type,1,0,0]);
+        $this->getPDO()->prepare($sql_receive)->execute([$user_id_post, $user_id, $content, $message_type, 1, 0, 0]);
         //---------------------- FINISH HERE --------------------
 
         //// FOR ME //////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ class MessageService extends PDOConnexionService{
         ///insert notification
         $sql_sender = "INSERT INTO " . $result_sender[0]["tablemessage"] . " (user_id,user_post,content,message_type, isForMe, isShow,isRead) VALUES (?,?,?,?,?,?,?)";
              
-        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id_post, $content,$message_type,0,1,1]);
+        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id_post, $content, $message_type, 0, 1, 1]);
         //---------------------- FINISH HERE --------------------
 
         $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $result_sender[0]["tablemessage"]);
@@ -135,10 +135,11 @@ class MessageService extends PDOConnexionService{
      */
     public function getAllOldMessage(int $user_other, string $table ){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM " . $table . " WHERE user_post = ". $user_other);
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE user_post = $user_other");
         $statement->execute();
-    
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
     }
 
 
