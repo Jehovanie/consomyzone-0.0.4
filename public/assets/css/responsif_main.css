@@ -1320,6 +1320,10 @@
         margin-top: 10px !important;
     }
 
+    .swal2-popup{
+        z-index: 10402;
+    }
+
     .all-z-index{
         z-index: 1401 !important;
     }

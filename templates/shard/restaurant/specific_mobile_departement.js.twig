@@ -101,7 +101,7 @@
 								</div>
 								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
 									<span>
-										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{restaurant.id}}" onclick="showListAvieMobile({{restaurant.id}}, {{app.user ? app.user.id : 0}})">
+										<a id="see-tom-js{{restaurant.id}}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{restaurant.id}}" onclick="showListAvieMobile({{restaurant.id}}, {{app.user ? app.user.id : 0}})">
 											<span class="nbr_avis_resto_jheo_js">{{restaurant.avis.nbr}} </span> 
 											avis
 										</a>
@@ -122,7 +122,7 @@
 										<button type="button" data-name="{{restaurant.denominationF | raw}}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" 
 										onclick="showPastillTable(event,'{{restaurant.id}}')">Pastiller</button>
 									{% endif %}
-									<div class="d-none content_avis_person_hidden_{{restaurant.id}}_jheo_js" data-avis-note="{{restaurant.avis.avisPerso.note ? restaurant.avis.avisPerso.note : 0 }}" data-avis-text="{{ restaurant.avis.avisPerso.text ? restaurant.avis.avisPerso.text : 0 }}"></div>
+									<div class="d-none content_avis_person_hidden_{{restaurant.id}}_jheo_js" data-avis-note="{{restaurant.avis.avisPerso.note ? restaurant.avis.avisPerso.note : 0 }}" data-avis-text="{{ restaurant.avis.avisPerso.text | raw ? restaurant.avis.avisPerso.text | raw : 0 }}"></div>
 								</div>
 							</div>
 						</a>
@@ -375,7 +375,7 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{restaurant.id}}" onclick="showListAvieMobile({{restaurant.id}}), {{app.user ? app.user.id : 0}}"></button>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{restaurant.id}}" onclick="showListAvieMobile({{restaurant.id}}, {{app.user ? app.user.id : 0}})"></button>
 								</div>
 								<div class="modal-body">
 									<form>
@@ -388,7 +388,7 @@
 									</form>
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-warning send_avis_{{restaurant.id}}_jheo_js" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile({{restaurant.id}}, {{app.user ? app.user.id : 0}})">Envoyer</button>
+									<button type="button" class="btn btn-warning send_avis_{{restaurant.id}}_jheo_js" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{restaurant.id}}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile({{restaurant.id}}, {{app.user ? app.user.id : 0}})">Envoyer</button>
 								</div>
 							</div>
 						</div>

@@ -314,8 +314,8 @@ function addAvisResto(){
 function addAvisRestoMobile(newIdResto, newUserId){
     
     ///// remove alert card and add chargement spinner
-    if( document.querySelector(".all_avis_jheo_js")){
-        document.querySelector(".all_avis_jheo_js").innerHTML = `
+    if( document.querySelector(`.all_avis_${newIdResto}_jheo_js`)){
+        document.querySelector(`.all_avis_${newIdResto}_jheo_js`).innerHTML = `
             <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
                 <div class="spinner-border m-3" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -336,13 +336,13 @@ function addAvisRestoMobile(newIdResto, newUserId){
             avis:avis
         }
 
-        deleteOldValueInputAvis(); //// delet input and text 
+        deleteOldValueInputAvisMobile(newIdResto); //// delet input and text 
 
         ///// remove alert card empty avis and add chargement spinner
-        if( document.querySelector(".card_avis_resto_empty_jheo_js")){
-            document.querySelector(".card_avis_resto_empty_jheo_js").remove();
+        if( document.querySelector(`.content_avis_person_hidden_${newIdResto}_jheo_js`)){
+            document.querySelector(`.content_avis_person_hidden_${newIdResto}_jheo_js`).remove();
 
-            document.querySelector(".all_avis_jheo_js").innerHTML = `
+            document.querySelector(`.all_avis_${newIdResto}_jheo_js`).innerHTML = `
                 <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
                     <div class="spinner-border m-3" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -366,7 +366,7 @@ function addAvisRestoMobile(newIdResto, newUserId){
                 //// Update state of the btn send avis resto
                 document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis';
                 document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "update");
-                document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("onclick", "settingAvisResto()");
+                document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("onclick", `settingAvisRestoMobile(${newIdResto})`);
 
                 ///// generate list avis in modal
                 showModifArea(newIdResto, newUserId)
@@ -382,9 +382,9 @@ function addAvisRestoMobile(newIdResto, newUserId){
                 }
 
 
-                if(document.querySelector(".content_avis_person_hidden_jheo_js")){
-                    document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-note", note )
-                    document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-text", avis )
+                if(document.querySelector(`.content_avis_person_hidden_${newIdResto}_jheo_js`)){
+                    document.querySelector(`.content_avis_person_hidden_${newIdResto}_jheo_js`).setAttribute("data-avis-note", note )
+                    document.querySelector(`.content_avis_person_hidden_${newIdResto}_jheo_js`).setAttribute("data-avis-text", avis )
                 }
             }
         })
@@ -449,10 +449,11 @@ function settingAvisRestoMobile(id_resto, id_user) {
             text = hiddenData.getAttribute('data-avis-text')
         }
         
-        document.querySelectorAll(`.note_number_${id_resto}_jheo_js`).value = parseFloat(note);
-        document.querySelectorAll(`.note_avis_jheo_${id_resto}_js`).value = text;
-
+        document.querySelector(`.note_number_${id_resto}_jheo_js`).value = parseFloat(note);
+        document.querySelector(`.note_avis_${id_resto}_jheo_js`).value = text;
+        
         const btn_update = document.querySelector(`.send_avis_${id_resto}_jheo_js`);
+        console.log(btn_update)
 
         btn_update.setAttribute(`onclick","updateAvisRestoMobile(${id_resto}, ${id_user})`)
 
@@ -668,7 +669,7 @@ function showListAvieMobile(newIdResto, userId) {
         if( document.querySelectorAll(".card_avis_resto_jheo_js")){
             document.querySelectorAll(".card_avis_resto_jheo_js").forEach(item => item.remove())
 
-            document.querySelector(".all_avis_jheo_js").innerHTML = `
+            document.querySelector(`.all_avis_${newIdResto}_jheo_js`).innerHTML = `
                 <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
                     <div class="spinner-border m-3" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -677,12 +678,12 @@ function showListAvieMobile(newIdResto, userId) {
             `
         }
 
-        if( document.querySelector(".send_avis_jheo_js")){ //// reset function add avis resto
-            if(document.querySelector(".send_avis_jheo_js").hasAttribute("onclick")){
-                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", `addAvisRestoMobile(${newIdResto}, ${userId})`);
+        if( document.querySelector(`.send_avis_${newIdResto}_jheo_js`)){ //// reset function add avis resto
+            if(document.querySelector(`.send_avis_${newIdResto}_jheo_js`).hasAttribute("onclick")){
+                document.querySelector(`.send_avis_${newIdResto}_jheo_js`).setAttribute("onclick", `addAvisRestoMobile(${newIdResto}, ${userId})`);
             }
 
-            deleteOldValueInputAvis(); //// delet input and text 
+            deleteOldValueInputAvisMobile(newIdResto); //// delet input and text 
         }
 
         // const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
@@ -748,6 +749,11 @@ function createGlobalNote(globalNote) {
 function deleteOldValueInputAvis(){
     document.querySelector(".note_number_jheo_js") ? document.querySelector(".note_number_jheo_js").value = "" : null ;
     document.querySelector(".note_avis_jheo_js") ? document.querySelector(".note_avis_jheo_js").value = "" : null ;
+}
+
+function deleteOldValueInputAvisMobile(newIdResto){
+    document.querySelector(`.note_number_${newIdResto}_jheo_js`) ? document.querySelector(`.note_number_${newIdResto}_jheo_js`).value = "" : null ;
+    document.querySelector(`.note_avis_${newIdResto}_jheo_js`) ? document.querySelector(`.note_avis_${newIdResto}_jheo_js`).value = "" : null ;
 }
 
 
@@ -845,7 +851,7 @@ function showAvis(currentUserId, idRestaurant) {
 
 function showAvisMobile(currentUserId, idRestaurant) {
 
-    const btn_update = document.querySelector(".send_avis_jheo_js");
+    const btn_update = document.querySelector(`.send_avis_${idRestaurant}_jheo_js`);
 
     if( !btn_update.classList.contains("btn-warning")){
         btn_update.classList.add("btn-warning")
@@ -903,7 +909,11 @@ function showModifArea(idRestaurant, currentUserId) {
             if (jsons) {
 
                 //// before show all comments, delete the content.
-                document.querySelector(".all_avis_jheo_js").innerHTML = "";
+                if (screen.width <= 991) {
+                    document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML = "";
+                } else {
+                    document.querySelector(".all_avis_jheo_js").innerHTML = "";
+                }
 
                 for (let json of jsons) { 
                     const b = (currentUserId == json["user"]["id"]);
