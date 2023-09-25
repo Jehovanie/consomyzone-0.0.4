@@ -155,7 +155,6 @@ body{
     width:100%;
 }
 
-
 @keyframes translateFull {
     0% {
         transform: translateX(-100%);

@@ -13,17 +13,19 @@
 {% endblock %}
 
 {% block javascripts %}
-
 	<script type="text/javascript" src="{{asset('assets/js/arrondParisGeoJson.js')}}" defer></script>
 
-	{# // <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/data_resto.js') }}" defer></script>
 
-	{# <script type="text/javascript" src="{{asset('assets/js/restaurant/sepecific_departement.js')}}" defer></script> #}
+    <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
+    <script src="{{asset('assets/js/module/shp.js')}}" defer></script>
+    
+
     <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterResto.js') }}" defer></script>
 	<script type="text/javascript" src="{{asset('assets/js/restaurant/marckerClusterResto_spec.js')}}" defer></script>
 
+    <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/filter_a-z_asc_desc.js') }}" defer></script>
 
 	<script type="text/javascript" src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
@@ -114,6 +116,42 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal CREATE POP UP-->
+        <div class="modal fade" id="modalCreatePopUp" tabindex="-1" aria-labelledby="modalCreatePopUpLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-1"><i class="bi bi-info-circle"></i> <span class="textInfos"></span></div>
+                    <h3 class="mb-3" style="color: #6c668d;text-decoration: underline;">Partager votre avis et consulter les avis des autres partisans dans la tribu T <span class="tbtName"></span> : </h3>
+                    <div class="btnAvis">
+                        <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Avis</button>
+                        <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Donner votre avis</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- Modal SHOW TRIBUS INFOS -->
+        <div class="modal fade" id="modalShowTribusInfos" tabindex="-1" aria-labelledby="modalShowTribusInfosLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalShowTribusInfosLabel">Vous avez pastillé ce restaurant avec ces tribus T</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="height:450px;">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+
     {% if (app.user) %}
         <div class="FtBjOlVf" data-dem="2ahUK:Ewip3tqU6Ob7AhW3gc:4B.{{app.user.id}}H:bAUBJQQ-EN6BAhzEAo"></div>
     {% endif %}

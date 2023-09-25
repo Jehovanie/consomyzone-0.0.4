@@ -1,14 +1,13 @@
-//let scroll_to_bottom = document.querySelector('.content_message');
-//scroll_to_bottom.scrollTop = scroll_to_bottom.scrollHeight;
-
-//// ON THE PAGE CHAT BOX
-// if(screen.width > 1000){
-
-// document.querySelector(".mode_mobile").remove()
-
-// }else{
-//     document.querySelector(".mode_pc").remove()
-// }
+const urlParams = new URLSearchParams(window.location.search);
+const myParam = urlParams.get('tribuT');
+if(myParam){
+    console.log(myParam);
+    if( document.querySelector(`.${myParam}_jheo_js`)){
+        document.querySelector(`.${myParam}_jheo_js`).click();
+    }else{
+        console.log(`Selector not found : '${myParam}_jheo_js'`);
+    }
+}
 
 if (document.querySelector(".content-message-nanta-css .bloc-text-message")) {
     document.querySelector(".content-message-nanta-css .bloc-text-message").classList.remove("text-white")
@@ -157,11 +156,7 @@ if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector
 }
 
 
-
-
-
 /// THIS FUNCTION SHOW AND SEND MESSAGE TO THE SERVER ////////////////
-
 function sendMessage(message, file_list){
 
     //// format date now 
@@ -308,3 +303,108 @@ imgs.forEach(img => {
     fullPage.style.display = 'block';
   });
 });
+
+// let y = document.querySelector("span.jc.un.mn.zn.gs.use-in-agd-nanta_js_css").textContent.trim()
+// console.log(y)
+
+if(document.querySelector("#elie-btn-visio")){
+
+    document.querySelector("#elie-btn-visio").addEventListener("click", function(){
+
+        $("#visioMessageElie").modal("show")
+
+        document.querySelector("#bodyVisioMessageElie").innerHTML = `<div class="d-flex justify-content-center mt-5">
+            <div class="containt">
+                <div class="word word-1">C</div>
+                <div class="word word-2">M</div>
+                <div class="word word-3">Z</div>
+            </div>
+        </div>
+        `   
+
+        let roomRandom_msg = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
+
+        let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+        <p class="text-info mb-2">
+            <i class="fas fa-video-camera me-2 ms-1"></i>
+            Appel en attente...
+            <span onclick="joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+        </p> 
+        </div>`
+
+        sendMessage(msg_txt, [])
+
+
+        let amis = document.querySelector("div.content_entete_msg_jheo_js")
+
+        document.querySelector("#bodyVisioMessageElie").innerHTML =""
+
+        runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'bodyVisioMessageElie')
+        // runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'content_discussion_elie')
+    })
+}
+
+function toggleClick(domHtml){
+    domHtml.classList.toggle("fa-minus-circle")
+    domHtml.classList.toggle("fa-plus-circle")
+}
+
+function toggleAmisTribu(domHtml){
+    if(!domHtml.querySelector(".linkToActive_jheo_js")){
+        console.log("Selector not found: 'linkToActive_jheo_js'")
+        return false;
+    }
+
+    const activeSwitch= domHtml.querySelector(".linkToActive_jheo_js");
+    if( !activeSwitch.classList.contains('active')){
+        activeSwitch.classList.add('active')
+    }
+
+    const selector_list = activeSwitch.getAttribute("data-selector-list")
+    if( document.querySelector(`.${selector_list}`).classList.contains('d-none')){
+        document.querySelector(`.${selector_list}`).classList.remove('d-none')
+    }
+
+    const allSwitches= document.querySelectorAll(".linkToActive_jheo_js")
+    allSwitches.forEach(item => {
+        if( item != activeSwitch ){
+            const selector_list_other = item.getAttribute("data-selector-list")
+            if( item.classList.contains('active')){
+                item.classList.remove('active')
+            }
+            if( !document.querySelector(`.${selector_list_other}`).classList.contains('d-none')){
+                document.querySelector(`.${selector_list_other}`).classList.add('d-none')
+            }
+        }
+    })
+
+}
+
+window.addEventListener("load", (event) => {
+
+    const currentUrl = window.location.href;
+
+    let url= new URL(currentUrl);
+    let params = new URLSearchParams(url.search);
+
+    let user_id = 0;
+
+    if(params.has("user_id")){
+        user_id = params.get("user_id");
+    }else{
+        user_id = document.querySelector(".content_entete_msg_jheo_js").getAttribute("data-toggle-id-user-to")
+    }
+
+    document.querySelectorAll("div.content-message-nanta-css").forEach(div=>{
+        if(div.getAttribute('data-toggle-user-id') == user_id){
+            div.classList.add("message-active")
+        }
+    })
+
+    // document.querySelectorAll(".rb > div > div > p")
+    document.querySelectorAll(".rb > div > div > p").forEach(p=>{
+        console.log(p);
+        p.classList.add("text-white")
+    })
+
+  });

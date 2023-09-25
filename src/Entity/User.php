@@ -129,22 +129,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="nom_table_event_followed", type="string", length=200, nullable=true)
-     */
-    private $nomTableEventFollowed;
-
-
-    /**
      * @var bool
      *
      * @ORM\Column(name="is_connected", type="boolean", nullable=false)
      */
     private $isConnected;
 
-    
-
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="status_demande_partenariat", nullable=false)
+     */
+    private $statusDemandePartenariat = 0;
 
     public function getId(): ?int
     {
@@ -463,29 +459,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get the value of nomTableEventFollowed
-     *
-     * @return  string
-     */ 
-    public function getNomTableEventFollowed()
-    {
-        return $this->nomTableEventFollowed;
-    }
-
-    /**
-     * Set the value of nomTableEventFollowed
-     *
-     * @param  string  $nomTableEventFollowed
-     *
-     * @return  self
-     */ 
-    public function setNomTableEventFollowed(string $nomTableEventFollowed)
-    {
-        $this->nomTableEventFollowed = $nomTableEventFollowed;
-
-        return $this;
-    }
 
     /**
      * Get the value of isActive
@@ -504,9 +477,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return  self
      */ 
-    public function setIsConnected(bool $isConnected)
+    public function setIsConnected($isConnected)
     {
         $this->isConnected = $isConnected;
+
+        return $this;
+    }
+
+
+    public function getStatusDemandePartenariat()
+    {
+        return $this->statusDemandePartenariat;
+    }
+
+    public function setStatusDemandePartenariat($statusDemandePartenariat)
+    {
+        $this->statusDemandePartenariat = $statusDemandePartenariat;
 
         return $this;
     }

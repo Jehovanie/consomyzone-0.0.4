@@ -15,8 +15,8 @@ class MessageService extends PDOConnexionService{
      * We use this function to create table dynamique for TributG.
      * @param  $table_name : this is the name of the table to create.
      */
-    public function createTable($table_name)
-    {
+    public function createTable($table_name){
+
         $sql = "CREATE TABLE " . $table_name . "(
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
                 user_id int(11) NOT NULL,
@@ -58,7 +58,7 @@ class MessageService extends PDOConnexionService{
         ///insert message
         $sql_receive = "INSERT INTO " . $result_receive[0]["tablemessage"] . " (user_id,user_post,content,message_type,isForMe, isShow,isRead) VALUES (?,?,?,?,?,?,?)";
             
-        $this->getPDO()->prepare($sql_receive)->execute([$user_id_post, $user_id, $content,$message_type,1,0,0]);
+        $this->getPDO()->prepare($sql_receive)->execute([$user_id_post, $user_id, $content, $message_type, 1, 0, 0]);
         //---------------------- FINISH HERE --------------------
 
         //// FOR ME //////////////////////////////////////////////////////////////////
@@ -70,12 +70,11 @@ class MessageService extends PDOConnexionService{
         ///insert notification
         $sql_sender = "INSERT INTO " . $result_sender[0]["tablemessage"] . " (user_id,user_post,content,message_type, isForMe, isShow,isRead) VALUES (?,?,?,?,?,?,?)";
              
-        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id_post, $content,$message_type,0,1,1]);
+        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id_post, $content, $message_type, 0, 1, 1]);
         //---------------------- FINISH HERE --------------------
 
         $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $result_sender[0]["tablemessage"]);
         $max_id->execute();
-
         return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -113,7 +112,7 @@ class MessageService extends PDOConnexionService{
         $sql = "SELECT DISTINCT user_post from ".$table_name;
         $exec_other_user_id = $this->getPDO()->query($sql);
         $other_user_id= $exec_other_user_id->fetchAll(PDO::FETCH_ASSOC);
-        // dd($other_user_id);
+        // dd($other_user_id),
 
         ///get the last message that we talk to there
         $results = [];
@@ -136,10 +135,11 @@ class MessageService extends PDOConnexionService{
      */
     public function getAllOldMessage(int $user_other, string $table ){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM " . $table . " WHERE user_post = ". $user_other);
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE user_post = $user_other");
         $statement->execute();
-    
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
     }
 
 
@@ -148,7 +148,7 @@ class MessageService extends PDOConnexionService{
      * @param string $table_name: my table name  message
      */
     public function setShowMessageAction($table_name){
-        $statement = $this->getPDO()->prepare(" UPDATE " . $table_name . "  SET isShow = '1' WHERE isShow = 0" );
+        $statement = $this->getPDO()->prepare("UPDATE " . $table_name . "  SET isShow = '1' WHERE isShow = 0" );
         $statement->execute();
     
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -217,7 +217,29 @@ class MessageService extends PDOConnexionService{
 
         $stmt = $this->getPDO()->prepare($sql);
 
-        $stmt->execute([$status, $id]);
+        $stmt->bindParam(1, $status);
+
+        $stmt->bindParam(2, $id);
+
+        $stmt->execute();
+
+        // $stmt->execute([$status, $id]);
+
+    }
+
+    public function updateOneMessageById($id, $myTableMessage, $content_msg)
+
+    {
+
+        $sql = "UPDATE $myTableMessage set content = ? WHERE id = ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $content_msg);
+
+        $stmt->bindParam(2, $id);
+
+        $stmt->execute();
 
     }
 
@@ -258,6 +280,15 @@ class MessageService extends PDOConnexionService{
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
+    }
+
+    public function getOneMessage($myTableMessage,$id){
+
+        $sql = "SELECT * FROM ".$myTableMessage." WHERE id = " . $id ;
+        $result = $this->getPDO()->query($sql);
+        $msg=  $result->fetch(PDO::FETCH_ASSOC);
+
+        return $msg;
     }
 
 }
