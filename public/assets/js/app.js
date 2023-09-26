@@ -1620,7 +1620,7 @@ function agrandirImage(ev){
 }
 
 function resetImage(ev){
-    console.log(ev.target)
+    // console.log(ev.target)
     ev.target.style="transform:scale(1)"
  }
 

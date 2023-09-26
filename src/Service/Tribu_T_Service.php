@@ -419,7 +419,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getAllIdRestoPastille($table, $isPastilled){
 
-        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table WHERE isPastilled = $isPastilled");
+        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' as 'tableName' FROM $table WHERE isPastilled = $isPastilled");
 
         $statement->execute();
 

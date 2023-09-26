@@ -33,6 +33,8 @@ class MarckerClusterResto extends MapModule  {
             
             this.listRestoPastille= responseJson.allIdRestoPastille;
 
+            console.log(this.listRestoPastille);
+
             this.initMap(null, null, null, isAddControl);
             this.bindAction();
 
@@ -323,18 +325,18 @@ class MarckerClusterResto extends MapModule  {
     }
 
     updateListRestoPastille( idResto, tribuName){
-        this.listRestoPastille.push({id_resto: idResto, tribuName: tribuName })
+        this.listRestoPastille.push({id_resto: idResto, tableName: tribuName })
         this.updateStateResto(idResto)
     }
 
-    updateListRestoDepastille(idResto){
-        this.listRestoPastille = this.listRestoPastille.filter(item=>parseInt(item.id) != parseInt(idResto))
-        console.log(this.listRestoPastille)
+    updateListRestoDepastille(idResto, tribuName){
+        this.listRestoPastille = this.listRestoPastille.filter(item=>{ return (parseInt(item.id_resto) != parseInt(idResto) || item.tableName != tribuName)})
         this.updateStateResto(idResto)
     }
 
 
     updateStateResto(idResto){
+        console.log(this.listRestoPastille)
         let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
         let isPastille = resultRestoPastille.length > 0 ? 2 : 0;

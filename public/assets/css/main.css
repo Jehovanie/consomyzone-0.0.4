@@ -1934,3 +1934,18 @@ textarea {
     font-weight: bolder;
     cursor: pointer;
 }
+
+.pictureOnBoth{
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#containerCamera video{
+    height: 400px;
+    width: 400px;
+    margin: auto;
+}
+
+#pictureOnLocal, #getPictureOnDevice, .labelFileRepertory, .labelPrisePhoto{
+    cursor: pointer;
+}

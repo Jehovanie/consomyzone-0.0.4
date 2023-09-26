@@ -2424,3 +2424,76 @@ function showPastillTable(e,id){
     })
     
 }
+
+function showImagePreview(e){
+    if(e.target.files.length > 0){
+        let src = URL.createObjectURL(e.target.files[0]);
+        let preview = document.querySelector("#image-preview");
+        preview.src = src;
+        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+        $("#mediaModal").modal("hide")
+        $("#addPictureModal").modal("hide")
+        $("#createAgenda").modal("show")
+    }
+}
+
+function resetImagePreview(){
+    document.querySelector(".btnAddPhoto_nanta_js").classList.remove("d-none")
+    document.querySelector(".preview_image_nanta_js").classList.add("d-none")
+}
+
+function showModalPicture(){
+    $("#addPictureModal").modal("hide")
+    document.querySelector("#containerCamera").innerHTML = ""
+    $("#mediaModal").modal("show")
+    // <video id="player" autoplay></video>
+    let video = document.createElement("video")
+    video.setAttribute("id","player")
+    video.setAttribute("autoplay",true)
+    // <canvas id="output"></canvas>
+    let canvas = document.createElement("canvas")
+    canvas.setAttribute("id","output")
+    canvas.setAttribute("class","d-none")
+    navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then((stream) => {
+        video.srcObject = stream;
+    }).catch(error => {
+        console.error('Can not get an access to a camera...', error);
+    });
+
+    document.querySelector("#containerCamera").appendChild(video)
+    document.querySelector("#containerCamera").appendChild(canvas)
+}
+
+function takePicture(){
+    const player = document.getElementById('player');
+    const outputCanvas = document.getElementById('output');
+    const context = outputCanvas.getContext('2d');
+
+    const imageWidth = player.offsetWidth;
+    const imageHeight = player.offsetHeight;
+    
+    // Make our hidden canvas the same size
+    outputCanvas.width = imageWidth;
+    outputCanvas.height = imageHeight;
+    
+    // Draw captured image to the hidden canvas
+    context.drawImage(player, 0, 0, imageWidth, imageHeight);
+    
+    // A bit of magic to save the image to a file
+    // const downloadLink = document.createElement('a');
+    // downloadLink.setAttribute('download', `capture-${new Date().getTime()}.png`);
+    outputCanvas.toBlob((blob) => {
+        console.log(URL.createObjectURL(blob))
+        // downloadLink.setAttribute('href', URL.createObjectURL(blob));
+        // downloadLink.click();
+        let preview = document.querySelector("#image-preview");
+        preview.src = URL.createObjectURL(blob);
+        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+        $("#mediaModal").modal("hide")
+        $("#createAgenda").modal("show")
+    });
+}

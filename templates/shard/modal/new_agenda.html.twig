@@ -80,9 +80,19 @@
                     <input type="time" class="form-control input_black timeEnd_jheo_js" id="timeEnd" required>
                 </div>
             </div>
-            <div class="mb-3 non_active">
-                <label class="form-label non_active">Si vous avez des fichier</label>
-                {% include 'shard/input/inputImageDragDrop.html.twig' %}
+            <div class="mb-3" style="margin:auto;">
+                {# <label class="form-label non_active">Si vous avez des fichier</label> #}
+                {# <label class="form-label text_black">Ajouter une photo</label>
+                {% include 'shard/input/inputImageAndScreenShoot.html.twig' %} #}
+                <div class="preview text-center d-none preview_image_nanta_js">
+                    <img id="image-preview" class="image-upload-image">
+                    <div class="image-title-wrap">
+                      <button type="button" onclick="resetImagePreview()" class="remove-image-uplaod">
+                        Changer l'image
+                      </button>
+                    </div>
+                </div>
+                <button class="btn btn-info btnAddPhoto_nanta_js" data-bs-target="#addPictureModal" data-bs-toggle="modal"><b><i class="bi bi-plus" style="font-size:20px;"></i> Ajouter une photo à votre événement</b></button>
             </div>
 
         </div>
@@ -326,6 +336,40 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="mediaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="mediaModalLabel">Votre caméra</h1>
+      </div>
+      <div class="modal-body">
+            <div id="containerCamera"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-target="#addPictureModal" data-bs-toggle="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" onclick="takePicture()">Prendre la photo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addPictureModal" tabindex="-1" aria-labelledby="addPictureModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addPictureModalLabel">Ajout de photo</h1>
+        <button type="button" class="btn-close" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          {% include 'shard/input/inputImageAndScreenShoot.html.twig' %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-target="#createAgenda" data-bs-toggle="modal">Fermer</button>
       </div>
     </div>
   </div>

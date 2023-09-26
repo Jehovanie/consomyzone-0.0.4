@@ -135,7 +135,7 @@ function pastilleRestoForTribuT(element, isPastilled){
                         updateBtnStatus(element, html)
                         document.querySelector("#"+tbl).remove()
                         reorganisePastille()
-                        CURRENT_MAP_INSTANCE.updateListRestoDepastille(data.id_resto)
+                        CURRENT_MAP_INSTANCE.updateListRestoDepastille(id, tbl+"_restaurant")
                     });
                 }else{
 
