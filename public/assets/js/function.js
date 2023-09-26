@@ -220,8 +220,8 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         
                         if (screemMax.matches) {
 
-                            const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                            location.assign(pathDetails)
+                            // const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                            // location.assign(pathDetails)
                         } else if (screemMin.matches) {
 
                             let remove = document.getElementById("remove-detail")
@@ -410,8 +410,8 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         
                         if (screemMax.matches) {
 
-                            const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                            location.assign(pathDetails)
+                            // const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                            // location.assign(pathDetails)
                         } else if (screemMin.matches) {
 
                             let remove = document.getElementById("remove-detail")
@@ -1027,9 +1027,9 @@ function addListSpecRestoMobile(nom_dep, id_dep, codinsee, arrdssm) {
 
 function getDetailRetoMobile(nom_dep, id_dep, id_restaurant, codinsee = null) {
     if (id_dep == "75" && codinsee != null) {
-        location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}?codinsee=${codinsee}`)
+        // location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}?codinsee=${codinsee}`)
     } else {
-        location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}`)
+        // location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}`)
     }
 }
 

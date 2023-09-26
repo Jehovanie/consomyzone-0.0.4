@@ -1180,8 +1180,10 @@ function chargeMapAndMarkers(response1, map, markers) {
 
             
             if (screen.width < 991) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                location.assign(pathDetails)
+                // getDetailResto(item.dep, item.depName, item.id, false)
+
+                // var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                // location.assign(pathDetails)
             } else {
                 
                 getDetailResto(item.dep, item.depName, item.id, false)

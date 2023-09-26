@@ -1258,7 +1258,7 @@
     }
 
     .leaflet-control-zoom.leaflet-bar.leaflet-control{
-        margin-top: 130px !important;
+        margin-top: 115px !important;
     }
 
     .active-mobile{
@@ -1282,6 +1282,10 @@
         width: 100%;
         position: absolute;
         bottom: 10px;
+    }
+
+    .swal-overlay{
+        z-index: 10403;
     }
 
     
@@ -1321,7 +1325,7 @@
     }
 
     .swal2-popup{
-        z-index: 10402;
+        z-index: 10402 !important;
     }
 
     .all-z-index{

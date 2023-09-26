@@ -254,11 +254,11 @@ class RestaurantController extends AbstractController
 
             $note_temp = 0;
             foreach ($global_note as $note) {
-                if ($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]  ) {
                     $isAlreadyCommented = true;
-                    $avis = ["note" => $note->getNote(), "text" => $note->getAvis()];
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
                 }
-                $note_temp += $note->getNote();
+                $note_temp +=  $note["note"];
             }
 
             $data["avis"] = [

@@ -719,7 +719,7 @@ function showAvis(currentUserId, idRestaurant) {
             }
 
             for (let json of jsons) {
-                createShowAvisAreas(json, currentUserId)
+                createShowAvisAreas(json, currentUserId,idRestaurant)
             }
         }else{
             document.querySelector(".all_avis_jheo_js").innerHTML= `
@@ -805,7 +805,7 @@ function showModifArea(idRestaurant, currentUserId) {
 
                 for (let json of jsons) { 
                     //// create single avis, and pass state of currect id
-                    createShowAvisAreas(json,currentUserId)
+                    createShowAvisAreas(json,currentUserId,idRestaurant)
                 }
                 
             }
@@ -886,7 +886,7 @@ function createModifArea(json,b) {
 /*
 *show comment without btn modification
 */
-function createShowAvisAreas(json,currentUserId) {
+function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
     let startIcon = "";
     let rate= parseFloat(json.note) - Math.trunc(parseFloat(json.note));
     let rateYellow = rate * 100;
