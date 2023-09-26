@@ -1294,7 +1294,8 @@ class TributTController extends AbstractController
 
         $type = "invitation";
 
-        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+        // $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+        $invitLink = "";
 
         for ($i = 0; $i < count($members); $i++) {
             if ($userId != $members[$i]["user_id"]) {
@@ -1353,7 +1354,9 @@ class TributTController extends AbstractController
         //$tribu_name = $tribu_t->showRightTributName($table);
 
         // $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]) . "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
-        $contentForDestinator = " vous a envoyé une invitation de rejoindre la tribu " . $nomTribu;
+        // $contentForDestinator = " vous a envoyé une invitation de rejoindre la tribu " . $nomTribu;
+        $contentForDestinator = "Vous avez reçu une invitation de rejoindre la tribu " . $nomTribu;
+
         
         $type = "invitation";
 
@@ -1975,7 +1978,7 @@ class TributTController extends AbstractController
                 "extensionData"=>$data["extensionData"]
             );
           
-            $bool=$this->createTribu_T($body, $stringTraitementService);
+            $bool=$this->createTribu_T($body, $stringTraitementService, $status);
             if($bool){
                 $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
             }else{
@@ -2114,7 +2117,7 @@ class TributTController extends AbstractController
      * @author  Tommy <tommyramihoatrarivo@gmail.com>
      * create  tribu-t
      */
-    public function createTribu_T($body, $stringTraitementService)
+    public function createTribu_T($body, $stringTraitementService, $status)
 
     {
 
@@ -2137,7 +2140,8 @@ class TributTController extends AbstractController
                   Au début $nom et $nomTribuT on la même valeur
                 */
                 $nomTribuT=$body["tribu_t_name"]; 
-                $description = str_replace("'", "$", $body["description"]);
+                // $description = str_replace("'", "$", $body["description"]);
+                $description = $status->convertUtf8ToUnicode($body["description"]) ;
                
                 $tableName = $stringTraitementService->normalizedString($nom);
                 $tableName = str_replace(" ","_", strtolower($tableName));
