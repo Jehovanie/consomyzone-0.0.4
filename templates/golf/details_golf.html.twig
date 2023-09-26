@@ -22,7 +22,10 @@
             </blockquote>
             <figcaption class="blockquote-footer">
                Adresse :  <a href="#" class="small text-center ">{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}</a>
-            </figcaption>  
+            </figcaption> 
+
+            {# {% set adresse = details.adr1|lower ~" "~ details.cp|lower ~" "~ details.nomCommune|lower %}
+            <button class="btn btn-outline-primary mx-auto w-50 mb-2 mt-2" onclick="openVoirPlusChearch('{{details.nomGolf | raw}}','{{adresse | trim}}', 'golf')">Voir plus</button>  #}
         </figure>
        
     </div>

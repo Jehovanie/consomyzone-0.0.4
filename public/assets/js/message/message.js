@@ -313,17 +313,20 @@ if(document.querySelector("#elie-btn-visio")){
 
         $("#visioMessageElie").modal("show")
 
+        
         document.querySelector("#bodyVisioMessageElie").innerHTML = `<div class="d-flex justify-content-center mt-5">
-            <div class="containt">
-                <div class="word word-1">C</div>
-                <div class="word word-2">M</div>
-                <div class="word word-3">Z</div>
-            </div>
+        <div class="containt">
+        <div class="word word-1">C</div>
+        <div class="word word-2">M</div>
+        <div class="word word-3">Z</div>
+        </div>
         </div>
         `   
-
+        
         let roomRandom_msg = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
-
+        
+        document.querySelector(".btn-minimize-elie").setAttribute('data-onclick',`joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this,'old')`)
+        
         let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
         <p class="text-info mb-2">
             <i class="fas fa-video-camera me-2 ms-1"></i>
@@ -417,3 +420,36 @@ window.addEventListener("load", (event) => {
     })
 
   });
+
+document.querySelector(".btn-minimize-elie").addEventListener("click", function(e){
+    $("#visioMessageElie").modal("hide")
+
+    let func = e.target.getAttribute("data-onclick")
+
+    let div_msg = document.createElement("div")
+    div_msg.classList ="visioMinimize fixed-bottom"
+
+    document.querySelector("#bodyVisioMessageElie").querySelector("iframe").style.height = "150px"
+
+    let btn_expand = document.createElement("button")
+    btn_expand.setAttribute('onclick',func)
+    // btn_expand.setAttribute('data-bs-placement','bottom')
+    // btn_expand.setAttribute('data-bs-title','Cliquez pour étendre la Visioconférence.')
+    btn_expand.setAttribute('type','button')
+    btn_expand.classList ="btn-close btn-expand-elie"
+    btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i>'
+
+    div_msg.appendChild(btn_expand)
+
+    div_msg.appendChild(document.querySelector("#bodyVisioMessageElie").querySelector("iframe"))
+    // document.querySelector("#bodyVisioMessageElie").querySelector("iframe").querySelector('.new-toolbox').style ="display : none !important;"
+
+    document.querySelector(".my-profile-id-elie").appendChild(div_msg)
+
+    btn_expand.addEventListener("click", function(){
+        $("#visioMessageElie").modal("show")
+        document.querySelector('#bodyVisioMessageElie') = document.querySelector(".visioMinimize").querySelector("iframe")
+        div_msg.innerHTML = ""
+    })
+
+})
