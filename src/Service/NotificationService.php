@@ -98,9 +98,16 @@ class NotificationService extends PDOConnexionService{
         $content= $this->convertUtf8ToUnicode($content);
         
         ///insert notification
-        $this->getPDO()
-             ->prepare("INSERT INTO  $tableNotification  (user_id,user_post,type,content,isShow,isRead) VALUES (?,?,?,?,?,?)")
-             ->execute([$user_id, $user_id_post, $type, $content,0,0]);
+        $statement = $this->getPDO()->prepare("INSERT INTO  $tableNotification  (user_id,user_post,type,content,isShow,isRead) VALUES (:user_id, :user_post, :type, :content, :isShow, :isRead)");
+        
+        $statement->bindParam(':user_id', $user_id);
+        $statement->bindParam(':user_post', $user_id_post);
+        $statement->bindParam(':type', $type);
+        $statement->bindParam(':content', $content);
+        $statement->bindParam(':isShow', 0);
+        $statement->bindParam(':isRead', 0);
+
+        $statement->execute();
 
     }
 
@@ -313,6 +320,7 @@ class NotificationService extends PDOConnexionService{
             }
             array_push($results, $item);
         }
+
         return $results;
     }
 

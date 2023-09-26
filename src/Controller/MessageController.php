@@ -108,7 +108,7 @@ class MessageController extends AbstractController
                             "firstname" => $profil_amis->getFirstname(),
                             "lastname" => $profil_amis->getLastname(),
                             "image_profil" => $profil_amis->getPhotoProfil(),
-                            "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(),$result["user_id"]),
                             "is_online" => $user_amis->getIsConnected(),
                         ];
                         ///get it

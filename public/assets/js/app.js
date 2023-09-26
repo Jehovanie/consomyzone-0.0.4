@@ -1,4 +1,4 @@
-const IS_DEV_MODE=true;
+const IS_DEV_MODE=false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -1530,7 +1530,7 @@ function acceptPropositionPartenariat(e) {
                                             })
                                             fetch(request).then(r=>{
                                                 if(r.status=200 && r.ok){
-                                                    swal("Info", `Le mail qui lui explique le refus a été envoyer et géné automatiquement par CMZ`, "success")
+                                                    swal("Info", `Le mail qui lui explique l'acceptation a été envoyé et géné automatiquement par CMZ`, "success")
                                                 }
                                             })
                                             break
