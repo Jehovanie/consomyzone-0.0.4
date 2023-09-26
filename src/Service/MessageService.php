@@ -161,7 +161,7 @@ class MessageService extends PDOConnexionService{
      */
     public function setShowAndReadMessages(int $user_id_post , string $my_table_name){
 
-        $statement = $this->getPDO()->prepare(" UPDATE " . $my_table_name . "  SET isShow = '1', isRead= '1' WHERE user_post = " . $user_id_post);
+        $statement = $this->getPDO()->prepare("UPDATE " . $my_table_name . "  SET isShow = '1', isRead= '1' WHERE user_post = " . $user_id_post);
         $statement->execute();
     
         return $statement->fetchAll(PDO::FETCH_ASSOC);

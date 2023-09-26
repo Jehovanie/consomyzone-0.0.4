@@ -280,7 +280,6 @@ class MessageController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         MessageService $messageService,
-
     )
     {
         /// SHOW THE NUMBER OF MESSAGES IN THE BADGE ////////////////////////////////////////////////////

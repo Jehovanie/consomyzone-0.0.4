@@ -97,8 +97,12 @@
 				<!-- Chat Notification Area -->
 				<li class="h" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
 					<a class="h message_jheo_js" href="#" @click.prevent="dropdownOpen = ! dropdownOpen">
-						<span class="g -ud-top-0.5 -ud-right-0.5 he dd th ck sa hidden badge_message_jheo_js">
-							<span class="bg g nc vc yd th ck po -ud-z-1"></span>
+						{# <span class="g -ud-top-0.5 -ud-right-0.5 he dd th ck sa hidden badge_message_jheo_js"> #}
+							{# <span class="bg g nc vc yd th ck po -ud-z-1">02</span> #}
+						<span class="g -ud-top-0.5 -ud-right-0.5 he dd th ck sa d-none badge_message_jheo_js">
+							<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+								0
+							</span>
 						</span>
 
 						<svg class="mk yq gp dp" width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

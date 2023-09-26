@@ -9,21 +9,20 @@ if( document.querySelector(".information_user_conected_jheo_js")){
         const new_nbr_message= JSON.parse(event.data);
         /// check if different 0  
         if(parseInt(new_nbr_message) !== 0){
-            
-            //// get the last number message
-            const old_nbr_message =document.querySelector(".nbr_message_jheo_js").innerText;
-            
             /// if its less than the new number: let's show
-            if( parseInt(old_nbr_message) < parseInt(new_nbr_message)){
-                
                 //// SHOW BADGE ON MESSAGE ICON
                 const badge_msg= document.querySelector('.badge_message_jheo_js')
-                if(badge_msg.classList.contains('hidden')){
-                    badge_msg.classList.remove('hidden');
+                if(badge_msg.classList.contains('d-none')){
+                    badge_msg.classList.remove('d-none');
+                    badge_msg.innerText= `${parseInt(new_nbr_message)}`
                 }
-
                 //// UPDATE NUMBER MESSAGE NOT READ
                 // document.querySelector(".nbr_message_jheo_js").innerText= parseInt(new_nbr_message) > 9 ? new_nbr_message : `0${new_nbr_message}`;
+        }else{
+            const badge_msg= document.querySelector('.badge_message_jheo_js')
+            if(!badge_msg.classList.contains('d-none')){
+                badge_msg.classList.add('d-none');
+                badge_msg.innerText= `0`
             }
         }
     }
@@ -489,7 +488,6 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
         <a class="lc mg ug" href='/user/message?user_id=${other_id}'>
             <div class="h sa wf uk th ni ej">
                 <img class="image_profil_navbar_msg"  src='${profil}' alt="User"/>
-                <span class="g l m xe qd th pi jj sj ra"></span>
             </div>
 
             <div>
@@ -524,7 +522,6 @@ function createAndAddCardNotification(
         <a class="lc kg ug" href="#">
             <div class="h sa wf uk th ni ej cb">
                 <img class="image_profil_navbar_msg" src="${user.photo ? user.photo: '/public/uploads/users/photos/img_avatar.png'}" alt="User"/>
-                ${badge_isConnected}
             </div>
             <div>
                 <figure>
