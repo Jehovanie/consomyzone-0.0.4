@@ -417,9 +417,20 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-    public function getAllIdRestoPastille($table){
+    public function getAllIdRestoPastille($table, $isPastilled){
 
-        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table");
+        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table WHERE isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    public function getIdRestoOnTableExtension($table, $idResto){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
 
         $statement->execute();
 
@@ -1318,15 +1329,11 @@ class Tribu_T_Service extends PDOConnexionService
         $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
 
             id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-
             id_resto VARCHAR(250) NOT NULL,
-
             denomination_f VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-
+            isPastilled tinyint(1) NULL  DEFAULT '1',
             datetime timestamp NOT NULL DEFAULT current_timestamp(),
-
             CONSTRAINT cst_id_resto UNIQUE (id_resto)
-            
             )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         
         $stmt = $this->getPDO()->prepare($sql);
@@ -1892,10 +1899,10 @@ class Tribu_T_Service extends PDOConnexionService
      * @param int $idResto: l'extension
      * @return number $result: 0 or if(not exists) else positive number
      */
-    public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto){
+    public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto, $isPastilled){
 
         
-        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto AND isPastilled = $isPastilled");
 
         $statement->execute();
 
@@ -1906,6 +1913,15 @@ class Tribu_T_Service extends PDOConnexionService
         }else{
             return false;
         }
+
+    }
+
+     public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->bindParam(":isPastilled", $isPastilled);
+        $stmt->bindParam(":resto_id", $resto_id);
+        $stmt->execute();
 
     }
   

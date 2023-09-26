@@ -9,6 +9,5 @@ onmessage=(e)=>{
     })
     fetch(request).then(rqt => rqt.json()).then(restos => {
             postMessage(restos)
-
     })
 }

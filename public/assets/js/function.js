@@ -2217,7 +2217,7 @@ function bindDataUpdatePub(table, id){
 
 }
 
-function pastilleRestoForTribuT(element){
+function pastilleRestoForTribuT(element, isPastilled){
     let id = element.dataset.id
     let name = element.dataset.name
     let tbl = element.dataset.tbname
@@ -2226,45 +2226,75 @@ function pastilleRestoForTribuT(element){
         name : name,
         tbl : tbl
     }
-   
-    const request = new Request("/user/tribu_t/pastille/resto", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(data)
-    })
+
+    let request = ""
+    if(isPastilled){
+        request = new Request("/user/tribu_t/pastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(data)
+        })
+
+    }else{
+        request = new Request("/user/tribu_t/depastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(data)
+        })
+    }
+
     fetch(request)
             .then(response=>response.json())
             .then(message=>{
-                tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-                tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
-
-                let html = `<td class="col-action">
-                                <button type="button" class="mx-2 btn btn-secondary" disabled="">Pastillé</button>
-                            </td>`
                 let tribuName = element.dataset.tribu
-                let img = document.createElement("img")
-                img.src = element.dataset.velona
-                img.dataset.name = tribuName
-                img.setAttribute("alt",tribuName)
-                let div = document.createElement("div")
-                div.setAttribute("onclick","createPopUp(event)")
-                div.setAttribute("onmouseout","resetImage(event)")
-                div.setAttribute("onmouseover","agrandirImage(event)")
-                div.setAttribute("class","img_nantenaina")
-                div.setAttribute("title","Tribu T " + tribuName)
-                div.setAttribute("data-bs-toggle","tooltip")
-                div.setAttribute("data-bs-placement","top")
-                div.dataset.name = tribuName
-                div.appendChild(img)
-                new swal("Succès !", "Restaurant pastillé avec succès", "success")
-                .then((value) => {
-                    updateBtnStatus(element, html)
-                    document.querySelector(".mainContainerLogoTribu").appendChild(div);
-                    reorganisePastille()
-                });
+                let html = ""
+                if(!isPastilled){
+                    html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
+                                data-tbname="${tbl}" class="mx-2 btn btn-success" data-velona="${element.dataset.velona}" 
+                                onclick="pastilleRestoForTribuT(this,true)">Pastiller</button> `
+                    new swal("Succès !", "Restaurant dépastillé avec succès", "success")
+                    .then((value) => {
+                        updateBtnStatus(element, html)
+                        document.querySelector("#"+tbl).remove()
+                        reorganisePastille()
+                    });
+                }else{
+
+                    html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
+                                    data-tbname="${tbl}" class="mx-2 btn btn-info" data-velona="${element.dataset.velona}" 
+                                    onclick="pastilleRestoForTribuT(this,false)">Dépastiller</button>`
+                    let img = document.createElement("img")
+                    img.src = element.dataset.velona
+                    img.dataset.name = tribuName
+                    img.setAttribute("alt",tribuName)
+                    let div = document.createElement("div")
+                    div.setAttribute("onclick","createPopUp(event)")
+                    div.setAttribute("onmouseout","resetImage(event)")
+                    div.setAttribute("onmouseover","agrandirImage(event)")
+                    div.setAttribute("id",tbl)
+                    div.setAttribute("class","img_nantenaina")
+                    div.setAttribute("title","Tribu T " + tribuName)
+                    div.setAttribute("data-bs-toggle","tooltip")
+                    div.setAttribute("data-bs-placement","top")
+                    div.dataset.name = tribuName
+                    div.appendChild(img)
+                    new swal("Succès !", "Restaurant pastillé avec succès", "success")
+                    .then((value) => {
+                        updateBtnStatus(element, html)
+                        document.querySelector(".mainContainerLogoTribu").appendChild(div);
+                        reorganisePastille()
+                    });
+                }
+
+                // tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+                // tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
+
                 
             })
             .catch(error=>console.log(error))
@@ -2417,21 +2447,22 @@ function showPastillTable(e,id){
             response.json().then(data=>{
                 data.forEach(item=>{
                     console.log(item)
-                    let status=item.isPastilled ? "Pastillé" :"Pastiller";
-                    let logoPath=item.logo_path ? item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+                    let status=item.isPastilled ? "Dépastiller" :"Pastiller";
+                    let logoPath=item.logo_path ? "/public"+item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
                     let tableTribuT=item.table_name; 
                     let nomTribuPars = tableTribuT.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
                     nomTribuPars = nomTribuPars.charAt(0).toUpperCase() + nomTribuPars.slice(1)
                     let nomTribuT = item.name_tribu_t_muable ? item.name_tribu_t_muable : nomTribuPars
                     let restaurant = e.target.dataset.name
                                     
-                    let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
+                    let btn = item.isPastilled ? `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}" 
+                                                class="mx-2 btn btn-info" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this,false)">${status}</button>` : 
                                                 `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}"
-                                                class="mx-2 btn btn-success" data-velona='/public${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
+                                                class="mx-2 btn btn-success" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this,true)">${status}</button>`
                     let tr=`<tr style="vertical-align: middle;">
                                 <td class="col-logo">
                                     <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
-                                        src="/public${logoPath}"
+                                        src="${logoPath}"
                                     alt="">
                                 </td>
                                 <td class="col-tribuT">${nomTribuT}</td>

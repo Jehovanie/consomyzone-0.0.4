@@ -1123,7 +1123,7 @@ function showResto(table_rst_pastilled, id_c_u) {
 
             for (let resto of restos) {
                 console.log(resto);
-
+                console.log(table_rst_pastilled)
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
                 let id = resto.id
