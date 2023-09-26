@@ -1509,7 +1509,7 @@ function acceptPropositionPartenariat(e) {
                                             })
                                             fetch(request).then(r=>{
                                                 if(r.status=200 && r.ok){
-                                                    swal("Info", `Le mail qui lui explique le refus a été envoyer et géné automatiquement par CMZ`, "success")
+                                                    swal("Info", `Le mail qui lui explique l'acceptation a été envoyé et géné automatiquement par CMZ`, "success")
                                                 }
                                             })
                                             break

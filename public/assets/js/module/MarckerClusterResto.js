@@ -120,11 +120,12 @@ class MarckerClusterResto extends MapModule  {
 
         let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        
+        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+
         const marker = L.marker(
             L.latLng(parseFloat(item.lat), parseFloat(item.long)),
             {
-                icon: isSelected ? setIconn(poi_icon_Selected) : setIconn(poi_icon),
+                icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
                 cleNom: item.denominationF,
                 id: item.id
             }

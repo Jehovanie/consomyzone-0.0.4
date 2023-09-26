@@ -1739,9 +1739,9 @@ function injectStatusGolf(){
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Icon</th>
+                        <th scope="col">Icône</th>
                     
-                        <th scope="col">Status</th>
+                        <th scope="col">Statut</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1787,15 +1787,15 @@ function injectStatusResto(){
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Icon</th>
+                        <th scope="col">Icône</th>
                     
-                        <th scope="col">Status</th>
+                        <th scope="col">Statut</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <th scope="row">1</th>
-                        <td><img class="icon_resto_legend" src="/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
+                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
                         
                         <td>Les restaurants non pastillés</td>
                     </tr>
@@ -2245,7 +2245,7 @@ function pastilleRestoForTribuT(element){
                             </td>`
                 let tribuName = element.dataset.tribu
                 let img = document.createElement("img")
-                img.src = element.dataset.velona
+                img.src = '/public' +  element.dataset.velona
                 img.dataset.name = tribuName
                 img.setAttribute("alt",tribuName)
                 let div = document.createElement("div")
@@ -2531,39 +2531,50 @@ function convertUnicodeToUtf8(str){
  */
 function showPastillTable(e,id){
     document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML=""
+    document.querySelector(".modal_liste_resto_pastille_nante_js").click()
+    
     fetch("/restaurant/pastilled/checking/"+parseInt(id)).then(response=>{
         if(response.status=200 && response.ok){
             response.json().then(data=>{
-                data.forEach(item=>{
-                    console.log(item)
-                    let status=item.isPastilled ? "Pastillé" :"Pastiller";
-                    let logoPath=item.logo_path ? item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
-                    let tableTribuT=item.table_name; 
-                    let nomTribuPars = tableTribuT.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-                    nomTribuPars = nomTribuPars.charAt(0).toUpperCase() + nomTribuPars.slice(1)
-                    let nomTribuT = item.name_tribu_t_muable ? item.name_tribu_t_muable : nomTribuPars
-                    let restaurant = e.target.dataset.name
-                                    
-                    let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
-                                                `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}"
-                                                class="mx-2 btn btn-success" data-velona='/public${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
-                    let tr=`<tr style="vertical-align: middle;">
-                                <td class="col-logo">
-                                    <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
-                                        src="/public${logoPath}"
-                                    alt="">
+                if(data.length > 0){
+                    data.forEach(item=>{
+                        console.log(item)
+                        let status=item.isPastilled ? "Pastillé" :"Pastiller";
+                        let logoPath=item.logo_path ? item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+                        let tableTribuT=item.table_name; 
+                        let nomTribuPars = tableTribuT.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+                        nomTribuPars = nomTribuPars.charAt(0).toUpperCase() + nomTribuPars.slice(1)
+                        let nomTribuT = item.name_tribu_t_muable ? item.name_tribu_t_muable : nomTribuPars
+                        let restaurant = e.target.dataset.name
+                                        
+                        let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
+                                                    `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}"
+                                                    class="mx-2 btn btn-success" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
+                        let tr=`<tr style="vertical-align: middle;">
+                                    <td class="col-logo">
+                                        <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
+                                            src="${logoPath}"
+                                        alt="">
+                                    </td>
+                                    <td class="col-tribuT">${nomTribuT}</td>
+                                    <td class="col-action">
+                                    ${btn}
+                                    </td>
+                                </tr>`
+                        // $("#restoPastilleModal").modal("show")
+                        document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML+=tr
+                    })
+                }else{
+                        document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML  = `
+                            <tr> 
+                                <td class="text-center" colspan="3"> 
+                                    Vous n'avez pas encore une tribu T avec extension Restaurant.
                                 </td>
-                                <td class="col-tribuT">${nomTribuT}</td>
-                                <td class="col-action">
-                                   ${btn}
-                                </td>
-                            </tr>`
-                    $("#restoPastilleModal").modal("show")
-                    document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML+=tr
-                })
+                            </tr>
+                        `
+                }
             })
         }
     })
     
 }
-

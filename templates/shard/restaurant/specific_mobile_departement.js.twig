@@ -106,17 +106,17 @@
 											avis
 										</a>
 									</span>
-									{% if restaurant.avis.isAlreadyCommented %}
+									{# {% if restaurant.avis.isAlreadyCommented %}
 										<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant{{restaurant.id}}" onclick="settingAvisRestoMobile({{restaurant.id}}, {{app.user ? app.user.id : 0}})">
 											Modifier votre avis
 										</button>
-									{% else %}
+									{% else %} #}
 										{% if app.user %}
 											<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-toggle-id-resto="{{restaurant.id}}" data-bs-target="#modalAvisRestaurant{{restaurant.id}}">Donner votre avis</button>
 										{% else %}
 											<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
 										{% endif %}
-									{% endif %}
+									{# {% endif %} #}
 									{# <button type="button" class="mx-2 text-point-9 btn btn-primary" id="pastille-mobile-tomm-js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalPastilRestaurant">Pastiller</button> #}
 									{% if app.user %}
 										<button type="button" data-name="{{restaurant.denominationF | raw}}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" 

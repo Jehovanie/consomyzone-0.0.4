@@ -785,6 +785,8 @@ let user_name = document.querySelector("#my_full_name") ? document.querySelector
  * @param {string} room : roomname of meet
  * @param {node} nodeElement : node of button of meeting
  */
+let apiJitsi
+
 function joinMeet(...args) {
 
     let room = args[0]
@@ -812,17 +814,17 @@ function joinMeet(...args) {
         parentNode: document.querySelector('#'+parentNodeId),
     };
 
-    let api = new JitsiMeetExternalAPI(domain, options);
-
-    api.executeCommand('displayName', user_name);
+    apiJitsi = new JitsiMeetExternalAPI(domain, options)
+    console.log(apiJitsi)
+    apiJitsi.executeCommand('displayName', user_name);
 
     setStatusMeetByName(room, "progress")
 
-    const iframe = api.getIFrame();
+    const iframe = apiJitsi.getIFrame();
 
     iframe.scrollIntoView();
 
-    api.on('readyToClose', () => {
+    apiJitsi.on('readyToClose', () => {
 
         setStatusMeetByName(room, "finished")
         
@@ -844,10 +846,23 @@ function joinMeet(...args) {
                 </p> 
             </div>`
 
+            // if(args[2]){
+            //     node = args[2]
+            //     message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
+            //     node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
+            // }
+
+            
             if(args[2]){
-                node = args[2]
-                message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
-                node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
+                if(args[3]){
+                    node = args[2]
+                    message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
+                    node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
+                }else{
+                    message_id=document.querySelector("#content_discussion_elie").lastElementChild.getAttribute("id").replaceAll(/[^0-9]/g,"");
+                    document.querySelector("#content_discussion_elie").lastElementChild.innerHTML=content
+                }             
+             
             }
 
             let msg = {
@@ -865,7 +880,7 @@ function joinMeet(...args) {
                 body: JSON.stringify(msg)
             }).then(response=>response.json())
             .then(res=>{
-                console.log(res);
+                //alert("terminé")
             })
 
             if (document.querySelector('#'+parentNodeId).querySelector("iframe")) {
@@ -884,7 +899,7 @@ function joinMeet(...args) {
         }
     })
 
-    api.addEventListener('participantJoined', (e) => {
+    apiJitsi.addEventListener('participantJoined', (e) => {
 
         if(document.querySelector("#user_name_chat")){
 
@@ -951,7 +966,7 @@ function runVisio(roomRandom, user_id, parentNodeId) {
                     .then(visio => {
                         if (!document.querySelector('#'+parentNodeId).querySelector("iframe")) {
                             document.querySelector(".chargement-visio").remove()
-                            joinMeet(roomRandom, parentNodeId, this)
+                            joinMeet(roomRandom, parentNodeId,this)
 
                         }
                     })

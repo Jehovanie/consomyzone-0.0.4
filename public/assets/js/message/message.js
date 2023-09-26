@@ -328,10 +328,11 @@ if(document.querySelector("#elie-btn-visio")){
         <p class="text-info mb-2">
             <i class="fas fa-video-camera me-2 ms-1"></i>
             Appel en attente...
-            <span onclick="joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+            <span onclick="joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this,'old')" class="float-end badge text-bg-primary text-white cursor-pointer p-2"><i class="fa-solid fa-phone-volume" style="color: #1bff0a;"></i></span>
+        
         </p> 
         </div>`
-
+        // <span onclick="cancelMeet('${roomRandom_msg}')"class="float-end badge text-bg-primary text-white cursor-pointer p-2"><i class="fa-solid fa-phone-slash" style="color: #ff0000;"></i></span>
         sendMessage(msg_txt, [])
 
 
@@ -342,6 +343,14 @@ if(document.querySelector("#elie-btn-visio")){
         runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'bodyVisioMessageElie')
         // runVisio(roomRandom_msg, amis.getAttribute("data-toggle-id-user-to"),'content_discussion_elie')
     })
+}
+
+function cancelMeet(room){
+    console.log(apiJitsi)
+    apiJitsi.executeCommand('hangup');
+    // let msg_txt = `Appel refusé.`
+    // sendMessage(msg_txt, [])
+    // setStatusMeetByName(room, "finished")
 }
 
 function toggleClick(domHtml){

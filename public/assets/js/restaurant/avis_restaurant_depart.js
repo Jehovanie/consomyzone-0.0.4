@@ -904,11 +904,19 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
             }
         }
     }
-    
+    let idModalModif
+    let eventClick
+    if (screen.width <= 991) {
+        idModalModif = `#modalAvisRestaurant${idRestaurant}`
+        eventClick = "settingAvisRestoMobile"
+    } else {
+        idModalModif = `#modalAvisRestaurant`
+        eventClick = "settingAvisResto"
+    }
     const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
     const editHTMl= `
         <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto('${json.id}' ,'${json.note}' , '${json.avis}')">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="${idModalModif}" onclick="${eventClick}('${json.id}' ,'${json.note}' , '${json.avis}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
@@ -945,7 +953,7 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
         </div>
     `
 
-    if (idRestaurant != 0) {
+    if (idRestaurant != 0 && screen.width <= 991) {
         document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML += singleAvisHtml;
     }else{
         document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
