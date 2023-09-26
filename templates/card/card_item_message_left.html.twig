@@ -1,7 +1,7 @@
 <div class="cg lc mg sh ol rl tq is content-message-nanta-css" data-toggle-user-id="{{id}}">
     <div class="h mb sc yd of th">
         {# /// photo de profil #}
-        <img src="{{(photo) ? photo  : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{firstname}}" class="vc yd qk rk elie-pdp-modif"/>
+        <img src="{{(photo) ? photo  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{firstname}}" class="vc yd qk rk elie-pdp-modif"/>
         
         {# //// state blue if in contact  #}
         {% if is_online == 1 %}
@@ -15,7 +15,7 @@
         <h5 class="mn un zn gs">
             {{firstname ~ " " ~ lastname }}
         </h5>
-        {% if last_message is defined and last_message != false %}
+        {% if last_message.message_type is defined %}
 
             {% if last_message.message_type is same as("text") %}
                 <p class="mn">{{ last_message.text|length > 50 ? "(Message long) ..." : last_message.text|raw  }}</p>

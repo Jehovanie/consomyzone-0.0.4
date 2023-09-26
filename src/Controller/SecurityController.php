@@ -720,10 +720,10 @@ class SecurityController extends AbstractController
 
             ///switch type of the notification
             $notification = [
-                "admin" => "Nous vous informons qu'une nouvelle tribu G a été créee.",
-                "fondateur" => "Nous avons un grand plaisir de vous annoncer que le tribu G selon votre code postal a été créee et vous êtes l'administrateur provisoire.",
-                "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans le tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
-                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau partisant."
+                "admin" => "Nous vous informons qu'une nouvelle tribu G a été créée.",
+                "fondateur" => "Nous avons un grand plaisir de vous annoncer que la tribu G selon votre code postal a été créée et vous êtes l'administrateur provisoire.",
+                "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans la tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
+                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau partisan."
             ];
 
 

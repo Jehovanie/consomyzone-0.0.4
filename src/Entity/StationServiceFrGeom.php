@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * StationServiceFrGeom
  *
- * @ORM\Table(name="station_service_fr_geom")
+ * @ORM\Table(name="station_service_fr_geom_new")
  * @ORM\Entity(repositoryClass="App\Repository\StationServiceFrGeomRepository")
  */
 class StationServiceFrGeom
@@ -49,7 +49,7 @@ class StationServiceFrGeom
     /**
      * @var string|null
      *
-     * @ORM\Column(name="horaies", type="string", nullable=true)
+     * @ORM\Column(name="horaires", type="string", nullable=true)
      */
     private $horaies;
 
