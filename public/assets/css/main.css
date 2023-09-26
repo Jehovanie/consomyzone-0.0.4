@@ -1940,13 +1940,15 @@ textarea {
     width: 60px;
     height: 60px;
     border-radius: 50%;
+    margin-left: 2px;
+    margin-right: 2px;
     /* background-color: #0D6EFD; */
     color: #0D6EFD;
     font-size: 30px;
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
-..fa-search-elie:hover{
+.fa-search-elie:hover{
     background-color: #0D6EFD;
     color: #fff;
     scale: 1.2;
