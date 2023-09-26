@@ -1472,7 +1472,7 @@ class Tribu_T_Service extends PDOConnexionService
                 FROM $tableResto  
                 as t1 LEFT JOIN $tableComment  
                 as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";*/
-        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,
+        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
 								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
 								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
 				as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";

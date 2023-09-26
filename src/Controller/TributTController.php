@@ -2264,9 +2264,9 @@ class TributTController extends AbstractController
             $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
         }
 
-        $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
+        // $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
         
-        return $this->json($message);
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
     }
 
     #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
@@ -2286,9 +2286,9 @@ class TributTController extends AbstractController
             $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
         }
 
-        $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
+        // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
         
-        return $this->json($message);
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
     }
 
     #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]
