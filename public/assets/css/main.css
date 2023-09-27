@@ -1956,6 +1956,10 @@ textarea {
 
 }
 
+.btn-minimize-elie :hover{
+    color: #f70b0b;
+}
+
 .btn-minimize-elie, .btn-expand-elie{
     height: auto !important;
     background :none !important;
@@ -1976,7 +1980,37 @@ textarea {
 
 .visioMinimize{
     width: 280px;
-    height: 150px;
+    height: 175px;
     left: auto !important;
     /* bottom: 40px !important; */
+}
+
+.tooltiptext {
+    font-size: 12px;
+    visibility: hidden;
+    width: 60px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 2px 0;
+    margin-left: -62px;
+    transition: opacity 0.3s;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .btn-minimize-elie:hover .tooltiptext {
+    visibility: visible;
+  }
+  .btn-expand-elie:hover .tooltiptext {
+    visibility: visible;
+}
+.tooltiptextAgrandir{
+    margin-left: -40px !important;
+    margin-top: -35px !important;
+}
+.mt-50px{
+    margin-top: -50px !important;
+    color: #000;
 }

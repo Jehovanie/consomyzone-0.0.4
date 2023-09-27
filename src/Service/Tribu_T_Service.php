@@ -496,7 +496,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
-    function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join,$nomTribuT)
+    function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$extenstion_golf,$userId,$tribu_t_owned_or_join,$nomTribuT)
 
     {
 
@@ -516,6 +516,7 @@ class Tribu_T_Service extends PDOConnexionService
                     "name_tribu_t_muable"=>$nomTribuT,
                     "description"=> $description,
                     "extension"=> $extenstion,
+                    "extension_golf"=> $extenstion_golf,
                     "logo_path"=>$path,
                     "date"=>  $date,
                     ));
@@ -542,7 +543,7 @@ class Tribu_T_Service extends PDOConnexionService
                 array_push($tmp, 
                 array("name" => $tribu_T_name_table,  
                 "name_tribu_t_muable"=>$nomTribuT, 
-                "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
+                "description" => $description, "extension" => $extenstion,"extension_golf"=> $extenstion_golf, "logo_path" => $path, "date" =>  $date));
                 $array = array("tribu_t" => $tmp);
             }
 
@@ -1340,6 +1341,47 @@ class Tribu_T_Service extends PDOConnexionService
             id_resto_comment int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
             id_restaurant VARCHAR(250) NOT NULL,
+
+            id_user VARCHAR(250) NOT NULL,
+
+            note decimal(3,2),
+
+            commentaire TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+
+            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute();
+    }
+
+    public function createExtensionDynamicTableGolf($tribu_t, $extension){
+
+        $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
+
+            id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+            id_golf VARCHAR(250) NOT NULL,
+
+            denomination_f VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+            datetime timestamp NOT NULL DEFAULT current_timestamp(),
+
+            CONSTRAINT cst_id_golf UNIQUE (id_golf)
+            
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute();
+    }
+
+    public function createTableCommentGolf($tribu_t, $extension){
+        $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . "(
+
+            id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+            id_golf VARCHAR(250) NOT NULL,
 
             id_user VARCHAR(250) NOT NULL,
 
