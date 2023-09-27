@@ -94,8 +94,8 @@ class NotificationService extends PDOConnexionService{
         if(!$this->isTableExist($tableNotification)){
             return false;
         }
-
         $content= $this->convertUtf8ToUnicode($content);
+        $default = 0;
         
         ///insert notification
         $statement = $this->getPDO()->prepare("INSERT INTO  $tableNotification  (user_id,user_post,type,content,isShow,isRead) VALUES (:user_id, :user_post, :type, :content, :isShow, :isRead)");
@@ -104,8 +104,8 @@ class NotificationService extends PDOConnexionService{
         $statement->bindParam(':user_post', $user_id_post);
         $statement->bindParam(':type', $type);
         $statement->bindParam(':content', $content);
-        $statement->bindParam(':isShow', 0);
-        $statement->bindParam(':isRead', 0);
+        $statement->bindParam(':isShow', $default);
+        $statement->bindParam(':isRead', $default);
 
         $statement->execute();
 
