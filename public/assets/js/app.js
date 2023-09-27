@@ -1644,3 +1644,9 @@ function showLogoAndNameTribus(){
         modalBody.innerHTML += `<div class="divContainerImgOnModal mb-3"><div><img onclick="createPopUp(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"></div><div class="tribuTName" onclick="createPopUp(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> ${tribu.dataset.name}</div></div>`
     })
 }
+
+
+function notificationSong() {
+    var audio = new Audio('/assets/song/notification_message.mp3');
+    audio.play();
+}

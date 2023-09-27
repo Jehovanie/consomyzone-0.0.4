@@ -4,25 +4,22 @@ if( document.querySelector(".information_user_conected_jheo_js")){
     //// GET NUMBER MESSAGE NOT SHOW  AND SETTINGS 
     const event_source_nbr_message= new EventSource("/user/show/nbrMessageNotShow");
     event_source_nbr_message.onmessage=function(event){
-
         ///number message not show in the database
         const new_nbr_message= JSON.parse(event.data);
+
         /// check if different 0  
-        if(parseInt(new_nbr_message) !== 0){
-            /// if its less than the new number: let's show
-                //// SHOW BADGE ON MESSAGE ICON
-                const badge_msg= document.querySelector('.badge_message_jheo_js')
-                if(badge_msg.classList.contains('d-none')){
-                    badge_msg.classList.remove('d-none');
-                    badge_msg.innerText= `${parseInt(new_nbr_message)}`
-                }
-                //// UPDATE NUMBER MESSAGE NOT READ
-                // document.querySelector(".nbr_message_jheo_js").innerText= parseInt(new_nbr_message) > 9 ? new_nbr_message : `0${new_nbr_message}`;
-        }else{
-            const badge_msg= document.querySelector('.badge_message_jheo_js')
+        const badge_msg= document.querySelector('.content_badge_message_jheo_js')
+        const old_nbr_message= document.querySelector('.badge_message_jheo_js').innerText;
+        if( parseInt(new_nbr_message) !=0 && parseInt(old_nbr_message) < parseInt(new_nbr_message) ){
+            if(badge_msg.classList.contains('d-none')){
+                badge_msg.classList.remove('d-none');
+            }
+            document.querySelector('.badge_message_jheo_js').innerText= `${parseInt(new_nbr_message)}`;
+            notificationSong()
+        }else if( parseInt(new_nbr_message) === 0 ){
             if(!badge_msg.classList.contains('d-none')){
                 badge_msg.classList.add('d-none');
-                badge_msg.innerText= `0`
+                document.querySelector('.badge_message_jheo_js').innerText= "0"
             }
         }
     }
@@ -76,9 +73,7 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                     // card_msg.className= ` ... show_single_msg_popup_jheo_js ${ parseInt(isRead) !== 1 ? 'gray400' : '' } msg_${other_id}_js_jheo`;
                     if( dataMsg ){
                         if( parseInt(dataMsg.message.isRead)  !== 1 ){
-                            console.log(dataMsg.message.user_post)
                             const divMsg = document.querySelector(`.msg_${dataMsg.message.user_post}_js_jheo`);
-    
                             if( divMsg && !divMsg.classList.contains('gray400')){
                                 divMsg.classList.add('gray400');
                             }
@@ -109,6 +104,16 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                 })
             }
         }
+
+        //// inside message link
+        // if( document.querySelector(".content_list_tribuG_jheo_js") && document.querySelector(".content_list_tribuT_jheo_js")){
+        //     new_message.forEach(({ message }) => {
+        //         if( document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`)){
+        //             const single= document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`);
+        //             if( parseInt(single.getAttribute("data-message-id")) != )
+        //         }
+        //     })
+        // }
     }
 
     /////GET NOTIFICATION AND SETTINGS
@@ -197,26 +202,19 @@ if( document.querySelector(".notification_jheo_js")){
             })
             .then(res => {
                 //// show badge red notification
-                const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js")
-                if( alert_new_notification && !alert_new_notification.classList.contains("d-none")){
-                    alert_new_notification.classList.add("d-none");
+                const content_alert_notif = document.querySelector(".content_alert_new_notification_jheo_js")
+                const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js");
+
+                if( content_alert_notif && !content_alert_notif.classList.contains("d-none")){
+                    content_alert_notif.classList.add("d-none");
                 }
+                
+                alert_new_notification.innerText= '0';
                 return res.json();
             })
             .then(res => {
                 if( res){
                     console.log(res)
-                    // document.querySelector(".nbr_notification_jheo_js").innerText="0";
-                    // document.querySelector(".nbr_notification_jheo_js").parentElement.style.opacity= "0"
-
-                    // const all_card=document.querySelectorAll(".card_js_jheo")
-                    // all_card.forEach(item => {
-                    //     if( item.classList.contains("back_gray")){
-                    //         setTimeout(() => {
-                    //             item.classList.remove("back_gray")
-                    //         }, 5000)
-                    //     }
-                    // })
                 }
             })
         }
@@ -388,12 +386,29 @@ function updateNbrNotificationAndShowBadge(allNotifications){
     const array_notificationNotShow = allNotifications.filter(item => parseInt(item.isShow) === 0)
     const array_notificationNotRead = allNotifications.filter(item => parseInt(item.isRead) === 0)
     
+    const content_alert_notif = document.querySelector(".content_alert_new_notification_jheo_js")
     //// show badge red notification
-    if( array_notificationNotShow.length > 0 ){
-        const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js")
-        if( alert_new_notification && alert_new_notification.classList.contains("d-none")){
-            alert_new_notification.classList.remove("d-none");
+    if( content_alert_notif ){
+        if( array_notificationNotShow.length > 0 ){
+            const alert_new_notification = document.querySelector(".alert_new_notification_jheo_js");
+            const old_nbr_notification= alert_new_notification.innerText;
+            
+            if( parseInt(old_nbr_notification) < array_notificationNotShow.length ){
+    
+                if( content_alert_notif.classList.contains("d-none")){
+                    content_alert_notif.classList.remove("d-none");
+                }
+                
+                alert_new_notification.innerText= array_notificationNotShow.length;
+                notificationSong()
+            }
+        }else{
+            if(!content_alert_notif.classList.contains("d-none")){
+                content_alert_notif.classList.add("d-none");
+            }
         }
+    }else{
+        console.log("Selector not found: 'content_alert_new_notification_jheo_js'");
     }
     
     ///content nbr of notification
@@ -406,6 +421,8 @@ function updateNbrNotificationAndShowBadge(allNotifications){
             //// change the old number notification
             contentNbrNotification.innerText= (array_notificationNotRead.length > 9 || array_notificationNotRead.length === 0) ? array_notificationNotRead.length : `0${array_notificationNotRead.length}`;
         }
+    }else{
+        console.log("Selector not found: 'nbr_notification_jheo_js'");
     }
 
 }
@@ -501,7 +518,11 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
         </a>
     `
     //// ADD IN CONTENT
-    document.querySelector(".content_card_msg_jheo_js").appendChild(card_msg);
+    if( parseInt(isRead) !== 1){
+        document.querySelector(".content_card_msg_jheo_js").prepend(card_msg);
+    }else{
+        document.querySelector(".content_card_msg_jheo_js").appendChild(card_msg);
+    }
 }
 
 function createAndAddCardNotification(
