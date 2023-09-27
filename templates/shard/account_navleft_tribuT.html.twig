@@ -31,7 +31,7 @@
 									</div>
 									<div class="col-9">
 										<p>
-											 <a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+											 <a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
 										</p>
 									</div>
 								</div>
@@ -47,7 +47,7 @@
 									</div>
 									<div class="col-9">
 										<p>
-											<a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable :  tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+											<a href="" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
 										</p>
 									</div>
 								</div>
@@ -74,7 +74,7 @@
 								</div>
 								<div class="col-9">
 									<p>
-											<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+											<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
 									</p>
 								</div>
 							</div>
@@ -92,7 +92,7 @@
 								</div>
 								<div class="col-9">
 									<p>
-										<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+										<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
 									</p>
 								</div>
 							</div>

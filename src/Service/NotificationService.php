@@ -303,7 +303,7 @@ class NotificationService extends PDOConnexionService{
         $results = [];
 
         foreach( $notifications as $item ){
-            $item["content"] = $this->convertUnicodeToUtf8($item["content"]);
+            $item["content"] = json_decode($this->convertUnicodeToUtf8($item["content"]), true);
 
             $userType= $item["type"];
             $userId= $item["user_post"];
