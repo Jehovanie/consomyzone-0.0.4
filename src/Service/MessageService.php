@@ -170,7 +170,7 @@ class MessageService extends PDOConnexionService{
 
     public function getLastMessage($myTableMessage,$otherID){
 
-        $sql = "SELECT id,user_id,user_post,JSON_VALUE(content, '$.text') as text ,message_type FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id,user_id,user_post,JSON_VALUE(content, '$.text') as text, message_type, isForMe, isRead FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
         $result = $this->getPDO()->query($sql);
         $msg=  $result->fetch(PDO::FETCH_ASSOC);
 

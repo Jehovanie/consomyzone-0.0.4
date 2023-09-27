@@ -1934,3 +1934,38 @@ textarea {
     font-weight: bolder;
     cursor: pointer;
 }
+
+.annimation_badge{
+    animation: 0.3s infinite alternate bounding_poping;
+}
+
+
+@keyframes bounding_poping {
+    0% {
+      transform: scale(0.8);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    55% {
+        transform: scale(0.952);
+    }
+    75% {
+        transform: scale(0.954);
+    }
+    80% {
+        transform: scale(0.956);
+    }
+    85% {
+        transform: scale(0.958);
+    }
+    90% {
+        transform: scale(0.959);
+    }
+    95% {
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(1.1);
+    }
+  }

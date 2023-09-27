@@ -30,7 +30,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
         /// last message for each user
         const new_message= JSON.parse(event.data);
-
         ////check number message not read
         const message_not_read = new_message.filter(item =>  parseInt(item.message.isRead) === 0);
         const new_nbr_message = message_not_read.length;
@@ -105,15 +104,45 @@ if( document.querySelector(".information_user_conected_jheo_js")){
             }
         }
 
-        //// inside message link
-        // if( document.querySelector(".content_list_tribuG_jheo_js") && document.querySelector(".content_list_tribuT_jheo_js")){
-        //     new_message.forEach(({ message }) => {
-        //         if( document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`)){
-        //             const single= document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`);
-        //             if( parseInt(single.getAttribute("data-message-id")) != )
-        //         }
-        //     })
-        // }
+        //// inside message link message discussion
+        if( document.querySelector(".content_list_tribuG_jheo_js") && document.querySelector(".content_list_tribuT_jheo_js")){
+
+            new_message.forEach(({ message }) => {
+
+                ///card message 
+                if( document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`)){
+
+                    const single= document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`); /// card message
+
+                    const lastMessageID= single.getAttribute("data-message-id"); /// last message ID use to chech new appear
+                 
+
+                    if( parseInt(lastMessageID) !== parseInt(message.id)){ /// check if new appear 
+    
+                        const messageType= message.message_type; /// new message type
+                        const messageContent= JSON.parse(message.content); //// messageContent Object  { files: ..., images : [... ], files: [... ] }
+    
+                        const isForMe = message.isForMe === 0 ? "vous: " : ""; //// befor the message
+                        
+                        if( messageType === "text"){ //// check the new type message
+                            single.querySelector('.text_message_jheo_js').innerText = isForMe + messageContent.text;
+                        }else{
+                            single.querySelector('.text_message_jheo_js').innerText = isForMe + '(object)';
+                        }
+                        
+                        if( parseInt(message.isRead) === 0 ){
+                            single.querySelector('.text_message_jheo_js').classList.add('wn')
+                        }
+                        
+                        const parentSingle= single.parentElement;
+                        single.remove()
+                        parentSingle.prepend(single)
+
+                        single.setAttribute("data-message-id", message.id)
+                    }
+                }
+            })
+        }
     }
 
     /////GET NOTIFICATION AND SETTINGS
@@ -208,7 +237,7 @@ if( document.querySelector(".notification_jheo_js")){
                 if( content_alert_notif && !content_alert_notif.classList.contains("d-none")){
                     content_alert_notif.classList.add("d-none");
                 }
-                
+
                 alert_new_notification.innerText= '0';
                 return res.json();
             })
