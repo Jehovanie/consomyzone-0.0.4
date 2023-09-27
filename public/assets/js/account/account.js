@@ -110,36 +110,35 @@ if( document.querySelector(".information_user_conected_jheo_js")){
             new_message.forEach(({ message }) => {
 
                 ///card message 
-                if( document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`)){
+                if( document.querySelectorAll(`.last_msg_user_${message.user_post}_jheo_js`)){
+                    const allMessageUserID =  document.querySelectorAll(`.last_msg_user_${message.user_post}_jheo_js`);
+                    allMessageUserID.forEach(single => {
+                        const lastMessageID= single.getAttribute("data-message-id"); /// last message ID use to chech new appear
 
-                    const single= document.querySelector(`.last_msg_user_${message.user_post}_jheo_js`); /// card message
+                        if( parseInt(lastMessageID) !== parseInt(message.id)){ /// check if new appear 
+        
+                            const messageType= message.message_type; /// new message type
+                            const messageContent= JSON.parse(message.content); //// messageContent Object  { files: ..., images : [... ], files: [... ] }
+        
+                            const isForMe = message.isForMe === 0 ? "vous: " : ""; //// befor the message
+                            
+                            if( messageType === "text"){ //// check the new type message
+                                single.querySelector('.text_message_jheo_js').innerText = isForMe + messageContent.text;
+                            }else{
+                                single.querySelector('.text_message_jheo_js').innerText = isForMe + '(object)';
+                            }
+                            
+                            if( parseInt(message.isRead) === 0 ){
+                                single.querySelector('.text_message_jheo_js').classList.add('wn')
+                            }
+                            
+                            const parentSingle= single.parentElement;
+                            single.remove()
+                            parentSingle.prepend(single)
 
-                    const lastMessageID= single.getAttribute("data-message-id"); /// last message ID use to chech new appear
-                 
-
-                    if( parseInt(lastMessageID) !== parseInt(message.id)){ /// check if new appear 
-    
-                        const messageType= message.message_type; /// new message type
-                        const messageContent= JSON.parse(message.content); //// messageContent Object  { files: ..., images : [... ], files: [... ] }
-    
-                        const isForMe = message.isForMe === 0 ? "vous: " : ""; //// befor the message
-                        
-                        if( messageType === "text"){ //// check the new type message
-                            single.querySelector('.text_message_jheo_js').innerText = isForMe + messageContent.text;
-                        }else{
-                            single.querySelector('.text_message_jheo_js').innerText = isForMe + '(object)';
+                            single.setAttribute("data-message-id", message.id)
                         }
-                        
-                        if( parseInt(message.isRead) === 0 ){
-                            single.querySelector('.text_message_jheo_js').classList.add('wn')
-                        }
-                        
-                        const parentSingle= single.parentElement;
-                        single.remove()
-                        parentSingle.prepend(single)
-
-                        single.setAttribute("data-message-id", message.id)
-                    }
+                    })
                 }
             })
         }
