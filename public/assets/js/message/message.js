@@ -51,31 +51,53 @@ if(document.querySelector(".btn_send_message_jheo_js") && document.querySelector
         ////on load file
         reader.addEventListener("load", () => {
 
+            const listExt= ['jpg', 'jpeg', 'png'];
+            const octetMax= 3145728; //3Mo
+
             /// file as url
             const uploaded_image = reader.result;
 
-            ///let get multiple images (files)
+            if( !checkFileExtension(listExt,uploaded_image)){
 
-            const type= checkFileExtension(imageType, reader.result ) ? "image" : "file";
-            image_list.push({type :type, name: reader.result});
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image.",
+                    icon: "error",
+                    button: "OK",
+                  });
 
-            // for the content image above the input message
-            const img = document.createElement("img")
-            img.className="image_input_item image_input_item_jheo_js";
-            img.setAttribute("alt","Image upload")
-            img.src = ( type === "image") ?  uploaded_image : fileDefaults;
-
-            const parentImage = document.querySelector(".content_image_input_jheo_js")
-            parentImage.style.display= "flex"
-
-            
-            //// add in the first the new image upload
-            if(parentImage.querySelector(".image_input_item_jheo_js")){
-                parentImage.insertBefore(img, parentImage.querySelector("image_input_item_jheo_js"))
             }else{
-                parentImage.appendChild(img)
-            }
+                if(!checkTailleImage(octetMax, uploaded_image)){
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 3Mo.",
+                        icon: "error",
+                        button: "OK",
+                      });
+                    
+                }else{
+                    ///let get multiple images (files)
+                    const type= checkFileExtension(imageType, reader.result ) ? "image" : "file";
+                    image_list.push({type :type, name: reader.result});
 
+                    // for the content image above the input message
+                    const img = document.createElement("img")
+                    img.className="image_input_item image_input_item_jheo_js";
+                    img.setAttribute("alt","Image upload")
+                    img.src = ( type === "image") ?  uploaded_image : fileDefaults;
+
+                    const parentImage = document.querySelector(".content_image_input_jheo_js")
+                    parentImage.style.display= "flex"
+
+                    
+                    //// add in the first the new image upload
+                    if(parentImage.querySelector(".image_input_item_jheo_js")){
+                        parentImage.insertBefore(img, parentImage.querySelector("image_input_item_jheo_js"))
+                    }else{
+                        parentImage.appendChild(img)
+                    }
+                }
+            }
         });
 
 
