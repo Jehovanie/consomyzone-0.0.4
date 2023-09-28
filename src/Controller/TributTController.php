@@ -2260,7 +2260,7 @@ class TributTController extends AbstractController
     }
 
     #[Route("/user/tribu_t/pastille/resto", name:"tribu_t_pastille_resto", methods:["POST"])]
-    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest){
+    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
 
         $jsonParsed=json_decode($resquest->getContent(),true);
 
@@ -2270,11 +2270,39 @@ class TributTController extends AbstractController
 
         $tribu_t = $jsonParsed["tbl"];
 
-        $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
+        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
 
-        $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
+        if(count($checkIdResto) > 0){
+            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, true);
+        }else{
+            $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
+        }
+
+        // $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
         
-        return $this->json($message);
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    }
+
+    #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
+    public function dePastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $resto_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
+
+        if($checkIdResto > 0){
+            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
+        }
+
+        // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
+        
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
     }
 
     #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]

@@ -1131,70 +1131,72 @@ function showResto(table_rst_pastilled, id_c_u) {
 
             for (let resto of restos) {
                 console.log(resto);
-
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
-                let id = resto.id
-                let id_resto = resto.id_resto
-                let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
+                if(resto.isPastilled){
 
-                let id_user = resto.All_user != null ? resto.All_user.split(",") : []
-                // console.log(id_user)
-                let denominationsF = resto.denomination_f
-                let nbrAvis = resto.nbrAvis
-                let key = 0
-                let note = resto.globalNote ? resto.globalNote : 0
-
-                let adresse = resto.numvoie + " " + resto.nomvoie + " " + resto.codpost + " " + resto.dep_name
-
-                let text1 = ""
-
-                let action = ""
-
-                for (let [k, v] of id_user.entries()) {
-                    if (v === id_c_u)
-                        key = k
+                    let id = resto.id
+                    let id_resto = resto.id_resto
+                    let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
+    
+                    let id_user = resto.All_user != null ? resto.All_user.split(",") : []
+                    // console.log(id_user)
+                    let denominationsF = resto.denomination_f
+                    let nbrAvis = resto.nbrAvis
+                    let key = 0
+                    let note = resto.globalNote ? resto.globalNote : 0
+    
+                    let adresse = resto.numvoie +" "+resto.nomvoie+" "+resto.codpost+" "+resto.dep_name
+    
+                    let text1 = ""
+    
+                    let action = ""
+    
+                    for (let [k, v] of id_user.entries()) {
+                        if (v === id_c_u)
+                            key = k
+                    }
+                    if (id_user.includes(id_c_u)) {
+                        // console.log("up " + denominationsF)
+                        // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
+                        action = "update"
+    
+                        text1 = "Modifiez votre avis"
+                    } else {
+                        // console.log("crt " + denominationsF)
+                        // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
+                        action = "create"
+                        text1 = "Notez"
+                    }
+    
+                    body_table += `
+                        <tr id="restaurant_${resto.id_resto}">
+                            <td class="d-flex bd-highlight align-items-center">
+                                <div class="elie-img-pastilled">${image_tribu_t}</div>
+                                <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
+                                    <span style="font-size:12pt;">${denominationsF} </span> 
+                                <!--</a>-->
+                            </td>
+                            <td class="data-note-${resto.id}">${note}/4</td>
+                            <td>
+                                <!--<div id="etoile_${id_resto}" class="non_active">
+                                    <i class="fa-solid fa-star" data-rank="1"></i>
+                                    <i class="fa-solid fa-star" data-rank="2"></i>
+                                    <i class="fa-solid fa-star" data-rank="3"></i>
+                                    <i class="fa-solid fa-star" data-rank="4"> </i>-->
+                                    <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
+                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                <!--</div>-->
+                            </td>
+                            <td>
+                                <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                                <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
+                                
+                                <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
+                            </td>
+                        </tr>
+                    `
                 }
-                if (id_user.includes(id_c_u)) {
-                    // console.log("up " + denominationsF)
-                    // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
-                    action = "update"
-
-                    text1 = "Modifiez votre avis"
-                } else {
-                    // console.log("crt " + denominationsF)
-                    // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
-                    action = "create"
-                    text1 = "Notez"
-                }
-
-                body_table += `
-                    <tr>
-                        <td class="d-flex bd-highlight align-items-center">
-                            <div class="elie-img-pastilled">${image_tribu_t}</div>
-                            <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
-                                <span style="font-size:12pt;">${denominationsF} </span> 
-                            <!--</a>-->
-                        </td>
-                        <td class="data-note-${resto.id}">${note}/4</td>
-                        <td>
-                            <!--<div id="etoile_${id_resto}" class="non_active">
-                                <i class="fa-solid fa-star" data-rank="1"></i>
-                                <i class="fa-solid fa-star" data-rank="2"></i>
-                                <i class="fa-solid fa-star" data-rank="3"></i>
-                                <i class="fa-solid fa-star" data-rank="4"> </i>-->
-                                <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
-                            <!--</div>-->
-                        </td>
-                        <td>
-                            <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
-                            <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
-                            
-                            <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
-                        </td>
-                    </tr>
-                `
             }
 
             restoContainer.innerHTML += head_table + body_table + foot_table
@@ -2427,9 +2429,20 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 
-    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote(" + id_pastille + ",\'" + action + "\')")
-    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent(" + id_pastille + ",\'" + denomination_f + "\',\'" + adresse + "\',\'" + action + "\')")
-
+    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
+    document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
+    document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
+    document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+      
+    // const swalWithBootstrapButtons = swal.mixin({
+    //     customClass: {
+    //         confirmButton: 'btn btn-primary me-2',
+    //         cancelButton: 'btn btn-secondary non_active disabled'
+    //         // cancelButton: 'btn btn-primary'
+    //     },
+    //     buttonsStyling: false
+    // })
 
 }
 

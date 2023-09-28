@@ -576,7 +576,7 @@ function createShowAvisAreas(json,currentUserId) {
     const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
     const editHTMl= `
         <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto('${json.id}' ,'${json.note}' , '${json.avis}')">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>

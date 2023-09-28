@@ -1,4 +1,4 @@
-const IS_DEV_MODE=false;
+const IS_DEV_MODE=true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -1719,7 +1719,7 @@ function agrandirImage(ev){
 }
 
 function resetImage(ev){
-    console.log(ev.target)
+    // console.log(ev.target)
     ev.target.style="transform:scale(1)"
  }
 
@@ -1752,3 +1752,8 @@ window.onload = (event) => {
     }
     document.querySelector("#minimizeVisio").innerHTML = visio
 };
+
+function notificationSong() {
+    var audio = new Audio('/assets/song/notification_message.mp3');
+    audio.play();
+}

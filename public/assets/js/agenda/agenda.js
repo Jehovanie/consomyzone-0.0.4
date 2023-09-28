@@ -266,6 +266,10 @@ function bindEventForAllDay(info) {
         initInputForm()
     }
 
+    document.querySelector(".preview_image_nanta_js").classList.add("d-none")
+    document.querySelector("#image-preview").src = ""
+    document.querySelector(".btnAddPhoto_nanta_js").classList.remove("d-none")
+
 }
 
 function bindEventForAnEvent(id) {
@@ -292,6 +296,7 @@ function bindEventForAnEvent(id) {
 }
 
 function setAndShowModal(agenda) {
+    console.log(agenda);
     $("#createAgenda").modal("show")
     $("#createOrEditBtn").text("Modifier")
     $("#modalCreateAgendaTitles").text("Modifier l'événement")
@@ -327,6 +332,16 @@ function setAndShowModal(agenda) {
 
     if (adresseContainer.classList.contains("d-none")) {
         adresseContainer.classList.remove("d-none")
+    }
+
+    if(agenda.file_path){
+        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+        document.querySelector("#image-preview").src = agenda.file_path
+        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+    }else{
+        document.querySelector(".preview_image_nanta_js").classList.add("d-none")
+        document.querySelector("#image-preview").src = ""
+        document.querySelector(".btnAddPhoto_nanta_js").classList.remove("d-none")
     }
 
     if (agenda.isEtabCMZ) {
@@ -1387,8 +1402,10 @@ function saveNewAgenda(agenda) {
         "dateEnd": agenda.dateEnd,
         "timeStart": agenda.timeStart,
         "timeEnd": agenda.timeEnd,
-        "fileType": null,
-        "fileName": null,
+        "fileType": agenda.fileType,
+        "fileName": agenda.fileName,
+        "base64": agenda.base64,
+        "directoryroot": agenda.directoryroot,
         "confidentiality": 1,
     };
 
@@ -1444,6 +1461,19 @@ function getObjectForNewAgenda(e) {
         isEtabCMZ = true
     }
 
+    let fileType = null
+    let fileName = null
+    let base64 = null
+    let directoryroot = null
+
+    if(!document.querySelector(".preview_image_nanta_js").classList.contains("d-none")){
+        let img = document.querySelector("#image-preview")
+        fileType = img.getAttribute("typefile")
+        base64 = img.getAttribute("src")
+        fileName = img.getAttribute("name")
+        directoryroot = img.getAttribute("directoryroot")
+    }
+
     const agenda = {
         "title": document.querySelector("#eventTitle").value,
         "type": document.querySelector("#typeEvent").value,
@@ -1459,6 +1489,10 @@ function getObjectForNewAgenda(e) {
         "dateEnd": document.querySelector("#eventEnd").value,
         "timeStart": document.querySelector("#timeStart").value,
         "timeEnd": document.querySelector("#timeEnd").value,
+        "fileType": fileType,
+        "base64": base64,
+        "directoryroot": directoryroot,
+        "fileName": fileName,
     }
 
     console.log(agenda);

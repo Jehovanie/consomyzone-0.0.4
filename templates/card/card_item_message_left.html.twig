@@ -1,4 +1,4 @@
-<div class="cg lc mg sh ol rl tq is content-message-nanta-css" data-toggle-user-id="{{id}}">
+<div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_{{id}}_jheo_js" data-toggle-user-id="{{id}}" data-message-id={{last_message.id}}>
     <div class="h mb sc yd of th">
         {# /// photo de profil #}
         <img src="{{(photo) ? photo  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{firstname}}" class="vc yd qk rk elie-pdp-modif"/>
@@ -15,15 +15,15 @@
         <h5 class="mn un zn gs">
             {{firstname ~ " " ~ lastname }}
         </h5>
+      
         {% if last_message.message_type is defined %}
-
             {% if last_message.message_type is same as("text") %}
-                <p class="mn">{{ last_message.text|length > 50 ? "(Message long) ..." : last_message.text|raw  }}</p>
+                <p class="mn text_message_jheo_js {{last_message.isRead == 0  ? 'wn'  : '' }}">{{ last_message.text|length > 50 ? "(Message long) ..." : last_message.text|raw  }}</p>
             {% else %}
-                <p class="mn">object</p>
+                <p class="mn text_message_jheo_js">(object)</p>
             {% endif %}
         {% else %}
-            <p>Nouvelle discussion</p>
+            <p class="text_message_jheo_js">Nouvelle discussion</p>
         {% endif %}
     </a>
 </div>
