@@ -345,9 +345,24 @@ class TributGController extends AbstractController
     ){
         $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
 
+        // dd($tributGService->getAllPhotos($table_tributG_name));
+
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_g/photos/".$table_tributG_name."/";
+        $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
+        $tabPhoto = [];
+        foreach ($images as $image) {
+            $photo = explode("uploads/tribu_g",$image)[1];
+            $photo = "/uploads/tribu_g/".$photo;
+            array_push($tabPhoto, ["photo"=>$photo]);
+        }
+
+        // dd($tabPhoto);
+        // return $this->json($tabPhoto);
+
         return $this->render("tribu_g/photos.html.twig", [
-            "photos" => $tributGService->getAllPhotos($table_tributG_name),
+            "photos" => $tabPhoto
         ]);
+
     }
 
 

@@ -400,6 +400,7 @@ function sendPublication(formData) {
  * @param {*} tribu_t_name 
  */
 function showdDataContent(data, type, tribu_t_name, id_c_u) {
+
     let detailsTribuT = null
 
     if (type === "owned")
@@ -414,14 +415,14 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     descriptionTribuT = tribu_t[0].description
     let restExtension = ""
     let golfExtension = ""
-    if (tribu_t[0].extension) {
+    if (tribu_t[0].extension.restaurant) {
         restExtension = ` <li class="listNavBarTribu restoNotHide">
-                            <a style="cursor:pointer;">Restaurants</a>
+                            <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
                         </li>`
     }
-    if (tribu_t[0].extension_golf) {
-        golfExtension = ` <li class="listNavBarTribu restoNotHide non_active">
-                            <a style="cursor:not-allowed;">Golf</a>
+    if (tribu_t[0].extension.golf) {
+        golfExtension = ` <li class="listNavBarTribu golfNotHide">
+                            <a style="cursor:pointer;" onclick="showGolf()" data-value="golf">Mon Golf</a>
                         </li>`
     }
 
@@ -1413,10 +1414,6 @@ function findResto(val, localisation = "") {
         method: 'GET'
     })
 
-    //    const request =new Request(`/tribu/findresto/${val}/${ou}`, {
-    //         method: 'GET'
-    //     })  
-
     document.querySelector("#result_resto_past").style.display = "block;"
 
 
@@ -1434,8 +1431,6 @@ function findResto(val, localisation = "") {
         let jsons = data.results[0]
 
         jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
-
-        // console.log(jsons.results[0])
 
         let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
         <thead>
@@ -1502,47 +1497,6 @@ function findResto(val, localisation = "") {
                                     </td>
                                 </tr>
                             `
-
-                // document.querySelector("#result_resto_chr").innerHTML += `
-
-                //     <div class="card-result-chr items">
-                //         <div class="header-result">
-                //             <h5>${name}</h5>
-
-                //         </div>
-                //         <div class="body-result">
-
-                //             <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
-                //              <div class="type-resto-ico row">
-                //                 <div class="col-lg-5">${boulangerie}</div>
-                //                 <div class="col-lg-5">${bar}</div>
-                //                 <div class="col-lg-5">${brasserie}</div>
-                //                 <div class="col-lg-5">${cafe}</div>
-                //                 <div class="col-lg-5">${cuisineMonde}</div>
-                //                 <div class="col-lg-5">${fastFood}</div>
-                //                 <div class="col-lg-5">${creperie}</div>
-                //                 <div class="col-lg-5">${salonThe}</div>
-                //                 <div class="col-lg-5">${pizzeria}</div>
-                //             </div>
-                //             <div>
-                //                 <h5>Adresse: </h5>
-                //                 <p>${adresse}</p>
-                //             </div>
-
-                //         </div>
-                //         <div class="footer-result">
-                //             <button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
-                //         </div>
-                //     </div>
-                // `
-                // $(document).ready(function(){
-                //     $(".owl-carousel").owlCarousel({
-                //         autoPlay: 3000,
-                //         items: 5
-                //     });
-                // });
-
-
             }
 
             document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
@@ -2232,13 +2186,15 @@ if (searchParams.has('message')) {
 
 function listResto() {
 
-    // document.querySelector(".content-actualite-connected").style ="background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);"
-
     document.querySelector("#elie-restou").innerHTML = ""
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
     if (adresse.trim() != "" || inputName.trim() != "") {
-        findResto(inputName, adresse)
+        if(document.querySelector(".golfNotHide > a").classList.contains("active")){
+            findGolf(inputName, adresse)
+        }else if(document.querySelector(".restoNotHide > a").classList.contains("active")){
+            findResto(inputName, adresse)
+        }
         $("#modalForExtension").modal("show")
     } else {
 
@@ -2501,11 +2457,18 @@ function settingTribuT(e, tribuTName) {
         document.querySelector("#update_description").value = currentTribuT.description
         document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg"
 
-        if (currentTribuT.extension != null) {
-            document.querySelector("#update_form_extension").checked = true
+        if (currentTribuT.extension.restaurant) {
+            document.querySelector("#update_form_restaurant").checked = true
         } else {
-            document.querySelector("#update_form_extension").checked = false
+            document.querySelector("#update_form_restaurant").checked = false
         }
+
+        if (currentTribuT.extension.golf) {
+            document.querySelector("#update_form_golf").checked = true
+        } else {
+            document.querySelector("#update_form_golf").checked = false
+        }
+
         document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
 
     })
@@ -2522,7 +2485,8 @@ function updateTribuTInfos(e) {
     let description = document.querySelector("#update_description").value.trim()
     let nomTribuT = document.querySelector("#updateTribuTName").value.trim()
     let path = null
-    let extension = document.querySelector("#update_form_extension").checked == true ? "on" : null
+    let restaurant = document.querySelector("#update_form_restaurant").checked == true ? "on" : null
+    let golf = document.querySelector("#update_form_golf").checked == true ? "on" : null
     let photoName = e.target.dataset.name
     let base64 = e.target.dataset.url
 
@@ -2533,7 +2497,8 @@ function updateTribuTInfos(e) {
         path: path,
         photoName: photoName,
         base64: base64,
-        extension: extension
+        restaurant: restaurant,
+        golf: golf
     }
 
     let request = new Request("/user/tribu/update-tribu_t-info", {
@@ -2563,4 +2528,253 @@ function updateTribuTInfos(e) {
             });
         })
 
+}
+
+function showGolf(){
+
+    if (document.querySelector("li.listNavBarTribu > a.active")) {
+        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    }
+    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+
+    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+
+    golfContainer.innerHTML = `
+                                <div class="row mt-3 p-3">
+                                    <div class="col-12">
+                                        <div id="form_past"></div>
+                                        <div class="g-3">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+                                            </div>
+                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+
+    /*golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+                                <table id="table_golf_pastilled" class="ta" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom de golf</th>
+                                            <th>Note</th>
+                                            <th>Avis</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                <tbody>
+                                <tr>
+                        <td class="d-flex bd-highlight align-items-center">
+                            Image
+                        </td>
+                        <td>Note</td>
+                        <td>
+                            <a class="text-secondary" style="cursor: pointer;text-decoration:none;">Avis</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary"><i class="fas fa-plus"></i> Plus</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>`*/
+
+    // golfContainer.classList.add("bg-white");
+    // golfContainer.classList.add("p-2");
+
+    // let foot_table = `</tbody>
+    // </table>`
+
+    // let body_table = ``
+
+    // let imgSrc = "";
+    // let avatar = "" //"{{avatar}}"
+    // if (avatar != null) {
+    //     imgSrc = "/uploads/tribus/photos/" + avatar
+    // } else {
+    //     imgSrc = "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
+    // }
+
+    // let golfs = 3
+
+    // if (golfs > 0) {
+
+    //     body_table = `
+    //                 <tr>
+    //                     <td class="d-flex bd-highlight align-items-center">
+    //                         Image
+    //                     </td>
+    //                     <td>Note</td>
+    //                     <td>
+    //                         <a class="text-secondary" style="cursor: pointer;text-decoration:none;">Avis</a>
+    //                     </td>
+    //                     <td>
+    //                         <button class="btn btn-primary"><i class="fas fa-plus"></i> Plus</button>
+    //                     </td>
+    //                 </tr>
+    //                 </tbody>
+    //             </table>
+    //             `
+    //     golfContainer.innerHTML += body_table
+
+    // }else {
+    //     golfContainer.style.textAlign = "center"
+    //     golfContainer.innerHTML += `<tr><td colspan="4">Aucun golf pastillé pour le moment</td></tr>`;
+
+    // }
+
+    // golfContainer.innerHTML += foot_table
+
+    golfContainer.style.display = "block"
+
+}
+
+function findGolf(val, localisation = "") {
+
+    const request = new Request(`/api/search/golf?cles0=${val}&cles1=${localisation}`, {
+        method: 'GET'
+    })
+
+    document.querySelector("#result_resto_past").style.display = "block;"
+
+
+    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+    document.querySelector("#elie-restou").innerHTML =
+        `<div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        </div>`
+
+
+    fetch(request).then(response => response.json()).then(data => {
+
+        let jsons = data.results[0]
+
+        jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " golfs trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " golf trouvé"
+
+        let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Nom du golf</th>
+                <th>Adresse</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>`
+
+        let foot_table = `</tbody>
+        </table>`
+
+        let body_table = "";
+
+        if (jsons.length > 0) {
+
+            for (let json of jsons) {
+
+                const name = json.nom;
+                const adresse = json.add;
+                const idDep = json.id_dep;
+                const nomDep = json.departement;
+                const idEtab = json.id_etab;
+                const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
+                
+                body_table += `
+                                <tr>
+                                    <td>${name}</td>
+                                    <td>${adresse}</td>
+                                    <td class="d-flex bd-highlight">
+                                        <button data-tbname = ${table} data-id="${idEtab}" data-name="${name}" data-adresse="${adresse}" class="btn btn-info" onclick="showEtabDetail(event,'${nomDep}', ${idDep}, ${idEtab})">Détail</button>
+                                        <button data-tbname = ${table} data-id="${idEtab}" data-name="${name}" data-adresse="${adresse}" class="btn btn-primary ms-1" onclick="pastilleGolf(this)">Pastillez</button>
+                                    </td>
+                                </tr>
+                            `
+
+            }
+
+            document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
+
+            $('#resto-a-pastiller-list').DataTable({
+                "language": {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                }
+            });
+
+        } else {
+            document.querySelector("#elie-restou").style.display = "block"
+            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
+        }
+    })
+
+}
+
+
+function showEtabDetail(event,nom_dep, id_dep, id_etab) {
+    
+    const request = new Request(`/api/agenda/golf/${nom_dep}/${id_dep}/detail/${id_etab}`)
+
+    $("#modalForExtension").modal("hide")
+    $("#detailEtabModal").modal("show")
+
+    let dataName = event.target.dataset.name
+    let dataAdresse = event.target.dataset.adresse
+    let modalBody = document.querySelector("#detailEtabModal .modal-body")
+    document.querySelector(".content_etab_detail").innerHTML = `<div>
+                                <div class="mb-2">
+                                    <span class="mt-2 ms-3"><b>${dataName}</b></span>
+                                </div>
+                                <p style="text-align:padding-left:4% !important;">
+                                    <a href="#" class="small" style="margin-left:4%#19a8d8 !important;">
+                                        ${dataAdresse}
+                                    </a>
+                                </p>
+                            </div>`
+
+    modalBody.innerHTML =  `<div class="d-flex justify-content-center">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                                </div>`
+
+    fetch(request)
+        .then(res => res.text()).then(html => {
+            modalBody.innerHTML = html
+        });
+    
+}
+
+function pastilleGolf(element){
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    console.log(data);
+
+    let request = new Request("/user/tribu_t/pastille/golf", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                new swal("Succès !", "Golf pastillé avec succès", "success")
+                    .then((value) => {
+                        element.classList = "btn btn-secondary ms-1"
+                        element.textContent = "Pastillé"
+                        element.setAttribute("disabled", true)
+                    });          
+            })
+            .catch(error=>console.log(error))
 }

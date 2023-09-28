@@ -710,8 +710,7 @@ class AgendaController extends AbstractController
         Request $request,
         AgendaService $agendaService, 
         Filesystem $fs,
-        TributGService $tributGService,
-        Tribu_T_Service $tribuTService
+        TributGService $tributGService
     ){
 
         $data=json_decode($request->getContent(),true);
@@ -719,17 +718,6 @@ class AgendaController extends AbstractController
         $userId = $this->getUser()->getId();
 
         extract($data); 
-
-        /*if( $fileName && $fileType ){
-            $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
-            $path .= (str_contains($req["fileType"], "application")) ? "document/" : "img/";
-        
-            if(!$fs->exists($path)){
-                $fs->mkdir($path,0777);
-            }
-            $fileUtils = new FilesUtils();
-            $fileUtils->uploadImageAjax($path, $req["fileBTOA"], $req["fileName"]);
-        }*/
 
         $imgURL = null;
 
@@ -740,11 +728,11 @@ class AgendaController extends AbstractController
                 if($nameRoot =="tribug"){
                     // $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/user_".$userId."/";
                     $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/";
-                    $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
+                    // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
                 }else{
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
                     $pathDir = '/uploads/tribu_t/photo/' .  $directoryroot . "_publication" . "/";
-                    $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
+                    // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
                 }
             }else{
                 $pathDir = "/uploads/users/agenda/agenda_".$userId."/"."files/";
@@ -800,8 +788,7 @@ class AgendaController extends AbstractController
         AgendaService $agendaService,
         Filesystem $fs,
         $agendaId,
-        TributGService $tributGService,
-        Tribu_T_Service $tribuTService
+        TributGService $tributGService
     ){
 
         $data=json_decode($request->getContent(),true);
@@ -809,17 +796,6 @@ class AgendaController extends AbstractController
         extract($data); 
 
         $userId = $this->getUser()->getId();
-
-        /*if( $fileName && $fileType ){
-            $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
-            $path .= (str_contains($req["fileType"], "application")) ? "document/" : "img/";
-        
-            if(!$fs->exists($path)){
-                $fs->mkdir($path,0777);
-            }
-            $fileUtils = new FilesUtils();
-            $fileUtils->uploadImageAjax($path, $req["fileBTOA"], $req["fileName"]);
-        }*/
 
         $imgURL = null;
 
@@ -830,12 +806,12 @@ class AgendaController extends AbstractController
                 if($nameRoot =="tribug"){
                     // $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/user_".$userId."/";
                     $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/";
-                    $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
+                    // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
                 }else{
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/";
                     $pathDir = '/uploads/tribu_t/photo/' .  $directoryroot . "_publication" . "/";
-                    $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
+                    // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
                 }
             }else{
                 $pathDir = "/uploads/users/agenda/agenda_".$userId."/"."files/";
