@@ -1,6 +1,6 @@
 
 ###> symfony/framework-bundle ###
-/BDD
+/.env.local
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
@@ -28,3 +28,5 @@
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
 /phpunit.xml
+
+/.env.local
