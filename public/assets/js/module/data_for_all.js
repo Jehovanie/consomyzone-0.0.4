@@ -87,3 +87,84 @@ function updateGeoJson(couche,index, e){
         CURRENT_MAP_INSTANCE.removeSpecGeoJson(couche, index)
     }
 }
+
+
+function pastilleRestoForTribuT(element, isPastilled){
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    let request = ""
+    if(isPastilled){
+        request = new Request("/user/tribu_t/pastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(data)
+        })
+
+    }else{
+        request = new Request("/user/tribu_t/depastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(data)
+        })
+    }
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(data=>{
+                let tribuName = element.dataset.tribu
+                let html = ""
+                if(!isPastilled){
+                    html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
+                                data-tbname="${tbl}" class="mx-2 btn btn-success" data-velona="${element.dataset.velona}" 
+                                onclick="pastilleRestoForTribuT(this,true)">Pastiller</button> `
+                    new swal("Succès !", "Restaurant dépastillé avec succès", "success")
+                    .then((value) => {
+                        updateBtnStatus(element, html)
+                        document.querySelector("#"+tbl).remove()
+                        reorganisePastille()
+                        CURRENT_MAP_INSTANCE.updateListRestoDepastille(id, tbl+"_restaurant")
+                    });
+                }else{
+
+                    html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
+                                    data-tbname="${tbl}" class="mx-2 btn btn-info" data-velona="${element.dataset.velona}" 
+                                    onclick="pastilleRestoForTribuT(this,false)">Dépastiller</button>`
+                    let img = document.createElement("img")
+                    img.src = element.dataset.velona
+                    img.dataset.name = tribuName
+                    img.setAttribute("alt",tribuName)
+                    let div = document.createElement("div")
+                    div.setAttribute("onclick","createPopUp(event)")
+                    div.setAttribute("onmouseout","resetImage(event)")
+                    div.setAttribute("onmouseover","agrandirImage(event)")
+                    div.setAttribute("id",tbl)
+                    div.setAttribute("class","img_nantenaina")
+                    div.setAttribute("title","Tribu T " + tribuName)
+                    div.setAttribute("data-bs-toggle","tooltip")
+                    div.setAttribute("data-bs-placement","top")
+                    div.dataset.name = tribuName
+                    div.appendChild(img)
+                    new swal("Succès !", "Restaurant pastillé avec succès", "success")
+                    .then((value) => {
+                        updateBtnStatus(element, html)
+                        document.querySelector(".mainContainerLogoTribu").appendChild(div);
+                        reorganisePastille()
+                        CURRENT_MAP_INSTANCE.updateListRestoPastille(data.id_resto, data.table)
+                    });
+                }
+            })
+            .catch(error=>console.log(error))
+}
