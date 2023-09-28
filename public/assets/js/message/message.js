@@ -427,19 +427,23 @@ window.addEventListener("load", (event) => {
         user_id = document.querySelector(".content_entete_msg_jheo_js").getAttribute("data-toggle-id-user-to")
     }
 
-    document.querySelectorAll("div.content-message-nanta-css").forEach(div => {
-        if (div.getAttribute('data-toggle-user-id') == user_id) {
-            div.classList.add("message-active")
-        }
-    })
+    if( document.querySelectorAll("div.content-message-nanta-css") ){
+        document.querySelectorAll("div.content-message-nanta-css").forEach(div => {
+            if (div.getAttribute('data-toggle-user-id') == user_id) {
+                div.classList.add("message-active")
+            }
+        })
+    }
 
     // document.querySelectorAll(".rb > div > div > p")
-    document.querySelectorAll(".rb > div > div > p").forEach(p => {
-        console.log(p);
-        p.classList.add("text-white")
-    })
-
+    if( document.querySelectorAll(".rb > div > div > p") ){
+        document.querySelectorAll(".rb > div > div > p").forEach(p => {
+            p.classList.add("text-white")
+        })
+    }
 });
+
+
 
 document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
     $("#visioMessageElie").modal("hide")
