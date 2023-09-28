@@ -46,7 +46,8 @@
                             {{details.villenorm|lower}}
                         </a>
                     </figcaption>  
-                    <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+
+                    <div class="d-flex justify-content-center align-items-stretch flex-gap-2 content_btn_avis">
                         <span>
                             <a id="see-tom-js" class="text-black btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
                                 <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
@@ -68,6 +69,10 @@
 
                         <div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}" ></div>
                     </div>
+
+                    {% set adresse = details.numvoie|lower ~" "~ details.typevoie|lower ~" "~ details.nomvoie|lower ~" "~ details.codpost|lower ~" "~ details.villenorm|lower %}
+                    <button class="btn btn-outline-primary mx-auto w-50 mb-2 mt-2" onclick="openVoirPlusChearch('{{details.denominationF | raw}}','{{adresse | trim}}', 'resto')">Voir plus</button>
+
                 </div>
             </div>
 

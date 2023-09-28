@@ -2027,3 +2027,82 @@ textarea {
 .repertoryDir ul li:hover, .repertoryDir ul li a:hover{
     color: #0D6EFD;
 }
+.fa-search-elie{
+    padding: 5px;
+    width: 60px;
+    min-width: 60px;
+    height: 60px;
+    min-height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #0d6efd;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    clip-path: circle(50%);
+    transition: 0.25s;
+}
+.fa-search-elie:hover{
+    border: 1px solid #09ff00;
+    color: #fff;
+    scale: 1.2;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.btn-minimize-elie :hover{
+    color: #f70b0b;
+}
+
+.btn-minimize-elie, .btn-expand-elie{
+    height: auto !important;
+    background :none !important;
+    opacity: 1 !important;
+    font-size: 20px;
+}
+
+.btn-expand-elie{
+    left: 5px !important;
+    top: 5px !important;
+    position: absolute;
+    color: white !important;
+}
+.btn-expand-elie:hover{
+    scale: 1.2;
+    color: #0D6EFD !important;
+}
+
+.visioMinimize{
+    width: 280px;
+    height: 175px;
+    left: auto !important;
+    /* bottom: 40px !important; */
+}
+
+.tooltiptext {
+    font-size: 12px;
+    visibility: hidden;
+    width: 60px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 2px 0;
+    margin-left: -62px;
+    transition: opacity 0.3s;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .btn-minimize-elie:hover .tooltiptext {
+    visibility: visible;
+  }
+  .btn-expand-elie:hover .tooltiptext {
+    visibility: visible;
+}
+.tooltiptextAgrandir{
+    margin-left: -40px !important;
+    margin-top: -35px !important;
+}
+.mt-50px{
+    margin-top: -50px !important;
+    color: #000;
+}

@@ -7,7 +7,7 @@ var id_c_u //id du user courant
 let image_list = [];
 let dataExtension = [];
 // var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
-var worker = new Worker('/assets/js/tribuT/worker.js') ;
+var worker = new Worker('/assets/js/tribuT/worker.js');
 // var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
 // var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
@@ -40,7 +40,7 @@ document.getElementById("form_upload").onchange = (e) => {
                 text: "Le fichier autorisé doit être une image",
                 icon: "error",
                 button: "Ok",
-              });
+            });
 
         } else {
 
@@ -65,7 +65,7 @@ document.getElementById("form_upload").onchange = (e) => {
                     text: "La taille de l\'image doit être inférieure à 2Mo",
                     icon: "error",
                     button: "Ok",
-                  });
+                });
 
             }
 
@@ -106,7 +106,7 @@ document.getElementById("form_upload_update").onchange = (e) => {
                 text: "Le fichier autorisé doit être une image",
                 icon: "error",
                 button: "Ok",
-              });
+            });
 
         } else {
 
@@ -138,7 +138,7 @@ document.getElementById("form_upload_update").onchange = (e) => {
                     text: "La taille de l\'image doit être inférieure à 2Mo",
                     icon: "error",
                     button: "Ok",
-                  });
+                });
 
             }
 
@@ -308,7 +308,7 @@ function showPartisan() {
 
                 document.querySelector("#tribu_t_conteuneur").classList.add("bg-white")
 
-                document.querySelector("#tribu_t_conteuneur").innerHTML +=head_table+body_table+foot_table
+                document.querySelector("#tribu_t_conteuneur").innerHTML += head_table + body_table + foot_table
 
                 $('#table_partisan_elie_js').DataTable({
                     "language": {
@@ -413,11 +413,18 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     tribu_t_name_0 = tribu_t[0].name
     descriptionTribuT = tribu_t[0].description
     let restExtension = ""
+    let golfExtension = ""
     if (tribu_t[0].extension) {
         restExtension = ` <li class="listNavBarTribu restoNotHide">
                             <a style="cursor:pointer;">Restaurants</a>
                         </li>`
     }
+    if (tribu_t[0].extension_golf) {
+        golfExtension = ` <li class="listNavBarTribu restoNotHide non_active">
+                            <a style="cursor:not-allowed;">Golf</a>
+                        </li>`
+    }
+
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
         image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
@@ -453,7 +460,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                             </div>
                         </div>
                         <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${ tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
                             <p class="ms-2 text-white">
                             ${tribu_t[0].description}
                             </p>
@@ -472,6 +479,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
 
                         ${restExtension}
+                        ${golfExtension}
 
                         <li class="listNavBarTribu invitation">
                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
@@ -544,7 +552,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
             let confidentiality = parseInt(data[i].confidentiality, 10);
             let contentPublication = ""
-           
+
             if (confidentiality === 1) {
 
                 let changeVisibility = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -579,7 +587,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                         </span>
                                     </div>` : ""
 
-               
+
                 contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
@@ -609,7 +617,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js"> ${ dataNbr} commentaire(s)</span>
+                                                        <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
@@ -711,7 +719,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js">  ${ dataNbr} commentaire(s) </span>
+                                                        <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
@@ -851,7 +859,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js"> ${ dataNbr} commentaire(s) </span>
+                                                        <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
                                                     </p>
 
                                                     <div class="reaction-icon d-flex">
@@ -1323,24 +1331,24 @@ function sendNote(note, commentaire, _idResto) {
     fetch(request).then(response => {
         if (response.status == 200 && response.ok) {
 
-            document.querySelector(".data-note-"+_idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
+            document.querySelector(".data-note-" + _idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
 
-            let last_avis = parseInt(document.querySelector(".data-avis-"+_idResto).textContent.replaceAll(/[^0-9]/g,""))
+            let last_avis = parseInt(document.querySelector(".data-avis-" + _idResto).textContent.replaceAll(/[^0-9]/g, ""))
 
-            document.querySelector(".data-avis-"+_idResto).innerHTML = parseInt(last_avis + 1)+" Avis";
+            document.querySelector(".data-avis-" + _idResto).innerHTML = parseInt(last_avis + 1) + " Avis";
 
-            document.querySelector(".data-avis-"+_idResto).setAttribute("onclick", "openAvis("+parseInt(last_avis + 1)+","+_idResto+")")
+            document.querySelector(".data-avis-" + _idResto).setAttribute("onclick", "openAvis(" + parseInt(last_avis + 1) + "," + _idResto + ")")
 
-            const openPopup = document.querySelector(".elie-plus-"+_idResto).getAttribute("onclick")
+            const openPopup = document.querySelector(".elie-plus-" + _idResto).getAttribute("onclick")
 
-            document.querySelector(".elie-plus-"+_idResto).setAttribute("onclick", openPopup.replaceAll("create","update").replaceAll("Notez","Modifier votre avis"))
+            document.querySelector(".elie-plus-" + _idResto).setAttribute("onclick", openPopup.replaceAll("create", "update").replaceAll("Notez", "Modifier votre avis"))
 
             swal({
                 title: "Noté!",
                 text: "Note ajouté avec succès",
                 icon: "success",
                 button: "Ok",
-              });
+            });
 
         } else {
             swal({
@@ -1348,7 +1356,7 @@ function sendNote(note, commentaire, _idResto) {
                 text: "Note non envoyé, veuillez réessayer!",
                 icon: "error",
                 button: "Ok",
-              });
+            });
 
         }
     })
@@ -1385,16 +1393,16 @@ function updateNote(note, commentaire, id_resto) {
             }
 
         })
-    
-    
-    document.querySelector(".data-note-"+id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString()+"/4";
+
+
+    document.querySelector(".data-note-" + id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
 
     swal({
         title: "A jour!",
         text: "Note modifié avec succès!",
         icon: "success",
         button: "Ok",
-      });
+    });
 
 
 }
@@ -1592,7 +1600,7 @@ function pastillerPast(element, id, nom) {
         text: "Le restaurant " + nom + " a été pastillé avec succès !",
         icon: "success",
         button: "Ok",
-      });
+    });
 
 }
 
@@ -2239,7 +2247,7 @@ function listResto() {
             text: "Champ invalide!",
             icon: "error",
             button: "Ok",
-          });
+        });
 
     }
 }
@@ -2257,7 +2265,7 @@ function listResto() {
 //     }
 //   }
 
-if(document.querySelector("#btn_open_modal_avis_elie")){
+if (document.querySelector("#btn_open_modal_avis_elie")) {
 
     document.querySelector("#btn_open_modal_avis_elie").addEventListener("click", function () {
         $("#avisRestoPastille").modal("hide")
@@ -2339,7 +2347,7 @@ function openAvis(nb_avis, id_resto) {
             text: "Aucun avis pour ce restaurant",
             icon: "warning",
             button: "Ok",
-          });
+        });
 
     }
 
@@ -2366,7 +2374,7 @@ function setSendNote(params, id_pastille) {
                 text: "Une note doit être inférieur ou égale à 4",
                 icon: "error",
                 button: "Ok",
-              });
+            });
 
         } else {
 
@@ -2397,7 +2405,7 @@ function openOnEvent(id, nom, adresse, action) {
     document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
 
     let date = new Date();
-    let currentDate = date.toISOString().substring(0,10);
+    let currentDate = date.toISOString().substring(0, 10);
     // let currentTime = date.toISOString().substring(11,16);
 
     document.getElementById('eventStart').value = currentDate;
@@ -2419,7 +2427,7 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     $("#detailOptionResto").modal("show")
 
-    document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> `+ text1
+    document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
@@ -2436,49 +2444,12 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     //     buttonsStyling: false
     // })
 
-    // swalWithBootstrapButtons.fire({
-    //     // title: 'Are you sure?',
-    //     text: "Quelle action voulez-vous pour ce restaurant?",
-    //     icon: 'question',
-    //     showCancelButton: true,
-    //     confirmButtonText: '<i class="fas fa-edit"></i> ' + text1,
-    //     cancelButtonText: '<i class="fas fa-calendar"></i> Créer un évènement',
-    //     // reverseButtons: true
-    // }).then((result) => {
-    //     if (result.isConfirmed) {
-
-    //         $("#modalAvisRestaurant").modal("show")
-
-    //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
-    //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
-
-    //     } else if (
-    //         /* Read more about handling dismissals below */
-    //         result.dismiss === swal.DismissReason.cancel
-    //     ) {
-
-    //         $("#createAgenda").modal("show")
-
-    //         // data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal"
-
-    //         //   createRepas(id_pastille,denomination_f, latitude,longitude)
-
-    //         // setNameOrAdresseForEtab({ name:'0 CHURRASCO',adress:'70 rue fontaine sucree 01170 crozet'} ,this)
-
-    //         // swalWithBootstrapButtons.fire(
-    //         //     'Crée!',
-    //         //     'Un évènement crée avec succès',
-    //         //     'success'
-    //         // )
-    //     }
-    // })
-
 }
 
 
 function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
 
-    fetch("/api/agenda/etab/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
+    fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
         .then(response => response.text())
         .then(result => {
 
@@ -2496,16 +2467,16 @@ function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
         })
 }
 
-function settingTribuT(e, tribuTName){
+function settingTribuT(e, tribuTName) {
     // if (document.querySelector("li.listNavBarTribu > a.active")) {
     //     document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
     // }
     let data = showdData(tribuTName)
 
-    data.then(response=>{
-     
+    data.then(response => {
+
         let tbt = JSON.parse(response.tribu_t_owned)
-        let selectTribuOwned = Array.isArray(tbt.tribu_t) ? tbt.tribu_t.filter((tribu) => tribu.name == tribuTName) : [tbt.tribu_t] ;
+        let selectTribuOwned = Array.isArray(tbt.tribu_t) ? tbt.tribu_t.filter((tribu) => tribu.name == tribuTName) : [tbt.tribu_t];
         let currentTribuT = selectTribuOwned[0]
         // let selectTribuOwned = []
 
@@ -2530,22 +2501,22 @@ function settingTribuT(e, tribuTName){
         document.querySelector("#update_description").value = currentTribuT.description
         document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg"
 
-        if(currentTribuT.extension != null){
+        if (currentTribuT.extension != null) {
             document.querySelector("#update_form_extension").checked = true
-        }else{
+        } else {
             document.querySelector("#update_form_extension").checked = false
         }
         document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
-    
+
     })
-   
+
 }
 
-function showModalInfo(){
+function showModalInfo() {
     $("#ModalUpdateTribuT").modal("show")
 }
 
-function updateTribuTInfos(e){
+function updateTribuTInfos(e) {
 
     let tableTribuT = e.target.dataset.tbttbl
     let description = document.querySelector("#update_description").value.trim()
@@ -2555,17 +2526,17 @@ function updateTribuTInfos(e){
     let photoName = e.target.dataset.name
     let base64 = e.target.dataset.url
 
-    let data={
-        tableTribuT:tableTribuT,
-        description:description,
-        nomTribuT:nomTribuT,
-        path:path,
-        photoName : photoName,
-        base64 : base64,
-        extension:extension
+    let data = {
+        tableTribuT: tableTribuT,
+        description: description,
+        nomTribuT: nomTribuT,
+        path: path,
+        photoName: photoName,
+        base64: base64,
+        extension: extension
     }
 
-    let request =new Request("/user/tribu/update-tribu_t-info",{
+    let request = new Request("/user/tribu/update-tribu_t-info", {
         method: "POST",
         headers: {
             'Accept': 'application/json',
@@ -2574,22 +2545,22 @@ function updateTribuTInfos(e){
         body: JSON.stringify(data)
     })
 
-    fetch(request).then(r=>r.json())
-                  .then(res=>{
-                    console.log(res)
-                    $("#ModalUpdateTribuT").modal("hide")
-                    document.querySelector("#activeTribu").textContent = "Tribu T " + nomTribuT
-                    swal({
-                        title: "Bravo !",
-                        text: "Information modifiée avec succès",
-                        icon: "success",
-                        button: "Fermer",
-                      }).then((value) => {
-                        if(photoName != ""){
-                            document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.querySelector('img').src = base64
-                        }
-                        document.querySelector("#activeTribu").click()
-                      });
-                })
+    fetch(request).then(r => r.json())
+        .then(res => {
+            console.log(res)
+            $("#ModalUpdateTribuT").modal("hide")
+            document.querySelector("#activeTribu").textContent = "Tribu T " + nomTribuT
+            swal({
+                title: "Bravo !",
+                text: "Information modifiée avec succès",
+                icon: "success",
+                button: "Fermer",
+            }).then((value) => {
+                if (photoName != "") {
+                    document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.querySelector('img').src = base64
+                }
+                document.querySelector("#activeTribu").click()
+            });
+        })
 
 }

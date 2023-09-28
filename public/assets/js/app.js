@@ -989,6 +989,105 @@ document.querySelectorAll(".btn_grise_non_actif_js_Elie").forEach(btn_gris=>{
         openSwalNonActif()
     })
 })
+
+function findInNet(server, denomination_f, adresse){
+
+    switch(server){
+        case 'google' :
+            window.open("https://www.google.com/search?q="+denomination_f+" "+adresse)
+            break;
+        case 'map':
+            window.open("https://www.google.com/maps?q="+denomination_f+" "+adresse)
+            break;
+        case 'thefork':
+            window.open("https://www.thefork.fr/restaurant/"+denomination_f.replaceAll(" ","-")+"-r")
+            break;
+        case 'tripadvisor':
+            window.open("https://www.tripadvisor.com/Search?q="+denomination_f)
+            break;
+        case 'michelin':
+            window.open("https://guide.michelin.com/fr/fr/restaurants?q="+denomination_f)
+            break;
+    }
+
+}
+
+function openVoirPlusChearch(denomination_f, adresse, type){
+
+    let html = ""
+
+    switch(type){
+        case 'resto' : {
+            html = `<div class="d-flex justify-content-center mt-3 mb-3">
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/google_icon.png" onclick="findInNet('google','${denomination_f}','${adresse}')"/>Google</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/googlemap_icon.png" onclick="findInNet('map','${denomination_f}','${adresse}')"/>Google Maps</div>
+            <div class="d-flex flex-column align-items-center m-2 non_active"><img class="fa-search-elie" src="assets/icon/thefork_icon.png" onclick="findInNet('thefork','${denomination_f}','${adresse}')"/>The fork</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','${denomination_f}','${adresse}')"/>Tripadvisor</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/michelin_icon.png" onclick="findInNet('michelin','${denomination_f}','${adresse}')"/>Guide Michelin</div>
+            <div class="d-flex flex-column align-items-center m-2"></div>`
+            break;
+        }
+        default : {
+            html = `<div class="d-flex justify-content-center mt-3 mb-3">
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/google_icon.png"/>Google</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/googlemap_icon.png"/>Google Maps</div>
+            <div class="d-flex flex-column align-items-center m-2"></div>`
+        }
+    }
+
+    swal({
+        text : "Voulez-vous avoir plus d\'informations sur cet établissement, veuillez cliquer sur l\'un des liens suivants :",
+        icon : "info",
+        content : {
+            element: "div",
+            attributes: {
+                class: "d-flex justify-content-center mt-3 mb-3",
+                id :"moreSearch",
+            },
+        },
+        buttons: {
+            cancel: false,
+            catch: false,
+            defeat: false,
+          },
+        
+      })
+      .then((value) => {
+        switch (value) {
+       
+          case "defeat":
+            swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning");
+            break;
+       
+          case "catch":
+            swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning");
+            break;
+       
+          default:
+            swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning");
+        }
+      });
+
+      if(document.querySelector("#moreSearch")){
+        document.querySelector("#moreSearch").innerHTML = html
+      }
+
+    // Swal.fire({
+    //     // title: 'Text',
+    //     title : 'Voulez-vous avoir plus d\'informations sur cet établissement, veuillez cliquer sur l\'un des liens suivants :',
+    //     icon: 'question',
+    //     width: 600,
+    //     html: html,
+    //     showConfirmButton: false,
+    //     showCancelButton: false,
+    //     confirmButtonText:
+    //       '<i class="fa-solid fa-magnifying-glass"></i> Rechercher',
+    //     cancelButtonText:
+    //       '<i class="fa-solid fa-xmark"></i> Pas maintenant',
+    //   })
+
+}
+
 function showPartenairAsk(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
     return html=`

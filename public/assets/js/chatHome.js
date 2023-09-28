@@ -773,10 +773,10 @@ function generateUID() {
 // On https://jaas.8x8.vc/
 
 const domain = '8x8.vc'
-const jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6InZwYWFzLW1hZ2ljLWNvb2tpZS02Yzg3YzllY2NlOGI0Y2NkYTMwYWYzNTkxZGMyNGI1NC82MGVkZjAifQ.eyJpc3MiOiJjaGF0IiwiYXVkIjoiaml0c2kiLCJleHAiOjE3MjM3OTQ0NDIsIm5iZiI6MTY5MjY5MDQ0Miwicm9vbSI6IioiLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7InVzZXIiOnsibW9kZXJhdG9yIjoiZmFsc2UiLCJlbWFpbCI6ImVsaWVmZW5vaGFzaW5hQGdtYWlsLmNvbSIsIm5hbWUiOiIiLCJhdmF0YXIiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1In0sImZlYXR1cmVzIjp7InJlY29yZGluZyI6InRydWUiLCJsaXZlc3RyZWFtaW5nIjoidHJ1ZSIsInRyYW5zY3JpcHRpb24iOiJmYWxzZSIsIm91dGJvdW5kLWNhbGwiOiJmYWxzZSJ9fX0.aVoq6pqgQL4vIHrOnvFOBP7UY1Q-1v1CaGWsO04zKPtC_uFWvkp09EX5I6qD8sBLcwxv8anF1zhOCAIJIdPruDlfp82RIhD0x4_RAkxie8TJqr0MneAQoNAXSyf8ZJent-VxTlAwIuP5OwKgVEGcF1LPXxe7aFr4cxQ24kGd_z7aspR52GPo_R8QjX-AN-jelqIDcQQCiqLvJSLFRHwYIvM9kQaA5OHezUT-4uZy-R0P6fx3oMr0OFDn3DeQobJUkADDYMj4M6W1_trjmDoUkEa2moJmSmDnrj8rT0lpC3jg-oWvMz5PVFSu1d4jJniDSKjjjfTXNFvqplibMvK8rA'
+const jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6InZwYWFzLW1hZ2ljLWNvb2tpZS02Yzg3YzllY2NlOGI0Y2NkYTMwYWYzNTkxZGMyNGI1NC82MGVkZjAifQ.eyJpc3MiOiJjaGF0IiwiYXVkIjoiaml0c2kiLCJleHAiOjE3MjY5MDMxMDQsIm5iZiI6MTY5NTc5OTEwNCwicm9vbSI6IioiLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNmM4N2M5ZWNjZThiNGNjZGEzMGFmMzU5MWRjMjRiNTQiLCJjb250ZXh0Ijp7InVzZXIiOnsibW9kZXJhdG9yIjoiZmFsc2UiLCJlbWFpbCI6IiIsIm5hbWUiOiIiLCJhdmF0YXIiOiIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0NTkyNDkwOTc1OTYyOTc1In0sImZlYXR1cmVzIjp7InJlY29yZGluZyI6InRydWUiLCJsaXZlc3RyZWFtaW5nIjoidHJ1ZSIsInRyYW5zY3JpcHRpb24iOiJmYWxzZSIsIm91dGJvdW5kLWNhbGwiOiJmYWxzZSJ9fX0.WkB1WzmEq5v8gX6IZ1uYUZKCY-q-AYx72WXuxPV4Q-Aojj4q0xK7PHfDpbjjj5VjPLY6WZqDZZF0R7jiVioTCwLLfMC-2_yDT9BnUQ6uL2zvU_Mh7Es4rAH2igZVhGONFWEQyQN21Boh225cZS66hVZDd-bLJTDXPy2v6dC2M8M1GISMI7pQMJIK_22UsMIquqSloSSPYlD4_5eyHoZz8O0sieQEM2V4pm4_FiuVOXzgMlFs3FP04efXOABOzluIQluN3VSiuFJRIpKY5n3CT22lVcqXDx-pn8lxN7aUz3OqPbDL6ZxEq4ej88m-r-dbwfIqN-PqEPazCJEN3wgLJw'
 const home_room = 'vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/'
 
-let user_name = document.querySelector("#my_full_name") ? document.querySelector("#my_full_name").textContent.trim() : document.querySelector("span.jc.un.mn.zn.gs.use-in-agd-nanta_js_css")? document.querySelector("span.jc.un.mn.zn.gs.use-in-agd-nanta_js_css").textContent.trim() : ""
+let user_name = document.querySelector("#my_full_name") ? document.querySelector("#my_full_name").textContent.trim() : document.querySelector("span.jc.un.mn.zn.gs.use-in-agd-nanta_js_css") ? document.querySelector("span.jc.un.mn.zn.gs.use-in-agd-nanta_js_css").textContent.trim() : ""
 
 /**
  * Function joining a meeting jitsi
@@ -791,16 +791,52 @@ function joinMeet(...args) {
 
     let room = args[0]
     let parentNodeId = args[1]
-    
+
     // let user_name = document.querySelector("#my_full_name").textContent.trim()
 
-    if(document.querySelector("#visioMessageElie")){
+    if (document.querySelector("#visioMessageElie")) {
         $("#visioMessageElie").modal("show")
     }
 
-    if (document.querySelector('#'+parentNodeId).querySelector("iframe")) {
-        document.querySelector('#'+parentNodeId).querySelector("iframe").remove()
+    if (document.querySelector('#' + parentNodeId).querySelector("iframe")) {
+        document.querySelector('#' + parentNodeId).querySelector("iframe").remove()
     }
+
+    toolbarButtonsList = [
+        'camera',
+        'chat',
+        'closedcaptions',
+        'desktop',
+        'download',
+        'embedmeeting',
+        'etherpad',
+        'feedback',
+        'filmstrip',
+        'fullscreen',
+        'hangup',
+        'help',
+        'highlight',
+        // 'invite',
+        'linktosalesforce',
+        'livestreaming',
+        'microphone',
+        'noisesuppression',
+        // 'participants-pane',
+        'profile',
+        'raisehand',
+        'recording',
+        'security',
+        'select-background',
+        'settings',
+        'shareaudio',
+        'sharedvideo',
+        'shortcuts',
+        'stats',
+        'tileview',
+        'toggle-camera',
+        'videoquality',
+        'whiteboard',
+    ]
 
     const options = {
         roomName: home_room + room,
@@ -808,10 +844,10 @@ function joinMeet(...args) {
         height: "95%",
         lang: 'fr',
         jwt: jwt,
-        configOverwrite: { prejoinPageEnabled: false },
-        // configOverwrite: { prejoinPageEnabled: false , enableClosePage: false, toolbarButtons : ['microphone', 'camera','tileview','fullscreen', 'desktop', 'closedcaptions','participants-pane','hangup']},
+        // configOverwrite: { prejoinPageEnabled: false },
+        configOverwrite: { prejoinPageEnabled: false, toolbarButtons: toolbarButtonsList },
         interfaceConfigOverwrite: { VERTICAL_FILMSTRIP: true },
-        parentNode: document.querySelector('#'+parentNodeId),
+        parentNode: document.querySelector('#' + parentNodeId),
     };
 
     apiJitsi = new JitsiMeetExternalAPI(domain, options)
@@ -827,12 +863,12 @@ function joinMeet(...args) {
     apiJitsi.on('readyToClose', () => {
 
         setStatusMeetByName(room, "finished")
-        
+
         //document.querySelector('#'+parentNodeId).innerHTML = ""
-        
+
         const currentUrl = window.location.href;
 
-        if(currentUrl.includes("user/message")){
+        if (currentUrl.includes("user/message")) {
 
             $("#visioMessageElie").modal("hide")
 
@@ -852,71 +888,78 @@ function joinMeet(...args) {
             //     node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
             // }
 
-            
-            if(args[2]){
-                if(args[3]){
+
+            if (args[2]) {
+                if (args[3]) {
                     node = args[2]
-                    message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g,"");
+                    message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g, "");
                     node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
-                }else{
-                    message_id=document.querySelector("#content_discussion_elie").lastElementChild.getAttribute("id").replaceAll(/[^0-9]/g,"");
-                    document.querySelector("#content_discussion_elie").lastElementChild.innerHTML=content
-                }             
-             
+                } else {
+                    message_id = document.querySelector("#content_discussion_elie").lastElementChild.getAttribute("id").replaceAll(/[^0-9]/g, "");
+                    document.querySelector("#content_discussion_elie").lastElementChild.innerHTML = content
+                }
+
             }
 
             let msg = {
-                text : content,
-                imagges :[],
-                files :[]
+                text: content,
+                imagges: [],
+                files: []
             }
-            
-            fetch('/update/oneMessage/'+message_id, {
+
+            fetch('/update/oneMessage/' + message_id, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(msg)
-            }).then(response=>response.json())
-            .then(res=>{
-                //alert("terminé")
-            })
+            }).then(response => response.json())
+                .then(res => {
+                    //alert("terminé")
+                })
 
-            if (document.querySelector('#'+parentNodeId).querySelector("iframe")) {
-                document.querySelector('#'+parentNodeId).querySelector("iframe").remove()
+            if (document.querySelector('#' + parentNodeId).querySelector("iframe")) {
+                document.querySelector('#' + parentNodeId).querySelector("iframe").remove()
             }
-        }else{
-            document.querySelector('#'+parentNodeId).innerHTML = ""
+        } else {
+            document.querySelector('#' + parentNodeId).innerHTML = ""
         }
-        
 
-        if(document.querySelector("#user_name_chat")){
+
+        if (document.querySelector("#user_name_chat")) {
             document.querySelector("#user_name_chat").innerText = "VisioConférence"
         }
-        if(document.querySelector("#visioMessageElieLabel")){
+        if (document.querySelector("#visioMessageElieLabel")) {
             document.querySelector("#visioMessageElieLabel").innerText = "VisioConférence"
         }
+
     })
+
+
+    if (document.querySelector(".btn-minimize-elie")) {
+        document.querySelector(".btn-minimize-elie").setAttribute("onclick", "joinMeet('" + room + "','minimizeVisio', this)")
+        document.querySelector(".btn-minimize-elie").setAttribute("data-room", room)
+    }
 
     apiJitsi.addEventListener('participantJoined', (e) => {
 
-        if(document.querySelector("#user_name_chat")){
+        if (document.querySelector("#user_name_chat")) {
 
             if (!document.querySelector("#user_name_chat").textContent.trim().includes(e.displayName)) {
 
                 document.querySelector("#user_name_chat").innerText = document.querySelector("#user_name_chat").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
             }
-            
+
         }
-        if(document.querySelector("#visioMessageElieLabel")){
+        if (document.querySelector("#visioMessageElieLabel")) {
 
             if (!document.querySelector("#visioMessageElieLabel").textContent.trim().includes(e.displayName)) {
 
                 document.querySelector("#visioMessageElieLabel").innerText = document.querySelector("#visioMessageElieLabel").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
             }
         }
-        
+
 
     })
 
@@ -931,14 +974,14 @@ function joinMeet(...args) {
  */
 function runVisio(roomRandom, user_id, parentNodeId) {
 
-    document.querySelector("#"+parentNodeId).innerHTML += `<div class="d-flex justify-content-center mt-5 chargement-visio">
+    document.querySelector("#" + parentNodeId).innerHTML += `<div class="d-flex justify-content-center mt-5 chargement-visio">
         <div class="containt">
             <div class="word word-1">C</div>
             <div class="word word-2">M</div>
             <div class="word word-3">Z</div>
         </div>
     </div>
-    `   
+    `
 
     let data = {
         roomName: roomRandom,
@@ -964,9 +1007,9 @@ function runVisio(roomRandom, user_id, parentNodeId) {
                 fetch("/getVisioByName/" + roomRandom)
                     .then(response => response.json())
                     .then(visio => {
-                        if (!document.querySelector('#'+parentNodeId).querySelector("iframe")) {
+                        if (!document.querySelector('#' + parentNodeId).querySelector("iframe")) {
                             document.querySelector(".chargement-visio").remove()
-                            joinMeet(roomRandom, parentNodeId,this)
+                            joinMeet(roomRandom, parentNodeId, this)
 
                         }
                     })
@@ -1001,15 +1044,15 @@ function createVisioGroup() {
 
     htm += "</ul></div>"
 
-    if(friend_list_node.length <= 0){
+    if (friend_list_node.length <= 0) {
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
             text: 'Aucun utilisateur connecté pour le moment!',
             footer: 'Réunion annulée!'
         })
-        
-    }else{
+
+    } else {
 
         Swal.fire({
             title: 'Inviter des amis',
@@ -1023,27 +1066,27 @@ function createVisioGroup() {
                 '<i class="fas fa-close"></i> Pas maintenant',
         }).then(res => {
             if (res.isConfirmed) {
-    
+
                 let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-    
-                
-                    if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
-    
-                        document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
-        
-                            runVisio(roomGroup, li.getAttribute("user_id_visio"), 'visio')
-        
-                        })
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Aucun utilisateur sélectionné!',
-                            footer: 'Réunion annulée!'
-                        })
-                    }
-        
-                
+
+
+                if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
+
+                    document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
+
+                        runVisio(roomGroup, li.getAttribute("user_id_visio"), 'visio')
+
+                    })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Aucun utilisateur sélectionné!',
+                        footer: 'Réunion annulée!'
+                    })
+                }
+
+
             }
         })
     }
@@ -1062,7 +1105,7 @@ function createVisioGroupFromMessage() {
     let div_tribuG = div.querySelector(".content_list_tribuG_jheo_js")
     let div_tribuT = div.querySelector(".content_list_tribuT_jheo_js")
 
-    let final_div = div_tribuT.outerHTML.replaceAll("ID_","ID_elie_")
+    let final_div = div_tribuT.outerHTML.replaceAll("ID_", "ID_elie_")
 
     final_div = final_div.replaceAll("content_list_tribuT_jheo_js", "content_list_tribuT_elie_js d-none")
     final_div = final_div.replaceAll("yd", "")
@@ -1097,10 +1140,10 @@ function createVisioGroupFromMessage() {
 
     })
 
-    
+
     htm += "</ul></div>"
 
-    htm +=final_div
+    htm += final_div
 
     Swal.fire({
         title: 'Inviter des amis',
@@ -1117,7 +1160,7 @@ function createVisioGroupFromMessage() {
 
             // let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
             let roomGroup = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
-            
+
             let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
             <p class="text-info mb-2">
                 <i class="fas fa-video-camera me-2 ms-1"></i>
@@ -1126,7 +1169,7 @@ function createVisioGroupFromMessage() {
             </p> 
             </div>`
 
-            
+
             if (document.querySelectorAll(".elie-user-selected").length > 0) {
 
                 let unique = [];
@@ -1138,33 +1181,33 @@ function createVisioGroupFromMessage() {
                     if (!unique.includes(to_user)) {
                         unique.push(to_user);
                     }
-                   
+
                 })
 
-                for(let user_id of unique){
+                for (let user_id of unique) {
                     fetch("/user/push/message", {
                         method: "POST",
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify( {
-                
+                        body: JSON.stringify({
+
                             /// current connecter
                             from: document.querySelector(".content_image_input_jheo_js").getAttribute("data-toggle-userfrom-id"),
-                            
+
                             /// user to talk
                             to: user_id,
-                
+
                             ///message content
                             message: msg_txt.replace("\n", ""),
                             files: []
                         })
-                    }).then(response=>response.json())
-                    .then(res=>console.log(res))
+                    }).then(response => response.json())
+                        .then(res => console.log(res))
 
-                    document.querySelector("#bodyVisioMessageElie").innerHTML =""
-    
+                    document.querySelector("#bodyVisioMessageElie").innerHTML = ""
+
                     runVisio(roomGroup, user_id, 'bodyVisioMessageElie')
                 }
 
@@ -1180,48 +1223,48 @@ function createVisioGroupFromMessage() {
         }
     })
 
-    document.querySelectorAll("ul.user-tabs-profile-elie > li").forEach(li=>{
-        
-        li.addEventListener("click",function(e){
-            document.querySelectorAll("ul.user-tabs-profile-elie > li > a").forEach(a=>{
+    document.querySelectorAll("ul.user-tabs-profile-elie > li").forEach(li => {
+
+        li.addEventListener("click", function (e) {
+            document.querySelectorAll("ul.user-tabs-profile-elie > li > a").forEach(a => {
                 a.classList.remove("active")
             })
             e.target.classList.add("active")
 
-            document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a=>{
+            document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a => {
                 a.href = "#"
-                if(a.parentElement.querySelector("span")){
+                if (a.parentElement.querySelector("span")) {
                     a.parentElement.querySelector("span").remove()
                 }
             })
 
-            if(e.target.classList.contains("_t_g")){
+            if (e.target.classList.contains("_t_g")) {
 
                 document.querySelector(".content_list_tribuT_elie_js").classList.add("d-none")
 
-                document.querySelectorAll(".user_t_g").forEach(user=>{
-                    user.style ="display:flex !important"
+                document.querySelectorAll(".user_t_g").forEach(user => {
+                    user.style = "display:flex !important"
                 })
 
-            }else{
-                document.querySelectorAll(".user_t_g").forEach(user=>{
-                    user.style ="display:none !important"
+            } else {
+                document.querySelectorAll(".user_t_g").forEach(user => {
+                    user.style = "display:none !important"
                 })
                 document.querySelector(".content_list_tribuT_elie_js").classList.remove("d-none")
 
-                document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a=>{
-                    if(a.querySelector("p")) a.querySelector("p").remove()
+                document.querySelector(".content_list_tribuT_elie_js").querySelectorAll("a").forEach(a => {
+                    if (a.querySelector("p")) a.querySelector("p").remove()
 
                     let span = document.createElement("span")
                     span.classList = "rounded-pill text-primary cursor-pointer ms-auto"
-                    span.setAttribute("onclick","selectOneUser(this)")
+                    span.setAttribute("onclick", "selectOneUser(this)")
                     span.textContent = "Inviter"
                     a.previousElementSibling.parentElement.appendChild(span)
 
                     a.parentElement.classList = "cg lc mg sh ol rl tq is content-message-nanta-css d-flex align-items-center"
 
                     a.parentElement.querySelector("img").classList = "user-pdp-visio"
-                    
+
                 })
 
             }
@@ -1502,26 +1545,26 @@ if (document.querySelector("#openMessage")) {
                                 </h5>
                             </div>
                             `
-        if(document.querySelector("div.user-chat-display").getAttribute("data-user-id") != 0){
+        if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") != 0) {
 
             getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
 
-        }else{
+        } else {
             document.querySelector("#footer_chat").classList.add("non_active")
         }
 
         /** Adding active message for user */
 
-        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i=>{
+        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
             i.classList.remove("message-active")
         })
 
-        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user=>{
-            if(user.getAttribute("data-toggle-user-id")==document.querySelector("div.user-chat-display").getAttribute("data-user-id")){
+        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user => {
+            if (user.getAttribute("data-toggle-user-id") == document.querySelector("div.user-chat-display").getAttribute("data-user-id")) {
                 user.classList.add("message-active")
             }
-            user.addEventListener("click",function(){
-                document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i=>{
+            user.addEventListener("click", function () {
+                document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
                     i.classList.remove("message-active")
                 })
                 user.classList.add("message-active")
@@ -1699,10 +1742,10 @@ if (document.querySelector("#openVisio")) {
 
             /** Adding active visio for user */
 
-            document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user=>{
+            document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user => {
 
-                user.addEventListener("click",function(){
-                    document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i=>{
+                user.addEventListener("click", function () {
+                    document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
                         i.classList.remove("message-active")
                     })
                     user.classList.add("message-active")
@@ -1714,65 +1757,65 @@ if (document.querySelector("#openVisio")) {
     })
 }
 
-if(document.querySelector("#closeChat")){
-    
+if (document.querySelector("#closeChat")) {
+
     document.querySelector("#closeChat").addEventListener("click", function () {
 
         closeChat()
-    
+
     })
 }
 
 
-if(document.querySelector("#text-search")){
+if (document.querySelector("#text-search")) {
 
     document.querySelector("#text-search").addEventListener("keyup", function (e) {
 
         if (e.key === 'Enter' || e.keyCode === 13) {
-    
+
             if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") == 0) {
                 if (e.target.value) {
-    
+
                     searchResultKey(e.target.value)
-    
+
                 }
             } else {
                 //console.log("send message user");
-    
+
                 sendChat(e.target.value, image_list, document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
             }
-    
-    
+
+
             e.target.value = ""
-    
+
         }
-    
+
     })
 }
 
 
-if(document.querySelector("#btn-send")){
+if (document.querySelector("#btn-send")) {
 
     document.querySelector("#btn-send").addEventListener("click", function (e) {
 
         if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") == 0) {
-    
+
             if (document.querySelector("#text-search").value) {
-    
+
                 searchResultKey(document.querySelector("#text-search").value)
-    
+
             }
-    
+
         } else {
-    
+
             //console.log("send message user");
-    
+
             sendChat(document.querySelector("#text-search").value, image_list, document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-    
+
         }
-    
+
         document.querySelector("#text-search").value = ""
-    
+
     })
 }
 
@@ -1781,77 +1824,77 @@ function removeToList(params) {
     params.parentElement.remove()
 }
 
-if(document.querySelectorAll("div.cg-chat")){
+if (document.querySelectorAll("div.cg-chat")) {
 
     document.querySelectorAll("div.cg-chat").forEach(amis => {
 
         amis.addEventListener("click", function (e) {
-    
+
             //Assistant virtuel and messagerie container
-    
+
             if (document.querySelector("#chat_container").getAttribute("data-type") != "visio") {
-    
+
                 document.querySelector("#conversation").innerHTML = ""
-    
+
                 document.querySelector(".content_image_input_js_jheo").innerHTML = ""
-    
+
                 document.querySelector(".content_image_input_js_jheo_file_name").innerHTML = ""
-    
+
                 image_list = [];
-    
+
                 let user_name = e.target.textContent.trim()
-    
+
                 //let user_id = amis.getAttribute("data-toggle-user-id")
-    
+
                 document.querySelector("#user_name_chat").innerText = user_name
-    
+
                 if (user_name != "Assistant Virtuel") {
-    
+
                     document.querySelector("#profile-user").src = amis.querySelector("img").src
                     document.querySelector(".mn-chat").style.display = "none"
-    
+
                     document.querySelector("div.user-chat-display").setAttribute("data-user-id", amis.getAttribute("data-toggle-user-id"))
-    
+
                     // get message from other user
-    
+
                     getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-    
+
                     checkNewMessage(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-    
+
                     document.querySelector(".btn-input-file").style = "cursor:pointer;"
-    
+
                 } else {
-    
+
                     document.querySelector("#profile-user").src = "https://www.iconpacks.net/icons/1/free-help-icon-1160-thumb.png"
-    
+
                     document.querySelector(".user-chat-display").innerHTML = `
                             <h5 class="un-chat zn-chat gs-chat" id="user_name_chat">
                                 Assistant Virtuel
                             </h5>
                             <p class="mn-chat">Reponse automatique</p>`
-    
+
                     document.querySelector("div.user-chat-display").setAttribute("data-user-id", "0")
-    
+
                     document.querySelector(".btn-input-file").style = "cursor:not-allowed;"
-    
+
                     runSpinner()
-    
+
                     writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
-    
+
                     runSuggestion()
-    
+
                 }
-    
+
                 // Visio conference container
-    
+
             } else {
-    
+
                 let roomRandom = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-    
+
                 runVisio(roomRandom, amis.getAttribute("data-toggle-user-id"), 'visio')
-    
+
             }
-    
+
         })
     })
 }
@@ -1861,79 +1904,79 @@ if(document.querySelectorAll("div.cg-chat")){
 
 ///read file
 
-if(document.querySelector("#input-image")){
+if (document.querySelector("#input-image")) {
 
     document.querySelector("#input-image").addEventListener("change", (e) => {
 
         ////on load file
         const reader = new FileReader();
-    
+
         reader.addEventListener("load", () => {
-    
+
             /// file as url
             const uploaded_image = reader.result;
-    
+
             ///let get multiple images (files)
-    
+
             image_list.push({
                 name: reader.result,
                 type: "image"
             });
-    
+
             //// for the content image above the input message
             const img = document.createElement("img")
             img.src = uploaded_image
             img.style = "width:100px;height:100px;"
             img.setAttribute("alt", "Image upload")
             document.querySelector(".content_image_input_js_jheo").style.display = "flex"
-    
+
             const parentImage = document.querySelector(".content_image_input_js_jheo")
-    
+
             //// add in the first the new image upload
             if (parentImage.querySelector("img")) {
                 parentImage.insertBefore(img, parentImage.querySelector("img"))
             } else {
                 document.querySelector(".content_image_input_js_jheo").appendChild(img)
             }
-    
+
         });
-    
+
         ///run event load in file reader.
         reader.readAsDataURL(e.target.files[0]);
-    
+
     })
 }
 
 
 /** Upload document */
-if(document.querySelector("#input-file")){
+if (document.querySelector("#input-file")) {
 
     document.querySelector("#input-file").addEventListener("change", (e) => {
 
         ///read file
         const reader_doc = new FileReader();
-    
+
         ////on load file
         reader_doc.addEventListener("load", () => {
-    
+
             ///let get multiple images (files)
             image_list.push({
                 name: reader_doc.result,
                 type: "file"
             });
-    
+
             const file_name = document.createElement("li")
             file_name.innerHTML = e.target.files[0].name
-    
+
             //document.querySelector(".content_image_input_js_jheo").style.display = "flex"
-    
+
             document.querySelector(".content_image_input_js_jheo_file_name").appendChild(file_name)
-    
+
         });
-    
+
         ///run event load in file reader.
         reader_doc.readAsDataURL(e.target.files[0]);
-    
+
     })
 }
 

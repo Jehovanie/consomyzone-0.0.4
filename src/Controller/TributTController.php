@@ -1942,6 +1942,10 @@ class TributTController extends AbstractController
                 'label' => 'Restaurant',
                 'required' => false
             ])
+            ->add('extension_golf', CheckboxType::class, [
+                'label' => 'Golf',
+                'required' => false
+            ])
             ->getForm();
         //$form = $this->createFormB(FileUplaodType::class);
         $user=$this->getUser();
@@ -1975,6 +1979,7 @@ class TributTController extends AbstractController
                 "description"=>$data["description"],
                 // "adresse"=>$data["adresse"], 
                 "extension"=>$data["extension"],
+                "extension_golf"=>$data["extension_golf"],
                 "extensionData"=>$data["extensionData"]
             );
           
@@ -2128,6 +2133,7 @@ class TributTController extends AbstractController
         if (!is_null($body)) {
            
                 $resto = $body['extension'];
+                $golf = $body['extension_golf'];
                 
                 $path  =   $body['path'];
                 /*$nom est une variable qui designe une table dans la  base de donneé de CMZ, 
@@ -2156,8 +2162,9 @@ class TributTController extends AbstractController
                 if ($output != 0) {
 
                     $restoExtension = ($resto == "on") ? "restaurant" : null;
+                    $golfExtension = ($golf == "on") ? "golf" : null;
                    
-                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned", $nomTribuT);
+                    $tribut->setTribuT($output, $description, $path,$restoExtension,$golfExtension, $userId,"tribu_t_owned", $nomTribuT);
 
                     $isSuccess = true;
 
@@ -2180,6 +2187,13 @@ class TributTController extends AbstractController
                         //     }
 
                         // }
+
+                    }
+                    if ($golf == "on") {
+
+                        $tribut->createExtensionDynamicTableGolf($tableTribu, "golf");
+
+                        $tribut->createTableCommentGolf($tableTribu, "golf_commentaire");
 
                     }
 
