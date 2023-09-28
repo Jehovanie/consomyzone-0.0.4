@@ -34,32 +34,32 @@
     </div>
     
     <div class="content_body">
-    {% if (app.user) %}
-        <div class="content content_tous_js_jheo" id="tout-dem"  data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
-    {% else %}
-        <div class="content content_tous_js_jheo" >
-    {% endif %}
-            <div class="content_cart_map content_cart_map-respons content_cart_map_jheo_js">
-                {# <div id="remove-detail" class="hidden responsif-none">
-                    <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
-                </div> #}
+        {% if (app.user) %}
+            <div class="content content_tous_js_jheo" id="tout-dem"  data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+        {% else %}
+            <div class="content content_tous_js_jheo" >
+        {% endif %}
+                <div class="content_cart_map content_cart_map-respons content_cart_map_jheo_js">
+                    {# <div id="remove-detail" class="hidden responsif-none">
+                        <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
+                    </div> #}
 
-                <div class="cart_map cart_map_js cart_map_jheo_js">
-                    {# Loading cart #}
-                    <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-                        <div class="containt">
-                            <div class="word word-1">C</div>
-                            <div class="word word-2">M</div>
-                            <div class="word word-3">Z</div>
+                    <div class="cart_map cart_map_js cart_map_jheo_js">
+                        {# Loading cart #}
+                        <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
+                            <div class="containt">
+                                <div class="word word-1">C</div>
+                                <div class="word word-2">M</div>
+                                <div class="word word-3">Z</div>
+                            </div>
                         </div>
-                    </div>
-                    {# end of Loading card }
+                        {# end of Loading card }
 
-                    {# <div id="map" class="map"></div> #}
-                    
+                        {# <div id="map" class="map"></div> #}
+                        
+                    </div>
                 </div>
             </div>
-        </div>
         
         <button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
     </div>
@@ -90,24 +90,25 @@
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 
     <!-- Modal CREATE POP UP-->
     <div class="modal fade" id="modalCreatePopUp" tabindex="-1" aria-labelledby="modalCreatePopUpLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-1"><i class="bi bi-info-circle"></i> <span class="textInfos"></span></div>
-                <h3 class="mb-3" style="color: #6c668d;text-decoration: underline;">Partager votre avis et consulter les avis des autres partisans dans la tribu T <span class="tbtName"></span> : </h3>
-                <div class="btnAvis">
-                    <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Avis</button>
-                    <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Donner votre avis</button>
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
+                <div class="modal-body">
+                    <div class="mb-1"><i class="bi bi-info-circle"></i> <span class="textInfos"></span></div>
+                    <h3 class="mb-3" style="color: #6c668d;text-decoration: underline;">Partager votre avis et consulter les avis des autres partisans dans la tribu T <span class="tbtName"></span> : </h3>
+                    <div class="btnAvis">
+                        <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Avis</button>
+                        <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Donner votre avis</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
