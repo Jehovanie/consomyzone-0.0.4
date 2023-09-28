@@ -1,137 +1,143 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ConsoMyZone{% endblock %}
+{% block title %}ConsoMyZone
+{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
 {% endblock %}
 
 {% block javascripts %}
-    {# <script src="{{asset('assets/js/home/data_home_poo.js')}}" defer></script> #}
-    {# <script src="{{asset('assets/js/tous/addToMap.js')}}" defer></script> #}
-    <script type="text/javascript" src="{{asset('assets/js/home/data_home.js')}}" defer></script>
+	{# <script src="{{asset('assets/js/home/data_home_poo.js')}}" defer></script> #}
+	{# <script src="{{asset('assets/js/tous/addToMap.js')}}" defer></script> #}<script type="text/javascript" src="{{asset('assets/js/home/data_home.js')}}" defer> </script>
 
-    <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
-    <script src="{{asset('assets/js/module/shp.js')}}" defer></script>
-    
-    
-    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
-    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterHome.js') }}" defer></script>
+	<script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
+	<script src="{{asset('assets/js/module/shp.js')}}" defer></script>
+
+
+	<script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterHome.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/home/marckerClusterHome.js') }}" defer></script>
 
-    <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
-    <script src="{{asset('assets/js/home/home.js')}}" defer></script>
-    <script src="{{asset('assets/js/home/details.js')}}" defer></script>
-    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
+	<script src="{{asset('assets/js/home/home.js')}}" defer></script>
+	<script src="{{asset('assets/js/home/details.js')}}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
 {% endblock %}
 
 
 {% block body %}
-    <div class="responsif-none">
-        {% include 'shard/navbar.twig' %}
-    </div>
-    
-    <div class="content_body">
-    {% if (app.user) %}
-        <div class="content content_tous_js_jheo" id="tout-dem"  data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
-    {% else %}
-        <div class="content content_tous_js_jheo" >
-    {% endif %}
-            <div class="content_cart_map content_cart_map-respons content_cart_map_jheo_js">
-                {# <div id="remove-detail" class="hidden responsif-none">
-                    <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
-                </div> #}
+	<div class="responsif-none">
+		{% include 'shard/navbar.twig' %}
+	</div>
 
-                <div class="cart_map cart_map_js cart_map_jheo_js">
-                    {# Loading cart #}
-                    <div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
-                        <div class="containt">
-                            <div class="word word-1">C</div>
-                            <div class="word word-2">M</div>
-                            <div class="word word-3">Z</div>
-                        </div>
-                    </div>
-                    {# end of Loading card }
+	<div class="content_body">
+		{% if (app.user) %}
+			<div class="content content_tous_js_jheo" id="tout-dem" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+			{% else %}
+				<div class="content content_tous_js_jheo">
+				{% endif %}
+				<div
+					class="content_cart_map content_cart_map-respons content_cart_map_jheo_js">
+					{# <div id="remove-detail" class="hidden responsif-none">
+					                    <div class="container-fluid list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
+					                </div> #}
 
-                    {# <div id="map" class="map"></div> #}
-                    
-                </div>
-            </div>
-        </div>
-        
-        <button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
-    </div>
-    
-    <button type="button" class="d-none modal_liste_resto_pastille_nante_js" data-bs-toggle="modal" data-bs-target="#restoPastilleModal"></button>
-    <div class="modal fade" id="restoPastilleModal" aria-hidden="true" aria-labelledby="restoPastilleModal_label" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title listResto_title_jheo_js" id="restoPastilleModal_label">Choisir une tribu via laquelle vous allez pastiller le restaurant</h5>
-                    <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body custom_modal">
-                    <div class="content_list_resto content_list_resto_js">
-                        <div class="list_resto_detail_for_pastille">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Logo</th>
-                                        <th scope="col">Tribu T</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </div>
+					<div
+						class="cart_map cart_map_js cart_map_jheo_js">
+						{# Loading cart #}
+						<div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
+							<div class="containt">
+								<div class="word word-1">C</div>
+								<div class="word word-2">M</div>
+								<div class="word word-3">Z</div>
+							</div>
+						</div>
+						{# end of Loading card }
+						
+						                    {# <div id="map" class="map"></div> #}
 
-    <!-- Modal CREATE POP UP-->
-    <div class="modal fade" id="modalCreatePopUp" tabindex="-1" aria-labelledby="modalCreatePopUpLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-1"><i class="bi bi-info-circle"></i> <span class="textInfos"></span></div>
-                <h3 class="mb-3" style="color: #6c668d;text-decoration: underline;">Partager votre avis et consulter les avis des autres partisans dans la tribu T <span class="tbtName"></span> : </h3>
-                <div class="btnAvis">
-                    <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Avis</button>
-                    <button class="btn btn-secondary btn_grise_non_actif_js_Elie">Donner votre avis</button>
-                </div>
-            </div>
-            </div>
-        </div>
-    </div>
+					</div>
+				</div>
+			</div>
 
-    <!-- Modal SHOW TRIBUS INFOS -->
-    <div class="modal fade" id="modalShowTribusInfos" tabindex="-1" aria-labelledby="modalShowTribusInfosLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalShowTribusInfosLabel">Vous avez pastillé ce restaurant avec ces tribus T</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" style="height:450px;">
-                
-                </div>
-            </div>
-        </div>
-    </div>
-    {% include 'shard/chatBot.html.twig' %}
-    {% include 'shard/home/detail_home_navleft.twig' %}
-    {% include 'shard/home/modalFilterHome.html.twig' %}
-    {% include 'shard/home/modal_detail_home_mobile.html.twig' %}
-    
-    {{ include('shard/restaurant/list_avis.html.twig') }}
-    {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
-    {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
-{% endblock %}
+			<button type="button" class="d-none show_detail_for_mobile_js_jheo" data-bs-toggle="modal" data-bs-target="#detailModalMobil"></button>
+		</div>
+
+		<button type="button" class="d-none modal_liste_resto_pastille_nante_js" data-bs-toggle="modal" data-bs-target="#restoPastilleModal"></button>
+		<div class="modal fade" id="restoPastilleModal" aria-hidden="true" aria-labelledby="restoPastilleModal_label" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title listResto_title_jheo_js" id="restoPastilleModal_label">Choisir une tribu via laquelle vous allez pastiller le restaurant</h5>
+						<button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body custom_modal">
+						<div class="content_list_resto content_list_resto_js">
+							<div class="list_resto_detail_for_pastille">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th scope="col">Logo</th>
+											<th scope="col">Tribu T</th>
+											<th scope="col">Action</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal CREATE POP UP-->
+		<div class="modal fade" id="modalCreatePopUp" tabindex="-1" aria-labelledby="modalCreatePopUpLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="modalCreatePopUpLabel"></h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-1">
+							<i class="bi bi-info-circle"></i>
+							<span class="textInfos"></span>
+						</div>
+						<h3 class="mb-3" style="color: #6c668d;text-decoration: underline;">Partager votre avis et consulter les avis des autres partisans dans la tribu T
+							<span class="tbtName"></span>
+							:
+						</h3>
+						<div class="btnAvis">
+							<button class="btn btn-secondary btn_grise_non_actif_js_Elie">Avis</button>
+							<button class="btn btn-secondary btn_grise_non_actif_js_Elie">Donner votre avis</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal SHOW TRIBUS INFOS -->
+		<div class="modal fade" id="modalShowTribusInfos" tabindex="-1" aria-labelledby="modalShowTribusInfosLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="modalShowTribusInfosLabel">Vous avez pastillé ce restaurant avec ces tribus T</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" style="height:450px;"></div>
+				</div>
+			</div>
+		</div>
+		{% include 'shard/chatBot.html.twig' %}
+		{% include 'shard/home/detail_home_navleft.twig' %}
+		{% include 'shard/home/modalFilterHome.html.twig' %}
+		{% include 'shard/home/modal_detail_home_mobile.html.twig' %}
+
+		{{ include('shard/restaurant/list_avis.html.twig') }}
+		{{ include('shard/restaurant/modal_avis_resto.html.twig') }}
+		{{ include('shard/restaurant/modal_modif_avis.html.twig') }}
+	{% endblock %}

@@ -795,7 +795,11 @@ function joinMeet(...args) {
     // let user_name = document.querySelector("#my_full_name").textContent.trim()
 
     if (document.querySelector("#visioMessageElie")) {
-        $("#visioMessageElie").modal("show")
+        document.querySelector("#visioMessageElie").classList.remove("d-none")
+    }
+
+    if (document.querySelector("#minimizeVisio")) {
+        document.querySelector("#minimizeVisio").style = "display :block !important;"
     }
 
     if (document.querySelector('#' + parentNodeId).querySelector("iframe")) {
@@ -841,7 +845,7 @@ function joinMeet(...args) {
     const options = {
         roomName: home_room + room,
         width: "100%",
-        height: "95%",
+        height: "100%",
         lang: 'fr',
         jwt: jwt,
         // configOverwrite: { prejoinPageEnabled: false },
@@ -851,16 +855,31 @@ function joinMeet(...args) {
     };
 
     apiJitsi = new JitsiMeetExternalAPI(domain, options)
-    console.log(apiJitsi)
+    // console.log(apiJitsi)
     apiJitsi.executeCommand('displayName', user_name);
 
     setStatusMeetByName(room, "progress")
 
     const iframe = apiJitsi.getIFrame();
 
+    localStorage.setItem("room_name", room)
+
     iframe.scrollIntoView();
 
     apiJitsi.on('readyToClose', () => {
+
+        if (localStorage.getItem("room_name")) {
+            localStorage.removeItem("room_name")
+        }
+
+        if (document.querySelector("#minimizeVisio")) {
+            document.querySelector("#minimizeVisio").innerHTML = ""
+            document.querySelector("#minimizeVisio").style = "display:none !important;"
+        }
+
+        if (document.querySelector("#visioMessageElie")) {
+            document.querySelector("#visioMessageElie").style = "display:none !important;"
+        }
 
         setStatusMeetByName(room, "finished")
 
@@ -1045,50 +1064,41 @@ function createVisioGroup() {
     htm += "</ul></div>"
 
     if (friend_list_node.length <= 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Aucun utilisateur connecté pour le moment!',
-            footer: 'Réunion annulée!'
-        })
+        swal({
+            title: "Oops...",
+            text: "Aucun utilisateur connecté pour le moment!",
+            icon: "error",
+            button: "OK",
+        });
 
     } else {
 
-        Swal.fire({
-            title: 'Inviter des amis',
-            html: htm,
-            showCloseButton: true,
-            showCancelButton: true,
-            focusConfirm: false,
-            confirmButtonText:
-                '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
-            cancelButtonText:
-                '<i class="fas fa-close"></i> Pas maintenant',
-        }).then(res => {
-            if (res.isConfirmed) {
+        $("#visioGroupModal").modal("show")
 
-                let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+        document.querySelector("#visioGroupContent").innerHTML = htm
+
+        document.querySelector("#confirmVisioGroup").addEventListener("click",function(){
+
+            let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
 
 
-                if (document.querySelectorAll("#list-group-user-visio > li.selected").length > 0) {
+            if (document.querySelectorAll("#list-group-user-visio > li.elie-user-selected").length > 0) {
 
-                    document.querySelectorAll("#list-group-user-visio > li.selected").forEach(li => {
+                document.querySelectorAll("#list-group-user-visio > li.elie-user-selected").forEach(li => {
 
-                        runVisio(roomGroup, li.getAttribute("user_id_visio"), 'visio')
+                    runVisio(roomGroup, li.getAttribute("user_id_visio"), 'visio')
 
-                    })
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Aucun utilisateur sélectionné!',
-                        footer: 'Réunion annulée!'
-                    })
-                }
-
-
+                })
+            } else {
+                swal({
+                    title: "Oops...",
+                    text: "Aucun utilisateur sélectionné!",
+                    icon: "error",
+                    button: "OK",
+                });
             }
         })
+
     }
 
 }
@@ -1145,23 +1155,16 @@ function createVisioGroupFromMessage() {
 
     htm += final_div
 
-    Swal.fire({
-        title: 'Inviter des amis',
-        html: htm,
-        showCloseButton: true,
-        showCancelButton: true,
-        focusConfirm: false,
-        confirmButtonText:
-            '<i class="fas fa-arrow-right"></i> Démarrer la conférence',
-        cancelButtonText:
-            '<i class="fas fa-close"></i> Pas maintenant',
-    }).then(res => {
-        if (res.isConfirmed) {
+    $("#visioGroupModalForMessage").modal("show")
 
-            // let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
-            let roomGroup = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
+    document.querySelector("#visioGroupContentForMessage").innerHTML = htm
 
-            let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+    document.querySelector("#confirmVisioGroupForMessage").addEventListener("click",function(){
+
+        // let roomGroup = "Meet" + generateUID() + document.querySelector("#amis_list").getAttribute("data-my-id")
+        let roomGroup = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
+
+        let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
             <p class="text-info mb-2">
                 <i class="fas fa-video-camera me-2 ms-1"></i>
                 Appel en attente...
@@ -1170,56 +1173,53 @@ function createVisioGroupFromMessage() {
             </div>`
 
 
-            if (document.querySelectorAll(".elie-user-selected").length > 0) {
+        if (document.querySelectorAll(".elie-user-selected").length > 0) {
 
-                let unique = [];
+            let unique = [];
 
-                document.querySelectorAll(".elie-user-selected").forEach(li => {
+            document.querySelectorAll(".elie-user-selected").forEach(li => {
 
-                    let to_user = li.getAttribute("user_id_visio")
+                let to_user = li.getAttribute("user_id_visio")
 
-                    if (!unique.includes(to_user)) {
-                        unique.push(to_user);
-                    }
-
-                })
-
-                for (let user_id of unique) {
-                    fetch("/user/push/message", {
-                        method: "POST",
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-
-                            /// current connecter
-                            from: document.querySelector(".content_image_input_jheo_js").getAttribute("data-toggle-userfrom-id"),
-
-                            /// user to talk
-                            to: user_id,
-
-                            ///message content
-                            message: msg_txt.replace("\n", ""),
-                            files: []
-                        })
-                    }).then(response => response.json())
-                        .then(res => console.log(res))
-
-                    document.querySelector("#bodyVisioMessageElie").innerHTML = ""
-
-                    runVisio(roomGroup, user_id, 'bodyVisioMessageElie')
+                if (!unique.includes(to_user)) {
+                    unique.push(to_user);
                 }
 
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Aucun utilisateur sélectionné!',
-                    footer: 'Réunion annulée!'
-                })
-            }
+            })
 
+            for (let user_id of unique) {
+                fetch("/user/push/message", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+
+                        /// current connecter
+                        from: document.querySelector(".content_image_input_jheo_js").getAttribute("data-toggle-userfrom-id"),
+
+                        /// user to talk
+                        to: user_id,
+
+                        ///message content
+                        message: msg_txt.replace("\n", ""),
+                        files: []
+                    })
+                }).then(response => response.json())
+                    .then(res => console.log(res))
+
+                document.querySelector("#bodyVisioMessageElie").innerHTML = ""
+
+                runVisio(roomGroup, user_id, 'bodyVisioMessageElie')
+            }
+        }else{
+            swal({
+                title: "Oops...",
+                text: "Aucun utilisateur sélectionné!",
+                icon: "error",
+                button: "OK",
+              });
         }
     })
 

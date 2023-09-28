@@ -1745,13 +1745,74 @@ function showLogoAndNameTribus(){
 }
 
 window.onload = (event) => {
-    let visio =''
-    if(document.querySelector("#minimizeVisio").querySelector("iframe")){
-        visio = document.querySelector("#minimizeVisio").outerHTML
 
+    // document.querySelector("#visioMessageElie").style="display :none !important;"
+    // document.querySelector("#minimizeVisio").style="display :none !important;"
+
+    if(localStorage.getItem("room_name")){
+        let room = localStorage.getItem("room_name")
+
+        document.querySelector("#visioMessageElie").style="display :none !important;"
+        document.querySelector("#minimizeVisio").style="display :block !important;"
+        
+
+        joinMeet(room, 'minimizeVisio', this)
+        
+        let btn_expand = document.createElement("button")
+        btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+        btn_expand.setAttribute('type', 'button')
+        btn_expand.classList = "btn-close btn-expand-elie"
+        btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+        
+        document.querySelector("#minimizeVisio").appendChild(btn_expand)
+
+        btn_expand.addEventListener("click", function () {
+            // $("#visioMessageElie").modal("show")
+            document.querySelector("#visioMessageElie").style="display:block !important"
+            document.querySelector("#minimizeVisio").innerHTML = ""
+            document.querySelector("#minimizeVisio").style="display:none !important"
+        })
+    }else{
+        if(document.querySelector("#minimizeVisio")){
+
+            document.querySelector("#minimizeVisio").style="display :none !important;"
+        }
     }
-    document.querySelector("#minimizeVisio").innerHTML = visio
+    
 };
+
+if(document.querySelector(".btn-minimize-elie")){
+
+    document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
+
+        document.querySelector("#visioMessageElie").style ="translate(25px, 25px); display:none !important;"
+    
+        let room_link = localStorage.getItem("room_link")
+    
+        document.querySelector("#minimizeVisio").style="display:block !important;"
+    
+        let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
+    
+        joinMeet(room, 'minimizeVisio', this)
+    
+        let btn_expand = document.createElement("button")
+        btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+        btn_expand.setAttribute('type', 'button')
+        btn_expand.classList = "btn-close btn-expand-elie"
+        btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+    
+        document.querySelector("#minimizeVisio").appendChild(btn_expand)
+        
+        btn_expand.addEventListener("click", function () {
+            // $("#visioMessageElie").modal("show")
+            document.querySelector("#visioMessageElie").style="display:block !important"
+            document.querySelector("#minimizeVisio").innerHTML = ""
+            document.querySelector("#minimizeVisio").style="display:none;"
+        })
+    
+    })
+
+}
 
 function notificationSong() {
     var audio = new Audio('/assets/song/notification_message.mp3');

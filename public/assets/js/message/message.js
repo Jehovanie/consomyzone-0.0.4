@@ -333,8 +333,9 @@ if (document.querySelector("#elie-btn-visio")) {
 
     document.querySelector("#elie-btn-visio").addEventListener("click", function () {
 
-        $("#visioMessageElie").modal("show")
-
+        // $("#visioMessageElie").modal("show")
+        document.querySelector("#visioMessageElie").classList.remove("d-none")
+        document.querySelector("#visioMessageElie").style ="display:block !important;"
 
         document.querySelector("#bodyVisioMessageElie").innerHTML = `<div class="d-flex justify-content-center mt-5">
         <div class="containt">
@@ -442,28 +443,3 @@ window.addEventListener("load", (event) => {
     })
 
 });
-
-document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
-    $("#visioMessageElie").modal("hide")
-
-    document.querySelector("#minimizeVisio").style="display:block;"
-
-    let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
-
-    joinMeet(room, 'minimizeVisio', this)
-
-    let btn_expand = document.createElement("button")
-    btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-    btn_expand.setAttribute('type', 'button')
-    btn_expand.classList = "btn-close btn-expand-elie"
-    btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
-
-    document.querySelector("#minimizeVisio").appendChild(btn_expand)
-
-    btn_expand.addEventListener("click", function () {
-        $("#visioMessageElie").modal("show")
-        document.querySelector("#minimizeVisio").innerHTML = ""
-        document.querySelector("#minimizeVisio").style="display:none;"
-    })
-
-})

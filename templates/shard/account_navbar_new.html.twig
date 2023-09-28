@@ -249,4 +249,5 @@
 
 <!-- ===== Header End ===== -->
 <div class="d-none information_user_conected_jheo_js" data-profil="{{userConnected.photo_profil}}" data-userFullName="{{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }}" data-toggle-user-id={{app.user.id}} data-toggle-notif={{app.user.tablenotification}} data-toggle-msg={{app.user.tablemessage}}></div>
+{{include('user/message/visio_message_modal.html.twig')}}
 <div class="visioMinimize fixed-bottom" id="minimizeVisio"></div>
