@@ -155,8 +155,9 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
     /// click btn send message
 
     btn_send_message.addEventListener("click", () => {
-
-        //alert("ok")
+        ////hide emojy picker
+        hideEmojyPicker()
+        
         ///check input content text
         if (document.querySelector(".input_message_jheo_js").value.length > 1 || image_list.length > 0) {
 

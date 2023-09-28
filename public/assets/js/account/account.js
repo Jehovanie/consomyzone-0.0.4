@@ -75,6 +75,11 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                             const divMsg = document.querySelector(`.msg_${dataMsg.message.user_post}_js_jheo`);
                             if( divMsg && !divMsg.classList.contains('gray400')){
                                 divMsg.classList.add('gray400');
+
+                                ///push to up
+                                const parentSingle= divMsg.parentElement;
+                                divMsg.remove()
+                                parentSingle.prepend(single)
                             }
                         }
                     }
