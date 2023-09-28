@@ -129,8 +129,6 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
                             const content= messageContent.text.length > 50 ? '(Message long) ...' : messageContent.text;
                             
-                            const content= messageContent.text.length > 50 ? '(Message long) ...' : messageContent.text;
-
                             if( messageType === "text"){ //// check the new type message
                                 single.querySelector('.text_message_jheo_js').innerText = isForMe + content;
                             }else{
