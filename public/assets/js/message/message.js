@@ -51,7 +51,7 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
         ////on load file
         reader.addEventListener("load", () => {
 
-            const listExt= ['jpg', 'jpeg', 'png'];
+            const listExt= ['jpg', 'jpeg', 'png', 'csv', 'txt', 'json', 'pdf'];
             const octetMax= 3145728; //3Mo
 
             /// file as url
@@ -61,7 +61,7 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
 
                 swal({
                     title: "Le format de fichier n\'est pas pris en charge!",
-                    text: "Le fichier autorisé doit être une image.",
+                    text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, .csv, .txt, .json, .pdf)",
                     icon: "error",
                     button: "OK",
                   });
@@ -183,8 +183,6 @@ function sendMessage(message, file_list) {
 
     //// format date now 
     const date = new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11, 19);
-
-    console.log(file_list)
 
     ///handle message, show under the input champ
     handleMessageResponse(date, message, file_list, "#", false)
