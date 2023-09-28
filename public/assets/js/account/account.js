@@ -121,9 +121,11 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                             const messageContent= JSON.parse(message.content); //// messageContent Object  { files: ..., images : [... ], files: [... ] }
         
                             const isForMe = message.isForMe === 0 ? "vous: " : ""; //// befor the message
+
+                            const content= messageContent.text.length > 50 ? '(Message long) ...' : messageContent.text;
                             
                             if( messageType === "text"){ //// check the new type message
-                                single.querySelector('.text_message_jheo_js').innerText = isForMe + messageContent.text;
+                                single.querySelector('.text_message_jheo_js').innerText = isForMe + content;
                             }else{
                                 single.querySelector('.text_message_jheo_js').innerText = isForMe + '(object)';
                             }

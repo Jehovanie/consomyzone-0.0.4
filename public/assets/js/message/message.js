@@ -44,7 +44,9 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
     ////Read image file. (message image)
     let image_list = [];
     icon_input_file_hidden.addEventListener("change", (e) => {
-
+        ////hide emojy picker
+        hideEmojyPicker()
+        
         ///read file
         const reader = new FileReader();
 
@@ -108,11 +110,18 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
 
     ///event on the keyup the user (message text)
     message_input.addEventListener("keyup", (e) => {
+
+        ////hide emojy picker
+        hideEmojyPicker()
+
         ///the user key entre ... 
         if (e.code === "Enter" || e.code === "NumpadEnter") {
 
             ///check input content text
             if (document.querySelector(".input_message_jheo_js").value.length > 1 || document.querySelectorAll(".content_image_input_js_jheo img").length > 0) {
+                
+                //// hide emoji picker
+                toggleEmojyPicker()
 
                 ///send message---------------------------------------------------
                 sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)
@@ -466,3 +475,28 @@ document.querySelector(".btn-minimize-elie").addEventListener("click", function 
     })
 
 })
+
+if( document.querySelector(".show_emojy_picker_jheo_js")){
+    const ctaShowEmojyPicker= document.querySelector(".show_emojy_picker_jheo_js")
+    
+    ctaShowEmojyPicker.addEventListener('click', () => {
+        toggleEmojyPicker()
+    })
+
+    document.querySelector('emoji-picker').addEventListener('emoji-click', event => {
+        document.querySelector(".input_message_jheo_js").value += event.detail.emoji.unicode
+    });
+}
+
+
+function toggleEmojyPicker(){
+    const contentEmojyPicker = document.querySelector(".content_emojy_picker_jheo_js")
+    contentEmojyPicker.classList.toggle('d-none')
+}
+
+function hideEmojyPicker(){
+    const contentEmojyPicker = document.querySelector(".content_emojy_picker_jheo_js")
+    if( !contentEmojyPicker.classList.contains('d-none') ){
+        contentEmojyPicker.classList.add('d-none')
+    }
+}

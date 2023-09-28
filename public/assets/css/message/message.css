@@ -790,3 +790,9 @@ div.img_slide_left {
   border-right: 0 !important;
   margin-bottom: 2px !important;
 }
+
+.content_emojy_picker{
+  position: absolute;
+  top: 35%;
+  left: 45%;
+}
