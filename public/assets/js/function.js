@@ -2425,22 +2425,77 @@ function showPastillTable(e,id){
     
 }
 
-function showImagePreview(e){
+/*function showImagePreview(e){
     if(e.target.files.length > 0){
+        console.log(e.target.files);
         let src = URL.createObjectURL(e.target.files[0]);
         let preview = document.querySelector("#image-preview");
         preview.src = src;
+        preview.setAttribute('name', `${new Date().getTime()}_${e.target.files[0].name}`);
+        preview.setAttribute('typeFile',e.target.files[0].type)
         document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
         document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
         $("#mediaModal").modal("hide")
         $("#addPictureModal").modal("hide")
         $("#createAgenda").modal("show")
     }
+}*/
+
+function showImagePreview(e){
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+        const uploaded_image = reader.result;
+
+        let taille = parseInt(e.target.files[0].size) // En Octets
+
+        if (!e.target.files[0].type.includes("image/")) {
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image",
+                icon: "error",
+                button: "Ok",
+              });
+
+        } else {
+
+            if (taille <= 2097152) {
+                let preview = document.querySelector("#image-preview");
+                preview.src = uploaded_image;
+                preview.setAttribute('name', `${new Date().getTime()}_${e.target.files[0].name}`);
+                preview.setAttribute('typeFile',e.target.files[0].type)
+                document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+                document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+                $("#mediaModal").modal("hide")
+                $("#addPictureModal").modal("hide")
+                // $("#createAgenda").modal("show")
+                $("#selectRepertoryModal").modal("show")
+                
+            } else {
+
+                swal({
+                    title: "Le fichier est trop volumineux.",
+                    text: "La taille de l\'image doit être inférieure à 2Mo",
+                    icon: "error",
+                    button: "Ok",
+                  });
+
+            }
+
+        }
+
+    }
+    reader.readAsDataURL(e.target.files[0])
 }
 
 function resetImagePreview(){
     document.querySelector(".btnAddPhoto_nanta_js").classList.remove("d-none")
     document.querySelector(".preview_image_nanta_js").classList.add("d-none")
+    $("#createAgenda").modal("hide")
+    $("#addPictureModal").modal("show")
 }
 
 function showModalPicture(){
@@ -2455,15 +2510,24 @@ function showModalPicture(){
     let canvas = document.createElement("canvas")
     canvas.setAttribute("id","output")
     canvas.setAttribute("class","d-none")
+
+    // <button id="capture-button" title="Take a picture"></button>
+    // onclick="takePicture()"
+    let captureButton = document.createElement("button")
+    captureButton.setAttribute("id","capture-button")
+    captureButton.setAttribute("onclick","takePicture()")
+    captureButton.setAttribute("title","Prendre une photo")
+
     navigator.mediaDevices
-    .getUserMedia({ video: true })
-    .then((stream) => {
-        video.srcObject = stream;
-    }).catch(error => {
-        console.error('Can not get an access to a camera...', error);
-    });
+            .getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            }).catch(error => {
+                console.error('Can not get an access to a camera...', error);
+            });
 
     document.querySelector("#containerCamera").appendChild(video)
+    document.querySelector("#containerCamera").appendChild(captureButton)
     document.querySelector("#containerCamera").appendChild(canvas)
 }
 
@@ -2485,15 +2549,49 @@ function takePicture(){
     // A bit of magic to save the image to a file
     // const downloadLink = document.createElement('a');
     // downloadLink.setAttribute('download', `capture-${new Date().getTime()}.png`);
-    outputCanvas.toBlob((blob) => {
+    let data =  outputCanvas.toDataURL()
+    let preview = document.querySelector("#image-preview");
+    preview.src = data;
+    preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+    preview.setAttribute('typeFile',"image/png")
+    document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+    document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+    $("#mediaModal").modal("hide")
+    // $("#createAgenda").modal("show")
+    $("#selectRepertoryModal").modal("show")
+    /*outputCanvas.toBlob((blob) => {
         console.log(URL.createObjectURL(blob))
         // downloadLink.setAttribute('href', URL.createObjectURL(blob));
         // downloadLink.click();
         let preview = document.querySelector("#image-preview");
         preview.src = URL.createObjectURL(blob);
+        preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+        preview.setAttribute('typeFile',"image/png")
         document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
         document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
         $("#mediaModal").modal("hide")
         $("#createAgenda").modal("show")
-    });
+    });*/
+}
+
+function showRepertoryDirTribuT(){
+    document.querySelector(".list-repertoryDirTribuT").classList.add("text-primary")
+    document.querySelector(".list-repertoryDirTribuG").classList.remove("text-primary")
+    document.querySelector("#repertoryDirTribuG").classList.add("d-none")
+    document.querySelector("#repertoryDirTribuT").classList.remove("d-none")
+}
+
+function showRepertoryDirTribuG(){
+    document.querySelector(".list-repertoryDirTribuT").classList.remove("text-primary")
+    document.querySelector(".list-repertoryDirTribuG").classList.add("text-primary")
+    document.querySelector("#repertoryDirTribuT").classList.add("d-none")
+    document.querySelector("#repertoryDirTribuG").classList.remove("d-none")
+}
+
+function setDirForImage(e){
+    let preview = document.querySelector("#image-preview");
+    let root = e.target.dataset.tribu
+    preview.setAttribute('directoryRoot', root);
+    $("#selectRepertoryModal").modal("hide")
+    $("#createAgenda").modal("show")
 }

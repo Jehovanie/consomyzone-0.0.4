@@ -984,7 +984,6 @@ class AgendaService extends PDOConnexionService
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
         $tab_agenda=  $stmt->fetch(PDO::FETCH_ASSOC);
-
         return $tab_agenda;
     }
 
