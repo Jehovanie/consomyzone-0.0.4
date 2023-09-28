@@ -415,7 +415,7 @@ window.addEventListener("load", (event) => {
 
     // document.querySelectorAll(".rb > div > div > p")
     document.querySelectorAll(".rb > div > div > p").forEach(p => {
-        console.log(p);
+        // console.log(p);
         p.classList.add("text-white")
     })
 
@@ -423,6 +423,8 @@ window.addEventListener("load", (event) => {
 
 document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
     $("#visioMessageElie").modal("hide")
+
+    document.querySelector("#minimizeVisio").style="display:block;"
 
     let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
 
@@ -439,6 +441,7 @@ document.querySelector(".btn-minimize-elie").addEventListener("click", function 
     btn_expand.addEventListener("click", function () {
         $("#visioMessageElie").modal("show")
         document.querySelector("#minimizeVisio").innerHTML = ""
+        document.querySelector("#minimizeVisio").style="display:none;"
     })
 
 })

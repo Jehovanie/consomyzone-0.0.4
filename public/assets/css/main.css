@@ -1982,6 +1982,9 @@ textarea {
     width: 280px;
     height: 175px;
     left: auto !important;
+    background-color: #009578;
+    /* display: none; */
+    /* z-index: 999999; */
     /* bottom: 40px !important; */
 }
 
@@ -1989,11 +1992,12 @@ textarea {
     font-size: 12px;
     visibility: hidden;
     width: 60px;
-    background-color: #555;
+    background-color: #000;
+    opacity: 0.5;
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 2px 0;
+    padding: 1px 0;
     margin-left: -62px;
     transition: opacity 0.3s;
     position: absolute;

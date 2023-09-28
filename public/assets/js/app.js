@@ -1743,3 +1743,12 @@ function showLogoAndNameTribus(){
         modalBody.innerHTML += `<div class="divContainerImgOnModal mb-3"><div><img onclick="createPopUp(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"></div><div class="tribuTName" onclick="createPopUp(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> ${tribu.dataset.name}</div></div>`
     })
 }
+
+window.onload = (event) => {
+    let visio =''
+    if(document.querySelector("#minimizeVisio").querySelector("iframe")){
+        visio = document.querySelector("#minimizeVisio").outerHTML
+
+    }
+    document.querySelector("#minimizeVisio").innerHTML = visio
+};
