@@ -343,6 +343,7 @@ class TributGController extends AbstractController
     public function fetchAllPhotosTributG(
         TributGService $tributGService,
     ){
+        // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
         $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
 
         // dd($tributGService->getAllPhotos($table_tributG_name));
@@ -352,7 +353,7 @@ class TributGController extends AbstractController
         $tabPhoto = [];
         foreach ($images as $image) {
             $photo = explode("uploads/tribu_g",$image)[1];
-            $photo = "/uploads/tribu_g/".$photo;
+            $photo = "/public/uploads/tribu_g".$photo;
             array_push($tabPhoto, ["photo"=>$photo]);
         }
 
@@ -362,7 +363,9 @@ class TributGController extends AbstractController
         return $this->render("tribu_g/photos.html.twig", [
             "photos" => $tabPhoto
         ]);
-
+        // return $this->render("tribu_g/photos.html.twig", [
+        //     "photos" => $tributGService->getAllPhotos($table_tributG_name),
+        // ]);
     }
 
 

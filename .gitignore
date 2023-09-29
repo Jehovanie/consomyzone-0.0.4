@@ -1,6 +1,6 @@
 
 ###> symfony/framework-bundle ###
-/BDD
+/.env.local
 /.env.local.php
 /.env.*.local
 .env.local

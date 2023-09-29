@@ -174,17 +174,25 @@ class MessageService extends PDOConnexionService{
         $result = $this->getPDO()->query($sql);
         $msg=  $result->fetch(PDO::FETCH_ASSOC);
 
-        $text = json_decode($this->convertUnicodeToUtf8($msg["content"]), true);
-        $result = [
-            "id" => $msg["id"],
-            "user_id" => $msg["user_id"],
-            "user_post" => $msg["user_post"],
-            "text" => $text["text"],
-            "message_type" => $msg["message_type"],
-            "isForMe" => $msg["isForMe"],
-            "isRead" => $msg["isRead"],
-        ];
-        return $result;
+        // dd($msg);
+
+        if($msg === true){
+            $text = json_decode($this->convertUnicodeToUtf8($msg["content"]), true);
+            $result = [
+                "id" => $msg["id"],
+                "user_id" => $msg["user_id"],
+                "user_post" => $msg["user_post"],
+                "text" => array_key_exists('text', $text) ?  $text["text"] : "(Object)",
+                "message_type" => $msg["message_type"],
+                "isForMe" => $msg["isForMe"],
+                "isRead" => $msg["isRead"],
+            ];
+            return $result;
+        }else{
+            return false;
+        }
+
+        
     }
 
     public function createVisio($from, $to, $username, $nom, $status){

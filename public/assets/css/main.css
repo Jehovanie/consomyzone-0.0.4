@@ -2072,20 +2072,21 @@ textarea {
 
 .visioMinimize{
     width: 280px;
-    height: 175px;
+    height: 176px;
     left: auto !important;
-    /* bottom: 40px !important; */
+    background-color: transparent;
 }
 
 .tooltiptext {
     font-size: 12px;
     visibility: hidden;
     width: 60px;
-    background-color: #555;
+    background-color: #000;
+    opacity: 0.5;
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 2px 0;
+    padding: 1px 0;
     margin-left: -62px;
     transition: opacity 0.3s;
     position: absolute;
@@ -2105,4 +2106,31 @@ textarea {
 .mt-50px{
     margin-top: -50px !important;
     color: #000;
+}
+
+.modal_visio{
+    /* display: none; */
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    background-color: #fff;
+    z-index: 9999;
+    left: 10%;
+    right: 10%;
+    top: 10%;
+    border-radius: 10px;
+    padding: 10px 10px;
+    border: 1px solid red;
+    transition: 1s ease-in-out;
+    transition: all .7s;
+}
+
+.modal_visio_to_min{
+
+    transform: translate(25px, 25px);
+}
+
+#bodyVisioMessageElie{
+    height: 72vh;
+    padding: 2px 0;
 }

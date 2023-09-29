@@ -4,7 +4,7 @@
 var tribu_t_name_0 = "";
 var id_c_u //id du user courant
 // var IS_DEV_MODE = true;
-let image_list = [];
+let image_listss = [];
 let dataExtension = [];
 // var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
 var worker = new Worker('/assets/js/tribuT/worker.js');
@@ -27,7 +27,7 @@ document.getElementById("form_upload").onchange = (e) => {
     }
     reader.onload = () => {
         const uploaded_image = reader.result;
-        image_list.push(reader.result);
+        image_listss.push(reader.result);
 
         let taille = parseInt(e.target.files[0].size) // En Octets
 
@@ -91,7 +91,7 @@ document.getElementById("form_upload_update").onchange = (e) => {
     }
     reader.onload = () => {
         const uploaded_image = reader.result;
-        image_list.push(reader.result);
+        image_listss.push(reader.result);
         let taille = parseInt(e.target.files[0].size) // En Octets
 
         // console.log(e.target.files[0].type.includes("image/"));
@@ -272,7 +272,7 @@ function showPartisan() {
 
                 jsons[0].forEach(json => {
                     profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
+                    let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
                     let lastName = profilInfo.lastName
                     let firstName = profilInfo.firstName
                     let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
@@ -594,7 +594,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assetss/image/img_avatar3.png" alt="">
+                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
@@ -665,7 +665,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assetss/image/img_avatar3.png" alt="">
+                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
@@ -807,7 +807,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/assetss/image/img_avatar3.png" alt="">
+                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
@@ -1123,7 +1123,7 @@ function showResto(table_rst_pastilled, id_c_u) {
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
-            imgSrc = "/uploads/tribus/photos/" + avatar
+            imgSrc = "/public/uploads/tribus/photos/" + avatar
         } else {
             imgSrc = "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
         }
@@ -2455,7 +2455,7 @@ function settingTribuT(e, tribuTName) {
 
         document.querySelector("#updateTribuTName").value = currentTribuT.name_tribu_t_muable ? currentTribuT.name_tribu_t_muable : currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ") //currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
         document.querySelector("#update_description").value = currentTribuT.description
-        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg"
+        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
 
         if (currentTribuT.extension.restaurant) {
             document.querySelector("#update_form_restaurant").checked = true

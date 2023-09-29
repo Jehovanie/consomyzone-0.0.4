@@ -727,19 +727,19 @@ class AgendaController extends AbstractController
                 $nameRoot = explode("_",$directoryroot)[0];
                 if($nameRoot =="tribug"){
                     // $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/user_".$userId."/";
-                    $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/";
+                    $pathDir = "/public/uploads/tribu_g/photos/".$directoryroot."/";
                     // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
                 }else{
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
-                    $pathDir = '/uploads/tribu_t/photo/' .  $directoryroot . "_publication" . "/";
+                    $pathDir = '/public/uploads/tribu_t/photo/' .$directoryroot . "_publication" . "/";
                     // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
                 }
             }else{
-                $pathDir = "/uploads/users/agenda/agenda_".$userId."/"."files/";
+                $pathDir = "/public/uploads/users/agenda/agenda_".$userId."/"."files/";
                 $pathDir .= explode("/",$fileType)[0]."/";
             }
 
-            $path = $this->getParameter('kernel.project_dir') ."/public". $pathDir;
+            $path = $this->getParameter('kernel.project_dir') .$pathDir;
 
             if(!$fs->exists($path)){
                 $fs->mkdir($path,0777);
@@ -805,20 +805,20 @@ class AgendaController extends AbstractController
                 $nameRoot = explode("_",$directoryroot)[0];
                 if($nameRoot =="tribug"){
                     // $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/user_".$userId."/";
-                    $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/";
+                    $pathDir = "/public/uploads/tribu_g/photos/".$directoryroot."/";
                     // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
                 }else{
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/";
-                    $pathDir = '/uploads/tribu_t/photo/' .  $directoryroot . "_publication" . "/";
+                    $pathDir = '/public/uploads/tribu_t/photo/' .  $directoryroot . "_publication" . "/";
                     // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
                 }
             }else{
-                $pathDir = "/uploads/users/agenda/agenda_".$userId."/"."files/";
+                $pathDir = "/public/uploads/users/agenda/agenda_".$userId."/"."files/";
                 $pathDir .= explode("/",$fileType)[0]."/";
             }
 
-            $path = $this->getParameter('kernel.project_dir') ."/public". $pathDir;
+            $path = $this->getParameter('kernel.project_dir') . $pathDir;
 
             if(!$fs->exists($path)){
                 $fs->mkdir($path,0777);

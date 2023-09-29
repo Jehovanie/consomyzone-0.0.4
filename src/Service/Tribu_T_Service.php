@@ -218,11 +218,7 @@ class Tribu_T_Service extends PDOConnexionService
                         ON UPDATE CASCADE
 
                     ) ENGINE=InnoDB";
-
-
-
-                    $this->getPDO()->exec($sql);
-
+                    // $this->getPDO()->exec($sql);
 
 
                     $sql = "CREATE TABLE " . $output . "_agenda_action(
@@ -253,20 +249,12 @@ class Tribu_T_Service extends PDOConnexionService
 
                     
 
-                    $this->getPDO()->exec($sql);
-
-  
-
+                    // $this->getPDO()->exec($sql);
                 }
-
             }
-
         }
 
-
-
         return $output;
-
     }
 
 

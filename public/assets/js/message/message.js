@@ -44,14 +44,16 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
     ////Read image file. (message image)
     let image_list = [];
     icon_input_file_hidden.addEventListener("change", (e) => {
-
+        ////hide emojy picker
+        hideEmojyPicker()
+        
         ///read file
         const reader = new FileReader();
 
         ////on load file
         reader.addEventListener("load", () => {
 
-            const listExt= ['jpg', 'jpeg', 'png'];
+            const listExt= ['jpg', 'jpeg', 'png', 'csv', 'txt', 'json', 'pdf'];
             const octetMax= 3145728; //3Mo
 
             /// file as url
@@ -61,7 +63,7 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
 
                 swal({
                     title: "Le format de fichier n\'est pas pris en charge!",
-                    text: "Le fichier autorisé doit être une image.",
+                    text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, .csv, .txt, .json, .pdf)",
                     icon: "error",
                     button: "OK",
                   });
@@ -108,11 +110,18 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
 
     ///event on the keyup the user (message text)
     message_input.addEventListener("keyup", (e) => {
+
+        ////hide emojy picker
+        hideEmojyPicker()
+
         ///the user key entre ... 
         if (e.code === "Enter" || e.code === "NumpadEnter") {
 
             ///check input content text
             if (document.querySelector(".input_message_jheo_js").value.length > 1 || document.querySelectorAll(".content_image_input_js_jheo img").length > 0) {
+                
+                //// hide emoji picker
+                hideEmojyPicker()
 
                 ///send message---------------------------------------------------
                 sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)
@@ -146,8 +155,9 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
     /// click btn send message
 
     btn_send_message.addEventListener("click", () => {
-
-        //alert("ok")
+        ////hide emojy picker
+        hideEmojyPicker()
+        
         ///check input content text
         if (document.querySelector(".input_message_jheo_js").value.length > 1 || image_list.length > 0) {
 
@@ -183,8 +193,6 @@ function sendMessage(message, file_list) {
 
     //// format date now 
     const date = new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11, 19);
-
-    console.log(file_list)
 
     ///handle message, show under the input champ
     handleMessageResponse(date, message, file_list, "#", false)
@@ -333,8 +341,9 @@ if (document.querySelector("#elie-btn-visio")) {
 
     document.querySelector("#elie-btn-visio").addEventListener("click", function () {
 
-        $("#visioMessageElie").modal("show")
-
+        // $("#visioMessageElie").modal("show")
+        document.querySelector("#visioMessageElie").classList.remove("d-none")
+        document.querySelector("#visioMessageElie").style ="display:block !important;"
 
         document.querySelector("#bodyVisioMessageElie").innerHTML = `<div class="d-flex justify-content-center mt-5">
         <div class="containt">
@@ -429,38 +438,69 @@ window.addEventListener("load", (event) => {
         user_id = document.querySelector(".content_entete_msg_jheo_js").getAttribute("data-toggle-id-user-to")
     }
 
-    document.querySelectorAll("div.content-message-nanta-css").forEach(div => {
-        if (div.getAttribute('data-toggle-user-id') == user_id) {
-            div.classList.add("message-active")
-        }
-    })
+    if( document.querySelectorAll("div.content-message-nanta-css") ){
+        document.querySelectorAll("div.content-message-nanta-css").forEach(div => {
+            if (div.getAttribute('data-toggle-user-id') == user_id) {
+                div.classList.add("message-active")
+            }
+        })
+    }
 
     // document.querySelectorAll(".rb > div > div > p")
-    document.querySelectorAll(".rb > div > div > p").forEach(p => {
-        console.log(p);
-        p.classList.add("text-white")
-    })
-
+    if( document.querySelectorAll(".rb > div > div > p") ){
+        document.querySelectorAll(".rb > div > div > p").forEach(p => {
+            p.classList.add("text-white")
+        })
+    }
 });
 
-document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
-    $("#visioMessageElie").modal("hide")
 
-    let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
 
-    joinMeet(room, 'minimizeVisio', this)
+if(document.querySelector(".btn-minimize-elie")){
+    document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
+        $("#visioMessageElie").modal("hide")
+    
+        let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
+    
+        joinMeet(room, 'minimizeVisio', this)
+    
+        let btn_expand = document.createElement("button")
+        btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+        btn_expand.setAttribute('type', 'button')
+        btn_expand.classList = "btn-close btn-expand-elie"
+        btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+    
+        document.querySelector("#minimizeVisio").appendChild(btn_expand)
+    
+        btn_expand.addEventListener("click", function () {
+            $("#visioMessageElie").modal("show")
+            document.querySelector("#minimizeVisio").innerHTML = ""
+        })
+    
+    })
+}
 
-    let btn_expand = document.createElement("button")
-    btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-    btn_expand.setAttribute('type', 'button')
-    btn_expand.classList = "btn-close btn-expand-elie"
-    btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
-
-    document.querySelector("#minimizeVisio").appendChild(btn_expand)
-
-    btn_expand.addEventListener("click", function () {
-        $("#visioMessageElie").modal("show")
-        document.querySelector("#minimizeVisio").innerHTML = ""
+if( document.querySelector(".show_emojy_picker_jheo_js")){
+    const ctaShowEmojyPicker= document.querySelector(".show_emojy_picker_jheo_js")
+    
+    ctaShowEmojyPicker.addEventListener('click', () => {
+        toggleEmojyPicker()
     })
 
-})
+    document.querySelector('emoji-picker').addEventListener('emoji-click', event => {
+        document.querySelector(".input_message_jheo_js").value += event.detail.emoji.unicode
+    });
+}
+
+
+function toggleEmojyPicker(){
+    const contentEmojyPicker = document.querySelector(".content_emojy_picker_jheo_js")
+    contentEmojyPicker.classList.toggle('d-none')
+}
+
+function hideEmojyPicker(){
+    const contentEmojyPicker = document.querySelector(".content_emojy_picker_jheo_js")
+    if( !contentEmojyPicker.classList.contains('d-none') ){
+        contentEmojyPicker.classList.add('d-none')
+    }
+}

@@ -75,6 +75,11 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                             const divMsg = document.querySelector(`.msg_${dataMsg.message.user_post}_js_jheo`);
                             if( divMsg && !divMsg.classList.contains('gray400')){
                                 divMsg.classList.add('gray400');
+
+                                ///push to up
+                                const parentSingle= divMsg.parentElement;
+                                divMsg.remove()
+                                parentSingle.prepend(single)
                             }
                         }
                     }
@@ -121,9 +126,11 @@ if( document.querySelector(".information_user_conected_jheo_js")){
                             const messageContent= JSON.parse(message.content); //// messageContent Object  { files: ..., images : [... ], files: [... ] }
         
                             const isForMe = message.isForMe === 0 ? "vous: " : ""; //// befor the message
+
+                            const content= messageContent.text.length > 50 ? '(Message long) ...' : messageContent.text;
                             
                             if( messageType === "text"){ //// check the new type message
-                                single.querySelector('.text_message_jheo_js').innerText = isForMe + messageContent.text;
+                                single.querySelector('.text_message_jheo_js').innerText = isForMe + content;
                             }else{
                                 single.querySelector('.text_message_jheo_js').innerText = isForMe + '(object)';
                             }
@@ -532,7 +539,7 @@ function createAndAddCardMessage(id,other_id, firstname, lastname,message,isForM
     card_msg.innerHTML= `
         <a class="lc mg ug" href='/user/message?user_id=${other_id}'>
             <div class="h sa wf uk th ni ej">
-                <img class="image_profil_navbar_msg"  src='${profil}' alt="User"/>
+                <img class="image_profil_navbar_msg"  src='${profil ? profil : '/public/uploads/users/photos/default_pdp.png'}' alt="User"/>
             </div>
 
             <div>
