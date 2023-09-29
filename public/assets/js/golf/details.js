@@ -96,7 +96,6 @@ function fecthGolfAction(goldID, action){
     fetch(request)
         .then(response=>response.json())
         .then(response =>{
-            console.log(response)
             if( response.success){
                 if( action === "finished"){
                     new swal("Bravo !","Vous avez marqué ce golf comme fait !", "success")

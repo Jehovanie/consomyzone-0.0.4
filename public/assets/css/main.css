@@ -668,8 +668,15 @@ body {
 
 .content_header_right_side{
     display: block;
-    height: 100px;
+    height: 55px;
     margin-top: 100px;
+}
+
+.table_info_marker{
+    display: block;
+    max-height: 65vh;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .header_right_side{
@@ -2092,7 +2099,7 @@ textarea {
     position: absolute;
     z-index: 1;
   }
-  
+
   .btn-minimize-elie:hover .tooltiptext {
     visibility: visible;
   }
