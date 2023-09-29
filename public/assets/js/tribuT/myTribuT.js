@@ -534,8 +534,6 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     worker.onmessage = (event) => {
         // console.log(event.data)
         let data = event.data
-        console.log(data);
-
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
             var limits = data.length > 5 ? 5 : data.length;
@@ -1131,7 +1129,6 @@ function showResto(table_rst_pastilled, id_c_u) {
         if (restos.length > 0) {
 
             for (let resto of restos) {
-                console.log(resto);
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
                 if(resto.isPastilled){
@@ -1175,7 +1172,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
                                 <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
-                                    <span style="font-size:12pt;">${denominationsF} </span> 
+                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span> 
                                 <!--</a>-->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
@@ -2387,18 +2384,10 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
-    document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-      
-    // const swalWithBootstrapButtons = swal.mixin({
-    //     customClass: {
-    //         confirmButton: 'btn btn-primary me-2',
-    //         cancelButton: 'btn btn-secondary non_active disabled'
-    //         // cancelButton: 'btn btn-primary'
-    //     },
-    //     buttonsStyling: false
-    // })
+    let btn = document.querySelector("#data-depastille-nanta-js")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
 
 }
 
@@ -2532,6 +2521,8 @@ function updateTribuTInfos(e) {
 
 function showGolf(){
 
+    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+
     if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
     }
@@ -2555,79 +2546,75 @@ function showGolf(){
                                     </div>
                                 `
 
-    /*golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
-                                <table id="table_golf_pastilled" class="ta" style="width:100%">
-                                    <thead>
-                                        <tr>
-                                            <th>Nom de golf</th>
-                                            <th>Note</th>
-                                            <th>Avis</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                <tbody>
-                                <tr>
-                        <td class="d-flex bd-highlight align-items-center">
-                            Image
-                        </td>
-                        <td>Note</td>
-                        <td>
-                            <a class="text-secondary" style="cursor: pointer;text-decoration:none;">Avis</a>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary"><i class="fas fa-plus"></i> Plus</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>`*/
+    fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
+    .then(response =>  response.json())
+    .then(data => {
+        if(data.length > 0){
+            let tr = ""
+            let i = 0
+            for (const item of data) {
+                    if(item.isPastilled){
+                        i++
+                        let nbrAvis = item.nbrAvis
+                        let note = item.globalNote ? item.globalNote : 0
+                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+                        tr += `<tr id="golf_${item.id_golf}">
+                            <td class="d-flex bd-highlight align-items-center">
+                                <div class="elie-img-pastilled">
+                                ${image_tribu_t}
+                                </div>
+                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
+                            </td>
+                            <td class="data-note-${item.id}">${note}/4</td>
+                            <td>
+                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+                            </td>
+                        </tr>`
 
-    // golfContainer.classList.add("bg-white");
-    // golfContainer.classList.add("p-2");
+                    }
+            }
 
-    // let foot_table = `</tbody>
-    // </table>`
+            if(i>0){
 
-    // let body_table = ``
+                golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom de golf</th>
+                                                <th>Note</th>
+                                                <th>Avis</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${tr}
+                                        </tbody>
+                                    </table>`
 
-    // let imgSrc = "";
-    // let avatar = "" //"{{avatar}}"
-    // if (avatar != null) {
-    //     imgSrc = "/uploads/tribus/photos/" + avatar
-    // } else {
-    //     imgSrc = "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
-    // }
+                $('#table_golf_pastilled').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
+            }else{
+                golfContainer.style.textAlign = "center"
+                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+            }
 
-    // let golfs = 3
 
-    // if (golfs > 0) {
+        }else{
+            golfContainer.style.textAlign = "center"
+            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+        }
 
-    //     body_table = `
-    //                 <tr>
-    //                     <td class="d-flex bd-highlight align-items-center">
-    //                         Image
-    //                     </td>
-    //                     <td>Note</td>
-    //                     <td>
-    //                         <a class="text-secondary" style="cursor: pointer;text-decoration:none;">Avis</a>
-    //                     </td>
-    //                     <td>
-    //                         <button class="btn btn-primary"><i class="fas fa-plus"></i> Plus</button>
-    //                     </td>
-    //                 </tr>
-    //                 </tbody>
-    //             </table>
-    //             `
-    //     golfContainer.innerHTML += body_table
+        golfContainer.classList.add("bg-white");
+        golfContainer.classList.add("p-2");
+        golfContainer.style.display = "block"
 
-    // }else {
-    //     golfContainer.style.textAlign = "center"
-    //     golfContainer.innerHTML += `<tr><td colspan="4">Aucun golf pastillé pour le moment</td></tr>`;
-
-    // }
-
-    // golfContainer.innerHTML += foot_table
-
-    golfContainer.style.display = "block"
+    })
 
 }
 
@@ -2775,6 +2762,56 @@ function pastilleGolf(element){
                         element.textContent = "Pastillé"
                         element.setAttribute("disabled", true)
                     });          
+            })
+            .catch(error=>console.log(error))
+}
+
+function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null) {
+
+    let tableTribu = document.querySelector("#activeTribu").dataset.tableName
+
+    $("#detailOptionGolf").modal("show")
+
+    // document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
+
+    document.querySelector("#data-note-nanta-js").removeAttribute("onclick")
+    document.querySelector("#data-event-nanta-js").removeAttribute("onclick")
+    let btn = document.querySelector("#data-depastilleGolf-nanta-js")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    btn.dataset.tbname = tableTribu
+}
+
+function depastilleGolf(selector){
+    let id = selector.dataset.id
+    let name = selector.dataset.name
+    let tbl = selector.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    let request = new Request("/user/tribu_t/depastille/golf", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                    new swal("Succès !", "Golf dépastillé avec succès", "success")
+                    .then((value) => {
+                            $("#detailOptionGolf").modal("hide")
+                            document.querySelector("#golf_"+id).remove()
+                    });
             })
             .catch(error=>console.log(error))
 }

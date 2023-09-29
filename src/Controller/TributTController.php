@@ -1493,10 +1493,33 @@ class TributTController extends AbstractController
 			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
 		
-		//dd($restos);
 		$r=$serialize->serialize($restos,'json');
 		
-		//return $this->json($restos);
+		return new JsonResponse($r, Response::HTTP_OK, [], true);
+
+    }
+
+    #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
+
+    public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
+
+    {
+        $table_golf = $table_tribu."_golf";
+
+        $tableComment=$table_golf."_commentaire";
+        $tribu_t = new Tribu_T_Service();
+
+        $has_golf = $tribu_t->hasTableResto($table_golf);
+        
+        $golfs = array();
+
+        if($has_golf == true){
+            $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
+			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+        }
+		
+		$r=$serialize->serialize($golfs,'json');
+		
 		return new JsonResponse($r, Response::HTTP_OK, [], true);
 
     }
@@ -2340,6 +2363,26 @@ class TributTController extends AbstractController
         // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
         
         return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    }
+
+    #[Route("/user/tribu_t/depastille/golf", name:"tribu_t_depastille_golf", methods:["POST"])]
+    public function dePastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $golf_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdGolf = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
+
+        if($checkIdGolf > 0){
+            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, false);
+        }
+        
+        return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
     }
 
     #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]

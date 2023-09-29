@@ -2228,9 +2228,6 @@ function pastilleRestoForTribuTDashboard(element, isPastilled){
                     });
                 }
 
-                // tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-                // tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
-
                 
             })
             .catch(error=>console.log(error))
