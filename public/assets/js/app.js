@@ -1072,20 +1072,6 @@ function openVoirPlusChearch(denomination_f, adresse, type){
         document.querySelector("#moreSearch").innerHTML = html
       }
 
-    // Swal.fire({
-    //     // title: 'Text',
-    //     title : 'Voulez-vous avoir plus d\'informations sur cet établissement, veuillez cliquer sur l\'un des liens suivants :',
-    //     icon: 'question',
-    //     width: 600,
-    //     html: html,
-    //     showConfirmButton: false,
-    //     showCancelButton: false,
-    //     confirmButtonText:
-    //       '<i class="fa-solid fa-magnifying-glass"></i> Rechercher',
-    //     cancelButtonText:
-    //       '<i class="fa-solid fa-xmark"></i> Pas maintenant',
-    //   })
-
 }
 
 function showPartenairAsk(){

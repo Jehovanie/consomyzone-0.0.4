@@ -730,38 +730,45 @@ fileInputProfils.forEach(fileInputProfil=>{
                 image : avatarPartisant
             }
 
-            Swal.fire({
-                // title: 'Voulez-vous definir cette photo comme photo de profile?',
-                text: "Voulez-vous definir cette photo comme photo de profile?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Oui, accepter',
-                cancelButtonText: 'Non, pas maintenant'
-              }).then((result) => {
-                if (result.isConfirmed) {
-                fetch(new Request("/user/profil/update/avatar", {
-                    method: "POST",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })).then(x => x.json()).then(response => {
-                    // console.log(response)
+            swal("Voulez-vous definir cette photo comme photo de profile?", {
+                buttons: {
+                  cancel: "Non, pas maintenant",
+                  confirm: {
+                    text: "Oui, accepter",
+                    value: "confirm",
+                  },
+                },
+              })
+              .then((value) => {
+                switch (value) {
+               
+                  case "confirm":{
+                    fetch(new Request("/user/profil/update/avatar", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })).then(x => x.json()).then(response => {
+                        // console.log(response)
+    
+                        if(response.success){
 
-                    if(response.success){
-                        Swal.fire(
-                            'Modifié',
-                            response.message,
-                            'success'
-                          )
+                            swal({
+                                title: "Modifié",
+                                text: response.message,
+                                icon: "success",
+                                button: "OK",
+                              });
+
+                        }
+    
+                    });
+                    break;
                     }
-
-                });
-                }else{
-                    
+               
+                  default:{
                     fetch(new Request("/user/profil/add/photo", {
                         method: "POST",
                         headers: {
@@ -773,16 +780,21 @@ fileInputProfils.forEach(fileInputProfil=>{
                         // console.log(response)
 
                         if(response.success){
-                            Swal.fire(
-                                'Téléchargé',
-                                response.message,
-                                'success'
-                              )
+
+                            swal({
+                                title: "Téléchargé",
+                                text: response.message,
+                                icon: "success",
+                                button: "OK",
+                              });
+
                         }
 
                     });
+                  }
                 }
-              })
+              });
+
         });
 
         ///run event load in file reader.
@@ -1026,37 +1038,55 @@ function setAsPdp(span){
     })).then(x => x.json()).then(response => {
         
         if(response.success){
-            Swal.fire(
-                'Modifié',
-                'Votre photo de profile a été mis à jour!',
-                'success'
-              )
+
+            swal({
+                title: "Modifié",
+                text: "Votre photo de profile a été mis à jour!",
+                icon: "success",
+                button: "OK",
+              });
 
         }
     });
 
 }
 
+let modalZoom = document.getElementById('modalZoom');
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+let imgFullSecreen = document.getElementById("imgFullSecreen");
+// let captionText = document.getElementById("captionZoom");
+
 document.querySelectorAll(".fancybox > img").forEach(fancy=>{
     let url = fancy.src
 
-    fancy.addEventListener("click", function(){
-        console.log(fancy.naturalWidth);
-        let h = fancy.naturalHeight ;
-        if(fancy.naturalHeight > window.screen.height){
-            h = window.screen.height
-        }
-        Swal.fire({
-            imageUrl: url,
-            imageHeight: h,
-            imageWidth: fancy.naturalWidth,
-            imageAlt: '',
-            showCloseButton: true,
-            showConfirmButton: false,
-          })
-    })
+    let h = fancy.naturalHeight ;
+    let w = fancy.naturalWidth;
+    if(fancy.naturalHeight > window.screen.height){
+        h = window.screen.height
+    }
+
+    fancy.onclick = function(){
+        document.querySelector("body").classList.add("modal-open")
+        document.querySelector("body").style = "overflow: hidden; padding-right: 19px;"
+        modalZoom.style.display = "block";
+        imgFullSecreen.src = url;
+        imgFullSecreen.height = h
+        imgFullSecreen.width = w
+        // captionText.innerHTML = fancy.alt;
+    }
 
 })
+
+// Get the <span> element that closes the modal
+let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
+
+// When the user clicks on <span> (x), close the modal
+spanCloseZoom.onclick = function() { 
+    modalZoom.style.display = "none";
+    document.querySelector("body").classList.remove("modal-open")
+    document.querySelector("body").style = ""
+}
 
 document.querySelectorAll(".elie_nav_link").forEach(i=>{
     i.addEventListener("click", function(){
