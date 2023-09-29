@@ -1746,10 +1746,8 @@ function showLogoAndNameTribus(){
 
 window.onload = (event) => {
 
-    // document.querySelector("#visioMessageElie").style="display :none !important;"
-    // document.querySelector("#minimizeVisio").style="display :none !important;"
-
     if(localStorage.getItem("room_name")){
+
         let room = localStorage.getItem("room_name")
 
         document.querySelector("#visioMessageElie").style="display :none !important;"
@@ -1785,10 +1783,7 @@ if(document.querySelector(".btn-minimize-elie")){
 
     document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
 
-        document.querySelector("#visioMessageElie").style ="translate(25px, 25px); display:none !important;"
-    
-        let room_link = localStorage.getItem("room_link")
-    
+        document.querySelector("#visioMessageElie").style ="display:none !important;"
         document.querySelector("#minimizeVisio").style="display:block !important;"
     
         let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
