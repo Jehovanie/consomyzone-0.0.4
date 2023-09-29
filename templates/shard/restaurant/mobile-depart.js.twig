@@ -66,11 +66,12 @@
         
         <div class="container list-depart-all" id="Scrollbar">
                 <div id="list_departements">
+                    <ul>
                     {% for departement in departements %}
                         {% if departement.id is same as('75')%}
-                            <ul>
+                            
                                 <li onclick="getSpecifictArrond('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -101,11 +102,10 @@
                                     </div>
                                 </li>
 
-                            </ul>
                         {% elseif departement.id is same as('44')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                            
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -136,11 +136,11 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                            
                         {% elseif departement.id is same as('77')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                            
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -171,11 +171,11 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                           
                         {% elseif departement.id is same as('78')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                            
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -206,11 +206,11 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                            
                         {% elseif departement.id is same as('91')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                         
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -241,11 +241,11 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                          
                         {% elseif departement.id is same as('92')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                       
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -276,11 +276,11 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                       
                         {% elseif departement.id is same as('93')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                      
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -311,11 +311,10 @@
                                     </div>
                                 </li>
 
-                            </ul>
                         {% elseif departement.id is same as('94')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                         
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -346,11 +345,11 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                          
                         {% elseif departement.id is same as('95')%}
-                            <ul>
-                                <li onclick="getSpectResto('{{departement.departement}}','{{departement.id}}')">
-                                    <div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+                         
+                                <li onclick="getSpectRestoMobile('{{departement.departement | raw}}','{{departement.id}}')">
+                                    <div class="row container-depart atribut-tomm-js pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement | raw}}">
                                         <div class="col">
                                             <h5 class="id_departement">{{departement.id | raw}}</h5>
                                         </div>
@@ -381,9 +380,10 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                           
                         {% endif %}
                     {% endfor %} 
+                    </ul>
                 </div>
             </div>
 

@@ -313,9 +313,9 @@ function addAvisRestoMobile(newIdResto, newUserId){
             if (r.ok && r.status === 200) {
 
                 //// Update state of the btn send avis resto
-                document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis';
-                document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "update");
-                document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("onclick", `settingAvisRestoMobile(${newIdResto})`);
+                // document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis';
+                // document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("data-status", "update");
+                // document.querySelector(".btn_modal_avis_resto_jheo_js").setAttribute("onclick", `settingAvisRestoMobile(${newIdResto})`);
 
                 ///// generate list avis in modal
                 showModifArea(newIdResto, newUserId)
@@ -363,34 +363,16 @@ function settingAvisResto(avisID, avisNote, avisText){
 
 
 
-function settingAvisRestoMobile(id_resto, id_user) {
-    const modifyAvis = document.querySelector(".btn_modal_avis_resto_jheo_js")
-    if( modifyAvis.getAttribute("data-status") === "update" ){
-        console.log(document.querySelector(`.content_avis_person_hidden_${id_resto}_jheo_js`))
-        // data-avis-note="${json.note}" data-avis-text="${json.avis}> my_comment_jheo_js
-        let note= 0, text= "";
-        if( document.querySelector(`.content_avis_person_hidden_${id_resto}_jheo_js`)){ //// in details html
-            const hiddenData=  document.querySelector(`.content_avis_person_hidden_${id_resto}_jheo_js`)
-            note = hiddenData.getAttribute('data-avis-note')
-            text = hiddenData.getAttribute('data-avis-text')
+function settingAvisRestoMobile(id_resto, id_user, avisID, avisNote, avisText) {
 
-        }else{ //// in list avis
-            const hiddenData=  document.querySelector(".my_comment_jheo_js")
-            note = hiddenData.getAttribute('data-avis-note')
-            text = hiddenData.getAttribute('data-avis-text')
-        }
-        
-        document.querySelector(`.note_number_${id_resto}_jheo_js`).value = parseFloat(note);
-        document.querySelector(`.note_avis_${id_resto}_jheo_js`).value = text;
-        
-        const btn_update = document.querySelector(`.send_avis_${id_resto}_jheo_js`);
-        console.log(btn_update)
+    // document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis."
+    
+    document.querySelector(`.note_number_${id_resto}_jheo_js`).value = parseFloat(avisNote);
+    document.querySelector(`.note_avis_${id_resto}_jheo_js`).value = avisText;
 
-        btn_update.setAttribute(`onclick","updateAvisRestoMobile(${id_resto}, ${id_user})`)
-
-    }else{
-        console.log(`Selector not found : "btn_modal_avis_resto_jheo_js"`)
-    }
+    const btn_update = document.querySelector(`.send_avis_${id_resto}_jheo_js`);
+    btn_update.setAttribute("onclick",`updateAvisRestoMobile(${id_resto}, ${id_user}, ${avisID})`)
+    
 }
 
 /**
@@ -461,7 +443,7 @@ function updateAvisResto(avisID){
 /**
  * Change avis resto
  */
-function updateAvisRestoMobile(newIdResto,newUserId){
+function updateAvisRestoMobile(newIdResto,newUserId,avisID){
 
     ///// remove alert card and add chargement spinner
     if( document.querySelector(`.all_avis_jheo_${newIdResto}_js`)){
@@ -474,16 +456,13 @@ function updateAvisRestoMobile(newIdResto,newUserId){
         `
     }
 
-    // let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-    // let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
-    // let note = document.querySelector("#text-note-modif").value
-    let note = document.querySelector(`#text-note-mobile-${newIdResto}`).value
-    note = note.replace(/,/g, ".")
-    // const avis = document.querySelector("#message-text-kidje3").value
+    let note = document.querySelector(`#text-note-mobile-${newIdResto}`).value.replace(/,/g, ".")
     const avis = document.querySelector(`#message-text-mobile-${newIdResto}`).value
+
     try {
             mustBeInferior4(note, document.querySelector(`#text-note-mobile-${newIdResto}`), true)  
             const requestParam = {
+                avisID: avisID,
                 note: parseFloat(note),
                 avis:avis
             }
@@ -510,7 +489,7 @@ function updateAvisRestoMobile(newIdResto,newUserId){
                         showNoteGlobale(newIdResto)
                     }
 
-                    document.querySelector(`.send_avis_${newIdResto}_jheo_js`).setAttribute(`onclick", "addAvisRestoMobile(${newIdResto},${newUserId})`);
+                    // document.querySelector(`.send_avis_${newIdResto}_jheo_js`).setAttribute(`onclick", "addAvisRestoMobile(${newIdResto},${newUserId})`);
                 }
             })
     } catch (e) {
@@ -904,23 +883,26 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
             }
         }
     }
-    let idModalModif
-    let eventClick
+    let modalebtnModife
     if (screen.width <= 991) {
-        idModalModif = `#modalAvisRestaurant${idRestaurant}`
-        eventClick = "settingAvisRestoMobile"
-    } else {
-        idModalModif = `#modalAvisRestaurant`
-        eventClick = "settingAvisResto"
-    }
-    const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
-    const editHTMl= `
+        modalebtnModife = `
         <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="${idModalModif}" onclick="${eventClick}('${json.id}' ,'${json.note}' , '${json.avis}')">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant${idRestaurant}" onclick="settingAvisRestoMobile(${idRestaurant},${currentUserId},'${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
     `
+    } else {
+         modalebtnModife = `
+        <div class="content_action">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+        </div>
+    `
+    }
+    const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
+    const editHTMl = modalebtnModife
     const  isOwnComment= (currentUserId == json.user.id ) ? editHTMl : "";
 
     const singleAvisHtml= `
@@ -934,8 +916,8 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
                                     <img class="profil_image" src="${ json.user.photo ? json.user.photo.replace('/public' , '') : '/uploads/users/photos/img_avatar.png' }" alt="User">
                                 </div>
                                 <div class="content_info">
-                                    <h3> <small class="fw-bolder text-black"> ${ json.user.fullname }</small></h3>
-                                    <cite class="fontSize07"> ${ settingDateToStringMonthDayAndYear(json.datetime)}</cite>
+                                    <h3 class="text-point-9"> <small class="fw-bolder text-black"> ${ json.user.fullname }</small></h3>
+                                    <cite class="font-point-6"> ${ settingDateToStringMonthDayAndYear(json.datetime)}</cite>
                                 </div>
                             </div>
                             <div class="content_start">
@@ -945,7 +927,7 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
                         </div>
 
                         <div class="mt-2">
-                            <p> ${json.avis} </p>
+                            <p class="text-point-9"> ${json.avis} </p>
                         </div>
                     </div>
                 </div>

@@ -333,27 +333,61 @@ class RestaurantController extends AbstractController
         ]);
     }
 
-    #[Route("/restaurant-mobile/specific", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
+    #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{limit}/{offset}", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
     public function getSpecificRestaurantMobile(
         BddRestoRepository $bddResto,
         Status $status,
         Request $request,
         CodeapeRepository $codeApeRep,
+        $nom_dep,
+        $id_dep,
+        $limit,
+        $offset,
+        AvisRestaurantRepository $avisRestaurantRepository,
+
     ) {
         $dataRequest = $request->query->all();
-        $nomDep = $dataRequest["nom_dep"];
-        $codeDep = $dataRequest["id_dep"];
-        $codinsee = $dataRequest["codinsee"];
-        $arrdssm = $dataRequest["arrdssm"];
-        
-        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
-        $resultCount= $bddResto->getAccountRestauranting($codeDep);
+        // $nomDep = $dataRequest["nom_dep"];
+        // $codeDep = $dataRequest["id_dep"];
+        // $codinsee = $dataRequest["codinsee"];
+        // $arrdssm = $dataRequest["arrdssm"];
+        $datas = [];
+        $restos = $bddResto->getCoordinateAndRestoIdForSpecificMobile($id_dep , null, $limit, $offset);
+        $resultCount= $bddResto->getAccountRestauranting($id_dep);
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
+        foreach ($restos as $data) {
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
-        return $this->render("shard/restaurant/specific_mobile_departement.js.twig", [
-            "id_dep" => $codeDep,
-            "nom_dep" => $nomDep,
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
+                }
+                $note_temp +=  $note["note"];
+            }
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
+
+
+            array_push($datas, $data);
+        }
+
+
+        return $this->json([
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
             "restaurants" => $datas,
             "nomber_resto" => $resultCount,
             "profil" => $statusProfile["profil"],
@@ -361,11 +395,9 @@ class RestaurantController extends AbstractController
             "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode(),
             "type" => "resto",
-            "arrdssm" => $arrdssm,
-            "codinsee" => $codinsee
-
-
-        ]);
+            // "arrdssm" => $arrdssm,
+            // "codinsee" => $codinsee
+        ],);
     }
 
     #[Route("/restaurant/arrondissement", name: "app_dep_restaurant_arrondisme", methods: ["GET"])]
@@ -502,11 +534,11 @@ class RestaurantController extends AbstractController
 
             $note_temp = 0;
             foreach ($global_note as $note) {
-                if ($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"] ) {
                     $isAlreadyCommented = true;
-                    $avis = ["note" => $note->getNote(), "text" => $note->getAvis()];
+                    $avis = ["note" => $note["note"], "text" => $note["avis"]];
                 }
-                $note_temp += $note->getNote();
+                $note_temp += $note["note"];
             }
 
             $data["avis"] = [
