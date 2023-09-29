@@ -2472,7 +2472,8 @@ function showImagePreview(e){
                 $("#mediaModal").modal("hide")
                 $("#addPictureModal").modal("hide")
                 // $("#createAgenda").modal("show")
-                $("#selectRepertoryModal").modal("show")
+                if(document.querySelector("#selectRepertoryModal"))
+                    $("#selectRepertoryModal").modal("show")
                 
             } else {
 
@@ -2558,7 +2559,8 @@ function takePicture(){
     document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
     $("#mediaModal").modal("hide")
     // $("#createAgenda").modal("show")
-    $("#selectRepertoryModal").modal("show")
+    if(document.querySelector("#selectRepertoryModal"))
+                    $("#selectRepertoryModal").modal("show")
     /*outputCanvas.toBlob((blob) => {
         console.log(URL.createObjectURL(blob))
         // downloadLink.setAttribute('href', URL.createObjectURL(blob));

@@ -1468,7 +1468,7 @@ class TributTController extends AbstractController
         $tabPhoto = [];
         foreach ($images as $image) {
             $photo = explode("uploads/tribu_t",$image)[1];
-            $photo = "/uploads/tribu_t/".$photo;
+            $photo = "/public/uploads/tribu_t".$photo;
             array_push($tabPhoto, ["photo"=>$photo]);
         }
         return $this->json($tabPhoto);
