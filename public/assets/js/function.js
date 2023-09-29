@@ -2500,9 +2500,7 @@ function resetImagePreview(){
 }
 
 function showModalPicture(){
-    $("#addPictureModal").modal("hide")
     document.querySelector("#containerCamera").innerHTML = ""
-    $("#mediaModal").modal("show")
     // <video id="player" autoplay></video>
     let video = document.createElement("video")
     video.setAttribute("id","player")
@@ -2522,9 +2520,11 @@ function showModalPicture(){
     navigator.mediaDevices
             .getUserMedia({ video: true })
             .then((stream) => {
+                $("#addPictureModal").modal("hide")
+                $("#mediaModal").modal("show")
                 video.srcObject = stream;
             }).catch(error => {
-                console.error('Can not get an access to a camera...', error);
+                swal("Attention !", "Impossible d'accéder à votre caméra !", "warning")
             });
 
     document.querySelector("#containerCamera").appendChild(video)
