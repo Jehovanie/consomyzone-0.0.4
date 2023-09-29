@@ -2664,8 +2664,6 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                         <i class="fa-solid fa-beer-mug-empty"></i>
 						Brasserie
                     `
-                } else {
-                    brasserie = ''
                 }
                 if (response.creperie) {
                     creperie = `
@@ -2760,6 +2758,18 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                 if (response.horaires1) {
                     horaires1 = `<li>${response.horaires1}</li>`
                 }
+                
+                let site1 = ''
+                if (response.site1) {
+                    site1 = `<div class="site_web non_active">
+                                <a class="btn btn-success" href="${response.site1}" target="_blank">Lien :  site Web</a>
+                            </div>`
+                }
+            
+                let fonctionalite1 = ''
+                if (response.fonctionalite1) {
+                    fonctionalite1 = `<li>${response.fonctionalite1}</li>`
+                }
 
                 
                 
@@ -2838,28 +2848,19 @@ function getDataSpecificMobile(nom_dep, id_dep) {
 											</p>
 										</div>
 
-										{# ///content cta #}
 										<div class="content_tow_cta">
-											{% if restaurant.site1 != "" %}
-												<div class="site_web non_active">
-													<a class="btn btn-success" href="{{restaurant.site1 | raw}}" target="_blank">Lien :  site Web</a>
-												</div>
-											{% endif %}
+											${site1}
 										</div>
 
 										<hr>
 
 										<div
 											class="fonctionnalite">
-											{#ancien class produit#}
 											<h5>
 												Fonctionalités:
 											</h5>
 											<ul>
-												{% if restaurant.fonctionalite1 %}
-													<li>{{restaurant.fonctionalite1 | raw}}</li>
-												{% endif %}
-
+                                                ${fonctionalite1}
 											</ul>
 
 
@@ -2872,9 +2873,7 @@ function getDataSpecificMobile(nom_dep, id_dep) {
 												Fourchette de prix:
 											</h5>
 											<ul>
-												{% if restaurant.fourchettePrix1 %}
-													<li>{{restaurant.fourchettePrix1 | raw}}</li>
-												{% endif %}
+												${fourchettePrix1}
 
 											</ul>
 										</div>
