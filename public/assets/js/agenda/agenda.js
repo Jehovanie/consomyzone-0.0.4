@@ -74,138 +74,138 @@ if ('WebSocket' in window) {
 
 
 ///// CANCEL CREATE AGENDA ------------------------------------------------------
-if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.querySelector(".btn_close_create_agenda_jheo_js")) {
-    const cta_cancel_create_agenda = [document.querySelector(".cta_cancel_create_agenda_jheo_js"), document.querySelector(".btn_close_create_agenda_jheo_js")];
+// if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.querySelector(".btn_close_create_agenda_jheo_js")) {
+//     const cta_cancel_create_agenda = [document.querySelector(".cta_cancel_create_agenda_jheo_js"), document.querySelector(".btn_close_create_agenda_jheo_js")];
 
-    cta_cancel_create_agenda.forEach(item => {
-        item.addEventListener("click", () => {
-            initInputForm()
+//     cta_cancel_create_agenda.forEach(item => {
+//         item.addEventListener("click", () => {
+//             initInputForm()
               
-        })
-    })
-}
+//         })
+//     })
+// }
 
 //// PUSH NEW AGENT -----------------------------------------------------------
-if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
+// if (document.querySelector(".cta_confirm_create_agenda_jheo_js")) {
 
-    //// CHECK INPUT TYPE EVENT : IF 'REPAS' SHOW INPUT SEARCH RESTO
-    const handleTypeEvent = [document.querySelector(".inputOther_radio_jheo_js"), document.querySelector(".inputRepas_radio_jheo_js")];
+//     //// CHECK INPUT TYPE EVENT : IF 'REPAS' SHOW INPUT SEARCH RESTO
+//     const handleTypeEvent = [document.querySelector(".inputOther_radio_jheo_js"), document.querySelector(".inputRepas_radio_jheo_js")];
 
-    handleTypeEvent.forEach(typeEvent => {
+//     handleTypeEvent.forEach(typeEvent => {
 
-        const content_inputTypeSelect = document.querySelector(".content_typeEventSelect_jheo_js");
-        const content_inputType = document.querySelector(".content_typeEvent_jheo_js");
+//         const content_inputTypeSelect = document.querySelector(".content_typeEventSelect_jheo_js");
+//         const content_inputType = document.querySelector(".content_typeEvent_jheo_js");
 
-        typeEvent.addEventListener("change", () => {
-            if (typeEvent.classList.contains("inputOther_radio_jheo_js")) {
-                if (content_inputType.classList.contains("d-none")) {
-                    content_inputType.classList.remove("d-none")
+//         typeEvent.addEventListener("change", () => {
+//             if (typeEvent.classList.contains("inputOther_radio_jheo_js")) {
+//                 if (content_inputType.classList.contains("d-none")) {
+//                     content_inputType.classList.remove("d-none")
 
-                    document.querySelector(".typeEvent_jheo_js").value = null;
-                }
+//                     document.querySelector(".typeEvent_jheo_js").value = null;
+//                 }
 
-                if (!content_inputTypeSelect.classList.contains("d-none")) {
-                    content_inputTypeSelect.classList.add("d-none")
-                }
+//                 if (!content_inputTypeSelect.classList.contains("d-none")) {
+//                     content_inputTypeSelect.classList.add("d-none")
+//                 }
 
-                if (!document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')) {
-                    document.querySelector(".content_searchResto_jheo_js").classList.add('d-none');
-                }
+//                 if (!document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')) {
+//                     document.querySelector(".content_searchResto_jheo_js").classList.add('d-none');
+//                 }
 
-                if (!document.querySelector(".content_restoEvent_jheo_js").classList.contains('d-none')) {
-                    document.querySelector(".content_restoEvent_jheo_js").classList.add('d-none');
-                    document.querySelector(".restoEvent_jheo_js").value = null
-                }
+//                 if (!document.querySelector(".content_restoEvent_jheo_js").classList.contains('d-none')) {
+//                     document.querySelector(".content_restoEvent_jheo_js").classList.add('d-none');
+//                     document.querySelector(".restoEvent_jheo_js").value = null
+//                 }
 
-                if (document.querySelector(".lieuEvent_jheo_js").hasAttribute('disabled')) {
-                    document.querySelector(".lieuEvent_jheo_js").removeAttribute('disabled');
-                    document.querySelector(".lieuEvent_jheo_js").value = null;
-                }
+//                 if (document.querySelector(".lieuEvent_jheo_js").hasAttribute('disabled')) {
+//                     document.querySelector(".lieuEvent_jheo_js").removeAttribute('disabled');
+//                     document.querySelector(".lieuEvent_jheo_js").value = null;
+//                 }
 
-            } else {
-                if (!content_inputType.classList.contains("d-none")) {
-                    content_inputType.classList.add("d-none")
-                }
+//             } else {
+//                 if (!content_inputType.classList.contains("d-none")) {
+//                     content_inputType.classList.add("d-none")
+//                 }
 
-                if (content_inputTypeSelect.classList.contains("d-none")) {
-                    content_inputTypeSelect.classList.remove("d-none")
-                }
+//                 if (content_inputTypeSelect.classList.contains("d-none")) {
+//                     content_inputTypeSelect.classList.remove("d-none")
+//                 }
 
-                if (document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')) {
-                    document.querySelector(".content_searchResto_jheo_js").classList.remove('d-none')
-                }
+//                 if (document.querySelector(".content_searchResto_jheo_js").classList.contains('d-none')) {
+//                     document.querySelector(".content_searchResto_jheo_js").classList.remove('d-none')
+//                 }
 
-                document.querySelector(".typeEvent_jheo_js").value = "Repas déjeuné"
-            }
-        })
-    })
+//                 document.querySelector(".typeEvent_jheo_js").value = "Repas déjeuné"
+//             }
+//         })
+//     })
 
-    document.querySelector(".typeEventSelect_jheo_js").addEventListener("change", (e) => {
-        document.querySelector(".typeEvent_jheo_js").value = e.target.value
-    })
-
-
-    //// CHANGE EVENT FOR SEARCH RESTO
-    document.querySelector(".searchResto_jheo_js").addEventListener("keyup", (e) => {
-        if (parseInt(e.keyCode) === 13) {
-            if (document.querySelector(".searchResto_jheo_js").value != "") {
-
-                /// afficher la liste des restos trouver
-                bindActionSearchResto(document.querySelector(".searchResto_jheo_js").value);
-            }
-        }
-    })
-
-    ///// AFFICHER UNE LISTE DES RESTO
-    document.querySelector(".chose_pastil_resto_jheo_js").addEventListener("click", () => {
-
-        /// afficher la liste des restos pastiller
-        bindActionSearchResto("RESTO_PASTILLE");
-    })
-
-    document.querySelector(".cta_confirm_create_agenda_jheo_js").addEventListener("click", (e) => {
-
-        let state = true;
-
-        const agenda = {
-            "title": document.querySelector(".nameEvent_jheo_js").value,
-            "type": document.querySelector(".typeEvent_jheo_js").value,
-            "address": document.querySelector(".lieuEvent_jheo_js").value,
-            "desc": document.querySelector(".eventDesc_jheo_js").value,
-            "participant": document.querySelector(".nbrParticipant_jheo_js").value,
-            "dateStart": document.querySelector(".eventStart_jheo_js").value,
-            "dateEnd": document.querySelector(".eventEnd_jheo_js").value,
-            "timeStart": document.querySelector(".timeStart_jheo_js").value,
-            "timeEnd": document.querySelector(".timeEnd_jheo_js").value,
-        }
-
-        const agenda_keys = Object.keys(agenda);
-        agenda_keys.forEach(key => {
-            if (agenda[key] === '') {
-                state = false;
-            }
-        })
-
-        if (!state) {
-            e.preventDefault()
-            console.log(agenda)
-            document.querySelector(".invalid_agenda_jheo_js").click();
-
-            setTimeout(() => {
-                document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
-            }, 1500);
-        } else {
-            sendNewAgenda(agenda)
-        }
-    })
+//     document.querySelector(".typeEventSelect_jheo_js").addEventListener("change", (e) => {
+//         document.querySelector(".typeEvent_jheo_js").value = e.target.value
+//     })
 
 
-    document.querySelectorAll(".cta_close_list_resto_jheo_js").forEach(close => {
-        close.addEventListener("click", () => {
-            document.querySelectorAll(".list_tr_resto_jheo_js tr").forEach(tr => tr.remove())
-        })
-    })
-}
+//     //// CHANGE EVENT FOR SEARCH RESTO
+//     document.querySelector(".searchResto_jheo_js").addEventListener("keyup", (e) => {
+//         if (parseInt(e.keyCode) === 13) {
+//             if (document.querySelector(".searchResto_jheo_js").value != "") {
+
+//                 /// afficher la liste des restos trouver
+//                 bindActionSearchResto(document.querySelector(".searchResto_jheo_js").value);
+//             }
+//         }
+//     })
+
+//     ///// AFFICHER UNE LISTE DES RESTO
+//     document.querySelector(".chose_pastil_resto_jheo_js").addEventListener("click", () => {
+
+//         /// afficher la liste des restos pastiller
+//         bindActionSearchResto("RESTO_PASTILLE");
+//     })
+
+//     document.querySelector(".cta_confirm_create_agenda_jheo_js").addEventListener("click", (e) => {
+
+//         let state = true;
+
+//         const agenda = {
+//             "title": document.querySelector(".nameEvent_jheo_js").value,
+//             "type": document.querySelector(".typeEvent_jheo_js").value,
+//             "address": document.querySelector(".lieuEvent_jheo_js").value,
+//             "desc": document.querySelector(".eventDesc_jheo_js").value,
+//             "participant": document.querySelector(".nbrParticipant_jheo_js").value,
+//             "dateStart": document.querySelector(".eventStart_jheo_js").value,
+//             "dateEnd": document.querySelector(".eventEnd_jheo_js").value,
+//             "timeStart": document.querySelector(".timeStart_jheo_js").value,
+//             "timeEnd": document.querySelector(".timeEnd_jheo_js").value,
+//         }
+
+//         const agenda_keys = Object.keys(agenda);
+//         agenda_keys.forEach(key => {
+//             if (agenda[key] === '') {
+//                 state = false;
+//             }
+//         })
+
+//         if (!state) {
+//             e.preventDefault()
+//             console.log(agenda)
+//             document.querySelector(".invalid_agenda_jheo_js").click();
+
+//             setTimeout(() => {
+//                 document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
+//             }, 1500);
+//         } else {
+//             sendNewAgenda(agenda)
+//         }
+//     })
+
+
+//     document.querySelectorAll(".cta_close_list_resto_jheo_js").forEach(close => {
+//         close.addEventListener("click", () => {
+//             document.querySelectorAll(".list_tr_resto_jheo_js tr").forEach(tr => tr.remove())
+//         })
+//     })
+// }
 
 
 function rendreCalendarWithEvents(events) {

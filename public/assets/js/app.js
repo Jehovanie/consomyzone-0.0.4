@@ -1,4 +1,4 @@
-const IS_DEV_MODE=true;
+const IS_DEV_MODE=false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -1015,22 +1015,22 @@ function findInNet(server, denomination_f, adresse){
 function openVoirPlusChearch(denomination_f, adresse, type){
 
     let html = ""
-
+// // <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/thefork_icon.png" onclick="openSwalNonActif()"/>The fork</div>
     switch(type){
         case 'resto' : {
             html = `<div class="d-flex justify-content-center mt-3 mb-3">
-            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/google_icon.png" onclick="findInNet('google','${denomination_f}','${adresse}')"/>Google</div>
-            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/googlemap_icon.png" onclick="findInNet('map','${denomination_f}','${adresse}')"/>Google Maps</div>
-            <div class="d-flex flex-column align-items-center m-2 non_active"><img class="fa-search-elie" src="assets/icon/thefork_icon.png" onclick="findInNet('thefork','${denomination_f}','${adresse}')"/>The fork</div>
-            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','${denomination_f}','${adresse}')"/>Tripadvisor</div>
-            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/michelin_icon.png" onclick="findInNet('michelin','${denomination_f}','${adresse}')"/>Guide Michelin</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/google_icon.png" onclick="findInNet('google','${denomination_f}','${adresse}')"/>Google</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png" onclick="findInNet('map','${denomination_f}','${adresse}')"/>Google Maps</div>
+           
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','${denomination_f}','${adresse}')"/>Tripadvisor</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png" onclick="findInNet('michelin','${denomination_f}','${adresse}')"/>Guide Michelin</div>
             <div class="d-flex flex-column align-items-center m-2"></div>`
             break;
         }
         default : {
             html = `<div class="d-flex justify-content-center mt-3 mb-3">
-            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/google_icon.png"/>Google</div>
-            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="assets/icon/googlemap_icon.png"/>Google Maps</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/google_icon.png"/>Google</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png"/>Google Maps</div>
             <div class="d-flex flex-column align-items-center m-2"></div>`
         }
     }
@@ -1810,6 +1810,7 @@ if(document.querySelector(".btn-minimize-elie")){
 }
 
 function notificationSong() {
-    var audio = new Audio('/assets/song/notification_message.mp3');
-    audio.play();
+    // var audio = new Audio('/assets/song/notification_message.mp3');
+    // audio.play();
+    console.log("song")
 }
