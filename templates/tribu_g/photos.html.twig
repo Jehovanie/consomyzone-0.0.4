@@ -1,4 +1,4 @@
-<div class="content_photos content_photos_js_jheo">
+<div class="content_photos_js_jheo" style="width:71%">
 	<div class="card p-3">
 		<!-- Gallery -->
 		<div>
@@ -6,7 +6,7 @@
 				Photo télechargé avec succès!
 			</div>
 
-			<span class="h4">Album des photos</span>
+			<span class="h4">Les photos de la tribu-G</span>
 
 			{# <label class="input-file text-center float-end" style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;">
 				<i class="bi bi-camera-fill"></i>
@@ -15,17 +15,33 @@
 				<img src="" alt="" id="photo-file" class="w-100" style="display:none;">
 			</label> #}
 		</div>
-
-		<div class="gallery-container">
-			<div class="" id="gallery" style="width:100%"> 
+{# id="gallery" #}
+		<div class="row mt-2" style="width:100%" >
+				
+				{# <div class="column-pg-cmz" >  #}
 				{% for single_photo in photos %}
+					
 					{% if single_photo.photo %}
-						<img src={{ single_photo.photo}} class="image_item_gallery" alt="Image"/>
+					    <div class="col-lg-3 col-md-4 col-xs-6 col-sm-6 thumb text-center">
+							<a href="#" class="fancybox" rel="ligthbox">
+								<img src={{ single_photo.photo}} class="zoom img-fluid " alt="Image" style="width:100%"/>
+							</a>
+						</div>
+						
+
 					{% endif %}
+					
 				{% endfor %}
-			</div>
+				
+				{# </div> #}
 			{# {% endfor %} #}
 		</div>
+
 		<!-- Gallery -->
+	</div>
+	<div id="modalZoom" class="modalZoom">
+		<span class="closeZoom">&times;</span>
+		<img class="modalZoom-content" id="imgFullSecreen">
+					{# <div id="captionZoom"></div> #}
 	</div>
 </div>

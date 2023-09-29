@@ -284,13 +284,13 @@ function getStateTabac(numeroIndices=1){
             <th scope="row">${numeroIndices}</th>
             <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/tabac_black0.png" alt="Icon Tabac"></td>
             
-            <td>Marker Tabac non sélectionné.</td>
+            <td>Marquer Tabac non sélectionné.</td>
         </tr>
         <tr>
             <th scope="row">${numeroIndices + 1 }</th>
             <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/tabac_red0.png" alt="Icon Tabac"></td>
 
-            <td>Marker Tabac sélectionné.</td>
+            <td>Marquer Tabac sélectionné.</td>
         </tr>
     `
     return data;
@@ -306,12 +306,12 @@ function getStateStation(numeroIndices=1){
             <th scope="row">${numeroIndices}</th>
             <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-station-new-B.png" alt="Icon Station"></td>
             
-            <td>Marker Station non sélectionné.</td>
+            <td>Marquer Station non sélectionné.</td>
         </tr>
         <tr>
             <th scope="row">${numeroIndices + 1 }</th>
             <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-station-new-R.png" alt="Icon Station"></td>
-            <td>Marker Station sélectionné.</td>
+            <td>Marquer Station sélectionné.</td>
         </tr>
     `
     return data;
@@ -329,12 +329,12 @@ function getStateFerme(numeroIndices=1){
             <th scope="row">${numeroIndices}</th>
             <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-ferme-new-B.png" alt="Icon Ferme"></td>
             
-            <td>Marker Ferme non sélectionné.</td>
+            <td>Marquer Ferme non sélectionné.</td>
         </tr>
         <tr>
             <th scope="row">${numeroIndices + 1 }</th>
             <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-ferme-new-R.png" alt="Icon Ferme"></td>
-            <td>Marker Ferme sélectionné.</td>
+            <td>Marquer Ferme sélectionné.</td>
         </tr>
     `
     return data;

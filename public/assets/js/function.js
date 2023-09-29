@@ -1012,24 +1012,33 @@ function deleteMap(){
 
 function setGallerie(imgs){
     imgs.forEach(img => {
-            
+        console.log(img)
         //console.log(img);
-        h = img.naturalHeight;
-        w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const w = img.naturalWidth;
 
-        //console.log("img.naturalHeight : " + img.naturalHeight)
-        //console.log("img.naturalWidth : " + img.naturalWidth)
-        ratio = w/h;
-        closestRatioValue = Math.abs(1-ratio);
-        closestRatio = 1;
+        console.log("img.naturalHeight : " + img.naturalHeight)
+        console.log("img.naturalWidth : " + img.naturalWidth)
+        const ratio = w/h;
+        let closestRatioValue = Math.abs(1-ratio);
+        console.log("closestRatioValue "+closestRatioValue)
+        let closestRatio = 1;
         var a = Math.abs(16/9-ratio);
         var b = Math.abs(9/16-ratio);
-
+        console.log("a "+ a+" b"+b )
         if(a < closestRatioValue){
             closestRatioValue = a;
             closestRatio = 16/9;
         }
         if(b < closestRatioValue){
+            closestRatioValue = b;
+            closestRatio = 9/16;
+        }
+        if(a > closestRatioValue){
+            closestRatioValue = a;
+            closestRatio = 16/9;
+        }
+        if(b > closestRatioValue){
             closestRatioValue = b;
             closestRatio = 9/16;
         }
@@ -1039,7 +1048,7 @@ function setGallerie(imgs){
             img.style.gridColumn = "span 2";
         } else if(closestRatio == 9/16){
             console.log("9/16");
-            img.style.gridRow = "span 2";
+            img.style.gridRow = "1 / span 2";
         }
     });
 }
@@ -2457,4 +2466,40 @@ function setDirForImage(e){
     preview.setAttribute('directoryRoot', root);
     $("#selectRepertoryModal").modal("hide")
     $("#createAgenda").modal("show")
+}
+
+/**
+ * @author Elie
+ */
+function setGallerieImageV2(){
+    let modalZoom = document.getElementById('modalZoom');
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    let imgFullSecreen = document.getElementById("imgFullSecreen");
+    // let captionText = document.getElementById("captionZoom");
+
+    document.querySelectorAll(".fancybox > img").forEach(fancy=>{
+        let url = fancy.src
+
+        fancy.onclick = function(){
+
+            document.querySelector("body").classList.add("modal-open")
+            document.querySelector("body").style = "overflow: scroll; padding-right: 19px;"
+            modalZoom.style.display = "block";
+            imgFullSecreen.src = url;
+            imgFullSecreen.style = " width:60%"
+            //height : 100%;
+        }
+
+    })
+
+    // Get the <span> element that closes the modal
+    let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    spanCloseZoom.onclick = function() { 
+        modalZoom.style.display = "none";
+        document.querySelector("body").classList.remove("modal-open")
+        document.querySelector("body").style = ""
+    }
 }

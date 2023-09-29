@@ -32,27 +32,22 @@ if( document.querySelector("#fetch_photo_tribug_jheo_js")){
             </div>
         `;
 
-
-        fetch("/tributG/photos")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Not 404 response", {cause: response});
-                } else {
-                    return response.text()
-                }
-            })
-            .catch(error => {
-                console.error(error)
-            })
-            .then( response => {
-                if( document.querySelector(".content_bloc_jheo_js")){
-                    document.querySelector(".content_bloc_jheo_js").innerHTML = response;
-
-                    setGallerie(document.querySelectorAll("#gallery > img"))
-                }
-            }).catch(error => {
-                console.log(error)
-            })
+        fetch("/tributG/photos").then(response=>{
+            if(response.ok && response.status==200){
+                response.text().then(text=>{
+                    if( document.querySelector(".content_bloc_jheo_js")){
+                        document.querySelector(".content_bloc_jheo_js").innerHTML = text;
+                        // const parser = new DOMParser();
+                        // const htmlDocument = parser.parseFromString(text, "text/html");
+                        // htmlDocument.querySelector(".image_item_gallery")
+                        setGallerieImageV2();
+                    }
+                })
+            }else{
+                throw new Error("Not 404 response", {cause: response});
+            }
+        })
+       
     })
 }
 
