@@ -1,0 +1,16 @@
+<div class="modal fade" id="addPictureModal" tabindex="-1" aria-labelledby="addPictureModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addPictureModalLabel">Ajout de photo</h1>
+        <button type="button" class="btn-close" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          {% include 'shard/input/inputImageAndScreenShoot.html.twig' %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-target="#createAgenda" data-bs-toggle="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1457,17 +1457,21 @@ class TributTController extends AbstractController
 
     {
 
+        // $tribu_t = new Tribu_T_Service();
 
+        // $photos = $tribu_t->showAllphotosTribut($table);
 
-        $tribu_t = new Tribu_T_Service();
+        // return $this->json($photos);
 
-
-
-        $photos = $tribu_t->showAllphotosTribut($table);
-
-
-
-        return $this->json($photos);
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/".$table."/";
+        $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
+        $tabPhoto = [];
+        foreach ($images as $image) {
+            $photo = explode("uploads/tribu_t",$image)[1];
+            $photo = "/public/uploads/tribu_t".$photo;
+            array_push($tabPhoto, ["photo"=>$photo]);
+        }
+        return $this->json($tabPhoto);
 
     }
 
@@ -2161,10 +2165,17 @@ class TributTController extends AbstractController
 
                 if ($output != 0) {
 
-                    $restoExtension = ($resto == "on") ? "restaurant" : null;
-                    $golfExtension = ($golf == "on") ? "golf" : null;
+                    // $restoExtension = ($resto == "on") ? "restaurant" : null;
+                    
+                    // $golfExtension = ($golf == "on") ? "golf" : null;
+
+                    $extension = [];
+                    $extension["restaurant"] = ($resto == "on") ? 1 : 0;
+                    $extension["golf"] = ($golf == "on") ? 1 : 0;
+
                    
-                    $tribut->setTribuT($output, $description, $path,$restoExtension,$golfExtension, $userId,"tribu_t_owned", $nomTribuT);
+                    // $tribut->setTribuT($output, $description, $path,$restoExtension,$golfExtension, $userId,"tribu_t_owned", $nomTribuT);
+                    $tribut->setTribuT($output, $description, $path,$extension, $userId,"tribu_t_owned", $nomTribuT);
 
                     $isSuccess = true;
 
@@ -2178,22 +2189,16 @@ class TributTController extends AbstractController
 
                         $tribut->createTableComment($tableTribu, "restaurant_commentaire");
 
-                        // $extensionData = json_decode($body["extensionData"]);
-
-                        // if (count($extensionData) > 0) {
-                        //     $agendaService = new AgendaService ();
-                        //     for($i = 0; $i < count($extensionData); $i++){
-                        //         $agendaService->saveRestaurant($tableTribu."_restaurant", $extensionData[$i]->denomination_f, $extensionData[$i]->id_resto);
-                        //     }
-
-                        // }
-
                     }
                     if ($golf == "on") {
 
-                        $tribut->createExtensionDynamicTableGolf($tableTribu, "golf");
+                        // $tribut->createExtensionDynamicTableGolf($tableTribu, "golf");
 
-                        $tribut->createTableCommentGolf($tableTribu, "golf_commentaire");
+                        // $tribut->createTableCommentGolf($tableTribu, "golf_commentaire");
+
+                        $tribut->createExtensionDynamicTable($tableTribu, "golf");
+
+                        $tribut->createTableComment($tableTribu, "restaurant_commentaire");
 
                     }
 
@@ -2239,6 +2244,10 @@ class TributTController extends AbstractController
         }
 
         $member = $tribu_T_Service->showMember($tableTribuT);
+
+        $extension = [];
+        $extension["restaurant"] = ($restaurant == "on") ? 1 : 0;
+        $extension["golf"] = ($golf == "on") ? 1 : 0;
         
         foreach ($member as $user) {
             if($user["user_id"] == $userId){
@@ -2248,11 +2257,19 @@ class TributTController extends AbstractController
             }
         }
 
-        if ($extension == "on") {
+        if ($restaurant == "on") {
 
             $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "restaurant");
 
             $tribu_T_Service->createTableComment($tableTribuT, "restaurant_commentaire");
+        }
+
+        if ($golf == "on") {
+
+            $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "golf");
+
+            $tribu_T_Service->createTableComment($tableTribuT, "golf_commentaire");
+
         }
 
         return $this->json("Information modifié avec succès");
@@ -2277,10 +2294,30 @@ class TributTController extends AbstractController
         }else{
             $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
         }
-
-        // $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
         
         return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    }
+
+    #[Route("/user/tribu_t/pastille/golf", name:"tribu_t_pastille_golf", methods:["POST"])]
+    public function pastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $golf_name =  $jsonParsed["name"];
+
+        $golf_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
+
+        if(count($checkIdResto) > 0){
+            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, true);
+        }else{
+            $agendaService->saveRestaurant($tribu_t."_golf", $golf_name, $golf_id);
+        }
+        
+        return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
     }
 
     #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
@@ -2433,6 +2470,21 @@ class TributTController extends AbstractController
         }
 
         return $this->json($keyValueDep);
+    }
+
+    #[Route("/user/all/photos", name:"user_all_photos", methods:["GET"])]
+    public function getAllPhotoOnDirectory(){
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/tribu_t_2_data_engineer_publication/";
+        $images = glob($folder . '*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+        $tabPhoto = [];
+        foreach ($images as $image) {
+            $photo = explode("uploads/tribu_t",$image)[1];
+            $photo = "/uploads/tribu_t/".$photo;
+            // $tabPhoto["photo"] = $photo;
+            // array_push($tmp, ...$array1["tribu_t"])
+            array_push($tabPhoto, ["photo"=>$photo]);
+        }
+        dd($tabPhoto);
     }
 
     

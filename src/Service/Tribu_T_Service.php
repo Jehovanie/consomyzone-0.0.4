@@ -491,11 +491,11 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
      * @param string $description it's can be change. This is the description of the tribu T
      * @param string $path  it's can be change. This is the logo path of the tribu T
-     * @param string $extenstion it's can be change. This is the extension we can associate with the tribu T
+     * @param array $extension it's can be change. This is the extension we can associate with the tribu T
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
-    function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$extenstion_golf,$userId,$tribu_t_owned_or_join,$nomTribuT)
+    function setTribuT($tribu_T_name_table, $description,$path,$extension,$userId,$tribu_t_owned_or_join,$nomTribuT)
 
     {
 
@@ -514,8 +514,7 @@ class Tribu_T_Service extends PDOConnexionService
                     "name"=> $tribu_T_name_table,
                     "name_tribu_t_muable"=>$nomTribuT,
                     "description"=> $description,
-                    "extension"=> $extenstion,
-                    "extension_golf"=> $extenstion_golf,
+                    "extension"=> $extension,
                     "logo_path"=>$path,
                     "date"=>  $date,
                     ));
@@ -533,7 +532,6 @@ class Tribu_T_Service extends PDOConnexionService
             $array1= json_decode($list, true);
             $tmp = [];
             $array =[];
-            
             try{
                 array_push($tmp, ...$array1["tribu_t"]);
             }catch(ArgumentCountError $e){
@@ -542,10 +540,9 @@ class Tribu_T_Service extends PDOConnexionService
                 array_push($tmp, 
                 array("name" => $tribu_T_name_table,  
                 "name_tribu_t_muable"=>$nomTribuT, 
-                "description" => $description, "extension" => $extenstion,"extension_golf"=> $extenstion_golf, "logo_path" => $path, "date" =>  $date));
+                "description" => $description, "extension" => $extension,"logo_path" => $path, "date" =>  $date));
                 $array = array("tribu_t" => $tmp);
             }
-
 
             if ($_ENV['APP_ENV'] == 'dev') 
                 dump($array);
@@ -557,7 +554,6 @@ class Tribu_T_Service extends PDOConnexionService
             $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
             $statement->bindParam(":jsonArray",$jsontribuT);
             $statement->bindParam(":userid",$userId);
-
           
         }
 
@@ -571,7 +567,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
      * @param string $description it's can be change. This is the description of the tribu T
      * @param string $path  it's can be change. This is the logo path of the tribu T
-     * @param string $extenstion it's can be change. This is the extension we can associate with the tribu T
+     * @param array $extension it's can be change. This is the extension we can associate with the tribu T
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
@@ -1270,27 +1266,15 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function fetchUserPublication($table, $user_id){
 
-
-
         $sql = "select * from $table where user_id = $user_id ORDER BY datetime DESC";
-
-
 
         $stmt = $this->getPDO()->prepare($sql);
 
-
-
         $stmt->execute();
-
-
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result;
-
-
 
     }
 
