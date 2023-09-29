@@ -121,7 +121,7 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
             if (document.querySelector(".input_message_jheo_js").value.length > 1 || document.querySelectorAll(".content_image_input_js_jheo img").length > 0) {
                 
                 //// hide emoji picker
-                toggleEmojyPicker()
+                hideEmojyPicker()
 
                 ///send message---------------------------------------------------
                 sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)

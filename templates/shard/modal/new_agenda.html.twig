@@ -375,7 +375,7 @@
 {# <div class="modal fade show" id="selectRepertory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-modal="true" role="dialog" style="display: block;">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-        <h3 class="mx-auto mt-4">Dans quel repertoire voulez vous partager ce photo?</h3>
+        <h3 class="mx-auto mt-4">Dans quel repertoire voulez vous partager cette photo?</h3>
         <div class="mx-auto mt-3">
             <a href="/user/tribu/partage/agenda" class="btn btn-primary">Tribu G</a>
             <button type="button" class="btn btn-danger" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Tribu T</button>
@@ -388,7 +388,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="selectRepertoryModalLabel">Dans quel repertoire voulez vous partager ce photo?</h1>
+        <h1 class="modal-title fs-5" id="selectRepertoryModalLabel">Dans quel repertoire voulez vous partager cette photo?</h1>
         <button type="button" class="btn-close" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -407,7 +407,7 @@
         <div id="repertoryDirTribuG">
             {# <ul>
               <li>
-                <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? asset('uploads/tribus/photos/' ~ tribuG.photoProfil) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
+                <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? asset(tribuG.photoProfil) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
                 <a href="#" data-tribu="{{tribuG.tributG}}">Tribu G {{tribuG.tributG|split('_', 4)|last|replace({'_':' '})|capitalize}}</a>
               </li>
             </ul> #}
@@ -415,7 +415,7 @@
                 <tbody>
                     <tr style="vertical-align: middle;">
                       <td class="col-logo">
-                        <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? asset('uploads/tribus/photos/' ~ tribuG.photoProfil) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
+                        <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? asset(tribuG.photoProfil) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
                       </td>
                       <td class="col-tribuT"><a href="#" data-tribu="{{tribuG.tributG}}" onclick="setDirForImage(event)">Tribu G {{tribuG.tributG|split('_', 3)|last|replace({'_':' '})|capitalize}}</a></td>
                       <td class="col-action">
@@ -443,8 +443,8 @@
                   {% for item in tribuT %}
                     <tr style="vertical-align: middle;">
                       <td class="col-logo">
-                          {# <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? '/public' ~ item.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> #}
-                          <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? item.logo_path : '/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+                          <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? '/public' ~ item.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
+                          {#<img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? item.logo_path : '/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">#}
                       </td>
                       <td class="col-tribuT"><a href="#" data-tribu="{{item.table_name}}" onclick="setDirForImage(event)">Tribu T {{item.name_tribu_t_muable|capitalize}}</a></td>
                       <td class="col-action">

@@ -176,13 +176,13 @@ class MessageService extends PDOConnexionService{
 
         // dd($msg);
 
-        if($msg == true){
+        if($msg === true){
             $text = json_decode($this->convertUnicodeToUtf8($msg["content"]), true);
             $result = [
                 "id" => $msg["id"],
                 "user_id" => $msg["user_id"],
                 "user_post" => $msg["user_post"],
-                "text" => $text["text"],
+                "text" => array_key_exists('text', $text) ?  $text["text"] : "(Object)",
                 "message_type" => $msg["message_type"],
                 "isForMe" => $msg["isForMe"],
                 "isRead" => $msg["isRead"],
