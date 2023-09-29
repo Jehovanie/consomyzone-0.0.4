@@ -2555,12 +2555,20 @@ function takePicture(){
     preview.src = data;
     preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
     preview.setAttribute('typeFile',"image/png")
-    document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
-    document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+    if(document.querySelector(".preview_image_nanta_js"))
+        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+    if(document.querySelector(".btnAddPhoto_nanta_js"))
+        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
     $("#mediaModal").modal("hide")
     // $("#createAgenda").modal("show")
-    if(document.querySelector("#selectRepertoryModal"))
-                    $("#selectRepertoryModal").modal("show")
+    if(document.querySelector("#selectRepertoryModal")){
+
+        $("#selectRepertoryModal").modal("show")
+    }
+    // open option photo profil
+    if(window.location.href.includes("/user/profil/") || window.location.href.includes("/user/setting/account")){
+        setPhotoAfterUpload({ image : data })
+    }
     /*outputCanvas.toBlob((blob) => {
         console.log(URL.createObjectURL(blob))
         // downloadLink.setAttribute('href', URL.createObjectURL(blob));
@@ -2596,4 +2604,113 @@ function setDirForImage(e){
     preview.setAttribute('directoryRoot', root);
     $("#selectRepertoryModal").modal("hide")
     $("#createAgenda").modal("show")
+}
+
+/**
+ * Function lancing after upload photo
+ * @constructor
+ * @param {string} data source 
+ */
+function setPhotoAfterUpload(data){
+
+    swal("Voulez-vous definir cette photo comme photo de profile?", {
+        buttons: {
+          cancel: "Non, pas maintenant",
+          confirm: {
+            text: "Oui, accepter",
+            value: "confirm",
+          },
+        },
+      })
+      .then((value) => {
+        switch (value) {
+       
+          case "confirm":{
+            fetch(new Request("/user/profil/update/avatar", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => {
+                // console.log(response)
+
+                if(response.success){
+
+                    swal({
+                        title: "Modifié",
+                        text: response.message,
+                        icon: "success",
+                        button: "OK",
+                      });
+
+                }
+
+            });
+            break;
+            }
+       
+          default:{
+            fetch(new Request("/user/profil/add/photo", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => {
+                // console.log(response)
+
+                if(response.success){
+
+                    swal({
+                        title: "Téléchargé",
+                        text: response.message,
+                        icon: "success",
+                        button: "OK",
+                      });
+
+                }
+
+            });
+          }
+        }
+      });
+}
+/**
+ * Function set gallery images on JS
+ * @constructor
+ */
+function setGallerieImageV2(){
+    let modalZoom = document.getElementById('modalZoom');
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    let imgFullSecreen = document.getElementById("imgFullSecreen");
+    // let captionText = document.getElementById("captionZoom");
+    
+    document.querySelectorAll(".fancybox > img").forEach(fancy=>{
+        let url = fancy.src
+    
+        fancy.onclick = function(){
+    
+            document.querySelector("body").classList.add("modal-open")
+            document.querySelector("body").style = "overflow: hidden; padding-right: 19px;"
+            modalZoom.style.display = "block";
+            imgFullSecreen.src = url;
+            imgFullSecreen.style = "height : 100%; width:60%"
+    
+        }
+    
+    })
+    
+    // Get the <span> element that closes the modal
+    let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
+    
+    // When the user clicks on <span> (x), close the modal
+    spanCloseZoom.onclick = function() { 
+        modalZoom.style.display = "none";
+        document.querySelector("body").classList.remove("modal-open")
+        document.querySelector("body").style = ""
+    }
 }

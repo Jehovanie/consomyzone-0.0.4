@@ -456,29 +456,33 @@ window.addEventListener("load", (event) => {
 
 
 
-if(document.querySelector(".btn-minimize-elie")){
-    document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
-        $("#visioMessageElie").modal("hide")
+// if(document.querySelector(".btn-minimize-elie")){
+//     document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
+
+//         document.querySelector("#bodyVisioMessageElie").classList.add("minRightModal")
+//         // $("#visioMessageElie").modal("hide")
     
-        let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
+//         // let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
+
+//         // document.querySelector("#bodyVisioMessageElie").innerHTML =""
     
-        joinMeet(room, 'minimizeVisio', this)
+//         // joinMeet(room, 'minimizeVisio', this)
     
-        let btn_expand = document.createElement("button")
-        btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-        btn_expand.setAttribute('type', 'button')
-        btn_expand.classList = "btn-close btn-expand-elie"
-        btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+//         // let btn_expand = document.createElement("button")
+//         // btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+//         // btn_expand.setAttribute('type', 'button')
+//         // btn_expand.classList = "btn-close btn-expand-elie"
+//         // btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
     
-        document.querySelector("#minimizeVisio").appendChild(btn_expand)
+//         // document.querySelector("#minimizeVisio").appendChild(btn_expand)
     
-        btn_expand.addEventListener("click", function () {
-            $("#visioMessageElie").modal("show")
-            document.querySelector("#minimizeVisio").innerHTML = ""
-        })
+//         // btn_expand.addEventListener("click", function () {
+//         //     $("#visioMessageElie").modal("show")
+//         //     document.querySelector("#minimizeVisio").innerHTML = ""
+//         // })
     
-    })
-}
+//     })
+// }
 
 if( document.querySelector(".show_emojy_picker_jheo_js")){
     const ctaShowEmojyPicker= document.querySelector(".show_emojy_picker_jheo_js")
