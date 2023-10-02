@@ -1735,12 +1735,11 @@ function getAllComment(pubId, tablePub, userOwnID){
             const comments = response.comments.reverse();
 
             comments.forEach(comment => {
-                const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
+                const pdp = (comment.user.photo !== null) ? comment.user.photo: '/public/uploads/users/photos/default_pdp.png';
                 listLIcomment += `
                     <li id='pub_${comment.pub_id}_comment_${comment.comment_id}' class="nr h lc rg mg qh sq js yk mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
                         <div class="h sa wf uk th ni ej">
                             <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
-                            <span class="g l m xe qd th pi jj sj ra"></span>
                         </div>
                         <div>
                             <h6 class="un zn gs">

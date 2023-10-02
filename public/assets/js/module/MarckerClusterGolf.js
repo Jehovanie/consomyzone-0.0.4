@@ -90,7 +90,6 @@ class MarckerClusterGolf extends MapModule {
 
     addMarker(newData){
         newData.forEach(item => {
-            console.log(item)
             const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
             let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
             
@@ -100,11 +99,11 @@ class MarckerClusterGolf extends MapModule {
             if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null ){
                 pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
             }else{
-                if( item.user_status.a_faire === true ){
+                if( !!item.user_status.a_faire === true ){
                     pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
-                }else if( item.user_status.fait === true ){
+                }else if( !!item.user_status.fait === true ){
                     pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png"
-                }else if( item.user_status.mon_golf === true ){
+                }else if( !!item.user_status.mon_golf === true ){
                     pathIcon= "/assets/icon/NewIcons/mon_golf.png"
                 }else{
                     pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
@@ -117,6 +116,8 @@ class MarckerClusterGolf extends MapModule {
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
+                console.log(item)
+
                 const itemID= item.id
                 const golfUpdate = this.data.find(jtem =>parseInt(jtem.id) === itemID);
                 this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
@@ -126,11 +127,11 @@ class MarckerClusterGolf extends MapModule {
                 if( golfUpdate.user_status.a_faire === null &&  golfUpdate.user_status.fait === null && golfUpdate.user_status.mon_golf === null ){
                     pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
                 }else{
-                    if( golfUpdate.user_status.a_faire === true){
+                    if( !!golfUpdate.user_status.a_faire === true){
                         pathIcon= "/assets/icon/NewIcons/icon-vert-golf-orange.png";
-                    }else if(golfUpdate.user_status.fait === true ){
+                    }else if( !!golfUpdate.user_status.fait === true ){
                         pathIcon= "/assets/icon/NewIcons/icon-vert-golf-bleu.png"
-                    }else if(golfUpdate.user_status.mon_golf === true ){
+                    }else if( !!golfUpdate.user_status.mon_golf === true ){
                         pathIcon= "/assets/icon/NewIcons/mon_golf_select.png"
                     }else{
                         pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';

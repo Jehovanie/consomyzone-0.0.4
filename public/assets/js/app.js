@@ -1683,28 +1683,33 @@ function sendFeedBackForPartenariat(){
 
 
 function reorganisePastille(){
-   let container=document.querySelector(".mainContainerLogoTribu") 
+  
 //    let ratio=(container.querySelectorAll(".img_nantenaina").length)/5
 //    container.style.width=(43*3)+"px"
-    let i=0
-    let j = 0;
-
-    let imLength = container.querySelectorAll(".img_nantenaina").length
-    if(imLength> 5)
-        document.querySelector(".iconePlus_nanta_js").classList.remove("d-none")
-
-   Array.from(container.querySelectorAll(".img_nantenaina")).forEach(item=>{
-      let bRect= item.getBoundingClientRect()
-      let itemWidth=bRect.width;
-      item.style.zIndex = 4 - j
-      i+= itemWidth
-      if(imLength > 4)
-        if(j>0)
-            item.style.marginLeft = "-10px"
-      j++
-      container.style.width=i+"px"
-   })
-
+   
+    if(document.querySelector(".mainContainerLogoTribu") ){
+        let container=document.querySelector(".mainContainerLogoTribu") 
+        let i=0
+        let j = 0;
+        if(container.querySelectorAll(".img_nantenaina")){
+       
+            let imLength = container.querySelectorAll(".img_nantenaina").length
+            if(imLength> 5)
+                document.querySelector(".iconePlus_nanta_js").classList.remove("d-none")
+    
+            Array.from(container.querySelectorAll(".img_nantenaina")).forEach(item=>{
+                let bRect= item.getBoundingClientRect()
+                let itemWidth=bRect.width;
+                item.style.zIndex = 4 - j
+                i+= itemWidth
+                if(imLength > 4)
+                    if(j>0)
+                        item.style.marginLeft = "-10px"
+                j++
+                container.style.width=i+"px"
+            })
+        }
+    }
 }
 
 function showNextImage(){

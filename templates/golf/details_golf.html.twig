@@ -8,11 +8,11 @@
                         {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
                             <span class="badge bg-info golf_status golf_status_jheo_js"></span>
                         {% else %}
-                            {% if details.user_status["a_faire"] == 1 %}
+                            {% if details.user_status["a_faire"] == "1" %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
-                            {% elseif details.user_status["fait"] == 1 %}
+                            {% elseif details.user_status["fait"] == "1" %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
-                            {% elseif details.user_status["mon_golf"] == 1 %}
+                            {% elseif details.user_status["mon_golf"] == "1" %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
                             {% else %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
@@ -59,7 +59,8 @@
             </div>
              <hr>
             <div class="mt-2 nombre_avis d-flex justify-content-center align-items-center">
-                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
+                {# <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button> #}
+                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">Avis</button>
             </div>
         </div>
 
