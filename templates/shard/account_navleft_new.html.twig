@@ -50,20 +50,24 @@
 					</a>
 				</li>
 
-				<li class="">
-					<a class="list-nav-left nr h un lc mg sg qh gp dp nl rl _q qq" id="link-super-admin" href="{{ path("app_dashboard") }}">
-						<i class="fa-solid fa-chart-line fa-users   fa-lg"></i>
-						Super Admin
-					</a>
-				</li>
+				{% if userConnected.isSuperAdmin is same as(true) %}
+					<li class="">
+						<a class="list-nav-left nr h un lc mg sg qh gp dp nl rl _q qq" id="link-super-admin" href="{{ path("app_dashboard") }}">
+							<i class="fa-solid fa-chart-line fa-users   fa-lg"></i>
+							Super Admin
+						</a>
+					</li>
+				{% endif %}
 
-				<li class="" >
-					{# <a class=" nr h un lc mg sg qh gp dp nl rl _q qq btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" href="app_dashboard"> #}
-					<a class=" nr h un lc mg sg qh gp dp nl rl _q qq btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" href="#">
-						<i class="fa-solid fa-chart-line fa-users fa-solid-nav  fa-lg"></i>
-						Fondateur
-					</a>
-				</li>
+				{% if userConnected.status_tribuG is same as( "FONDATEUR" )  %}
+					<li class="" >
+						{# <a class=" nr h un lc mg sg qh gp dp nl rl _q qq btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" href="app_dashboard"> #}
+						<a class=" nr h un lc mg sg qh gp dp nl rl _q qq btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" href="#">
+							<i class="fa-solid fa-chart-line fa-users fa-solid-nav  fa-lg"></i>
+							Fondateur
+						</a>
+					</li>
+				{% endif %}
                {# list-nav-left #}
 				{# <li class="non_active">
 					<a class=" nr h un lc mg sg qh gp dp nl rl _q qq" href="{{path('user_profil', { user_id: app.user.id })}}" >

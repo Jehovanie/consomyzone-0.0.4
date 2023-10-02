@@ -1983,8 +1983,8 @@ class UserController extends AbstractController
 
             $requesting->setIsAccepted($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
 
-            $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
-
+            // $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), $type, $content);
 
             /* End Nantenaina */
         } else {
@@ -2034,7 +2034,8 @@ class UserController extends AbstractController
 
             $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $balise;
 
-            $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
+            // $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), $type, $content);
 
             /* End Nantenaina */
         } else {
