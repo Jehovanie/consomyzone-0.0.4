@@ -427,6 +427,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+        //public
         image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
         // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
     } else {
@@ -462,7 +463,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                         <div class="col-lg-8 col-8 content-tribu-t-name">
                             <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
                             <p class="ms-2 text-white">
-                            ${tribu_t[0].description}
+                            ${tribu_t[0].description.replace(/"/gi,'')}
                             </p>
                         </div>
                     </div>
@@ -611,7 +612,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -713,7 +714,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -853,7 +854,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
                                                     ${pub_photo}
                                                 </div>
 

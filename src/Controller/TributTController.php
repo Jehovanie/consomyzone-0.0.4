@@ -2061,7 +2061,7 @@ class TributTController extends AbstractController
         $userId= $user->getId();
         $jsonParsed=json_decode($request->getContent(),true);
         $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $publication= $jsonParsed["contenu"];
+        $publication= json_encode($jsonParsed["contenu"]);
         $confid=$jsonParsed["confidentialite"];
         $image= $jsonParsed["base64"];
         $imageName= time()."_".$jsonParsed["photoName"];
@@ -2224,7 +2224,7 @@ class TributTController extends AbstractController
         extract($jsonParsed);
 
         $path = '/public/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
-
+        $pathToBase='/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
         $imgURL = null;
         if($photoName != ""){
             if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
@@ -2234,7 +2234,7 @@ class TributTController extends AbstractController
     
             $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $base64, time().$photoName);
 
-            $imgURL = $path.time().$photoName;
+            $imgURL = $pathToBase.time().$photoName;
         }
 
         $member = $tribu_T_Service->showMember($tableTribuT);

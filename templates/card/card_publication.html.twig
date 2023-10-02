@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        {% if userOwnPub.id is same as( app.user.id) %}
+        {% if userOwnPub.id == app.user.id %}
             <div class="param-content">
                 <span class="float-end dropstart">
                     <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
@@ -47,7 +47,7 @@
                     </span>
                     <ul class="dropdown-menu">
                         {# <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')"> #}
-                        <li class="non_active">
+                        <li class="non_active" onclick="openSwalNonActif()">
                             {# <button class="text-primary dropdown-item"> #}
                             <button class="text-secondary dropdown-item">
                                 <i class="fas fa-edit"></i>

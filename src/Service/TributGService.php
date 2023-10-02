@@ -52,6 +52,7 @@ class TributGService extends PDOConnexionService{
             }
 
             $description = "Département " . $depart_tributG[1] . ", " . $depart_tributG_name;
+            $description = $this->convertUtf8ToUnicode($description);
 
             //// creation de table tribut G.
             $sql = "CREATE TABLE " . $name_table_tribuG . " (
@@ -542,9 +543,21 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE user_id = $user_id LIMIT 1");
         $statement->execute();
 
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        return $result;
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
 
+        $result = [
+            "id" => $data['id'],
+            "user_id" => $data['user_id'],
+            "name" => $data['name'],
+            "description" => json_decode($this->convertUnicodeToUtf8($data['description']), true),
+            "avatar" => $data['avatar'],
+            "roles" => $data["roles"],
+            "datetime" => $data['datetime'],
+            "isBanished" => $data["isBanished"],
+            "isDeveloper" => $data["isDeveloper"],
+            "isModerate" => $data["isModerate"]
+        ];
+        return $result;
     }
 
 
