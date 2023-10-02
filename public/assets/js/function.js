@@ -2579,9 +2579,12 @@ function setGallerieImageV2(){
     let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
 
     // When the user clicks on <span> (x), close the modal
-    spanCloseZoom.onclick = function() { 
-        modalZoom.style.display = "none";
-        document.querySelector("body").classList.remove("modal-open")
-        document.querySelector("body").style = ""
+    if(spanCloseZoom){
+        spanCloseZoom.onclick = function() { 
+            modalZoom.style.display = "none";
+            document.querySelector("body").classList.remove("modal-open")
+            document.querySelector("body").style = ""
+        }
     }
+    
 }

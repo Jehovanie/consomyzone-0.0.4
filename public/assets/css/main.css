@@ -2148,7 +2148,7 @@ textarea {
 }
 
 #bodyVisioMessageElie{
-    /* height: 72vh; */
+    height: 72vh;
     padding: 2px 0;
 }
 /**modal gallerie*/
@@ -2257,4 +2257,3 @@ textarea {
     border-radius: 5px;
     padding: 6px;
 }
-

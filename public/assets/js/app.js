@@ -1817,15 +1817,18 @@ function expand(e){
     document.querySelector("#bodyVisioMessageElie").classList.remove("minRightVisioBody")
 }
 
-if(document.querySelector("#visioMessageElie").classList.contains("minRightModal")){
-    document.querySelector("#visioMessageElie").setAttribute("draggable", true)
-    // document.querySelector("#visioMessageElie").addEventListener("")
-
-    // script.js File
-   
+if(document.querySelector("#visioMessageElie")){
+    if(document.querySelector("#visioMessageElie").classList.contains("minRightModal")){
+        document.querySelector("#visioMessageElie").setAttribute("draggable", true)
+        // document.querySelector("#visioMessageElie").addEventListener("")
+    
+        // script.js File
+       
+    }
 }
 
-// const container = document.querySelector("body");
+
+// const container = document.querySelector(".minRightModal");
 // function onMouseDrag({ movementX, movementY }) {
 //     let getContainerStyle = window.getComputedStyle(container);
 //     let leftValue = parseInt(getContainerStyle.left);
@@ -1840,6 +1843,7 @@ if(document.querySelector("#visioMessageElie").classList.contains("minRightModal
 //     container.removeEventListener("mousemove", onMouseDrag);
 // });
 
+
 function notificationSong() {
     // var audio = new Audio('/assets/song/notification_message.mp3');
     // audio.play();
@@ -1852,7 +1856,7 @@ function reduire(e){
     e.classList ="btn-expand-elie-v2"
     e.setAttribute("onclick", "expand(this)")
     e.innerHTML = `
-        <span class="tooltiptext">Agrandir</span>
+        <span class="tooltiptext tooltiptextAgrandir">Agrandir</span>
         <i class="fa-solid fa-expand"></i>
     `
 
