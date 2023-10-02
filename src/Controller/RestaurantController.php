@@ -132,7 +132,7 @@ class RestaurantController extends AbstractController
             $tableTribu = $key["table_name"];
             $tableExtension = $tableTribu . "_restaurant";
             if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension);
+                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension, true);
                 $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
             }
         }
@@ -197,7 +197,7 @@ class RestaurantController extends AbstractController
             $tableTribu = $key["table_name"];
             $tableExtension = $tableTribu . "_restaurant";
             if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension);
+                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension, true);
                 $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
             }
         }
@@ -744,7 +744,7 @@ class RestaurantController extends AbstractController
                 $name_tribu_t_muable = $key["name_tribu_t_muable"];
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"])){
+                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"], true)){
                         array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
                     }else{
                         array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
@@ -760,7 +760,7 @@ class RestaurantController extends AbstractController
                 $name_tribu_t_muable = $key["name_tribu_t_muable"];
                 $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
-                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"])){
+                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
                         array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
                     }
                 }
@@ -803,7 +803,7 @@ class RestaurantController extends AbstractController
                 $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"]:null;
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant)){
+                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant, true)){
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path,"isPastilled"=>false]);
                     }else{
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled"=>true]);

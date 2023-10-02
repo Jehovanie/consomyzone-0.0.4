@@ -996,6 +996,105 @@ document.querySelectorAll(".btn_grise_non_actif_js_Elie").forEach(btn_gris=>{
         openSwalNonActif()
     })
 })
+
+function findInNet(server, denomination_f, adresse){
+
+    switch(server){
+        case 'google' :
+            window.open("https://www.google.com/search?q="+denomination_f+" "+adresse)
+            break;
+        case 'map':
+            window.open("https://www.google.com/maps?q="+denomination_f+" "+adresse)
+            break;
+        case 'thefork':
+            window.open("https://www.thefork.fr/restaurant/"+denomination_f.replaceAll(" ","-")+"-r")
+            break;
+        case 'tripadvisor':
+            window.open("https://www.tripadvisor.com/Search?q="+denomination_f)
+            break;
+        case 'michelin':
+            window.open("https://guide.michelin.com/fr/fr/restaurants?q="+denomination_f)
+            break;
+    }
+
+}
+
+function openVoirPlusChearch(denomination_f, adresse, type){
+
+    let html = ""
+// // <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/thefork_icon.png" onclick="openSwalNonActif()"/>The fork</div>
+    switch(type){
+        case 'resto' : {
+            html = `<div class="d-flex justify-content-center mt-3 mb-3">
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/google_icon.png" onclick="findInNet('google','${denomination_f}','${adresse}')"/>Google</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png" onclick="findInNet('map','${denomination_f}','${adresse}')"/>Google Maps</div>
+           
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','${denomination_f}','${adresse}')"/>Tripadvisor</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png" onclick="findInNet('michelin','${denomination_f}','${adresse}')"/>Guide Michelin</div>
+            <div class="d-flex flex-column align-items-center m-2"></div>`
+            break;
+        }
+        default : {
+            html = `<div class="d-flex justify-content-center mt-3 mb-3">
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/google_icon.png"/>Google</div>
+            <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png"/>Google Maps</div>
+            <div class="d-flex flex-column align-items-center m-2"></div>`
+        }
+    }
+
+    swal({
+        text : "Voulez-vous avoir plus d\'informations sur cet établissement, veuillez cliquer sur l\'un des liens suivants :",
+        icon : "info",
+        content : {
+            element: "div",
+            attributes: {
+                class: "d-flex justify-content-center mt-3 mb-3",
+                id :"moreSearch",
+            },
+        },
+        buttons: {
+            cancel: false,
+            catch: false,
+            defeat: false,
+          },
+        
+      })
+      .then((value) => {
+        switch (value) {
+       
+          case "defeat":
+            swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning");
+            break;
+       
+          case "catch":
+            swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning");
+            break;
+       
+          default:
+            swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning");
+        }
+      });
+
+      if(document.querySelector("#moreSearch")){
+        document.querySelector("#moreSearch").innerHTML = html
+      }
+
+    // Swal.fire({
+    //     // title: 'Text',
+    //     title : 'Voulez-vous avoir plus d\'informations sur cet établissement, veuillez cliquer sur l\'un des liens suivants :',
+    //     icon: 'question',
+    //     width: 600,
+    //     html: html,
+    //     showConfirmButton: false,
+    //     showCancelButton: false,
+    //     confirmButtonText:
+    //       '<i class="fa-solid fa-magnifying-glass"></i> Rechercher',
+    //     cancelButtonText:
+    //       '<i class="fa-solid fa-xmark"></i> Pas maintenant',
+    //   })
+
+}
+
 function showPartenairAsk(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
     return html=`
@@ -1591,28 +1690,33 @@ function sendFeedBackForPartenariat(){
 
 
 function reorganisePastille(){
-   let container=document.querySelector(".mainContainerLogoTribu") 
+  
 //    let ratio=(container.querySelectorAll(".img_nantenaina").length)/5
 //    container.style.width=(43*3)+"px"
-    let i=0
-    let j = 0;
-
-    let imLength = container.querySelectorAll(".img_nantenaina").length
-    if(imLength> 5)
-        document.querySelector(".iconePlus_nanta_js").classList.remove("d-none")
-
-   Array.from(container.querySelectorAll(".img_nantenaina")).forEach(item=>{
-      let bRect= item.getBoundingClientRect()
-      let itemWidth=bRect.width;
-      item.style.zIndex = 4 - j
-      i+= itemWidth
-      if(imLength > 4)
-        if(j>0)
-            item.style.marginLeft = "-10px"
-      j++
-      container.style.width=i+"px"
-   })
-
+   
+    if(document.querySelector(".mainContainerLogoTribu") ){
+        let container=document.querySelector(".mainContainerLogoTribu") 
+        let i=0
+        let j = 0;
+        if(container.querySelectorAll(".img_nantenaina")){
+       
+            let imLength = container.querySelectorAll(".img_nantenaina").length
+            if(imLength> 5)
+                document.querySelector(".iconePlus_nanta_js").classList.remove("d-none")
+    
+            Array.from(container.querySelectorAll(".img_nantenaina")).forEach(item=>{
+                let bRect= item.getBoundingClientRect()
+                let itemWidth=bRect.width;
+                item.style.zIndex = 4 - j
+                i+= itemWidth
+                if(imLength > 4)
+                    if(j>0)
+                        item.style.marginLeft = "-10px"
+                j++
+                container.style.width=i+"px"
+            })
+        }
+    }
 }
 
 function showNextImage(){
@@ -1627,7 +1731,7 @@ function agrandirImage(ev){
 }
 
 function resetImage(ev){
-    console.log(ev.target)
+    // console.log(ev.target)
     ev.target.style="transform:scale(1)"
  }
 
@@ -1652,4 +1756,105 @@ function showLogoAndNameTribus(){
     })
 }
 
+// window.onload = (event) => {
 
+//     // document.querySelector("#visioMessageElie").style="display :none !important;"
+//     // document.querySelector("#minimizeVisio").style="display :none !important;"
+
+//     if(localStorage.getItem("room_name")){
+//         let room = localStorage.getItem("room_name")
+
+//         document.querySelector("#visioMessageElie").style="display :none !important;"
+//         document.querySelector("#minimizeVisio").style="display :block !important;"
+        
+
+//         joinMeet(room, 'minimizeVisio', this)
+        
+//         let btn_expand = document.createElement("button")
+//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+//         btn_expand.setAttribute('type', 'button')
+//         btn_expand.classList = "btn-close btn-expand-elie"
+//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+        
+//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
+
+//         btn_expand.addEventListener("click", function () {
+//             // $("#visioMessageElie").modal("show")
+//             document.querySelector("#visioMessageElie").style="display:block !important"
+//             document.querySelector("#minimizeVisio").innerHTML = ""
+//             document.querySelector("#minimizeVisio").style="display:none !important"
+//         })
+//     }else{
+//         if(document.querySelector("#minimizeVisio")){
+
+//             document.querySelector("#minimizeVisio").style="display :none !important;"
+//         }
+//     }
+    
+// };
+
+// if(document.querySelector(".btn-minimize-elie")){
+
+//     document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
+
+//         document.querySelector("#visioMessageElie").style ="translate(25px, 25px); display:none !important;"
+    
+//         let room_link = localStorage.getItem("room_link")
+    
+//         document.querySelector("#minimizeVisio").style="display:block !important;"
+    
+//         let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
+    
+//         joinMeet(room, 'minimizeVisio', this)
+    
+//         let btn_expand = document.createElement("button")
+//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+//         btn_expand.setAttribute('type', 'button')
+//         btn_expand.classList = "btn-close btn-expand-elie"
+//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+    
+//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
+        
+//         btn_expand.addEventListener("click", function () {
+//             // $("#visioMessageElie").modal("show")
+//             document.querySelector("#visioMessageElie").style="display:block !important"
+//             document.querySelector("#minimizeVisio").innerHTML = ""
+//             document.querySelector("#minimizeVisio").style="display:none;"
+//         })
+    
+//     })
+
+// }
+
+function notificationSong() {
+    // var audio = new Audio('/assets/song/notification_message.mp3');
+    // audio.play();
+    console.log("song")
+}
+
+
+function reduire(e){
+    e.classList.remove("btn-minimize-elie")
+    e.classList ="btn-expand-elie-v2"
+    e.setAttribute("onclick", "expand(this)")
+    e.innerHTML = `
+        <span class="tooltiptext">Agrandir</span>
+        <i class="fa-solid fa-expand"></i>
+    `
+
+    document.querySelector("#visioMessageElie").classList.add("minRightModal")
+    document.querySelector("#bodyVisioMessageElie").classList.add("minRightVisioBody")
+}
+
+function expand(e){
+    e.setAttribute("onclick", "reduire(this)")
+    e.classList.remove("btn-expand-elie-v2")
+    e.classList ="btn-close btn-minimize-elie "
+    e.innerHTML = `
+        <span class="tooltiptext">Reduire</span>
+        <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
+    `
+
+    document.querySelector("#visioMessageElie").classList.remove("minRightModal")
+    document.querySelector("#bodyVisioMessageElie").classList.remove("minRightVisioBody")
+}

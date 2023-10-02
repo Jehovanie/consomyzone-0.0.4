@@ -1452,23 +1452,21 @@ class TributTController extends AbstractController
 
 
     #[Route('/user/tribu/photos/{table}', name: 'show_all_photos')]
-
     public function showAllphotosTribut($table): Response
-
     {
+        // $tribu_t = new Tribu_T_Service();
+        // $photos = $tribu_t->showAllphotosTribut($table);
+        // return $this->json($photos);
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/".$table."/";
+        $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
 
-
-
-        $tribu_t = new Tribu_T_Service();
-
-
-
-        $photos = $tribu_t->showAllphotosTribut($table);
-
-
-
-        return $this->json($photos);
-
+        $tabPhoto = [];
+        foreach ($images as $image) {
+            $photo = explode("uploads/tribu_t",$image)[1];
+            $photo = "/public/uploads/tribu_t".$photo;
+            array_push($tabPhoto, ["photo"=>$photo]);
+        }
+        return $this->json($tabPhoto);
     }
 
     #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
@@ -1942,6 +1940,10 @@ class TributTController extends AbstractController
                 'label' => 'Restaurant',
                 'required' => false
             ])
+            ->add('extension_golf', CheckboxType::class, [
+                'label' => 'Golf',
+                'required' => false
+            ])
             ->getForm();
         //$form = $this->createFormB(FileUplaodType::class);
         $user=$this->getUser();
@@ -1975,6 +1977,7 @@ class TributTController extends AbstractController
                 "description"=>$data["description"],
                 // "adresse"=>$data["adresse"], 
                 "extension"=>$data["extension"],
+                "extension_golf"=>$data["extension_golf"],
                 "extensionData"=>$data["extensionData"]
             );
           
@@ -2128,6 +2131,7 @@ class TributTController extends AbstractController
         if (!is_null($body)) {
            
                 $resto = $body['extension'];
+                $golf = $body['extension_golf'];
                 
                 $path  =   $body['path'];
                 /*$nom est une variable qui designe une table dans la  base de donneé de CMZ, 
@@ -2156,6 +2160,7 @@ class TributTController extends AbstractController
                 if ($output != 0) {
 
                     $restoExtension = ($resto == "on") ? "restaurant" : null;
+                    // $golfExtension = ($golf == "on") ? "golf" : null;
                    
                     $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned", $nomTribuT);
 
@@ -2180,6 +2185,13 @@ class TributTController extends AbstractController
                         //     }
 
                         // }
+
+                    }
+                    if ($golf == "on") {
+
+                        $tribut->createExtensionDynamicTableGolf($tableTribu, "golf");
+
+                        $tribut->createTableCommentGolf($tableTribu, "golf_commentaire");
 
                     }
 
@@ -2246,7 +2258,7 @@ class TributTController extends AbstractController
     }
 
     #[Route("/user/tribu_t/pastille/resto", name:"tribu_t_pastille_resto", methods:["POST"])]
-    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest){
+    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
 
         $jsonParsed=json_decode($resquest->getContent(),true);
 
@@ -2256,11 +2268,39 @@ class TributTController extends AbstractController
 
         $tribu_t = $jsonParsed["tbl"];
 
-        $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
+        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
 
-        $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
+        if(count($checkIdResto) > 0){
+            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, true);
+        }else{
+            $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
+        }
+
+        // $message = "Le restaurant " . $resto_name . " a été pastillé avec succès !";
         
-        return $this->json($message);
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    }
+
+    #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
+    public function dePastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $resto_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
+
+        if($checkIdResto > 0){
+            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
+        }
+
+        // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
+        
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
     }
 
     #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]

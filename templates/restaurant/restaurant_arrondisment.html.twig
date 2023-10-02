@@ -34,8 +34,7 @@
 
 
 {% block body %}
-    
-    {# {% include 'shard/modalSearch.twig' %} #}
+    {% include 'shard/restaurant/arrondisment_resto_mobile_navleft.twig' %}
 	<div class="resto_specifique_dep_js_jheo" data-resto-codeDep= "{{id_dep}}" data-resto-nameDep="{{nom_dep}}">
 		<div class="responsif-none" id="tous">
 			{% include 'shard/restaurant/arrondisment_resto_navleft.twig' %}
@@ -46,15 +45,19 @@
         <div class="responsif-none-pc navbar-mobile-all">
             {% include 'shard/navbar_mobile.twig' %}
         </div>
-        <div class="open-navleft-mobile  responsif-none-pc" id="open-navleft-resto-mobile-tomm-js-arrand"  onclick="addListSpecResto('{{nom_dep}}', '{{id_dep}}')">
+        {% if (app.user) %}
+            <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+        {% else %}
+            <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js">
+        {% endif %}
                 <i class="fa-solid fa-bars"></i>
-        </div>
+            </div>
+            <div class="list-depart-resto-mobile-tomm-js" id="list-depart-resto-mobile-tomm-js"></div>
+
 		<div class="">
 			
-            {# <div id="remove-detail-spec-resto" class="hidden responsif-none">
-                <div class="list-depart-all-detail list-depart-all-detail-tous responsif-none" id="content-details"></div>
-            </div> #}
-            <div id="list-arrand-resto-tomm-js"></div>
+           
+            {# <div id="list-arrand-resto-tomm-js"></div> #}
             
             {# content detail #}
             {{ include('shard/restaurant/detail_resto_navleft.html.twig') }}

@@ -679,15 +679,29 @@ class AgendaController extends AbstractController
 
    
     #[Route("/user/tribu/agenda", name: "app_agenda")]
-    public function agenda(Status $status){
+    public function agenda(Status $status, ConsumerRepository $consumer, 
+    SupplierRepository $supplier, UserRepository $userRepository){
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
 
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $user = $user->getId();
+        $tribuG = "";
+        if($userType == "consumer"){
+            $tribuG = $consumer->findBy(["userId"=>$user])[0];
+        }elseif($userType == "supplier"){
+            $tribuG = $supplier->findBy(["userId"=>$user])[0];
+        }
+
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "userConnected" => $userConnected,
+            "tribuG" => $tribuG,
+            "tribuT" => $tribu_t_owned
         ]);
     }
 
@@ -695,22 +709,46 @@ class AgendaController extends AbstractController
     public function createEventUpdate(
         Request $request,
         AgendaService $agendaService, 
-        Filesystem $fs
+        Filesystem $fs,
+        TributGService $tributGService
     ){
 
         $data=json_decode($request->getContent(),true);
 
+        $userId = $this->getUser()->getId();
+
         extract($data); 
 
+        $imgURL = null;
+
         if( $fileName && $fileType ){
-            $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
-            $path .= (str_contains($req["fileType"], "application")) ? "document/" : "img/";
-        
+            $pathDir = "";
+            if($directoryroot){
+                $nameRoot = explode("_",$directoryroot)[0];
+                if($nameRoot =="tribug"){
+                    // $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/user_".$userId."/";
+                    $pathDir = "/public/uploads/tribu_g/photos/".$directoryroot."/";
+                    // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
+                }else{
+                    // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
+                    $pathDir = '/public/uploads/tribu_t/photo/' .$directoryroot . "_publication" . "/";
+                    // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
+                }
+            }else{
+                $pathDir = "/public/uploads/users/agenda/agenda_".$userId."/"."files/";
+                $pathDir .= explode("/",$fileType)[0]."/";
+            }
+
+            $path = $this->getParameter('kernel.project_dir') .$pathDir;
+
             if(!$fs->exists($path)){
                 $fs->mkdir($path,0777);
             }
+
             $fileUtils = new FilesUtils();
-            $fileUtils->uploadImageAjax($path, $req["fileBTOA"], $req["fileName"]);
+            $fileUtils->uploadImageAjax($path, $base64, $fileName);
+            $imgURL = $pathDir.$fileName;
+
         }
 
         $newAgenda= [
@@ -729,7 +767,7 @@ class AgendaController extends AbstractController
             "heureStart" => $timeStart,
             "heureEnd" => $timeEnd,
             "file_type" => $fileType ? $fileType : null,
-            "file_path" => $fileName ? $fileName : null,
+            "file_path" => $imgURL ? $imgURL : null,
             "status" => 0,
             "user_id" => $this->getUser()->getId()
         ];
@@ -749,23 +787,52 @@ class AgendaController extends AbstractController
         Request $request,
         AgendaService $agendaService,
         Filesystem $fs,
-        $agendaId
+        $agendaId,
+        TributGService $tributGService
     ){
 
         $data=json_decode($request->getContent(),true);
 
         extract($data); 
 
+        $userId = $this->getUser()->getId();
+
+        $imgURL = null;
+
         if( $fileName && $fileType ){
-            $path = $this->getParameter('kernel.project_dir') . "/public/uploads/users/agenda/files/";
-            $path .= (str_contains($req["fileType"], "application")) ? "document/" : "img/";
-        
+            $pathDir = "";
+            if($directoryroot){
+                $nameRoot = explode("_",$directoryroot)[0];
+                if($nameRoot =="tribug"){
+                    // $pathDir = "/uploads/tribu_g/photos/".$directoryroot."/user_".$userId."/";
+                    $pathDir = "/public/uploads/tribu_g/photos/".$directoryroot."/";
+                    // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
+                }else{
+                    // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
+                    // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/";
+                    $pathDir = '/public/uploads/tribu_t/photo/' .  $directoryroot . "_publication" . "/";
+                    // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
+                }
+            }else{
+                $pathDir = "/public/uploads/users/agenda/agenda_".$userId."/"."files/";
+                $pathDir .= explode("/",$fileType)[0]."/";
+            }
+
+            $path = $this->getParameter('kernel.project_dir') . $pathDir;
+
             if(!$fs->exists($path)){
                 $fs->mkdir($path,0777);
             }
+
             $fileUtils = new FilesUtils();
-            $fileUtils->uploadImageAjax($path, $req["fileBTOA"], $req["fileName"]);
+            $fileUtils->uploadImageAjax($path, $base64, $fileName);
+            $imgURL = $pathDir.$fileName;
+
         }
+
+        $agendaTableName=$this->getUser()->getNomTableAgenda();
+
+        $agenda= $agendaService->getOneAgenda($agendaTableName, $agendaId);
 
         $newAgenda= [
             "title" => $title,
@@ -781,12 +848,10 @@ class AgendaController extends AbstractController
             "dateEnd" => $dateEnd,
             "heureStart" => $timeStart,
             "heureEnd" => $timeEnd,
-            "file_type" => $fileType ? $fileType : null,
-            "file_path" => $fileName ? $fileName : null,
+            "file_type" => $fileType ? $fileType : $agenda["file_type"],
+            "file_path" => $imgURL ? $imgURL : $agenda["file_path"],
             "status" => 0,
         ];
-
-        $agendaTableName=$this->getUser()->getNomTableAgenda();
 
         $agendaService->updateEventCalendar($agendaTableName,$newAgenda, $agendaId);
 

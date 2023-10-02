@@ -13,12 +13,11 @@ window.addEventListener('load', () => {
     
 
     if (screen.width < 991) {
-        const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
+                
 
+        const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
         contentModalAvieResto.forEach(items => {
-            
             items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => { 
-                alert("test")
                 if (items.querySelector(".flash-msg-ERREUR")) {
                     items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
                 }
@@ -37,22 +36,7 @@ window.addEventListener('load', () => {
         })
         
 
-        // document.querySelector("#text-note-modif-mobile").onkeyup = (e) => { 
-        //     if (document.querySelector(".flash-msg-ERREUR")) {
-        //         document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
-        //     }
-        //     const value = e.target.value
-        //     mustBeInferior4(value, e.target)
-            
-            
-        //     setTimeout(() => {
-        //         e.target.style="border:2px solid black;" 
-        //         document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
-        //             i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
-                    
-        //         })
-        //     }, 5000)   
-        // }
+     
     } else {
         document.querySelector("#text-note").onkeyup = (e) => { 
             if (document.querySelector(".flash-msg-ERREUR")) {
@@ -116,7 +100,7 @@ window.addEventListener('load', () => {
         console.log(" executed")
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 
             let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-            let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+            let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
             // let note = document.querySelector("#text-note-modif").value
             let note = document.querySelector("#text-note").value
             note = note.replace(/,/g, ".")
@@ -198,7 +182,7 @@ function addAvisResto(){
     }
 
     let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-    let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+    let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
 
     let note = document.querySelector("#text-note").value
     note=note.replace(/,/g,".")
@@ -254,15 +238,18 @@ function addAvisResto(){
             }
         })
     } catch (e) {
-        if (e.message == "note sup à 4") {
-            alert("la note que vous aviez donnés est supérieur à 4")
-        } else if(e.message == "non numerique") {
-            alert("la note que vous aviez donnés n'est pas du type numeric ")
-        }
+        msgErrorAlertAvis(e)
+    }finally{
+
     }
 }
 
-function addAvisRestoMobile(newIdResto, newUserId){
+function addAvisRestoMobile(newIdResto, newUserId) {
+    if (document.querySelector(`#modalAvisRestaurant${newIdResto}`)) {
+        document.querySelector(`#modalAvisRestaurant${newIdResto}`).classList.remove("show")
+        document.querySelector(`#modalAvisRestaurant${newIdResto}`).style = "display: none"
+        document.querySelector(".modal-backdrop").remove()
+    }
     
     ///// remove alert card and add chargement spinner
     if( document.querySelector(`.all_avis_${newIdResto}_jheo_js`)){
@@ -339,6 +326,8 @@ function addAvisRestoMobile(newIdResto, newUserId){
                 }
             }
         })
+        // showListAvieMobile(newIdResto, newUserId)
+
     } catch (e) {
         if (e.message == "note sup à 4") {
             alert("la note que vous aviez donnés est supérieur à 4")
@@ -394,7 +383,8 @@ function updateAvisResto(avisID){
     }
 
     let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-    let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+    let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
+
     let note = document.querySelector("#text-note").value.replace(/,/g, ".")
     let avis = document.querySelector("#message-text").value
 
@@ -433,13 +423,27 @@ function updateAvisResto(avisID){
                 }
             })
     } catch (e) {
-        if (e.message == "note sup à 4") {
-            alert("la note que vous aviez donnés est supérieur à 4")
-        } else if(e.message == "non numerique") {
-            alert("la note que vous aviez donnés n'est pas du type numeric ")
-        } else {
-            console.log(e)
-        }
+        msgErrorAlertAvis(e)
+    }finally{
+
+    }
+}
+
+/**
+ * 
+ */
+function msgErrorAlertAvis(e){
+    if (e.message == "note sup à 4") {
+        
+        new swal("Attention !","la note que vous aviez donnés est supérieur à 4 !", "warning") .then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    } else if(e.message == "non numerique") {
+        new swal("Attention !","la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    } else {
+        console.log(e)
     }
 }
 /**
@@ -537,7 +541,7 @@ function showNoteGlobale(idRestaurant) {
                 totalNote+=parseFloat(avis["note"])
             }
             globalNote= totalNote /(response.length);
-            createGlobalNote(globalNote)
+            createGlobalNote(globalNote,idRestaurant)
         }
     })
 }
@@ -574,7 +578,11 @@ function showListAvie() {
 }
 
 function showListAvieMobile(newIdResto, userId) {
-
+    if (document.querySelector(`#modalAvisRestaurant${newIdResto}`)) {
+        document.querySelector(`#modalAvisRestaurant${newIdResto}`).classList.remove("show")
+        document.querySelector(`#modalAvisRestaurant${newIdResto}`).style = "display: none"
+        // document.querySelector(".modal-backdrop").remove()
+    }
     // const listAvieMobile = document.querySelectorAll(".list-avis-ferme-global-mobile")
 
     // listAvieMobile.forEach(items => {
@@ -599,10 +607,9 @@ function showListAvieMobile(newIdResto, userId) {
             deleteOldValueInputAvisMobile(newIdResto); //// delet input and text 
         }
 
-        // const newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-        // const userId = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
-        showAvisMobile(userId, newIdResto) 
-    // })
+    showAvisMobile(userId, newIdResto) 
+    
+    
     
 }
 
@@ -611,7 +618,7 @@ function showListAvieMobile(newIdResto, userId) {
  * Update note global star rating
  * @param {*} globalNote 
  */
-function createGlobalNote(globalNote) {
+function createGlobalNote(globalNote,idRestaurant) {
     let startHTML = "";
     let rate= globalNote - Math.trunc(globalNote);
     let rateYellow = rate * 100;
@@ -628,8 +635,12 @@ function createGlobalNote(globalNote) {
             }
         }
     }
-
-    document.querySelector(".start_jheo_js").innerHTML = startHTML;
+    if (screen.width <= 991) {
+        document.querySelector(`.start_jheo_js${idRestaurant}`).innerHTML = startHTML;
+    } else {
+        document.querySelector(".start_jheo_js").innerHTML = startHTML;
+    }    
+    
 }
 
 /**
@@ -916,7 +927,7 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="content_profil_image me-2">
-                                    <img class="profil_image" src="${ json.user.photo ? json.user.photo.replace('/public' , '') : '/uploads/users/photos/img_avatar.png' }" alt="User">
+                                    <img class="profil_image" src="${ json.user.photo ? json.user.photo : '/public/uploads/users/photos/default_pdp.png' }" alt="User">
                                 </div>
                                 <div class="content_info">
                                     <h3 class="text-point-9"> <small class="fw-bolder text-black"> ${ json.user.fullname }</small></h3>

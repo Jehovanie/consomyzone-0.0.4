@@ -161,7 +161,7 @@ class MessageService extends PDOConnexionService{
      */
     public function setShowAndReadMessages(int $user_id_post , string $my_table_name){
 
-        $statement = $this->getPDO()->prepare(" UPDATE " . $my_table_name . "  SET isShow = '1', isRead= '1' WHERE user_post = " . $user_id_post);
+        $statement = $this->getPDO()->prepare("UPDATE " . $my_table_name . "  SET isShow = '1', isRead= '1' WHERE user_post = " . $user_id_post);
         $statement->execute();
     
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -170,11 +170,29 @@ class MessageService extends PDOConnexionService{
 
     public function getLastMessage($myTableMessage,$otherID){
 
-        $sql = "SELECT id,user_id,user_post,JSON_VALUE(content, '$.text') as text ,message_type FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id,user_id,user_post,content, message_type, isForMe, isRead FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
         $result = $this->getPDO()->query($sql);
         $msg=  $result->fetch(PDO::FETCH_ASSOC);
 
-        return $msg;
+        // dd($msg);
+
+        if($msg === true){
+            $text = json_decode($this->convertUnicodeToUtf8($msg["content"]), true);
+            $result = [
+                "id" => $msg["id"],
+                "user_id" => $msg["user_id"],
+                "user_post" => $msg["user_post"],
+                "text" => array_key_exists('text', $text) ?  $text["text"] : "(Object)",
+                "message_type" => $msg["message_type"],
+                "isForMe" => $msg["isForMe"],
+                "isRead" => $msg["isRead"],
+            ];
+            return $result;
+        }else{
+            return false;
+        }
+
+        
     }
 
     public function createVisio($from, $to, $username, $nom, $status){

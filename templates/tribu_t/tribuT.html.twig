@@ -128,6 +128,9 @@
 						<div class="form-check form-switch mt-6">
 							{{ form_row(form.extension, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
 						</div>
+						<div class="form-check form-switch mt-50px d-none">
+							{{ form_row(form.extension_golf, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
+						</div>
 
 					</div>
 
@@ -245,6 +248,7 @@
 						<div class="container mb-4 mt-5">
 							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
 							<button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
 						</div>
 				</div>
 

@@ -42,75 +42,6 @@ function addEventLocation() {
 
 }
 
-// function addListFermeMobile() {
-//     document.querySelector("#mobil-ferme").addEventListener('click', (event) => {
-//         alert("Please select")
-//         document.querySelector("#map > div.leaflet-control-container").innerHTML =
-//             `
-//             <div class="content-mobil-ferme">
-//                 <svg class="close" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
-//                 width="10px" height="10px" viewBox="0 0 980.000000 982.000000"
-//                 preserveAspectRatio="xMidYMid meet">
-
-//                     <g transform="translate(0.000000,982.000000) scale(0.100000,-0.100000)"
-//                     fill="#000000" stroke="none">
-//                         <path d="M217 9593 l-217 -218 2232 -2232 2233 -2233 -2233 -2233 -2232 -2232
-//                         220 -220 220 -220 2228 2228 c1225 1225 2232 2227 2237 2227 5 0 1010 -1000
-//                         2232 -2222 l2223 -2223 220 220 220 220 -2227 2227 -2228 2228 2228 2228 2227
-//                         2227 -220 220 -220 220 -2223 -2223 c-1222 -1222 -2227 -2222 -2232 -2222 -6
-//                         0 -1011 1001 -2235 2225 -1224 1224 -2227 2225 -2230 2225 -3 0 -103 -98 -223
-//                         -217z"/>
-//                     </g>
-//                 </svg>
-//                 <div>
-//                     <p>
-//                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" 
-//                         width="6vw" height="6vh" viewbox="0 0 128.000000 128.000000" 
-//                         preserveaspectratio="xMidYMid meet">
-
-//                             <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
-//                                 fill="#1111FE" stroke="none">
-//                                 <path d="M820 965 c-14 -7 -38 -16 -53 -20 -20 -4 -33 -16 -43 -40 -7 -18 -18
-//                                 -36 -24 -40 -13 -8 -13 -51 0 -75 5 -10 21 -20 34 -24 20 -5 26 -14 31 -50 8
-//                                 -52 -13 -101 -50 -118 -14 -6 -25 -17 -25 -25 0 -23 31 -14 65 20 44 44 53 91
-//                                 31 170 -16 58 -16 62 2 86 26 35 67 39 99 9 20 -19 24 -29 19 -59 -5 -31 -2
-//                                 -39 19 -53 33 -21 76 -98 90 -158 6 -27 15 -48 20 -46 17 5 8 83 -14 126 -12
-//                                 23 -17 42 -12 42 15 0 32 36 25 55 -4 8 -18 22 -33 29 l-26 14 28 13 c15 7 26
-//                                 17 24 23 -6 17 -49 36 -85 36 -29 0 -32 2 -26 24 4 19 -1 32 -20 50 -29 30
-//                                 -41 31 -76 11z m145 -125 c-3 -5 -10 -10 -16 -10 -5 0 -9 5 -9 10 0 6 7 10 16
-//                                 10 8 0 12 -4 9 -10z"/>
-//                                 <path d="M855 831 c-7 -12 12 -24 25 -16 11 7 4 25 -10 25 -5 0 -11 -4 -15 -9z"/>
-//                                 <path d="M246 778 c-69 -40 -109 -153 -72 -204 8 -10 16 -17 18 -14 2 3 12 18
-//                                 22 33 9 15 28 33 42 39 13 6 24 18 24 26 0 10 4 12 13 5 6 -6 32 -13 56 -16
-//                                 62 -8 71 -23 13 -23 -142 0 -218 -164 -126 -274 33 -38 74 -60 114 -60 35 0
-//                                 37 8 10 52 -40 65 -16 159 49 193 44 22 48 20 53 -33 9 -96 91 -205 174 -232
-//                                 25 -8 34 -18 34 -33 0 -12 7 -30 15 -41 12 -16 12 -20 -1 -33 -7 -8 -14 -21
-//                                 -14 -29 0 -19 26 -18 34 2 5 14 7 14 22 0 17 -18 50 -21 59 -6 3 6 -5 14 -19
-//                                 20 -55 21 -9 84 81 110 92 28 189 138 196 224 4 51 -20 40 -37 -17 -55 -189
-//                                 -300 -252 -439 -113 -47 47 -67 85 -74 144 l-5 47 67 -3 c77 -4 118 4 112 21
-//                                 -2 8 -24 11 -70 9 -95 -5 -103 -1 -99 52 5 54 -24 115 -70 147 -47 34 -131 37
-//                                 -182 7z m494 -539 c0 -11 -27 -29 -33 -22 -14 14 -6 32 13 30 11 -1 20 -4 20
-//                                 -8z"/>
-//                                 <path d="M865 590 c-4 -6 10 -26 32 -45 21 -19 33 -34 27 -35 -6 0 -17 7 -24
-//                                 15 -17 20 -54 19 -98 -4 -100 -51 -121 -60 -175 -74 -33 -9 -62 -19 -65 -22
-//                                 -11 -11 49 -53 97 -70 59 -20 170 -19 221 1 75 30 107 109 72 174 -22 40 -76
-//                                 77 -87 60z"/>
-//                             </g>
-//                         </svg>
-//                         Ferme dans tous les departements francais.
-//                     </p>
-//                     <div>
-                        
-//                     </div>
-//                 </div>
-//             </div>
-//         `
-//         document.querySelector("#close").addEventListener('click', () => {
-//             document.querySelector("#map > div.leaflet-control-container > div.content-mobil-ferme").style.transform = "translateX(-100vw)"
-//         })
-//     })
-// }
-
 function addControlPlaceholders(map) {
     const corners = map._controlCorners
     const l = 'leaflet-'
@@ -1078,24 +1009,33 @@ function deleteMap(){
 
 function setGallerie(imgs){
     imgs.forEach(img => {
-            
+        console.log(img)
         //console.log(img);
-        h = img.naturalHeight;
-        w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const w = img.naturalWidth;
 
-        //console.log("img.naturalHeight : " + img.naturalHeight)
-        //console.log("img.naturalWidth : " + img.naturalWidth)
-        ratio = w/h;
-        closestRatioValue = Math.abs(1-ratio);
-        closestRatio = 1;
+        console.log("img.naturalHeight : " + img.naturalHeight)
+        console.log("img.naturalWidth : " + img.naturalWidth)
+        const ratio = w/h;
+        let closestRatioValue = Math.abs(1-ratio);
+        console.log("closestRatioValue "+closestRatioValue)
+        let closestRatio = 1;
         var a = Math.abs(16/9-ratio);
         var b = Math.abs(9/16-ratio);
-
+        console.log("a "+ a+" b"+b )
         if(a < closestRatioValue){
             closestRatioValue = a;
             closestRatio = 16/9;
         }
         if(b < closestRatioValue){
+            closestRatioValue = b;
+            closestRatio = 9/16;
+        }
+        if(a > closestRatioValue){
+            closestRatioValue = a;
+            closestRatio = 16/9;
+        }
+        if(b > closestRatioValue){
             closestRatioValue = b;
             closestRatio = 9/16;
         }
@@ -1105,7 +1045,7 @@ function setGallerie(imgs){
             img.style.gridColumn = "span 2";
         } else if(closestRatio == 9/16){
             console.log("9/16");
-            img.style.gridRow = "span 2";
+            img.style.gridRow = "1 / span 2";
         }
     });
 }
@@ -1725,143 +1665,6 @@ function checkTailleImage(maxOctetAccepted, file_base64){
     return (sizeInBytes < maxOctetAccepted ) ? true : false;
 }
 
-
-function injectStatusGolf(){
-    if( !document.querySelector(".content_right_side_body_jheo_js")){
-        console.log("Selector not found : '.content_right_side_body_body'")
-        return false;
-    }
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
-        <div class="right_side_body right_side_body_jheo_js">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Icône</th>
-                    
-                        <th scope="col">Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                        
-                        <td>Mon Golf</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
-
-                        <td>A faire</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
-
-                        <td>Fait</td>
-                    </tr>
-                    <tr>
-                    <th scope="row">4</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                        
-                        <td>Inconnu</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    `
-}
-
-
-function injectStatusResto(){
-    if( !document.querySelector(".content_right_side_body_jheo_js")){
-        console.log("Selector not found : '.content_right_side_body_body'")
-        return false;
-    }
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
-        <div class="right_side_body right_side_body_jheo_js">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Icône</th>
-                    
-                        <th scope="col">Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
-                        
-                        <td>Les restaurants non pastillés</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-org-single.png" alt="Icon Resto"></td>
-
-                        <td>Les restaurants pastillés par une seule tribu T.</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-vert-multi.png" alt="Icon Resto"></td>
-
-                        <td>Les restaurants pastillés par plusieurs tribus T.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    `
-}
-
-function injectChooseCouch(){
-    if( !document.querySelector(".content_right_side_body_jheo_js")){
-        console.log("Selector not found : '.content_right_side_body_body'")
-        return false;
-    }
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
-        <div class="right_side_body right_side_body_jheo_js">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="region">
-                <label class="form-check-label" for="region">
-                    REGION
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="commune">
-                <label class="form-check-label" for="commune">
-                    COMMUNE
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="departement">
-                <label class="form-check-label" for="departement">
-                    DEPARTEMENT
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="iris" >
-                <label class="form-check-label" for="iris">
-                    IRIS
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="quartierDeVie" >
-                <label class="form-check-label" for="quartierDeVie">
-                    QUARTIER DE VIE
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="canton" >
-                <label class="form-check-label" for="canton">
-                    CANTON
-                </label>
-            </div>
-        </div>
-    `
-}
-
 function removePublication(pubId, tablePub){
 
     document.querySelector('.confirm_delete_pub_jheo_js').addEventListener('click',() => {
@@ -1929,12 +1732,11 @@ function getAllComment(pubId, tablePub, userOwnID){
             const comments = response.comments.reverse();
 
             comments.forEach(comment => {
-                const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
+                const pdp = (comment.user.photo !== null) ? comment.user.photo: '/public/uploads/users/photos/default_pdp.png';
                 listLIcomment += `
                     <li id='pub_${comment.pub_id}_comment_${comment.comment_id}' class="nr h lc rg mg qh sq js yk mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
                         <div class="h sa wf uk th ni ej">
                             <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
-                            <span class="g l m xe qd th pi jj sj ra"></span>
                         </div>
                         <div>
                             <h6 class="un zn gs">
@@ -2214,7 +2016,7 @@ function bindDataUpdatePub(table, id){
 
 }
 
-function pastilleRestoForTribuT(element){
+function pastilleRestoForTribuTDashboard(element, isPastilled){
     let id = element.dataset.id
     let name = element.dataset.name
     let tbl = element.dataset.tbname
@@ -2223,45 +2025,80 @@ function pastilleRestoForTribuT(element){
         name : name,
         tbl : tbl
     }
-   
-    const request = new Request("/user/tribu_t/pastille/resto", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(data)
-    })
+
+    let request = ""
+    if(isPastilled){
+        request = new Request("/user/tribu_t/pastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(data)
+        })
+
+    }else{
+        request = new Request("/user/tribu_t/depastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify(data)
+        })
+    }
+
     fetch(request)
             .then(response=>response.json())
             .then(message=>{
-                tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-                tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
-
-                let html = `<td class="col-action">
-                                <button type="button" class="mx-2 btn btn-secondary" disabled="">Pastillé</button>
-                            </td>`
                 let tribuName = element.dataset.tribu
-                let img = document.createElement("img")
-                img.src = '/public' +  element.dataset.velona
-                img.dataset.name = tribuName
-                img.setAttribute("alt",tribuName)
-                let div = document.createElement("div")
-                div.setAttribute("onclick","createPopUp(event)")
-                div.setAttribute("onmouseout","resetImage(event)")
-                div.setAttribute("onmouseover","agrandirImage(event)")
-                div.setAttribute("class","img_nantenaina")
-                div.setAttribute("title","Tribu T " + tribuName)
-                div.setAttribute("data-bs-toggle","tooltip")
-                div.setAttribute("data-bs-placement","top")
-                div.dataset.name = tribuName
-                div.appendChild(img)
-                new swal("Succès !", "Restaurant pastillé avec succès", "success")
-                .then((value) => {
-                    updateBtnStatus(element, html)
-                    document.querySelector(".mainContainerLogoTribu").appendChild(div);
-                    reorganisePastille()
-                });
+                let html = ""
+                if(!isPastilled){
+                    html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
+                                data-tbname="${tbl}" class="mx-2 btn btn-success" data-velona="${element.dataset.velona}" 
+                                onclick="pastilleRestoForTribuT(this,true)">Pastiller</button> `
+                    new swal("Succès !", "Restaurant dépastillé avec succès", "success")
+                    .then((value) => {
+                        if(document.querySelector("#"+tbl)){
+                            updateBtnStatus(element, html)
+                            document.querySelector("#"+tbl).remove()
+                            reorganisePastille()
+                        }else{
+                            $("#detailOptionResto").modal("hide")
+                            document.querySelector("#restaurant_"+id).remove()
+                        }
+                    });
+                }else{
+
+                    html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
+                                    data-tbname="${tbl}" class="mx-2 btn btn-info" data-velona="${element.dataset.velona}" 
+                                    onclick="pastilleRestoForTribuT(this,false)">Dépastiller</button>`
+                    let img = document.createElement("img")
+                    img.src = element.dataset.velona
+                    img.dataset.name = tribuName
+                    img.setAttribute("alt",tribuName)
+                    let div = document.createElement("div")
+                    div.setAttribute("onclick","createPopUp(event)")
+                    div.setAttribute("onmouseout","resetImage(event)")
+                    div.setAttribute("onmouseover","agrandirImage(event)")
+                    div.setAttribute("id",tbl)
+                    div.setAttribute("class","img_nantenaina")
+                    div.setAttribute("title","Tribu T " + tribuName)
+                    div.setAttribute("data-bs-toggle","tooltip")
+                    div.setAttribute("data-bs-placement","top")
+                    div.dataset.name = tribuName
+                    div.appendChild(img)
+                    new swal("Succès !", "Restaurant pastillé avec succès", "success")
+                    .then((value) => {
+                        updateBtnStatus(element, html)
+                        document.querySelector(".mainContainerLogoTribu").appendChild(div);
+                        reorganisePastille()
+                    });
+                }
+
+                // tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+                // tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
+
                 
             })
             .catch(error=>console.log(error))
@@ -2536,18 +2373,18 @@ function showPastillTable(e,id){
             response.json().then(data=>{
                 if(data.length > 0){
                     data.forEach(item=>{
-                        console.log(item)
-                        let status=item.isPastilled ? "Pastillé" :"Pastiller";
-                        let logoPath=item.logo_path ? item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+                        let status=item.isPastilled ? "Dépastiller" :"Pastiller";
+                        let logoPath=item.logo_path ? "/public"+item.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
                         let tableTribuT=item.table_name; 
                         let nomTribuPars = tableTribuT.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
                         nomTribuPars = nomTribuPars.charAt(0).toUpperCase() + nomTribuPars.slice(1)
                         let nomTribuT = item.name_tribu_t_muable ? item.name_tribu_t_muable : nomTribuPars
                         let restaurant = e.target.dataset.name
                                         
-                        let btn = item.isPastilled ? `<button type="button" class="mx-2 btn btn-secondary" disabled>${status}</button>` : 
+                        let btn = item.isPastilled ? `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}" 
+                                                    class="mx-2 btn btn-info" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this,false)">${status}</button>` : 
                                                     `<button type="button" data-id="${id}" data-tribu="${nomTribuT}" data-name="${restaurant}" data-tbname="${tableTribuT}"
-                                                    class="mx-2 btn btn-success" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this)">${status}</button>`
+                                                    class="mx-2 btn btn-success" data-velona='${logoPath}' onclick="pastilleRestoForTribuT(this,true)">${status}</button>`
                         let tr=`<tr style="vertical-align: middle;">
                                     <td class="col-logo">
                                         <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
@@ -2559,17 +2396,16 @@ function showPastillTable(e,id){
                                     ${btn}
                                     </td>
                                 </tr>`
-                        // $("#restoPastilleModal").modal("show")
                         document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML+=tr
                     })
                 }else{
-                        document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML  = `
-                            <tr> 
-                                <td class="text-center" colspan="3"> 
-                                    Vous n'avez pas encore une tribu T avec extension Restaurant.
-                                </td>
-                            </tr>
-                        `
+                    document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML  = `
+                                    <tr> 
+                                        <td class="text-center" colspan="3"> 
+                                            Vous n'avez pas encore une tribu T avec extension Restaurant.
+                                        </td>
+                                    </tr>
+                                `
                 }
             })
         }
@@ -2780,7 +2616,7 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                                     <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
                                         <p class="text-point-12 fw-bold">${response.nom}</p>
                                         <div class="content_note">
-                                            <div class=" start start_jheo_js" id="start-globale-mobile">
+                                            <div class=" start start_jheo_js${response.id}" id="start-globale-mobile">
                                                 ${star}
                                             </div>
                                             <div class="nombre_avis"></div>
@@ -2828,7 +2664,7 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                                     <div class="modal-body ">
                                         <div class="modal-body-mobile">
                                             <div class="content_note">
-                                                <div class=" start start_jheo_js">
+                                                <div class=" start start_jheo_js${response.id}">
                                                     ${star}
                                                 </div>
                                                 <div class="nombre_avis"></div>
@@ -2958,11 +2794,10 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                                 <div class="modal-content">
                                     <div class="modal-header bg-light">
                                         <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" onclick="closeModalAvieDetail(${response.id})"></button>
                                     </div>
                                     <div class="list-avis-ferme">
-                                        <div
-                                            class="modal-body container-avis all_avis_${response.id}_jheo_js">
+                                        <div class="modal-body container-avis all_avis_${response.id}_jheo_js">
                                         </div>
                                     </div>
                                 </div>
@@ -2985,23 +2820,237 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
+                                        <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                     `
-                
-                
-                
-                    
             })
+            if (screen.width < 991) {
+                const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
+                contentModalAvieResto.forEach(items => {
+                    items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => {
+                        if (items.querySelector(".flash-msg-ERREUR")) {
+                            items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
+                        }
+                        const value = e.target.value
+                        mustBeInferior4(value, e.target)
+                        
+                        
+                        setTimeout(() => {
+                            e.target.style = "border:2px solid black;"
+                            items.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;"
+                            })
+                        }, 5000)
+                    }
+                })
+            }
         })    
 }
 
 function closeModalDetail(id_resto) {
     document.querySelector(`#ModalDetailMobile${id_resto}`).classList.remove("show")
-    document.querySelector(`#ModalDetailMobile${id_resto}`).style = "display: none"    
+    document.querySelector(`#ModalDetailMobile${id_resto}`).style = "display: none"
     document.querySelector(".modal-backdrop").remove()
+}
+
+function closeModalAvieDetail(id_resto) {
+    document.querySelector(`#staticBackdrop${id_resto}`).classList.remove("show")
+    document.querySelector(`#staticBackdrop${id_resto}`).style = "display: none"
+    document.querySelector(".modal-backdrop").remove()
+}
+
+
+function showImagePreview(e){
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+        const uploaded_image = reader.result;
+
+        let taille = parseInt(e.target.files[0].size) // En Octets
+
+        if (!e.target.files[0].type.includes("image/")) {
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image",
+                icon: "error",
+                button: "Ok",
+              });
+
+        } else {
+
+            if (taille <= 2097152) {
+                let preview = document.querySelector("#image-preview");
+                preview.src = uploaded_image;
+                preview.setAttribute('name', `${new Date().getTime()}_${e.target.files[0].name}`);
+                preview.setAttribute('typeFile',e.target.files[0].type)
+                document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+                document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+                $("#mediaModal").modal("hide")
+                $("#addPictureModal").modal("hide")
+                // $("#createAgenda").modal("show")
+                $("#selectRepertoryModal").modal("show")
+                
+            } else {
+
+                swal({
+                    title: "Le fichier est trop volumineux.",
+                    text: "La taille de l\'image doit être inférieure à 2Mo",
+                    icon: "error",
+                    button: "Ok",
+                  });
+
+            }
+
+        }
+
+    }
+    reader.readAsDataURL(e.target.files[0])
+}
+
+function resetImagePreview(){
+    document.querySelector(".btnAddPhoto_nanta_js").classList.remove("d-none")
+    document.querySelector(".preview_image_nanta_js").classList.add("d-none")
+    $("#createAgenda").modal("hide")
+    $("#addPictureModal").modal("show")
+}
+
+function showModalPicture(){
+    $("#addPictureModal").modal("hide")
+    document.querySelector("#containerCamera").innerHTML = ""
+    $("#mediaModal").modal("show")
+    // <video id="player" autoplay></video>
+    let video = document.createElement("video")
+    video.setAttribute("id","player")
+    video.setAttribute("autoplay",true)
+    // <canvas id="output"></canvas>
+    let canvas = document.createElement("canvas")
+    canvas.setAttribute("id","output")
+    canvas.setAttribute("class","d-none")
+
+    // <button id="capture-button" title="Take a picture"></button>
+    // onclick="takePicture()"
+    let captureButton = document.createElement("button")
+    captureButton.setAttribute("id","capture-button")
+    captureButton.setAttribute("onclick","takePicture()")
+    captureButton.setAttribute("title","Prendre une photo")
+
+    navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            }).catch(error => {
+                console.error('Can not get an access to a camera...', error);
+            });
+
+    document.querySelector("#containerCamera").appendChild(video)
+    document.querySelector("#containerCamera").appendChild(captureButton)
+    document.querySelector("#containerCamera").appendChild(canvas)
+}
+
+function takePicture(){
+    const player = document.getElementById('player');
+    const outputCanvas = document.getElementById('output');
+    const context = outputCanvas.getContext('2d');
+
+    const imageWidth = player.offsetWidth;
+    const imageHeight = player.offsetHeight;
+    
+    // Make our hidden canvas the same size
+    outputCanvas.width = imageWidth;
+    outputCanvas.height = imageHeight;
+    
+    // Draw captured image to the hidden canvas
+    context.drawImage(player, 0, 0, imageWidth, imageHeight);
+    
+    // A bit of magic to save the image to a file
+    // const downloadLink = document.createElement('a');
+    // downloadLink.setAttribute('download', `capture-${new Date().getTime()}.png`);
+    let data =  outputCanvas.toDataURL()
+    let preview = document.querySelector("#image-preview");
+    preview.src = data;
+    preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+    preview.setAttribute('typeFile',"image/png")
+    document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+    document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+    $("#mediaModal").modal("hide")
+    // $("#createAgenda").modal("show")
+    $("#selectRepertoryModal").modal("show")
+    /*outputCanvas.toBlob((blob) => {
+        console.log(URL.createObjectURL(blob))
+        // downloadLink.setAttribute('href', URL.createObjectURL(blob));
+        // downloadLink.click();
+        let preview = document.querySelector("#image-preview");
+        preview.src = URL.createObjectURL(blob);
+        preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+        preview.setAttribute('typeFile',"image/png")
+        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+        $("#mediaModal").modal("hide")
+        $("#createAgenda").modal("show")
+    });*/
+}
+
+function showRepertoryDirTribuT(){
+    document.querySelector(".list-repertoryDirTribuT").classList.add("text-primary")
+    document.querySelector(".list-repertoryDirTribuG").classList.remove("text-primary")
+    document.querySelector("#repertoryDirTribuG").classList.add("d-none")
+    document.querySelector("#repertoryDirTribuT").classList.remove("d-none")
+}
+
+function showRepertoryDirTribuG(){
+    document.querySelector(".list-repertoryDirTribuT").classList.remove("text-primary")
+    document.querySelector(".list-repertoryDirTribuG").classList.add("text-primary")
+    document.querySelector("#repertoryDirTribuT").classList.add("d-none")
+    document.querySelector("#repertoryDirTribuG").classList.remove("d-none")
+}
+
+function setDirForImage(e){
+    let preview = document.querySelector("#image-preview");
+    let root = e.target.dataset.tribu
+    preview.setAttribute('directoryRoot', root);
+    $("#selectRepertoryModal").modal("hide")
+    $("#createAgenda").modal("show")
+}
+
+/**
+ * @author Elie
+ */
+function setGallerieImageV2(){
+    let modalZoom = document.getElementById('modalZoom');
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    let imgFullSecreen = document.getElementById("imgFullSecreen");
+    // let captionText = document.getElementById("captionZoom");
+
+    document.querySelectorAll(".fancybox > img").forEach(fancy=>{
+        let url = fancy.src
+
+        fancy.onclick = function(){
+
+            document.querySelector("body").classList.add("modal-open")
+            document.querySelector("body").style = "overflow: scroll; padding-right: 19px;"
+            modalZoom.style.display = "block";
+            imgFullSecreen.src = url;
+            imgFullSecreen.style = " width:60%"
+            //height : 100%;
+        }
+
+    })
+
+    // Get the <span> element that closes the modal
+    let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    spanCloseZoom.onclick = function() { 
+        modalZoom.style.display = "none";
+        document.querySelector("body").classList.remove("modal-open")
+        document.querySelector("body").style = ""
+    }
 }

@@ -218,11 +218,7 @@ class Tribu_T_Service extends PDOConnexionService
                         ON UPDATE CASCADE
 
                     ) ENGINE=InnoDB";
-
-
-
-                    $this->getPDO()->exec($sql);
-
+                    // $this->getPDO()->exec($sql);
 
 
                     $sql = "CREATE TABLE " . $output . "_agenda_action(
@@ -253,20 +249,12 @@ class Tribu_T_Service extends PDOConnexionService
 
                     
 
-                    $this->getPDO()->exec($sql);
-
-  
-
+                    // $this->getPDO()->exec($sql);
                 }
-
             }
-
         }
 
-
-
         return $output;
-
     }
 
 
@@ -417,9 +405,20 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-    public function getAllIdRestoPastille($table){
+    public function getAllIdRestoPastille($table, $isPastilled){
 
-        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' FROM $table");
+        $statement = $this->getPDO()->prepare("SELECT id_resto, '$table' as 'tableName' FROM $table WHERE isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    public function getIdRestoOnTableExtension($table, $idResto){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
 
         $statement->execute();
 
@@ -516,6 +515,7 @@ class Tribu_T_Service extends PDOConnexionService
                     "name_tribu_t_muable"=>$nomTribuT,
                     "description"=> $description,
                     "extension"=> $extenstion,
+                    // "extension_golf"=> $extenstion_golf,
                     "logo_path"=>$path,
                     "date"=>  $date,
                     ));
@@ -542,6 +542,7 @@ class Tribu_T_Service extends PDOConnexionService
                 array_push($tmp, 
                 array("name" => $tribu_T_name_table,  
                 "name_tribu_t_muable"=>$nomTribuT, 
+                // "description" => $description, "extension" => $extenstion,"extension_golf"=> $extenstion_golf, "logo_path" => $path, "date" =>  $date));
                 "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
                 $array = array("tribu_t" => $tmp);
             }
@@ -1318,15 +1319,11 @@ class Tribu_T_Service extends PDOConnexionService
         $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
 
             id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-
             id_resto VARCHAR(250) NOT NULL,
-
             denomination_f VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-
+            isPastilled tinyint(1) NULL  DEFAULT '1',
             datetime timestamp NOT NULL DEFAULT current_timestamp(),
-
             CONSTRAINT cst_id_resto UNIQUE (id_resto)
-            
             )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         
         $stmt = $this->getPDO()->prepare($sql);
@@ -1340,6 +1337,47 @@ class Tribu_T_Service extends PDOConnexionService
             id_resto_comment int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
             id_restaurant VARCHAR(250) NOT NULL,
+
+            id_user VARCHAR(250) NOT NULL,
+
+            note decimal(3,2),
+
+            commentaire TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+
+            datetime timestamp NOT NULL DEFAULT current_timestamp())ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute();
+    }
+
+    public function createExtensionDynamicTableGolf($tribu_t, $extension){
+
+        $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
+
+            id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+            id_golf VARCHAR(250) NOT NULL,
+
+            denomination_f VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+            datetime timestamp NOT NULL DEFAULT current_timestamp(),
+
+            CONSTRAINT cst_id_golf UNIQUE (id_golf)
+            
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute();
+    }
+
+    public function createTableCommentGolf($tribu_t, $extension){
+        $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . "(
+
+            id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+            id_golf VARCHAR(250) NOT NULL,
 
             id_user VARCHAR(250) NOT NULL,
 
@@ -1465,7 +1503,7 @@ class Tribu_T_Service extends PDOConnexionService
                 FROM $tableResto  
                 as t1 LEFT JOIN $tableComment  
                 as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";*/
-        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, id_resto_comment,id_restaurant,id_user,note,commentaire ,
+        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
 								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
 								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
 				as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
@@ -1892,10 +1930,10 @@ class Tribu_T_Service extends PDOConnexionService
      * @param int $idResto: l'extension
      * @return number $result: 0 or if(not exists) else positive number
      */
-    public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto){
+    public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto, $isPastilled){
 
         
-        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto");
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto AND isPastilled = $isPastilled");
 
         $statement->execute();
 
@@ -1906,6 +1944,15 @@ class Tribu_T_Service extends PDOConnexionService
         }else{
             return false;
         }
+
+    }
+
+     public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->bindParam(":isPastilled", $isPastilled);
+        $stmt->bindParam(":resto_id", $resto_id);
+        $stmt->execute();
 
     }
   

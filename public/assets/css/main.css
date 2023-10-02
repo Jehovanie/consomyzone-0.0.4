@@ -698,8 +698,15 @@ body {
 
 .content_header_right_side{
     display: block;
-    height: 100px;
+    height: 55px;
     margin-top: 100px;
+}
+
+.table_info_marker{
+    display: block;
+    max-height: 65vh;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .header_right_side{
@@ -1687,7 +1694,13 @@ i.fa-eye-slash, i.fa-eye{
 .icon_resto_legend{
     display: block;
     width: 30px;
-    height: 40px;
+    height: 40px ;
+}
+
+.icon_golf_legend{
+    display: block;
+    width: 30px;
+    height: 40px ;
 }
 
 .containerPastilleResto{
@@ -1963,4 +1976,295 @@ textarea {
     color: #0D6EFD;
     font-weight: bolder;
     cursor: pointer;
+}
+
+.annimation_badge{
+    animation: 0.3s infinite alternate bounding_poping;
+}
+
+
+@keyframes bounding_poping {
+    0% {
+      transform: scale(0.8);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    55% {
+        transform: scale(0.952);
+    }
+    75% {
+        transform: scale(0.954);
+    }
+    80% {
+        transform: scale(0.956);
+    }
+    85% {
+        transform: scale(0.958);
+    }
+    90% {
+        transform: scale(0.959);
+    }
+    95% {
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(1.1);
+    }
+  }
+
+.pictureOnBoth{
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#containerCamera video{
+    height: 400px;
+    width: 400px;
+    margin: auto;
+}
+
+#pictureOnLocal, #getPictureOnDevice, .labelFileRepertory, .labelPrisePhoto{
+    cursor: pointer;
+}
+
+#pictureOnLocal:hover, #getPictureOnDevice:hover{
+    color: #0D6EFD;
+}
+
+#capture-button {
+    display: block;
+    position: absolute;
+    top: 80%;
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    left: 50%;
+    margin-left: -25px;
+    border-radius: 50%;
+    background-color: #ff0000;
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: all .15s ease-in-out;
+    opacity: 0.5;
+    outline: none;
+    
+    &:hover {
+        transform: scale(1.1);
+    }
+    
+    &:active {
+        background-color: #00ff00;
+    }
+}
+
+#player{
+    height: 300px !important;
+    width: 400px !important;
+}
+
+#modal-dialog-camera{
+    width: 430px !important;
+}
+
+.repertoryDir ul li:hover, .repertoryDir ul li a:hover{
+    color: #0D6EFD;
+}
+.fa-search-elie{
+    padding: 5px;
+    width: 60px;
+    min-width: 60px;
+    height: 60px;
+    min-height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #0d6efd;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    clip-path: circle(50%);
+    transition: 0.25s;
+}
+.fa-search-elie:hover{
+    border: 1px solid #09ff00;
+    color: #fff;
+    scale: 1.2;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.btn-minimize-elie :hover{
+    color: #f70b0b;
+}
+
+.btn-minimize-elie, .btn-expand-elie{
+    height: auto !important;
+    background :none !important;
+    opacity: 1 !important;
+    font-size: 20px;
+}
+
+.btn-expand-elie{
+    left: 5px !important;
+    top: 5px !important;
+    position: absolute;
+    color: white !important;
+}
+.btn-expand-elie:hover{
+    scale: 1.2;
+    color: #0D6EFD !important;
+}
+
+.visioMinimize{
+    width: 280px;
+    height: 176px;
+    left: auto !important;
+    background-color: transparent;
+}
+
+.tooltiptext {
+    font-size: 12px;
+    visibility: hidden;
+    width: 60px;
+    background-color: #000;
+    opacity: 0.5;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 1px 0;
+    margin-left: -62px;
+    transition: opacity 0.3s;
+    position: absolute;
+    z-index: 1;
+  }
+
+  .btn-minimize-elie:hover .tooltiptext {
+    visibility: visible;
+  }
+  .btn-expand-elie:hover .tooltiptext {
+    visibility: visible;
+}
+.tooltiptextAgrandir{
+    margin-left: -40px !important;
+    margin-top: -35px !important;
+}
+.mt-50px{
+    margin-top: -50px !important;
+    color: #000;
+}
+
+.modal_visio{
+    /* display: none; */
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    background-color: #fff;
+    z-index: 9999;
+    left: 10%;
+    right: 10%;
+    top: 10%;
+    border-radius: 10px;
+    padding: 10px 10px;
+    border: 1px solid red;
+    transition: 1s ease-in-out;
+    transition: all .7s;
+}
+
+.modal_visio_to_min{
+
+    transform: translate(25px, 25px);
+}
+
+#bodyVisioMessageElie{
+    height: 72vh;
+    padding: 2px 0;
+}
+/**modal gallerie*/
+/*The Modal (background)*/
+.modalZoom {
+    display: none; 
+    position: fixed; 
+    z-index: 999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.9); 
+}
+
+/*Modal Content (Image)*/
+.modalZoom-content {
+    margin: auto;
+    display: block;
+    width: 100%;
+    max-width: 900px;
+    border-radius: 5px;
+}
+
+
+/*Add Animation - Zoom in the Modal*/
+.modalZoom-content, #captionZoom { 
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(0)} 
+    to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+
+/**The Close Button*/
+.closeZoom {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.closeZoom:hover,
+.closeZoom:focus {
+    color: #ff0000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.minRightModal{
+    display: block !important;
+    width: 300px;
+    height: 220px;
+    right: 0;
+    margin: auto;
+    bottom: 0;
+    left: auto;
+    padding: 0 !important;
+    border-radius: 0px !important;
+    top: 66% !important;
+}
+.minRightVisioBody{
+    /* height: 100%!important; */
+    height: 194px !important;
+    padding: 0 !important;
+}
+.btn-expand-elie-v2{
+    margin-right: 2px;
+    color: #000;
+}
+
+
+/*100% Image Width on Smaller Screens*/
+@media only screen and (max-width: 700px){
+    .modalZoom-content {
+        width: 100%;
+    }
 }

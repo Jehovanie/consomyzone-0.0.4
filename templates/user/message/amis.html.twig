@@ -11,12 +11,14 @@
 
 {% block javascripts %}
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
-    <script src='https://8x8.vc/external_api.js'></script>
-    <script  src="{{ asset('assets/js/chatHome.js') }}" defer></script>
+    {# <script src='https://8x8.vc/external_api.js'></script> #}
+    {# <script  src="{{ asset('assets/js/chatHome.js') }}" defer></script> #}
     {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
     <script  src="{{ asset('assets/js/message/message.js') }}" defer></script>
     <script  src="{{ asset('assets/js/message/eventStrem_message.js') }}" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
 {% endblock %}
 
@@ -72,10 +74,17 @@
                                 <ul class="list-group list-group-flush">
                                     {% for jtem in allTribuT %}
                                         <li class="list-group-item">
-                                            <p class="text-primary d-flex justify-content-between align-items-center">
-                                                {{jtem.name_tribu_t_muable}}
-                                                <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
-                                            </p>
+                                            <div class="text-primary d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    {{jtem.name_tribu_t_muable}}
+                                                </div>
+                                                <div>
+                                                    {% if jtem.amis|length > 0 %}
+                                                        <span class="badge bg-info text-dark">{{jtem.amis|length}} en ligne.</span>
+                                                    {% endif %}
+                                                    <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
+                                                </div>
+                                            </div>
                                             <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
                                                 <ul class="list-group">
                                                     {% if jtem.amis|length > 0 %}
@@ -112,14 +121,11 @@
                             </div>
                             <div>
                                 <p class="mn">
-
                                     Répondez au message de
                                     <h5 class="un zn gs">
-                                    {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
+                                        {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
                                     </h5>
                                 </p>
-                                
-                                
                             </div>
                         </div>
                         <div>
@@ -128,20 +134,6 @@
                                 <button class="lc yc zd mg pg sh bj wr wj yr me-1" id="elie-btn-visio">
                                     <i class="fas fa-video-camera" style="font-size:28px;color:#0d6efd;"></i>
                                 </button>
-                                {# <button @click="openDropDown = !openDropDown" class="lc yc zd mg pg sh ni bj wr wj yr non_active">
-                                    <svg width="18" height="18" viewbox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_3019_3034)">
-                                            <path d="M15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75Z" fill="#98A6AD"/>
-                                            <path d="M9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75Z" fill="#98A6AD"/>
-                                            <path d="M2.25 6.75C1.00736 6.75 3.05336e-07 7.75736 1.96701e-07 9C8.80661e-08 10.2426 1.00736 11.25 2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75Z" fill="#98A6AD"/>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_3019_3034">
-                                                <rect width="18" height="18" fill="white" transform="translate(18 18) rotate(-180)"/>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </button> #}
                                 <div x-show="openDropDown" @click.outside="openDropDown = false" class="g m n na de eh sh so nj xr ni bj wr vk">
                                     <button class="yd sh ol ll gn mn tq js">
                                         Modifiez.
@@ -161,8 +153,7 @@
                             {% set defaultFile = "/assets/image/type_file.png" %}
 
                             {% for message in userToProfil.messages %}
-
-                                {% if message.isForMe is same as("1") %}
+                                {% if message.isForMe|number_format is same as("1") %}
                                     <div class="qf" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
                                         <p class="qb mn un">
                                             {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
@@ -265,9 +256,10 @@
                                         </svg>
                                     </div>
 
-                                    <input class="hidden input_file_hidden_jheo_js"  type="file" class="first-input" multiple aria-disabled> 
+                                    {# <input class="hidden input_file_hidden_jheo_js"  type="file" class="first-input" multiple aria-disabled  accept="image/png, image/jpeg, image/gif">  #}
+                                    <input class="hidden input_file_hidden_jheo_js" accept=".jpeg, .png, .jpg, .csv, .txt, .json, .doc, .pdf"  type="file" class="first-input" multiple aria-disabled> 
                                     
-                                    <div class="zq non_active">
+                                    <div class="zq show_emojy_picker_jheo_js">
                                         <svg width="19" height="18" viewbox="0 0 19 18" class="hk">
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 2.25C5.77208 2.25 2.75 5.27208 2.75 9C2.75 12.7279 5.77208 15.75 9.5 15.75C13.2279 15.75 16.25 12.7279 16.25 9C16.25 5.27208 13.2279 2.25 9.5 2.25ZM1.25 9C1.25 4.44365 4.94365 0.75 9.5 0.75C14.0564 0.75 17.75 4.44365 17.75 9C17.75 13.5564 14.0564 17.25 9.5 17.25C4.94365 17.25 1.25 13.5564 1.25 9Z"/>
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.09769 10.0469C6.84856 9.71825 6.38037 9.6523 6.05004 9.90004C5.71867 10.1486 5.65152 10.6187 5.90004 10.95L6.50004 10.5C5.90004 10.95 5.90022 10.9503 5.90041 10.9505L5.9008 10.9511L5.90167 10.9522L5.90372 10.9549L5.90913 10.962L5.9251 10.9824C5.93803 10.9988 5.95555 11.0204 5.97757 11.0467C6.02155 11.0991 6.08379 11.17 6.16363 11.2533C6.32269 11.4193 6.55512 11.6379 6.85579 11.8566C7.45424 12.2918 8.3559 12.75 9.50004 12.75C10.6442 12.75 11.5458 12.2918 12.1443 11.8566C12.445 11.6379 12.6774 11.4193 12.8365 11.2533C12.9163 11.17 12.9785 11.0991 13.0225 11.0467C13.0445 11.0204 13.0621 10.9988 13.075 10.9824L13.091 10.962L13.0964 10.9549L13.0984 10.9522L13.0993 10.9511L13.0997 10.9505C13.0999 10.9503 13.1 10.95 12.5 10.5L13.1 10.95C13.3486 10.6187 13.2814 10.1486 12.95 9.90004C12.6197 9.6523 12.1515 9.71825 11.9024 10.0469L11.8989 10.0514C11.8945 10.057 11.886 10.0676 11.8736 10.0823C11.8487 10.112 11.8084 10.1582 11.7535 10.2155C11.643 10.3308 11.477 10.4872 11.262 10.6435C10.8292 10.9583 10.2309 11.25 9.50004 11.25C8.76919 11.25 8.17084 10.9583 7.73805 10.6435C7.52309 10.4872 7.35709 10.3308 7.24661 10.2155C7.19168 10.1582 7.15139 10.112 7.12653 10.0823C7.11412 10.0676 7.10563 10.057 7.10117 10.0514L7.09769 10.0469Z"/>
@@ -277,6 +269,9 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {{include('card/card_emojy_pickert.html.twig')}}
+
                             <button class="xc yd pf lc mg pg qh oj eo wq btn_send_message_jheo_js">
                                 <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -301,9 +296,9 @@
 
                         <div class="hn">
                             <h5 class="tn on zn gs">
-                                {{userToProfil.firstname ~ " " ~ userToProfil.lastname }} est un
+                                {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
                             </h5>
-                            <p class="mn"> {{userToProfil.status is same as('CONSUMER') ? 'Partisan': 'Partenaire'}} dans ConsoMyZone.</p>
+                            <p class="mn">  est un {{userToProfil.status is same as('CONSUMER') ? 'Partisan': 'Partenaire'}} dans ConsoMyZone.</p>
 
                             {# <p class="mn sb rl gu 2xl:ud-px-15">
                                 Lorem ipsum dolor sit amet, consectetur solium adipiscing
@@ -326,12 +321,33 @@
                             </div>
                         </div>
                     </div>
+                    {# <div class="visioMinimize fixed-bottom" id="minimizeVisio"></div> #}
                 </div>
             </div>
         </div>
     </main>
 </div>
 {{include('user/message/visio_message_modal.html.twig')}}
+
+
+<div class="modal fade" id="visioGroupModalForMessage" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Veuillez inviter vos amis</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="visioGroupContentForMessage">
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-close"></i> Pas maintenant</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmVisioGroupForMessage"><i class="fas fa-arrow-right"></i> Démarrer la conférence</button>
+      </div>
+    </div>
+  </div>
+</div>
+{# {{include('user/message/visio_message_modal.html.twig')}} #}
 {# {{include('user/message/amis_mobile.html.twig')}} #}
 
     {# list des amis dans le tribu G 

@@ -280,7 +280,6 @@ class MessageController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         MessageService $messageService,
-
     )
     {
         /// SHOW THE NUMBER OF MESSAGES IN THE BADGE ////////////////////////////////////////////////////
@@ -560,7 +559,7 @@ class MessageController extends AbstractController
 
         $API_KEY="vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54/60edf0";
         $APP_ID="vpaas-magic-cookie-6c87c9ecce8b4ccda30af3591dc24b54"; // Your AppID (previously tenant)
-        $USER_EMAIL="eliefenohasina@gmail.com";
+        $USER_EMAIL="";
         $USER_NAME="";
         $USER_IS_MODERATOR=false;
         $USER_AVATAR_URL="";

@@ -344,9 +344,12 @@ class GolfFranceController extends AbstractController
 
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
-        $golfFinished->setUserId($userID);
+        $golfFinished->setUserId($golfID);
         $golfFinished->setFait(1);
         $golfFinished->setAfaire(0);
+        $golfFinished->setMonGolf(0);
+
+        // dd($golfFinished);
 
         $entityManager->persist($golfFinished);
 
@@ -384,6 +387,7 @@ class GolfFranceController extends AbstractController
         $golfFinished->setUserId($userID);
         $golfFinished->setFait(0);
         $golfFinished->setAfaire(1);
+        $golfFinished->setMonGolf(0);
 
         $entityManager->persist($golfFinished);
 
@@ -420,6 +424,7 @@ class GolfFranceController extends AbstractController
         $golfFinished->setUserId($userID);
         $golfFinished->setFait(0);
         $golfFinished->setAfaire(0);
+        $golfFinished->setMonGolf(0);
 
         $entityManager->persist($golfFinished);
 
@@ -461,6 +466,44 @@ class GolfFranceController extends AbstractController
         return $this->json([
             "success" => true,
             "message" => "Setting golf unfinished successfully"
+        ], 201);
+    }
+
+    #[Route('user/setGolf/for_me', name: 'set_golf_for_me', methods: ["POST"])]
+    public function setGolfForMe(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        NotificationService $notificationService
+    ){
+        $requestContent = json_decode($request->getContent(), true);
+        extract($requestContent); ///$golfID
+
+        
+        ///current user connected
+        $user = $this->getUser();
+        if( !$user ){
+            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        }
+
+        $userID= $user->getId();
+
+        $golfFinished= new GolfFinished();
+        $golfFinished->setGolfId($golfID);
+        $golfFinished->setUserId($userID);
+        $golfFinished->setFait(0);
+        $golfFinished->setAfaire(0);
+        $golfFinished->setMonGolf(1);
+
+        $entityManager->persist($golfFinished);
+
+        $entityManager->flush();
+
+        // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
+        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf est à vous.");
+
+        return $this->json([
+            "success" => true,
+            "message" => "Golf finished successfully"
         ], 201);
     }
 }

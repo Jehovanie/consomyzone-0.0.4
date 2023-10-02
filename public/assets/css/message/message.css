@@ -770,7 +770,7 @@ div.img_slide_left {
 }
 
 #bodyVisioMessageElie {
-  height: 74vh !important;
+  /* height: 70vh !important; */
   padding-bottom: 0;
 }
 
@@ -789,4 +789,10 @@ div.img_slide_left {
   border-bottom: 0 !important;
   border-right: 0 !important;
   margin-bottom: 2px !important;
+}
+
+.content_emojy_picker{
+  position: absolute;
+  top: 15%;
+  left: 45%;
 }
