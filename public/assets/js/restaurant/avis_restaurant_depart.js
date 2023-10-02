@@ -16,7 +16,9 @@ window.addEventListener('load', () => {
         const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
 
         contentModalAvieResto.forEach(items => {
+            
             items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => { 
+                alert("test")
                 if (items.querySelector(".flash-msg-ERREUR")) {
                     items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
                 }
@@ -572,6 +574,7 @@ function showListAvie() {
 }
 
 function showListAvieMobile(newIdResto, userId) {
+
     // const listAvieMobile = document.querySelectorAll(".list-avis-ferme-global-mobile")
 
     // listAvieMobile.forEach(items => {

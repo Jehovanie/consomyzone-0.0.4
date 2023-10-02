@@ -752,7 +752,7 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
 
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    remove.setAttribute("class", "navleft-detail fixed-top responsif-none")
 
     const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
 
@@ -2808,7 +2808,7 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                                     <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                                         <span>
                                             <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
-                                                <span class="nbr_avis_resto_jheo_js">1 </span> avis
+                                                <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
                                             </a>
                                         </span>
                                         ${btnDonneAvie}
@@ -2818,142 +2818,178 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                             </a>
                         </li>
 
-                        <div class="modal fade" id="ModalDetailMobile${response.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content modal-content-mobile">
-								<div class="modal-header">
-									<h5 class="modal-title" id="exampleModalLabel">${response.nom}</h5>
+                        <div class="modal fade" id="ModalDetailMobile${response.id}" tabindex="-1" aria-labelledby="ModalLabelDetail${response.id}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content modal-content-mobile">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ModalLabelDetail">${response.nom}</h5>
+                                        <button type="button" class="btn-close" onclick="closeModalDetail(${response.id})"></button>
+                                    </div>
+                                    <div class="modal-body ">
+                                        <div class="modal-body-mobile">
+                                            <div class="content_note">
+                                                <div class=" start start_jheo_js">
+                                                    ${star}
+                                                </div>
+                                                <div class="nombre_avis"></div>
+                                            </div>
+                                            <figcaption class="blockquote-footer card-text cmz-adresse mt-2">
+                                                Adresse :
+                                                <a href="#" class="small text-center ">
+                                                    ${response.add.toLowerCase()}
+                                                </a>
+                                            </figcaption>
 
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body ">
-									<div class="modal-body-mobile">
-										<div class="content_note">
-											<div class=" start start_jheo_js">
-												${star}
-											</div>
-											<div class="nombre_avis"></div>
-										</div>
-										<figcaption class="blockquote-footer card-text cmz-adresse mt-2">
-											Adresse :
-											<a href="#" class="small text-center ">
-												${response.add.toLowerCase()}
-											</a>
-										</figcaption>
+                                            <div class="content_activite">
+                                                <p class="activite">
+                                                    <span class="fw-bold">Type restaurant:</span>
+                                                    ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
+                                                </p>
+                                            </div>
 
-										<div class="content_activite">
-											<p class="activite">
-												<span class="fw-bold">Type restaurant:</span>
-												${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
-											</p>
-										</div>
+                                            <div class="content_tow_cta">
+                                                ${site1}
+                                            </div>
 
-										<div class="content_tow_cta">
-											${site1}
-										</div>
+                                            <hr>
 
-										<hr>
-
-										<div
-											class="fonctionnalite">
-											<h5>
-												Fonctionalités:
-											</h5>
-											<ul>
-                                                ${fonctionalite1}
-											</ul>
+                                            <div
+                                                class="fonctionnalite">
+                                                <h5>
+                                                    Fonctionalités:
+                                                </h5>
+                                                <ul>
+                                                    ${fonctionalite1}
+                                                </ul>
 
 
-										</div>
+                                            </div>
 
-										<hr>
+                                            <hr>
 
-										<div class="fourchette_de_prix">
-											<h5>
-												Fourchette de prix:
-											</h5>
-											<ul>
-												${fourchettePrix1}
+                                            <div class="fourchette_de_prix">
+                                                <h5>
+                                                    Fourchette de prix:
+                                                </h5>
+                                                <ul>
+                                                    ${fourchettePrix1}
 
-											</ul>
-										</div>
+                                                </ul>
+                                            </div>
 
-										<hr>
+                                            <hr>
 
-										<div class="horaire">
-											<h5>
-												Horaires :
-											</h5>
-											<ul>
-                                                ${horaires1}
-												
-											</ul>
-											<hr>
+                                            <div class="horaire">
+                                                <h5>
+                                                    Horaires :
+                                                </h5>
+                                                <ul>
+                                                    ${horaires1}
+                                                    
+                                                </ul>
+                                                <hr>
 
-										</div>
+                                            </div>
 
-										<div class="prestation">
-											<h5>
-												Prestation :
-											</h5>
-											<ul>
-                                                ${prestation1}
-											</ul>
-											<hr>
+                                            <div class="prestation">
+                                                <h5>
+                                                    Prestation :
+                                                </h5>
+                                                <ul>
+                                                    ${prestation1}
+                                                </ul>
+                                                <hr>
 
-										</div>
+                                            </div>
 
-										<div class="regime_speciaux">
-											<h5>
-												Régime spécial :
-											</h5>
-											<ul>
-												${regimeSpeciaux1}
-											</ul>
-											<hr>
+                                            <div class="regime_speciaux">
+                                                <h5>
+                                                    Régime spécial :
+                                                </h5>
+                                                <ul>
+                                                    ${regimeSpeciaux1}
+                                                </ul>
+                                                <hr>
 
-										</div>
+                                            </div>
 
-										<div class="repas">
-											<h5>
-												Repas :
-											</h5>
-											<ul>
-												${repas1}
-											</ul>
-											<hr>
+                                            <div class="repas">
+                                                <h5>
+                                                    Repas :
+                                                </h5>
+                                                <ul>
+                                                    ${repas1}
+                                                </ul>
+                                                <hr>
 
-										</div>
+                                            </div>
 
-										<div class="tel">
-											<h5>
-												Téléphone :
-											</h5>
-											<ul>
-												${tel}
-											</ul>
-											<hr>
+                                            <div class="tel">
+                                                <h5>
+                                                    Téléphone :
+                                                </h5>
+                                                <ul>
+                                                    ${tel}
+                                                </ul>
+                                                <hr>
 
-										</div>
-									</div>
-								</div>
-								<div class="modal-footer">
-									<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
-										<span>
-											<a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
-												<span class="nbr_avis_resto_jheo_js">${response.avis.nbr}
-												</span>
-												avis
-											</a>
-										</span>
-										
-									</div>
-								</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+                                            <span>
+                                                <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
+                                                    <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}
+                                                    </span>
+                                                    avis
+                                                </a>
+                                            </span>
+                                            
+                                        </div>
+                                    </div>
 
-							</div>
-						</div>
-					</div>
+                                </div>
+                            </div>
+                        </div>  
 
+                        <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${response.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog  modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="list-avis-ferme">
+                                        <div
+                                            class="modal-body container-avis all_avis_${response.id}_jheo_js">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${response.id}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                            <textarea class="form-control note_number_${response.id}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${response.id}"></textarea>
+                                            <label for="message-text" class="col-form-label">Commentaire:</label>
+                                            <textarea class="form-control note_avis_${response.id}_jheo_js" id="message-text-mobile-${response.id}"></textarea>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     `
                 
@@ -2961,8 +2997,11 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                 
                     
             })
-        })
-    
-       
-        
+        })    
+}
+
+function closeModalDetail(id_resto) {
+    document.querySelector(`#ModalDetailMobile${id_resto}`).classList.remove("show")
+    document.querySelector(`#ModalDetailMobile${id_resto}`).style = "display: none"    
+    document.querySelector(".modal-backdrop").remove()
 }
