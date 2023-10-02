@@ -1,4 +1,4 @@
-const IS_DEV_MODE=false;
+const IS_DEV_MODE=true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -1669,28 +1669,33 @@ function sendFeedBackForPartenariat(){
 
 
 function reorganisePastille(){
-   let container=document.querySelector(".mainContainerLogoTribu") 
+  
 //    let ratio=(container.querySelectorAll(".img_nantenaina").length)/5
 //    container.style.width=(43*3)+"px"
-    let i=0
-    let j = 0;
-
-    let imLength = container.querySelectorAll(".img_nantenaina").length
-    if(imLength> 5)
-        document.querySelector(".iconePlus_nanta_js").classList.remove("d-none")
-
-   Array.from(container.querySelectorAll(".img_nantenaina")).forEach(item=>{
-      let bRect= item.getBoundingClientRect()
-      let itemWidth=bRect.width;
-      item.style.zIndex = 4 - j
-      i+= itemWidth
-      if(imLength > 4)
-        if(j>0)
-            item.style.marginLeft = "-10px"
-      j++
-      container.style.width=i+"px"
-   })
-
+   
+    if(document.querySelector(".mainContainerLogoTribu") ){
+        let container=document.querySelector(".mainContainerLogoTribu") 
+        let i=0
+        let j = 0;
+        if(container.querySelectorAll(".img_nantenaina")){
+       
+            let imLength = container.querySelectorAll(".img_nantenaina").length
+            if(imLength> 5)
+                document.querySelector(".iconePlus_nanta_js").classList.remove("d-none")
+    
+            Array.from(container.querySelectorAll(".img_nantenaina")).forEach(item=>{
+                let bRect= item.getBoundingClientRect()
+                let itemWidth=bRect.width;
+                item.style.zIndex = 4 - j
+                i+= itemWidth
+                if(imLength > 4)
+                    if(j>0)
+                        item.style.marginLeft = "-10px"
+                j++
+                container.style.width=i+"px"
+            })
+        }
+    }
 }
 
 function showNextImage(){
@@ -1730,91 +1735,75 @@ function showLogoAndNameTribus(){
     })
 }
 
-window.onload = (event) => {
+// window.onload = (event) => {
 
-    // if(localStorage.getItem("room_name")){
+//     // document.querySelector("#visioMessageElie").style="display :none !important;"
+//     // document.querySelector("#minimizeVisio").style="display :none !important;"
 
-    //     let room = localStorage.getItem("room_name")
+//     if(localStorage.getItem("room_name")){
+//         let room = localStorage.getItem("room_name")
 
-    //     document.querySelector("#visioMessageElie").style="display :none !important;"
-    //     document.querySelector("#minimizeVisio").style="display :block !important;"
+//         document.querySelector("#visioMessageElie").style="display :none !important;"
+//         document.querySelector("#minimizeVisio").style="display :block !important;"
         
 
-    //     joinMeet(room, 'minimizeVisio', this)
+//         joinMeet(room, 'minimizeVisio', this)
         
-    //     let btn_expand = document.createElement("button")
-    //     btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-    //     btn_expand.setAttribute('type', 'button')
-    //     btn_expand.classList = "btn-close btn-expand-elie"
-    //     btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+//         let btn_expand = document.createElement("button")
+//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+//         btn_expand.setAttribute('type', 'button')
+//         btn_expand.classList = "btn-close btn-expand-elie"
+//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
         
-    //     document.querySelector("#minimizeVisio").appendChild(btn_expand)
+//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
 
-    //     btn_expand.addEventListener("click", function () {
-    //         // $("#visioMessageElie").modal("show")
-    //         document.querySelector("#visioMessageElie").style="display:block !important"
-    //         document.querySelector("#minimizeVisio").innerHTML = ""
-    //         document.querySelector("#minimizeVisio").style="display:none !important"
-    //     })
-    // }else{
-    //     if(document.querySelector("#minimizeVisio")){
+//         btn_expand.addEventListener("click", function () {
+//             // $("#visioMessageElie").modal("show")
+//             document.querySelector("#visioMessageElie").style="display:block !important"
+//             document.querySelector("#minimizeVisio").innerHTML = ""
+//             document.querySelector("#minimizeVisio").style="display:none !important"
+//         })
+//     }else{
+//         if(document.querySelector("#minimizeVisio")){
 
-    //         document.querySelector("#minimizeVisio").style="display :none !important;"
-    //     }
-    // }
+//             document.querySelector("#minimizeVisio").style="display :none !important;"
+//         }
+//     }
     
-};
+// };
 
 // if(document.querySelector(".btn-minimize-elie")){
 
 //     document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
 
-//         this.classList.remove("btn-minimize-elie")
-//         this.classList ="btn-expand-elie-v2"
-//         this.setAttribute("onclick", "expand(this)")
-//         this.innerHTML = `<span class="tooltiptext">Agrandir</span>
-//         <i class="fa-solid fa-expand"></i>`
-
-//         document.querySelector("#visioMessageElie").classList.add("minRightModal")
-
-//         document.querySelector("#bodyVisioMessageElie").classList.add("minRightVisioBody")
-
-//         // document.querySelector("#visioMessageElie").style ="display:none !important;"
-//         // document.querySelector("#minimizeVisio").style="display:block !important;"
+//         document.querySelector("#visioMessageElie").style ="translate(25px, 25px); display:none !important;"
     
-//         // let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
+//         let room_link = localStorage.getItem("room_link")
     
-//         // joinMeet(room, 'minimizeVisio', this)
+//         document.querySelector("#minimizeVisio").style="display:block !important;"
     
-//         // let btn_expand = document.createElement("button")
-//         // btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-//         // btn_expand.setAttribute('type', 'button')
-//         // btn_expand.classList = "btn-close btn-expand-elie"
-//         // btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+//         let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
     
-//         // document.querySelector("#minimizeVisio").appendChild(btn_expand)
+//         joinMeet(room, 'minimizeVisio', this)
+    
+//         let btn_expand = document.createElement("button")
+//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
+//         btn_expand.setAttribute('type', 'button')
+//         btn_expand.classList = "btn-close btn-expand-elie"
+//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
+    
+//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
         
-//         // btn_expand.addEventListener("click", function () {
-//         //     // $("#visioMessageElie").modal("show")
-//         //     document.querySelector("#visioMessageElie").style="display:block !important"
-//         //     document.querySelector("#minimizeVisio").innerHTML = ""
-//         //     document.querySelector("#minimizeVisio").style="display:none;"
-//         // })
+//         btn_expand.addEventListener("click", function () {
+//             // $("#visioMessageElie").modal("show")
+//             document.querySelector("#visioMessageElie").style="display:block !important"
+//             document.querySelector("#minimizeVisio").innerHTML = ""
+//             document.querySelector("#minimizeVisio").style="display:none;"
+//         })
     
 //     })
 
 // }
-function reduire(e){
-    e.classList.remove("btn-minimize-elie")
-    e.classList ="btn-expand-elie-v2"
-    e.setAttribute("onclick", "expand(this)")
-    e.innerHTML = `<span class="tooltiptext tooltiptextAgrandir">Agrandir</span>
-    <i class="fa-solid fa-expand"></i>`
-
-    document.querySelector("#visioMessageElie").classList.add("minRightModal")
-
-    document.querySelector("#bodyVisioMessageElie").classList.add("minRightVisioBody")
-}
 
 function expand(e){
     e.setAttribute("onclick", "reduire(this)")
@@ -1857,3 +1846,29 @@ function notificationSong() {
     console.log("song")
 }
 
+
+function reduire(e){
+    e.classList.remove("btn-minimize-elie")
+    e.classList ="btn-expand-elie-v2"
+    e.setAttribute("onclick", "expand(this)")
+    e.innerHTML = `
+        <span class="tooltiptext">Agrandir</span>
+        <i class="fa-solid fa-expand"></i>
+    `
+
+    document.querySelector("#visioMessageElie").classList.add("minRightModal")
+    document.querySelector("#bodyVisioMessageElie").classList.add("minRightVisioBody")
+}
+
+function expand(e){
+    e.setAttribute("onclick", "reduire(this)")
+    e.classList.remove("btn-expand-elie-v2")
+    e.classList ="btn-close btn-minimize-elie "
+    e.innerHTML = `
+        <span class="tooltiptext">Reduire</span>
+        <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
+    `
+
+    document.querySelector("#visioMessageElie").classList.remove("minRightModal")
+    document.querySelector("#bodyVisioMessageElie").classList.remove("minRightVisioBody")
+}

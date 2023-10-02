@@ -1012,24 +1012,33 @@ function deleteMap(){
 
 function setGallerie(imgs){
     imgs.forEach(img => {
-            
+        console.log(img)
         //console.log(img);
-        h = img.naturalHeight;
-        w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const w = img.naturalWidth;
 
-        //console.log("img.naturalHeight : " + img.naturalHeight)
-        //console.log("img.naturalWidth : " + img.naturalWidth)
-        ratio = w/h;
-        closestRatioValue = Math.abs(1-ratio);
-        closestRatio = 1;
+        console.log("img.naturalHeight : " + img.naturalHeight)
+        console.log("img.naturalWidth : " + img.naturalWidth)
+        const ratio = w/h;
+        let closestRatioValue = Math.abs(1-ratio);
+        console.log("closestRatioValue "+closestRatioValue)
+        let closestRatio = 1;
         var a = Math.abs(16/9-ratio);
         var b = Math.abs(9/16-ratio);
-
+        console.log("a "+ a+" b"+b )
         if(a < closestRatioValue){
             closestRatioValue = a;
             closestRatio = 16/9;
         }
         if(b < closestRatioValue){
+            closestRatioValue = b;
+            closestRatio = 9/16;
+        }
+        if(a > closestRatioValue){
+            closestRatioValue = a;
+            closestRatio = 16/9;
+        }
+        if(b > closestRatioValue){
             closestRatioValue = b;
             closestRatio = 9/16;
         }
@@ -1039,7 +1048,7 @@ function setGallerie(imgs){
             img.style.gridColumn = "span 2";
         } else if(closestRatio == 9/16){
             console.log("9/16");
-            img.style.gridRow = "span 2";
+            img.style.gridRow = "1 / span 2";
         }
     });
 }
@@ -1659,143 +1668,6 @@ function checkTailleImage(maxOctetAccepted, file_base64){
     return (sizeInBytes < maxOctetAccepted ) ? true : false;
 }
 
-
-function injectStatusGolf(){
-    if( !document.querySelector(".content_right_side_body_jheo_js")){
-        console.log("Selector not found : '.content_right_side_body_body'")
-        return false;
-    }
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
-        <div class="right_side_body right_side_body_jheo_js">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Icône</th>
-                    
-                        <th scope="col">Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                        
-                        <td>Mon Golf</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
-
-                        <td>A faire</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
-
-                        <td>Fait</td>
-                    </tr>
-                    <tr>
-                    <th scope="row">4</th>
-                        <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
-                        
-                        <td>Inconnu</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    `
-}
-
-
-function injectStatusResto(){
-    if( !document.querySelector(".content_right_side_body_jheo_js")){
-        console.log("Selector not found : '.content_right_side_body_body'")
-        return false;
-    }
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
-        <div class="right_side_body right_side_body_jheo_js">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Icône</th>
-                    
-                        <th scope="col">Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
-                        
-                        <td>Les restaurants non pastillés</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-org-single.png" alt="Icon Resto"></td>
-
-                        <td>Les restaurants pastillés par une seule tribu T.</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-vert-multi.png" alt="Icon Resto"></td>
-
-                        <td>Les restaurants pastillés par plusieurs tribus T.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    `
-}
-
-function injectChooseCouch(){
-    if( !document.querySelector(".content_right_side_body_jheo_js")){
-        console.log("Selector not found : '.content_right_side_body_body'")
-        return false;
-    }
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
-        <div class="right_side_body right_side_body_jheo_js">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="region">
-                <label class="form-check-label" for="region">
-                    REGION
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="commune">
-                <label class="form-check-label" for="commune">
-                    COMMUNE
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="departement">
-                <label class="form-check-label" for="departement">
-                    DEPARTEMENT
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="iris" >
-                <label class="form-check-label" for="iris">
-                    IRIS
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="quartierDeVie" >
-                <label class="form-check-label" for="quartierDeVie">
-                    QUARTIER DE VIE
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="canton" >
-                <label class="form-check-label" for="canton">
-                    CANTON
-                </label>
-            </div>
-        </div>
-    `
-}
-
 function removePublication(pubId, tablePub){
 
     document.querySelector('.confirm_delete_pub_jheo_js').addEventListener('click',() => {
@@ -1863,12 +1735,11 @@ function getAllComment(pubId, tablePub, userOwnID){
             const comments = response.comments.reverse();
 
             comments.forEach(comment => {
-                const pdp = (comment.user.photo !== null) ? comment.user.photo.replace("/public", "") : '/uploads/users/photos/default_pdp.png';
+                const pdp = (comment.user.photo !== null) ? comment.user.photo: '/public/uploads/users/photos/default_pdp.png';
                 listLIcomment += `
                     <li id='pub_${comment.pub_id}_comment_${comment.comment_id}' class="nr h lc rg mg qh sq js yk mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
                         <div class="h sa wf uk th ni ej">
                             <a href="#"> <img class="profil_publication" src="${pdp}" alt="User"/> </a>
-                            <span class="g l m xe qd th pi jj sj ra"></span>
                         </div>
                         <div>
                             <h6 class="un zn gs">
@@ -2688,25 +2559,25 @@ function setGallerieImageV2(){
     // Get the image and insert it inside the modal - use its "alt" text as a caption
     let imgFullSecreen = document.getElementById("imgFullSecreen");
     // let captionText = document.getElementById("captionZoom");
-    
+
     document.querySelectorAll(".fancybox > img").forEach(fancy=>{
         let url = fancy.src
-    
+
         fancy.onclick = function(){
-    
+
             document.querySelector("body").classList.add("modal-open")
-            document.querySelector("body").style = "overflow: hidden; padding-right: 19px;"
+            document.querySelector("body").style = "overflow: scroll; padding-right: 19px;"
             modalZoom.style.display = "block";
             imgFullSecreen.src = url;
-            imgFullSecreen.style = "height : 100%; width:60%"
-    
+            imgFullSecreen.style = " width:60%"
+            //height : 100%;
         }
-    
+
     })
-    
+
     // Get the <span> element that closes the modal
     let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
-    
+
     // When the user clicks on <span> (x), close the modal
     spanCloseZoom.onclick = function() { 
         modalZoom.style.display = "none";

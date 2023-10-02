@@ -743,14 +743,32 @@ class MapModule{
                     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
                 </button>
             `
+        }else if( this.mapForType === "tous"){
+            htmlControl += `
+                <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
+                </button>
+            `
+        }else if( this.mapForType === "station"){
+            htmlControl += `
+                <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
+                </button>
+            `
+        }else if( this.mapForType === "ferme"){
+            htmlControl += `
+                <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
+                </button>
+            `
+        }else if( this.mapForType === "tabac"){
+            htmlControl += `
+                <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
+                </button>
+            `
         }
-        // else if( this.mapForType === "tabac") {
-        //     htmlControl += `
-        //         <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
-        //             <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
-        //         </button>
-        //     `
-        // }
+
         L.control.custom({
             // position: 'topright',
             content : htmlControl,
@@ -895,19 +913,35 @@ class MapModule{
             }
     
             if( rightSideContentType === "info_golf_jheo_js"){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
                 injectStatusGolf();
 
             }else if( rightSideContentType === "info_resto_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
                 injectStatusResto();
 
+            }else if( rightSideContentType === "info_ferme_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusFerme();
+
+            }else if( rightSideContentType === "info_station_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusStation();
+
+            }else if( rightSideContentType === "info_tabac_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusTabac();
+
+            }else if( rightSideContentType === "info_tous_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusTous();
+
             }else if( rightSideContentType === "couche_tabac_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.".toUpperCase();
+                document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
                 this.injectChooseCouche();
 
             }else{ //// default tiles type
-                document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de map".toUpperCase();
+                document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
                 this.injectTilesType();
             }
     

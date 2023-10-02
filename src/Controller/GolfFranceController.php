@@ -340,8 +340,8 @@ class GolfFranceController extends AbstractController
         $userID= $user->getId();
 
         $golfFinished= new GolfFinished();
-        $golfFinished->setGolfId($$golfID);
-        $golfFinished->setUserId($$golfID);
+        $golfFinished->setGolfId($golfID);
+        $golfFinished->setUserId($golfID);
         $golfFinished->setFait(1);
         $golfFinished->setAfaire(0);
         $golfFinished->setMonGolf(0);
@@ -496,7 +496,7 @@ class GolfFranceController extends AbstractController
         $entityManager->flush();
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf à faire.");
+        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf est à vous.");
 
         return $this->json([
             "success" => true,

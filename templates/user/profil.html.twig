@@ -73,7 +73,7 @@
 					</div>
 					<div class="lc jg yl bn cn it _t xr">
 						<div class="pdp h -ud-top-14 qa jd yd sf th ri jj qo us ws">
-							<img src={{ (autre_profil[0].getPhotoProfil != null) ? autre_profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }} alt="{{ autre_profil[0].getFirstname }}"/>
+							<img src={{ (autre_profil[0].getPhotoProfil != null) ? autre_profil[0].getPhotoProfil : '/public/uploads/users/photos/default_pdp.png' }} alt="{{ autre_profil[0].getFirstname }}"/>
 						</div>
 						<div class="yd iu">
 							<div class="wb mg qg ss">
@@ -85,7 +85,7 @@
 
 									<p class="mn un" id="elie_my_tribu_g" data-g="{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}">
 										{{status_tribuT_autre_profil}}
-										du département
+										de la tribu-G 
 										{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}
 									</p>
 								</div>
@@ -267,7 +267,7 @@
 							<tbody id="tbody_tribu_t">
 								{% for user in tribu_t_friend %}
 									<tr>
-										<td><img src="{{user.tribuT.avatar}}" alt="" style="width:40px; height:40px;border-radius:50%;"/>
+										<td><img src="{{user.tribuT.avatar ? user.tribuT.avatar : '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" alt="" style="width:40px; height:40px;border-radius:50%;"/>
 										</td>
 										<td>{{user.tribuT.name}}
 										</td>

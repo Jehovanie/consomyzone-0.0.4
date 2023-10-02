@@ -668,8 +668,15 @@ body {
 
 .content_header_right_side{
     display: block;
-    height: 100px;
+    height: 55px;
     margin-top: 100px;
+}
+
+.table_info_marker{
+    display: block;
+    max-height: 65vh;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .header_right_side{
@@ -1657,7 +1664,13 @@ i.fa-eye-slash, i.fa-eye{
 .icon_resto_legend{
     display: block;
     width: 30px;
-    height: 40px;
+    height: 40px ;
+}
+
+.icon_golf_legend{
+    display: block;
+    width: 30px;
+    height: 40px ;
 }
 
 .containerPastilleResto{
@@ -2092,7 +2105,7 @@ textarea {
     position: absolute;
     z-index: 1;
   }
-  
+
   .btn-minimize-elie:hover .tooltiptext {
     visibility: visible;
   }
@@ -2138,52 +2151,23 @@ textarea {
     /* height: 72vh; */
     padding: 2px 0;
 }
-
-.minRightModal{
-    display: block !important;
-    width: 300px;
-    height: 220px;
-    right: 0;
-    margin: auto;
-    bottom: 0;
-    left: auto;
-    padding: 0 !important;
-    border-radius: 0px !important;
-    top: 66% !important;
-    animation-duration: 1s;
-    transition: all .7s;
-    cursor: move;
-    position: absolute;
-}
-.minRightVisioBody{
-    /* height: 100%!important; */
-    height: 194px !important;
-    padding: 0 !important;
-    
-}
-.btn-expand-elie-v2{
-    margin-right: 2px;
-    color: #000;
-}
-
-/* Style the Image Used to Trigger the Modal */
-
-/* The Modal (background) */
+/**modal gallerie*/
+/*The Modal (background)*/
 .modalZoom {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 999; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: none; 
+    position: fixed; 
+    z-index: 999;
+    padding-top: 100px;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.9); 
 }
 
-/* Modal Content (Image) */
+/*Modal Content (Image)*/
 .modalZoom-content {
     margin: auto;
     display: block;
@@ -2193,7 +2177,7 @@ textarea {
 }
 
 
-/* Add Animation - Zoom in the Modal */
+/*Add Animation - Zoom in the Modal*/
 .modalZoom-content, #captionZoom { 
     -webkit-animation-name: zoom;
     -webkit-animation-duration: 0.6s;
@@ -2211,7 +2195,7 @@ textarea {
     to {transform:scale(1)}
 }
 
-/* The Close Button */
+/**The Close Button*/
 .closeZoom {
     position: absolute;
     top: 15px;
@@ -2229,7 +2213,30 @@ textarea {
     cursor: pointer;
 }
 
-/* 100% Image Width on Smaller Screens */
+.minRightModal{
+    display: block !important;
+    width: 300px;
+    height: 220px;
+    right: 0;
+    margin: auto;
+    bottom: 0;
+    left: auto;
+    padding: 0 !important;
+    border-radius: 0px !important;
+    top: 66% !important;
+}
+.minRightVisioBody{
+    /* height: 100%!important; */
+    height: 194px !important;
+    padding: 0 !important;
+}
+.btn-expand-elie-v2{
+    margin-right: 2px;
+    color: #000;
+}
+
+
+/*100% Image Width on Smaller Screens*/
 @media only screen and (max-width: 700px){
     .modalZoom-content {
         width: 100%;

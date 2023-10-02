@@ -770,7 +770,11 @@ div.img_slide_left {
 }
 
 #bodyVisioMessageElie {
+<<<<<<< HEAD
   height: 70vh;
+=======
+  /* height: 70vh !important; */
+>>>>>>> dev
   padding-bottom: 0;
 }
 

@@ -495,7 +495,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
-    function setTribuT($tribu_T_name_table, $description,$path,$extension,$userId,$tribu_t_owned_or_join,$nomTribuT)
+    function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join,$nomTribuT)
 
     {
 
@@ -514,7 +514,8 @@ class Tribu_T_Service extends PDOConnexionService
                     "name"=> $tribu_T_name_table,
                     "name_tribu_t_muable"=>$nomTribuT,
                     "description"=> $description,
-                    "extension"=> $extension,
+                    "extension"=> $extenstion,
+                    // "extension_golf"=> $extenstion_golf,
                     "logo_path"=>$path,
                     "date"=>  $date,
                     ));
@@ -540,7 +541,8 @@ class Tribu_T_Service extends PDOConnexionService
                 array_push($tmp, 
                 array("name" => $tribu_T_name_table,  
                 "name_tribu_t_muable"=>$nomTribuT, 
-                "description" => $description, "extension" => $extension,"logo_path" => $path, "date" =>  $date));
+                // "description" => $description, "extension" => $extenstion,"extension_golf"=> $extenstion_golf, "logo_path" => $path, "date" =>  $date));
+                "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
                 $array = array("tribu_t" => $tmp);
             }
 

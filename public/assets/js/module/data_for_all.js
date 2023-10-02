@@ -168,3 +168,215 @@ function pastilleRestoForTribuT(element, isPastilled){
             })
             .catch(error=>console.log(error))
 }
+
+function injectChooseCouch(){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+        <div class="right_side_body right_side_body_jheo_js">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="region">
+                <label class="form-check-label" for="region">
+                    REGION
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="commune">
+                <label class="form-check-label" for="commune">
+                    COMMUNE
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="departement">
+                <label class="form-check-label" for="departement">
+                    DEPARTEMENT
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="iris" >
+                <label class="form-check-label" for="iris">
+                    IRIS
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="quartierDeVie" >
+                <label class="form-check-label" for="quartierDeVie">
+                    QUARTIER DE VIE
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="canton" >
+                <label class="form-check-label" for="canton">
+                    CANTON
+                </label>
+            </div>
+        </div>
+    `
+}
+
+function getStateGolf(numeroIndices= 1){
+    const data= `
+        <tr>
+            <th scope="row">${numeroIndices}</th>
+            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/mon_golf.png" alt="Icon Golf"></td>
+            
+            <td>Mon Golf</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png" alt="Icon Golf"></td>
+
+            <td>Golf A faire</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 2 }</th>
+            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png" alt="Icon Golf"></td>
+
+            <td>Golf fait</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 3}</th>
+            <td><img class="icon_golf_legend" src="/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png" alt="Icon Golf"></td>
+            
+            <td>Golf Inconnue</td>
+        </tr>
+    `
+    return data;
+}
+function injectStatusGolf(){
+    const data = getStateGolf(1)
+    injectStatus(data)
+}
+
+function getStateResto(numeroIndices= 1){
+    const data= `
+        <tr>
+            <th scope="row">${numeroIndices}</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B.png" alt="Icon Resto"></td>
+            
+            <td>Les restaurants non pastillés</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-org-single.png" alt="Icon Resto"></td>
+
+            <td>Les restaurants pastillés par une seule tribu T.</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 2 }</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-resto-new-B-vert-multi.png" alt="Icon Resto"></td>
+
+            <td>Les restaurants pastillés par plusieurs tribus T.</td>
+        </tr>
+    `
+    return data;
+}
+function injectStatusResto(){
+    const data= getStateResto(1);
+    injectStatus(data)
+}
+
+function getStateTabac(numeroIndices=1){
+    const data= `
+        <tr>
+            <th scope="row">${numeroIndices}</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/tabac_black0.png" alt="Icon Tabac"></td>
+            
+            <td>Marquer Tabac non sélectionné.</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/tabac_red0.png" alt="Icon Tabac"></td>
+
+            <td>Marquer Tabac sélectionné.</td>
+        </tr>
+    `
+    return data;
+}
+function injectStatusTabac(){
+    const data= getStateTabac(1);
+    injectStatus(data)
+}
+
+function getStateStation(numeroIndices=1){
+    const data= `
+        <tr>
+            <th scope="row">${numeroIndices}</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-station-new-B.png" alt="Icon Station"></td>
+            
+            <td>Marquer Station non sélectionné.</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-station-new-R.png" alt="Icon Station"></td>
+            <td>Marquer Station sélectionné.</td>
+        </tr>
+    `
+    return data;
+}
+
+function injectStatusStation(){
+    const data= getStateStation(1);
+    injectStatus(data)
+}
+
+
+function getStateFerme(numeroIndices=1){
+    const data= `
+        <tr>
+            <th scope="row">${numeroIndices}</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-ferme-new-B.png" alt="Icon Ferme"></td>
+            
+            <td>Marquer Ferme non sélectionné.</td>
+        </tr>
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td><img class="icon_resto_legend" src="/public/assets/icon/NewIcons/icon-ferme-new-R.png" alt="Icon Ferme"></td>
+            <td>Marquer Ferme sélectionné.</td>
+        </tr>
+    `
+    return data;
+}
+
+function injectStatusFerme(){
+    const data = getStateFerme(1);
+    injectStatus(data)
+}
+
+
+function injectStatusTous(){
+    let data = getStateResto(1);
+    data += getStateFerme(4);
+    data += getStateStation(6);
+    data += getStateGolf(8);
+    data += getStateTabac(12);
+
+    injectStatus(data);
+}
+
+
+function injectStatus(data){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table table_info_marker">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icône</th>
+                    
+                        <th scope="col">Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data}
+                </tbody>
+            </table>
+        </div>
+    `
+}

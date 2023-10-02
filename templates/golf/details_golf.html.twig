@@ -8,11 +8,11 @@
                         {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
                             <span class="badge bg-info golf_status golf_status_jheo_js"></span>
                         {% else %}
-                            {% if details.user_status["a_faire"] == 1 %}
+                            {% if details.user_status["a_faire"] == "1" %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
-                            {% elseif details.user_status["fait"] == 1 %}
+                            {% elseif details.user_status["fait"] == "1" %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
-                            {% elseif details.user_status["mon_golf"] == 1 %}
+                            {% elseif details.user_status["mon_golf"] == "1" %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
                             {% else %}
                                 <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
@@ -29,7 +29,7 @@
             {% if app.user %}
                 <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
                     {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
-                        <label for="selectActionGolf" class="form-label">Voulez-vous marquer que ce golf comme : </label>
+                        <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
                         <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange="executeActionForPastGolf({{details.id}})">
                             <option value="0">Aucun</option>
                             <option value="1">A faire</option>
@@ -59,7 +59,8 @@
             </div>
              <hr>
             <div class="mt-2 nombre_avis d-flex justify-content-center align-items-center">
-                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
+                {# <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button> #}
+                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">Avis</button>
             </div>
         </div>
 

@@ -1452,19 +1452,14 @@ class TributTController extends AbstractController
 
 
     #[Route('/user/tribu/photos/{table}', name: 'show_all_photos')]
-
     public function showAllphotosTribut($table): Response
-
     {
-
         // $tribu_t = new Tribu_T_Service();
-
         // $photos = $tribu_t->showAllphotosTribut($table);
-
         // return $this->json($photos);
-
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/".$table."/";
         $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
+
         $tabPhoto = [];
         foreach ($images as $image) {
             $photo = explode("uploads/tribu_t",$image)[1];
@@ -1472,7 +1467,6 @@ class TributTController extends AbstractController
             array_push($tabPhoto, ["photo"=>$photo]);
         }
         return $this->json($tabPhoto);
-
     }
 
     #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
@@ -2165,17 +2159,10 @@ class TributTController extends AbstractController
 
                 if ($output != 0) {
 
-                    // $restoExtension = ($resto == "on") ? "restaurant" : null;
-                    
+                    $restoExtension = ($resto == "on") ? "restaurant" : null;
                     // $golfExtension = ($golf == "on") ? "golf" : null;
-
-                    $extension = [];
-                    $extension["restaurant"] = ($resto == "on") ? 1 : 0;
-                    $extension["golf"] = ($golf == "on") ? 1 : 0;
-
                    
-                    // $tribut->setTribuT($output, $description, $path,$restoExtension,$golfExtension, $userId,"tribu_t_owned", $nomTribuT);
-                    $tribut->setTribuT($output, $description, $path,$extension, $userId,"tribu_t_owned", $nomTribuT);
+                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned", $nomTribuT);
 
                     $isSuccess = true;
 
