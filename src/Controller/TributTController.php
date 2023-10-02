@@ -2145,7 +2145,8 @@ class TributTController extends AbstractController
                 */
                 $nomTribuT=$body["tribu_t_name"]; 
                 // $description = str_replace("'", "$", $body["description"]);
-                $description = $status->convertUtf8ToUnicode($body["description"]) ;
+                // $description = $status->convertUtf8ToUnicode($body["description"]) ;
+                $description =$body["description"] ;
                
                 $tableName = $stringTraitementService->normalizedString($nom);
                 $tableName = str_replace(" ","_", strtolower($tableName));

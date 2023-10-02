@@ -621,7 +621,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                         <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                             onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>
