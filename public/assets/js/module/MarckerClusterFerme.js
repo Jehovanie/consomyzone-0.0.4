@@ -256,7 +256,7 @@ class MarckerClusterFerme extends MapModule {
 
             const response = await fetch(`/getLatitudeLongitudeFerme${param}`);
             let new_data = await response.json();
-            console.log(new_data);
+            // console.log(new_data);
             new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
          
             this.addMarker(this.checkeFilterType(new_data));

@@ -802,9 +802,6 @@ function lookupByDepCodeFerme(g) {
 
 // const nom_dep = 
 
-function addListDepartMobile(nom_dep, id_dep) {
-    location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
-}
 
 function addSpecificFermeMobile(nom_dep, id_dep) {
     document.querySelector("#open-navleft-mobile-tomm-js-specific").style.opacity = 0
@@ -2420,26 +2417,40 @@ function getSpectRestoMobile(nom_dep, id_dep) {
     
 }
 
-let limitSpec = 5
-let offset = 0
+
+/**
+ * @author Tomm
+ * incrimentation specific liste
+ * vers specific_mobile_depart....twig
+ */
+let limitSpecTomm = 5
+let offsetTomm = 0
 if (document.querySelector(".scroll-mobile-tomm-js")) {
     let contentSpecMobile = document.querySelector(".scroll-mobile-tomm-js")
-    contentSpecMobile.addEventListener('scrollend', (event) => {  
-        const id_dep = new URLSearchParams(window.location.href).get("id_dep")
-        const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
-            offset += limitSpec
-        getDataSpecificMobile(nom_dep, id_dep)
-        // limitSpec++
-       
-        
-        
+    contentSpecMobile.addEventListener('scroll', (event) => { 
+        if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
+            
+            const rubricName = new URL(window.location.href).pathname.split("/")[1]
+            if (rubricName == 'restaurant') {
+                const id_dep = new URLSearchParams(window.location.href).get("id_dep")
+                const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
+                offsetTomm += limitSpecTomm
+                getDataSpecificMobile(nom_dep, id_dep)
+            } else if (rubricName == 'ferme') {
+                const id_dep = new URL(window.location.href).pathname.split('/')[4]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+                offsetTomm += limitSpecTomm
+                getDataSpecFermeMobile(nom_dep, id_dep)
+                console.log(contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth)
+            }
+        }
     })
 }
 function getDataSpecificMobile(nom_dep, id_dep) {
     
     let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     let id_resto = ''
-    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpec}/${offset}`, {
+    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
@@ -2851,6 +2862,126 @@ function getDataSpecificMobile(nom_dep, id_dep) {
         })    
 }
 
+/**
+ * @author Tomm
+ * href list specic ferme mobile
+ * vers specific_mobile_depar...js.twig
+ */
+function addListDepartMobile(nom_dep, id_dep) {
+    location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
+    
+}
+
+
+/**
+ * @author Tomm
+ * creation list specic ferme mobile
+ * vers specific_mobile_depar...js.twig
+ */
+function getDataSpecFermeMobile(nom_dep, id_dep) {
+    let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+    const request = new Request(`/ferme-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => { 
+                
+            let listSpecMobile = document.querySelector(".list-specific-ferme-mobile-tomm-js")
+            responses.fermes.forEach(response => {
+                let genre = ''
+                if (response.genre) {
+                    genre = `<span class="ferme-genre">
+                            ${response.genre}</span>`
+                }
+                
+                let agricultureBio = ''
+                if (response.agricultureBio) {
+                    agricultureBio = `
+                        <div class="row">
+                            <div class="col-8">
+                                <p class="agribio fw-bold">
+                                    Agri biologie
+                                </p>
+                            </div>
+                            <div class="col-2">
+                                <img src="/public/assets/icon/icon-agri.png" alt="" width="50">
+                            </div>
+                            <div class="col-2">
+                                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    `
+                }
+            
+                let btnAviMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+                
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">${response.nomFerme}
+										${genre}
+									</p>
+                                    <div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+
+                                    <p class="test-point-9">
+										<span class="fw-bold">
+											Adresse :
+										</span>
+										<span class="small ">
+											${response.adresseFerme}
+										</span>
+									</p>
+
+                                    <p class="activite text-point-9">
+                                        ${agricultureBio}
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Produit:</span>
+										${response.produitFerme}
+                                    </p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email:</span>
+										${response.email}
+                                    </p>
+
+								</div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAviMobile}
+								</div>
+							
+							</div>
+						</a>
+					</li>
+                `
+            })
+            let lengthFerme = responses.fermes.length
+            console.log(lengthFerme + lengthFerme)
+        })
+
+}
+
 function closeModalDetail(id_resto) {
     document.querySelector(`#ModalDetailMobile${id_resto}`).classList.remove("show")
     document.querySelector(`#ModalDetailMobile${id_resto}`).style = "display: none"
@@ -3054,3 +3185,7 @@ function setGallerieImageV2(){
         document.querySelector("body").style = ""
     }
 }
+
+
+
+

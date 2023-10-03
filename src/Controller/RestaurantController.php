@@ -346,11 +346,6 @@ class RestaurantController extends AbstractController
         AvisRestaurantRepository $avisRestaurantRepository,
 
     ) {
-        $dataRequest = $request->query->all();
-        // $nomDep = $dataRequest["nom_dep"];
-        // $codeDep = $dataRequest["id_dep"];
-        // $codinsee = $dataRequest["codinsee"];
-        // $arrdssm = $dataRequest["arrdssm"];
         $datas = [];
         $restos = $bddResto->getCoordinateAndRestoIdForSpecificMobile($id_dep , null, $limit, $offset);
         $resultCount= $bddResto->getAccountRestauranting($id_dep);

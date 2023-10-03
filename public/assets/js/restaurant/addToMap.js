@@ -46,3 +46,4 @@ window.addEventListener('load', () => {
         document.querySelector("#close-navleft").click();
     }
 })
+

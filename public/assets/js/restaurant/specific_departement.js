@@ -4,6 +4,7 @@ window.addEventListener('load', () => {
     getDataSpecificMobile(nom_dep, id_dep)
     
     
+    
 
 });
 

@@ -1,34 +1,12 @@
-let tabArray, map, markers
-let tabMarker = []
+
 
 window.addEventListener('load', () => {
-    const geos = []
-    document.querySelectorAll("#all_ferme_in_dep > div > a").forEach(item => {
-        item.onclick = () => {
-            localStorage.removeItem("coordFerme")
-        }
-    })
-    const id_dep = document.querySelector('#all_ferme_in_dep').getAttribute("data-toggle-id-dep")
 
-    if (id_dep == 20) {
-        for (let corse of ['2A', '2B'])
-            geos.push(franceGeo.features.find(element => element.properties.code == corse))
-    } else {
-            geos.push(franceGeo.features.find(element => element.properties.code == id_dep))
-    }
-    //  console.log(geos) 
-  fetch(window.location.href.replace(/#/g, "") + "/allFerme")
-    .then(result => result.json())
-    .then(parsedResult => {
-        tabArray = parsedResult;
-
-        // create_map_content();
-        var map=create_map_content(geos,id_dep, "home");
-        markers = L.markerClusterGroup({
-            chunkedLoading: true
-        });
-        chargeMapAndMarkers(tabArray, map, markers)
-    });
+    // const id_dep = new URLSearchParams(window.location.href).get("id_dep")
+    // const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
+    const id_dep = new URL(window.location.href).pathname.split('/')[4]
+    const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+    getDataSpecFermeMobile(nom_dep, id_dep)
 
 });
 
@@ -46,26 +24,26 @@ window.addEventListener('load', () => {
 
 
 
-document.querySelectorAll(".suppr-etab").forEach((element) => {
-    element.addEventListener("click", (event) => {
-        const currentUserId = parseInt(event.target.dataset.token.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
-        const currentCard = event.target.parentNode.parentNode.parentNode
-        console.log(currentCard)
-        const formBody = "id=" + encodeURIComponent(currentUserId)
-        fetch('/delete-etab', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: formBody
-            }).then(response => {
-                if (response.ok) {
-                    //currentCard.style = "transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;"
-                    currentCard.parentNode.removeChild(currentCard)
-                }
-        })
-    })
-})
+// document.querySelectorAll(".suppr-etab").forEach((element) => {
+//     element.addEventListener("click", (event) => {
+//         const currentUserId = parseInt(event.target.dataset.token.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
+//         const currentCard = event.target.parentNode.parentNode.parentNode
+//         console.log(currentCard)
+//         const formBody = "id=" + encodeURIComponent(currentUserId)
+//         fetch('/delete-etab', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+//             },
+//             body: formBody
+//             }).then(response => {
+//                 if (response.ok) {
+//                     //currentCard.style = "transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;"
+//                     currentCard.parentNode.removeChild(currentCard)
+//                 }
+//         })
+//     })
+// })
 
 
 
@@ -75,13 +53,13 @@ document.querySelectorAll(".suppr-etab").forEach((element) => {
 
 
 
-document.querySelectorAll(".modif-etab").forEach((element) => {
-    element.addEventListener("click", (event) => {
-        const idFerme = parseInt(event.target.dataset.token.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
-        sessionStorage.setItem("fff", idFerme)
-    })
+// document.querySelectorAll(".modif-etab").forEach((element) => {
+//     element.addEventListener("click", (event) => {
+//         const idFerme = parseInt(event.target.dataset.token.split(":")[2].split("\.")[1].replace(/[^0-9]/g, ""), 10)
+//         sessionStorage.setItem("fff", idFerme)
+//     })
 
-})
+// })
 
 
 // // filter alphabet
@@ -196,85 +174,85 @@ document.querySelectorAll(".modif-etab").forEach((element) => {
 //   return liTag; //reurn the li tag
 // }
 
-function chargeMapAndMarkers(parsedResult, map, markers) {
+// function chargeMapAndMarkers(parsedResult, map, markers) {
 
-    if (parsedResult) {
-        const departName = document.querySelector(".titre").getAttribute("data-toggle-deparement")
+//     if (parsedResult) {
+//         const departName = document.querySelector(".titre").getAttribute("data-toggle-deparement")
 
-        parsedResult.forEach(item => {
-            item= item.id ? item : item[0];
+//         parsedResult.forEach(item => {
+//             item= item.id ? item : item[0];
 
-            // var pathDetails = "/ferme/departement/" + departName + "/" + item.departement + "/details/" + item.id.toString().trim();
-            let pathDetails = `/ferme/departement/${departName}/${item.departement}/details/${item.id}`;
-            let pathDetailsMobile = `/ferme-mobile/departement/${departName}/${item.departement}/details/${item.id}`;
+//             // var pathDetails = "/ferme/departement/" + departName + "/" + item.departement + "/details/" + item.id.toString().trim();
+//             let pathDetails = `/ferme/departement/${departName}/${item.departement}/details/${item.id}`;
+//             let pathDetailsMobile = `/ferme-mobile/departement/${departName}/${item.departement}/details/${item.id}`;
 
-            const adress = "<br> <span class='fw-bolder'> Adresse: </span> <br>" + item.adresseFerme;
+//             const adress = "<br> <span class='fw-bolder'> Adresse: </span> <br>" + item.adresseFerme;
 
-            var title = " <span class='fw-bolder'> Ferme:</span> <br>" + item.nomFerme + ".<br> <span class='fw-bolder'> Departement:</span> <br>" + item.departement + "." + adress;
-            var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') });
+//             var title = " <span class='fw-bolder'> Ferme:</span> <br>" + item.nomFerme + ".<br> <span class='fw-bolder'> Departement:</span> <br>" + item.departement + "." + adress;
+//             var marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') });
 
-            tabMarker.push(marker)
+//             tabMarker.push(marker)
 
-            marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
-            marker.on('click', (e) => {
+//             marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+//             marker.on('click', (e) => {
                 
-                const coordAndZoom = {
-                    zoom: e.target.__parent._zoom+1,
-                    coord:e.target.__parent._cLatLng
-                }
+//                 const coordAndZoom = {
+//                     zoom: e.target.__parent._zoom+1,
+//                     coord:e.target.__parent._cLatLng
+//                 }
 
-                setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
+//                 setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
 
-                let screemMax = window.matchMedia("(max-width: 1000px)")
-                let screemMin = window.matchMedia("(min-width: 1000px)")
-                let remove = document.getElementById("remove-detail-ferme")
-                if (screemMax.matches) {
-                    location.assign(pathDetailsMobile)
-                } else if (screemMin.matches) {
+//                 let screemMax = window.matchMedia("(max-width: 1000px)")
+//                 let screemMin = window.matchMedia("(min-width: 1000px)")
+//                 let remove = document.getElementById("remove-detail-ferme")
+//                 if (screemMax.matches) {
+//                     location.assign(pathDetailsMobile)
+//                 } else if (screemMin.matches) {
                     
-                    remove.removeAttribute("class", "hidden");
-                    remove.setAttribute("class", "navleft-detail fixed-top")
-                    var myHeaders = new Headers();
-                    myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
-                    fetch(pathDetails, myHeaders)
-                        .then(response => {
-                            return response.text()
-                        }).then(r => {
-                            document.querySelector("#content-details-ferme").innerHTML = null
-                            document.querySelector("#content-details-ferme").innerHTML = r
+//                     remove.removeAttribute("class", "hidden");
+//                     remove.setAttribute("class", "navleft-detail fixed-top")
+//                     var myHeaders = new Headers();
+//                     myHeaders.append('Content-Type', 'text/plain; charset=UTF-8');
+//                     fetch(pathDetails, myHeaders)
+//                         .then(response => {
+//                             return response.text()
+//                         }).then(r => {
+//                             document.querySelector("#content-details-ferme").innerHTML = null
+//                             document.querySelector("#content-details-ferme").innerHTML = r
                         
-                            document.querySelector("#close-detail-ferme").addEventListener("click", () => {
-                                document.querySelector("#remove-detail-ferme").setAttribute("class", "hidden")
-                            })
-                            // document.querySelector("#content-details-ferme").removeAttribute("style")
+//                             document.querySelector("#close-detail-ferme").addEventListener("click", () => {
+//                                 document.querySelector("#remove-detail-ferme").setAttribute("class", "hidden")
+//                             })
+//                             // document.querySelector("#content-details-ferme").removeAttribute("style")
                         
-                        })
+//                         })
                 
-                }
-            });
-            markers.addLayer(marker);
-        })
-        map.addLayer(markers);
+//                 }
+//             });
+//             markers.addLayer(marker);
+//         })
+//         map.addLayer(markers);
 
-        map.on("resize zoom", (e) => {
-            const coordAndZoom = {
-                zoom: e.target._zoom,
-                coord:e.target._lastCenter
-            }
-            setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
-        })
-        map.on("dragend", (e) => {
-            console.log(e.target.getCenter(), e.target.getZoom())
-            const coordAndZoom = {
-                zoom: e.target.getZoom(),
-                coord:e.target.getCenter()
-            }
-            setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
-        })
-    } else {
-        console.log("ERREUR : L'erreur se produit par votre réseaux.")
-    }
-}
+//         map.on("resize zoom", (e) => {
+//             const coordAndZoom = {
+//                 zoom: e.target._zoom,
+//                 coord:e.target._lastCenter
+//             }
+//             setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
+//         })
+//         map.on("dragend", (e) => {
+//             console.log(e.target.getCenter(), e.target.getZoom())
+//             const coordAndZoom = {
+//                 zoom: e.target.getZoom(),
+//                 coord:e.target.getCenter()
+//             }
+//             setDataInLocalStorage("coordFerme", JSON.stringify(coordAndZoom))
+//         })
+//     } else {
+//         console.log("ERREUR : L'erreur se produit par votre réseaux.")
+//     }
+// }
 
 // /*function filterData(lat, long) {
 //   console.log(tabArray);
