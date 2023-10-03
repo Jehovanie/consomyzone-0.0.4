@@ -132,7 +132,7 @@ class RestaurantController extends AbstractController
             $tableTribu = $key["table_name"];
             $tableExtension = $tableTribu . "_restaurant";
             if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension, true);
+                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension, true);  // [ [ id_resto => ..., tableName => ... ], ... ]
                 $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
             }
         }
@@ -153,6 +153,21 @@ class RestaurantController extends AbstractController
         }
 
         $datas= $bddResto->getSomeDataShuffle(2000);
+
+        if( count($arrayIdResto) > 0 ){
+            ////add List Resto pastille in data
+            $dataRestoPastille = $bddResto->getRestoPastille($arrayIdResto);
+
+            foreach ($dataRestoPastille as $itemRestoPastille){
+                $idRestoPastille = $itemRestoPastille["id"];
+                $isAlreadyGet = array_search($idRestoPastille, array_column($datas, 'id'));
+
+                if( !$isAlreadyGet){
+                    array_push($datas, $itemRestoPastille);
+                }
+            }
+        }
+
         return $this->json([
             "data" => $datas,
             "allIdRestoPastille" => $arrayIdResto
@@ -217,6 +232,22 @@ class RestaurantController extends AbstractController
         }
         // $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep), 'json');
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep);
+
+        if( count($arrayIdResto) > 0 ){
+            ////add List Resto pastille in data
+            $dataRestoPastille = $bddResto->getRestoPastille($arrayIdResto);
+
+            foreach ($dataRestoPastille as $itemRestoPastille){
+                $idRestoPastille = $itemRestoPastille["id"];
+                $isAlreadyGet = array_search($idRestoPastille, array_column($datas, 'id'));
+
+                if( !$isAlreadyGet){
+                    array_push($datas, $itemRestoPastille);
+                }
+            }
+        }
+
+
         return $this->json([
             "data" => $datas,
             "allIdRestoPastille" => $arrayIdResto

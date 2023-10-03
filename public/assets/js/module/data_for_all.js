@@ -380,3 +380,74 @@ function injectStatus(data){
         </div>
     `
 }
+
+
+function itemRestoPastielle(numeroIndices,depName, dep, name, id, icon ){
+    const items= `
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">
+                <img class="icon_resto_legend" src="${icon}" alt="Icon Resto">
+            </td>
+            <td>${name}</td>
+        </tr>
+    `
+    return items;
+}
+
+
+function dataListMarker(data){
+
+    let dataTable= '';
+    data.forEach((item, index) => {
+        dataTable += itemRestoPastielle(index,item.depName, item.dep, `${item.name} ${index}`,  item.id, '/assets/icon/NewIcons/icon-resto-new-B.png')
+    });
+
+    return dataTable;
+}
+
+function injectListMarker(data){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+    let dataHTML= data.length > 0 ? dataListMarker(data) : `
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-info text-center" role="alert">
+                    Vous n'avez pas des restaurantes pastilles ou vous n'avez pas encore de tribu T avec une extension Restaurant.
+                </div>
+            </td>
+        </tr>
+    `;
+
+
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table table_info_marker">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icône</th>
+                    
+                        <th scope="col">Restaurant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${dataHTML}
+                </tbody>
+            </table>
+        </div>
+    `
+}
+
+function resetListMarker(){
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = "";
+}
+
+
+function getDetailFromListRight(nom_dep, id_dep, id_resto) {
+    if(CURRENT_MAP_INSTANCE.checkIsExist(id_resto)){
+        CURRENT_MAP_INSTANCE.clickOnMarker(id_resto)
+    }
+}

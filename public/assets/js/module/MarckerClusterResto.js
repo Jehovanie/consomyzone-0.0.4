@@ -134,6 +134,7 @@ class MarckerClusterResto extends MapModule  {
         marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
 
         marker.on('click', (e) => {
+            this.closeRightSide();
 
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
@@ -355,6 +356,18 @@ class MarckerClusterResto extends MapModule  {
         });
 
         this.markers.refreshClusters();
+    }
+
+    injectListRestoPastille(){
+        const restoPastilleTab= [];
+        this.listRestoPastille.forEach(item => {
+            const restoPastille = this.default_data.find(jtem => parseInt(item.id_resto) === parseInt(jtem.id));
+            if( restoPastille ){
+                restoPastilleTab.push({ id: restoPastille.id, name: restoPastille.denominationF, depName: restoPastille.depName, dep: restoPastille.dep })
+            }
+        })
+        // this.default_data
+        injectListMarker(restoPastilleTab)
     }
 
 }

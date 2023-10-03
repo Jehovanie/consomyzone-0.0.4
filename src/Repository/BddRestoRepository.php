@@ -955,6 +955,61 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Gat all resto pastille from id
+     * 
+     * @param array Resto  [ [ id_resto => ..., tableName => ... ], ... ]
+     */
+    public function getRestoPastille($data){
+        $tab= [];
+        foreach($data as $item){
+            $resto=  $this->createQueryBuilder("r")
+                ->select(
+                    "r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiY as lat,
+                    r.poiX as long"
+                )
+                ->where("r.id =:id")
+                ->setParameter("id",intval($item["id_resto"]))
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            array_push($tab, $resto);
+        }
+        return $tab;
+    }
+
 
     public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null){
         $query =  $this->createQueryBuilder("r")
