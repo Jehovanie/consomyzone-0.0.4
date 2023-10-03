@@ -1876,7 +1876,7 @@ class Tribu_T_Service extends PDOConnexionService
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $this->convertUnicodeToUtf8($d_pub['publication']),
+                        "description" => json_decode($this->convertUnicodeToUtf8($d_pub['publication']), true),
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,
