@@ -1452,7 +1452,7 @@ input::-ms-clear {
 }
 
 .image-upload-wrap {
-    margin-top: 20px;
+    /* margin-top: 20px; */
     border: 2px dashed #878787;
     position: relative;
     border-radius: 5px;
@@ -2256,4 +2256,16 @@ textarea {
     background: lavender;
     border-radius: 5px;
     padding: 6px;
+}
+
+.labelPrisePhoto{
+    /* border: 1px solid; */
+    border-radius: 8px;
+    padding: 5px;
+    cursor: pointer;
+    background: lavender;
+    /* color: #0d6efd; */
+}
+.labelPrisePhoto:hover{
+    color: #0d6efd;
 }

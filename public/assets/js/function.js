@@ -2423,8 +2423,22 @@ function takePicture(){
     // downloadLink.setAttribute('download', `capture-${new Date().getTime()}.png`);
     let data =  outputCanvas.toDataURL()
     let preview = document.querySelector("#image-preview");
-    preview.src = data;
+
+    /** @author elie
+     *  où: on Utilise cette block pour capture de photo de publication tribu T
+     *  localisation : function.js, 
+     *  utilisation de selecteur modal_publication.html.twig
+     *  je veux : ajouter une photo par media screen navigateur
+     */
+    
+    if(window.location.href.includes("/user/tribu/my-tribu-t")){
+        preview = document.querySelector("#image-publication-tribu-t");
+        document.querySelector(".image_upload_image_jheo_js").src = data
+        document.querySelector(".image-upload-content").style.display = "block";
+        document.querySelector(".image-upload-wrap").style.display = "none";
+    }
     preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+    preview.src = data;
     preview.setAttribute('typeFile',"image/png")
     if(document.querySelector(".preview_image_nanta_js"))
         document.querySelector(".preview_image_nanta_js").classList.remove("d-none")

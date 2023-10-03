@@ -7,11 +7,14 @@ var id_c_u //id du user courant
 let image_listss = [];
 let dataExtension = [];
 // var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
-var worker = new Worker('/public/assets/js/tribuT/worker.js');
+var worker = new Worker('/assets/js/tribuT/worker.js');
+// var worker = new Worker('/public/assets/js/tribuT/worker.js');
 // var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js');
+var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
+// var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 // var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-var workerGetCommentaireTribuT = new Worker('/public/assets/js/tribuT/worker_cmnt.js')
+var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
+// var workerGetCommentaireTribuT = new Worker('/public/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t
 var descriptionTribuT = ""
 /**
@@ -2190,7 +2193,7 @@ function listResto() {
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
     if (adresse.trim() != "" || inputName.trim() != "") {
-        if(document.querySelector(".golfNotHide > a").classList.contains("active")){
+        if(document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")){
             findGolf(inputName, adresse)
         }else if(document.querySelector(".restoNotHide > a").classList.contains("active")){
             findResto(inputName, adresse)
@@ -2232,68 +2235,70 @@ if (document.querySelector("#btn_open_modal_avis_elie")) {
 function openAvis(nb_avis, id_resto) {
     // document.querySelector("#staticBackdrop")
 
+
     if (parseInt(nb_avis) > 0) {
+        alert(nb_avis)
 
         // $("#modalAvisRestaurant").modal("hidden")
 
         $("#avisRestoPastille").modal("show")
 
-        const table_resto = tribu_t_name_0 + "_restaurant"
-        console.log(table_resto);
+        // const table_resto = tribu_t_name_0 + "_restaurant"
+        // console.log(table_resto);
 
-        fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
-            .then(response => response.json())
-            .then(avis => {
-                // console.log(avis);
-                for (let avi of avis) {
+        // fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
+        //     .then(response => response.json())
+        //     .then(avis => {
+        //         // console.log(avis);
+        //         for (let avi of avis) {
 
-                    let noteEtoile = ""
+        //             let noteEtoile = ""
 
-                    switch (parseInt(avi.note)) {
-                        case 1:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 2:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 3:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 4:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
-                            break;
-                        default:
-                            noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                    }
+        //             switch (parseInt(avi.note)) {
+        //                 case 1:
+        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+        //                     break;
+        //                 case 2:
+        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+        //                     break;
+        //                 case 3:
+        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
+        //                     break;
+        //                 case 4:
+        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+        //                     break;
+        //                 default:
+        //                     noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+        //             }
 
-                    document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
-                        `<div class="card mb-2 card_avis_resto_jheo_js">
-                            <div class="card-body">
-                                <div class="avis_content">
-                                    <div class="d-flex justify-content-between align-items-end">
-                                        <h5>
-                                            <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
-                                            ${avi.commentaire}
-                                        </h5>	
-                                        <p>
-                                            ${noteEtoile}
-                                            <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-                                            <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-                                            <i class="fa-solid fa-star"></i>
-                                            <i class="fa-solid fa-star"></i>-->
-                                        </p>
-                                    </div>
-                                    <p>${avi.datetime}</p>
-                                </div>
-                            </div>
-                        </div>
-                        `
-                }
+        //             document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
+        //                 `<div class="card mb-2 card_avis_resto_jheo_js">
+        //                     <div class="card-body">
+        //                         <div class="avis_content">
+        //                             <div class="d-flex justify-content-between align-items-end">
+        //                                 <h5>
+        //                                     <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
+        //                                     ${avi.commentaire}
+        //                                 </h5>	
+        //                                 <p>
+        //                                     ${noteEtoile}
+        //                                     <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+        //                                     <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+        //                                     <i class="fa-solid fa-star"></i>
+        //                                     <i class="fa-solid fa-star"></i>-->
+        //                                 </p>
+        //                             </div>
+        //                             <p>${avi.datetime}</p>
+        //                         </div>
+        //                     </div>
+        //                 </div>
+        //                 `
+        //         }
 
-                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+        //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
 
-                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", "create")
-            })
+        //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", "create")
+        //     })
 
 
     } else {
@@ -2307,11 +2312,11 @@ function openAvis(nb_avis, id_resto) {
 
     }
 
-    const myModalEl = document.getElementById('avisRestoPastille')
-    myModalEl.addEventListener('hidden.bs.modal', event => {
-        // do something...
-        document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
-    })
+    // const myModalEl = document.getElementById('avisRestoPastille')
+    // myModalEl.addEventListener('hidden.bs.modal', event => {
+    //     // do something...
+    //     // document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
+    // })
 
 }
 
@@ -2349,8 +2354,8 @@ function setSendNote(params, id_pastille) {
 
 function openOnNote(id_pastille, action) {
 
-    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
-    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+    document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
 
 }
 
