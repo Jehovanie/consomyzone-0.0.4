@@ -713,24 +713,55 @@ fileInputProfils.forEach(fileInputProfil=>{
 
             let avatarPartisant = fileReader.result;
 
-            // Change profil
-            let profilPartisants = document.querySelectorAll("#profilPartisant");
+            /**
+             * @author elie
+             * checking image extension and size if <2Mo
+             * use into profil.html.twig
+             * i want upload an image less than 2Mo
+             */
 
-            profilPartisants.forEach(profilPartisant=>{
-                profilPartisant.src = avatarPartisant
-            })
+            const listExt= ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
+            const octetMax= 2e+6; //2Mo 
 
-            //profilPartisant.src = avatarPartisant
+            if( !checkFileExtension(listExt,avatarPartisant)){
 
-            if(document.querySelector("#roundedImg") != null){
-                document.querySelector("#roundedImg").src = avatarPartisant
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe)",
+                    icon: "error",
+                    button: "OK",
+                    });
+
+            }else{
+                if(!checkTailleImage(octetMax, avatarPartisant)){
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 2Mo.",
+                        icon: "error",
+                        button: "OK",
+                        });
+                    
+                }else{
+                    // Change profil
+                    let profilPartisants = document.querySelectorAll("#profilPartisant");
+
+                    profilPartisants.forEach(profilPartisant=>{
+                        profilPartisant.src = avatarPartisant
+                    })
+
+                    //profilPartisant.src = avatarPartisant
+
+                    if(document.querySelector("#roundedImg") != null){
+                        document.querySelector("#roundedImg").src = avatarPartisant
+                    }
+
+                    let data = {
+                        image : avatarPartisant
+                    }
+
+                    setPhotoAfterUpload(data);
+                }
             }
-
-            let data = {
-                image : avatarPartisant
-            }
-
-            setPhotoAfterUpload(data);
 
         });
 
@@ -1035,3 +1066,46 @@ document.querySelectorAll(".elie_nav_link").forEach(i=>{
     })
     
 })
+
+/**
+ * @author elie
+ * @constructor
+ * @localisation : account.js
+ * @utiliser à : account.html.twig
+ * @je_veux : créer une publication à partir de javascript fetch
+ * @param {string} message 
+ * @param {int} confid 
+ * @param {blob} image64 
+ */
+function createOnePubTribuG(message, confid, image64){
+
+    let data = {
+        message : message,
+        confid :  confid,
+        image64 : image64,
+    }
+
+    console.log(data);
+
+    fetch('/tribu_g/createOnePub', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(res=>{
+            console.log(res)
+        })
+}
+
+if(document.querySelector(".send_new_pub_js_jheo")){
+    document.querySelector(".send_new_pub_js_jheo").addEventListener("submit", function(){
+        let message = document.querySelector("#publication_legend").value
+        let confid = document.querySelector("#publication_confidentiality").value
+        let image64 = document.querySelector("#publication_image").src
+        createOnePubTribuG(message, confid, image64)
+    })
+}

@@ -2403,6 +2403,115 @@ function showModalPicture(){
     document.querySelector("#containerCamera").appendChild(canvas)
 }
 
+/**
+ * @author elie
+ * @constructor
+ * function utiliser pour tribu T et G pour choix de photo (tribuT.html.twig)
+ * localisation : function.js
+ * je veux : afficher un modal pour choix de photo à telecharger
+ */
+function showModalPictureTribu(type){
+    document.querySelector("#containerCamera").innerHTML = ""
+    // <video id="player" autoplay></video>
+    let video = document.createElement("video")
+    video.setAttribute("id","player")
+    video.setAttribute("autoplay",true)
+    // <canvas id="output"></canvas>
+    let canvas = document.createElement("canvas")
+    canvas.setAttribute("id","output")
+    canvas.setAttribute("class","d-none")
+
+    // <button id="capture-button" title="Take a picture"></button>
+    // onclick="takePicture()"
+    let captureButton = document.createElement("button")
+    captureButton.setAttribute("id","capture-button")
+    captureButton.setAttribute("onclick","takePictureTribu('"+type+"')")
+    captureButton.setAttribute("title","Prendre une photo")
+
+    navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((stream) => {
+                $("#addPictureModalTribu").modal("hide")
+                $("#mediaModalTribu").modal("show")
+                video.srcObject = stream;
+            }).catch(error => {
+                swal("Attention !", "Impossible d'accéder à votre caméra !", "warning")
+            });
+
+    document.querySelector("#containerCamera").appendChild(video)
+    document.querySelector("#containerCamera").appendChild(captureButton)
+    document.querySelector("#containerCamera").appendChild(canvas)
+}
+
+/**
+ * @author elie
+ * @constructor
+ * fonction prendre de photo utilisé dans tribuT.html.twig
+ * localisation : function.js
+ * je veux : prendre une photo dans un navigateur pour utiliser dans tribu T ou G
+ */
+function takePictureTribu(type){
+    const player = document.getElementById('player');
+    const outputCanvas = document.getElementById('output');
+    const context = outputCanvas.getContext('2d');
+
+    const imageWidth = player.offsetWidth;
+    const imageHeight = player.offsetHeight;
+    
+    // Make our hidden canvas the same size
+    outputCanvas.width = imageWidth;
+    outputCanvas.height = imageHeight;
+    
+    // Draw captured image to the hidden canvas
+    context.drawImage(player, 0, 0, imageWidth, imageHeight);
+    
+    // A bit of magic to save the image to a file
+
+    let data =  outputCanvas.toDataURL()
+
+    let preview
+
+    // Pour tribu G
+    if(window.location.href.includes("/user/account")){
+
+        // console.log("send data tribu G");
+        document.querySelector("#publication_image").src = data
+        document.querySelector(".image_upload_image_jheo_js").src = data
+        $("#modal_publication_tributG").modal("show")
+        document.querySelector("#imageUploadTribu > div.image-upload-wrap").classList.add("d-none")
+        document.querySelector("#imageUploadTribu > div.image-upload-content").style.display="block"
+
+        // document.querySelector("#uploadImageID").onchange=(){
+
+        // }
+
+        // document.querySelector("#uploadImageID").files[0] = dataURLtoFile(data, `capture-${new Date().getTime()}.png`)
+
+
+    }// POUR Tribu T
+    else if(window.location.href.includes("/user/tribu/my-tribu-t")){
+        if(type == 'pub'){
+            $("#modal_publication").modal("show")
+            preview = document.querySelector("#image-publication-tribu-t");
+            document.querySelector(".image_upload_image_jheo_js").src = data
+            document.querySelector(".image-upload-content").style.display = "block";
+            document.querySelector(".image-upload-wrap").style.display = "none";
+            preview.setAttribute("data-file", "image")
+            preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+            preview.src = data;
+            preview.setAttribute('typeFile',"image/png")
+            
+        }
+        if(type == 'pdp'){
+            // console.log("pdp");
+            updatePdpTribu_T(dataURLtoFile(data, `capture-${new Date().getTime()}.png`))
+        }
+    }
+    
+    $("#mediaModalTribu").modal("hide")
+    
+}
+
 function takePicture(){
     const player = document.getElementById('player');
     const outputCanvas = document.getElementById('output');
@@ -2424,19 +2533,6 @@ function takePicture(){
     let data =  outputCanvas.toDataURL()
     let preview = document.querySelector("#image-preview");
 
-    /** @author elie
-     *  où: on Utilise cette block pour capture de photo de publication tribu T
-     *  localisation : function.js, 
-     *  utilisation de selecteur modal_publication.html.twig
-     *  je veux : ajouter une photo par media screen navigateur
-     */
-    
-    if(window.location.href.includes("/user/tribu/my-tribu-t")){
-        preview = document.querySelector("#image-publication-tribu-t");
-        document.querySelector(".image_upload_image_jheo_js").src = data
-        document.querySelector(".image-upload-content").style.display = "block";
-        document.querySelector(".image-upload-wrap").style.display = "none";
-    }
     preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
     preview.src = data;
     preview.setAttribute('typeFile',"image/png")
@@ -2467,6 +2563,28 @@ function takePicture(){
         $("#mediaModal").modal("hide")
         $("#createAgenda").modal("show")
     });*/
+}
+
+/**
+ * @author elie
+ * @constructor
+ *  ou : on utilise cette fonction dans le fichier myTribyT.js
+ * je veux : transformer URL to file
+ * @param {url} dataurl 
+ * @param {string} filename 
+ * @returns File
+ */
+function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]), 
+        n = bstr.length, 
+        u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    console.log(new File([u8arr], filename, {type:mime}));
+    return new File([u8arr], filename, {type:mime});
 }
 
 function showRepertoryDirTribuT(){

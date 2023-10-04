@@ -1,28 +1,34 @@
 <!-- Modal new publication-->
 <div class="modal fade" id="modal_publication_tributG" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    {{form_start(new_publication, {'method': 'POST'})}}
+    
+    <form action="" id="form-publication-tribu-t">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle publication</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle publication</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
 
-                    <div class="mb-3">
-                        <label for="message-text" class="col-form-label">Message</label>
-                        {{form_row(new_publication.legend)}}
-                    </div>
-                    <div class="mb-3">
-                        <label for="formFileMultiple" class="form-label">Confidentialité</label>
-                        {{form_row(new_publication.confidentiality)}}
-                    </div>
-                    {# <div class="mb-3">
-                        <label for="formFileMultiple" class="form-label">Photo</label>
-                        {{form_row(new_publication.photo)}}
-                    </div> #}
-                    {% include 'shard/input/inputImageDragDrop.html.twig' with {'InputDropDown': new_publication.photo} %}
+                <div class="mb-3">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    <textarea id="publication_legend" name="contenu" class="form-control"></textarea>
+                </div>
+				<div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                    <select id="publication_confidentiality" name="confidentialite" class="form-select">
+                        <option value="1">A tous les partisans</option>
+                        <option value="2">Moi uniquement</option>
+                    </select>
+                </div>
+                <img src="" alt="" width="100" id="publication_image" class="d-none">
+
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Photo</label>
+                    {% include 'shard/input/inputImageDragDrop.html.twig' with {'id': 'publication_photo', 'name':'photo'} %}
                     
+                    {# selecteur prendre photo camera créer par elie
+                        utilisé dans function.js #}
                     <div class="d-flex flex-column text-center">
                         <span>ou</span>
                         <label onclick="showModalPictureTribu('pub')" class="labelPrisePhoto" data-bs-target="#mediaModalTribu" data-bs-toggle="modal">
@@ -30,15 +36,16 @@
                                 Prendre une photo?
                         </label>
                     </div>
-
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
-                    <input type="submit" class="btn btn-primary send_new_pub_js_jheo" value="Envoyer">
-                </div>
+                    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
+                <input type="submit" class="btn btn-primary" value="Envoyer" id="submit-publication-tribu-t">
             </div>
         </div>
-    {{form_end(new_publication)}}
+    </div>
+    </form>
 </div>
 <!-- End Modal-->
 

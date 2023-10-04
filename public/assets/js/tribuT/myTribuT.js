@@ -339,61 +339,141 @@ function getBase64V2() {
     fR.readAsDataURL(this.files[0]);
 }
 function updatePdpTribu_T(files) {
+
     const fR = new FileReader();
+
     fR.addEventListener("load", (evt) => {
 
-        const param = {
-            base64: evt.target.result,
-            photoName: files.name,
-            photoType: files.type,
-            photoSize: files.size,
-            tribu_t_name: tribu_t_name_0,
-        }
-        console.log(param)
-        const request = new Request("/user/tribu/set/pdp", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(param)
-        })
-        fetch(request).then(responses => {
-            if (responses.ok && responses.status === 200) {
-                document.querySelector("#avatarTribuT").src = evt.target.result
-                document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+        /**
+         * @author elie
+         * checking image extension and size if <2Mo
+         * use into TribuT.html.twig
+         * i want upload an image less than 2Mo
+         */
+
+        const listExt= ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
+        const octetMax= 2e+6; //2Mo 
+
+        /// file as url
+        const uploaded_image = fR.result;
+
+        if( !checkFileExtension(listExt,uploaded_image)){
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe)",
+                icon: "error",
+                button: "OK",
+                });
+
+        }else{
+            if(!checkTailleImage(octetMax, uploaded_image)){
+                swal({
+                    title: "Le fichier est trop volumineux!",
+                    text: "La taille de l\'image doit être inférieure à 2Mo.",
+                    icon: "error",
+                    button: "OK",
+                    });
+                
+            }else{
+                const param = {
+                    base64: evt.target.result,
+                    photoName: files.name,
+                    photoType: files.type,
+                    photoSize: files.size,
+                    tribu_t_name: tribu_t_name_0,
+                }
+                console.log(param)
+                const request = new Request("/user/tribu/set/pdp", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(param)
+                })
+                fetch(request).then(responses => {
+                    if (responses.ok && responses.status === 200) {
+                        document.querySelector("#avatarTribuT").src = evt.target.result
+                        document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+                        swal({
+                            title: "Succès!",
+                            text: "L\'avatar de la tribu est à jour avec succès!",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }
+                })
             }
-        })
+        }
 
     })
     fR.readAsDataURL(files);
 }
 
+/** @author elie (update)
+ *  où: on Utilise cette block pour capture de photo de publication tribu T
+ *  localisation : myTribuT.js, 
+ *  utilisation de selecteur modal_publication.html.twig
+ *  je veux : ajouter une photo par media screen navigateur
+ */
 function sendPublication(formData) {
     const fR = new FileReader();
-    fR.addEventListener("load", (evt) => {
 
-        const param = {
-            base64: evt.target.result,
-            photoName: formData.get("photo").name,
-            photoType: formData.get("photo").type,
-            photoSize: formData.get("photo").size,
-            contenu: formData.get("contenu"),
-            tribu_t_name: tribu_t_name_0,
-            confidentialite: formData.get("confidentialite")
-        }
-        console.log(param)
-        const request = new Request("/user/create-one/publication", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(param)
+    /**
+     * tester si on utilise la capture media
+     */
+    if(document.querySelector("#image-publication-tribu-t").getAttribute("data-file")=="image"){
+        fR.addEventListener("load", (evt) => {
+
+            let base64 = document.querySelector("#image-publication-tribu-t").src
+            let param = {
+                base64: base64,
+                photoName: `capture-${new Date().getTime()}.png`,
+                photoType: 'image/png',
+                photoSize: 300000,
+                contenu: formData.get("contenu"),
+                tribu_t_name: tribu_t_name_0,
+                confidentialite: formData.get("confidentialite")
+            }
+            // console.log(formData.get('photo'));
+            console.log(param)
+            const request = new Request("/user/create-one/publication", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            })
+            fetch(request)
         })
-        fetch(request)
-    })
-    fR.readAsDataURL(formData.get('photo'));
+        fR.readAsDataURL(dataURLtoFile(document.querySelector("#image-publication-tribu-t").src, `capture-${new Date().getTime()}.png`));
+    }else{
+        fR.addEventListener("load", (evt) => {
+
+            let param = {
+                base64: evt.target.result,
+                photoName: formData.get("photo").name,
+                photoType: formData.get("photo").type,
+                photoSize: formData.get("photo").size,
+                contenu: formData.get("contenu"),
+                tribu_t_name: tribu_t_name_0,
+                confidentialite: formData.get("confidentialite")
+            }
+            const request = new Request("/user/create-one/publication", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            })
+            fetch(request)
+        })
+        fR.readAsDataURL(formData.get('photo'));
+    }
+    
 }
 
 /**
@@ -440,10 +520,10 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let canChangeTribuPicture = "";
     if (document.querySelector("#activeTribu")) {
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier le logo de la tribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
-                                    <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
+                                    <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
                                 </div>` : ""
     }
 
@@ -537,7 +617,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     worker.onmessage = (event) => {
         // console.log(event.data)
         let data = event.data
-        console.log(data);
+        // console.log(data);
 
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
