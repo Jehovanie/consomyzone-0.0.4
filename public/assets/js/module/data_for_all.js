@@ -402,7 +402,7 @@ function dataListMarker(data){
 
     let dataTable= '';
     data.forEach((item, index) => {
-        dataTable += itemRestoPastielle(index,item.depName, item.dep, `${item.name} ${index}`,  item.id, item.logo_path )
+        dataTable += itemRestoPastielle(index,item.depName, item.dep, `${item.name} ${index}`,  item.id, item.logo_path)
     });
 
     return dataTable;
@@ -451,9 +451,6 @@ function injectListMarker(data){
     `
 }
 
-
 function getDetailFromListRight(nom_dep, id_dep, id_resto) {
-    if(CURRENT_MAP_INSTANCE.checkIsExist(id_resto)){
-        CURRENT_MAP_INSTANCE.clickOnMarker(id_resto)
-    }
+    CURRENT_MAP_INSTANCE.clickOnMarker(id_resto)
 }

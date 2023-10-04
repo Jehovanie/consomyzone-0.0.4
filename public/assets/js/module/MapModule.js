@@ -763,6 +763,9 @@ class MapModule{
                 <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
                 </button>
+                <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+                    <i  class="fa-solid fa-thumbtack" data-type="resto_pastille_jheo_js"></i>
+                </button>
             `
         }else if( this.mapForType === "station"){
             htmlControl += `

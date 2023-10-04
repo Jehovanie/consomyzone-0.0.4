@@ -11,7 +11,9 @@ use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 
+use App\Service\Tribu_T_Service;
 use App\Service\TributGService;
+
 use App\Repository\UserRepository;
 
 use App\Entity\AdressIpAndPosition;
@@ -334,12 +336,23 @@ class ToutsController extends AbstractController
     #[Route("/dataHome", name:"dataForHome", methods:["GET"])]
     public function getDateHome(
         Request $request,
+        UserRepository $userRepository,
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
         GolfFranceRepository $golfFranceRepository,
-        TabacRepository $tabacRepository
+        TabacRepository $tabacRepository,
+        Tribu_T_Service $tribu_T_Service
     ){
+
+        $arrayIdResto = [];
+
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        
         if($request->query->has("minx") && $request->query->has("miny") ){
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");
@@ -355,15 +368,16 @@ class ToutsController extends AbstractController
             ]);
         }
 
-        $taille= 2000;
+        $taille= 1500;
         $userID= $this->getUser() ? $this->getUser()->getId(): null;
+        //// update data result to add all resto pastille in the Tribu T
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
-            "resto" => $bddRestoRepository->getSomeDataShuffle($taille),
+            "resto" => $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto),
             "golf" => $golfFranceRepository->getSomeDataShuffle($userID, $taille),
-            "tabac" => $tabacRepository->getSomeDataShuffle($taille)
-            
+            "tabac" => $tabacRepository->getSomeDataShuffle($taille),
+            "allIdRestoPastille" => $arrayIdResto
         ]);
     }
     
