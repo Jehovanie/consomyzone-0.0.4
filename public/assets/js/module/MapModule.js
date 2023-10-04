@@ -1211,7 +1211,7 @@ class MapModule{
             color: data_spec.color[0],
             // fillColor: data_spec.color[1],
             fillOpacity: 0,
-            weight: 2,
+            weight: 1,
         }
 
         const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
@@ -1233,6 +1233,14 @@ class MapModule{
                 })
 
                 layer.bindPopup(description);
+
+                layer.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                
+                layer.on('mouseout', function (e) {
+                    this.closePopup();
+                });
             }
         }).addTo(this.map);
 
