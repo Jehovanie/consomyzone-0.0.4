@@ -2221,7 +2221,7 @@ class TributTController extends AbstractController
 
                         $tribut->createExtensionDynamicTable($tableTribu, "golf");
 
-                        $tribut->createTableComment($tableTribu, "restaurant_commentaire");
+                        $tribut->createTableComment($tableTribu, "golf_commentaire");
 
                     }
 

@@ -1297,6 +1297,13 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * @param string $tribu_t : Table tribu T
+     * @param string $extension : extension pour la table tribu T
+     * Cette fonction est utilisée pour la création de toute les tables des extensions
+     * id_resto n'est autre que l'id des extensions
+     */
     public function createExtensionDynamicTable($tribu_t, $extension){
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
@@ -1314,6 +1321,14 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * @param string $tribu_t : Table tribu T
+     * @param string $extension : extension pour la table tribu T
+     * Cette fonction est utilisée pour la création de toute les tables commentaires des extensions
+     * id_restaurant n'est autre que l'id des extensions
+     * id_resto_comment n'est autre que la clé primaire de la table commentaire de l'extension
+     */
     public function createTableComment($tribu_t, $extension){
         $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . "(
 

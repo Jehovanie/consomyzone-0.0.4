@@ -2761,6 +2761,8 @@ function pastilleGolf(element){
                         element.classList = "btn btn-secondary ms-1"
                         element.textContent = "Pastillé"
                         element.setAttribute("disabled", true)
+                        showGolf()
+                        document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
                     });          
             })
             .catch(error=>console.log(error))

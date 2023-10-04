@@ -107,6 +107,56 @@ class MarckerClusterResto extends MapModule  {
         this.map.addLayer(this.markers);
     }
 
+    /**
+     * @Author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: faire apparaitre la note en haut à gauche du poi resto
+     * si une POI a une note, la note se montre en haut à gauche du POI 
+     */
+    setSpecialMarkerToShowNote(latLng,item,isSelected=false, poi_icon, poi_icon_Selected, taille){
+        // isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille)
+        // const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
+        // const taille=0
+        let noteMoyenne = item.moyenne_note == null ? 2.5 :item.moyenne_note
+        return new L.Marker(latLng, {
+            icon: new L.DivIcon({
+                className: 'my-div-icon',
+                html: ` 
+                        <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
+                        background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                        border-radius: 50%;">${noteMoyenne}</span>
+                      <img class="my-div-image" style="width:30px ; height:45px" src="/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                       `,
+                iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+                iconAnchor: [11, 30],
+                popupAnchor: [0, -20],
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94],
+            }),
+            cleNom:item.denominationF,
+            id:item.id
+        });
+    }
+
+    setSpecialIcon(item, isSelected=false, poi_icon, poi_icon_Selected, taille){
+        let noteMoyenne = item.moyenne_note == null ? 2.5 :item.moyenne_note
+        return new L.DivIcon({
+            className: 'my-div-icon',
+            html: ` 
+                    <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
+                    background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                    border-radius: 50%;">${noteMoyenne}</span>
+                  <img class="my-div-image" style="width:30px ; height:45px" src="/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                   `,
+            iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+            iconAnchor: [11, 30],
+            popupAnchor: [0, -20],
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94],
+        })
+    }
+
 
     settingSingleMarker(item, isSelected= false){
         
@@ -122,14 +172,29 @@ class MarckerClusterResto extends MapModule  {
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
         let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
 
-        const marker = L.marker(
+        let marker
+
+        /*const marker = L.marker(
             L.latLng(parseFloat(item.lat), parseFloat(item.long)),
             {
                 icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
                 cleNom: item.denominationF,
                 id: item.id
             }
-        );
+        );*/
+
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
+                    cleNom: item.denominationF,
+                    id: item.id
+                }
+            );
+        }else{
+            marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, isSelected, poi_icon, poi_icon_Selected, isPastille)
+        }
 
         marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
 
@@ -145,7 +210,7 @@ class MarckerClusterResto extends MapModule  {
 
 
 
-            const icon_R = L.Icon.extend({
+            /*const icon_R = L.Icon.extend({
                 options: {
                     iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon_Selected  : this.currentUrl.origin + "/public/" + poi_icon_Selected,
                     iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
@@ -155,8 +220,12 @@ class MarckerClusterResto extends MapModule  {
                     shadowAnchor: [22, 94]
                 }
             })
+            
+            marker.setIcon(new icon_R);*/
 
-            marker.setIcon(new icon_R);
+            marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+
+            // marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, isSelected, poi_icon, poi_icon_Selected, isPastille)
 
             if (this.marker_last_selected && this.marker_last_selected != marker ) {
                 
@@ -174,7 +243,8 @@ class MarckerClusterResto extends MapModule  {
                         shadowAnchor: [22, 94]
                     }
                 })
-                this.marker_last_selected.setIcon(new icon_B)
+                // this.marker_last_selected.setIcon(new icon_B)
+                this.marker_last_selected.setIcon(this.setSpecialIcon(item, false, poi_icon, poi_icon_Selected, isPastille))
             }
             this.marker_last_selected = marker;
 

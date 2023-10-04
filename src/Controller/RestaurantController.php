@@ -124,7 +124,8 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
         $tribu_t_owned = $userRepository->getListTableTribuT_owned();
@@ -157,6 +158,13 @@ class RestaurantController extends AbstractController
             "data" => $datas,
             "allIdRestoPastille" => $arrayIdResto
         ], 200);
+    }
+
+    #[Route("/test/get/avis", name:"find_all_avis", methods:["GET"])]
+    public function getAllAvis(AvisRestaurantRepository $avisRestaurantRepository)
+    {
+        $avis = $avisRestaurantRepository->getAllNoteById([36489,1]);
+        return $this->json($avis);
     }
 
     #[Route("/Coord/All/Restaurant/specific/arrondissement/{dep}/{codinsee}", name: "app_coord_restaurant_sepcific_arrond", methods: ["GET"])]
