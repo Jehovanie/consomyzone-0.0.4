@@ -413,15 +413,23 @@ function injectListMarker(data){
         console.log("Selector not found : '.content_right_side_body_body'")
         return false;
     }
-    let dataHTML= data.length > 0 ? dataListMarker(data) : `
+    let dataHTML= data.length > 0 ? dataListMarker(data) : (document.querySelector('.cta_to_actualite_jheo_js') ? `
         <tr>
             <td colspan="3">
                 <div class="alert alert-info text-center" role="alert">
-                    Vous n'avez pas des restaurantes pastilles ou vous n'avez pas encore de tribu T avec une extension Restaurant.
+                    Vous n'avez pas des restaurants pastilles ou vous n'avez pas encore de tribu T avec une extension Restaurant.
                 </div>
             </td>
         </tr>
-    `;
+    ` : `
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-danger text-center" role="alert">
+                    Vous n'êtes pas connecté, veuillez connecter pour voir la liste des restaurants pastilles dans vos tribus T.
+                </div>
+            </td>
+        </tr>
+    ` ) ;
 
 
     document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
