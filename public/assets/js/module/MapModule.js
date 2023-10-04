@@ -1223,9 +1223,11 @@ class MapModule{
             onEachFeature : (feature, layer)  => {
                 const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
                 const lat= (feature.geometry.bbox[1] + feature.geometry.bbox[3]) / 2 ;
-
-                this.updateCenter(lat, lng, 8);
-                this.updateDataInSessionStorage(lat, lng, 8);
+                
+                if(couche !== "quartier"){
+                    this.updateCenter(lat, lng, 8);
+                    this.updateDataInSessionStorage(lat, lng, 8);
+                }
 
                 const coucheOption= this.contourOption.find(item => item.couche === couche.toLowerCase());
 
