@@ -24,18 +24,20 @@ use App\Repository\BddRestoRepository;
 
 use App\Repository\FermeGeomRepository;
 
+use App\Controller\RestaurantController;
+
 use App\Repository\GolfFranceRepository;
 
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Repository\DepartementRepository;
 
+use App\Repository\AvisRestaurantRepository;
+
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use App\Repository\AdressIpAndPositionRepository;
 use App\Repository\StationServiceFrGeomRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -338,7 +340,9 @@ class ToutsController extends AbstractController
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
         GolfFranceRepository $golfFranceRepository,
-        TabacRepository $tabacRepository
+        TabacRepository $tabacRepository,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        RestaurantController $restaurantController
     ){
         if($request->query->has("minx") && $request->query->has("miny") ){
             $minx = $request->query->get("minx");
@@ -346,10 +350,17 @@ class ToutsController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
+            $restos = $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
+
+            $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
             return $this->json([
                 "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
-                "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                // "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
                 "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
             ]);
@@ -357,10 +368,16 @@ class ToutsController extends AbstractController
 
         $taille= 2000;
         $userID= $this->getUser() ? $this->getUser()->getId(): null;
+        $restos = $bddRestoRepository->getSomeDataShuffle($taille);
+
+        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
+
+        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
-            "resto" => $bddRestoRepository->getSomeDataShuffle($taille),
+            // "resto" => $bddRestoRepository->getSomeDataShuffle($taille),
+            "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
             "golf" => $golfFranceRepository->getSomeDataShuffle($userID, $taille),
             "tabac" => $tabacRepository->getSomeDataShuffle($taille)
             

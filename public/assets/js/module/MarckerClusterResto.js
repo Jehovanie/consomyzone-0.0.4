@@ -118,7 +118,8 @@ class MarckerClusterResto extends MapModule  {
         // isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille)
         // const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
         // const taille=0
-        let noteMoyenne = item.moyenne_note == null ? 2.5 :item.moyenne_note
+        let noteMoyenne = item.moyenne_note == null ? 2.5 :parseFloat(item.moyenne_note).toFixed(2)
+
         return new L.Marker(latLng, {
             icon: new L.DivIcon({
                 className: 'my-div-icon',
@@ -140,7 +141,7 @@ class MarckerClusterResto extends MapModule  {
     }
 
     setSpecialIcon(item, isSelected=false, poi_icon, poi_icon_Selected, taille){
-        let noteMoyenne = item.moyenne_note == null ? 2.5 :item.moyenne_note
+        let noteMoyenne = item.moyenne_note == null ? 2.5 :parseFloat(item.moyenne_note).toFixed(2)
         return new L.DivIcon({
             className: 'my-div-icon',
             html: ` 
