@@ -53,7 +53,7 @@ window.addEventListener('load', () => {
         console.log(" executed")
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 
             let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-            let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+            let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
             // let note = document.querySelector("#text-note-modif").value
             let note = document.querySelector("#text-note").value
             note = note.replace(/,/g, ".")
@@ -133,7 +133,7 @@ function addAvisResto(){
     }
 
     let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-    let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+    let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
 
     let note = document.querySelector("#text-note").value
     note=note.replace(/,/g,".")
@@ -189,11 +189,9 @@ function addAvisResto(){
             }
         })
     } catch (e) {
-        if (e.message == "note sup à 4") {
-            alert("la note que vous aviez donnés est supérieur à 4")
-        } else if(e.message == "non numerique") {
-            alert("la note que vous aviez donnés n'est pas du type numeric ")
-        }
+        msgErrorAlertAvis(e)
+    }finally{
+
     }
 }
 
@@ -228,7 +226,8 @@ function updateAvisResto(avisID){
     }
 
     let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
-    let newUserId = parseInt(document.querySelector(".content_one_cta").dataset.dem.split(":")[3].replace(/[^0-9]/g, ""), 10)
+    let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
+
     let note = document.querySelector("#text-note").value.replace(/,/g, ".")
     let avis = document.querySelector("#message-text").value
 
@@ -267,13 +266,27 @@ function updateAvisResto(avisID){
                 }
             })
     } catch (e) {
-        if (e.message == "note sup à 4") {
-            alert("la note que vous aviez donnés est supérieur à 4")
-        } else if(e.message == "non numerique") {
-            alert("la note que vous aviez donnés n'est pas du type numeric ")
-        } else {
-            console.log(e)
-        }
+        msgErrorAlertAvis(e)
+    }finally{
+
+    }
+}
+
+/**
+ * 
+ */
+function msgErrorAlertAvis(e){
+    if (e.message == "note sup à 4") {
+        
+        new swal("Attention !","la note que vous aviez donnés est supérieur à 4 !", "warning") .then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    } else if(e.message == "non numerique") {
+        new swal("Attention !","la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    } else {
+        console.log(e)
     }
 }
 
@@ -591,7 +604,7 @@ function createShowAvisAreas(json,currentUserId) {
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="content_profil_image me-2">
-                                    <img class="profil_image" src="${ json.user.photo ? json.user.photo.replace('/public' , '') : '/uploads/users/photos/img_avatar.png' }" alt="User">
+                                    <img class="profil_image" src="${ json.user.photo ? json.user.photo : '/public/uploads/users/photos/default_pdp.png' }" alt="User">
                                 </div>
                                 <div class="content_info">
                                     <h3> <small class="fw-bolder text-black"> ${ json.user.fullname }</small></h3>

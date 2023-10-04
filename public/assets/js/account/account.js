@@ -577,7 +577,7 @@ function createAndAddCardNotification(
     notification_item.innerHTML = `
         <a class="lc kg ug" href="#">
             <div class="h sa wf uk th ni ej cb">
-                <img class="image_profil_navbar_msg" src="${user.photo ? user.photo: '/public/uploads/users/photos/img_avatar.png'}" alt="User"/>
+                <img class="image_profil_navbar_msg" src="${user.photo ? user.photo: '/public/uploads/users/photos/default_pdp.png'}" alt="User"/>
             </div>
             <div>
                 <figure>

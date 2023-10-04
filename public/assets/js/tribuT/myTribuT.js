@@ -7,11 +7,11 @@ var id_c_u //id du user courant
 let image_listss = [];
 let dataExtension = [];
 // var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
-var worker = new Worker('/assets/js/tribuT/worker.js');
+var worker = new Worker('/public/assets/js/tribuT/worker.js');
 // var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
+var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 // var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
+var workerGetCommentaireTribuT = new Worker('/public/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t
 var descriptionTribuT = ""
 /**
@@ -619,7 +619,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                         <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like non_active"></i>
+                                                        <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                             onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>

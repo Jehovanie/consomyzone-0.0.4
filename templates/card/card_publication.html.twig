@@ -2,7 +2,7 @@
     <div class="head-pub content_header_pub">
         <div class="content_pub_info">
             <div class="pdp-content">
-                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+                <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}">
             </div>
             <div class="name-content-h">
                 <div class="name-content">
@@ -78,7 +78,7 @@
             <span class="nbr_comment_jheo_js">{{ publication.comments|length ~ (publication.comments|length > 1 ? " commentaires" : " commentaire" ) }} </span>
         </p>
         <div class="reaction-icon d-flex">
-            <i class="bi-heart like"></i>
+            <i class="bi-heart like" onclick="openSwalNonActif()"></i>
             <i class=" fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i>
             {# <i class="non_active fa-regular fa-comment comment"></i> #}
         </div>

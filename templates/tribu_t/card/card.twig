@@ -4,7 +4,7 @@
             <div class="content_pub_info">
                 <div class="pdp-content">
                     {# <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil|replace({"/public": ""}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}"> DEV #}
-                    <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}">
+                    <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}">
                 </div>
                 <div class="name-content-h">
                     <div class="name-content">
@@ -77,7 +77,7 @@
 
             {# <p class="text-comment"> {{ publication.comments|length ~ (publication.comments|length > 1 ? " comentaires" : " commentaire" ) }}</p> #}
             <div class="reaction-icon d-flex">
-                <i class="bi-heart like non_active"></i>
+                <i class="bi-heart like"  onclick="openSwalNonActif()"></i>
                 {# <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}')"></i> #}
                 {# <i class="fa-regular fa-comment comment non_active"></i> #}
                 <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i>

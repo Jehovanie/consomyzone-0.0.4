@@ -862,7 +862,7 @@ function joinMeet(...args) {
 
     const iframe = apiJitsi.getIFrame();
 
-    localStorage.setItem("room_name", room)
+    // localStorage.setItem("room_name", room)
 
     iframe.scrollIntoView();
 
@@ -957,7 +957,7 @@ function joinMeet(...args) {
 
 
     if (document.querySelector(".btn-minimize-elie")) {
-        document.querySelector(".btn-minimize-elie").setAttribute("onclick", "joinMeet('" + room + "','minimizeVisio', this)")
+        // document.querySelector(".btn-minimize-elie").setAttribute("onclick", "joinMeet('" + room + "','minimizeVisio', this)")
         document.querySelector(".btn-minimize-elie").setAttribute("data-room", room)
     }
 
