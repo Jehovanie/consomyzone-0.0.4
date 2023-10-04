@@ -101,16 +101,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 foreach($arrayTribu_T_Owned as $tribuT){
                     extract($tribuT);  /// $name
                     $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
-                    array_push($results,["table_name" => $name, 
-                    "name_tribu_t_muable" => $name_tribu_t_muable,
-                    "logo_path" => $logo_path] );
+                    
+                    array_push($results, [
+                            "table_name" => $name, 
+                            "name_tribu_t_muable" => $name_tribu_t_muable,
+                            "logo_path" => $logo_path
+                        ]
+                    );
                 }
             }else{
                 $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Owned) ? $arrayTribu_T_Owned["name_tribu_t_muable"]:null;
-                array_push($results, 
-                ["table_name" => $arrayTribu_T_Owned['name'],
-                "name_tribu_t_muable" => $name_tribu_t_muable,
-                 "logo_path" => $arrayTribu_T_Owned['logo_path']]);
+                array_push($results, [
+                        "table_name" => $arrayTribu_T_Owned['name'],
+                        "name_tribu_t_muable" => $name_tribu_t_muable,
+                        "logo_path" => $arrayTribu_T_Owned['logo_path']
+                    ]
+                );
             }
             
         }

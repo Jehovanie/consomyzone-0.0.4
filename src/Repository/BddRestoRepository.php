@@ -1010,6 +1010,35 @@ class BddRestoRepository extends ServiceEntityRepository
         return $tab;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * où:la rubrique resto 
+     * localisation du fichier: dans ResturantController.php,
+     * je veux: Faire une mise à jour sur les donnée, ajouter les restaurant passtille.
+     * 
+     * @param array $datas: all data to append the new data
+     * @param array $arrayIdResto: array id resto get each details and append in the $datas when this is not yet in.
+     * 
+     * @return array $data: all data updated : all resto with resto pastielle
+     */
+    public function appendRestoPastille($datas, $arrayIdResto){
+        if( count($arrayIdResto) > 0 ){
+            ////add List Resto pastille in data
+            $dataRestoPastille = $this->getRestoPastille($arrayIdResto);
+
+            foreach ($dataRestoPastille as $itemRestoPastille){
+                $idRestoPastille = $itemRestoPastille["id"];
+                $isAlreadyGet = array_search($idRestoPastille, array_column($datas, 'id'));
+
+                if( !$isAlreadyGet){
+                    array_push($datas, $itemRestoPastille);
+                }
+            }
+        }
+        return $datas;
+    }
+
 
     public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null){
         $query =  $this->createQueryBuilder("r")

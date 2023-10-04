@@ -1955,7 +1955,44 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
 
     }
-  
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * où:la rubrique resto 
+     * localisation du fichier: dans ResturantController.php,
+     * je veux: obtenir les details de tous les tribu T avec une extension restaurant avec l'id de restaurant pastille.
+     * 
+     * @param $tribu_t_owned []
+     * 
+     * @return array [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+     */
+    public function getEntityRestoPastilled($tribu_t_owned){
+        $arrayIdResto = [];
+        if( count($tribu_t_owned) > 0 ){
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $tableExtension = $tableTribu . "_restaurant";
+                if($this->checkExtension($tableTribu, "_restaurant") > 0){
+                    $all_id_resto_pastille = $this->getAllIdRestoPastille($tableExtension, true);  // [ [ id_resto => ..., tableName => ... ], ... ]
+                    if( count($all_id_resto_pastille) > 0 ){
+                        foreach ($all_id_resto_pastille as $id_resto_pastille){
+                            $temp = [
+                                "id_resto" => $id_resto_pastille["id_resto"],
+                                "tableName" => $id_resto_pastille["tableName"],
+                                "name_tribu_t_muable" => $key["name_tribu_t_muable"],
+                                "logo_path" => $key["logo_path"]
+                            ];
+    
+                            array_push($arrayIdResto, $temp);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $arrayIdResto;
+    }
 
 }
 

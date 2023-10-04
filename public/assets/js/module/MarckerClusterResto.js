@@ -363,7 +363,14 @@ class MarckerClusterResto extends MapModule  {
         this.listRestoPastille.forEach(item => {
             const restoPastille = this.default_data.find(jtem => parseInt(item.id_resto) === parseInt(jtem.id));
             if( restoPastille ){
-                restoPastilleTab.push({ id: restoPastille.id, name: restoPastille.denominationF, depName: restoPastille.depName, dep: restoPastille.dep })
+                restoPastilleTab.push({ 
+                    id: restoPastille.id, 
+                    name: restoPastille.denominationF, 
+                    depName: restoPastille.depName, 
+                    dep: restoPastille.dep ,
+                    logo_path: item.logo_path,
+                    name_tribu_t_muable: item.name_tribu_t_muable
+                })
             }
         })
         // this.default_data

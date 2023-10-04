@@ -387,9 +387,11 @@ function itemRestoPastielle(numeroIndices,depName, dep, name, id, icon ){
         <tr>
             <th scope="row">${numeroIndices + 1 }</th>
             <td onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">
-                <img class="icon_resto_legend" src="${icon}" alt="Icon Resto">
+                <img class="icon_resto_legend" src="${icon ? icon : '/uploads/tribu_t/photo/avatar_tribu.jpg'}" alt="Icon Resto">
             </td>
-            <td>${name}</td>
+            <td>
+                <a href="#" class="link-primary" onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">${name}</a>
+            </td>
         </tr>
     `
     return items;
@@ -400,7 +402,7 @@ function dataListMarker(data){
 
     let dataTable= '';
     data.forEach((item, index) => {
-        dataTable += itemRestoPastielle(index,item.depName, item.dep, `${item.name} ${index}`,  item.id, '/assets/icon/NewIcons/icon-resto-new-B.png')
+        dataTable += itemRestoPastielle(index,item.depName, item.dep, `${item.name} ${index}`,  item.id, item.logo_path )
     });
 
     return dataTable;
@@ -439,10 +441,6 @@ function injectListMarker(data){
             </table>
         </div>
     `
-}
-
-function resetListMarker(){
-    document.querySelector(".content_right_side_body_jheo_js").innerHTML = "";
 }
 
 
