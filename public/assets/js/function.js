@@ -2420,8 +2420,8 @@ function getSpectRestoMobile(nom_dep, id_dep) {
 
 /**
  * @author Tomm
- * incrimentation specific liste
- * vers specific_mobile_depart....twig
+ * @action incrimentation specific liste
+ * @ou specific_mobile_depart....twig
  */
 let limitSpecTomm = 5
 let offsetTomm = 0
@@ -2441,7 +2441,11 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
                 const nom_dep = new URL(window.location.href).pathname.split('/')[3]
                 offsetTomm += limitSpecTomm
                 getDataSpecFermeMobile(nom_dep, id_dep)
-                console.log(contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth)
+            } else if (rubricName == 'station') {
+                const id_dep = new URL(window.location.href).pathname.split('/')[3]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[4]
+                offsetTomm += limitSpecTomm
+                getDataSpecStationMobile(nom_dep, id_dep)
             }
         }
     })
@@ -2864,8 +2868,9 @@ function getDataSpecificMobile(nom_dep, id_dep) {
 
 /**
  * @author Tomm
- * href list specic ferme mobile
- * vers specific_mobile_depar...js.twig
+ * @action href list specic ferme mobile
+ * @ou  specific_mobile_depar...js.twig
+ * @utiliser dans specific_mobile_depar.twig
  */
 function addListDepartMobile(nom_dep, id_dep) {
     location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
@@ -2875,8 +2880,9 @@ function addListDepartMobile(nom_dep, id_dep) {
 
 /**
  * @author Tomm
- * creation list specic ferme mobile
- * vers specific_mobile_depar...js.twig
+ * @action add list specic ferme mobile on scrollLeft
+ * @ou dans le specific_mobile_depar...twig
+ * @utiliser dans le ferme/specific_departement.js
  */
 function getDataSpecFermeMobile(nom_dep, id_dep) {
     let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
@@ -2901,7 +2907,7 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
                 let agricultureBio = ''
                 if (response.agricultureBio) {
                     agricultureBio = `
-                        <div class="row">
+                        <div class="row text-point-9">
                             <div class="col-8">
                                 <p class="agribio fw-bold">
                                     Agri biologie
@@ -2916,6 +2922,150 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
                         </div>
                     `
                 }
+
+                let activite = ''
+                if (response.activite) {
+                    activite = `<div class="content_activite">
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Activite:</span>
+                                        ${response.activite}
+                                    </p>
+                                </div>`
+                }
+
+                let codePostal = ''
+                if (response.codePostal) {
+                    codePostal = `<div class="content_activite">
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Code Postal:</span>
+                                        ${response.codePostal}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                let ville = ''
+                if (response.ville) {
+                    ville = `<div class="content_activite">
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold ">Ville:</span>
+                                        ${response.ville}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                let produit1 = ''
+                if (response.produit1) {
+                    produit1 = `<li class="text-point-9">${response.produit1}</li>`
+                }
+
+                let produit2 = ''
+                if (response.produit2) {
+                    produit2 = `<li class="text-point-9">${response.produit2}</li>`
+                }
+                let produit3 = ''
+                if (response.produit3) {
+                    produit3 = `<li class="text-point-9">${response.produit3}</li>`
+                }
+                let produit4 = ''
+                if (response.produit4) {
+                    produit4 = `<li class="text-point-9">${response.produit4}</li>`
+                }
+                let produit5 = ''
+                if (response.produit5) {
+                    produit5 = `<li class="text-point-9">${response.produit5}</li>`
+                }
+                let produit6 = ''
+                if (response.produit6) {
+                    produit6 = `<li class="text-point-9">${response.produit6}</li>`
+                }
+                let produit7 = ''
+                if (response.produit7) {
+                    produit7 = `<li class="text-point-9">${response.produit7}</li>`
+                }
+                let produit8 = ''
+                if (response.produit8) {
+                    produit8 = `<li class="text-point-9">${response.produit8}</li>`
+                }
+
+                let carteBancaire = ''
+                if (response.carteBancaire) {
+                    carteBancaire = `<li class="text-point-9">Carte Bancaire possible.</li>`
+                }
+
+                let chequeVacance = ''
+                if (response.chequeVacance) {
+                    chequeVacance = `<li class="text-point-9">Accepter les chèques de Vacance.</li>`
+                }
+
+                let degustation = ''
+                if (response.degustation) {
+                    degustation = `<li class="text-point-9">Dégustation possible.</li>`
+                }
+                let animauxAutoriser = ''
+                if (response.animauxAutoriser) {
+                    animauxAutoriser = `<li class="text-point-9">Autorise de porte des animaux.</li>`
+                }
+                let venteEnLigne = ''
+                if (response.venteEnLigne) {
+                    venteEnLigne = `<li class="text-point-9">Vente en ligne possible.</li>`
+                }
+
+                let telephoneDomicile = ''
+                if (response.telephoneDomicile) {
+                    telephoneDomicile = `<li class="text-point-9">
+                                            <span class="fw-bold text-point-9">Tel Domicile:</span>
+                                            ${response.telephoneDomicile}
+                                        </li>`
+                }
+
+                let telephoneMobile = ''
+                if (response.telephoneMobile) {
+                    telephoneMobile = `<li class="text-point-9">
+                                            <span class="fw-bold text-point-9">Tel Mobile:</span>
+                                            ${response.telephoneMobile}
+                                        </li>`
+                }
+
+                let telephoneTravail = ''
+                if (response.telephoneTravail) {
+                    telephoneTravail = `<li class="text-point-9">
+                                            <span class="fw-bold text-point-9">Tel Travail:</span>
+                                            ${response.telephoneTravail}
+                                        </li>`
+                }
+
+                let horairesVenteAuMarche = ''
+                if (response.horairesVenteAuMarche) {
+                    horairesVenteAuMarche = `<li class="text-point-9">
+                                                <h5 class="fw-bold">Horaires vente au marché</h5>
+                                                <span class="text-point-9">
+                                                    ${response.horairesVenteAuMarche}
+                                                </span>
+                                            </li>`
+                }
+
+                let horairesVenteMagasinProd = ''
+                if (response.horairesVenteMagasinProd) {
+                    horairesVenteMagasinProd = `<li class="text-point-9">
+                                                    <h5 class="fw-bold">Horaires vente du magasin prod</h5>
+                                                    <span class="text-point-9">
+                                                        ${response.horairesVenteMagasinProd}
+                                                    </span>
+                                                </li>`
+                }
+
+                let horairesVenteAFerme = ''
+                if (response.horairesVenteAFerme) {
+                    horairesVenteAFerme = `<li class="text-point-9">
+                                                <h5 class="fw-bold">Horaires vente à la ferme</h5>
+                                                <span class="text-point-9">
+                                                    ${response.horairesVenteAFerme}
+                                                </span>
+                                            </li>`
+                }
+
             
                 let btnAviMobile = ''
                 if (document.querySelector("#is-connected-tomm-js")) {
@@ -2923,6 +3073,8 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
                 } else {
                     btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
                 }
+
+                
                 
                 listSpecMobile.innerHTML += `
                     <li class="nav-item icon-tabac me-3">
@@ -2974,20 +3126,359 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
 							</div>
 						</a>
 					</li>
+
+                    <div class="modal fade" id="detailModalMobil${response.id}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+							<div class="modal-content  modal-content-mobile">
+								<div class="modal-header">
+									<h5 class="modal-title" id="detailModalMobilLabel">
+										${response.nomFerme}
+										<figcaption class="blockquote-footer mt-2">
+											<a href="#" class="small text-center ">${response.nomProprietaire}
+											</a>
+										</figcaption>
+									</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<div class="modal-body-mobile">
+										<div class="start">
+											<i class="fa-solid fa-star" data-rank="1"></i>
+											<i class="fa-solid fa-star" data-rank="2"></i>
+											<i class="fa-solid fa-star" data-rank="3"></i>
+											<i class="fa-solid fa-star" data-rank="4"></i>
+										</div>
+                                        ${activite}
+                                        ${agricultureBio}
+											<hr>
+                                        ${codePostal}
+                                        ${ville}
+										<div class="content_genre">
+											<p class="genre text-point-9">
+												<span class="fw-bold">Genre:</span>
+												${response.genre}
+											</p>
+										</div>
+
+										<hr>
+										<div class="produit">
+											<h5>
+												<span class="fw-bold text-point-9">Produit:</span>
+											</h5>
+											<ul >
+                                                ${produit1}
+                                                ${produit2}
+                                                ${produit3}
+                                                ${produit4}
+                                                ${produit5}
+                                                ${produit6}
+                                                ${produit7}
+                                                ${produit8}
+											</ul>
+
+											<p class="text-point-9">${response.produitFerme}</p>
+										</div>
+
+										<hr>
+
+										<div class="particularite">
+											<h5 class="fw-bold text-point-9">
+												Particularité:
+											</h5>
+											<ul>
+                                                ${carteBancaire}
+                                                ${chequeVacance}
+                                                ${degustation}
+                                                ${animauxAutoriser}
+                                                ${venteEnLigne}
+											</ul>
+										</div>
+
+										<hr>
+
+										<div class="content_tel">
+											<h5 class="fw-bold text-point-9">
+												Contact rapide:
+											</h5>
+											<ul>
+                                                ${telephoneDomicile}
+                                                ${telephoneMobile}
+                                                ${telephoneTravail}
+											</ul>
+											<hr>
+
+										</div>
+
+										<hr>
+                                        <div class="mb-3">
+                                            <h3 class="fw-bold text-point-9">
+                                                Horaires:
+                                            </h3>
+                                            <ul class="horaires">
+                                                ${horairesVenteAuMarche}
+                                                ${horairesVenteMagasinProd}
+                                                ${horairesVenteAFerme}
+                                            </ul>
+                                        </div>
+
+										<div class="content_tow_cta mb-3">
+											<div class="site_web">
+												<a class="btn btn-outline-success" href="https://${response.lienSiteWeb}" target="_blank">Lien :  site Web</a>
+											</div>
+										</div>
+										<hr>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+										<span>
+											<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+												<span class="nbr_avis_resto_jheo_js"></span>
+												avis
+											</a>
+										</span>
+                                        ${btnAviMobile}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
                 `
             })
             let lengthFerme = responses.fermes.length
-            console.log(lengthFerme + lengthFerme)
+            console.log(lengthFerme)
         })
 
 }
 
+/**
+ * @author Tomm
+ * @action add list specic station mobile on scrollLeft
+ * @ou dans le specific_station_navleft_mobile.twig
+ * @utiliser dans le station/data_station.js
+ */
+function getDataSpecStationMobile(nom_dep, id_dep) {
+    const request = new Request(`/station-mobile/departement/${id_dep}/${nom_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+    .then(responses => { 
+        let listSpecMobile = document.querySelector(".list-specific-station-mobile-tomm-js")
+        responses.stations.forEach(response => {
+            console.log(response)
+
+            let services = ''
+            if (response.services) {
+                services = `
+                    <p class="text-point-9 mb-2">
+                        <span class="fw-bold">
+                            Services :
+                        </span>
+                        <span class="small  ">
+                            ${response.services}
+                        </span>
+                    </p>
+                `
+            }
+
+            let prixE85 = ''
+            if (response.prixE85 != 0 ) {
+                prixE85 = `<span class="btn btn-outline-success text-point-9 mb-2">E85 : ${response.prixE85} €</span>`
+            }
+            
+            let prixGplc = ''
+            if (response.prixGplc != 0) {
+                prixGplc = `<span class="btn btn-outline-success text-point-9 mb-2">GPLC : ${response.prixGplc} €</span>`
+            }
+        
+            let prixSp95 = ''
+            if (response.prixSp95 != 0) {
+                prixSp95 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95 : ${response.prixSp95} €</span>`
+            }
+        
+            let prixSp95E10 = ''
+            if (response.prixSp95E10 != 0) {
+                prixSp95E10 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95-E10 : ${response.prixSp95E10} €</span>`
+            }
+        
+            let prixSp98 = ''
+            if (response.prixSp98 != 0) {
+                prixSp98 = `<span class="btn btn-outline-success text-point-9 mb-2">SP98 : ${response.prixSp98} €</span>`
+            }
+        
+            let prixGasoil = ''
+            if (response.prixGasoil != 0) {
+                prixGasoil = `<span class="btn btn-outline-success text-point-9 mb-2">GASOIL : ${response.prixGasoil} €</span>`
+            }
+
+            let horaires = ''
+            if (response.horaies) { 
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							${response.horaies }`
+            } else {
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							Non disponible.`
+            }
+
+            let automate2424 = ''
+            if (response.automate2424) { 
+                automate2424 = `<span class="fw-bold text-point-9">Automate</span>
+							    : 24/24`
+            } else {
+                automate2424 = `<span class="fw-bold text-point-9">Automate :</span>
+							Non disponible.`
+            }
+
+            let departementCode = ''
+            if (response.departementCode) { 
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+									${response.departementCode}`
+            } else {
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+								    Non reconue.`
+            }
+
+            let departementName = ''
+            if (response.departementName) { 
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+									${response.departementName}`
+            } else {
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+								    Non reconue.`
+            }
+
+
+            listSpecMobile.innerHTML += `
+                <li class="nav-item icon-station me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${response.nom}
+
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">
+                                            Adresse :
+										</span>
+										<span class="small  ">
+                                            ${response.adresse}
+                                        </span>
+									</p>
+                                    ${services}
+                                    
+									<div class="text-point-9">
+                                        ${prixE85}
+                                        ${prixGplc}
+                                        ${prixSp95}
+                                        ${prixSp95E10}
+                                        ${prixSp98}
+                                        ${prixGasoil}
+										
+									</div>
+
+								</div>
+
+							</div>
+						</a>
+					</li>
+
+                    <div class="modal fade" id="detailModalMobil${response.id}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+							<div class="modal-content modal-content-mobile">
+								<div class="modal-header">
+									<h5 class="modal-title" id="detailModalMobilLabel">${response.nom}</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body modal-body-mobile">
+									<figcaption class="blockquote-footer">
+										Adresse :  <a href="#" class="small text-center ">${response.adresse} </a>
+									</figcaption>
+
+									<div class="">
+										<div class="content_tow_cta d-flex justify-content-evenly my-2">
+											<div class="site_web non_active">
+												<button class="btn btn-primary rounded" style="cursor: not-allowed;">
+													Lien :  site Web
+												</button>
+											</div>
+										</div>
+										<hr>
+
+										<div class="content_essense">
+											<h5 class="fw-bold">
+												Liste des Carburants:
+											</h5>
+											<div class="text-point-9">
+                                                ${prixE85}
+                                                ${prixGplc}
+                                                ${prixSp95}
+                                                ${prixSp95E10}
+                                                ${prixSp98}
+                                                ${prixGasoil}
+                                                
+                                            </div>
+										</div>
+										<hr>
+
+										<ul class="details_station">
+											<li class="text-point-9">
+                                                ${services}
+												<hr>
+											</li>
+											<li class="text-point-9">
+                                                ${horaires}
+												<hr>
+											</li>
+											<li class="text-point-9">
+                                                ${automate2424}
+												<hr>
+											</li>
+											<li class="text-point-9">
+                                                ${departementCode}
+												<hr>
+
+											</li>
+											<li class="text-point-9">
+                                                ${departementName}
+											</li>
+										</ul>
+										<hr>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+            `
+        })
+    })
+}
+
+
+/**
+ * @author Tomm
+ * @action fermer le modal du detail
+ * @ou dans le modale
+ * @utiliser dans getDataSpecFermeMobile()
+ */
 function closeModalDetail(id_resto) {
     document.querySelector(`#ModalDetailMobile${id_resto}`).classList.remove("show")
     document.querySelector(`#ModalDetailMobile${id_resto}`).style = "display: none"
     document.querySelector(".modal-backdrop").remove()
 }
 
+/**
+ * @author Tomm
+ * fermer le modal du list avie resto
+ * action dans le modale
+ * utiliser dans getDataSpecFermeMobile()
+ */
 function closeModalAvieDetail(id_resto) {
     document.querySelector(`#staticBackdrop${id_resto}`).classList.remove("show")
     document.querySelector(`#staticBackdrop${id_resto}`).style = "display: none"

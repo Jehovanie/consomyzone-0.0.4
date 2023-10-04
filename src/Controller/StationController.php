@@ -236,11 +236,13 @@ class StationController extends AbstractController
     }
 
     /**
-     * @Route("/station-mobile/departement/{depart_code}/{depart_name}" , name="specific_station_departement_mobile", methods={"GET"})
+     * @Route("/station-mobile/departement/{depart_code}/{depart_name}/{limit}/{offset}" , name="specific_station_departement_mobile", methods={"GET"})
      */
     public function specifiStationDepartementMobile(
         $depart_code,
         $depart_name,
+        $limit,
+        $offset,
         CodeapeRepository $codeApeRep,
         Status $status,
         Request $request,
@@ -290,7 +292,7 @@ class StationController extends AbstractController
             }
         }
 
-        return $this->render("shard/station/specific_station_navleft_mobile.twig", [
+        return $this->json([
 
             "departCode" => $depart_code,
             "userConnected" => $userConnected,
@@ -299,7 +301,7 @@ class StationController extends AbstractController
             "type" => "station",
 
             // "stations"   => $stationServiceFrGeomRepository->getStationByDepartement($depart_code, $depart_name, 0),
-            "stations"   => $stationServiceFrGeomRepository->getAllStationInDepartement($depart_code, $depart_name),
+            "stations"   => $stationServiceFrGeomRepository->getAllStationInDepartementMobile($depart_code, $depart_name, $limit, $offset),
 
             "number_station" => $stationServiceFrGeomRepository->getCountStation($depart_code, $depart_name)[0]["1"],
 
