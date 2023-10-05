@@ -29,6 +29,7 @@ class MapModule{
         this.isRightSideAlreadyOpen = false;
 
         this.objectGeoJson = [];
+        this.listRestoPastille = [];
 
         this.tab_tales = [];
         this.listTales= [
@@ -883,6 +884,17 @@ class MapModule{
             return new L.Control.Custom(options);
         };
     }
+
+    updateListRestoPastille( idResto, tribuName){
+        this.listRestoPastille.push({id_resto: idResto, tableName: tribuName })
+        this.updateStateResto(idResto)
+    }
+
+    updateListRestoDepastille(idResto, tribuName){
+        this.listRestoPastille = this.listRestoPastille.filter(item=>{ return (parseInt(item.id_resto) != parseInt(idResto) || item.tableName != tribuName)})
+        this.updateStateResto(idResto)
+    }
+
 
 
     createRightSideControl(){

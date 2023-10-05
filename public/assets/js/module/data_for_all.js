@@ -402,22 +402,24 @@ function dataListMarker(data){
 
     let dataTable= '';
     data.forEach((item, index) => {
-        dataTable += itemRestoPastielle(index,item.depName, item.dep, `${item.name} ${index}`,  item.id, item.logo_path)
+        dataTable += itemRestoPastielle(index,item.depName, item.dep, item.name,  item.id, item.logo_path)
     });
 
     return dataTable;
 }
 
-function injectListMarker(data){
+function injectListMarker(data, isInSearch=false){
     if( !document.querySelector(".content_right_side_body_jheo_js")){
         console.log("Selector not found : '.content_right_side_body_body'")
         return false;
     }
+
+    let message = isInSearch ? "Il semble que vos restaurants pastilles ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille." : "Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.";
     let dataHTML= data.length > 0 ? dataListMarker(data) : (document.querySelector('.cta_to_actualite_jheo_js') ? `
         <tr>
             <td colspan="3">
                 <div class="alert alert-info text-center" role="alert">
-                    Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.
+                    ${message}
                 </div>
             </td>
         </tr>

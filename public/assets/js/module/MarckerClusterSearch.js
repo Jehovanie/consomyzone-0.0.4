@@ -1,7 +1,19 @@
 class MarckerClusterSearch extends MapModule  {
 
     constructor(nom_dep = null, id_dep = null) {
-        super(id_dep,nom_dep, "search")
+        const url_test= new URL(window.location.href);
+        const search_type= url_test.pathname;
+        
+        let map_for_type= "";
+        if( search_type.includes("/restaurant")){
+            map_for_type="resto"
+        }else if(search_type.includes("/tous")){
+            map_for_type="tous"
+        }
+
+        super(id_dep,nom_dep, map_for_type)
+
+        this.url_test = url_test;
 
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
@@ -9,7 +21,8 @@ class MarckerClusterSearch extends MapModule  {
     }
 
     async onInit(isAddControl=false) {
-        const url = new Request(url_test.href.replace("search", 'api/search'));
+
+        const url = new Request(this.url_test.href.replace("search", 'api/search'));
         this.isAddControl = isAddControl;
         try {
             // this.getGeos()
@@ -17,7 +30,9 @@ class MarckerClusterSearch extends MapModule  {
             
             const response = await fetch(url);
             this.default_data = await response.json();
-            this.data = this.default_data;  /// [ data, data_length, cles0, cles1, origin_cles1]
+            this.data = this.default_data;  /// [ results [ data, length, type], allIdRestoPastille,type, cles0, cles1, origin_cles1]
+
+            this.listRestoPastille = this.data.allIdRestoPastille;
 
             // const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
             // const responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${this.data.origin_cles1}&country=France`)
@@ -118,10 +133,12 @@ class MarckerClusterSearch extends MapModule  {
     bindAction() {
         const { results } = this.data;
         this.addMarker(results[0]);
+        
         // this.addEventOnMap(this.map, this.markers);
     }
 
     displayData() {
+        console.log(this.allIdRestoPastille)
         console.log(this.data)
         console.log(this.geos)
         console.log(this.map)
@@ -309,16 +326,31 @@ class MarckerClusterSearch extends MapModule  {
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
 
         const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id, type: "resto" });
+        
+        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
+        let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
+        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+
+        
+        
+        // const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id, type: "resto" });
+        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn(poi_icon, '', isPastille ), id: item.id, type: "resto" });
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
         marker.on('click', (e) => {
+            let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(e.target.options.id)) : [];
+            let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
+            let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+    
+            
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
-                    iconSize: [32,50],
+                    // iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-Rr.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-Rr.png",
+                    // iconSize: [32,50],
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon_Selected  : this.currentUrl.origin + "/public/" + poi_icon_Selected,
+                    iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     shadowSize: [68, 95],
@@ -470,13 +502,22 @@ class MarckerClusterSearch extends MapModule  {
     updateLastMarkerSelected(marker, type) {
 
         if (this.marker_last_selected && this.marker_last_selected != marker) {
+
+            const resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(this.marker_last_selected.options.id)) : [];
+            const isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+
+
             let icon_marker = "";
             if (this.marker_last_selected_type === "station") {
                 icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-station-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-station-new-B.png`;
             } else if (this.marker_last_selected_type === "ferme") {
                 icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-ferme-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
+            
             } else if (this.marker_last_selected_type === "resto") {
-                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
+                const poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' );
+                icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/${poi_icon}` : `${this.currentUrl.origin}/public/${poi_icon}`;
+                
+                // icon_marker = IS_DEV_MODE ? `${this.currentUrl.origin}/assets/icon/NewIcons/icon-resto-new-B.png` : `${this.currentUrl.origin}/public/assets/icon/NewIcons/icon-resto-new-B.png`;
             } else if (this.marker_last_selected_type === "golf") {
             
                 const last_marker= this.data.results[0].find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
@@ -499,7 +540,7 @@ class MarckerClusterSearch extends MapModule  {
             const icon_B = L.Icon.extend({
                 options: {
                     iconUrl: icon_marker,
-                    iconSize:[32,50],
+                    iconSize:isPastille > 0 ? [45, 60] : [32,50],
                     iconAnchor: [11, 30],
                     popupAnchor: [0, -20],
                     //shadowUrl: 'my-icon-shadow.png',
@@ -833,5 +874,47 @@ class MarckerClusterSearch extends MapModule  {
         })
     }
 
+    updateStateResto(idResto){
+        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
+        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
+        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(idResto) && marker.options.type === "resto" ) {
+                const icon_R = L.Icon.extend({
+                    options: {
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/"+  poi_icon_Selected: this.currentUrl.origin + "/public/" + poi_icon_Selected,
+                        iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
+                        iconAnchor: [11, 30],
+                        popupAnchor: [0, -20],
+                        shadowSize: [68, 95],
+                        shadowAnchor: [22, 94]
+                    }
+                })
+                marker.setIcon(new icon_R);
+            }
+        });
+
+        this.markers.refreshClusters();
+    }
+
+    injectListRestoPastille(){
+        const restoPastilleTab= [];
+        this.listRestoPastille.forEach(item => {
+            const restoPastille = this.default_data.results[0].find(jtem => parseInt(item.id_resto) === parseInt(jtem.id) &&  jtem.resto !== undefined );
+            if( restoPastille ){
+                restoPastilleTab.push({ 
+                    id: restoPastille.id, 
+                    name: restoPastille.denominationF, 
+                    depName: restoPastille.depName, 
+                    dep: restoPastille.dep ,
+                    logo_path: item.logo_path,
+                    name_tribu_t_muable: item.name_tribu_t_muable
+                })
+            }
+        })
+        // this.default_data
+        injectListMarker(restoPastilleTab,true)
+    }
 
 }

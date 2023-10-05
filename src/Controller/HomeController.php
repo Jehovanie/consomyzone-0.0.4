@@ -6,6 +6,7 @@ use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\TributGService;
+use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Service\SortResultService;
 use App\Repository\BddRestoRepository;
@@ -186,6 +187,7 @@ class HomeController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
+        Tribu_T_Service $tribu_T_Service,
         CommuneGeoCoderRepository $communeGeoCoderRepository,
         GolfFranceRepository $golfFranceRepository,
         TabacRepository $tabacRepository
@@ -448,9 +450,19 @@ class HomeController extends AbstractController
                 break;
         }
 
+        ///// les resto pastille si l'utilisateur connecter
+        $arrayIdResto = [];
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+
         if(str_contains($request->getPathInfo(), '/api/search')){
             return $this->json([
                 "results" => $results,
+                "allIdRestoPastille" => $arrayIdResto,
                 "type" => $type,
                 "cles0" => $cles0,
                 "cles1" => $cles1,
