@@ -139,8 +139,13 @@ class RestaurantController extends AbstractController
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
+            $ids=array_map('self::getIdAvisResto',$datas);
+
+            $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+            //merge of resto data and note 
+            // $l=array_map("self::mergeDatasAndAvis",$datas,$moyenneNote);
             return $this->json([
-                "data" => $datas,
+                "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
                 "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }
@@ -151,16 +156,60 @@ class RestaurantController extends AbstractController
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
 
+        $ids=array_map('self::getIdAvisResto',$datas);
+
+        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
         return $this->json([
-            "data" => $datas,
-            "allIdRestoPastille" => $arrayIdResto
+            "data" =>self::mergeDatasAndAvis($datas,$moyenneNote),
+            "allIdRestoPastille" => $arrayIdResto,
+           
         ], 200);
     }
+    /**
+     * @author Nantenaina <email>
+     * où= dans la fonction getAllRestCoor
+     * location=RestaurantController.phpo
+     * je veux avoir les id des  resto recupéré apres  appel de la fonction getDataBetweenAnd()
+     * pour avoir les notes
+     */
+    static function getIdAvisResto($data){
+        return $data["id"];
+    } 
+
+    /**
+     * @author Nantenaina <email>
+     * où= dans la fonction getAllRestCoor
+     * location=RestaurantController.phpo
+     * je veux fussioner les  resto recupéré apres  appel de la fonction getDataBetweenAnd() et leur note
+     * pour avoir les notes
+     */
+    public function mergeDatasAndAvis($datas,$notes){
+        $noteExist=[];
+        foreach($datas as $data){
+            foreach($notes as $note){
+                if($data["id"] === $note["id_resto"]){
+                    // array_push($noteExist,array_merge($data,$note));
+                    $data["moyenne_note"] = $note["moyenne_note"];
+                    $data["id_resto"] = $note["id_resto"];
+                    array_push($noteExist,$data);
+                    break;
+                }
+               
+            }
+            if( !isset($data["moyenne_note"]))
+                array_push($noteExist,$data);
+        }
+       return $noteExist;
+        
+    }
+
+   
 
     #[Route("/test/get/avis", name:"find_all_avis", methods:["GET"])]
     public function getAllAvis(AvisRestaurantRepository $avisRestaurantRepository)
     {
-        $avis = $avisRestaurantRepository->getAllNoteById([36489,1]);
+        $avis = $avisRestaurantRepository->getAllNoteById([36489,1,36488,36505]);
         return $this->json($avis);
     }
 
@@ -172,7 +221,8 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
 
@@ -191,8 +241,12 @@ class RestaurantController extends AbstractController
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee);
 
+            $ids=array_map('self::getIdAvisResto',$datas);
+
+            $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
             return $this->json([
-                "data" => $datas,
+                "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
                 "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }
@@ -203,8 +257,12 @@ class RestaurantController extends AbstractController
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
 
+        $ids=array_map('self::getIdAvisResto',$datas);
+
+        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
         return $this->json([
-            "data" => $datas,
+            "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
             "allIdRestoPastille" => $arrayIdResto
         ], 200);
     }
@@ -216,7 +274,8 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
 
@@ -234,20 +293,29 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep);
+
+            $ids=array_map('self::getIdAvisResto',$datas);
+
+            $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
             return $this->json([
-                    "data" => $datas,
+                    "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
                     "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }
 
         //// data resto specific in departement
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep);
-        
+
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
 
+        $ids=array_map('self::getIdAvisResto',$datas);
+
+        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
         return $this->json([
-            "data" => $datas,
+            "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
             "allIdRestoPastille" => $arrayIdResto
         ], 200);
     }
