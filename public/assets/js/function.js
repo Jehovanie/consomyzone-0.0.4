@@ -2475,18 +2475,11 @@ function takePictureTribu(type){
     if(window.location.href.includes("/user/account")){
 
         // console.log("send data tribu G");
-        document.querySelector("#publication_image").src = data
+        document.querySelector("#publication_capture").value = data
         document.querySelector(".image_upload_image_jheo_js").src = data
         $("#modal_publication_tributG").modal("show")
         document.querySelector("#imageUploadTribu > div.image-upload-wrap").classList.add("d-none")
         document.querySelector("#imageUploadTribu > div.image-upload-content").style.display="block"
-
-        // document.querySelector("#uploadImageID").onchange=(){
-
-        // }
-
-        // document.querySelector("#uploadImageID").files[0] = dataURLtoFile(data, `capture-${new Date().getTime()}.png`)
-
 
     }// POUR Tribu T
     else if(window.location.href.includes("/user/tribu/my-tribu-t")){

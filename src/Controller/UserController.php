@@ -265,6 +265,8 @@ class UserController extends AbstractController
 
             $photo = $new_publication['photo']->getData();
 
+            $capture = $new_publication['capture']->getData();
+
             $newFilename = "";
 
             $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$profil[0]->getTributg().'/';
@@ -280,10 +282,10 @@ class UserController extends AbstractController
             if ($publication || $confid) {
 
 
+                $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG();
 
                 if ($photo) {
 
-                    $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG();
 
                     $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -297,8 +299,27 @@ class UserController extends AbstractController
                     );
                 }
 
+                /**
+                 * @author Elie
+                 * bloc capture si l'utilisateur utilise un camera direct de votre appareil
+                 * utilisé dans Tribu G
+                 */
+                if ($capture) {
 
-                
+                    // Function to write image into file
+
+                    $temp = explode(";", $capture);
+
+                    $extension = explode("/", $temp[0])[1];
+
+                    $imagename = md5($userId) . '-' . uniqid() . "." . $extension;
+
+                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" .$imagename;
+
+                    file_put_contents($destination .'/'. $imagename, file_get_contents($capture));
+
+                }
+
                 $tributGService->createOnePub($profil[0]->getTributG() . "_publication", $userId, $publication, $confid, $newFilename);
             }
 

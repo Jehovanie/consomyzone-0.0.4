@@ -2317,9 +2317,10 @@ function openAvis(nb_avis, id_resto) {
 
 
     if (parseInt(nb_avis) > 0) {
-        alert(nb_avis)
+        // alert(nb_avis)
 
         // $("#modalAvisRestaurant").modal("hidden")
+        console.log(document.querySelector("#avisRestoPastille"));
 
         $("#avisRestoPastille").modal("show")
 

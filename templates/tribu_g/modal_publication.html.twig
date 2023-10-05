@@ -17,6 +17,8 @@
                         <label for="formFileMultiple" class="form-label">Confidentialité</label>
                         {{form_row(new_publication.confidentiality)}}
                     </div>
+                    {# block capture #}
+                    {{form_row(new_publication.capture)}}
                     {# <div class="mb-3">
                         <label for="formFileMultiple" class="form-label">Photo</label>
                         {{form_row(new_publication.photo)}}
@@ -34,7 +36,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger annulation_pub_js_jheo" data-bs-dismiss="modal">Annuler</button>
-                    <input type="submit" class="btn btn-primary send_new_pub_js_jheo" value="Envoyer">
+                    <input type="submit" class="btn btn-primary send_new_pub_js_jheo" value="Envoyer" onsubmit="sendOnePubTribuG(event)">
                 </div>
             </div>
         </div>
