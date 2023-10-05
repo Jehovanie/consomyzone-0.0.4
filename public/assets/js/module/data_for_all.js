@@ -417,7 +417,7 @@ function injectListMarker(data){
         <tr>
             <td colspan="3">
                 <div class="alert alert-info text-center" role="alert">
-                    Vous n'avez pas des restaurants pastilles ou vous n'avez pas encore de tribu T avec une extension Restaurant.
+                    Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.
                 </div>
             </td>
         </tr>

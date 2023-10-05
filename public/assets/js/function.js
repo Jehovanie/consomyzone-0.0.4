@@ -2099,9 +2099,6 @@ function pastilleRestoForTribuTDashboard(element, isPastilled){
                     });
                 }
 
-                // tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-                // tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
-
                 
             })
             .catch(error=>console.log(error))
@@ -2343,7 +2340,8 @@ function showImagePreview(e){
                 $("#mediaModal").modal("hide")
                 $("#addPictureModal").modal("hide")
                 // $("#createAgenda").modal("show")
-                $("#selectRepertoryModal").modal("show")
+                if(document.querySelector("#selectRepertoryModal"))
+                    $("#selectRepertoryModal").modal("show")
                 
             } else {
 
@@ -2370,9 +2368,7 @@ function resetImagePreview(){
 }
 
 function showModalPicture(){
-    $("#addPictureModal").modal("hide")
     document.querySelector("#containerCamera").innerHTML = ""
-    $("#mediaModal").modal("show")
     // <video id="player" autoplay></video>
     let video = document.createElement("video")
     video.setAttribute("id","player")
@@ -2392,9 +2388,11 @@ function showModalPicture(){
     navigator.mediaDevices
             .getUserMedia({ video: true })
             .then((stream) => {
+                $("#addPictureModal").modal("hide")
+                $("#mediaModal").modal("show")
                 video.srcObject = stream;
             }).catch(error => {
-                console.error('Can not get an access to a camera...', error);
+                swal("Attention !", "Impossible d'accéder à votre caméra !", "warning")
             });
 
     document.querySelector("#containerCamera").appendChild(video)
@@ -2429,7 +2427,8 @@ function takePicture(){
     document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
     $("#mediaModal").modal("hide")
     // $("#createAgenda").modal("show")
-    $("#selectRepertoryModal").modal("show")
+    if(document.querySelector("#selectRepertoryModal"))
+                    $("#selectRepertoryModal").modal("show")
     /*outputCanvas.toBlob((blob) => {
         console.log(URL.createObjectURL(blob))
         // downloadLink.setAttribute('href', URL.createObjectURL(blob));

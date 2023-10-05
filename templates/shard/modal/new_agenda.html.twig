@@ -81,9 +81,6 @@
                 </div>
             </div>
             <div class="mb-3" style="margin:auto;">
-                {# <label class="form-label non_active">Si vous avez des fichier</label> #}
-                {# <label class="form-label text_black">Ajouter une photo</label>
-                {% include 'shard/input/inputImageAndScreenShoot.html.twig' %} #}
                 <div class="preview text-center d-none preview_image_nanta_js">
                     <img id="image-preview" class="image-upload-image">
                     <div class="image-title-wrap">
@@ -341,48 +338,9 @@
   </div>
 </div>
 
-<div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="mediaModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" id="modal-dialog-camera">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="mediaModalLabel">Votre caméra</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#addPictureModal" data-bs-toggle="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <div id="containerCamera"></div>
-      </div>
-    </div>
-  </div>
-</div>
+{% include 'shard/modal/media_modal.html.twig' %}
 
-<div class="modal fade" id="addPictureModal" tabindex="-1" aria-labelledby="addPictureModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="addPictureModalLabel">Ajout de photo</h1>
-        <button type="button" class="btn-close" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          {% include 'shard/input/inputImageAndScreenShoot.html.twig' %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-target="#createAgenda" data-bs-toggle="modal">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{# <div class="modal fade show" id="selectRepertory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-modal="true" role="dialog" style="display: block;">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-        <h3 class="mx-auto mt-4">Dans quel repertoire voulez vous partager cette photo?</h3>
-        <div class="mx-auto mt-3">
-            <a href="/user/tribu/partage/agenda" class="btn btn-primary">Tribu G</a>
-            <button type="button" class="btn btn-danger" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Tribu T</button>
-        </div>
-    </div>
-  </div>
-</div> #}
+{% include 'shard/modal/ajout_de_photo_modal.html.twig' %}
 
 <div class="modal fade" id="selectRepertoryModal" tabindex="-1" aria-labelledby="selectRepertoryModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -393,8 +351,6 @@
       </div>
       <div class="modal-body">
         <div class="repertoryDir mb-3 container-fluid">
-          {# <a href="" class="btn btn-primary">Tribu G</a>
-          <button type="button" class="btn btn-danger">Tribu T</button> #}
           <ul class="navbar-nav me-auto mb-2" style="display: flex;flex-direction: row;">
             <li class="nav-item" style="cursor:pointer;" style="cursor:pointer;" onclick="showRepertoryDirTribuG()">
               <a class="nav-link list-repertoryDirTribuG text-primary" data-target="repertoryDirTribuG">Tribu G</a>
@@ -405,12 +361,6 @@
           </ul>
         </div>
         <div id="repertoryDirTribuG">
-            {# <ul>
-              <li>
-                <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? asset(tribuG.photoProfil) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
-                <a href="#" data-tribu="{{tribuG.tributG}}">Tribu G {{tribuG.tributG|split('_', 4)|last|replace({'_':' '})|capitalize}}</a>
-              </li>
-            </ul> #}
             <table class="table table-striped">
                 <tbody>
                     <tr style="vertical-align: middle;">
@@ -426,17 +376,6 @@
               </table>
         </div>
         <div id="repertoryDirTribuT" class="d-none">
-            {# <ul>
-              {% if tribuT|length > 0 %}
-              
-                {% for item in tribuT %}
-                  <li>
-                    <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? '/public' ~ item.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
-                    <a href="#" data-tribu="{{item.table_name}}">Tribu T {{item.name_tribu_t_muable|capitalize}}</a>
-                  </li>
-                {% endfor %}
-              {% endif %}
-            </ul> #}
             {% if tribuT|length > 0 %}
               <table class="table table-striped">
                 <tbody>
@@ -444,7 +383,6 @@
                     <tr style="vertical-align: middle;">
                       <td class="col-logo">
                           <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? '/public' ~ item.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
-                          {#<img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? item.logo_path : '/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">#}
                       </td>
                       <td class="col-tribuT"><a href="#" data-tribu="{{item.table_name}}" onclick="setDirForImage(event)">Tribu T {{item.name_tribu_t_muable|capitalize}}</a></td>
                       <td class="col-action">

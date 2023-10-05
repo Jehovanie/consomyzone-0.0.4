@@ -180,8 +180,12 @@
 								<div class="mb-3">
 									<div class="mt-3 text-black" style="margin-left: -10%;">Modifier l'extension</div>
 									<div class="form-check">
-										<input type="checkbox" id="update_form_extension" name="update_extension" class="form-check-input form-check-input" role="switch">
+										<input type="checkbox" id="update_form_restaurant" name="update_form_restaurant" class="form-check-input form-check-input" role="switch">
 										<label for="form_extension">Restaurant</label>
+									</div>
+									<div class="form-check">
+										<input type="checkbox" id="update_form_golf" name="update_form_golf" class="form-check-input form-check-input" role="switch">
+										<label for="form_extension">Golf</label>
 									</div>
 								</div>
 							</div>
@@ -244,19 +248,57 @@
 				<div class="modal-body">
 					<div class="container text-center">
 						<i class="fas fa-question-circle fs-1 text-info"></i><br>
-						<p class="">Quelle action voulez-vous pour ce restaurant?</p>
-						<div class="container mb-4 mt-5">
+						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+						<div class="container mb-4 mt-5 content_btns_nanta_js">
 							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
 							<button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
 							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
 						</div>
-				</div>
+					</div>
 
 				</div>
-				{# <div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
-				</div> #}
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" tabindex="-1" id="detailOptionGolf">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Plus d'options</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center">
+						<i class="fas fa-question-circle fs-1 text-info"></i><br>
+						<p class="questionAction">Quelle action voulez-vous pour ce golf?</p>
+						<div class="container mb-4 mt-5 content_btns_nanta_js">
+							<button type="button" id="data-note-nanta-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+							<button type="button" id="data-event-nanta-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)">Dépastiller</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="detailEtabModal" aria-hidden="true" aria-labelledby="detailEtabModal_label" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="modal-header">
+				{# <h5 class="modal-title">Détail</h5> #}
+				<div class="content_etab_detail">
+				</div>
+				<button type="button" class="btn-close" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+			</div>
 			</div>
 		</div>
 	</div>
