@@ -1551,6 +1551,15 @@ function readURL(input) {
  * @parm inputImage.html.twig
  */
 function removeUpload() {
+    
+    document.querySelector("#image-publication-tribu-t")? document.querySelector("#image-publication-tribu-t").src="" : ""
+    document.querySelector("#publication_capture")? document.querySelector("#publication_capture").value="" : ""
+    document.querySelector("#mixte_publication_capture")? document.querySelector("#mixte_publication_capture").value="" : ""
+    document.querySelectorAll('.image-upload-wrap').forEach(i=>{
+        if (i.classList.contains("d-none")) {
+            i.classList.remove("d-none")
+        }
+    })
     $('.image-upload-input').replaceWith($('.image-upload-input').clone());
     $('.image-upload-content').hide();
     $('.image-upload-wrap').show();
@@ -1566,6 +1575,7 @@ function removeUpload() {
     document.querySelector(".image_upload_input_jheo_js").value = null
     
     $('.image_upload_input_jheo_js').click();
+
 }
 
 
@@ -2405,10 +2415,10 @@ function showModalPicture(){
 
 /**
  * @author elie
- * @constructor
- * function utiliser pour tribu T et G pour choix de photo (tribuT.html.twig)
- * localisation : function.js
- * je veux : afficher un modal pour choix de photo à telecharger
+ * @constructor function utiliser pour tribu T et G pour choix de photo (tribuT.html.twig)
+ * @param {string} type : pub ou photo de profile
+ * @localisation : function.js
+ * @je veux : afficher un modal pour choix de photo à telecharger
  */
 function showModalPictureTribu(type){
     document.querySelector("#containerCamera").innerHTML = ""
@@ -2421,8 +2431,6 @@ function showModalPictureTribu(type){
     canvas.setAttribute("id","output")
     canvas.setAttribute("class","d-none")
 
-    // <button id="capture-button" title="Take a picture"></button>
-    // onclick="takePicture()"
     let captureButton = document.createElement("button")
     captureButton.setAttribute("id","capture-button")
     captureButton.setAttribute("onclick","takePictureTribu('"+type+"')")
@@ -2445,10 +2453,10 @@ function showModalPictureTribu(type){
 
 /**
  * @author elie
- * @constructor
- * fonction prendre de photo utilisé dans tribuT.html.twig
- * localisation : function.js
- * je veux : prendre une photo dans un navigateur pour utiliser dans tribu T ou G
+ * @constructor fonction prendre de photo utilisé dans tribuT.html.twig
+ * @param {string} type : pub ou photo de profile (pdp)
+ * @localisation : function.js
+ * @je veux : prendre une photo dans un navigateur pour utiliser dans tribu T ou G
  */
 function takePictureTribu(type){
     const player = document.getElementById('player');
@@ -2470,6 +2478,19 @@ function takePictureTribu(type){
     let data =  outputCanvas.toDataURL()
 
     let preview
+
+     // Pour actualité tribu G et T
+     if(window.location.href.includes("/user/actualite")){
+
+        // console.log("send data tribu G");
+        document.querySelector("#mixte_publication_capture").value = data
+        document.querySelector("#image-publication-tribu-t").src = data
+        document.querySelector(".image_upload_image_jheo_js").src = data
+        $("#newPublication").modal("show")
+        document.querySelector("#imageUploadTribu > div.image-upload-wrap").classList.add("d-none")
+        document.querySelector("#imageUploadTribu > div.image-upload-content").style.display="block"
+
+    }
 
     // Pour tribu G
     if(window.location.href.includes("/user/account")){

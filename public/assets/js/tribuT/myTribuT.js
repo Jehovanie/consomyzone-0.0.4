@@ -286,7 +286,7 @@ function showPartisan() {
                                 <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
                             </td>
                             <td>
-                                <a target="_blank" href="/user/profil/1" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
                             </td>
                             <td>
                                 TribuG ${tribuG.replaceAll("_", " ")}
@@ -498,12 +498,12 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     descriptionTribuT = tribu_t[0].description
     let restExtension = ""
     let golfExtension = ""
-    if (tribu_t[0].extension.restaurant) {
+    if (tribu_t[0].extension.restaurant == 1) {
         restExtension = ` <li class="listNavBarTribu restoNotHide">
                             <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
                         </li>`
     }
-    if (tribu_t[0].extension.golf) {
+    if (tribu_t[0].extension.golf == 1) {
         golfExtension = ` <li class="listNavBarTribu golfNotHide">
                             <a style="cursor:pointer;" onclick="showGolf()" data-value="golf">Mon Golf</a>
                         </li>`
@@ -2312,74 +2312,78 @@ if (document.querySelector("#btn_open_modal_avis_elie")) {
     })
 }
 
+/**
+ * @author elie
+ * @constructor
+ * Function affichage de la liste des avis de resto pastillé dans un tribu T
+ * @localisation: myTribuT.js
+ * @utilisation : dans le template tribuT.html.twig
+ * @param {int} nb_avis : afficher dans le template
+ * @param {int} id_resto : id de la bdd_resto
+ */
 function openAvis(nb_avis, id_resto) {
-    // document.querySelector("#staticBackdrop")
-
 
     if (parseInt(nb_avis) > 0) {
-        // alert(nb_avis)
-
-        // $("#modalAvisRestaurant").modal("hidden")
-        console.log(document.querySelector("#avisRestoPastille"));
 
         $("#avisRestoPastille").modal("show")
 
-        // const table_resto = tribu_t_name_0 + "_restaurant"
-        // console.log(table_resto);
+        const table_resto = tribu_t_name_0 + "_restaurant"
 
-        // fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
-        //     .then(response => response.json())
-        //     .then(avis => {
-        //         // console.log(avis);
-        //         for (let avi of avis) {
+        // document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
 
-        //             let noteEtoile = ""
+        fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
+            .then(response => response.json())
+            .then(avis => {
+                // console.log(avis);
+                for (let avi of avis) {
 
-        //             switch (parseInt(avi.note)) {
-        //                 case 1:
-        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-        //                     break;
-        //                 case 2:
-        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-        //                     break;
-        //                 case 3:
-        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
-        //                     break;
-        //                 case 4:
-        //                     noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
-        //                     break;
-        //                 default:
-        //                     noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-        //             }
+                    let noteEtoile = ""
 
-        //             document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
-        //                 `<div class="card mb-2 card_avis_resto_jheo_js">
-        //                     <div class="card-body">
-        //                         <div class="avis_content">
-        //                             <div class="d-flex justify-content-between align-items-end">
-        //                                 <h5>
-        //                                     <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
-        //                                     ${avi.commentaire}
-        //                                 </h5>	
-        //                                 <p>
-        //                                     ${noteEtoile}
-        //                                     <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-        //                                     <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-        //                                     <i class="fa-solid fa-star"></i>
-        //                                     <i class="fa-solid fa-star"></i>-->
-        //                                 </p>
-        //                             </div>
-        //                             <p>${avi.datetime}</p>
-        //                         </div>
-        //                     </div>
-        //                 </div>
-        //                 `
-        //         }
+                    switch (parseInt(avi.note)) {
+                        case 1:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 2:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 3:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 4:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+                            break;
+                        default:
+                            noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                    }
 
-        //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+                    document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
+                        `<div class="card mb-2 card_avis_resto_jheo_js">
+                            <div class="card-body">
+                                <div class="avis_content">
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <h5>
+                                            <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
+                                            ${avi.commentaire}
+                                        </h5>	
+                                        <p>
+                                            ${noteEtoile}
+                                            <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+                                            <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
+                                            <i class="fa-solid fa-star"></i>
+                                            <i class="fa-solid fa-star"></i>-->
+                                        </p>
+                                    </div>
+                                    <p>${avi.datetime}</p>
+                                </div>
+                            </div>
+                        </div>
+                        `
+                }
 
-        //         document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", "create")
-        //     })
+                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+
+                document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
+            })
 
 
     } else {
@@ -2393,14 +2397,22 @@ function openAvis(nb_avis, id_resto) {
 
     }
 
-    // const myModalEl = document.getElementById('avisRestoPastille')
-    // myModalEl.addEventListener('hidden.bs.modal', event => {
-    //     // do something...
-    //     // document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
-    // })
+    const myModalEl = document.getElementById('avisRestoPastille')
+    myModalEl.addEventListener('hidden.bs.modal', event => {
+        // do something...
+        document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
+    })
 
 }
 
+/**
+ * @author elie
+ * @constructor : fonction de parametrage d'id resto dans un template
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {element} params : element ou le fonction se place
+ * @param {int} id_pastille : id resto
+ */
 function setSendNote(params, id_pastille) {
 
     const action = params.getAttribute("data-action")
@@ -2423,16 +2435,19 @@ function setSendNote(params, id_pastille) {
             sendNote(parseFloat(note.value), avis.value, id_pastille)
         }
 
-
     } else {
-
         updateNote(parseFloat(note.value), avis.value, id_pastille)
-
     }
-
-
 }
 
+/**
+ * @author elie
+ * @constructor Fonction d'ouverture de note de resto pastillé
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {int} id_pastille : id resto
+ * @param {string} action : action à faire pour le bouton
+ */
 function openOnNote(id_pastille, action) {
 
     document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
@@ -2440,6 +2455,14 @@ function openOnNote(id_pastille, action) {
 
 }
 
+/**
+ * @constructor Fonction d'ouverture d'un evenement
+ * @author elie
+ * @param {int} id : id resto
+ * @param {string} nom : nom de resto
+ * @param {string} adresse : adresse de resto
+ * @param {string} action : action à faire pour le resto
+ */
 function openOnEvent(id, nom, adresse, action) {
 
     document.querySelector("#nomEtabEvent").value = nom
@@ -2448,23 +2471,24 @@ function openOnEvent(id, nom, adresse, action) {
 
     let date = new Date();
     let currentDate = date.toISOString().substring(0, 10);
-    // let currentTime = date.toISOString().substring(11,16);
 
     document.getElementById('eventStart').value = currentDate;
     document.getElementById('eventEnd').value = currentDate;
     document.getElementById('timeStart').value = '00:00';
     document.getElementById('timeEnd').value = '23:00';
 
-
-    // document.querySelector("#eventEnd").value = new Date().toLocaleDateString()
-    // swal({
-    //     title: "Succès!",
-    //     text: "Un évènement crée avec succès",
-    //     icon: "success",
-    //     button: "OK",
-    //   });
 }
 
+/**
+ * @constructor Fonction d'ouverture d'un modal detail option resto
+ * @param {*} id_pastille : id resto
+ * @param {*} denomination_f : nom resto
+ * @param {*} adresse 
+ * @param {*} latitude 
+ * @param {*} longitude 
+ * @param {*} text1 : icon action
+ * @param {*} action : type d'action
+ */
 function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
 
     $("#detailOptionResto").modal("show")
@@ -2476,19 +2500,17 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
     document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
     document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-      
-    // const swalWithBootstrapButtons = swal.mixin({
-    //     customClass: {
-    //         confirmButton: 'btn btn-primary me-2',
-    //         cancelButton: 'btn btn-secondary non_active disabled'
-    //         // cancelButton: 'btn btn-primary'
-    //     },
-    //     buttonsStyling: false
-    // })
 
 }
 
-
+/**
+ * @constructor : Ouverture de modal detail resto
+ * @param {*} nom_resto 
+ * @param {*} adresse 
+ * @param {*} nom_dep 
+ * @param {*} id_dep 
+ * @param {*} id_restaurant 
+ */
 function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
 
     fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)

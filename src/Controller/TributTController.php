@@ -2132,7 +2132,7 @@ class TributTController extends AbstractController
            
                 $resto = $body['extension'];
                 $golf = $body['extension_golf'];
-                
+
                 $path  =   $body['path'];
                 /*$nom est une variable qui designe une table dans la  base de donneé de CMZ, 
                 Elle ne peut pas être modifier par l'user ou par le devellopeur , sous risque d'un grand systemique.
@@ -2160,10 +2160,14 @@ class TributTController extends AbstractController
 
                 if ($output != 0) {
 
-                    $restoExtension = ($resto == "on") ? "restaurant" : null;
+                    // $restoExtension = ($resto == "on") ? "restaurant" : null;
                     // $golfExtension = ($golf == "on") ? "golf" : null;
+
+                    $extension = [];
+                    $extension["restaurant"] = ($resto == "on") ? 1 : 0;
+                    $extension["golf"] = ($golf == "on") ? 1 : 0;
                    
-                    $tribut->setTribuT($output, $description, $path,$restoExtension, $userId,"tribu_t_owned", $nomTribuT);
+                    $tribut->setTribuT($output, $description, $path,$extension, $userId,"tribu_t_owned", $nomTribuT);
 
                     $isSuccess = true;
 

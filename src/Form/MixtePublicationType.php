@@ -52,6 +52,10 @@ class MixtePublicationType extends AbstractType
                 'disabled' => true,
                 'required' => false
             ])
+            /**
+             * @author : elie 
+             * ajout de form hidden pour stocker l'image base64 pour l'utilisation de camera de l'appareil */
+            ->add('capture', HiddenType::class)
         ;
     }
 

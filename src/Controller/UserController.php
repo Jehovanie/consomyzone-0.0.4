@@ -152,6 +152,7 @@ class UserController extends AbstractController
             $legend = $new_publication['legend']->getData();
             $confid = $new_publication['confidentiality']->getData();
             $photo = $new_publication['photo']->getData();
+            $capture = $new_publication['capture']->getData();
             // dd($photo);
             if( $photo ){
                 $destination = $this->getParameter('kernel.project_dir'). "/public/uploads";
@@ -175,6 +176,43 @@ class UserController extends AbstractController
                 }
                 
                 $photo->move($destination,$newFilename);
+            }
+
+            /**
+             * @author Elie
+             * bloc capture si l'utilisateur utilise un camera direct de votre appareil
+             * utilisé dans Tribu G ou T
+             */
+            if ($capture) {
+
+                // Function to write image into file
+
+                $destination = $this->getParameter('kernel.project_dir'). "/public/uploads";
+                $newFilename = "/public/uploads";
+
+                $temp = explode(";", $capture);
+
+                $extension = explode("/", $temp[0])[1];
+
+                $imagename = md5($userId) . '-' . uniqid() . "." . $extension;
+
+                if( $type_tribu === "Tribu G"){
+                    $destination .= '/tribu_g/photos/'.$tribuG.'/';
+                    $newFilename .= '/tribu_g/photos/' . $tribuG. "/" . $imagename;
+
+                }else{
+                    $tribu = $new_publication['tribu']->getData();
+                    $destination .= '/tribu_t/photos/'.$tribu.'/';
+                    $newFilename .= '/tribu_t/photos/' . $tribu . "/" . $imagename;
+                }
+
+                $dir_exist = $this->filesyst->exists($destination);
+                if($dir_exist===false){
+                    $this->filesyst->mkdir($destination, 0777);
+                }
+
+                file_put_contents($destination .'/'. $imagename, file_get_contents($capture));
+
             }
 
             if ($legend || $photo) {
