@@ -75,7 +75,13 @@ class MarckerClusterHome extends MapModule  {
                     let sepcMarmerIsExist = false;
                     for (let g of  cluster.getAllChildMarkers()){
                         if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-                            sepcMarmerIsExist = true;
+                            if(that.marker_last_selected.options.hasOwnProperty('type')){
+                                if( that.marker_last_selected.options.type === g.options.type ){
+                                    sepcMarmerIsExist = true;
+                                }
+                            }else{
+                                sepcMarmerIsExist = true;
+                            }
                             break;
                         }
                     }
