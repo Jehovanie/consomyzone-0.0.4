@@ -9,18 +9,19 @@ use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Service\SortResultService;
+use App\Repository\TabacRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
+use App\Repository\GolfFranceRepository;
 use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\AvisRestaurantRepository;
 use App\Repository\CommuneGeoCoderRepository;
-use App\Repository\GolfFranceRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\StationServiceFrGeomRepository;
-use App\Repository\TabacRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
@@ -190,7 +191,9 @@ class HomeController extends AbstractController
         Tribu_T_Service $tribu_T_Service,
         CommuneGeoCoderRepository $communeGeoCoderRepository,
         GolfFranceRepository $golfFranceRepository,
-        TabacRepository $tabacRepository
+        TabacRepository $tabacRepository,
+        RestaurantController $restaurantController,
+        AvisRestaurantRepository $avisRestaurantRepository
         
     ){
 
@@ -270,7 +273,15 @@ class HomeController extends AbstractController
                     $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
                     $otherResult = true;
                 }
+                
+                if(count($resto) > 0){
+                    $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                    $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                    $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                }
+
                 $results = $resto;
+
                 break;
             case "golf":
                 $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
@@ -320,6 +331,12 @@ class HomeController extends AbstractController
 
                     if($otherResto){
                         $otherResult = true;
+                    }
+
+                    if(count($resto) > 0){
+                        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                        $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
                     }
 
                     $results[0] = array_merge($resto[0]);
@@ -388,6 +405,12 @@ class HomeController extends AbstractController
                         $otherResto = true;
                     }
 
+                    if(count($resto) > 0){
+                        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                        $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                    }
+
                     $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($golf[0])>0){
                         $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
@@ -417,15 +440,16 @@ class HomeController extends AbstractController
                             $results[1] = $ferme[1];
                         }
 
+                        if(!$otherStation){
+                            $results[0] = array_merge($station[0], $results[0]);
+                            $results[1] += $station[1];
+                        }
+
                         if(!$otherResto){
                             $results[0] = array_merge($resto[0], $results[0]);
                             $results[1] += $resto[1];
                         }
 
-                        if(!$otherStation){
-                            $results[0] = array_merge($station[0], $results[0]);
-                            $results[1] += $station[1];
-                        }
 
                         if(!$otherGolf){
                             $results[0] = array_merge($golf[0], $results[0]);
