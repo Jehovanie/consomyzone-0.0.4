@@ -37,12 +37,7 @@ class RestaurantController extends AbstractController
     ) {
         $statusProfile = $status->statusFondateur($this->getUser());
         $dataRequest = $departementRepository->getDep();
-        // $id_dep = $dataRequest["id"];
-        // $datas = $code->getAllCodinsee($id_dep);
-        // dump($dataRequest);
-        //dd($bddResto->getAccountRestauranting(),$bddResto->getAllOpenedRestos());
 
-        
         ///current user connected
         $user = $this->getUser();
 
@@ -128,16 +123,13 @@ class RestaurantController extends AbstractController
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
-        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
-        foreach ($tribu_t_owned as $key) {
-            $tableTribu = $key["table_name"];
-            $tableExtension = $tableTribu . "_restaurant";
-            if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension, true);
-                $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
-            }
-        }
-      
+
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
         if($request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
@@ -158,7 +150,11 @@ class RestaurantController extends AbstractController
             ], 200);
         }
 
+        //// data resto all departement
         $datas= $bddResto->getSomeDataShuffle(2000);
+
+        //// update data result to add all resto pastille in the Tribu T
+        $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
 
         $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -223,8 +219,18 @@ class RestaurantController extends AbstractController
         $codinsee,
         Request $request,
         BddRestoRepository $bddResto,
-        SerializerInterface $serialize
+        SerializerInterface $serialize,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service
     ) {
+        $arrayIdResto = [];
+
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
         if($request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
@@ -232,12 +238,24 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $serialize->serialize($bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee), 'json');
+            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee);
 
-            return new JsonResponse($datas, 200, [], true);
+            return $this->json([
+                "data" => $datas,
+                "allIdRestoPastille" => $arrayIdResto
+            ], 200);
         }
-        $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep, $codinsee), 'json');
-        return new JsonResponse($datas, 200, [], true);
+
+        //// $data resto specific in $dep and $codinsee
+        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep, $codinsee);
+
+        //// update data result to add all resto pastille in the Tribu T
+        $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+
+        return $this->json([
+            "data" => $datas,
+            "allIdRestoPastille" => $arrayIdResto
+        ], 200);
     }
 
     #[Route("/Coord/Spec/Restaurant/{dep}", name: "app_coord_spec_restaurant", methods: ["GET"])]
@@ -251,16 +269,13 @@ class RestaurantController extends AbstractController
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
-        $tribu_t_owned = $userRepository->getListTableTribuT_owned();
-        foreach ($tribu_t_owned as $key) {
-            $tableTribu = $key["table_name"];
-            $tableExtension = $tableTribu . "_restaurant";
-            if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                $all_id_resto_pastille = $tribu_T_Service->getAllIdRestoPastille($tableExtension, true);
-                $arrayIdResto = array_merge($arrayIdResto, $all_id_resto_pastille);
-            }
-        }
 
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned();  /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
         if($request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
@@ -279,10 +294,17 @@ class RestaurantController extends AbstractController
                     "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }
-        // $datas = $serialize->serialize($bddResto->getCoordinateAndRestoIdForSpecific($dep), 'json');
+
+        //// data resto specific in departement
         $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep);
+
+        //// update data result to add all resto pastille in the Tribu T
+        $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+
         $ids=array_map('self::getIdAvisResto',$datas);
+        
         $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
         return $this->json([
             "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
             "allIdRestoPastille" => $arrayIdResto

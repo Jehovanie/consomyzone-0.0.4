@@ -955,6 +955,90 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Gat all resto pastille from id
+     * 
+     * @param array Resto  [ [ id_resto => ..., tableName => ... ], ... ]
+     */
+    public function getRestoPastille($data){
+        $tab= [];
+        foreach($data as $item){
+            $resto=  $this->createQueryBuilder("r")
+                ->select(
+                    "r.id,
+                    r.denominationF,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiY as lat,
+                    r.poiX as long"
+                )
+                ->where("r.id =:id")
+                ->setParameter("id",intval($item["id_resto"]))
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            array_push($tab, $resto);
+        }
+        return $tab;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * où:la rubrique resto 
+     * localisation du fichier: dans ResturantController.php,
+     * je veux: Faire une mise à jour sur les donnée, ajouter les restaurant passtille.
+     * 
+     * @param array $datas: all data to append the new data
+     * @param array $arrayIdResto: array id resto get each details and append in the $datas when this is not yet in.
+     * 
+     * @return array $data: all data updated : all resto with resto pastielle
+     */
+    public function appendRestoPastille($datas, $arrayIdResto){
+        if( count($arrayIdResto) > 0 ){
+            ////add List Resto pastille in data
+            $dataRestoPastille = $this->getRestoPastille($arrayIdResto);
+
+            foreach ($dataRestoPastille as $itemRestoPastille){
+                $idRestoPastille = $itemRestoPastille["id"];
+                $isAlreadyGet = array_search($idRestoPastille, array_column($datas, 'id'));
+
+                if( !$isAlreadyGet){
+                    array_push($datas, $itemRestoPastille);
+                }
+            }
+        }
+        return $datas;
+    }
+
 
     public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null){
         $query =  $this->createQueryBuilder("r")

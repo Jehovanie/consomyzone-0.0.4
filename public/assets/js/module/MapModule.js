@@ -11,7 +11,12 @@ class MapModule{
         this.latitude= 46.61171462536897;
         this.longitude= 1.8896484375000002;
 
+        this.defautLatitude= this.latitude;
+        this.defaultLongitude= this.longitude;
+
+
         this.defaultZoom= 6;
+
         this.zoomDetails= 20;
         this.geos= [];
 
@@ -38,7 +43,6 @@ class MapModule{
             { couche : "commune", arrayColor :["#e0f3db","#a8ddb5","#43a2ca"], properties: []},        /// GnBu
             { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
             { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
-            // { couche : "quartier", arrayColor :["#ffeda0","#feb24c","#f03b20"], properties: []},       /// YlOrRd
             { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: ["nom_qv", "code_qv", "nom_pole", "pole" ]},       /// YlOrRd
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ]
@@ -86,8 +90,9 @@ class MapModule{
         
         this.map = L.map('map', {
                 zoomControl: false,
-                center: ( this.id_dep || ( lat && long && zoom ) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                center: ( this.id_dep || !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
                 zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
+                // zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
                 layers: [this.tiles] 
             }
         );
@@ -246,6 +251,10 @@ class MapModule{
 
     updateCenter(lat, long, zoom){
         this.map.setView(L.latLng(lat, long), zoom, { animation: true });
+    }
+
+    resetZoom(){
+        this.map.setView(L.latLng(this.defautLatitude, this.defaultLongitude), 6, { animation: true });
     }
 
     addControlPlaceholders(map) {
@@ -736,17 +745,26 @@ class MapModule{
                 <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
                 </button>
+                <button class="btn btn-info" data-type="golf_pastille_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-location-smile fa-flip" data-type="golf_pastille_jheo_js"></i>
+                </button>
             `
         }else if( this.mapForType === "resto" ){ 
             htmlControl += `
                 <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
                 </button>
+                <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+                    <i  class="fa-solid fa-thumbtack" data-type="resto_pastille_jheo_js"></i>
+                </button>
             `
         }else if( this.mapForType === "tous"){
             htmlControl += `
                 <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
+                </button>
+                <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+                    <i  class="fa-solid fa-thumbtack" data-type="resto_pastille_jheo_js"></i>
                 </button>
             `
         }else if( this.mapForType === "station"){
@@ -768,6 +786,12 @@ class MapModule{
                 </button>
             `
         }
+
+        htmlControl += `
+                <button class="btn btn-dark" data-type="reset_zoom_jheo_js" style="font-size: 1.1rem;">
+                    <i class="fa-solid fa-arrows-rotate" data-type="reset_zoom_jheo_js"></i>
+                </button>
+            `
 
         L.control.custom({
             // position: 'topright',
@@ -894,72 +918,79 @@ class MapModule{
 
     openRightSide(rightSideContentType){
 
-        if( document.querySelector(".close_details_jheo_js")){
-            document.querySelector(".close_details_jheo_js").click();
-        }
-
-        if( document.querySelector('.icon_close_nav_left_jheo_js')){
-            document.querySelector(".icon_close_nav_left_jheo_js").click();
-        }
-
-        const cart_width= '75%';
-        const cont_legent_width= '25%';
-        
-        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-
-            if( !document.querySelector(".title_right_side_jheo_js")){
-                console.log("Selector not found: '.title_right_side_jheo_js'")
-                return false;
-            }
-    
-            if( rightSideContentType === "info_golf_jheo_js"){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusGolf();
-
-            }else if( rightSideContentType === "info_resto_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusResto();
-
-            }else if( rightSideContentType === "info_ferme_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusFerme();
-
-            }else if( rightSideContentType === "info_station_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusStation();
-
-            }else if( rightSideContentType === "info_tabac_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusTabac();
-
-            }else if( rightSideContentType === "info_tous_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusTous();
-
-            }else if( rightSideContentType === "couche_tabac_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
-                this.injectChooseCouche();
-
-            }else{ //// default tiles type
-                document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
-                this.injectTilesType();
-            }
-    
-            document.querySelector(".cart_map_jheo_js").style.width= cart_width;
-            document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
-            document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+        if(rightSideContentType === "reset_zoom_jheo_js" ){
+            this.resetZoom()
         }else{
-            console.log("Selector not found")
-            console.log("cart_map_jheo_js", "content_legende_jheo_js")
-        }
+            if( document.querySelector(".close_details_jheo_js")){
+                document.querySelector(".close_details_jheo_js").click();
+            }
     
+            if( document.querySelector('.icon_close_nav_left_jheo_js')){
+                document.querySelector(".icon_close_nav_left_jheo_js").click();
+            }
     
-        if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
-            document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-                this.closeRightSide();
-            })
+            const cart_width= '75%';
+            const cont_legent_width= '25%';
+            
+            if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+    
+                if( !document.querySelector(".title_right_side_jheo_js")){
+                    console.log("Selector not found: '.title_right_side_jheo_js'")
+                    return false;
+                }
+        
+                if( rightSideContentType === "info_golf_jheo_js"){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                    injectStatusGolf(); 
+    
+                }else if( rightSideContentType === "resto_pastille_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
+                    this.injectListRestoPastille();
+    
+                }else if( rightSideContentType === "info_resto_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                    injectStatusResto();
+    
+                }else if( rightSideContentType === "info_ferme_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                    injectStatusFerme();
+    
+                }else if( rightSideContentType === "info_station_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                    injectStatusStation();
+    
+                }else if( rightSideContentType === "info_tabac_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                    injectStatusTabac();
+    
+                }else if( rightSideContentType === "info_tous_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                    injectStatusTous();
+    
+                }else if( rightSideContentType === "couche_tabac_jheo_js" ){
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
+                    this.injectChooseCouche();
+    
+                }else{ //// default tiles type
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
+                    this.injectTilesType();
+                }
+        
+                document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+                document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
+                document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+            }else{
+                console.log("Selector not found")
+                console.log("cart_map_jheo_js", "content_legende_jheo_js")
+            }
+        
+        
+            if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
+                document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+                    this.closeRightSide();
+                })
+            }
         }
-
     }
 
     closeRightSide(){
@@ -1137,7 +1168,6 @@ class MapModule{
 
                 const reader = new FileReader();
                 reader.onload = () => {
-                    console.log(reader.result)
                     shp(reader.result)
                         .then((geoJson) =>{
                             hideChargementRightSide() 
@@ -1184,7 +1214,7 @@ class MapModule{
             color: data_spec.color[0],
             // fillColor: data_spec.color[1],
             fillOpacity: 0,
-            weight: 2,
+            weight: 1,
         }
 
         const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
@@ -1193,8 +1223,11 @@ class MapModule{
             onEachFeature : (feature, layer)  => {
                 const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
                 const lat= (feature.geometry.bbox[1] + feature.geometry.bbox[3]) / 2 ;
-
-                this.updateCenter(lat, lng, 8);
+                
+                if(couche !== "quartier"){
+                    this.updateCenter(lat, lng, 8);
+                    this.updateDataInSessionStorage(lat, lng, 8);
+                }
 
                 const coucheOption= this.contourOption.find(item => item.couche === couche.toLowerCase());
 
@@ -1205,6 +1238,14 @@ class MapModule{
                 })
 
                 layer.bindPopup(description);
+
+                layer.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                
+                layer.on('mouseout', function (e) {
+                    this.closePopup();
+                });
             }
         }).addTo(this.map);
 

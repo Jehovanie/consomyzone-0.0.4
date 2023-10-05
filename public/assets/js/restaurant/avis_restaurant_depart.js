@@ -24,7 +24,7 @@ window.addEventListener('load', () => {
                 i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
                 
             })
-        }, 5000)   
+        }, 2000)   
     }
 
     if(document.querySelector("#text-note-modif")){
@@ -285,7 +285,11 @@ function msgErrorAlertAvis(e){
         new swal("Attention !","la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
             document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
         })
-    } else {
+    }else if(e.message == "note not found" ){ /// veulliez saisir un note de 0 à 4
+        new swal("Attention !","Veulliez saisir un note de 0 à 4", "warning").then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    }else {
         console.log(e)
     }
 }
@@ -404,6 +408,9 @@ function createNombreAvisContainer(parent,nombre) {
 
 
 function mustBeInferior4(value,target, isThrowException) {
+
+    console.log(value === "" )
+
     regex=/[^0-9,\.]+/
     if (parseFloat(value) > 4.00) {
         target.style = "border:2px solid red;"
@@ -415,6 +422,11 @@ function mustBeInferior4(value,target, isThrowException) {
         msgFlash("veulliez saisir un type numerique", target)
         if(isThrowException)
            throw new Error("non numerique")
+    } else if( value === "" ){
+        target.style = "border:2px solid red;"
+        msgFlash("veulliez saisir un note de 0 à 4", target)
+        if(isThrowException)
+           throw new Error("note not found")
     }
 }
 
