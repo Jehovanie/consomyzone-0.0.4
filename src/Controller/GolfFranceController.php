@@ -190,10 +190,12 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
-    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}', name: 'golf_dep_france_mobile', methods: ["GET", "POST"])]
+    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{limit}/{offset}', name: 'golf_dep_france_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementMobile(
         $nom_dep,
         $id_dep,
+        $limit,
+        $offset,
         GolfFranceRepository $golfFranceRepository,
         Status $status,
         TributGService $tributGService,
@@ -242,7 +244,7 @@ class GolfFranceController extends AbstractController
             }
         }
 
-        return $this->render("shard/golf/specific_golf_navleft_mobile.twig", [
+        return $this->json([
 
             "id_dep" => $id_dep,
 
@@ -250,7 +252,7 @@ class GolfFranceController extends AbstractController
 
             "type" => "golf",
 
-            "golf" => $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID),
+            "golf" => $golfFranceRepository->getGolfByDepMobile($nom_dep, $id_dep, $userID, $limit, $offset),
 
             "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
 

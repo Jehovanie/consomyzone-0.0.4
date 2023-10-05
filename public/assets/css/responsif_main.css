@@ -545,6 +545,15 @@
         fill: #000;
         transform: scale(1.2);
     }
+    .form-select-detail.select_action_golf_nanta_js {
+        font-size: 12pt !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        padding: 3px;
+        margin-left: 0!important;
+        border: #000 1px solid;
+        border-radius: 3px;
+    }
 
     .open-navleft-mobile i {
         position: absolute;

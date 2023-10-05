@@ -207,16 +207,16 @@ function addRestaurantToMap(nom_dep, code_dep) {
 
                     parsedResult.forEach(new_element => {
 
-                        // <div class="element" id="{{station.id}}">
+                        // <div class="element" id="{{station.id}">
                         const div_new_element = document.createElement("div");
                         div_new_element.setAttribute("class", "element")
                         div_new_element.setAttribute("id", new_element.id);
 
-                        // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
+                        // <p> <span class="id_departement">{{station.nom } </span> {{station.adresse}</p>
                         const s_p = document.createElement("p");
                         s_p.innerHTML = "<span class='id_departement'>" + new_element.nomFerme + " </span>" + new_element.adresseFerme
 
-                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
+                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }">
                         const a = document.createElement("a");
                         a.setAttribute("class", "plus")
                         a.setAttribute("href", "/ferme/departement/" + nom_dep + "/" + id_dep + "/details/" + new_element.id)
@@ -2446,6 +2446,11 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
                 const nom_dep = new URL(window.location.href).pathname.split('/')[4]
                 offsetTomm += limitSpecTomm
                 getDataSpecStationMobile(nom_dep, id_dep)
+            } else if (rubricName == 'golf') { 
+                const id_dep = new URL(window.location.href).pathname.split('/')[4]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+                offsetTomm += limitSpecTomm
+                getDataSpecGolfMobile(nom_dep, id_dep)
             }
         }
     })
@@ -3251,6 +3256,8 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
 
 }
 
+
+
 /**
  * @author Tomm
  * @action add list specic station mobile on scrollLeft
@@ -3458,6 +3465,210 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
             `
         })
     })
+}
+
+/**
+ * @author Tomm
+ * @action add list specic golf mobile on scrollLeft
+ * @ou dans le specific_golf_navleft.twig
+ * @utiliser dans le golf/data_golf.js
+ */
+function getDataSpecGolfMobile(nom_dep, id_dep) { 
+     const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => {
+                console.log(responses)
+
+            let listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+            responses.golf.forEach(response => { 
+
+                let btnAviMobile = ''
+                let containerActionGolf = ''
+                let containerActionGolfDetail = ''
+                let statusGolf = ''
+                let siteWeb = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                    let valueContaintGolf = ''
+                    let valueContaintGolfDetail = ''
+                    if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
+                        valueContaintGolf = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                                <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
+                                    <option value="0">Aucun</option>
+                                    <option value="1">A faire</option>
+                                    <option value="2">Fait</option>
+                                </select>`
+                        valueContaintGolfDetail = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
+                                    </label>
+                                    <select class="form-select-detail select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
+                                        <option value="0">Aucun</option>
+                                        <option value="1">A faire</option>
+                                        <option value="2">Fait</option>
+                                    </select>`
+                        statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
+                    } else {
+                        valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+                        valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+                        if (response.user_status["a_faire"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
+                        }else if (response.user_status["fait"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
+                        } else {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
+                        }
+                    }
+                    containerActionGolf = `
+                        <div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
+                            ${valueContaintGolf}
+                        </div>
+                    `
+                    containerActionGolfDetail = `
+                        <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
+                            ${valueContaintGolfDetail}
+                    `
+
+                    siteWeb = `<div class="site_web">
+                                    <a class="btn btn-outline-success" href="${response.web}" target="_blank">
+                                        Lien :  Site Web
+                                    </a>
+                                </div>`
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                    siteWeb = `<div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
+                                    <a class="btn btn-outline-success disabled">
+                                        Lien :  Site Web
+                                    </a>
+                                </div>` 
+                }
+
+                let codePostal = ''
+                if (response.cp) {
+                    codePostal = `<div class="content_activite">
+                                        <p class="activite">
+                                            <span class="fw-bold">Code Postal:</span>
+                                            ${response.cp}
+                                        </p>
+                                    </div>
+                                    <hr>`
+                }
+
+                let commune = ''
+                if (response.commune) {
+                    commune = `<div class="content_activite">
+                                    <p class="activite">
+                                        <span class="fw-bold">Commune:</span>
+                                        ${response.commune}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                let tel = ''
+                if (response.tel) {
+                    tel = `<div class="content_activite">
+                                    <p class="activite">
+                                        <span class="fw-bold">Telephone:</span>
+                                        ${response.tel}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+                
+                let adr1 = ''
+                if (response.adr1) {
+                    adr1 = `<div class="content_activite">
+                                    <p class="activite">
+                                        <span class="fw-bold">Adress:</span>
+                                        ${response.adr1}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobilGolf${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${response.name} 
+									</p>
+                                    <div class="start">
+                                        <i class="fa-solid fa-star" data-rank="1"></i>
+                                        <i class="fa-solid fa-star" data-rank="2"></i>
+                                        <i class="fa-solid fa-star" data-rank="3"></i>
+                                        <i class="fa-solid fa-star" data-rank="4"></i>
+                                    </div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse : </span> <span class="small  ">${response.adresse}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Tél : </span> <span class="small  ">${response.tel}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email : </span> <span class="small  ">${response.email}</span>
+									</p>
+								</div>
+								${containerActionGolf}
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js">
+											</span>
+											avis
+										</a>
+									</span>
+										${btnAviMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+                    <div class="modal fade" id="detailModalMobilGolf${response.id}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+							<div class="modal-content modal-content-mobile">
+								<div class="modal-header">
+									<h5 class="modal-title" id="detailModalMobilLabel">${response.name } </h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body modal-body-mobil">
+									<div class="content_titre_detail">
+										<figure class="text-center mt-4">
+											<blockquote class="blockquote">
+												<p>
+													${statusGolf}
+												</p>
+											</blockquote>
+											<figcaption class="blockquote-footer">
+												Adresse :
+												<a href="#" class="small text-center ">${response.adr1}
+													${response.cp }
+													${response.commune }</a>
+											</figcaption>
+										</figure>
+										${codePostal}
+										${commune}
+										${tel}
+										${adr1}
+										<hr>
+										${siteWeb}
+										${containerActionGolfDetail}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                `
+            })
+        })
 }
 
 
@@ -3676,7 +3887,5 @@ function setGallerieImageV2(){
         document.querySelector("body").style = ""
     }
 }
-
-
 
 

@@ -182,6 +182,58 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
+    ///Tomm : prendre tous les fermes qui appartients dans un departement specifique mobole
+    public function getGolfByDepMobile($nom_dep = "", $id_dep, $userID = null, $limit = 2000, $offset = 0)
+    {
+        $id_dep = strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
+        ///lancement de requette
+        $data = $this->createQueryBuilder('p')
+        ->select(
+            'p.id',
+            'p.id as id_etab',
+            'p.nom_golf as name',
+            'p.nom_golf as nom',
+            'p.adr1',
+            'p.adr1 as adress',
+            'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as adresse',
+            'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as add',
+            'p.adr2',
+            'p.adr3',
+            'p.e_mail as email',
+            'p.web',
+            'p.site_web as website',
+            'p.telephone as tel',
+            'p.cp',
+            'p.dep',
+            'p.nom_dep',
+            'p.nom_dep as depName',
+            'p.nom_dep as departement',
+            'p.nom_commune as commune',
+            'p.latitude as lat',
+            'p.longitude as long',
+        )
+        ->where('p.dep = :k')
+        ->setParameter('k',  $id_dep)
+        ->orderBy('p.id', 'ASC')
+        ->setMaxResults($limit)
+        ->setFirstResult($offset)
+        ->getQuery()
+        ->execute();
+
+        for ($i = 0; $i < count($data); $i++) {
+            if (!$userID) {
+                $data[$i]["user_status"] = ["a_faire" => null, "fait" => null, "mon_golf" => null];
+                $data[$i]["user_id"] = null;
+            } else {
+                $golfFinishedRepository = new GolfFinishedRepository($this->registry);
+                $user = $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
+                $data[$i]["user_status"] = ($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf()]  : ["a_faire" => null, "fait" => null, "mon_golf" => null];
+                $data[$i]["user_id"] = $userID;
+            }
+        }
+        return $data;
+    }
+
 
     public function getOneGolf($golfID, $userID=null){
         $data = $this->createQueryBuilder('p')
