@@ -693,6 +693,8 @@ class MapModule{
         });
     }
 
+
+    /// fonction create map: ( init map, init geojson, add event on memoire zooming)
     initMap(lat= null,long= null, zoom= null , isAddControl=false){
         const content_map= document.querySelector(".cart_map_js");
 
@@ -708,15 +710,21 @@ class MapModule{
             content_map.appendChild(map);
         }
 
-
+        ///init map
         this.createMap(lat, long, zoom);
         // this.eventSetPositionOnMap();
 
+        ////init geojson
         this.addGeoJsonToMap();
+
+        ///inject event to save memoir zoom
         this.settingMemoryCenter();
 
-        if( isAddControl ){
+        if( isAddControl ){ /// bind controller in the right
+            //// bind all fonctionnality on the right
             this.bindOtherControles();
+
+            //// prepare right container
             this.createRightSideControl();
         }
 
@@ -725,6 +733,7 @@ class MapModule{
         // this.bindEventLocationForMobile();
     }
     
+    //// get Max
     getMax(max,min){
         if(Math.abs(max)<Math.abs(min))
             return {max:min,min:max} 
@@ -732,6 +741,7 @@ class MapModule{
            return {max:max,min:min}
     }
 
+    ///bind and add control on the right side of the map
     bindOtherControles(){
         let htmlControl = `
             <button class="btn btn-warning" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">

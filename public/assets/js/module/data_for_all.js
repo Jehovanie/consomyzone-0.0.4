@@ -11,6 +11,7 @@ const all_instances = [
 const data= all_instances.find(item => item.value !== null);
 const CURRENT_MAP_INSTANCE = data.value;
 
+///generate html checkbox on right side
 function generateSelectContoursGeographie(couche, data,itemsSelected= []){
     let all_select_HTML =""
     data.forEach((item, index ) => {
@@ -27,6 +28,7 @@ function generateSelectContoursGeographie(couche, data,itemsSelected= []){
         }else if( couche === "commune"){ 
             nom_reg = item.properties.depcom + " " + item.properties.nom_com + " " + item.properties.nom_reg.split("-").join(" ")
         }
+
         all_select_HTML += `
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="${couche + "_" + nom_reg + "_" + index}" onchange="updateGeoJson('${couche}', '${index}', this)" ${ isSelected ? "checked" : "" }>
@@ -87,7 +89,6 @@ function updateGeoJson(couche,index, e){
         CURRENT_MAP_INSTANCE.removeSpecGeoJson(couche, index)
     }
 }
-
 
 function pastilleRestoForTribuT(element, isPastilled){
     let id = element.dataset.id
@@ -245,6 +246,8 @@ function getStateGolf(numeroIndices= 1){
     `
     return data;
 }
+
+
 function injectStatusGolf(){
     const data = getStateGolf(1)
     injectStatus(data)
@@ -273,6 +276,8 @@ function getStateResto(numeroIndices= 1){
     `
     return data;
 }
+
+
 function injectStatusResto(){
     const data= getStateResto(1);
     injectStatus(data)
@@ -295,6 +300,8 @@ function getStateTabac(numeroIndices=1){
     `
     return data;
 }
+
+
 function injectStatusTabac(){
     const data= getStateTabac(1);
     injectStatus(data)

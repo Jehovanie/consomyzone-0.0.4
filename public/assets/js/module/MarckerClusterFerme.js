@@ -26,7 +26,6 @@ class MarckerClusterFerme extends MapModule {
             
             this.bindAction()
 
-
             if(getDataInSessionStorage("lastSearchPosition")){
                 clearDataInSessionStorage("lastSearchPosition")
             }

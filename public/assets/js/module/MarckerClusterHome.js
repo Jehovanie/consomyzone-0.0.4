@@ -14,11 +14,15 @@ class MarckerClusterHome extends MapModule  {
         try {
             this.createMarkersCluster();
             
+            //// api get all data from server and return objects
             const response = await fetch("/dataHome");
             
-            this.default_data = await response.json();
-            this.data = this.default_data;
-            this.listRestoPastille= this.default_data.allIdRestoPastille;
+            //// api get all data from server
+            this.default_data = await response.json(); /// { station, ferme, resto, golf, tabac, allIdRestoPasstille}
+            
+            this.data = this.default_data;  /// { station, ferme, resto, golf, tabac, allIdRestoPasstille}
+            
+            this.listRestoPastille= this.default_data.allIdRestoPastille; /// [  { id_resto : ..., tableName : ..., name_tribu_t_muable : ..., logo_path : ... } , ... ]
             
             this.initMap(null, null, null, isAddControl);
 
