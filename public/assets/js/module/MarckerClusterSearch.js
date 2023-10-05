@@ -847,6 +847,9 @@ class MarckerClusterSearch extends MapModule  {
     }
 
     clickOnMarker(id){
+        /// close RightSide
+        this.closeRightSide();
+
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
                 marker.fireEvent('click');
