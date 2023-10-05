@@ -944,7 +944,7 @@ class MapModule{
                     injectStatusGolf(); 
     
                 }else if( rightSideContentType === "resto_pastille_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurantes pastilles.";
+                    document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
                     this.injectListRestoPastille();
     
                 }else if( rightSideContentType === "info_resto_jheo_js" ){
