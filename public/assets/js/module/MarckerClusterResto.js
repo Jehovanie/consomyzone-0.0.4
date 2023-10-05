@@ -405,4 +405,27 @@ class MarckerClusterResto extends MapModule  {
         injectListMarker(restoPastilleTab)
     }
 
+    /**
+     * @Author Nantenaina
+     * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mettre à jour la note moyenne sur un POI
+     * si une POI a une note, la note se montre en haut à gauche du POI 
+     */
+    showNoteMoyenneRealTime(idResto, note){
+        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
+        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
+        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(idResto)) {
+                let oneResto = this.default_data.find(jtem => parseInt(idResto) === parseInt(jtem.id));
+                oneResto.moyenne_note = parseFloat(note).toFixed(2)
+                marker.setIcon(this.setSpecialIcon(oneResto, true, poi_icon_Selected, poi_icon_Selected, isPastille))
+            }
+        });
+
+        this.markers.refreshClusters();
+    }
+
 }

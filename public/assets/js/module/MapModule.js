@@ -1311,7 +1311,7 @@ class MapModule{
     /**
      * @Author Nantenaina
      * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
-     * localisation du fichier: dans MarkerClusterHome.js,
+     * localisation du fichier: dans MapModule.js,
      * je veux: faire apparaitre la note en haut à gauche du poi resto
      * si une POI a une note, la note se montre en haut à gauche du POI 
      */
@@ -1345,7 +1345,7 @@ class MapModule{
     /**
      * @Author Nantenaina
      * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
-     * localisation du fichier: dans MarkerClusterHome.js,
+     * localisation du fichier: dans MapModule.js,
      * je veux: modifier l'icone du poi resto
      * si une POI a une note, la note se montre en haut à gauche du POI 
      */
