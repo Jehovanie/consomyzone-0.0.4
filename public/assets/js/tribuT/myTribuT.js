@@ -2496,16 +2496,13 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
-<<<<<<< HEAD
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-=======
-    document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
->>>>>>> elie-nante
+    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
+    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
+    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
 
 }
 
