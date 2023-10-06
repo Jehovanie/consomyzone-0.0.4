@@ -26,6 +26,7 @@
 							<li class="mb-2">
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
+									{# '/public' ~  #}
 										 <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" alt=""> 
 										 {# <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? tribus.logo_path: asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">  #}
 									</div>
@@ -41,6 +42,7 @@
 							<li class="mb-2">
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
+									{# '/public'~ #}
 									<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public'~ tribu.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
 									{# <img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? tribu.logo_path: asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> #}
 

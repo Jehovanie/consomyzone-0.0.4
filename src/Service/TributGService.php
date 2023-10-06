@@ -560,7 +560,6 @@ class TributGService extends PDOConnexionService{
             "isModerate" => $data["isModerate"]
         ];
         return $result;
-
     }
 
 
