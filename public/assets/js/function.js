@@ -2657,7 +2657,9 @@ function setPhotoAfterUpload(data){
                         text: response.message,
                         icon: "success",
                         button: "OK",
-                      });
+                    }).then(r=>{
+                        location.reload()
+                    });
 
                 }
 

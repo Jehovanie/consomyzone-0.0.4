@@ -188,7 +188,7 @@ class RestaurantController extends AbstractController
         $noteExist=[];
         foreach($datas as $data){
             foreach($notes as $note){
-                if($data["id"] === $note["id_resto"]){
+                if(intval($data["id"]) === intval($note["id_resto"])){
                     // array_push($noteExist,array_merge($data,$note));
                     $data["moyenne_note"] = $note["moyenne_note"];
                     $data["id_resto"] = $note["id_resto"];

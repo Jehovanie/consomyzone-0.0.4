@@ -394,7 +394,7 @@ function itemRestoPastielle(numeroIndices,depName, dep, name, id, icon ){
         <tr>
             <th scope="row">${numeroIndices + 1 }</th>
             <td onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">
-                <img class="icon_resto_legend" src="${icon ? icon : '/uploads/tribu_t/photo/avatar_tribu.jpg'}" alt="Icon Resto">
+                <img class="icon_resto_legend" style="clip-path:circle()" src="/public${icon ? icon : '/uploads/tribu_t/photo/avatar_tribu.jpg'}" alt="Icon Resto">
             </td>
             <td>
                 <a href="#" class="link-primary" onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">${name}</a>
@@ -434,7 +434,8 @@ function injectListMarker(data, isInSearch=false){
         <tr>
             <td colspan="3">
                 <div class="alert alert-danger text-center" role="alert">
-                    Vous n'êtes pas connecté, veuillez connecter pour voir la liste des restaurants pastilles dans vos tribus T.
+                   <a class="text-primary" href="/connexion" style="text-decoration:underline">Veuillez-vous connecter</a> pour voir la liste des restaurants pastillés dans vos tribus T.
+
                 </div>
             </td>
         </tr>

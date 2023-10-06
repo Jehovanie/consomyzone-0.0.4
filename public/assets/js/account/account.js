@@ -1007,11 +1007,24 @@ function setAsPdp(span){
         
         if(response.success){
 
-            swal({
-                title: "Modifié",
-                text: "Votre photo de profile a été mis à jour!",
-                icon: "success",
-                button: "OK",
+            swal("Votre photo de profile a été mis à jour!",{
+                  buttons:{
+                     ok:{
+                         value:"ok"
+                     }
+                  }
+              }).then((value)=>{
+                  switch(value){
+                     case "ok":{
+                        location.reload();
+                        break
+                     }
+                     default:{
+                        location.reload();
+                        
+                     }
+
+                  }
               });
 
         }

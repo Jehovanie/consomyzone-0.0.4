@@ -366,9 +366,9 @@ class ToutsController extends AbstractController
             $restos = $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
             $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
-
+             
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
-
+            
             return $this->json([
                 "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),

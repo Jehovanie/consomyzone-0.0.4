@@ -1350,7 +1350,7 @@ class MapModule{
                         <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                         background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                         border-radius: 50%;">${noteMoyenne}</span>
-                      <img class="my-div-image" style="width:30px ; height:45px" src="/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                      <img class="my-div-image" style="width:30px ; height:45px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
                        `,
                 iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
                 iconAnchor: [11, 30],
@@ -1379,8 +1379,8 @@ class MapModule{
                     <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                     background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                     border-radius: 50%;">${noteMoyenne}</span>
-                  <img class="my-div-image" style="width:30px ; height:45px" src="/${isSelected ? poi_icon_Selected : poi_icon}"/>
-                   `:`<img class="my-div-image" style="width:30px ; height:45px" src="/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                  <img class="my-div-image" style="width:30px ; height:45px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                   `:`<img class="my-div-image" style="width:30px ; height:45px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
                    `,
             iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
             iconAnchor: [11, 30],
