@@ -240,6 +240,62 @@ class TabacRepository extends ServiceEntityRepository
         return $data;
     }
 
+    ///jheo : prendre tous les Tabac qui appartients dans un departement specifique
+    public function getGolfByDepMobile($nom_dep, $id_dep, $limit = 2000, $offset = 0)
+    {
+        ///lancement de requette
+        $data = $this->createQueryBuilder('r')
+            ->select(
+                "
+                r.id,
+                r.clenum,
+                r.denomination_f,
+                r.denomination_f as nom,
+                r.denomination_f as name,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.codinsee,
+                r.siren,
+                r.tel,
+                r.tel as telephone,
+                r.bureau_tabac,
+                r.tabac_presse,
+                r.bar_tabac,
+                r.hotel_tabac,
+                r.cafe_tabac,
+                r.site_1,
+                r.site_2,
+                r.fonctionalite_1,
+                r.horaires_1,
+                r.prestation_1,
+                r.codens,
+                r.poi_qualitegeorue,
+                r.dcomiris,
+                r.dep,
+                r.dep_name,
+                r.dep_name as nom_dep,
+                r.dep_name as depName,
+                r.date_data,
+                r.date_inser,
+                r.poi_x as long,
+                r.poi_y as lat,
+                CONCAT(r.numvoie,' ', r.typevoie,' ', r.nomvoie,' ', r.codpost,' ', r.villenorm) as add"
+            )
+            ->where('r.dep = :k')
+            ->setParameter('k',  $id_dep)
+            ->orderBy('r.id', 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->execute();
+        return $data;
+    }
+
 
     public function getOneTabac($tabacID){
         $data = $this->createQueryBuilder('r')

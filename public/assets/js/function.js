@@ -2451,10 +2451,16 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
                 const nom_dep = new URL(window.location.href).pathname.split('/')[3]
                 offsetTomm += limitSpecTomm
                 getDataSpecGolfMobile(nom_dep, id_dep)
+            }else if (rubricName == 'tabac') { 
+                const id_dep = new URL(window.location.href).pathname.split('/')[4]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+                offsetTomm += limitSpecTomm
+                getDataSpecTabacMobile(nom_dep, id_dep)
             }
         }
     })
 }
+
 function getDataSpecificMobile(nom_dep, id_dep) {
     
     let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
@@ -3671,6 +3677,102 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
         })
 }
 
+/**
+ * @author Tomm
+ * @action add list specic tabac mobile on scrollLeft
+ * @ou dans le specific_golf_navleft.twig
+ * @utiliser dans le tabac/data_tabac.js
+ */
+function getDataSpecTabacMobile(nom_dep, id_dep) { 
+    const request = new Request(`/tabac-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => {
+            console.log(responses)
+            let listSpecMobile = document.querySelector(".list-specific-tabac-mobile-tomm-js")
+            responses.tabac.forEach(response => { 
+                let bar_tabac = ''
+                if (response.bar_tabac != 0) {
+                    bar_tabac = `<span class="btn btn-outline-success text-point-9">Bar Tabac</span>`
+                }
+
+                let bureau_tabac = ''
+                if (response.bureau_tabac != 0) {
+                    bureau_tabac = `<span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>`
+                }
+
+                let cafe_tabac = ''
+                if (response.cafe_tabac != 0) {
+                    cafe_tabac = `<span class="btn btn-outline-success text-point-9">Cafe Tabac</span>`
+                }
+
+                let tabac_presse = ''
+                if (response.tabac_presse != 0) {
+                    tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`
+                }
+
+                let btnAvieMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) { 
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail"  data-bs-toggle="modal" data-bs-target="#detailModalMobilTabac${response.id}"  onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${response.name  }
+									</p>
+									<div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse :
+										</span>
+										<span class="small  ">${response.add }</span>
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">${response.tel }</span>
+									</p>
+									<div class="text-point-9">
+                                        ${bar_tabac}
+                                        ${bureau_tabac}
+                                        ${cafe_tabac}
+                                        ${tabac_presse}
+                                    </div>
+
+								</div>
+							
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAvieMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+                `
+            })
+        })
+}
 
 /**
  * @author Tomm

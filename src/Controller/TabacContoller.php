@@ -193,10 +193,12 @@ class TabacContoller extends AbstractController
         ]);
     }
 
-    #[Route('/tabac-mobile/departement/{nom_dep}/{id_dep}', name: 'app_tabac_dep_mobile', methods: ["GET", "POST"])]
+    #[Route('/tabac-mobile/departement/{nom_dep}/{id_dep}/{limit}/{offset}', name: 'app_tabac_dep_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementMobile(
         $nom_dep,
         $id_dep,
+        $limit,
+        $offset,
         TabacRepository $tabacRepository,
         Status $status,
         TributGService $tributGService,
@@ -243,7 +245,7 @@ class TabacContoller extends AbstractController
             }
         }
 
-        return $this->render("shard/tabac/specific_tabac_navleft_mobile.twig", [
+        return $this->json([
 
             "id_dep" => $id_dep,
 
@@ -251,7 +253,7 @@ class TabacContoller extends AbstractController
 
             "type" => "tabac",
 
-            "tabac" => $tabacRepository->getGolfByDep($nom_dep, $id_dep),
+            "tabac" => $tabacRepository->getGolfByDepMobile($nom_dep, $id_dep, $limit, $offset),
 
             "nomber_tabac" => $tabacRepository->getCount($nom_dep, $id_dep),
 
