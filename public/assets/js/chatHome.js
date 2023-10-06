@@ -799,7 +799,8 @@ function joinMeet(...args) {
     }
 
     if (document.querySelector("#minimizeVisio")) {
-        document.querySelector("#minimizeVisio").style = "display :block !important;"
+        document.querySelector("#minimizeVisio").innerHTML =""
+        // document.querySelector("#minimizeVisio").style = "display :block !important;"
     }
 
     if (document.querySelector('#' + parentNodeId).querySelector("iframe")) {

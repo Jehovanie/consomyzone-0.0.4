@@ -1452,7 +1452,7 @@ input::-ms-clear {
 }
 
 .image-upload-wrap {
-    margin-top: 20px;
+    /* margin-top: 20px; */
     border: 2px dashed #878787;
     position: relative;
     border-radius: 5px;
@@ -2112,9 +2112,12 @@ textarea {
   .btn-expand-elie:hover .tooltiptext {
     visibility: visible;
 }
+    .btn-expand-elie-v2:hover .tooltiptext {
+        visibility: visible;
+    }
 .tooltiptextAgrandir{
     margin-left: -40px !important;
-    margin-top: -35px !important;
+    margin-top: -30px !important;
 }
 .mt-50px{
     margin-top: -50px !important;
@@ -2134,7 +2137,8 @@ textarea {
     border-radius: 10px;
     padding: 10px 10px;
     border: 1px solid red;
-    transition: 1s ease-in-out;
+    animation-duration: 1s;
+    /* transition: 1s ease-in-out; */
     transition: all .7s;
 }
 
@@ -2237,4 +2241,31 @@ textarea {
     .modalZoom-content {
         width: 100%;
     }
+}
+
+.pictureOnLocal{
+    text-align: center;
+    padding: 3px 3px;
+    border: 1px dashed gray;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.pictureOnDevice{
+    text-align: center;
+    background: lavender;
+    border-radius: 5px;
+    padding: 6px;
+}
+
+.labelPrisePhoto{
+    /* border: 1px solid; */
+    border-radius: 8px;
+    padding: 5px;
+    cursor: pointer;
+    background: lavender;
+    /* color: #0d6efd; */
+}
+.labelPrisePhoto:hover{
+    color: #0d6efd;
 }

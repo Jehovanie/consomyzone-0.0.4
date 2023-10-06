@@ -7,6 +7,14 @@ class MarckerClusterSearch extends MapModule  {
         let map_for_type= "";
         if( search_type.includes("/restaurant")){
             map_for_type="resto"
+        }else if(search_type.includes("/ferme")){
+            map_for_type="ferme"
+        }else if(search_type.includes("/station")){
+            map_for_type="station"
+        }else if(search_type.includes("/golf")){
+            map_for_type="golf"
+        }else if(search_type.includes("/tabac")){
+            map_for_type="tabac"
         }else if(search_type.includes("/tous")){
             map_for_type="tous"
         }

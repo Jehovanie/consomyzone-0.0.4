@@ -7,11 +7,14 @@ var id_c_u //id du user courant
 let image_listss = [];
 let dataExtension = [];
 // var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
-var worker = new Worker('/public/assets/js/tribuT/worker.js');
+var worker = new Worker('/assets/js/tribuT/worker.js');
+// var worker = new Worker('/public/assets/js/tribuT/worker.js');
 // var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js');
+var workerRestoPastilled = new Worker('/assets/js/tribuT/worker_pastilled.js');
+// var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 // var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-var workerGetCommentaireTribuT = new Worker('/public/assets/js/tribuT/worker_cmnt.js')
+var workerGetCommentaireTribuT = new Worker('/assets/js/tribuT/worker_cmnt.js')
+// var workerGetCommentaireTribuT = new Worker('/public/assets/js/tribuT/worker_cmnt.js')
 var image_tribu_t
 var descriptionTribuT = ""
 /**
@@ -283,7 +286,7 @@ function showPartisan() {
                                 <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
                             </td>
                             <td>
-                                <a target="_blank" href="/user/profil/1" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
                             </td>
                             <td>
                                 TribuG ${tribuG.replaceAll("_", " ")}
@@ -336,61 +339,141 @@ function getBase64V2() {
     fR.readAsDataURL(this.files[0]);
 }
 function updatePdpTribu_T(files) {
+
     const fR = new FileReader();
+
     fR.addEventListener("load", (evt) => {
 
-        const param = {
-            base64: evt.target.result,
-            photoName: files.name,
-            photoType: files.type,
-            photoSize: files.size,
-            tribu_t_name: tribu_t_name_0,
-        }
-        console.log(param)
-        const request = new Request("/user/tribu/set/pdp", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(param)
-        })
-        fetch(request).then(responses => {
-            if (responses.ok && responses.status === 200) {
-                document.querySelector("#avatarTribuT").src = evt.target.result
-                document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+        /**
+         * @author elie
+         * checking image extension and size if <2Mo
+         * use into TribuT.html.twig
+         * i want upload an image less than 2Mo
+         */
+
+        const listExt= ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
+        const octetMax= 2e+6; //2Mo 
+
+        /// file as url
+        const uploaded_image = fR.result;
+
+        if( !checkFileExtension(listExt,uploaded_image)){
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe)",
+                icon: "error",
+                button: "OK",
+                });
+
+        }else{
+            if(!checkTailleImage(octetMax, uploaded_image)){
+                swal({
+                    title: "Le fichier est trop volumineux!",
+                    text: "La taille de l\'image doit être inférieure à 2Mo.",
+                    icon: "error",
+                    button: "OK",
+                    });
+                
+            }else{
+                const param = {
+                    base64: evt.target.result,
+                    photoName: files.name,
+                    photoType: files.type,
+                    photoSize: files.size,
+                    tribu_t_name: tribu_t_name_0,
+                }
+                console.log(param)
+                const request = new Request("/user/tribu/set/pdp", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(param)
+                })
+                fetch(request).then(responses => {
+                    if (responses.ok && responses.status === 200) {
+                        document.querySelector("#avatarTribuT").src = evt.target.result
+                        document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+                        swal({
+                            title: "Succès!",
+                            text: "L\'avatar de la tribu est à jour avec succès!",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }
+                })
             }
-        })
+        }
 
     })
     fR.readAsDataURL(files);
 }
 
+/** @author elie (update)
+ *  où: on Utilise cette block pour capture de photo de publication tribu T
+ *  localisation : myTribuT.js, 
+ *  utilisation de selecteur modal_publication.html.twig
+ *  je veux : ajouter une photo par media screen navigateur
+ */
 function sendPublication(formData) {
     const fR = new FileReader();
-    fR.addEventListener("load", (evt) => {
 
-        const param = {
-            base64: evt.target.result,
-            photoName: formData.get("photo").name,
-            photoType: formData.get("photo").type,
-            photoSize: formData.get("photo").size,
-            contenu: formData.get("contenu"),
-            tribu_t_name: tribu_t_name_0,
-            confidentialite: formData.get("confidentialite")
-        }
-        console.log(param)
-        const request = new Request("/user/create-one/publication", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(param)
+    /**
+     * tester si on utilise la capture media
+     */
+    if(document.querySelector("#image-publication-tribu-t").getAttribute("data-file")=="image"){
+        fR.addEventListener("load", (evt) => {
+
+            let base64 = document.querySelector("#image-publication-tribu-t").src
+            let param = {
+                base64: base64,
+                photoName: `capture-${new Date().getTime()}.png`,
+                photoType: 'image/png',
+                photoSize: 300000,
+                contenu: formData.get("contenu"),
+                tribu_t_name: tribu_t_name_0,
+                confidentialite: formData.get("confidentialite")
+            }
+            // console.log(formData.get('photo'));
+            console.log(param)
+            const request = new Request("/user/create-one/publication", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            })
+            fetch(request)
         })
-        fetch(request)
-    })
-    fR.readAsDataURL(formData.get('photo'));
+        fR.readAsDataURL(dataURLtoFile(document.querySelector("#image-publication-tribu-t").src, `capture-${new Date().getTime()}.png`));
+    }else{
+        fR.addEventListener("load", (evt) => {
+
+            let param = {
+                base64: evt.target.result,
+                photoName: formData.get("photo").name,
+                photoType: formData.get("photo").type,
+                photoSize: formData.get("photo").size,
+                contenu: formData.get("contenu"),
+                tribu_t_name: tribu_t_name_0,
+                confidentialite: formData.get("confidentialite")
+            }
+            const request = new Request("/user/create-one/publication", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            })
+            fetch(request)
+        })
+        fR.readAsDataURL(formData.get('photo'));
+    }
+    
 }
 
 /**
@@ -415,12 +498,12 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     descriptionTribuT = tribu_t[0].description
     let restExtension = ""
     let golfExtension = ""
-    if (tribu_t[0].extension.restaurant) {
+    if (tribu_t[0].extension.restaurant == 1) {
         restExtension = ` <li class="listNavBarTribu restoNotHide">
                             <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
                         </li>`
     }
-    if (tribu_t[0].extension.golf) {
+    if (tribu_t[0].extension.golf == 1) {
         golfExtension = ` <li class="listNavBarTribu golfNotHide">
                             <a style="cursor:pointer;" onclick="showGolf()" data-value="golf">Mon Golf</a>
                         </li>`
@@ -437,10 +520,10 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let canChangeTribuPicture = "";
     if (document.querySelector("#activeTribu")) {
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier le logo de la tribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
-                                    <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
+                                    <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
                                 </div>` : ""
     }
 
@@ -534,6 +617,8 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     worker.onmessage = (event) => {
         // console.log(event.data)
         let data = event.data
+        // console.log(data);
+
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
             var limits = data.length > 5 ? 5 : data.length;
@@ -2187,7 +2272,7 @@ function listResto() {
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
     if (adresse.trim() != "" || inputName.trim() != "") {
-        if(document.querySelector(".golfNotHide > a").classList.contains("active")){
+        if(document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")){
             findGolf(inputName, adresse)
         }else if(document.querySelector(".restoNotHide > a").classList.contains("active")){
             findResto(inputName, adresse)
@@ -2226,17 +2311,24 @@ if (document.querySelector("#btn_open_modal_avis_elie")) {
     })
 }
 
+/**
+ * @author elie
+ * @constructor
+ * Function affichage de la liste des avis de resto pastillé dans un tribu T
+ * @localisation: myTribuT.js
+ * @utilisation : dans le template tribuT.html.twig
+ * @param {int} nb_avis : afficher dans le template
+ * @param {int} id_resto : id de la bdd_resto
+ */
 function openAvis(nb_avis, id_resto) {
-    // document.querySelector("#staticBackdrop")
 
     if (parseInt(nb_avis) > 0) {
-
-        // $("#modalAvisRestaurant").modal("hidden")
 
         $("#avisRestoPastille").modal("show")
 
         const table_resto = tribu_t_name_0 + "_restaurant"
-        console.log(table_resto);
+
+        // document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
 
         fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
             .then(response => response.json())
@@ -2287,9 +2379,9 @@ function openAvis(nb_avis, id_resto) {
                         `
                 }
 
-                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
 
-                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", "create")
+                document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
             })
 
 
@@ -2312,6 +2404,14 @@ function openAvis(nb_avis, id_resto) {
 
 }
 
+/**
+ * @author elie
+ * @constructor : fonction de parametrage d'id resto dans un template
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {element} params : element ou le fonction se place
+ * @param {int} id_pastille : id resto
+ */
 function setSendNote(params, id_pastille) {
 
     const action = params.getAttribute("data-action")
@@ -2334,23 +2434,34 @@ function setSendNote(params, id_pastille) {
             sendNote(parseFloat(note.value), avis.value, id_pastille)
         }
 
-
     } else {
-
         updateNote(parseFloat(note.value), avis.value, id_pastille)
-
     }
-
-
 }
 
+/**
+ * @author elie
+ * @constructor Fonction d'ouverture de note de resto pastillé
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {int} id_pastille : id resto
+ * @param {string} action : action à faire pour le bouton
+ */
 function openOnNote(id_pastille, action) {
 
-    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
-    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+    document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
 
 }
 
+/**
+ * @constructor Fonction d'ouverture d'un evenement
+ * @author elie
+ * @param {int} id : id resto
+ * @param {string} nom : nom de resto
+ * @param {string} adresse : adresse de resto
+ * @param {string} action : action à faire pour le resto
+ */
 function openOnEvent(id, nom, adresse, action) {
 
     document.querySelector("#nomEtabEvent").value = nom
@@ -2359,23 +2470,24 @@ function openOnEvent(id, nom, adresse, action) {
 
     let date = new Date();
     let currentDate = date.toISOString().substring(0, 10);
-    // let currentTime = date.toISOString().substring(11,16);
 
     document.getElementById('eventStart').value = currentDate;
     document.getElementById('eventEnd').value = currentDate;
     document.getElementById('timeStart').value = '00:00';
     document.getElementById('timeEnd').value = '23:00';
 
-
-    // document.querySelector("#eventEnd").value = new Date().toLocaleDateString()
-    // swal({
-    //     title: "Succès!",
-    //     text: "Un évènement crée avec succès",
-    //     icon: "success",
-    //     button: "OK",
-    //   });
 }
 
+/**
+ * @constructor Fonction d'ouverture d'un modal detail option resto
+ * @param {*} id_pastille : id resto
+ * @param {*} denomination_f : nom resto
+ * @param {*} adresse 
+ * @param {*} latitude 
+ * @param {*} longitude 
+ * @param {*} text1 : icon action
+ * @param {*} action : type d'action
+ */
 function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
 
     $("#detailOptionResto").modal("show")
@@ -2384,14 +2496,27 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
+<<<<<<< HEAD
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+=======
+    document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
+    document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
+    document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+>>>>>>> elie-nante
 
 }
 
-
+/**
+ * @constructor : Ouverture de modal detail resto
+ * @param {*} nom_resto 
+ * @param {*} adresse 
+ * @param {*} nom_dep 
+ * @param {*} id_dep 
+ * @param {*} id_restaurant 
+ */
 function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
 
     fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)

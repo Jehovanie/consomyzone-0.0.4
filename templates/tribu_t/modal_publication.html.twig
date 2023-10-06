@@ -22,9 +22,20 @@
                     </select>
                 </div>
                 <img src="" alt="" width="100" id="image-publication-tribu-t" class="d-none">
+
                 <div class="mb-3">
                     <label for="formFileMultiple" class="form-label">Photo</label>
                     {% include 'shard/input/inputImageDragDrop.html.twig' with {'id': 'publication_photo', 'name':'photo'} %}
+                    
+                    {# selecteur prendre photo camera créer par elie
+                        utilisé dans function.js #}
+                    <div class="d-flex flex-column text-center">
+                        <span>ou</span>
+                        <label onclick="showModalPictureTribu('pub')" class="labelPrisePhoto" data-bs-target="#mediaModalTribu" data-bs-toggle="modal">
+                                <i class="bi bi-camera-fill pictureOnBoth"></i>
+                                Prendre une photo?
+                        </label>
+                    </div>
                 </div>
                     
             </div>

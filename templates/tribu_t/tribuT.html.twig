@@ -30,10 +30,6 @@
 
 {% endblock %}
 
-{% block sweetalert %}
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{% endblock %}
-
 {% block body %}
 
 	<div class="nh">
@@ -93,6 +89,8 @@
 
 	</div>
 	{% include "tribu_t/modal_publication.html.twig" %}
+	{% include 'tribu_t/modal_add_picture.twig' %}
+	{% include 'shard/modal/media_modal_tribu.html.twig' %}
 
 	<!-- Modal Créer tribuT -->
 	<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
@@ -248,11 +246,16 @@
 				<div class="modal-body">
 					<div class="container text-center">
 						<i class="fas fa-question-circle fs-1 text-info"></i><br>
-						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+						{# <p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
 						<div class="container mb-4 mt-5 content_btns_nanta_js">
 							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
 							<button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
-							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
+							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button> #}
+						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+						<div class="container mb-4 mt-5 content_btns_nanta_js">
+							<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+							<button type="button" id="data-event-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning mt-1" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
 						</div>
 					</div>
 

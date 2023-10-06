@@ -713,76 +713,56 @@ fileInputProfils.forEach(fileInputProfil=>{
 
             let avatarPartisant = fileReader.result;
 
-            // Change profil
-            let profilPartisants = document.querySelectorAll("#profilPartisant");
+            /**
+             * @author elie
+             * checking image extension and size if <2Mo
+             * use into profil.html.twig
+             * i want upload an image less than 2Mo
+             */
 
-            profilPartisants.forEach(profilPartisant=>{
-                profilPartisant.src = avatarPartisant
-            })
+            const listExt= ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
+            const octetMax= 2e+6; //2Mo 
 
-            //profilPartisant.src = avatarPartisant
+            if( !checkFileExtension(listExt,avatarPartisant)){
 
-            if(document.querySelector("#roundedImg") != null){
-                document.querySelector("#roundedImg").src = avatarPartisant
-            }
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe)",
+                    icon: "error",
+                    button: "OK",
+                    });
 
-            let data = {
-                image : avatarPartisant
-            }
+            }else{
+                if(!checkTailleImage(octetMax, avatarPartisant)){
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 2Mo.",
+                        icon: "error",
+                        button: "OK",
+                        });
+                    
+                }else{
+                    // Change profil
+                    let profilPartisants = document.querySelectorAll("#profilPartisant");
 
-            Swal.fire({
-                // title: 'Voulez-vous definir cette photo comme photo de profile?',
-                text: "Voulez-vous definir cette photo comme photo de profile?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Oui, accepter',
-                cancelButtonText: 'Non, pas maintenant'
-              }).then((result) => {
-                if (result.isConfirmed) {
-                fetch(new Request("/user/profil/update/avatar", {
-                    method: "POST",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })).then(x => x.json()).then(response => {
-                    // console.log(response)
+                    profilPartisants.forEach(profilPartisant=>{
+                        profilPartisant.src = avatarPartisant
+                    })
 
-                    if(response.success){
-                        Swal.fire(
-                            'Modifié',
-                            response.message,
-                            'success'
-                          )
+                    //profilPartisant.src = avatarPartisant
+
+                    if(document.querySelector("#roundedImg") != null){
+                        document.querySelector("#roundedImg").src = avatarPartisant
                     }
 
-                });
-                }else{
-                    
-                    fetch(new Request("/user/profil/add/photo", {
-                        method: "POST",
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })).then(x => x.json()).then(response => {
-                        // console.log(response)
+                    let data = {
+                        image : avatarPartisant
+                    }
 
-                        if(response.success){
-                            Swal.fire(
-                                'Téléchargé',
-                                response.message,
-                                'success'
-                              )
-                        }
-
-                    });
+                    setPhotoAfterUpload(data);
                 }
-              })
+            }
+
         });
 
         ///run event load in file reader.
@@ -1026,37 +1006,20 @@ function setAsPdp(span){
     })).then(x => x.json()).then(response => {
         
         if(response.success){
-            Swal.fire(
-                'Modifié',
-                'Votre photo de profile a été mis à jour!',
-                'success'
-              )
+
+            swal({
+                title: "Modifié",
+                text: "Votre photo de profile a été mis à jour!",
+                icon: "success",
+                button: "OK",
+              });
 
         }
     });
 
 }
 
-document.querySelectorAll(".fancybox > img").forEach(fancy=>{
-    let url = fancy.src
-
-    fancy.addEventListener("click", function(){
-        console.log(fancy.naturalWidth);
-        let h = fancy.naturalHeight ;
-        if(fancy.naturalHeight > window.screen.height){
-            h = window.screen.height
-        }
-        Swal.fire({
-            imageUrl: url,
-            imageHeight: h,
-            imageWidth: fancy.naturalWidth,
-            imageAlt: '',
-            showCloseButton: true,
-            showConfirmButton: false,
-          })
-    })
-
-})
+setGallerieImageV2()
 
 document.querySelectorAll(".elie_nav_link").forEach(i=>{
     i.addEventListener("click", function(){

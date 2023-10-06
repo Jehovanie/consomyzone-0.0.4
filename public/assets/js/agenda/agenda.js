@@ -1466,7 +1466,7 @@ function getObjectForNewAgenda(e) {
     let base64 = null
     let directoryroot = null
 
-    if(!document.querySelector(".preview_image_nanta_js").classList.contains("d-none")){
+    if(document.querySelector(".preview_image_nanta_js") && !document.querySelector(".preview_image_nanta_js").classList.contains("d-none")){
         let img = document.querySelector("#image-preview")
         fileType = img.getAttribute("typefile")
         base64 = img.getAttribute("src")
