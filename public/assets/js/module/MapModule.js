@@ -756,10 +756,10 @@ class MapModule{
                 <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
                     <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
                 </button>
-                <button class="btn btn-info" data-type="golf_pastille_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-location-smile fa-flip" data-type="golf_pastille_jheo_js"></i>
-                </button>
             `
+            // <button class="btn btn-light" data-type="golf_pastille_jheo_js" style="font-size: 1.1rem;">
+            //     <i class="fa-solid fa-location-smile fa-flip" data-type="golf_pastille_jheo_js"></i>
+            // </button>
         }else if( this.mapForType === "resto" ){ 
             htmlControl += `
                 <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">

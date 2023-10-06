@@ -189,6 +189,10 @@ class MarckerClusterHome extends MapModule  {
     handleClickStation(stationMarker,dataStation){
             
         stationMarker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+
             this.updateCenter( parseFloat(dataStation.lat ), parseFloat(dataStation.long ), this.zoomDetails);
             
             const icon_R = L.Icon.extend({
@@ -232,6 +236,9 @@ class MarckerClusterHome extends MapModule  {
     handleClickFerme(fermeMarker, dataFerme ){
 
         fermeMarker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
             this.updateCenter( parseFloat(dataFerme.lat ), parseFloat(dataFerme.long ), this.zoomDetails);
             const icon_R = L.Icon.extend({
                 options: {
@@ -294,6 +301,10 @@ class MarckerClusterHome extends MapModule  {
     handleClickResto(restoMarker, dataResto){
         
         restoMarker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+
             this.updateCenter( parseFloat(dataResto.lat ), parseFloat(dataResto.long ), this.zoomDetails);
             
             let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(restoMarker.options.id)) : [];
@@ -363,6 +374,9 @@ class MarckerClusterHome extends MapModule  {
 
     handleClickGolf(golfMarker, item){
         golfMarker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
             const itemID= item.id
             
             const golfUpdate = this.data.golf.find(jtem =>parseInt(jtem.id) === itemID);
@@ -427,6 +441,9 @@ class MarckerClusterHome extends MapModule  {
 
     handleClickTabac(tabacMarker, item){
         tabacMarker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
             let pathIcon='/assets/icon/NewIcons/tabac_red0.png';
             

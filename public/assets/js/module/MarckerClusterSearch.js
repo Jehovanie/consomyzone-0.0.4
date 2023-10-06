@@ -243,6 +243,8 @@ class MarckerClusterSearch extends MapModule  {
         var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"), id: item.id, type: "station" });
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
         marker.on('click', (e) => {
+            /// close RightSide
+            this.closeRightSide();
 
             const latlng = L.latLng(marker._latlng.lat, marker._latlng.lng);
             this.map.setView(latlng, 13);
@@ -290,6 +292,9 @@ class MarckerClusterSearch extends MapModule  {
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
         marker.on('click', (e) => {
+            /// close RightSide
+            this.closeRightSide();
+
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
             
             const icon_R = L.Icon.extend({
@@ -352,6 +357,10 @@ class MarckerClusterSearch extends MapModule  {
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
         marker.on('click', (e) => {
+            /// close RightSide
+            this.closeRightSide();
+
+
             let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(e.target.options.id)) : [];
             let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
             let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
@@ -420,6 +429,9 @@ class MarckerClusterSearch extends MapModule  {
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
         marker.on('click', (e) => {
+            /// close RightSide
+            this.closeRightSide();
+
             const itemID= item.id
             const golfUpdate = this.data.results[0].find(jtem => jtem.hasOwnProperty('golf') && parseInt(jtem.id) === itemID );
             console.log(golfUpdate)
@@ -482,6 +494,8 @@ class MarckerClusterSearch extends MapModule  {
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
         marker.on('click', (e) => {
+            /// close RightSide
+            this.closeRightSide();
 
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
@@ -847,9 +861,6 @@ class MarckerClusterSearch extends MapModule  {
     }
 
     clickOnMarker(id){
-        /// close RightSide
-        this.closeRightSide();
-
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
                 marker.fireEvent('click');
