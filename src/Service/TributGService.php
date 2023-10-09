@@ -560,6 +560,7 @@ class TributGService extends PDOConnexionService{
             "isModerate" => $data["isModerate"]
         ];
         return $result;
+
     }
 
 
@@ -817,7 +818,7 @@ class TributGService extends PDOConnexionService{
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $this->convertUnicodeToUtf8($d_pub['publication'] ), //// when get, must decode
+                        "description" => json_decode($this->convertUnicodeToUtf8($d_pub['publication'] ),true), //// when get, must decode
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,

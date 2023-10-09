@@ -1700,28 +1700,32 @@ class Tribu_T_Service extends PDOConnexionService
 
         $object= json_decode($tribu_t_owned, true);
 
-        if( !array_key_exists("name", $object['tribu_t']) ){
+        if( !array_key_exists("name_tribu_t_muable", $object['tribu_t']) ){
+            
             foreach ($object['tribu_t'] as $trib){
+                
+                //"Tribu T " . ucfirst(explode("_",$trib['name_tribu_t_muable'])[count(explode("_",$trib['name_tribu_t_muable']))-1])
                 if( $trib['name'] === $table_name){
                     $apropos = [
-                        'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
+                        'name' => $trib['name_tribu_t_muable'],
                         'description' => $trib['description'],
                         'avatar' => $trib['logo_path'],
                     ];
-    
+                   
                     break;
                 }
             }
         }else{
+            //"Tribu T " . ucfirst(explode("_",$object['tribu_t']['name_tribu_t_muable'])[count(explode("_",$object['tribu_t']['name_tribu_t_muable']))-1])
             if( $object['tribu_t']['name'] === $table_name){
                 $apropos = [
-                    'name' => "Tribu T " . ucfirst(explode("_",$object['tribu_t']['name'])[count(explode("_",$object['tribu_t']['name']))-1]),
+                    'name' =>  $object['tribu_t']['name_tribu_t_muable'],
                     'description' => $object['tribu_t']['description'],
                     'avatar' => $object['tribu_t']['logo_path'],
                 ];
             }
         }
-
+        
         return $apropos;
     }
 
@@ -1843,8 +1847,9 @@ class Tribu_T_Service extends PDOConnexionService
     public function getAllPublicationsUpdate($table_name){
         $resultats = [];
 
+      
         $apropo_tribuT = $this->getApropos($table_name);
-
+       
         if( !$apropo_tribuT ){
             return $resultats;
         }
@@ -1870,7 +1875,7 @@ class Tribu_T_Service extends PDOConnexionService
                 $statement->execute();
                 $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
                 
-              
+               
                 $data= [
                     "userOwnPub" => [
                         "id" => $d_pub["user_id"],

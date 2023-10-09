@@ -4,15 +4,19 @@
             <div class="pdp-content">
                 <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}">
             </div>
+           
             <div class="name-content-h">
                 <div class="name-content">
                     <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
                     <div class="">
-                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="tribu_name_jheo_js">{{tribu.name}}</span></p>
+                        <p  class="p-title"> a publié sur <span id="btnGroupDrop0" 
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                        class="tribu_name_jheo_js">{{tribu.name | split('_', 4)|last|replace({'_':' '})|capitalize }}</span></p>
                         {# <div class="dropdown-menu" aria-labelledby="btnGroupDrop0">
                             <p class="dropdown-item" >{{tribu.name}}</p>
                             <p class="dropdown-item" >{{tribu.description}}</p>
                         </div> #}
+                        {# | split('_', 4)|last|replace({'_':' '})|capitalize #}
                     </div>
                 </div>
                 <div class="status-content d-flex">

@@ -1342,7 +1342,7 @@ class MapModule{
         // const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
         // const taille=0
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
-
+        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
         return new L.Marker(latLng, {
             icon: new L.DivIcon({
                 className: 'my-div-icon',
@@ -1350,9 +1350,9 @@ class MapModule{
                         <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                         background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                         border-radius: 50%;">${noteMoyenne}</span>
-                      <img class="my-div-image" style="width:30px ; height:45px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                      <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
                        `,
-                iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+                //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
                 iconAnchor: [11, 30],
                 popupAnchor: [0, -20],
                 shadowSize: [68, 95],
@@ -1373,16 +1373,17 @@ class MapModule{
      */
     setSpecialIcon(item, isSelected=false, poi_icon, poi_icon_Selected, taille){
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
+        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
         return new L.DivIcon({
             className: 'my-div-icon',
             html: noteMoyenne > 0 ? ` 
                     <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                     background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                     border-radius: 50%;">${noteMoyenne}</span>
-                  <img class="my-div-image" style="width:30px ; height:45px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
-                   `:`<img class="my-div-image" style="width:30px ; height:45px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                   `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
                    `,
-            iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+            //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
             iconAnchor: [11, 30],
             popupAnchor: [0, -20],
             shadowSize: [68, 95],

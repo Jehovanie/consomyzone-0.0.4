@@ -498,16 +498,29 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     descriptionTribuT = tribu_t[0].description
     let restExtension = ""
     let golfExtension = ""
-    if (tribu_t[0].extension.restaurant == 1) {
+
+    // extension 'on' correspond à extension 
+    //restaurant dans les anciens version
+    // ce bout de code est là pour assurer une prise en charge recurssive
+    if(tribu_t[0].extension=="on" || tribu_t[0].extension=="restaurant" ){
         restExtension = ` <li class="listNavBarTribu restoNotHide">
-                            <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
-                        </li>`
+                        <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+                    </li>`
+    }else{
+        if(tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1 ) {
+            restExtension = ` <li class="listNavBarTribu restoNotHide">
+                                <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+                            </li>`
+        }
+        if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
+            golfExtension = ` <li class="listNavBarTribu golfNotHide">
+                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
+                            </li>`
+        }
     }
-    if (tribu_t[0].extension.golf == 1) {
-        golfExtension = ` <li class="listNavBarTribu golfNotHide">
-                            <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
-                        </li>`
-    }
+
+    
+
 
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
@@ -2569,7 +2582,10 @@ function settingTribuT(e, tribuTName) {
         document.querySelector("#update_description").value = currentTribuT.description
         document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
 
-        if (currentTribuT.extension.restaurant) {
+        // extension 'on' correspond à extension 
+        //restaurant dans les anciens version
+        // ce bout de code est là pour assurer une prise en charge recurssive
+        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
@@ -2581,6 +2597,7 @@ function settingTribuT(e, tribuTName) {
             document.querySelector("#update_form_golf").checked = false
         }
 
+       
         document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
 
     })
