@@ -1,4 +1,4 @@
-const IS_DEV_MODE=false;
+const IS_DEV_MODE=true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
