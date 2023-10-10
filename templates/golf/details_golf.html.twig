@@ -1,0 +1,131 @@
+<div class="description content_body_details_jheo_js" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomGolf}}">
+    <div class="content_titre_details">
+        <figure class="text-center mt-4">
+            <blockquote class="blockquote">
+                <p> 
+                    {{details.nomGolf | upper}}  
+                    {% if app.user %}
+                        {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                            <span class="badge bg-info golf_status golf_status_jheo_js"></span>
+                        {% else %}
+                            {% if details.user_status["a_faire"] == "1" %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
+                            {% elseif details.user_status["fait"] == "1" %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
+                            {% elseif details.user_status["mon_golf"] == "1" %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
+                            {% else %}
+                                <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </p>
+               
+            </blockquote>
+            <figcaption class="blockquote-footer">
+               Adresse :  <a href="#" class="small text-center ">{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}</a>
+            </figcaption> 
+
+            {% if app.user %}
+                <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
+                    {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                        <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
+                        <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange="executeActionForPastGolf({{details.id}})">
+                            <option value="0">Aucun</option>
+                            <option value="1">A faire</option>
+                            <option value="2">Fait</option>
+                            <option value="3">Mon golf</option>
+                        </select>
+                        {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
+                    {% else %}
+                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# {% set adresse = details.adr1|lower ~" "~ details.cp|lower ~" "~ details.nomCommune|lower %}
+            <button class="btn btn-outline-primary mx-auto w-50 mb-2 mt-2" onclick="openVoirPlusChearch('{{details.nomGolf | raw}}','{{adresse | trim}}', 'golf')">Voir plus</button>  #}
+        </figure>
+       
+    </div>
+
+    <div class="p-4">
+        <div class="content_note mb-3">
+            <div class="start text-center">
+                <i class="fa-solid fa-star" data-rank="1"></i>
+                <i class="fa-solid fa-star" data-rank="2"></i>
+                <i class="fa-solid fa-star" data-rank="3"></i>
+                <i class="fa-solid fa-star" data-rank="4"></i>
+            </div>
+             <hr>
+            <div class="mt-2 nombre_avis d-flex justify-content-center align-items-center">
+                {# <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button> #}
+                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">Avis</button>
+            </div>
+        </div>
+
+        <hr>
+ 
+        {# ///codePostal #}
+        {% if details.cp %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Code Postal:</span>
+                    {{details.cp  | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.nomCommune %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Commune:</span>
+                    {{details.nomCommune  | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+
+        {% if details.telephone %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Telephone:</span>
+                        {{details.telephone | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.adr1 %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Adress:</span>
+                    {{details.adr1 | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        <hr>
+
+        {# ///content cta #}
+        <div class="content_tow_cta mt-4">
+            {% if app.user %}
+                <div class="site_web">
+                    <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">
+                        Lien :  Site Web
+                    </a>
+                </div>
+            {% else %}
+                <div class="site_web btn_gris_actif_js_Elie" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf." onclick="openSwalActif()">
+                    <a class="{{ app.user ? 'btn btn-outline-success ' : 'btn btn-outline-success disabled' }}" href="{{details.siteWeb | raw}}" target="_blank">
+                        Lien :  Site Web
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>

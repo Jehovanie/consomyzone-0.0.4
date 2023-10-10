@@ -1,0 +1,286 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    ConsoMyZone : Partenaires
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/dashboard/apropos.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+	<div class="nh">
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv hm hv dashbord-super-admin">
+			<div class="sk bu 2xl:ud-p-11">
+				<a href="{{ path("app_dashboard") }}">
+					<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
+
+						<g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+							<path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
+							17 11 17 96 l0 97 90 -7 c174 -13 337 -77 472 -184 72 -57 183 -183 213 -243
+							9 -16 20 -29 25 -29 6 0 -4 28 -21 63 -148 295 -406 481 -741 532 l-37 6 -3
+							92 c-2 72 -6 92 -18 94 -8 2 -91 -53 -185 -122z"></path>
+						</g>
+					</svg>
+				</a>
+				<div class="oc gg yt xv vg au 2xl:ud-gap-7.5">
+					
+					<!-- Card Item Start -->
+					<div class="rh ni bj wr nj xr _l em">
+						<div class="lc mg pg re hd th bk as">
+							<svg class="jk es" width="22" height="16" viewbox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z" fill=""/>
+								<path d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z" fill=""/>
+							</svg>
+							
+						</div>
+
+						<div class="lc lg qg yb">
+							<div>
+								<h6 class="wn zn gs">
+									{{supplier.firstname}}
+								</h6>
+								<span class="un mn">{{supplier.lastname}}</span>
+							</div>
+						</div>
+					</div>
+					<!-- Card Item End -->
+
+					<!-- Card Item Start -->
+					<div class="rh ni bj wr nj xr _l em">
+						<div class="lc mg pg re hd th bk as">
+							<svg  class="jk es" width="20" height="22" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="0 0 330.001 330.001" xml:space="preserve">
+								<g id="XMLID_348_">
+									<path id="XMLID_350_" d="M173.871,177.097c-2.641,1.936-5.756,2.903-8.87,2.903c-3.116,0-6.23-0.967-8.871-2.903L30,84.602
+												L0.001,62.603L0,275.001c0.001,8.284,6.716,15,15,15L315.001,290c8.285,0,15-6.716,15-14.999V62.602l-30.001,22L173.871,177.097z"/>
+									<polygon id="XMLID_351_" points="165.001,146.4 310.087,40.001 19.911,40 	"/>
+								</g>
+							</svg>
+						</div>
+
+						<div class="lc lg qg yb">
+							<div>
+								<h6 class="wn zn gs">
+									<p>{{user.email}}</p>
+								</h6>
+							</div>
+						</div>
+					</div>
+					<!-- Card Item End -->
+
+					<!-- Card Item Start -->
+					<div class="rh ni bj wr nj xr _l em">
+						<div class="lc mg pg re hd th bk as">
+							<svg version="1.1" class="jk es" width="22" height="22" fill="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 512.053 512.053" style="enable-background:new 0 0 512.053 512.053;" xml:space="preserve">
+								<g>
+									<path d="M365.027,44.5c-30-29.667-66.333-44.5-109-44.5s-79,14.833-109,44.5s-45,65.5-45,107.5
+										c0,25.333,12.833,67.667,38.5,127c25.667,59.334,51.333,113.334,77,162s38.5,72.334,38.5,71c4-7.334,9.5-17.334,16.5-30
+										s19.333-36.5,37-71.5s33.167-67.166,46.5-96.5c13.334-29.332,25.667-59.667,37-91s17-55,17-71
+										C410.027,110,395.027,74.167,365.027,44.5z M289.027,184c-9.333,9.333-20.5,14-33.5,14c-13,0-24.167-4.667-33.5-14
+										s-14-20.5-14-33.5s4.667-24,14-33s20.5-13.5,33.5-13.5c13,0,24.167,4.5,33.5,13.5s14,20,14,33S298.36,174.667,289.027,184z"/>
+								</g>
+							</svg>
+						</div>
+
+						<div class="lc lg qg yb">
+							<div>
+								<h6 class="wn zn gs">
+									<p>{{supplier.commune}}</p>
+								</h6>
+							</div>
+						</div>
+					</div>
+					<!-- Card Item End -->
+
+					<!-- Card Item Start -->
+					<div class="rh ni bj wr nj xr _l em">
+						<div class="lc mg pg re hd th bk as">
+							<svg class="jk es" width="22" height="18" viewbox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M7.18418 8.03751C9.31543 8.03751 11.0686 6.35313 11.0686 4.25626C11.0686 2.15938 9.31543 0.475006 7.18418 0.475006C5.05293 0.475006 3.2998 2.15938 3.2998 4.25626C3.2998 6.35313 5.05293 8.03751 7.18418 8.03751ZM7.18418 2.05626C8.45605 2.05626 9.52168 3.05313 9.52168 4.29063C9.52168 5.52813 8.49043 6.52501 7.18418 6.52501C5.87793 6.52501 4.84668 5.52813 4.84668 4.29063C4.84668 3.05313 5.9123 2.05626 7.18418 2.05626Z" fill=""/>
+								<path d="M15.8124 9.6875C17.6687 9.6875 19.1468 8.24375 19.1468 6.42188C19.1468 4.6 17.6343 3.15625 15.8124 3.15625C13.9905 3.15625 12.478 4.6 12.478 6.42188C12.478 8.24375 13.9905 9.6875 15.8124 9.6875ZM15.8124 4.7375C16.8093 4.7375 17.5999 5.49375 17.5999 6.45625C17.5999 7.41875 16.8093 8.175 15.8124 8.175C14.8155 8.175 14.0249 7.41875 14.0249 6.45625C14.0249 5.49375 14.8155 4.7375 15.8124 4.7375Z" fill=""/>
+								<path d="M15.9843 10.0313H15.6749C14.6437 10.0313 13.6468 10.3406 12.7874 10.8563C11.8593 9.61876 10.3812 8.79376 8.73115 8.79376H5.67178C2.85303 8.82814 0.618652 11.0625 0.618652 13.8469V16.3219C0.618652 16.975 1.13428 17.4906 1.7874 17.4906H20.2468C20.8999 17.4906 21.4499 16.9406 21.4499 16.2875V15.4625C21.4155 12.4719 18.9749 10.0313 15.9843 10.0313ZM2.16553 15.9438V13.8469C2.16553 11.9219 3.74678 10.3406 5.67178 10.3406H8.73115C10.6562 10.3406 12.2374 11.9219 12.2374 13.8469V15.9438H2.16553V15.9438ZM19.8687 15.9438H13.7499V13.8469C13.7499 13.2969 13.6468 12.7469 13.4749 12.2313C14.0937 11.7844 14.8499 11.5781 15.6405 11.5781H15.9499C18.0812 11.5781 19.8343 13.3313 19.8343 15.4625V15.9438H19.8687Z" fill=""/>
+							</svg>
+							
+						</div>
+
+						<div class="lc lg qg yb">
+							<div>
+								<h6 class="wn jn zn gs">
+									Valider
+								</h6>
+							</div>
+
+							<span class="lc mg xg un mn ko">
+								<button 
+									id="1"
+									class="btn btn-success validating_super_admin_fournisseur_js_jheo"
+									data-toggle-id={{user.id}}
+
+									{{user.isLabled is same as(true) ? "disabled": ""}}
+								>
+									Oui
+								</button>
+							</span>
+						</div>
+					</div>
+					<!-- Card Item End -->
+				</div>
+
+
+				<!-- Order List Start -->
+				<div class="yb ot 2xl:ud-mt-10">
+					<h4 class="tn jn zn gs xb">
+						<i class="fa-solid fa-user"> </i>Apropos
+					</h4>
+
+					<div class="rh ni bj wr nj xr">
+						<div class="nf oh">
+							<table class="yd yf rh">
+								<thead>
+									<tr class="vi bj wr">
+										<th class="ff sl rm sm">
+											<p class="gn un zn gs">
+												Autre Information
+											</p>
+										</th>
+										
+										<th class="hf sl rl">
+											<p class="gn un zn gs">
+											
+											</p>
+										</th>
+										
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Type</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th xj/10 jl am mn un io">
+												<span class="ub jc dd he th xj"></span>
+												{{(user.type) is same as("supplier")? "Partenaire" : "" }}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Addresse Postal </h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th pj/10 jl am mn un go">
+												<span class="ub jc dd he th pj"></span>
+												{{supplier.codePostal}}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Code APE</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th sj/10 jl am mn un fo">
+												<span class="ub jc dd he th sj"></span>
+												{{supplier.codeape}}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi cj">
+										<td class="_l rm sm">
+											<h5 class="un">Commerce</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th xj/10 jl am mn un io">
+												<span class="ub jc dd he th xj"></span>
+												{{supplier.commerce}}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Num Rue</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th sj/10 jl am mn un fo">
+												<span class="ub jc dd he th sj"></span>
+												{{supplier.numRue}}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Pays</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th xj/10 jl am mn un io">
+												<span class="ub jc dd he th xj"></span>
+												{{supplier.pays}}
+											</p>
+										</td>
+									</tr>
+									
+									
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Web Site</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th pj/10 jl am mn un go">
+												<span class="ub jc dd he th pj"></span>
+												{{supplier.website}}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Twitter</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th sj/10 jl am mn un fo">
+												<span class="ub jc dd he th sj"></span>
+												{{supplier.twitter}}
+											</p>
+										</td>
+									</tr>
+
+									<tr class="vi bj wr">
+										<td class="_l rm sm">
+											<h5 class="un">Facebook</h5>
+										</td>
+										<td class="_l rl">
+											<p class="nc mg pg th xj/10 jl am mn un io">
+												<span class="ub jc dd he th xj"></span>
+												{{supplier.facebook}}
+											</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- Order List End -->
+			</div>
+		</main>
+		<!-- ===== Main Content End ===== -->
+	</div>
+
+
+{% endblock %}

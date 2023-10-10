@@ -1,0 +1,119 @@
+<div class="description content_body_details_jheo_js" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nametabac="{{details.nom}}">
+    <div class="content_titre_details">
+        <figure class="text-center mt-4">
+            <blockquote class="blockquote">
+                <p> 
+                    {{details.denomination_f | upper}}  
+                </p>
+               
+            </blockquote>
+            <figcaption class="blockquote-footer">
+                Adresse :  
+                <a href="#" class="small text-center ">
+                    {{details.numvoie|lower}}
+                    {{details.typevoie|lower}}
+                    {{details.nomvoie|lower}}
+                    {{details.codpost|lower}}
+                    {{details.villenorm|lower}}
+                </a>
+            </figcaption>  
+        </figure>
+       
+    </div>
+
+    <div class="p-4">
+        {# note avis   #}
+        {# <hr> #}
+        <div class="content_note text-center mb-3">
+            <div class="start">
+                <i class="fa-solid fa-star" data-rank="1"></i>
+                <i class="fa-solid fa-star" data-rank="2"></i>
+                <i class="fa-solid fa-star" data-rank="3"></i>
+                <i class="fa-solid fa-star" data-rank="4"></i>
+            </div>
+            <div class="mt-2 nombre_avis">
+                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button>
+            </div>
+        </div>
+
+        <hr>
+        {% if details.bar_tabac %}
+            <div class="content_activite">
+                <p class="activite">
+                    Bar Tabac
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.bureau_tabac %}
+            <div class="content_activite">
+                <p class="activite">
+                    Bureau Tabac
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.cafe_tabac %}
+            <div class="content_activite">
+                <p class="activite">
+                    Cafe Tabac
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.tabac_presse %}
+            <div class="content_activite">
+                <p class="activite">
+                    Tabac Presse
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.horaires_1 %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Horaires:</span>
+                    {{details.horaires_1 | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+
+        {% if details.tel %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Telephone:</span>
+                    {{details.tel | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        {% if details.codpost %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Code Postal:</span>
+                    {{details.codpost | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+
+        {% if details.commune %}
+            <div class="content_activite">
+                <p class="activite">
+                    <span class="fw-bold">Commune:</span>
+                    {{details.commune | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+    </div>
+</div>

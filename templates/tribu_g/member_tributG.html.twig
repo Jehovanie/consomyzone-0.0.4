@@ -1,0 +1,33 @@
+<div class="content_list_p_tG">
+    <div class="card mb-2">
+        <div class="card-header">
+            <h4>Partisans dans la tribu G</h4>
+        </div>
+        <div class="card-body" style="overflow-x:auto;">
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Prénom</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Statu</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in membersTributG %}
+                        <tr>
+                            <td scope="row">{{ loop.index }}</td>
+                            <td>{{item.firstname}}</td>
+                            <td>{{item.lastname}}</td>
+                            <td>{{item.email}}</td>
+                            <td class="text-primary">{{item.status|upper }}</td>
+                            <td> <a class="btn btn-primary" href={{path("user_profil", { user_id : item.id })}}> Profil</a> </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

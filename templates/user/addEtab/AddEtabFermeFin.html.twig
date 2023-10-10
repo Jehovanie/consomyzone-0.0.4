@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+
+    <script src="{{ asset('assets/js/addEtab/addEtab.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+             <h1>Formulaires</h1>
+                {{ form_start(form_add_etab_ferme_fin, {'label_attr': {'class': 'form-control w-50'}}, { 'method': ''}) }}
+                
+
+                <div class="row mb-3">
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.acces_handicape , "Acces handicape", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.acces_handicape , {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.acces_handicap_auditif , "Acces handicap auditif", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.acces_handicap_auditif, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.acces_handicap_mental , "Acces handicap mental", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.acces_handicap_mental, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.acces_handicap_motrice , "Acces handicap motrice", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.acces_handicap_motrice, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.acces_handicap_visuel , "Acces handicap visuel", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.acces_handicap_visuel, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.acces_voiture , "acces_voiture", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.acces_voiture, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.adherent_adeve , "adherent_adeve", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.adherent_adeve, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.agriculture_bio , "agriculture bio", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.agriculture_bio, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.animaux_autoriser , "Animaux autoriser", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.animaux_autoriser, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.atelier , "atelier", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.atelier, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.carte_bancaire , "carte_bancaire", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.carte_bancaire, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.cheque_vacance , "cheque_vacance", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.cheque_vacance, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.degustation , "degustation", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.degustation, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.marcher_produit , "marcher_produit", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.marcher_produit, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.site_web , "site_web", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.site_web, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.station_verte , "station_verte", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.station_verte, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.tickets_restaurant , "tickets_restaurant", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.tickets_restaurant, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form_add_etab_ferme_fin.vente_en_ligne , "vente_en_ligne", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
+                        {{ form_widget(form_add_etab_ferme_fin.vente_en_ligne, {'label_attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <a href="" class="btn btn-outline-info " id="btn-fin-etab">Terminer</a>
+               
+             {{form_end(form_add_etab_ferme_fin)}}
+         </div>
+    
+    
+{% endblock %}
+

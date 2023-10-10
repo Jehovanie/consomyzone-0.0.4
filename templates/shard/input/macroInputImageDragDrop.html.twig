@@ -1,0 +1,22 @@
+
+{% macro inputPartageAgenda() %}
+	<div class="drop_zone_Nantenaina_css_js">
+    	<span class="drop_zone__prompt_Nantenaina_css_js">Cliquez sur la bannière 
+		ou glissez le fichier ici directement</span>
+		<input type="file" name="fileAgendaShare" id="fileAgendaShare" class="drop_zone__input_Nantenaina_css_js" accept='text/csv'>
+	</div>
+{% endmacro %}
+
+{% macro inputTribuG_T() %}
+
+	<div class="drop_zone_Nantenaina_css_js">
+    	<span class="drop_zone__prompt_Nantenaina_css_js">Cliquez sur la bannière 
+		ou glissez le fichier ici directement</span>
+		
+		{% if InputDropDown is defined %}
+            {{ form_row(InputDropDown, {'attr': {'class': 'image-upload-input image_upload_input_jheo_js', 'accept': 'image/png, image/jpeg, image/gif', 'onchange':'readURL(this);'}}) }}
+        {% else %}
+            <input class="image-upload-input image_upload_input_jheo_js drop_zone__input_Nantenaina_css_js" id="{{id is defined ? id : 'uploadImageID'}}" name="{{name is defined ? name : 'uploadImageName'}}" type="file" onchange="readURL(this);" accept="image/png, image/jpeg, image/gif"/>
+        {% endif %}
+	</div>
+{% endmacro %}

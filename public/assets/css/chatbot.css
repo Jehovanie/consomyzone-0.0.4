@@ -1,0 +1,64 @@
+/* style="width:70px;height:70px; position: fixed;bottom: 0; right: 0; z-index:1003;background-color:transparent;" */
+
+.content_chatbot{
+    position: absolute;
+    bottom: 56px;
+    right: 28px;
+    z-index: 1003;
+}
+
+.content_open_chat{
+    background-color: #0d6efd;
+    width:40px;
+    height:40px;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.card_chatbot{
+    background-color: white;
+    border-radius: 20px;
+    height: 100%;
+}
+
+.card_chatbot_header{
+    display: block;
+    height: 45px;
+}
+
+.card_chatbot_footer{
+
+}
+
+.chat_container_visio{
+    width: 85vw !important;
+    height: 88vh !important;
+}
+
+.content_chat_visio{
+    width: 50vw !important;
+}
+.chat_friend_visio{
+    width: 80%;
+}
+
+.user-pdp-visio{
+    max-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.message-active {
+  
+    border: 2px solid rgb(13,202,240,1) !important;
+    background-color: rgba(13,202,240,0.1) !important;
+    background-color: #f0e68c !important;
+    /* background-color: lavender !important; */
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    border-right: 0 !important;
+    /* margin-bottom: 2px !important; */
+  }

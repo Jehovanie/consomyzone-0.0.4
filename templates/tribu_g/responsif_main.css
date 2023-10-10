@@ -1,0 +1,317 @@
+@media screen and (min-width:1000px) {
+    .leaflet-control-container{
+        display: none ;
+    }
+    .leaflet-control-zoom{
+        display: block !important;
+    }
+    .responsif-none-mobile{
+        display: none !important;
+    }
+
+}
+
+@media screen and (max-width:1000px){
+    *,
+    *::before,
+    *::after{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        border: none !important;
+        transition: all 0.3s ease;
+    }
+    .responsif-none{
+        display: none !important;
+    }
+
+    .leaflet-control-zoom{
+        display: none !important;
+    }
+
+    .content_cart_map-respons{
+        width: 100vw !important;
+        height: 100vh !important;
+        /* margin-top: 50px !important; */
+    }
+
+        .leaflet-verticalcenter {
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none;
+            top: 50%;
+            /* possible because the placeholder's parent is the map */
+            transform: translateY(-50%);
+            /* using the CSS3 Transform technique */
+            padding-top: 10px;
+        }
+    
+        .leaflet-verticalcenter.leaflet-right .leaflet-control {
+            margin-bottom: 10px;
+            width: 13vw;
+            height: 8vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            box-shadow: 5px 15px 55px #6e6e6e;
+        }
+    
+        .leaflet-verticalcenterl.leaflet-left {
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none;
+            /* top: 50vh;
+            /* possible because the placeholder's parent is the map */
+            /* transform: translateY(-50%); */
+            /* using the CSS3 Transform technique */
+            /* padding-top: 10px; */
+            background-color: #fff;
+            width: 100vw;
+            height: 100vh;
+        }
+    
+        .leaflet-verticalcenterl.leaflet-left ul li {
+            background-color: #ccc;
+            border-radius: 25px;
+            width: 90vw;
+            height: 10vh;
+            margin-top: 10px;
+        }
+    
+        #map {
+            width: 100vw;
+            height: 100vh;
+            /* margin-top: 50px !important; */
+        }
+    
+        .horizontalmiddle-center {
+            width: 50vw;
+            height: 70vh;
+        }
+    
+        .hide {
+            display: none;
+        }
+    
+        .leaflet-horizontalmiddle {
+            height: 70vh;
+            padding-left: 6vw;
+            padding-top: 70vh;
+        }
+    
+        .leaflet-horizontalmiddle .options-container {
+            width: 88vw;
+            height: 20vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 40px;
+            box-shadow: 5px 15px 55px #6e6e6e;
+        }
+    
+        .leaflet-horizontalmiddle ul {
+            display: flex;
+        }
+    
+        .leaflet-horizontalmiddle ul li {
+            list-style: none;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            color: #fff;
+        }
+    
+    
+    
+        .leaflet-horizontalmiddle li a {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #fff !important;
+            border-radius: 50%;
+        }
+    
+        .leaflet-horizontalmiddle .recherche:hover {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #C13B3B !important;
+            background-color: #C13B3B;
+            border-radius: 50%;
+        }
+    
+        .leaflet-horizontalmiddle .ferme:hover {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #2343ac !important;
+            background-color: #2343ac;
+            border-radius: 50%;
+        }
+    
+        .leaflet-horizontalmiddle .resto:hover {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #af37af !important;
+            background-color: #af37af;
+            border-radius: 50%;
+        }
+    
+        .leaflet-horizontalmiddle .station:hover {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #40c456 !important;
+            background-color: #40c456;
+            border-radius: 50%;
+        }
+    
+        .leaflet-horizontalmiddle .home {
+            margin-left: 40vw;
+            margin-top: 3vh;
+        }
+    
+        .leaflet-horizontalmiddle .home .retoure {
+            background-color: transparent;
+        }
+    
+        .swipe-me {
+    
+            transform: translateX(0vh);
+        }
+    
+        .close {
+            margin-left: 95vw;
+            margin-top: 10px;
+        }
+    
+        .swipe-me-reverse {
+    
+            transform: translateX(-50vh);
+            opacity: 0
+        }
+        
+        .content-mobil-ferme{
+            position: relative;
+            z-index: 400 !important;
+            background-color: #fff;
+            width: 100vw;
+            height: 100vh;
+        }
+        .content_list_menu{
+            width: 60px !important;
+        }
+
+        .account-profils{
+            width: 60px !important;
+        }
+
+
+        .account-profils .rounded-circle{
+            width: 40px !important;
+            height: 40px !important;
+            margin-left: 6px;
+            margin-bottom: 13px;
+            overflow-y: scroll !important;
+
+        }
+
+        .content_global , .right_content{
+            width: 100vw;
+            margin-right: 5px;
+        }
+
+        .tribut_t_reponsive{
+            width: 100vw !important;
+            margin-left: 0px !important;
+        }
+        .container-custom{
+            padding: 2px !important;
+            margin-left: 2px !important;
+        }
+
+        .logo{
+            width: 140px !important;
+        }
+        .profilTribu{
+            width: 50vw !important;
+            max-width: 200px !important;
+        }
+        .img_account, .nav-icon{
+            width: 30px !important;
+            margin-top: 22px !important;
+        }
+        .img_menu{
+            margin-top: 0 !important;
+        }
+
+        .navbar-mobile{
+            width: 100vw !important;
+            height: 66px !important;
+        }
+
+        .badge_message, .badge_notification{
+            top: 18px !important;
+            left: 18px !important;
+        }
+
+        .fw-bolder{
+            width: 95vw !important;
+        }
+
+        .navbar-brand{
+            font-size: large !important;
+            margin-right: 0 !important;
+        }
+        
+        .container-invitation{
+            margin-left: 70px !important;
+            margin-top: 30px !important;
+            /* width: 100vw !important; */
+            float: left;
+        }
+        #panneau{
+            margin: -50px !important;
+            width: 100vw !important;
+        }
+        #onglets{
+            margin-top: 70px !important;
+        }
+        .demande , .invitation-conf, #contenus{
+            width: 80vw !important;
+        }
+
+        .content_left_menu_account_mobile{
+            width: 20vw !important;
+        }
+
+        .notification_popup , .message_popup{
+            right: 2px !important;
+           width: 80vw !important;
+           left: 50px !important;
+        }
+
+        ul.dropdown-menu[data-bs-popper]{
+            left: 200px !important;
+            right: 2px !important;
+        }
+
+        .mobile-responsive{
+            margin-top: -10%;
+        }
+
+        #profilTribu{
+            min-width: 500%;
+            text-align: center;
+            margin-left: 50%;
+        }
+
+        label[for="fileInputTribu"]{
+            margin-left: 80px;
+        }
+
+        .tribuNameContent-mobile, #navBarTribu{
+            font-size: small;
+            color: black;
+        }
+
+        .bgPersonnalisee{
+            background-image: linear-gradient(#888888 50px, #ffffff 0%);
+            border: none !important;
+        }
+
+
+}

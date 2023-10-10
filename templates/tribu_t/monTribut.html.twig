@@ -1,0 +1,290 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Tribut T
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/css/lightbox.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.8.2/js/lightbox.min.js"></script>
+
+	<style>
+		a {
+			text-decoration: none;
+		}
+		.foot a {
+			color: black;
+		}
+		.days li.clicked::before {
+			color: white;
+			background: #0d6efd;
+			border: 2px solid red;
+		}
+		.lightbox-gallery{background-image: linear-gradient(#4A148C, #E53935);background-repeat: no-repeat;color: #000;overflow-x: hidden}.lightbox-gallery p{color:#fff}.lightbox-gallery h2{font-weight:bold;margin-bottom:20px;padding-top:20px;color:#fff}@media (max-width:1000){.lightbox-gallery h2{margin-bottom:10px;padding-top:10px;font-size:24px}}.lightbox-gallery .intro{font-size:16px;margin:0 auto 40px; width:100%}.lightbox-gallery .intro p{margin-bottom:0}.lightbox-gallery .photos{padding-bottom:20px}.lightbox-gallery .item{padding-bottom:30px}
+		
+	</style>
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" ></script>
+	<script  src="{{ asset('assets/js/tribuT/tribut_invitation.js') }}" defer></script>
+	<script  src="{{ asset('assets/js/tribuT/avis_restaurant_tribuT.js') }}" defer></script>
+
+{% endblock %}
+
+
+{% block body %}
+
+	<div id="settingProfilId" class="row">
+		<div class="col" data-tribu-us-rank="{{app.user.id}}">
+			<div class="content_left_menu_account fixed-top mt-5 col responsif-none">
+				<div class="left_menu">
+					{% include "shard/account_navleft.html.twig" %}
+				</div>
+			</div>
+			<div class="content_left_menu_account_mobile fixed-top mt-5 col responsif-none-mobile">
+				<div class="left_menu">
+					{% include "shard/account_navleft_mobile.html.twig" %}
+				</div>
+			</div>
+		</div>
+
+		<div class="navbar-mobile">
+			<div class="fixed-top col responsif-none  bg-blanc">
+				{{ include('shard/account_navbar.html.twig') }}
+			</div>
+
+			<div class="fixed-top col responsif-none-mobile">
+				{{ include('shard/account_navbar_mobile.html.twig') }}
+			</div>
+		</div>
+
+
+		<!-- for PC -->
+
+		<div class="col row account" id="container-mobile">
+			<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+				<symbol id="check-circle-fill" fill="currentColor" viewbox="0 0 16 16">
+					<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+				</symbol>
+				<symbol id="exclamation-triangle-fill" fill="currentColor" viewbox="0 0 16 16">
+					<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+				</symbol>
+			</svg>
+			<div class="col content_global monTribu_mobile">
+				<div class="right_content contentTribu">
+					<div class="">
+						<div class="row" style="height:100%; margin-top:10%">
+							{% if app.request.get('message') %}
+
+								<div style="margin-left:15%;width:80%;" class="alert alert-success">
+									<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+									{{ app.request.get('message') }}
+								</div>
+
+							{% endif %}
+							<div class="col-lg-9 tribut_t_reponsive" style="height:100%; margin-left:10%">
+								<div class="container container-custom">
+									<div class="card card-pub p-3 bgPersonnalisee mb-5">
+										<div class="row">
+											<div class="col-12 w-25 profilTribu">
+											<span data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+												<img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribu_t/photos/") ~ table_tribu ~ "/" ~ avatar}} {% else %} {{ asset("uploads/tribu_t/photos/avatar_tribu.jpg") }} {% endif %} "></span>
+												{# <img id="profilTribu" class="w-100" style="height: 150px; border-radius:10px;" src="{% if avatar != null %} {{ asset("uploads/tribu_t/photos/") ~ table_tribu ~ "/" ~ avatar}} {% else %} {{ asset("uploads/tribu_t/photos/avatar_tribu.jpg") }} {% endif %} "> #}
+												{% if roles == "Fondateur" %}
+
+													<label style="margin-left:40%;" for="fileInputTribu">
+														<i class="bi bi-camera-fill f" style="font-size: 20px; margin-top:5px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+													</label>
+													<input type="file" name="fileInputTribu" id="fileInputTribu" style="display:none;visibility:none;" accept="image/*">
+
+												{% else %}
+
+													<div class="mt-3"></div>
+
+												{% endif %}
+											</div>
+											<div class="col-12 text-white tribuNameBlock">
+												<h4 style="margin-left:20px;margin-top:5%;">{{ tribu["name"] | replace({"$": "'"}) }}</h4>
+												<small style="margin-left:20px;">
+													<i>{{ tribu["description"] | replace({"$": "'"}) }}</i>
+												</small>
+											</div>
+											<nav class="col-12 responsif-none-mobile" style="margin-top: 55px;border: 1px gray solid;border-radius: 3px;padding: 3px 3px;">
+												<ul id="navBarTribu">
+													<li class="listNavBarTribu">
+														<a id="ulActualites" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+													</li>
+													{% if has_restaurant == true %}
+
+														<li class="listNavBarTribu restoNotHide">
+															<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
+														</li>
+
+													{% endif %}
+
+													<li class="listNavBarTribu">
+														<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
+													</li>
+													<li class="listNavBarTribu">
+															<a style="cursor:pointer;" onclick='showPartisant("{{table_tribu}}")'>Partisant</a>
+														{# <a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a> #}
+													</li>
+													<li class="listNavBarTribu">
+														<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
+													</li>
+												</ul>
+											</nav>
+
+
+
+											{% if has_restaurant == true %}
+
+												<div class="col-xl-4 col-lg-1 col-md-1 col-sm-0 "></div>
+												<nav class="col-xl-8 col-lg-11 col-md-11 col-sm-12 responsif-none">
+													<ul id="navBarTribu">
+														<li class="listNavBarTribu">
+															<a id="ulActualites" class="text-primary active text-white" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+														</li>
+
+
+														<li class="listNavBarTribu restoNotHide">
+															<a style="cursor:pointer;" onclick="showResto()">Restaurants</a>
+														</li>
+
+														<li class="listNavBarTribu">
+															<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
+														</li>
+														<li class="listNavBarTribu">
+															{# <a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a> #}
+															<a style="cursor:pointer;" onclick='showPartisant("{{table_tribu}}")'>Partisant</a>
+														</li>
+														<li class="listNavBarTribu">
+															<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
+														</li>
+
+													</ul>
+												</nav>
+											{% else %}
+												<div class="col-xl-5 col-lg-2 col-md-2 col-sm-0 "></div>
+												<nav class="col-xl-7 col-lg-10 col-md-10 col-sm-12 responsif-none">
+													<ul id="navBarTribu">
+														<li class="listNavBarTribu">
+															<a id="ulActualites" class="text-primary active text-white" style="cursor:pointer;" onclick='showActualites()'>Actualités</a>
+														</li>
+
+														<li class="listNavBarTribu">
+															<a style="cursor:pointer;" onclick='showInvitations()'>Invitations</a>
+														</li>
+														<li class="listNavBarTribu">
+															{# <a style="cursor:pointer;" href="/user/tribu/show-member/{{table_tribu}}">Partisant</a> #}
+															<a style="cursor:pointer;" onclick='showPartisant("{{table_tribu}}")'>Partisant</a>
+														</li>
+														<li class="listNavBarTribu">
+															<a style="cursor:pointer;" onclick='showPhotos("{{table_pub}}")'>Photos</a>
+														</li>
+
+													</ul>
+												</nav>
+											{% endif %}
+
+
+										</div>
+										{# <div class="mt-5 p-3 row photos lightbox-gallery" id="photos" style="display:none;background-color:"></div> #}
+										<div class="mt-5 p-3 row" id="photos" style="display:none;background-color:"></div>
+										<div class="mt-5 p-3" id="invitations" style="display:none;"></div>
+										<div class="mt-5 p-3" id="restaurants" style="display:none;"></div>
+										<div class="mt-5 p-3" id="membres" style="display:none;"></div>
+										{# <div class="row p-3 mt-4"></div> #}
+
+
+										<div id="showCreatePub" class="card mb-2 responsif-none">
+											<div class="row p-3">
+												<div class="col-1 rounded-circle">
+													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/photo_user_")  ~ app.user.id ~ "/" ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
+												</div>
+												<div class="col-11">
+													<input id="btnShowModalAddPub_" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+												</div>
+												<div class="row mt-3">
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-play-btn-fill"></i>
+														Vidéo
+													</div>
+													{# <div class="col-3 text-center" style="cursor:pointer;"> #}
+													<div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
+														<i class="bi bi-geo-alt-fill"></i>Localisation
+													</div>
+													<div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
+														<i class="bi bi-calendar2-event-fill"></i> Agenda
+
+													</div>
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-pencil-square"></i>
+														Article
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div id="showCreatePub_mobile" class="card mb-2 mt-2 responsif-none-mobile">
+											<div class="row p-3">
+												<div class="col-1 rounded-circle">
+													<img id="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? asset("uploads/users/photos/photo_user_") ~ app.user.id ~ '/' ~ profil[0].getPhotoProfil : asset("uploads/users/photos/img_avatar.png") }}>
+												</div>
+												<div class="col-11">
+													<input id="btnShowModalAddPub_" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo" placeholder="Exprimez-vous..." style="margin-left:30px">
+												</div>
+												<div class="row mt-3">
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-play-btn-fill"></i>
+														{# Vidéo #}
+													</div>
+													<div class="col-3 text-center" style="cursor:pointer;" onclick="getPosition()" data-bs-toggle="modal" data-bs-target="#modal_localisation">
+														<i class="bi bi-geo-alt-fill"></i>
+														{# Localisation #}
+													</div>
+													<div class="col-3 text-center" data-bs-toggle="modal" data-bs-target="#modal_evenement" data-bs-whatever="@mdo" style="cursor:pointer;">
+														<i class="bi bi-calendar2-event-fill"></i>
+														{# Agenda #}
+
+													</div>
+													<div class="col-3 text-center" style="cursor:pointer;">
+														<i class="bi bi-pencil-square"></i>
+														{# Article #}
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="showPubBlock">
+											{% include "tribu_t/publications.twig" %}
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- end PC -->
+
+	</div>
+</div>
+
+{% include "tribu_t/script.html.twig" %}
+{% include "tribu_t/modal_publication.html.twig" %}
+{% include "agenda/script.agenda.html.twig" %}
+{# {% include "shard/script.html.twig" %} #}{% endblock %}

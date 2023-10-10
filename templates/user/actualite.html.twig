@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Actualité
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
+
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>.js
+    <script  src="{{ asset('assets/js/account/actualiter_new_publication.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+<div class="nh">
+    {% include 'shard/account_navleft_new.html.twig' %}
+    {% include 'shard/account_navbar_new.html.twig' %}
+
+    <!-- ===== Main Content Start ===== -->
+    <main class="gv hm hv content-actualite-connected">
+        <div class="sk bu 2xl:ud-p-11">
+            <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5">
+                <!-- ====== Chart pub One Start -->
+                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                    <div class="head-pub">
+                        <div class="pdp-content">
+                            <img class="profil_publication" src="{{(userConnected.photo_profil) ? userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userConnected.firstname }}">
+                        </div>
+                        <div class="name-content-h">
+                            <div class="name-content" data-bs-toggle="modal" data-bs-target="#newPublication">
+                                <p class="form-pub">Partagez ce que vous pensez, {{userConnected.firstname ~ " " ~ userConnected.lastname }} ...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ====== Chart pub One End -->
+            </div>
+             
+            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+                {% include 'shard/publications/all_publication.html.twig' with { 'publications': publications } %}
+            </div>
+
+            <!-- ====== Chart Two Start -->
+            <div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none">
+                <div class="kb qg ss">
+                    <div class="kb qs">
+                        <h4 class="tn kn zn gs">C'est quoi une tribu-G?</h4>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="-ud-ml-5 -ud-mb-9 mb-3">
+                        <p>Une tribu-G est un groupe fondé sur votre appartenance géographique d'où la lettre G pour géographie. </br>
+                          Pour notre cas dans consomyzone pour l'instant le terme géographique se limite au niveau communal. </br>
+                          Une tribu-G est alors une tribu-Géographique composer de gens du même commune que vous.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- ====== Chart Two End -->
+        </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+
+</div>
+
+{% include 'shard/modal/new_publication.html.twig' with {'formPub' : formPub, 'modalId' : 'newPublication', 'parent': 'allTribut' } %}
+{% include 'shard/modal/update_publication.html.twig' %}
+{% include 'shard/modal/delete.html.twig' %}
+{% include 'shard/modal/commentaire.html.twig' %}
+{% include 'shard/modal/alert_flash.html.twig' %}
+
+{% endblock %}

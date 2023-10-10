@@ -1,0 +1,110 @@
+
+<nav class="navbar navbar-mobile bg-white fixed-top">
+  <div class="container-fluid">
+	<a class="text-dark" href="javascript:void(0)" >
+		<i class="bi bi-list fa-2x" id="menu-mobile-tribut"></i>
+	</a>
+    <a class="navbar-brand" href="{{path('all_departement_touts')}}">
+		<img src="{{asset('assets/image/logo.jpg')}}" alt="logo" width="200" class="logo">
+	</a>
+	<a class ="navbar-brand">
+		<div class="content_message_nav_bar icon_message content-mobile-notif" aria-current="page" data-bs-toggle="dropdown">
+			<div class="badge_message">
+				<span class="nbr_message_jheo_js_mobile">0</span>
+			</div>
+			
+			<a class="nav-link">
+				<img class="nav-icon" src="{{asset('assets/image/icon-chat.png')}}" alt="">
+			</a>
+		</div>
+
+		<div class="dropdown-menu message_popup">
+			<h4 class="mx-3 fw-bolder">Message</h4>
+			<hr>
+			<div class="mx-3 card_message content_card_message_jheo_js_mobile">
+			</div>
+		</div>
+	</a>
+
+	<a class ="navbar-brand notification_jheo_js">
+		<div class="content_notification icon_notification content-mobile-notif" aria-current="page" data-bs-toggle="dropdown">
+			<div class="badge_notification">
+				<span class="nbr_notification_jheo_js_mobile">0</span>
+			</div>
+			
+			<a class="nav-link">
+				<img class="nav-icon" src="{{asset('assets/image/icon-notification.png')}}" alt="">
+			</a>
+		</div>
+		<div class="dropdown-menu notification_popup">
+			<h4 class="mx-3 fw-bolder">Notification</h4>
+			<a class="btn btn-secondary tous_marquer_comme_lu mx-3 tous_marquer_comme_lu_js_jheo" href="#">Tout marquer comme lu</a>
+			<hr>
+			<div class="mx-3 card_notification content_card_notification_jheo_js_mobile">
+				{# CONTENT NOTIFICATION POPUP  #}
+			</div>
+		</div>
+	</a>
+
+	<a class ="navbar-brand">
+		<a class="nav-link dropdown " href="javascript:void(0)"  id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+			<img class="nav-icon img_menu" src="{{asset('assets/image/icon-menu.png')}}" alt="">
+		</a>
+		<ul class="dropdown-menu dropdown-mobile" aria-labelledby="navbarDropdown">
+			<li>
+				<a class="dropdown-item" href="#">Action</a>
+			</li>
+			<li>
+				<a class="dropdown-item" href="#" lng-tag="autre_action">Another action</a>
+			</li>
+			<li><hr class="dropdown-divider"></li>
+			<li>
+				<a class="dropdown-item" href="{{path('app_logout')}}" lng-tag="deconnexion">Déconnexion</a>
+			</li>
+		</ul>
+	</a>
+
+	{% if app.user.type is same as("supplier")%}
+		<a class="nav-item avatar-account-pdp">
+
+			{% if app.user.isLabled %}
+				<div class="labelC-rond-account"><h5 class="text-center ">F</h5></div>
+			{% endif %}
+			
+			{% if statusTribut.status is same as("fondateur") and statusTribut.verified is same as(true) %}
+				<a class="nav-link {% if app.user.isLabled %}avatar-account-square-labelC-fondateur {% else %} avatar-account-square-fondateur{% endif %}" href="{{path('app_account')}}">
+					<img src="{{asset('assets/image/img_avatar3.png')}}" alt="" class="img_menu">
+				</a>
+			{% else %}
+				<a class="nav-link {% if app.user.isLabled %}avatar-account-square-labelC {% else %} avatar-account-square{% endif %}" href="{{path('app_account')}}">
+					<img src="{{asset('assets/image/img_avatar3.png')}}" alt="" class="img_menu">
+				</a>
+			{% endif %}
+		</a>
+
+	{% elseif app.user.type is same as("consumer")%}
+	
+		
+		{% if statusTribut.status is same as("fondateur") and statusTribut.verified is same as(true) %}
+			<a class="nav-item avatar-account-pdp">
+				<a class="nav-link avatar-account-fondateur" href="{{path('app_account')}}">
+					<img src="{{asset('assets/image/img_avatar3.png')}}" alt="" class="img_menu">
+				</a>
+				
+			</a>
+		{% else %}
+			<a class="nav-item avatar-account-pdp">
+				<a class="nav-link avatar-account" href="{{path('app_account')}}">
+					<img src="{{asset('assets/image/img_avatar3.png')}}" alt="" class="img_account img_menu">
+				</a>
+				
+			</a>
+		{% endif %}
+	{% endif %}
+	
+  </div>
+</nav>
+
+
+{# content data important on back #}
+<div class="information_user_conected_jheo_js" data-toggle-user-id={{app.user.id}} data-toggle-notif={{app.user.tablenotification}} data-toggle-msg={{app.user.tablemessage}}></div>

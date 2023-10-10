@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone: Modification de profil
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+	<div id="settingProfilId">
+
+		<div class="content_left_menu_account fixed-top mt-5 col">
+			<div class="left_menu">
+				{% include "shard/account_navleft.html.twig" %}
+			</div>
+		</div>
+		<div class="fixed-top">
+			{{ include('shard/account_navbar.html.twig') }}
+		</div>
+
+		<div class="row account">
+
+			<div class="col content_global ">
+				<div class="right_content">
+					<div class="row">
+
+						<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+							<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+								<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+							</symbol>
+						</svg>
+
+						<div class="row" style="height:100%; margin-top:10%">
+							<div class="col-lg-9  mx-auto" style="height:100%">
+								<div class="container">
+									<h3>Modifier votre profil</h3>
+									<div class="card card-setting" >
+										{% if message != null %}
+											<div id="succesMessage" class="alert alert-success"> <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg> {{ message }}</div>
+										{% endif %}
+										{{ form(form) }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<script>
+
+						let profil_consumer_form = document.querySelector("#setting_profil_consumer");
+
+                        let profil_supplier_form = document.querySelector("#setting_profil_supplier");
+
+						let succesMessage = document.querySelector("#succesMessage");
+
+						if(succesMessage == null){
+							if(profil_consumer_form != null){
+								profil_consumer_form.style.paddingTop = '2%';
+							}else{
+								profil_supplier_form.style.paddingTop = '2%';
+							}
+						}
+						
+						</script>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+	{% endblock %}

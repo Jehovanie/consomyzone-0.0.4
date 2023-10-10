@@ -1,0 +1,227 @@
+<div class="content_home responsif-none">
+	<div id="close-detail-tous-resto">
+		<i class="fa-solid fa-x"></i>
+	</div>
+	{# <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 mx-auto" style="height:100%"> #}
+	<div class="left_content_home">
+		<div>
+			<div class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+
+				{# note avis   #}
+				<div class="content_titre_details">
+					{# <div class="content_entete_detail">
+						<a href="{{path('app_specific_dep_restaurant', {'nom_dep': nom_dep, 'id_dep': id_dep}) }}">
+							<i class="fa-solid fa-arrow-left" title="list de département"></i>
+						</a>
+						<div class="content_bottom" id="hide_list">
+							<i class="fa fa-eye-slash" aria-hidden="true"></i>
+						</div>
+					</div> #}
+
+					{# /// nom et propriété #}
+					<div class="titre col text-center">
+						<h4>
+							{{details.denominationF | raw}}
+							<br>
+							{{details.numvoie  | raw}}
+							{{details.typevoie | raw}}
+							{{details.nomvoie | raw}}
+							{{details.codpost | raw}}
+							{{details.villenorm | raw}}
+							<span>
+								<a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
+							</span>
+
+						</h4>
+					</div>
+				</div>
+
+				<div class="p-4">
+						
+					{# note avis   #}
+					<hr>
+					<div class="content_note">
+						<div class="start">
+							<i class="fa-solid fa-star" data-rank="1"></i>
+							<i class="fa-solid fa-star" data-rank="2"></i>
+							<i class="fa-solid fa-star" data-rank="3"></i>
+							<i class="fa-solid fa-star" data-rank="4"></i>
+
+						</div>
+
+						<div class="nombre_avis"></div>
+					</div>
+
+					<hr>
+					{# ///activiter #}
+
+					<div class="content_activite">
+						<p class="activite">
+							<span class="fw-bold">Type restaurant:</span>
+							{% if details.restaurant %}
+								<i class="fa-solid fa-utensils"></i>
+								restaurant
+							{% endif %}
+							{% if details.brasserie %}
+								<i class="fa-solid fa-beer-mug-empty"></i>
+								Brasserie
+							{% endif %}
+							{% if details.creperie %}
+								<i class="fa-solid fa-pancakes"></i>
+								creperie
+							{% endif %}
+							{% if details.fastFood %}
+								<i class="fa-solid fa-burger"></i>
+								fastFood
+							{% endif %}
+							{% if details.pizzeria %}
+								<i class="fa-solid fa-pizza-slice"></i>
+								pizzeria
+							{% endif %}
+							{% if details.boulangerie %}
+								<i class="fa-solid fa-pie"></i>
+								boulangerie
+							{% endif %}
+							{% if details.bar %}
+								<i class="fa-solid fa-martini-glass-empty"></i>
+								bar
+							{% endif %}
+							{% if details.cuisineMonde %}
+								<i class="fa-solid fa-hat-chef"></i>
+								cuisine du monde
+							{% endif %}
+							{% if details.cafe %}
+								<i class="fa-solid fa-coffee-pot"></i>
+								café
+							{% endif %}
+							{% if details.salonThe %}
+								<i class="fa-solid fa-mug-tea"></i>
+								salon de thé
+							{% endif %}
+						</p>
+					</div>
+
+					{# ///content cta #}
+					<div class="content_tow_cta">
+						{% if details.site1 != "" %}
+							<div class="site_web non_active">
+								<a class="btn btn-success" href="{{details.site1 | raw}}" target="_blank">Lien :  site Web</a>
+							</div>
+						{% endif %}
+					</div>
+
+					<hr>
+
+					<div class="fonctionnalite">
+						{#ancien class produit#}
+						<h5>
+							Fonctionalités:
+						</h5>
+						<ul>
+							{% if details.fonctionalite1 %}
+								<li>{{details.fonctionalite1 | raw}}</li>
+							{% endif %}
+
+						</ul>
+
+
+					</div>
+
+					<hr>
+
+					<div class="fourchette_de_prix">
+						<h5>
+							Fourchette de prix:
+						</h5>
+						<ul>
+							{% if details.fourchettePrix1 %}
+								<li>{{details.fourchettePrix1 | raw}}</li>
+							{% endif %}
+
+						</ul>
+					</div>
+
+					<hr>
+
+					<div class="horaire">
+						<h5>
+							Horaires :
+						</h5>
+						<ul>
+							{% if details.horaires1 %}
+								<li>{{details.horaires1 | raw}}</li>
+							{% endif %}
+						</ul>
+						<hr>
+
+					</div>
+
+					<div class="prestation">
+						<h5>
+							Prestation :
+						</h5>
+						<ul>
+							{% if details.prestation1 %}
+								<li>{{details.prestation1 | raw}}</li>
+							{% endif %}
+						</ul>
+						<hr>
+
+					</div>
+
+					<div class="regime_speciaux">
+						<h5>
+							Régime spécial :
+						</h5>
+						<ul>
+							{% if details.regimeSpeciaux1 %}
+								<li>{{details.regimeSpeciaux1 | raw}}</li>
+							{% endif %}
+						</ul>
+						<hr>
+
+					</div>
+
+					<div class="repas">
+						<h5>
+							Repas :
+						</h5>
+						<ul>
+							{% if details.repas1 %}
+								<li>{{details.repas1 | raw}}</li>
+							{% endif %}
+						</ul>
+						<hr>
+
+					</div>
+
+					<div class="tel">
+						<h5>
+							Téléphone :
+						</h5>
+						<ul>
+							{% if details.tel %}
+								<li>{{details.tel | raw}}</li>
+							{% endif %}
+						</ul>
+						<hr>
+
+					</div>
+
+					<hr>
+
+					{% if (app.user) %}
+						<div class="content_one_cta text-center">
+							<button class="btn btn-success" id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
+						</div>
+					{% endif %}
+					
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
