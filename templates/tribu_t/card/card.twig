@@ -61,9 +61,9 @@
                 </div>
             {% endif %}
         </div>
-            
+    
         <div class="card-pub-actu">
-            <p class="text-pub mb-3">{{publication.description}}</p>
+            <p class="text-pub mb-3">{{ publication.description }}</p>
             {% if publication.image is defined and publication.image is not same as("") %}
                 {# <img class="image_publication"  src="{{publication.image|replace({"/public": ""})}}" alt="image publication"> ON DEV #}
                 <img class="publication-picture"  src="{{publication.image}}" alt="image publication">

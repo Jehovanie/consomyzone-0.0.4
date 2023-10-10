@@ -6,20 +6,22 @@ use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\TributGService;
+use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Service\SortResultService;
+use App\Repository\TabacRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
+use App\Repository\GolfFranceRepository;
 use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\AvisRestaurantRepository;
 use App\Repository\CommuneGeoCoderRepository;
-use App\Repository\GolfFranceRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\StationServiceFrGeomRepository;
-use App\Repository\TabacRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
@@ -186,9 +188,12 @@ class HomeController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
+        Tribu_T_Service $tribu_T_Service,
         CommuneGeoCoderRepository $communeGeoCoderRepository,
         GolfFranceRepository $golfFranceRepository,
-        TabacRepository $tabacRepository
+        TabacRepository $tabacRepository,
+        RestaurantController $restaurantController,
+        AvisRestaurantRepository $avisRestaurantRepository
         
     ){
 
@@ -268,7 +273,15 @@ class HomeController extends AbstractController
                     $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
                     $otherResult = true;
                 }
+                
+                if(count($resto) > 0){
+                    $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                    $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                    $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                }
+
                 $results = $resto;
+
                 break;
             case "golf":
                 $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
@@ -318,6 +331,12 @@ class HomeController extends AbstractController
 
                     if($otherResto){
                         $otherResult = true;
+                    }
+
+                    if(count($resto) > 0){
+                        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                        $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
                     }
 
                     $results[0] = array_merge($resto[0]);
@@ -386,6 +405,12 @@ class HomeController extends AbstractController
                         $otherResto = true;
                     }
 
+                    if(count($resto) > 0){
+                        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                        $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                    }
+
                     $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($golf[0])>0){
                         $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
@@ -404,97 +429,38 @@ class HomeController extends AbstractController
                         $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
                         $otherStation = true;
                     }
-    
-                    if(!$otherFerme && !$otherResto && !$otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0], $tabac[0]);
-                        $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1] + $tabac[1];
-                    }elseif(!$otherFerme && $otherResto && $otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($ferme[0]);
-                        $results[1] = $ferme[1];
-                    }elseif($otherFerme && !$otherResto && $otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0]);
-                        $results[1] = $resto[1];
-                    }elseif($otherFerme && $otherResto && !$otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($station[0]);
-                        $results[1] = $station[1];
-                    }elseif($otherFerme && $otherResto && $otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($golf[0]);
-                        $results[1] = $golf[1];
-                    }elseif($otherFerme && $otherResto && $otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($tabac[0]);
-                        $results[1] = $tabac[1];
-                    }elseif(!$otherFerme && !$otherResto && $otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0], $ferme[0]);
-                        $results[1] = $ferme[1] + $resto[1];
-                    }elseif(!$otherFerme && $otherResto && !$otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($station[0] , $ferme[0]);
-                        $results[1] = $station[1] + $ferme[1];
-                    }elseif($otherFerme && !$otherResto && !$otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0] , $station[0]);
-                        $results[1] = $station[1] + $resto[1];
-                    }elseif(!$otherFerme && $otherResto && $otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($ferme[0] , $golf[0]);
-                        $results[1] = $ferme[1] + $golf[1];
-                    }elseif($otherFerme && !$otherResto && $otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0] , $golf[0]);
-                        $results[1] = $resto[1] + $golf[1];
-                    }elseif($otherFerme && $otherResto && !$otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($station[0] , $golf[0]);
-                        $results[1] = $station[1] + $golf[1];
-                    }elseif(!$otherFerme && $otherResto && $otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($ferme[0] , $tabac[0]);
-                        $results[1] = $ferme[1] + $tabac[1];
-                    }elseif($otherFerme && !$otherResto && $otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($resto[0] , $tabac[0]);
-                        $results[1] = $resto[1] + $tabac[1];
-                    }elseif($otherFerme && $otherResto && !$otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($station[0] , $tabac[0]);
-                        $results[1] = $station[1] + $tabac[1];
-                    }elseif($otherFerme && $otherResto && $otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($golf[0] , $tabac[0]);
-                        $results[1] = $golf[1] + $tabac[1];
-                    }elseif(!$otherFerme && !$otherResto && !$otherStation && $otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0]);
-                        $results[1] = $station[1] + $ferme[1] + $resto[1];
-                    }elseif($otherFerme && !$otherResto && !$otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0] , $station[0], $golf[0]);
-                        $results[1] = $station[1] + $golf[1] + $resto[1];
-                    }elseif(!$otherFerme && !$otherResto && $otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($resto[0] , $ferme[0], $golf[0]);
-                        $results[1] = $ferme[1] + $golf[1] + $resto[1];
-                    }elseif(!$otherFerme && $otherResto && !$otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($station[0] , $ferme[0], $golf[0]);
-                        $results[1] = $ferme[1] + $golf[1] + $station[1];
-                    }elseif(!$otherFerme && !$otherResto && $otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($resto[0] , $ferme[0], $tabac[0]);
-                        $results[1] = $ferme[1] + $tabac[1] + $resto[1];
-                    }elseif(!$otherFerme && $otherResto && !$otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($station[0] , $ferme[0], $tabac[0]);
-                        $results[1] = $ferme[1] + $tabac[1] + $station[1];
-                    }elseif(!$otherFerme && $otherResto && $otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($golf[0] , $ferme[0], $tabac[0]);
-                        $results[1] = $ferme[1] + $tabac[1] + $golf[1];
-                    }elseif($otherFerme && !$otherResto && $otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($golf[0] , $resto[0], $tabac[0]);
-                        $results[1] = $resto[1] + $tabac[1] + $golf[1];
-                    }elseif($otherFerme && !$otherResto && !$otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($station[0] , $resto[0], $tabac[0]);
-                        $results[1] = $resto[1] + $tabac[1] + $station[1];
-                    }elseif(!$otherFerme && !$otherResto && !$otherStation && !$otherGolf && $otherTabac){
-                        $results[0] = array_merge($ferme[0] , $resto[0], $station[0], $golf[0]);
-                        $results[1] = $ferme[1] + $resto[1] + $station[1] + $golf[1];
-                    }elseif(!$otherFerme && $otherResto && !$otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($ferme[0] , $tabac[0], $station[0], $golf[0]);
-                        $results[1] = $ferme[1] + $tabac[1] + $station[1] + $golf[1];
-                    }elseif(!$otherFerme && !$otherResto && $otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($ferme[0] , $tabac[0], $resto[0], $golf[0]);
-                        $results[1] = $ferme[1] + $tabac[1] + $resto[1] + $golf[1];
-                    }elseif(!$otherFerme && !$otherResto && !$otherStation && $otherGolf && !$otherTabac){
-                        $results[0] = array_merge($ferme[0] , $tabac[0], $resto[0], $station[0]);
-                        $results[1] = $ferme[1] + $tabac[1] + $resto[1] + $station[1];
-                    }elseif($otherFerme && !$otherResto && !$otherStation && !$otherGolf && !$otherTabac){
-                        $results[0] = array_merge($golf[0] , $tabac[0], $resto[0], $station[0]);
-                        $results[1] = $golf[1] + $tabac[1] + $resto[1] + $station[1];
+
+                    $results[0] = [];
+
+                    $results[1] = 0;
+
+                    if(!$otherFerme || !$otherResto || !$otherStation || !$otherGolf || !$otherTabac){
+                        if(!$otherFerme){
+                            $results[0] = array_merge($ferme[0]);
+                            $results[1] = $ferme[1];
+                        }
+
+                        if(!$otherStation){
+                            $results[0] = array_merge($station[0], $results[0]);
+                            $results[1] += $station[1];
+                        }
+
+                        if(!$otherResto){
+                            $results[0] = array_merge($resto[0], $results[0]);
+                            $results[1] += $resto[1];
+                        }
+
+
+                        if(!$otherGolf){
+                            $results[0] = array_merge($golf[0], $results[0]);
+                            $results[1] += $golf[1];
+                        }
+
+                        if(!$otherTabac){
+                            $results[0] = array_merge($tabac[0], $results[0]);
+                            $results[1] += $tabac[1];
+                        }
+
                     }else{
                         $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0], $tabac[0]);
                         $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1] + $tabac[1];
@@ -508,9 +474,19 @@ class HomeController extends AbstractController
                 break;
         }
 
+        ///// les resto pastille si l'utilisateur connecter
+        $arrayIdResto = [];
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+
         if(str_contains($request->getPathInfo(), '/api/search')){
             return $this->json([
                 "results" => $results,
+                "allIdRestoPastille" => $arrayIdResto,
                 "type" => $type,
                 "cles0" => $cles0,
                 "cles1" => $cles1,

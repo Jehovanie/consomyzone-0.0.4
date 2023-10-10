@@ -11,7 +11,9 @@ use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 
+use App\Service\Tribu_T_Service;
 use App\Service\TributGService;
+
 use App\Repository\UserRepository;
 
 use App\Entity\AdressIpAndPosition;
@@ -24,18 +26,20 @@ use App\Repository\BddRestoRepository;
 
 use App\Repository\FermeGeomRepository;
 
+use App\Controller\RestaurantController;
+
 use App\Repository\GolfFranceRepository;
 
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Repository\DepartementRepository;
 
+use App\Repository\AvisRestaurantRepository;
+
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use App\Repository\AdressIpAndPositionRepository;
 use App\Repository\StationServiceFrGeomRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -334,36 +338,64 @@ class ToutsController extends AbstractController
     #[Route("/dataHome", name:"dataForHome", methods:["GET"])]
     public function getDateHome(
         Request $request,
+        UserRepository $userRepository,
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         FermeGeomRepository $fermeGeomRepository,
         BddRestoRepository $bddRestoRepository,
         GolfFranceRepository $golfFranceRepository,
-        TabacRepository $tabacRepository
+        TabacRepository $tabacRepository,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        RestaurantController $restaurantController,
+        Tribu_T_Service $tribu_T_Service
     ){
+
+        $arrayIdResto = [];
+
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        
         if($request->query->has("minx") && $request->query->has("miny") ){
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
+            $restos = $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
+             
+            $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+            
             return $this->json([
                 "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
-                "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                // "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
                 "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
                 "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
             ]);
         }
 
-        $taille= 2000;
+        $taille= 1500;
         $userID= $this->getUser() ? $this->getUser()->getId(): null;
+
+        $restos = $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto);
+
+        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
+
+        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+        
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
-            "resto" => $bddRestoRepository->getSomeDataShuffle($taille),
+            // "resto" => $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto),
+            "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
             "golf" => $golfFranceRepository->getSomeDataShuffle($userID, $taille),
-            "tabac" => $tabacRepository->getSomeDataShuffle($taille)
-            
+            "tabac" => $tabacRepository->getSomeDataShuffle($taille),
+            "allIdRestoPastille" => $arrayIdResto
         ]);
     }
     

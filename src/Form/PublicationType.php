@@ -36,6 +36,10 @@ class PublicationType extends AbstractType
             ])
         /*->add('user_id', HiddenType::class)*/
         ->add('tribu_t_name', HiddenType::class)
+        /**
+         * @author : elie 
+         * ajout de form hidden pour stocker l'image base64 pour l'utilisation de camera de l'appareil */
+        ->add('capture', HiddenType::class)
         ;
     }
 

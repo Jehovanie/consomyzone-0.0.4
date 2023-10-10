@@ -2251,3 +2251,15 @@ img.zoom {
     color: black;
 
 }
+
+.upload_pdp_elie{
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    border-radius: 50%;
+    background-color: #ccc;
+    color: #02042A;
+    padding: 5px;
+    border: 1px solid gray;
+    cursor: pointer;
+}

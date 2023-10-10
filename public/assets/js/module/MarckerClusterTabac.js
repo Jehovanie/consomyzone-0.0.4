@@ -102,8 +102,10 @@ class MarckerClusterTabac extends MapModule {
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
+                ////close right if this open
+                this.closeRightSide();
 
-                hideRightSide();
+                // hideRightSide();
 
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 

@@ -60,8 +60,10 @@ function createPagination(totalPages, page){
                 active = "alphabet_active";
                 handleFilterFirstChar(letters[plength]);
                 OBJECT_MARKERS_RESTO.filterByFirstLetterOnName(letters[page])
-            
-                document.querySelector(".content_pagination_js_jheo").classList.add("hidden");
+
+                if(document.querySelector(".content_pagination_js_jheo")){
+                    document.querySelector(".content_pagination_js_jheo").classList.add("hidden");
+                }
             }
         }else{ //else leave empty to the active variable
             active = "";
@@ -154,5 +156,7 @@ function refreshDataList(){
 
     OBJECT_MARKERS_RESTO.resetToDefaultMarkers();
 
-    document.querySelector(".content_pagination_js_jheo").classList.remove("hidden");
+    if(document.querySelector(".content_pagination_js_jheo")){
+        document.querySelector(".content_pagination_js_jheo").classList.remove("hidden");
+    }
 }

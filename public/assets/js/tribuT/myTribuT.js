@@ -3,15 +3,12 @@
  */
 var tribu_t_name_0 = "";
 var id_c_u //id du user courant
-// var IS_DEV_MODE = true;
 let image_listss = [];
 let dataExtension = [];
-// var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
-var worker = new Worker('/public/assets/js/tribuT/worker.js');
-// var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-var workerRestoPastilled = new Worker('/public/assets/js/tribuT/worker_pastilled.js');
-// var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
-var workerGetCommentaireTribuT = new Worker('/public/assets/js/tribuT/worker_cmnt.js')
+var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
+var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
+var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
+
 var image_tribu_t
 var descriptionTribuT = ""
 /**
@@ -283,7 +280,7 @@ function showPartisan() {
                                 <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
                             </td>
                             <td>
-                                <a target="_blank" href="/user/profil/1" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
                             </td>
                             <td>
                                 TribuG ${tribuG.replaceAll("_", " ")}
@@ -336,61 +333,141 @@ function getBase64V2() {
     fR.readAsDataURL(this.files[0]);
 }
 function updatePdpTribu_T(files) {
+
     const fR = new FileReader();
+
     fR.addEventListener("load", (evt) => {
 
-        const param = {
-            base64: evt.target.result,
-            photoName: files.name,
-            photoType: files.type,
-            photoSize: files.size,
-            tribu_t_name: tribu_t_name_0,
-        }
-        console.log(param)
-        const request = new Request("/user/tribu/set/pdp", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(param)
-        })
-        fetch(request).then(responses => {
-            if (responses.ok && responses.status === 200) {
-                document.querySelector("#avatarTribuT").src = evt.target.result
-                document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+        /**
+         * @author elie
+         * checking image extension and size if <2Mo
+         * use into TribuT.html.twig
+         * i want upload an image less than 2Mo
+         */
+
+        const listExt= ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
+        const octetMax= 2e+6; //2Mo 
+
+        /// file as url
+        const uploaded_image = fR.result;
+
+        if( !checkFileExtension(listExt,uploaded_image)){
+
+            swal({
+                title: "Le format de fichier n\'est pas pris en charge!",
+                text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe)",
+                icon: "error",
+                button: "OK",
+                });
+
+        }else{
+            if(!checkTailleImage(octetMax, uploaded_image)){
+                swal({
+                    title: "Le fichier est trop volumineux!",
+                    text: "La taille de l\'image doit être inférieure à 2Mo.",
+                    icon: "error",
+                    button: "OK",
+                    });
+                
+            }else{
+                const param = {
+                    base64: evt.target.result,
+                    photoName: files.name,
+                    photoType: files.type,
+                    photoSize: files.size,
+                    tribu_t_name: tribu_t_name_0,
+                }
+                console.log(param)
+                const request = new Request("/user/tribu/set/pdp", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(param)
+                })
+                fetch(request).then(responses => {
+                    if (responses.ok && responses.status === 200) {
+                        document.querySelector("#avatarTribuT").src = evt.target.result
+                        document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+                        swal({
+                            title: "Succès!",
+                            text: "L\'avatar de la tribu est à jour avec succès!",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }
+                })
             }
-        })
+        }
 
     })
     fR.readAsDataURL(files);
 }
 
+/** @author elie (update)
+ *  où: on Utilise cette block pour capture de photo de publication tribu T
+ *  localisation : myTribuT.js, 
+ *  utilisation de selecteur modal_publication.html.twig
+ *  je veux : ajouter une photo par media screen navigateur
+ */
 function sendPublication(formData) {
     const fR = new FileReader();
-    fR.addEventListener("load", (evt) => {
 
-        const param = {
-            base64: evt.target.result,
-            photoName: formData.get("photo").name,
-            photoType: formData.get("photo").type,
-            photoSize: formData.get("photo").size,
-            contenu: formData.get("contenu"),
-            tribu_t_name: tribu_t_name_0,
-            confidentialite: formData.get("confidentialite")
-        }
-        console.log(param)
-        const request = new Request("/user/create-one/publication", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(param)
+    /**
+     * tester si on utilise la capture media
+     */
+    if(document.querySelector("#image-publication-tribu-t").getAttribute("data-file")=="image"){
+        fR.addEventListener("load", (evt) => {
+
+            let base64 = document.querySelector("#image-publication-tribu-t").src
+            let param = {
+                base64: base64,
+                photoName: `capture-${new Date().getTime()}.png`,
+                photoType: 'image/png',
+                photoSize: 300000,
+                contenu: formData.get("contenu"),
+                tribu_t_name: tribu_t_name_0,
+                confidentialite: formData.get("confidentialite")
+            }
+            // console.log(formData.get('photo'));
+            console.log(param)
+            const request = new Request("/user/create-one/publication", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            })
+            fetch(request)
         })
-        fetch(request)
-    })
-    fR.readAsDataURL(formData.get('photo'));
+        fR.readAsDataURL(dataURLtoFile(document.querySelector("#image-publication-tribu-t").src, `capture-${new Date().getTime()}.png`));
+    }else{
+        fR.addEventListener("load", (evt) => {
+
+            let param = {
+                base64: evt.target.result,
+                photoName: formData.get("photo").name,
+                photoType: formData.get("photo").type,
+                photoSize: formData.get("photo").size,
+                contenu: formData.get("contenu"),
+                tribu_t_name: tribu_t_name_0,
+                confidentialite: formData.get("confidentialite")
+            }
+            const request = new Request("/user/create-one/publication", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            })
+            fetch(request)
+        })
+        fR.readAsDataURL(formData.get('photo'));
+    }
+    
 }
 
 /**
@@ -400,6 +477,7 @@ function sendPublication(formData) {
  * @param {*} tribu_t_name 
  */
 function showdDataContent(data, type, tribu_t_name, id_c_u) {
+
     let detailsTribuT = null
 
     if (type === "owned")
@@ -414,19 +492,33 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     descriptionTribuT = tribu_t[0].description
     let restExtension = ""
     let golfExtension = ""
-    if (tribu_t[0].extension) {
+
+    // extension 'on' correspond à extension 
+    //restaurant dans les anciens version
+    // ce bout de code est là pour assurer une prise en charge recurssive
+    if(tribu_t[0].extension=="on" || tribu_t[0].extension=="restaurant" ){
         restExtension = ` <li class="listNavBarTribu restoNotHide">
-                            <a style="cursor:pointer;">Restaurants</a>
-                        </li>`
+                        <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+                    </li>`
+    }else{
+        if(tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1 ) {
+            restExtension = ` <li class="listNavBarTribu restoNotHide">
+                                <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+                            </li>`
+        }
+        if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
+            golfExtension = ` <li class="listNavBarTribu golfNotHide">
+                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
+                            </li>`
+        }
     }
-    if (tribu_t[0].extension_golf) {
-        golfExtension = ` <li class="listNavBarTribu restoNotHide non_active">
-                            <a style="cursor:not-allowed;">Golf</a>
-                        </li>`
-    }
+
+    
+
 
     if (tribu_t[0].logo_path) {
         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+        //public
         image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
         // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
     } else {
@@ -436,10 +528,10 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let canChangeTribuPicture = "";
     if (document.querySelector("#activeTribu")) {
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier le logo de la tribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
-                                    <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
+                                    <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
                                 </div>` : ""
     }
 
@@ -462,7 +554,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                         <div class="col-lg-8 col-8 content-tribu-t-name">
                             <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
                             <p class="ms-2 text-white">
-                            ${tribu_t[0].description}
+                            ${tribu_t[0].description.replace(/"/gi,'')}
                             </p>
                         </div>
                     </div>
@@ -533,7 +625,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     worker.onmessage = (event) => {
         // console.log(event.data)
         let data = event.data
-        console.log(data);
+        // console.log(data);
 
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
@@ -611,7 +703,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -713,7 +805,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -853,7 +945,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -1130,7 +1222,6 @@ function showResto(table_rst_pastilled, id_c_u) {
         if (restos.length > 0) {
 
             for (let resto of restos) {
-                console.log(resto);
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
                 if(resto.isPastilled){
@@ -1174,7 +1265,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
                                 <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
-                                    <span style="font-size:12pt;">${denominationsF} </span> 
+                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span> 
                                 <!--</a>-->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
@@ -1413,10 +1504,6 @@ function findResto(val, localisation = "") {
         method: 'GET'
     })
 
-    //    const request =new Request(`/tribu/findresto/${val}/${ou}`, {
-    //         method: 'GET'
-    //     })  
-
     document.querySelector("#result_resto_past").style.display = "block;"
 
 
@@ -1434,8 +1521,6 @@ function findResto(val, localisation = "") {
         let jsons = data.results[0]
 
         jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
-
-        // console.log(jsons.results[0])
 
         let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
         <thead>
@@ -1502,47 +1587,6 @@ function findResto(val, localisation = "") {
                                     </td>
                                 </tr>
                             `
-
-                // document.querySelector("#result_resto_chr").innerHTML += `
-
-                //     <div class="card-result-chr items">
-                //         <div class="header-result">
-                //             <h5>${name}</h5>
-
-                //         </div>
-                //         <div class="body-result">
-
-                //             <div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>
-                //              <div class="type-resto-ico row">
-                //                 <div class="col-lg-5">${boulangerie}</div>
-                //                 <div class="col-lg-5">${bar}</div>
-                //                 <div class="col-lg-5">${brasserie}</div>
-                //                 <div class="col-lg-5">${cafe}</div>
-                //                 <div class="col-lg-5">${cuisineMonde}</div>
-                //                 <div class="col-lg-5">${fastFood}</div>
-                //                 <div class="col-lg-5">${creperie}</div>
-                //                 <div class="col-lg-5">${salonThe}</div>
-                //                 <div class="col-lg-5">${pizzeria}</div>
-                //             </div>
-                //             <div>
-                //                 <h5>Adresse: </h5>
-                //                 <p>${adresse}</p>
-                //             </div>
-
-                //         </div>
-                //         <div class="footer-result">
-                //             <button class="btn btn-primary" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
-                //         </div>
-                //     </div>
-                // `
-                // $(document).ready(function(){
-                //     $(".owl-carousel").owlCarousel({
-                //         autoPlay: 3000,
-                //         items: 5
-                //     });
-                // });
-
-
             }
 
             document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
@@ -2232,13 +2276,15 @@ if (searchParams.has('message')) {
 
 function listResto() {
 
-    // document.querySelector(".content-actualite-connected").style ="background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4);"
-
     document.querySelector("#elie-restou").innerHTML = ""
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
     if (adresse.trim() != "" || inputName.trim() != "") {
-        findResto(inputName, adresse)
+        if(document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")){
+            findGolf(inputName, adresse)
+        }else if(document.querySelector(".restoNotHide > a").classList.contains("active")){
+            findResto(inputName, adresse)
+        }
         $("#modalForExtension").modal("show")
     } else {
 
@@ -2273,17 +2319,24 @@ if (document.querySelector("#btn_open_modal_avis_elie")) {
     })
 }
 
+/**
+ * @author elie
+ * @constructor
+ * Function affichage de la liste des avis de resto pastillé dans un tribu T
+ * @localisation: myTribuT.js
+ * @utilisation : dans le template tribuT.html.twig
+ * @param {int} nb_avis : afficher dans le template
+ * @param {int} id_resto : id de la bdd_resto
+ */
 function openAvis(nb_avis, id_resto) {
-    // document.querySelector("#staticBackdrop")
 
     if (parseInt(nb_avis) > 0) {
-
-        // $("#modalAvisRestaurant").modal("hidden")
 
         $("#avisRestoPastille").modal("show")
 
         const table_resto = tribu_t_name_0 + "_restaurant"
-        console.log(table_resto);
+
+        // document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
 
         fetch('/user/comment/tribu/restos-pastilles/' + table_resto + '/' + id_resto)
             .then(response => response.json())
@@ -2334,9 +2387,9 @@ function openAvis(nb_avis, id_resto) {
                         `
                 }
 
-                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
 
-                document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", "create")
+                document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
             })
 
 
@@ -2359,6 +2412,14 @@ function openAvis(nb_avis, id_resto) {
 
 }
 
+/**
+ * @author elie
+ * @constructor : fonction de parametrage d'id resto dans un template
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {element} params : element ou le fonction se place
+ * @param {int} id_pastille : id resto
+ */
 function setSendNote(params, id_pastille) {
 
     const action = params.getAttribute("data-action")
@@ -2381,23 +2442,34 @@ function setSendNote(params, id_pastille) {
             sendNote(parseFloat(note.value), avis.value, id_pastille)
         }
 
-
     } else {
-
         updateNote(parseFloat(note.value), avis.value, id_pastille)
-
     }
-
-
 }
 
+/**
+ * @author elie
+ * @constructor Fonction d'ouverture de note de resto pastillé
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {int} id_pastille : id resto
+ * @param {string} action : action à faire pour le bouton
+ */
 function openOnNote(id_pastille, action) {
 
-    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("data-action", action)
-    document.querySelector("#Submit-Avis-resto-tom-js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+    document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
 
 }
 
+/**
+ * @constructor Fonction d'ouverture d'un evenement
+ * @author elie
+ * @param {int} id : id resto
+ * @param {string} nom : nom de resto
+ * @param {string} adresse : adresse de resto
+ * @param {string} action : action à faire pour le resto
+ */
 function openOnEvent(id, nom, adresse, action) {
 
     document.querySelector("#nomEtabEvent").value = nom
@@ -2406,23 +2478,24 @@ function openOnEvent(id, nom, adresse, action) {
 
     let date = new Date();
     let currentDate = date.toISOString().substring(0, 10);
-    // let currentTime = date.toISOString().substring(11,16);
 
     document.getElementById('eventStart').value = currentDate;
     document.getElementById('eventEnd').value = currentDate;
     document.getElementById('timeStart').value = '00:00';
     document.getElementById('timeEnd').value = '23:00';
 
-
-    // document.querySelector("#eventEnd").value = new Date().toLocaleDateString()
-    // swal({
-    //     title: "Succès!",
-    //     text: "Un évènement crée avec succès",
-    //     icon: "success",
-    //     button: "OK",
-    //   });
 }
 
+/**
+ * @constructor Fonction d'ouverture d'un modal detail option resto
+ * @param {*} id_pastille : id resto
+ * @param {*} denomination_f : nom resto
+ * @param {*} adresse 
+ * @param {*} latitude 
+ * @param {*} longitude 
+ * @param {*} text1 : icon action
+ * @param {*} action : type d'action
+ */
 function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
 
     $("#detailOptionResto").modal("show")
@@ -2431,22 +2504,24 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
-    document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-      
-    // const swalWithBootstrapButtons = swal.mixin({
-    //     customClass: {
-    //         confirmButton: 'btn btn-primary me-2',
-    //         cancelButton: 'btn btn-secondary non_active disabled'
-    //         // cancelButton: 'btn btn-primary'
-    //     },
-    //     buttonsStyling: false
-    // })
+    let btn = document.querySelector("#data-depastille-nanta-js")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
+    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
+    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
 
 }
 
-
+/**
+ * @constructor : Ouverture de modal detail resto
+ * @param {*} nom_resto 
+ * @param {*} adresse 
+ * @param {*} nom_dep 
+ * @param {*} id_dep 
+ * @param {*} id_restaurant 
+ */
 function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
 
     fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
@@ -2501,11 +2576,22 @@ function settingTribuT(e, tribuTName) {
         document.querySelector("#update_description").value = currentTribuT.description
         document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
 
-        if (currentTribuT.extension != null) {
-            document.querySelector("#update_form_extension").checked = true
+        // extension 'on' correspond à extension 
+        //restaurant dans les anciens version
+        // ce bout de code est là pour assurer une prise en charge recurssive
+        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
+            document.querySelector("#update_form_restaurant").checked = true
         } else {
-            document.querySelector("#update_form_extension").checked = false
+            document.querySelector("#update_form_restaurant").checked = false
         }
+
+        if (currentTribuT.extension.golf) {
+            document.querySelector("#update_form_golf").checked = true
+        } else {
+            document.querySelector("#update_form_golf").checked = false
+        }
+
+       
         document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
 
     })
@@ -2522,7 +2608,8 @@ function updateTribuTInfos(e) {
     let description = document.querySelector("#update_description").value.trim()
     let nomTribuT = document.querySelector("#updateTribuTName").value.trim()
     let path = null
-    let extension = document.querySelector("#update_form_extension").checked == true ? "on" : null
+    let restaurant = document.querySelector("#update_form_restaurant").checked == true ? "on" : null
+    let golf = document.querySelector("#update_form_golf").checked == true ? "on" : null
     let photoName = e.target.dataset.name
     let base64 = e.target.dataset.url
 
@@ -2533,7 +2620,8 @@ function updateTribuTInfos(e) {
         path: path,
         photoName: photoName,
         base64: base64,
-        extension: extension
+        restaurant: restaurant,
+        golf: golf
     }
 
     let request = new Request("/user/tribu/update-tribu_t-info", {
@@ -2563,4 +2651,303 @@ function updateTribuTInfos(e) {
             });
         })
 
+}
+
+function showGolf(){
+
+    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+
+    if (document.querySelector("li.listNavBarTribu > a.active")) {
+        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    }
+    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+
+    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+
+    golfContainer.innerHTML = `
+                                <div class="row mt-3 p-3">
+                                    <div class="col-12">
+                                        <div id="form_past"></div>
+                                        <div class="g-3">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+                                            </div>
+                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+
+    fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
+    .then(response =>  response.json())
+    .then(data => {
+        if(data.length > 0){
+            let tr = ""
+            let i = 0
+            for (const item of data) {
+                    if(item.isPastilled){
+                        i++
+                        let nbrAvis = item.nbrAvis
+                        let note = item.globalNote ? item.globalNote : 0
+                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+                        tr += `<tr id="golf_${item.id_golf}">
+                            <td class="d-flex bd-highlight align-items-center">
+                                <div class="elie-img-pastilled">
+                                ${image_tribu_t}
+                                </div>
+                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
+                            </td>
+                            <td class="data-note-${item.id}">${note}/4</td>
+                            <td>
+                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+                            </td>
+                        </tr>`
+
+                    }
+            }
+
+            if(i>0){
+
+                golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom de golf</th>
+                                                <th>Note</th>
+                                                <th>Avis</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${tr}
+                                        </tbody>
+                                    </table>`
+
+                $('#table_golf_pastilled').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
+            }else{
+                golfContainer.style.textAlign = "center"
+                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+            }
+
+
+        }else{
+            golfContainer.style.textAlign = "center"
+            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+        }
+
+        golfContainer.classList.add("bg-white");
+        golfContainer.classList.add("p-2");
+        golfContainer.style.display = "block"
+
+    })
+
+}
+
+function findGolf(val, localisation = "") {
+
+    const request = new Request(`/api/search/golf?cles0=${val}&cles1=${localisation}`, {
+        method: 'GET'
+    })
+
+    document.querySelector("#result_resto_past").style.display = "block;"
+
+
+    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+    document.querySelector("#elie-restou").innerHTML =
+        `<div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        </div>`
+
+
+    fetch(request).then(response => response.json()).then(data => {
+
+        let jsons = data.results[0]
+
+        jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " golfs trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " golf trouvé"
+
+        let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Nom du golf</th>
+                <th>Adresse</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>`
+
+        let foot_table = `</tbody>
+        </table>`
+
+        let body_table = "";
+
+        if (jsons.length > 0) {
+
+            for (let json of jsons) {
+
+                const name = json.nom;
+                const adresse = json.add;
+                const idDep = json.id_dep;
+                const nomDep = json.departement;
+                const idEtab = json.id_etab;
+                const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
+                
+                body_table += `
+                                <tr>
+                                    <td>${name}</td>
+                                    <td>${adresse}</td>
+                                    <td class="d-flex bd-highlight">
+                                        <button data-tbname = ${table} data-id="${idEtab}" data-name="${name}" data-adresse="${adresse}" class="btn btn-info" onclick="showEtabDetail(event,'${nomDep}', ${idDep}, ${idEtab})">Détail</button>
+                                        <button data-tbname = ${table} data-id="${idEtab}" data-name="${name}" data-adresse="${adresse}" class="btn btn-primary ms-1" onclick="pastilleGolf(this)">Pastillez</button>
+                                    </td>
+                                </tr>
+                            `
+
+            }
+
+            document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
+
+            $('#resto-a-pastiller-list').DataTable({
+                "language": {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                }
+            });
+
+        } else {
+            document.querySelector("#elie-restou").style.display = "block"
+            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
+        }
+    })
+
+}
+
+
+function showEtabDetail(event,nom_dep, id_dep, id_etab) {
+    
+    const request = new Request(`/api/agenda/golf/${nom_dep}/${id_dep}/detail/${id_etab}`)
+
+    $("#modalForExtension").modal("hide")
+    $("#detailEtabModal").modal("show")
+
+    let dataName = event.target.dataset.name
+    let dataAdresse = event.target.dataset.adresse
+    let modalBody = document.querySelector("#detailEtabModal .modal-body")
+    document.querySelector(".content_etab_detail").innerHTML = `<div>
+                                <div class="mb-2">
+                                    <span class="mt-2 ms-3"><b>${dataName}</b></span>
+                                </div>
+                                <p style="text-align:padding-left:4% !important;">
+                                    <a href="#" class="small" style="margin-left:4%#19a8d8 !important;">
+                                        ${dataAdresse}
+                                    </a>
+                                </p>
+                            </div>`
+
+    modalBody.innerHTML =  `<div class="d-flex justify-content-center">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                                </div>`
+
+    fetch(request)
+        .then(res => res.text()).then(html => {
+            modalBody.innerHTML = html
+        });
+    
+}
+
+function pastilleGolf(element){
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    console.log(data);
+
+    let request = new Request("/user/tribu_t/pastille/golf", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                new swal("Succès !", "Golf pastillé avec succès", "success")
+                    .then((value) => {
+                        element.classList = "btn btn-secondary ms-1"
+                        element.textContent = "Pastillé"
+                        element.setAttribute("disabled", true)
+                        showGolf()
+                        document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
+                    });          
+            })
+            .catch(error=>console.log(error))
+}
+
+function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null) {
+
+    let tableTribu = document.querySelector("#activeTribu").dataset.tableName
+
+    $("#detailOptionGolf").modal("show")
+
+    // document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
+
+    document.querySelector("#data-note-nanta-js").removeAttribute("onclick")
+    document.querySelector("#data-event-nanta-js").removeAttribute("onclick")
+    let btn = document.querySelector("#data-depastilleGolf-nanta-js")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    btn.dataset.tbname = tableTribu
+}
+
+function depastilleGolf(selector){
+    let id = selector.dataset.id
+    let name = selector.dataset.name
+    let tbl = selector.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    let request = new Request("/user/tribu_t/depastille/golf", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                    new swal("Succès !", "Golf dépastillé avec succès", "success")
+                    .then((value) => {
+                            $("#detailOptionGolf").modal("hide")
+                            document.querySelector("#golf_"+id).remove()
+                    });
+            })
+            .catch(error=>console.log(error))
 }

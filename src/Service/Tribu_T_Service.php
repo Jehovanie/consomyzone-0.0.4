@@ -491,11 +491,12 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
      * @param string $description it's can be change. This is the description of the tribu T
      * @param string $path  it's can be change. This is the logo path of the tribu T
-     * @param string $extenstion it's can be change. This is the extension we can associate with the tribu T
+     * @param array $extension it's can be change. This is the extension we can associate with the tribu T
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
-    function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join,$nomTribuT)
+    function setTribuT($tribu_T_name_table, $description,$path,$extension,$userId,$tribu_t_owned_or_join,$nomTribuT)
+    // function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join,$nomTribuT)
 
     {
 
@@ -514,7 +515,8 @@ class Tribu_T_Service extends PDOConnexionService
                     "name"=> $tribu_T_name_table,
                     "name_tribu_t_muable"=>$nomTribuT,
                     "description"=> $description,
-                    "extension"=> $extenstion,
+                    "extension"=> $extension,
+                    // "extension"=> $extenstion,
                     // "extension_golf"=> $extenstion_golf,
                     "logo_path"=>$path,
                     "date"=>  $date,
@@ -533,7 +535,6 @@ class Tribu_T_Service extends PDOConnexionService
             $array1= json_decode($list, true);
             $tmp = [];
             $array =[];
-            
             try{
                 array_push($tmp, ...$array1["tribu_t"]);
             }catch(ArgumentCountError $e){
@@ -542,11 +543,11 @@ class Tribu_T_Service extends PDOConnexionService
                 array_push($tmp, 
                 array("name" => $tribu_T_name_table,  
                 "name_tribu_t_muable"=>$nomTribuT, 
+                "description" => $description, "extension" => $extension,"logo_path" => $path, "date" =>  $date));
                 // "description" => $description, "extension" => $extenstion,"extension_golf"=> $extenstion_golf, "logo_path" => $path, "date" =>  $date));
-                "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
+                // "description" => $description, "extension" => $extenstion, "logo_path" => $path, "date" =>  $date));
                 $array = array("tribu_t" => $tmp);
             }
-
 
             if ($_ENV['APP_ENV'] == 'dev') 
                 dump($array);
@@ -558,7 +559,6 @@ class Tribu_T_Service extends PDOConnexionService
             $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
             $statement->bindParam(":jsonArray",$jsontribuT);
             $statement->bindParam(":userid",$userId);
-
           
         }
 
@@ -572,7 +572,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
      * @param string $description it's can be change. This is the description of the tribu T
      * @param string $path  it's can be change. This is the logo path of the tribu T
-     * @param string $extenstion it's can be change. This is the extension we can associate with the tribu T
+     * @param array $extension it's can be change. This is the extension we can associate with the tribu T
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
@@ -1271,27 +1271,15 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function fetchUserPublication($table, $user_id){
 
-
-
         $sql = "select * from $table where user_id = $user_id ORDER BY datetime DESC";
-
-
 
         $stmt = $this->getPDO()->prepare($sql);
 
-
-
         $stmt->execute();
-
-
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-
         return $result;
-
-
 
     }
 
@@ -1314,6 +1302,13 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * @param string $tribu_t : Table tribu T
+     * @param string $extension : extension pour la table tribu T
+     * Cette fonction est utilisée pour la création de toute les tables des extensions
+     * id_resto n'est autre que l'id des extensions
+     */
     public function createExtensionDynamicTable($tribu_t, $extension){
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . " (
@@ -1331,6 +1326,14 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
+    /**
+     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+     * @param string $tribu_t : Table tribu T
+     * @param string $extension : extension pour la table tribu T
+     * Cette fonction est utilisée pour la création de toute les tables commentaires des extensions
+     * id_restaurant n'est autre que l'id des extensions
+     * id_resto_comment n'est autre que la clé primaire de la table commentaire de l'extension
+     */
     public function createTableComment($tribu_t, $extension){
         $sql = "CREATE TABLE IF NOT EXISTS " . $tribu_t . "_" . $extension . "(
 
@@ -1491,18 +1494,6 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getRestoPastilles($tableResto, $tableComment){
     
-        // $sql = "SELECT * from (SELECT $tableResto.id as id_pastille, $tableResto.id_resto, $tableResto.denomination_f, bdd_resto.id as id_unique, bdd_resto.dep as id_dep, bdd_resto.poi_y as latitude, bdd_resto.poi_x as longitude,  concat(bdd_resto.numvoie,' ',bdd_resto.typevoie,' ',bdd_resto.nomvoie,' ',bdd_resto.codpost,' ',bdd_resto.commune) as adresse FROM `tribu_t_2_data_engineer_restaurant` inner JOIN bdd_resto on $tableResto.id_resto = bdd_resto.clenum ORDER BY $tableResto.datetime DESC) as resto_pastille INNER JOIN departement ON resto_pastille.id_dep=departement.id";
-        //$sql = "SELECT * FROM $tableResto ORDER BY datetime DESC";
-
-        //ORDER BY datetime DESC 
-        //$sql = "SELECT * FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id ";
-
-        /*$sql= "SELECT  * ,GROUP_CONCAT(t2.id_user) as All_user,GROUP_CONCAT(t2.commentaire) as All_com,
-                FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-                GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com 
-                FROM $tableResto  
-                as t1 LEFT JOIN $tableComment  
-                as t2  ON t2.id_restaurant =t1.id GROUP BY t1.id";*/
         $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
 								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
 								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
@@ -1514,6 +1505,20 @@ class Tribu_T_Service extends PDOConnexionService
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
 
+    }
+
+    public function getGolfPastilles($tableGolf, $tableComment){
+    
+        $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
+								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+				as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+
+        $stmt = $this->getPDO()->prepare($sql);
+         
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
 
     }
 
@@ -1695,28 +1700,32 @@ class Tribu_T_Service extends PDOConnexionService
 
         $object= json_decode($tribu_t_owned, true);
 
-        if( !array_key_exists("name", $object['tribu_t']) ){
+        if( !array_key_exists("name_tribu_t_muable", $object['tribu_t']) ){
+            
             foreach ($object['tribu_t'] as $trib){
+                
+                //"Tribu T " . ucfirst(explode("_",$trib['name_tribu_t_muable'])[count(explode("_",$trib['name_tribu_t_muable']))-1])
                 if( $trib['name'] === $table_name){
                     $apropos = [
-                        'name' => "Tribu T " . ucfirst(explode("_",$trib['name'])[count(explode("_",$trib['name']))-1]),
+                        'name' => $trib['name_tribu_t_muable'],
                         'description' => $trib['description'],
                         'avatar' => $trib['logo_path'],
                     ];
-    
+                   
                     break;
                 }
             }
         }else{
+            //"Tribu T " . ucfirst(explode("_",$object['tribu_t']['name_tribu_t_muable'])[count(explode("_",$object['tribu_t']['name_tribu_t_muable']))-1])
             if( $object['tribu_t']['name'] === $table_name){
                 $apropos = [
-                    'name' => "Tribu T " . ucfirst(explode("_",$object['tribu_t']['name'])[count(explode("_",$object['tribu_t']['name']))-1]),
+                    'name' =>  $object['tribu_t']['name_tribu_t_muable'],
                     'description' => $object['tribu_t']['description'],
                     'avatar' => $object['tribu_t']['logo_path'],
                 ];
             }
         }
-
+        
         return $apropos;
     }
 
@@ -1838,8 +1847,9 @@ class Tribu_T_Service extends PDOConnexionService
     public function getAllPublicationsUpdate($table_name){
         $resultats = [];
 
+      
         $apropo_tribuT = $this->getApropos($table_name);
-
+       
         if( !$apropo_tribuT ){
             return $resultats;
         }
@@ -1865,7 +1875,7 @@ class Tribu_T_Service extends PDOConnexionService
                 $statement->execute();
                 $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
                 
-              
+               
                 $data= [
                     "userOwnPub" => [
                         "id" => $d_pub["user_id"],
@@ -1876,7 +1886,7 @@ class Tribu_T_Service extends PDOConnexionService
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $this->convertUnicodeToUtf8($d_pub['publication']),
+                        "description" => json_decode($this->convertUnicodeToUtf8($d_pub['publication']), true),
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,
@@ -1955,7 +1965,44 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
 
     }
-  
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * où:la rubrique resto 
+     * localisation du fichier: dans ResturantController.php,
+     * je veux: obtenir les details de tous les tribu T avec une extension restaurant avec l'id de restaurant pastille.
+     * 
+     * @param $tribu_t_owned []
+     * 
+     * @return array [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+     */
+    public function getEntityRestoPastilled($tribu_t_owned){
+        $arrayIdResto = [];
+        if( count($tribu_t_owned) > 0 ){
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $tableExtension = $tableTribu . "_restaurant";
+                if($this->checkExtension($tableTribu, "_restaurant") > 0){
+                    $all_id_resto_pastille = $this->getAllIdRestoPastille($tableExtension, true);  // [ [ id_resto => ..., tableName => ... ], ... ]
+                    if( count($all_id_resto_pastille) > 0 ){
+                        foreach ($all_id_resto_pastille as $id_resto_pastille){
+                            $temp = [
+                                "id_resto" => $id_resto_pastille["id_resto"],
+                                "tableName" => $id_resto_pastille["tableName"],
+                                "name_tribu_t_muable" => $key["name_tribu_t_muable"],
+                                "logo_path" => $key["logo_path"]
+                            ];
+    
+                            array_push($arrayIdResto, $temp);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $arrayIdResto;
+    }
 
 }
 

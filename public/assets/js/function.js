@@ -1558,6 +1558,15 @@ function readURL(input) {
  * @parm inputImage.html.twig
  */
 function removeUpload() {
+    
+    document.querySelector("#image-publication-tribu-t")? document.querySelector("#image-publication-tribu-t").src="" : ""
+    document.querySelector("#publication_capture")? document.querySelector("#publication_capture").value="" : ""
+    document.querySelector("#mixte_publication_capture")? document.querySelector("#mixte_publication_capture").value="" : ""
+    document.querySelectorAll('.image-upload-wrap').forEach(i=>{
+        if (i.classList.contains("d-none")) {
+            i.classList.remove("d-none")
+        }
+    })
     $('.image-upload-input').replaceWith($('.image-upload-input').clone());
     $('.image-upload-content').hide();
     $('.image-upload-wrap').show();
@@ -1573,6 +1582,7 @@ function removeUpload() {
     document.querySelector(".image_upload_input_jheo_js").value = null
     
     $('.image_upload_input_jheo_js').click();
+
 }
 
 
@@ -2105,9 +2115,6 @@ function pastilleRestoForTribuTDashboard(element, isPastilled){
                         reorganisePastille()
                     });
                 }
-
-                // tbl = tbl.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-                // tbl = tbl.charAt(0).toUpperCase() + tbl.slice(1)
 
                 
             })
@@ -3537,7 +3544,8 @@ function showImagePreview(e){
                 $("#mediaModal").modal("hide")
                 $("#addPictureModal").modal("hide")
                 // $("#createAgenda").modal("show")
-                $("#selectRepertoryModal").modal("show")
+                if(document.querySelector("#selectRepertoryModal"))
+                    $("#selectRepertoryModal").modal("show")
                 
             } else {
 
@@ -3564,9 +3572,7 @@ function resetImagePreview(){
 }
 
 function showModalPicture(){
-    $("#addPictureModal").modal("hide")
     document.querySelector("#containerCamera").innerHTML = ""
-    $("#mediaModal").modal("show")
     // <video id="player" autoplay></video>
     let video = document.createElement("video")
     video.setAttribute("id","player")
@@ -3586,14 +3592,129 @@ function showModalPicture(){
     navigator.mediaDevices
             .getUserMedia({ video: true })
             .then((stream) => {
+                $("#addPictureModal").modal("hide")
+                $("#mediaModal").modal("show")
                 video.srcObject = stream;
             }).catch(error => {
-                console.error('Can not get an access to a camera...', error);
+                swal("Attention !", "Impossible d'accéder à votre caméra !", "warning")
             });
 
     document.querySelector("#containerCamera").appendChild(video)
     document.querySelector("#containerCamera").appendChild(captureButton)
     document.querySelector("#containerCamera").appendChild(canvas)
+}
+
+/**
+ * @author elie
+ * @constructor function utiliser pour tribu T et G pour choix de photo (tribuT.html.twig)
+ * @param {string} type : pub ou photo de profile
+ * @localisation : function.js
+ * @je veux : afficher un modal pour choix de photo à telecharger
+ */
+function showModalPictureTribu(type){
+    document.querySelector("#containerCamera").innerHTML = ""
+    // <video id="player" autoplay></video>
+    let video = document.createElement("video")
+    video.setAttribute("id","player")
+    video.setAttribute("autoplay",true)
+    // <canvas id="output"></canvas>
+    let canvas = document.createElement("canvas")
+    canvas.setAttribute("id","output")
+    canvas.setAttribute("class","d-none")
+
+    let captureButton = document.createElement("button")
+    captureButton.setAttribute("id","capture-button")
+    captureButton.setAttribute("onclick","takePictureTribu('"+type+"')")
+    captureButton.setAttribute("title","Prendre une photo")
+
+    navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((stream) => {
+                $("#addPictureModalTribu").modal("hide")
+                $("#mediaModalTribu").modal("show")
+                video.srcObject = stream;
+            }).catch(error => {
+                swal("Attention !", "Impossible d'accéder à votre caméra !", "warning")
+            });
+
+    document.querySelector("#containerCamera").appendChild(video)
+    document.querySelector("#containerCamera").appendChild(captureButton)
+    document.querySelector("#containerCamera").appendChild(canvas)
+}
+
+/**
+ * @author elie
+ * @constructor fonction prendre de photo utilisé dans tribuT.html.twig
+ * @param {string} type : pub ou photo de profile (pdp)
+ * @localisation : function.js
+ * @je veux : prendre une photo dans un navigateur pour utiliser dans tribu T ou G
+ */
+function takePictureTribu(type){
+    const player = document.getElementById('player');
+    const outputCanvas = document.getElementById('output');
+    const context = outputCanvas.getContext('2d');
+
+    const imageWidth = player.offsetWidth;
+    const imageHeight = player.offsetHeight;
+    
+    // Make our hidden canvas the same size
+    outputCanvas.width = imageWidth;
+    outputCanvas.height = imageHeight;
+    
+    // Draw captured image to the hidden canvas
+    context.drawImage(player, 0, 0, imageWidth, imageHeight);
+    
+    // A bit of magic to save the image to a file
+
+    let data =  outputCanvas.toDataURL()
+
+    let preview
+
+     // Pour actualité tribu G et T
+     if(window.location.href.includes("/user/actualite")){
+
+        // console.log("send data tribu G");
+        document.querySelector("#mixte_publication_capture").value = data
+        document.querySelector("#image-publication-tribu-t").src = data
+        document.querySelector(".image_upload_image_jheo_js").src = data
+        $("#newPublication").modal("show")
+        document.querySelector("#imageUploadTribu > div.image-upload-wrap").classList.add("d-none")
+        document.querySelector("#imageUploadTribu > div.image-upload-content").style.display="block"
+
+    }
+
+    // Pour tribu G
+    if(window.location.href.includes("/user/account")){
+
+        // console.log("send data tribu G");
+        document.querySelector("#publication_capture").value = data
+        document.querySelector(".image_upload_image_jheo_js").src = data
+        $("#modal_publication_tributG").modal("show")
+        document.querySelector("#imageUploadTribu > div.image-upload-wrap").classList.add("d-none")
+        document.querySelector("#imageUploadTribu > div.image-upload-content").style.display="block"
+
+    }// POUR Tribu T
+    else if(window.location.href.includes("/user/tribu/my-tribu-t")){
+        if(type == 'pub'){
+            $("#modal_publication").modal("show")
+            preview = document.querySelector("#image-publication-tribu-t");
+            document.querySelector(".image_upload_image_jheo_js").src = data
+            document.querySelector(".image-upload-content").style.display = "block";
+            document.querySelector(".image-upload-wrap").style.display = "none";
+            preview.setAttribute("data-file", "image")
+            preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+            preview.src = data;
+            preview.setAttribute('typeFile',"image/png")
+            
+        }
+        if(type == 'pdp'){
+            // console.log("pdp");
+            updatePdpTribu_T(dataURLtoFile(data, `capture-${new Date().getTime()}.png`))
+        }
+    }
+    
+    $("#mediaModalTribu").modal("hide")
+    
 }
 
 function takePicture(){
@@ -3616,14 +3737,24 @@ function takePicture(){
     // downloadLink.setAttribute('download', `capture-${new Date().getTime()}.png`);
     let data =  outputCanvas.toDataURL()
     let preview = document.querySelector("#image-preview");
-    preview.src = data;
+
     preview.setAttribute('name', `capture-${new Date().getTime()}.png`);
+    preview.src = data;
     preview.setAttribute('typeFile',"image/png")
-    document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
-    document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
+    if(document.querySelector(".preview_image_nanta_js"))
+        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
+    if(document.querySelector(".btnAddPhoto_nanta_js"))
+        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
     $("#mediaModal").modal("hide")
     // $("#createAgenda").modal("show")
-    $("#selectRepertoryModal").modal("show")
+    if(document.querySelector("#selectRepertoryModal")){
+
+        $("#selectRepertoryModal").modal("show")
+    }
+    // open option photo profil
+    if(window.location.href.includes("/user/profil/") || window.location.href.includes("/user/setting/account")){
+        setPhotoAfterUpload({ image : data })
+    }
     /*outputCanvas.toBlob((blob) => {
         console.log(URL.createObjectURL(blob))
         // downloadLink.setAttribute('href', URL.createObjectURL(blob));
@@ -3637,6 +3768,28 @@ function takePicture(){
         $("#mediaModal").modal("hide")
         $("#createAgenda").modal("show")
     });*/
+}
+
+/**
+ * @author elie
+ * @constructor
+ *  ou : on utilise cette fonction dans le fichier myTribyT.js
+ * je veux : transformer URL to file
+ * @param {url} dataurl 
+ * @param {string} filename 
+ * @returns File
+ */
+function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]), 
+        n = bstr.length, 
+        u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    console.log(new File([u8arr], filename, {type:mime}));
+    return new File([u8arr], filename, {type:mime});
 }
 
 function showRepertoryDirTribuT(){
@@ -3662,7 +3815,82 @@ function setDirForImage(e){
 }
 
 /**
- * @author Elie
+ * Function lancing after upload photo
+ * @constructor
+ * @param {string} data source 
+ */
+function setPhotoAfterUpload(data){
+
+    swal("Voulez-vous definir cette photo comme photo de profile?", {
+        buttons: {
+          cancel: "Non, pas maintenant",
+          confirm: {
+            text: "Oui, accepter",
+            value: "confirm",
+          },
+        },
+      })
+      .then((value) => {
+        switch (value) {
+       
+          case "confirm":{
+            fetch(new Request("/user/profil/update/avatar", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => {
+                // console.log(response)
+
+                if(response.success){
+
+                    swal({
+                        title: "Modifié",
+                        text: response.message,
+                        icon: "success",
+                        button: "OK",
+                    }).then(r=>{
+                        location.reload()
+                    });
+
+                }
+
+            });
+            break;
+            }
+       
+          default:{
+            fetch(new Request("/user/profil/add/photo", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })).then(x => x.json()).then(response => {
+                // console.log(response)
+
+                if(response.success){
+
+                    swal({
+                        title: "Téléchargé",
+                        text: response.message,
+                        icon: "success",
+                        button: "OK",
+                      });
+
+                }
+
+            });
+          }
+        }
+      });
+}
+/**
+ * Function set gallery images on JS
+ * @constructor
  */
 function setGallerieImageV2(){
     let modalZoom = document.getElementById('modalZoom');
@@ -3690,11 +3918,14 @@ function setGallerieImageV2(){
     let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
 
     // When the user clicks on <span> (x), close the modal
-    spanCloseZoom.onclick = function() { 
-        modalZoom.style.display = "none";
-        document.querySelector("body").classList.remove("modal-open")
-        document.querySelector("body").style = ""
+    if(spanCloseZoom){
+        spanCloseZoom.onclick = function() { 
+            modalZoom.style.display = "none";
+            document.querySelector("body").classList.remove("modal-open")
+            document.querySelector("body").style = ""
+        }
     }
+    
 }
 
 

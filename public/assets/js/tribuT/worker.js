@@ -10,7 +10,7 @@ onmessage = (e) => {
     params.push(limits)
     params.push(tblCommentaire)
     params = params.join("&")
-    console.log("/user/publicalition/vals?"+params)
+
     const request = new Request("/user/publicalition/vals?"+params, {
         method: "GET",
         headers: {
@@ -19,7 +19,6 @@ onmessage = (e) => {
         
     })
     fetch(request).then((response) => response.json()).then((json) => { 
-        console.log(json)
         postMessage(json)
     })
 }

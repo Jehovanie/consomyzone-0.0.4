@@ -3475,6 +3475,7 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
   position: fixed;
   top: 130px;
   right: 0;
+  height: 80vh;
 }
 
 .account-message-conected img{

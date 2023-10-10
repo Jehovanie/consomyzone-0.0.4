@@ -11,6 +11,7 @@ const all_instances = [
 const data= all_instances.find(item => item.value !== null);
 const CURRENT_MAP_INSTANCE = data.value;
 
+///generate html checkbox on right side
 function generateSelectContoursGeographie(couche, data,itemsSelected= []){
     let all_select_HTML =""
     data.forEach((item, index ) => {
@@ -27,6 +28,7 @@ function generateSelectContoursGeographie(couche, data,itemsSelected= []){
         }else if( couche === "commune"){ 
             nom_reg = item.properties.depcom + " " + item.properties.nom_com + " " + item.properties.nom_reg.split("-").join(" ")
         }
+
         all_select_HTML += `
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="${couche + "_" + nom_reg + "_" + index}" onchange="updateGeoJson('${couche}', '${index}', this)" ${ isSelected ? "checked" : "" }>
@@ -87,7 +89,6 @@ function updateGeoJson(couche,index, e){
         CURRENT_MAP_INSTANCE.removeSpecGeoJson(couche, index)
     }
 }
-
 
 function pastilleRestoForTribuT(element, isPastilled){
     let id = element.dataset.id
@@ -245,6 +246,8 @@ function getStateGolf(numeroIndices= 1){
     `
     return data;
 }
+
+
 function injectStatusGolf(){
     const data = getStateGolf(1)
     injectStatus(data)
@@ -273,6 +276,8 @@ function getStateResto(numeroIndices= 1){
     `
     return data;
 }
+
+
 function injectStatusResto(){
     const data= getStateResto(1);
     injectStatus(data)
@@ -295,6 +300,8 @@ function getStateTabac(numeroIndices=1){
     `
     return data;
 }
+
+
 function injectStatusTabac(){
     const data= getStateTabac(1);
     injectStatus(data)
@@ -380,4 +387,104 @@ function injectStatus(data){
             </table>
         </div>
     `
+}
+
+
+function itemRestoPastielle(numeroIndices,depName, dep, name, id, icon ){
+    const items= `
+        <tr>
+            <th scope="row">${numeroIndices + 1 }</th>
+            <td onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">
+                <img class="icon_resto_legend" style="clip-path:circle()" src="/public${icon ? icon : '/uploads/tribu_t/photo/avatar_tribu.jpg'}" alt="Icon Resto">
+            </td>
+            <td>
+                <a href="#" class="link-primary" onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">${name}</a>
+            </td>
+        </tr>
+    `
+    return items;
+}
+
+
+function dataListMarker(data){
+
+    let dataTable= '';
+    data.forEach((item, index) => {
+        dataTable += itemRestoPastielle(index,item.depName, item.dep, item.name,  item.id, item.logo_path)
+    });
+
+    return dataTable;
+}
+
+function injectListMarker(data, isInSearch=false){
+    if( !document.querySelector(".content_right_side_body_jheo_js")){
+        console.log("Selector not found : '.content_right_side_body_body'")
+        return false;
+    }
+
+    let message = isInSearch ? "Il semble que vos restaurants pastilles ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille." : "Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.";
+    let dataHTML= data.length > 0 ? dataListMarker(data) : (document.querySelector('.cta_to_actualite_jheo_js') ? `
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-info text-center" role="alert">
+                    ${message}
+                </div>
+            </td>
+        </tr>
+    ` : `
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-danger text-center" role="alert">
+                   <a class="text-primary" href="/connexion" style="text-decoration:underline">Veuillez-vous connecter</a> pour voir la liste des restaurants pastillés dans vos tribus T.
+
+                </div>
+            </td>
+        </tr>
+    ` ) ;
+
+
+    document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table table_info_marker">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Icône</th>
+                    
+                        <th scope="col">Restaurant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${dataHTML}
+                </tbody>
+            </table>
+        </div>
+    `
+}
+
+function getDetailFromListRight(nom_dep, id_dep, id_resto) {
+    CURRENT_MAP_INSTANCE.clickOnMarker(id_resto)
+}
+
+/**
+ * Get global note avis resto  and setting
+ * @param {*} idRestaurant 
+ */
+function showNoteGlobale(idRestaurant) { 
+    fetch(`/avis/restaurant/global/${idRestaurant}`, {
+        methode:"GET"
+    }).then(r => r.json())
+    .then(response => {
+        let globalNote=0.00;
+        let totalNote=0.00;
+        if( response.length > 0 ){
+            for (let avis of response) {
+                totalNote+=parseFloat(avis["note"])
+            }
+            globalNote= totalNote /(response.length);
+            createGlobalNote(globalNote)
+            CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(idRestaurant, globalNote)
+        }
+        
+    })
 }

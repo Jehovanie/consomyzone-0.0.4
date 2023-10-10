@@ -138,6 +138,9 @@ class MarckerClusterStation extends MapModule  {
             // });
             
             marker.on('click', (e) => {
+                ////close right if this open
+                this.closeRightSide();
+                
                 this.updateCenter( parseFloat(item.latitude ), parseFloat(item.longitude ), this.zoomDetails);
                 
                 const icon_R = L.Icon.extend({

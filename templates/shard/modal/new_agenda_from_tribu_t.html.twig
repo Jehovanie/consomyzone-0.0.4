@@ -79,10 +79,11 @@
                     <input type="time" class="form-control input_black timeEnd_jheo_js" id="timeEnd" required>
                 </div>
             </div>
-            <div class="mb-3 non_active">
+            {# <button class="btn btn-info btnAddPhoto_nanta_js" data-bs-target="#addPictureModal" data-bs-toggle="modal"><b><i class="bi bi-plus" style="font-size:20px;"></i> Ajouter une photo à votre événement</b></button> #}
+            {# <div class="mb-3">
                 <label class="form-label non_active">Si vous avez des fichier</label>
                 {% include 'shard/input/inputImageDragDrop.html.twig' %}
-            </div>
+            </div> #}
 
         </div>
       </div>
@@ -96,3 +97,7 @@
     </div>
   </div>
 </div>
+
+{% include 'shard/modal/media_modal.html.twig' %}
+
+{% include 'shard/modal/ajout_de_photo_modal.html.twig' %}

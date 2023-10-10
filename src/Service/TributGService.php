@@ -51,7 +51,10 @@ class TributGService extends PDOConnexionService{
                 $depart_tributG_name .= " "  .  mb_convert_case( $depart_tributG[$i] , MB_CASE_TITLE, "UTF-8");
             }
 
+            // $depart_tributG_name = $this->convertUtf8ToUnicode($depart_tributG_name);
+
             $description = "Département " . $depart_tributG[1] . ", " . $depart_tributG_name;
+            $description = $this->convertUtf8ToUnicode($description);
 
             //// creation de table tribut G.
             $sql = "CREATE TABLE " . $name_table_tribuG . " (
@@ -542,7 +545,20 @@ class TributGService extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_name WHERE user_id = $user_id LIMIT 1");
         $statement->execute();
 
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $result = [
+            "id" => $data['id'],
+            "user_id" => $data['user_id'],
+            "name" => $data['name'],
+            "description" => json_decode($this->convertUnicodeToUtf8($data['description']), true),
+            "avatar" => $data['avatar'],
+            "roles" => $data["roles"],
+            "datetime" => $data['datetime'],
+            "isBanished" => $data["isBanished"],
+            "isDeveloper" => $data["isDeveloper"],
+            "isModerate" => $data["isModerate"]
+        ];
         return $result;
 
     }
@@ -802,7 +818,7 @@ class TributGService extends PDOConnexionService{
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => $this->convertUnicodeToUtf8($d_pub['publication'] ), //// when get, must decode
+                        "description" => json_decode($this->convertUnicodeToUtf8($d_pub['publication'] ),true), //// when get, must decode
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,

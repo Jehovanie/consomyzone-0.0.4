@@ -127,28 +127,22 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->getSingleScalarResult();
     }
-//    /**
-//     * @return AvisRestaurant[] Returns an array of AvisRestaurant objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 
-//    public function findOneBySomeField($value): ?AvisRestaurant
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @author Nantenaina <nantenainasoa39@gmail.com>
+     * où: on Utilise cette fonction dans RestaurantController.php, 
+     * localisation du fichier: dans AvisRestaurantRepository.php,
+     * je veux: faire apparaitre la note en haut à gauche du poi resto
+     * si une POI a une note, la note se montre en haut à gauche du POI 
+     */
+    public function getAllNoteById(array $a){
+        return $this->createQueryBuilder("r")
+                    ->select("AVG(r.note) as moyenne_note, IDENTITY(r.restaurant) as id_resto")
+                    ->where("r.restaurant IN (:u)")
+                    ->setParameter("u",$a)
+                    ->groupBy("r.restaurant")
+                    ->getQuery()
+                    ->getResult();
+    }
+
 }

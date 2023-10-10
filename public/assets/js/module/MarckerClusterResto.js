@@ -107,7 +107,6 @@ class MarckerClusterResto extends MapModule  {
         this.map.addLayer(this.markers);
     }
 
-
     settingSingleMarker(item, isSelected= false){
         
         const departementName = item.depName
@@ -122,18 +121,35 @@ class MarckerClusterResto extends MapModule  {
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
         let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
 
-        const marker = L.marker(
+        let marker
+
+        /*const marker = L.marker(
             L.latLng(parseFloat(item.lat), parseFloat(item.long)),
             {
                 icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
                 cleNom: item.denominationF,
                 id: item.id
             }
-        );
+        );*/
+
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
+                    cleNom: item.denominationF,
+                    id: item.id
+                }
+            );
+        }else{
+            marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, isSelected, poi_icon, poi_icon_Selected, isPastille)
+        }
 
         marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
 
         marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
 
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
@@ -156,7 +172,11 @@ class MarckerClusterResto extends MapModule  {
                 }
             })
 
-            marker.setIcon(new icon_R);
+            if(!item.moyenne_note){
+                marker.setIcon(new icon_R)
+            }else{
+                marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+            }
 
             if (this.marker_last_selected && this.marker_last_selected != marker ) {
                 
@@ -174,7 +194,15 @@ class MarckerClusterResto extends MapModule  {
                         shadowAnchor: [22, 94]
                     }
                 })
-                this.marker_last_selected.setIcon(new icon_B)
+
+                let oneResto = this.default_data.find(jtem => parseInt(this.marker_last_selected.options.id) === parseInt(jtem.id));
+
+                if(!oneResto.moyenne_note){
+                    this.marker_last_selected.setIcon(new icon_B)
+                }else{
+                    this.marker_last_selected.setIcon(this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille))
+                }
+
             }
             this.marker_last_selected = marker;
 
@@ -339,7 +367,7 @@ class MarckerClusterResto extends MapModule  {
 
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(idResto)) {
-                const icon_R = L.Icon.extend({
+                /*const icon_R = L.Icon.extend({
                     options: {
                         iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/"+  poi_icon_Selected: this.currentUrl.origin + "/public/" + poi_icon_Selected,
                         iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
@@ -348,8 +376,52 @@ class MarckerClusterResto extends MapModule  {
                         shadowSize: [68, 95],
                         shadowAnchor: [22, 94]
                     }
+                })*/
+                // marker.setIcon(new icon_R);
+                const oneResto = this.default_data.find(jtem => parseInt(idResto) === parseInt(jtem.id));
+                marker.setIcon(this.setSpecialIcon(oneResto, true, poi_icon_Selected, poi_icon_Selected, isPastille))
+            }
+        });
+
+        this.markers.refreshClusters();
+    }
+
+    injectListRestoPastille(){
+        const restoPastilleTab= [];
+        this.listRestoPastille.forEach(item => {
+            const restoPastille = this.default_data.find(jtem => parseInt(item.id_resto) === parseInt(jtem.id));
+            if( restoPastille ){
+                restoPastilleTab.push({ 
+                    id: restoPastille.id, 
+                    name: restoPastille.denominationF, 
+                    depName: restoPastille.depName, 
+                    dep: restoPastille.dep ,
+                    logo_path: item.logo_path,
+                    name_tribu_t_muable: item.name_tribu_t_muable
                 })
-                marker.setIcon(new icon_R);
+            }
+        })
+        // this.default_data
+        injectListMarker(restoPastilleTab)
+    }
+
+    /**
+     * @Author Nantenaina
+     * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mettre à jour la note moyenne sur un POI
+     * si une POI a une note, la note se montre en haut à gauche du POI 
+     */
+    showNoteMoyenneRealTime(idResto, note){
+        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
+        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
+        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(idResto)) {
+                let oneResto = this.default_data.find(jtem => parseInt(idResto) === parseInt(jtem.id));
+                oneResto.moyenne_note = parseFloat(note).toFixed(2)
+                marker.setIcon(this.setSpecialIcon(oneResto, true, poi_icon_Selected, poi_icon_Selected, isPastille))
             }
         });
 

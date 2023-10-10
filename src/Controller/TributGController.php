@@ -580,4 +580,63 @@ class TributGController extends AbstractController
 
         return $this->json(["status" => "ok"], 200);
     }
+
+    #[Route('/tribu_g/createOnePub', name: 'tribu_g_createOnePub')]
+
+    public function createOnePub(Request $request, TributGService $tributGService, Filesystem $filesyst): Response
+
+    {
+
+        $user = $this->getUser();
+
+
+        $userId = $user->getId();
+
+
+        $data = json_decode($request->getContent(), true);
+
+        // extract($data);
+        $pub = $data["message"];
+        $confid = $data["confid"];
+        $image = $data["image64"];
+        $imagename = "";
+
+        $table_tribuG = $tributGService->getTableNameTributG($userId);
+
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $table_tribuG . '/';
+
+        //dd($path);
+
+
+        $dir_exist = $filesyst->exists($path);
+
+        if ($dir_exist == false) {
+
+            $filesyst->mkdir($path, 0777);
+        }
+
+
+        if ($image != "") {
+
+            // Function to write image into file
+
+            $temp = explode(";", $image);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $imagename = md5($table_tribuG) . '-' . uniqid() . "." . $extension;
+
+            ///save image in public/uploader folder
+
+            file_put_contents($path . $imagename, file_get_contents($image));
+
+        }
+
+        $tributGService->createOnePub($table_tribuG . "_publication", $userId, $message, $confid, '/public/uploads/tribu_g/photos/' . $table_tribuG . '/'.$imagename);
+
+        // return $this->redirectToRoute('app_account');
+
+        return $this->json("Publication ajouté avec succès");
+    }
 }

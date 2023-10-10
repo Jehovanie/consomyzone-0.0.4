@@ -116,7 +116,8 @@ class MarckerClusterGolf extends MapModule {
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
             marker.on('click', (e) => {
-                console.log(item)
+                ////close right if this open
+                this.closeRightSide();
 
                 const itemID= item.id
                 const golfUpdate = this.data.find(jtem =>parseInt(jtem.id) === itemID);
