@@ -253,12 +253,12 @@ class HomeController extends AbstractController
         $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tabac" || $cles0 === "golf" || $cles0 === "tous"  );
         $type= $condition ? $cles0: $type;
         $cles0= $condition ? "": $cles0;
-        // dd($tabacRepository->getGolfByDep("Paris", 75));
+
         $size = 20;
 
         $otherResult = false;
 
-        switch (strtolower($type)){
+        switch (strtolower($cles0)){
             case "ferme":
                 $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($ferme[0])>0){
@@ -270,8 +270,17 @@ class HomeController extends AbstractController
             case "restaurant":
                 $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($resto[0])>0){
+
                     $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResult = true;
+
+                    $resto0 = $sortResultService->getDataByCommune($resto, $cles1);
+                        
+                    if(count($resto0)>0){
+                        $resto[0] = $resto0["data"];
+                        $resto[1] = $resto0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
                 }
                 
                 if(count($resto) > 0){
@@ -326,7 +335,15 @@ class HomeController extends AbstractController
                     $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($resto[0])>0){
                         $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherResto = true;
+
+                        $resto0 = $sortResultService->getDataByCommune($resto, $cles1);
+                        
+                        if(count($resto0)>0){
+                            $resto[0] = $resto0["data"];
+                            $resto[1] = $resto0["nombre"];
+                        }else{
+                            $otherResto = true;
+                        }
                     }
 
                     if($otherResto){
@@ -400,9 +417,20 @@ class HomeController extends AbstractController
                     }
     
                     $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    
                     if(!count($resto[0])>0){
+
                         $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherResto = true;
+
+                        $resto0 = $sortResultService->getDataByCommune($resto, $cles1);
+                        
+                        if(count($resto0)>0){
+                            $resto[0] = $resto0["data"];
+                            $resto[1] = $resto0["nombre"];
+                        }else{
+                            $otherResto = true;
+                        }
+
                     }
 
                     if(count($resto) > 0){

@@ -193,4 +193,74 @@ class SortResultService extends StringTraitementService
         return preg_match("/\b{$needle}\b/", $haystack) === 1;
     }
 
+    /**
+     * @author Nantenaina <nantenainasoa39@gmail.com>
+     * où: On utilise cette fonction dans HomeController.php
+     * localisation du fichier: dans SortResultService.php,
+     * je veux: optimiser le moteur de recherche par rapport au nom de la commune
+     * si l'adresse saisie par l'internaute ne contient pas de chiffres on se focalise sur la recherche communale 
+     * @param array $data
+     * @param string $cles1,
+     *  @param string $type
+     * @return array
+     */
+    function getDataByCommune($data, $cles1, $type="restaurant"){
+        $data0 = [];
+        $results = [];
+        $text = $cles1;
+        $adrs = explode(" ",trim($text));
+        $hasCP = false;
+        $hasNumVoie = false;
+
+        foreach($adrs as $mot){
+            if(is_numeric($mot) && strlen($mot) == 5)
+                $hasCP = true;
+            if(is_numeric($mot) && strlen($mot) < 5)
+                $hasNumVoie = true;
+        }
+
+        $i = 0;
+
+        foreach ($data[0] as $key) {
+
+            if($type=="restaurant"){
+
+                if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+    
+                    $levCommune = levenshtein($key["villenorm"], $cles1);
+    
+                    if($hasCP){
+                        $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                        $cles1 = trim($cles1);
+                        $levCommune = levenshtein($key["villenorm"], $cles1);
+                    }
+    
+                    if($levCommune <= 3){
+                        array_push($data0, $key);
+                        $i++;
+                    }
+                }elseif ($hasNumVoie && !$hasCP) {
+                    $levStreet = levenshtein($key["numvoie"]." ".$key["typevoie"]." ".$key["nomvoie"], trim($cles1));
+                    if($levStreet <= 3){
+                        array_push($data0, $key);
+                        $i++;
+                    }
+                }else{
+                    $levAdresse = levenshtein($key["add"], trim($cles1));
+                    if($levAdresse <= 3){
+                        array_push($data0, $key);
+                        $i++;
+                    }
+                }
+            }
+
+        }
+        
+        $results["nombre"] = $i;
+
+        $results["data"] = $data0;
+
+        return $results;
+    }
+
 }
