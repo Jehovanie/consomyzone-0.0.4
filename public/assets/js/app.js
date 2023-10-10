@@ -834,6 +834,7 @@ function initCKEditor(idElement,callback){
     }
     
 }
+
 function showModalEditor(isG, isListeInfile=false){
     let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
     if(isListeInfile){
@@ -1875,4 +1876,171 @@ function expand(e){
 
     document.querySelector("#visioMessageElie").classList.remove("minRightModal")
     document.querySelector("#bodyVisioMessageElie").classList.remove("minRightVisioBody")
+}
+
+
+/**
+ * @Author Jehovanie RAMANDRIJOEL 
+ * où: on Utilise partout, 
+ * je veux: faire un get des informations sur notre application
+ * fetch sur le lien '/user/toast-message' dans le notificationController
+ * 
+ * @return (resultat fetch) /// object { success: '', toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...] }
+ */
+function getToastMessage(){
+    fetch("/user/toast-message")
+        .then(response => response.json())
+        .then(response => { 
+            if( response.success){
+                // response.toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...]
+                generateToastMessage(response.toastMessage)
+            }
+        })
+}
+
+
+/**
+ * @Author Jehovanie RAMANDRIJOEL 
+ * où: on utilise dans le fonction getToastMessage(), 
+ * je veux: prépare le toast-message
+ * 
+ * @param array array of toast message type {id: ..., toast_message: ..., is_update: ...}
+ * 
+ * @return call function to generate each toast message
+ */
+function generateToastMessage(data){
+    data.forEach((item, index) => {
+        setTimeout(() => {
+            generateOneToastMessage(
+                item.id,
+                item.toast_message,
+                6000
+            );
+        }, 1000 * (index + 1))
+    })
+}
+
+/**
+ * @Author Jehovanie RAMANDRIJOEL 
+ * où: on utilise dans le fonction generateToastMessage(), 
+ * je veux: prépare et afficher une seule toast message.
+ * 
+ * @param toastID id of toast message 
+ * @param toast_message message toast
+ * @param duration delai afficher
+ * 
+ * @return call function to generate each toast message
+ */
+function generateOneToastMessage(toastId, message, duration){
+    const toastPosition = { gravity: 'bottom', position: 'right'}
+
+    const contentDivElement= document.createElement('div');
+    contentDivElement.className = `toast_message_${toastId}_jheo_js`
+    contentDivElement.innerHTML = `
+        <div>
+            <p>${message} </p>
+        </div>
+        <button type="button" class="btn btn-primary" style="float: right" onclick="clickedOnToastMessage('${toastId}')">
+            OK, j'ai compris...
+        </button>
+    `
+
+    Toastify({
+        // text: message,
+        node: contentDivElement, 
+        duration: duration,
+        // destination: "https://github.com/apvarun/toastify-js",
+        // newWindow: true,
+        close: true,
+        gravity: toastPosition.gravity, // `top` or `bottom`
+        position: toastPosition.position, // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          color: '#084298',
+          background: "#cfe2ff",
+          fontSize: '0.9rem',
+          width: '350px'
+        },
+        onClick: function(){ // Callback after click
+            clickedOnToastMessage(toastId)
+        } 
+    }).showToast();
+}
+
+
+/**
+ * @Author Jehovanie RAMANDRIJOEL 
+ * où: on utilise dans le fonction generateOneToastMessage(), 
+ * je veux: si on click on ferme le toast message
+ * 
+ * @param toastID id of toast message 
+ * 
+ * @return close toast message
+ */
+function clickedOnToastMessage(toastID){
+    console.log(toastID)
+    if( document.querySelector(`.toast_message_${toastID}_jheo_js`)){
+        const oneToast= document.querySelector(`.toast_message_${toastID}_jheo_js`);
+        oneToast.parentElement.querySelector('.toast-close').click();
+    }
+}
+
+
+
+function askClientToUseCookie(){
+    const toastPosition = { gravity: 'bottom', position: 'left'}
+
+    const contentDivElement= document.createElement('div');
+    contentDivElement.className = `ask_client_to_use_cookie_jheo_js`
+
+    contentDivElement.innerHTML = `
+        <div>
+            <h3 style="font-size: 1.6rem;"> Ce site web utilise des cookies.</h3>
+            <p> 
+                Les cookies nous permettent de personnaliser le contenu et les annonces pour vous.
+                Nous partageons également des informations sur l'utilisation de notre application qui peuvent combiner celles-ci avec d'autres informations que vous leur avez fournies ou qu'ils ont collectées lors de votre utilisation de leurs services.
+            </p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-danger" style="float: right" onclick="closeAskClientToUseCookie()">
+                Non, merci...
+            </button>
+            <button type="button" class="btn btn-primary me-2" style="float: right" onclick="showToastMessage()">
+                OK, j'ai compris...
+            </button>
+        </div>
+    `
+
+    Toastify({
+        // text: message,
+        node: contentDivElement, 
+        duration: -1,
+        // destination: "https://github.com/apvarun/toastify-js",
+        // newWindow: true,
+        close: true,
+        gravity: toastPosition.gravity, // `top` or `bottom`
+        position: toastPosition.position, // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          color: '#084298',
+          background: "#cfe2ff",
+          fontSize: '0.9rem',
+          width: '100vw'
+        },
+        onClick: function(){ // Callback after click
+            console.log("onclick...")
+        } 
+    }).showToast();
+}
+
+function showToastMessage(){
+    closeAskClientToUseCookie()
+    getToastMessage()
+}
+
+function closeAskClientToUseCookie(){
+    if( document.querySelector(`.ask_client_to_use_cookie_jheo_js`)){
+        const btnClose= document.querySelector(`.ask_client_to_use_cookie_jheo_js`);
+        btnClose.parentElement.querySelector('.toast-close').click();
+    }
 }

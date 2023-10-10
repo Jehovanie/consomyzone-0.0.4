@@ -461,6 +461,15 @@ class NotificationService extends PDOConnexionService{
         return $result["id"];
     }
 
+    public function getToastMessage(){
+        $table= "toast_message";
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE is_update = '0'");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
 }
 
 

@@ -55,5 +55,26 @@ class NotificationController extends AbstractController
             "result" => $result
         ]);
     }
+
+
+    #[Route("/user/toast-message" , name : "app_toast_message")]
+    public function toastMessage(
+        NotificationService $notificationsService
+    )
+    {
+        if(!$this->getUser()){
+            return $this->json([
+                "success" => false,
+                "toastMessage" => []
+            ]);
+        }
+
+        $result = $notificationsService->getToastMessage();
+
+        return $this->json([
+            "success" => true,
+            "toastMessage" => $result
+        ]);
+    }
     
 }
