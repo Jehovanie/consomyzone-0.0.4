@@ -403,11 +403,12 @@ if(document.getElementById("open_menu")){
 
 
 window.addEventListener('load', () => {
-    console.log(isValueInCookie("isCanUseCookie"))
     if(!!isValueInCookie("isCanUseCookie") === false){
         askClientToUseCookie();
     }else{
-        getToastMessage()
+        if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
+            getToastMessage()
+        }
     }
 })
 /// --------------- end of this rtesponsive for mobile ---------
