@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Service\NotificationService;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -63,18 +65,27 @@ class NotificationController extends AbstractController
     )
     {
         if(!$this->getUser()){
-            return $this->json([
-                "success" => false,
-                "toastMessage" => []
-            ]);
+            return $this->json([ "success" => false,  "toastMessage" => [] ]);
         }
 
-        $result = $notificationsService->getToastMessage();
-
-        return $this->json([
+        $cookie = new Cookie( 'my_cookie', 1000, strtotime('tomorrow') );
+        $res = new Response();
+        
+        $data = $notificationsService->getToastMessage();
+        $res->headers->setCookie( $cookie );
+        
+        $result= [
             "success" => true,
-            "toastMessage" => $result
-        ]);
+            "toastMessage" => $data
+        ];
+
+        $res->setContent(json_encode($result, true));
+        // dd($res);
+        return $res;
+        // return $this->json([
+        //     "success" => true,
+        //     "toastMessage" => $result
+        // ]);
     }
     
 }

@@ -400,6 +400,16 @@ if(document.getElementById("open_menu")){
     })
 
 }
+
+
+window.addEventListener('load', () => {
+    console.log(isValueInCookie("isCanUseCookie"))
+    if(!!isValueInCookie("isCanUseCookie") === false){
+        askClientToUseCookie();
+    }else{
+        getToastMessage()
+    }
+})
 /// --------------- end of this rtesponsive for mobile ---------
 
 
@@ -1890,7 +1900,7 @@ function expand(e){
 function getToastMessage(){
     fetch("/user/toast-message")
         .then(response => response.json())
-        .then(response => { 
+        .then(response => {
             if( response.success){
                 // response.toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...]
                 generateToastMessage(response.toastMessage)
@@ -1910,13 +1920,15 @@ function getToastMessage(){
  */
 function generateToastMessage(data){
     data.forEach((item, index) => {
-        setTimeout(() => {
-            generateOneToastMessage(
-                item.id,
-                item.toast_message,
-                6000
-            );
-        }, 1000 * (index + 1))
+        if(!!isValueInCookie(`toast_message_${item.id}`) === false){
+            setTimeout(() => {
+                generateOneToastMessage(
+                    item.id,
+                    item.toast_message,
+                    6000
+                );
+            }, 1000 * (index + 1))
+        }
     })
 }
 
@@ -1940,8 +1952,8 @@ function generateOneToastMessage(toastId, message, duration){
         <div>
             <p>${message} </p>
         </div>
-        <button type="button" class="btn btn-primary" style="float: right" onclick="clickedOnToastMessage('${toastId}')">
-            OK, j'ai compris...
+        <button type="button" class="btn btn-primary" style="float: right" onclick="saveToastMessage('${toastId}',true)">
+            Ok, j'ai compris...
         </button>
     `
 
@@ -1968,6 +1980,13 @@ function generateOneToastMessage(toastId, message, duration){
 }
 
 
+function saveToastMessage(toastID, isSave=false){
+    if( isSave === true){
+        document.cookie = `toast_message_${toastID}=1`;
+    }
+    clickedOnToastMessage(toastID);
+}
+
 /**
  * @Author Jehovanie RAMANDRIJOEL 
  * où: on utilise dans le fonction generateOneToastMessage(), 
@@ -1978,7 +1997,6 @@ function generateOneToastMessage(toastId, message, duration){
  * @return close toast message
  */
 function clickedOnToastMessage(toastID){
-    console.log(toastID)
     if( document.querySelector(`.toast_message_${toastID}_jheo_js`)){
         const oneToast= document.querySelector(`.toast_message_${toastID}_jheo_js`);
         oneToast.parentElement.querySelector('.toast-close').click();
@@ -2002,11 +2020,11 @@ function askClientToUseCookie(){
             </p>
         </div>
         <div>
-            <button type="button" class="btn btn-danger" style="float: right" onclick="closeAskClientToUseCookie()">
-                Non, merci...
+            <button type="button" class="btn btn-danger" style="float: right" onclick="notCanUseCookie()">
+                Non, merci
             </button>
             <button type="button" class="btn btn-primary me-2" style="float: right" onclick="showToastMessage()">
-                OK, j'ai compris...
+                Autoriser les cookies
             </button>
         </div>
     `
@@ -2034,8 +2052,14 @@ function askClientToUseCookie(){
 }
 
 function showToastMessage(){
+    document.cookie = "isCanUseCookie=1";
     closeAskClientToUseCookie()
     getToastMessage()
+}
+
+function notCanUseCookie(){
+    document.cookie = "isCanUseCookie=0";
+    closeAskClientToUseCookie()
 }
 
 function closeAskClientToUseCookie(){
@@ -2043,4 +2067,14 @@ function closeAskClientToUseCookie(){
         const btnClose= document.querySelector(`.ask_client_to_use_cookie_jheo_js`);
         btnClose.parentElement.querySelector('.toast-close').click();
     }
+}
+
+
+function isValueInCookie(cName) {
+    const name = cName + "=";
+    const cDecoded = decodeURIComponent(document.cookie); //to be careful
+    const cArr = cDecoded.split('; ');
+    const res= cArr.find( item => item.indexOf(name) === 0)
+
+    return res ? res.substring(name.length) : 0;
 }
