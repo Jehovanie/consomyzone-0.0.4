@@ -35,7 +35,7 @@
 }
 
 .content_description {
-    height: 75vh !important;
+    height: 75vh ;
 }
 .navleft .list-depart-all-specific {
     height: 70vh;

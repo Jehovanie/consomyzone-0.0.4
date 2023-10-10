@@ -186,7 +186,7 @@ input[type="range"]::-moz-slider-thumb{
 }
 
 .content_description {
-    height: 75vh !important;
+    height: 75vh;
     padding: 0 !important;
 }
 

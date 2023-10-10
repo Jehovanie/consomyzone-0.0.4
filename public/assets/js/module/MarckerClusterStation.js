@@ -169,7 +169,7 @@ class MarckerClusterStation extends MapModule  {
                 this.markers.refreshClusters();
     
                 if (screen.width < 991) {
-                    getDetailHomeForMobile("/station/departement/" + item.departementCode.toString().trim() + "/" + item.departementName.trim().replace("?", "") + "/details/" + item.id)
+                    getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
                 } else {
                     getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
                 }

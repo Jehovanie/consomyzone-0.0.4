@@ -190,10 +190,8 @@ class MarckerClusterGolf extends MapModule {
 
                 
                 if (screen.width < 991) {
-                    let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
-                    getDetailHomeForMobile(pathDetails)
+                    getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id)
                 } else {
-                    // getDetailsFerme(pathDetails, true)getDetailStation
                     getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id)
                 }
 

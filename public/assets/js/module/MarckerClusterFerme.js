@@ -153,8 +153,7 @@ class MarckerClusterFerme extends MapModule {
 
                 
                 if (screen.width < 991) {
-                    let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-                    getDetailHomeForMobile(pathDetails)
+                    getDetailFerme(item.departement, item.departementName, item.id)
                 } else {
                     // getDetailsFerme(pathDetails, true)getDetailStation
                     getDetailFerme(item.departement, item.departementName, item.id)

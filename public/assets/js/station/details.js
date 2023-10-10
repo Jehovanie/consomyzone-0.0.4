@@ -3,8 +3,9 @@ function getDetailFromListLeft(depart_name, depart_code, id) {
         OBJECT_MARKERS_STATION.clickOnMarker(id)
     }else{
         if (screen.width < 991) {
-            var pathDetails = `/station/departement/${depart_name}/${depart_code}/details/${id}`;
-            location.assign(pathDetails)
+            // var pathDetails = `/station/departement/${depart_name}/${depart_code}/details/${id}`;
+            // location.assign(pathDetails)
+            getDetailStation(depart_code, depart_name, id, false,select_dem)
             
         } else {
             const select_dem = document.querySelector("#open-navleft-resto-spec-mobile-tomm-js")

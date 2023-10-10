@@ -144,10 +144,8 @@ class MarckerClusterTabac extends MapModule {
 
                 
                 if (screen.width < 991) {
-                    let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
-                    getDetailHomeForMobile(pathDetails)
+                    getDetailTabac(item.dep, item.nom_dep, item.id)
                 } else {
-                    // getDetailsFerme(pathDetails, true)getDetailStation
                     getDetailTabac(item.dep, item.nom_dep, item.id)
                 }
 

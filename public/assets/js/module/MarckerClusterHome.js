@@ -195,7 +195,7 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(stationMarker, "station");
             
             if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + dataStation.departementCode.toString().toString().trim() + "/" + dataStation.departementName.toString().trim().replace("?", "") + "/details/" + dataStation.id)
+                getDetailStation( dataStation.departementName.toString().trim().replace("?", ""), dataStation.departementCode.toString().toString().trim(), dataStation.id, true)
             } else {
                 getDetailStation( dataStation.departementName.toString().trim().replace("?", ""), dataStation.departementCode.toString().toString().trim(), dataStation.id, true)
             }
@@ -236,10 +236,8 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(fermeMarker, "ferme")
 
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${dataFerme.departementName}/${dataFerme.departement}/details/${dataFerme.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true)
             }
 
@@ -280,8 +278,7 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(restoMarker, "resto")
             
             if (screen.width < 991) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
-                location.assign(pathDetails)
+                getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true)
             } else {
                 getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true)
             }
@@ -357,10 +354,8 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(golfMarker, "golf")
             
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             }
 
@@ -403,10 +398,8 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(tabacMarker, "tabac")
 
             if (screen.width < 991) {
-                let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailTabac(item.dep, item.nom_dep, item.id, true)
             }
         })

@@ -762,7 +762,6 @@ class RestaurantController extends AbstractController
             }
 
         }
-
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -773,7 +772,7 @@ class RestaurantController extends AbstractController
             "codeApes" => $codeApeRep->getCode(),
             "tribu_t_can_pastille" => $arrayTribu,
             "tribu_t_resto_pastille" => $arrayTribuRestoPast,
-            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast
+            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
         ]);
     }
 

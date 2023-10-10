@@ -150,7 +150,7 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         
                         if (screemMax.matches) {
-
+                            
                             // const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
                             // location.assign(pathDetails)
                         } else if (screemMin.matches) {
@@ -340,6 +340,7 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         
                         if (screemMax.matches) {
+                            
 
                             // const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
                             // location.assign(pathDetails)
@@ -510,7 +511,11 @@ function getDetailStation(depart_name, depart_code, id, inHome = false) {
     let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home");
     
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
     fetchDetails(id_selector,linkGetDetails)
@@ -623,7 +628,11 @@ function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
     
     let remove = !inHome ? document.getElementById("remove-detail-ferme") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content-details-ferme" : "#content_details_home_js_jheo";
 
@@ -637,7 +646,11 @@ function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
 
     let remove = !inHome ? document.getElementById("remove-detail-golf") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content-details-golf" : "#content_details_home_js_jheo";
 
@@ -652,7 +665,11 @@ function getDetailTabac(codeDepart,nameDepart, golfID, inHome = false) {
 
     let remove = !inHome ? document.getElementById("remove-detail-tabac") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content-details-tabac" : "#content_details_home_js_jheo";
 
@@ -683,24 +700,20 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
 
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top responsif-none")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
 
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
 
-    // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
     const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
     fetchDetails(id_selector, pathDetails);
 
 
-    // if (document.querySelector("#open-navleft-resto-mobile-tomm-js")) {
-    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile-tomm-js"))
-    // } else if (document.querySelector("#open-navleft-resto-spec-mobile-tomm-js")) {
-    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile-tomm-js"))
-    // } else if (document.querySelector("#tout-dem")) {
-    //     fetchAvies(idResto,document.querySelector("#tout-dem"))
-    // }
 }
 
 
@@ -2488,9 +2501,8 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                 let rate = restaurantAvisNote;
                 let rateYellow = rate * 100;
                 let rateBlack = 100 - rateYellow;
-                var star = ''
+                let star = ''
                 for (let item = 0; item <= 3; item++) {
-                    
                     if (item < response.avis.note - 1) {
                         star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
                     } else {
@@ -2680,140 +2692,7 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                             </a>
                         </li>
 
-                        <div class="modal fade" id="ModalDetailMobile${response.id}" tabindex="-1" aria-labelledby="ModalLabelDetail${response.id}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content modal-content-mobile">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="ModalLabelDetail">${response.nom}</h5>
-                                        <button type="button" class="btn-close" onclick="closeModalDetail(${response.id})"></button>
-                                    </div>
-                                    <div class="modal-body ">
-                                        <div class="modal-body-mobile">
-                                            <div class="content_note">
-                                                <div class=" start start_jheo_js${response.id}">
-                                                    ${star}
-                                                </div>
-                                                <div class="nombre_avis"></div>
-                                            </div>
-                                            <figcaption class="blockquote-footer card-text cmz-adresse mt-2">
-                                                Adresse :
-                                                <a href="#" class="small text-center ">
-                                                    ${response.add.toLowerCase()}
-                                                </a>
-                                            </figcaption>
-
-                                            <div class="content_activite">
-                                                <p class="activite">
-                                                    <span class="fw-bold">Type restaurant:</span>
-                                                    ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
-                                                </p>
-                                            </div>
-
-                                            <div class="content_tow_cta">
-                                                ${site1}
-                                            </div>
-
-                                            <hr>
-
-                                            <div
-                                                class="fonctionnalite">
-                                                <h5>
-                                                    Fonctionalités:
-                                                </h5>
-                                                <ul>
-                                                    ${fonctionalite1}
-                                                </ul>
-
-
-                                            </div>
-
-                                            <hr>
-
-                                            <div class="fourchette_de_prix">
-                                                <h5>
-                                                    Fourchette de prix:
-                                                </h5>
-                                                <ul>
-                                                    ${fourchettePrix1}
-
-                                                </ul>
-                                            </div>
-
-                                            <hr>
-
-                                            <div class="horaire">
-                                                <h5>
-                                                    Horaires :
-                                                </h5>
-                                                <ul>
-                                                    ${horaires1}
-                                                    
-                                                </ul>
-                                                <hr>
-
-                                            </div>
-
-                                            <div class="prestation">
-                                                <h5>
-                                                    Prestation :
-                                                </h5>
-                                                <ul>
-                                                    ${prestation1}
-                                                </ul>
-                                                <hr>
-
-                                            </div>
-
-                                            <div class="regime_speciaux">
-                                                <h5>
-                                                    Régime spécial :
-                                                </h5>
-                                                <ul>
-                                                    ${regimeSpeciaux1}
-                                                </ul>
-                                                <hr>
-
-                                            </div>
-
-                                            <div class="repas">
-                                                <h5>
-                                                    Repas :
-                                                </h5>
-                                                <ul>
-                                                    ${repas1}
-                                                </ul>
-                                                <hr>
-
-                                            </div>
-
-                                            <div class="tel">
-                                                <h5>
-                                                    Téléphone :
-                                                </h5>
-                                                <ul>
-                                                    ${tel}
-                                                </ul>
-                                                <hr>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
-                                            <span>
-                                                <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
-                                                    <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}
-                                                    </span>
-                                                    avis
-                                                </a>
-                                            </span>
-                                            
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>  
+                        
 
                         <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${response.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog  modal-dialog-scrollable">
@@ -2851,7 +2730,6 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                                 </div>
                             </div>
                         </div>
-
                     `
             })
             if (screen.width < 991) {
@@ -3138,122 +3016,7 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
 						</a>
 					</li>
 
-                    <div class="modal fade" id="detailModalMobil${response.id}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
-						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-							<div class="modal-content  modal-content-mobile">
-								<div class="modal-header">
-									<h5 class="modal-title" id="detailModalMobilLabel">
-										${response.nomFerme}
-										<figcaption class="blockquote-footer mt-2">
-											<a href="#" class="small text-center ">${response.nomProprietaire}
-											</a>
-										</figcaption>
-									</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body">
-									<div class="modal-body-mobile">
-										<div class="start">
-											<i class="fa-solid fa-star" data-rank="1"></i>
-											<i class="fa-solid fa-star" data-rank="2"></i>
-											<i class="fa-solid fa-star" data-rank="3"></i>
-											<i class="fa-solid fa-star" data-rank="4"></i>
-										</div>
-                                        ${activite}
-                                        ${agricultureBio}
-											<hr>
-                                        ${codePostal}
-                                        ${ville}
-										<div class="content_genre">
-											<p class="genre text-point-9">
-												<span class="fw-bold">Genre:</span>
-												${response.genre}
-											</p>
-										</div>
-
-										<hr>
-										<div class="produit">
-											<h5>
-												<span class="fw-bold text-point-9">Produit:</span>
-											</h5>
-											<ul >
-                                                ${produit1}
-                                                ${produit2}
-                                                ${produit3}
-                                                ${produit4}
-                                                ${produit5}
-                                                ${produit6}
-                                                ${produit7}
-                                                ${produit8}
-											</ul>
-
-											<p class="text-point-9">${response.produitFerme}</p>
-										</div>
-
-										<hr>
-
-										<div class="particularite">
-											<h5 class="fw-bold text-point-9">
-												Particularité:
-											</h5>
-											<ul>
-                                                ${carteBancaire}
-                                                ${chequeVacance}
-                                                ${degustation}
-                                                ${animauxAutoriser}
-                                                ${venteEnLigne}
-											</ul>
-										</div>
-
-										<hr>
-
-										<div class="content_tel">
-											<h5 class="fw-bold text-point-9">
-												Contact rapide:
-											</h5>
-											<ul>
-                                                ${telephoneDomicile}
-                                                ${telephoneMobile}
-                                                ${telephoneTravail}
-											</ul>
-											<hr>
-
-										</div>
-
-										<hr>
-                                        <div class="mb-3">
-                                            <h3 class="fw-bold text-point-9">
-                                                Horaires:
-                                            </h3>
-                                            <ul class="horaires">
-                                                ${horairesVenteAuMarche}
-                                                ${horairesVenteMagasinProd}
-                                                ${horairesVenteAFerme}
-                                            </ul>
-                                        </div>
-
-										<div class="content_tow_cta mb-3">
-											<div class="site_web">
-												<a class="btn btn-outline-success" href="https://${response.lienSiteWeb}" target="_blank">Lien :  site Web</a>
-											</div>
-										</div>
-										<hr>
-									</div>
-								</div>
-								<div class="modal-footer">
-									<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
-										<span>
-											<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
-												<span class="nbr_avis_resto_jheo_js"></span>
-												avis
-											</a>
-										</span>
-                                        ${btnAviMobile}
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+                    
                 `
             })
             let lengthFerme = responses.fermes.length
@@ -3399,75 +3162,6 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
 							</div>
 						</a>
 					</li>
-
-                    <div class="modal fade" id="detailModalMobil${response.id}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
-						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-							<div class="modal-content modal-content-mobile">
-								<div class="modal-header">
-									<h5 class="modal-title" id="detailModalMobilLabel">${response.nom}</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body modal-body-mobile">
-									<figcaption class="blockquote-footer">
-										Adresse :  <a href="#" class="small text-center ">${response.adresse} </a>
-									</figcaption>
-
-									<div class="">
-										<div class="content_tow_cta d-flex justify-content-evenly my-2">
-											<div class="site_web non_active">
-												<button class="btn btn-primary rounded" style="cursor: not-allowed;">
-													Lien :  site Web
-												</button>
-											</div>
-										</div>
-										<hr>
-
-										<div class="content_essense">
-											<h5 class="fw-bold">
-												Liste des Carburants:
-											</h5>
-											<div class="text-point-9">
-                                                ${prixE85}
-                                                ${prixGplc}
-                                                ${prixSp95}
-                                                ${prixSp95E10}
-                                                ${prixSp98}
-                                                ${prixGasoil}
-                                                
-                                            </div>
-										</div>
-										<hr>
-
-										<ul class="details_station">
-											<li class="text-point-9">
-                                                ${services}
-												<hr>
-											</li>
-											<li class="text-point-9">
-                                                ${horaires}
-												<hr>
-											</li>
-											<li class="text-point-9">
-                                                ${automate2424}
-												<hr>
-											</li>
-											<li class="text-point-9">
-                                                ${departementCode}
-												<hr>
-
-											</li>
-											<li class="text-point-9">
-                                                ${departementName}
-											</li>
-										</ul>
-										<hr>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-
             `
         })
     })
@@ -3638,40 +3332,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
 							</div>
 						</a>
 					</li>
-                    <div class="modal fade" id="detailModalMobilGolf${response.id}" tabindex="-1" aria-labelledby="detailModalMobilLabel" aria-hidden="true">
-						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-							<div class="modal-content modal-content-mobile">
-								<div class="modal-header">
-									<h5 class="modal-title" id="detailModalMobilLabel">${response.name } </h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body modal-body-mobil">
-									<div class="content_titre_detail">
-										<figure class="text-center mt-4">
-											<blockquote class="blockquote">
-												<p>
-													${statusGolf}
-												</p>
-											</blockquote>
-											<figcaption class="blockquote-footer">
-												Adresse :
-												<a href="#" class="small text-center ">${response.adr1}
-													${response.cp }
-													${response.commune }</a>
-											</figcaption>
-										</figure>
-										${codePostal}
-										${commune}
-										${tel}
-										${adr1}
-										<hr>
-										${siteWeb}
-										${containerActionGolfDetail}
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+                    
                 `
             })
         })
@@ -3714,6 +3375,50 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
                 let tabac_presse = ''
                 if (response.tabac_presse != 0) {
                     tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`
+                }
+
+                let horaires_1 = ''
+                if (response.horaires_1 != 0) {
+                    horaires_1 = `<div class="content_activite">
+                                        <p class="activite">
+                                            <span class="fw-bold">Horaires:</span>
+                                            ${response.horaires_1}
+                                        </p>
+                                    </div>
+                                    <hr>`
+                }
+
+                let tel = ''
+                if (response.tel != 0) {
+                    tel = `<div class="content_activite">
+                                <p class="activite">
+                                    <span class="fw-bold">Telephone:</span>
+                                    ${response.tel}
+                                </p>
+                            </div>
+                            <hr>`
+                }
+
+                let codpost = ''
+                if (response.codpost != 0) {
+                    codpost = `<div class="content_activite">
+                                <p class="activite">
+                                    <span class="fw-bold">Code Postal:</span>
+                                    ${response.codpost}
+                                </p>
+                            </div>
+                            <hr>`
+                }
+
+                let commune = ''
+                if (response.commune != 0) {
+                    commune = `<div class="content_activite">
+                                <p class="activite">
+                                    <span class="fw-bold">Commune:</span>
+                                    ${response.commune}
+                                </p>
+                            </div>
+                            <hr>`
                 }
 
                 let btnAvieMobile = ''
@@ -3769,6 +3474,8 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
 							</div>
 						</a>
 					</li>
+
+                    
                 `
             })
         })

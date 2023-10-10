@@ -608,6 +608,31 @@
         width: 100%;
     }
 
+    #modalAvisRestaurant{
+        z-index: 10404;
+    }
+
+    #restoPastilleModal{
+        z-index: 10405;
+    }
+    .modal-backdrop{
+        z-index: 10405;
+    }
+    
+    .navleft-detail-mobile {
+        transform: translate(1vw, 1vh) !important;
+        width: 355px;
+        z-index: 10404 !important;
+    }
+    .swal-overlay--show-modal{
+        z-index: 10405 !important;
+    }
+
+   
+    .content_description {
+        height: 95vh !important;
+    }
+
     .content-logo-shearch {
         width: 100% !important;
         margin-left: 0px !important;

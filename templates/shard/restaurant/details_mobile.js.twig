@@ -1,117 +1,40 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Resto ConsoMyZone
-{% endblock %}
-
-{% block stylesheets %}
-	<link rel="stylesheet" href="{{asset('assets/css/restaurant/app.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/restaurant/sepecific_departement.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/restaurant/app_specifique.css')}}">
-	<link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-{% endblock %}
-
-
-{% block javascripts %}
-	{# // <script src="{{asset('assets/js/ferme/data_ferme.js')}}" defer></script>
-		// <script src="{{asset('assets/js/ferme/details.js')}}" defer></script>
-		// <script src="{{asset('assets/js/ferme/ferme.js')}}" defer></script> #}
-{% endblock %}
-
-{% block body %}
-
-	<div class="content-detaile-resto fixed-top">
-
-		<div class="logo-consomyzone">
-			<a class="logo" href="{{path('app_home') | raw}}">
-				{# <img src="{{asset('assets/image/logo.png') | raw}}" alt="logo"> #}
-				<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewbox="0 0 400.000000 400.000000" preserveaspectratio="xMidYMid meet">
-					<g transform="translate(0.000000,400.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
-						<path fill="#1111FE" d="M585 2515 c-157 -35 -275 -126 -345 -265 -76 -153 -74 -365 7 -524
-							35 -68 135 -166 203 -198 115 -54 296 -72 433 -43 136 29 260 124 318 245 41
-							85 43 95 17 107 -13 6 -57 27 -99 46 l-77 36 -22 -62 c-59 -162 -242 -242
-							-387 -169 -184 94 -220 416 -63 573 131 131 364 93 437 -72 l17 -39 88 0 88 0
-							0 180 0 180 -85 0 -85 0 0 -35 c0 -19 -2 -35 -5 -35 -3 0 -29 13 -58 30 -100
-							56 -251 74 -382 45z"/>
-						<path fill="#000000" d="M1320 2425 l0 -85 65 0 65 0 0 -340 0 -340 -65 0 -65 0 0 -85 0 -85
-							215 0 215 0 0 85 0 85 -65 0 -65 0 0 341 c0 267 3 340 12 337 7 -3 77 -175
-							155 -384 78 -208 150 -398 159 -422 l16 -43 56 3 56 3 156 419 c85 231 161
-							421 168 424 9 3 12 -69 12 -337 l0 -341 -60 0 -60 0 0 -85 0 -85 255 0 255 0
-							0 85 0 85 -65 0 -65 0 0 340 0 340 65 0 65 0 0 85 0 85 -261 -2 -262 -3 -109
-							-289 c-59 -159 -110 -291 -112 -293 -1 -2 -52 129 -112 292 l-109 295 -257 0
-							-258 0 0 -85z"/>
-						<path fill="#51C94B" d="M2940 2330 l0 -180 90 0 90 0 0 95 0 95 135 0 c74 0 135 -3 135 -6 0
-							-3 -108 -157 -240 -342 l-240 -337 0 -82 0 -83 415 0 415 0 0 185 0 185 -85 0
-							-85 0 0 -100 0 -100 -170 0 -169 0 249 350 250 351 0 74 0 75 -395 0 -395 0 0
-							-180z"/>
-					</g>
-				</svg>
-			</a>
-		</div>
-		<div class="ferme-mobile-detail">
-			<svg class="close-ferme" id="close-resto-detail" onclick="closeRestoDetail('{{nom_dep}}','{{id_dep}}','{{codinsee}}')" xmlns="http://www.w3.org/2000/svg" height="1em" viewbox="0 0 384 512">
-				<path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
-			</svg>
-		</div>
-		{# <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 mx-auto" style="height:100%"> #}
-
-		<div
-			class="content_titre_details">
-
-			{# /// nom et propriété #}
-			<div class="titre text-center">
-				<div class="mb-2 restoNameWithLogoTribu" style="display:flex;justify-content:center">
-					<span class="mt-2 ms-3 me-1 text-center">
-						<b>{{details.denominationF | raw}}</b>
-					</span>
-				</div>
-				{# <p class="card-text cmz-adresse">
-									                        <a href="#" class="small">  
-									                            {{details.numvoie|lower}}
-									                            {{details.typevoie|lower}}
-									                            {{details.nomvoie|lower}}
-									                            {{details.codpost|lower}}
-									                            {{details.villenorm|lower}}
-									                        </a>
-									                    </p> #}
-				<figcaption class="blockquote-footer card-text cmz-adresse">
-					Adresse :
-					<a href="#" class="small text-center ">
-						{{details.numvoie|lower | raw}}
-						{{details.typevoie|lower | raw}}
-						{{details.nomvoie|lower | raw}}
-						{{details.codpost|lower | raw}}
-						{{details.villenorm|lower | raw}}
-					</a>
-				</figcaption>
-				<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
-					<span>
-						<a id="see-tom-js" class="text-black btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
-							<span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span>
-							avis
-						</a>
-					</span>
-					{% if details.avis.isAlreadyCommented %}
-						<button type="button" class="mx-2 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto()">
-							Modifier votre avis
-						</button>
-					{% else %}
-						{% if app.user %}
-							<button type="button" class="mx-2 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
-						{% else %}
-							<button type="button" class="mx-2 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>
-						{% endif %}
-					{% endif %}
-					<div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}"></div>
-				</div>
-			</div>
-		</div>
+<div class="content_home responsif-none">
+	<div id="close-detail-tous-resto">
+		<i class="fa-solid fa-x"></i>
 	</div>
+	{# <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 mx-auto" style="height:100%"> #}
+	<div class="left_content_home">
+		<div>
+			<div
+				class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
 
-	<div class="content_home content_body_details_jheo_js content_home_detail_mobile" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
-		<div class="left_content_home">
-			<div class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+				{# note avis   #}
+				<div class="content_titre_details">
+					{# <div class="content_entete_detail">
+											<a href="{{path('app_specific_dep_restaurant', {'nom_dep': nom_dep, 'id_dep': id_dep}) }}">
+												<i class="fa-solid fa-arrow-left" title="list de département"></i>
+											</a>
+											<div class="content_bottom" id="hide_list">
+												<i class="fa fa-eye-slash" aria-hidden="true"></i>
+											</div>
+										</div> #}
 
+					{# /// nom et propriété #}
+						<div class="titre col text-center"> <h4>
+							{{details.denominationF | raw}}
+							<br>
+							{{details.numvoie  | raw}}
+							{{details.typevoie | raw}}
+							{{details.nomvoie | raw}}
+							{{details.codpost | raw}}
+							{{details.villenorm | raw}}
+							<span>
+								<a id="see-tom-js" class="see-avis" data-bs-toggle="modal" data-bs-target="#staticBackdrop">avis</a>
+							</span>
+
+						</h4>
+					</div>
+				</div>
 
 				<div
 					class="p-4">
@@ -119,24 +42,12 @@
 					{# note avis   #}
 					<hr>
 					<div class="content_note">
-						<div class="text-center start start_jheo_js">
-							{% set rate = details.avis.note != 0 ?  details.avis.note - (details.avis.note|number_format - 1): 0 %}
+						<div class="start">
+							<i class="fa-solid fa-star" data-rank="1"></i>
+							<i class="fa-solid fa-star" data-rank="2"></i>
+							<i class="fa-solid fa-star" data-rank="3"></i>
+							<i class="fa-solid fa-star" data-rank="4"></i>
 
-							{% set rateYellow = rate * 100  %}
-							{% set rateBlack = 100 - rateYellow %}
-
-							{% for item in 0..3 %}
-								{% if item < details.avis.note|number_format - 1 %}
-									<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-								{% else %}
-									{% if rate != 0 %}
-										<i class="fa-solid fa-star" data-rank="1" style="{{ "background: linear-gradient(90deg, #F5D165 " ~ rateYellow ~ "%, #000 " ~ rateBlack ~ "%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>
-										{% set rate = 0 %}
-									{% else %}
-										<i class="fa-solid fa-star" data-rank="1"></i>
-									{% endif %}
-								{% endif %}
-							{% endfor %}
 						</div>
 
 						<div class="nombre_avis"></div>
@@ -301,10 +212,16 @@
 
 					<hr>
 
+					{% if (app.user) %}
+						<div class="content_one_cta text-center">
+							<button class="btn btn-success" id="givs-avis-resto-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
+						</div>
+					{% endif %}
+
 
 				</div>
 			</div>
 		</div>
-
-	{% endblock %}
+	</div>
+</div>
 

@@ -978,7 +978,7 @@ class MapModule{
         }
 
         const cart_width= '100%';
-        const cont_legent_width= '100%';
+        const cont_legent_width= '200%';
         
         if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
 
@@ -990,6 +990,26 @@ class MapModule{
             if( rightSideContentType === "info_golf_jheo_js"){
                 document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
                 injectStatusGolf();
+            }else if( rightSideContentType === "info_resto_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusResto();
+
+            }else if( rightSideContentType === "info_ferme_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusFerme();
+
+            }else if( rightSideContentType === "info_station_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusStation();
+
+            }else if( rightSideContentType === "info_tabac_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusTabac();
+
+            }else if( rightSideContentType === "info_tous_jheo_js" ){
+                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                injectStatusTous();
+
             }else if( rightSideContentType === "couche_tabac_jheo_js" ){
                 document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.".toUpperCase();
                 this.injectChooseCouche();
