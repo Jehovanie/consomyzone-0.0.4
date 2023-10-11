@@ -852,10 +852,11 @@ class MapModule{
      * si une btn controle, on trouve une icon, couleur unique, message tooltip, action qui ouvre la partie droite.
      */
     createBtnControl(dataType, faSolidIcon, classBtn, messageTooltip){
+        const fontSize = (dataType === "resto_pastille_jheo_js") ? '1.3rem' : '1.1rem';
         return `
             <div class="content_message_tooltip content_message_tooltip_jheo_js" data-type="${dataType}">
                 <div class="message_tooltip d-none message_tooltip_jheo_js">${messageTooltip}</div>
-                <button class="${classBtn} right_control_jheo_js" data-type="${dataType}"  style="font-size: 1.1rem;">
+                <button class="${classBtn} right_control_jheo_js" data-type="${dataType}"  style="font-size: ${fontSize};">
                     <i class="${faSolidIcon}" data-type="${dataType}"></i>
                 </button>
             </div>
