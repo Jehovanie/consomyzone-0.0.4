@@ -127,6 +127,10 @@
         padding: 3px;
     }
 
+    .content_right_actualite .exprime-pub {
+        margin-top: 0px !important;
+    }
+
     .btn-spec{
         position: absolute;
         top: 170px;
@@ -221,6 +225,16 @@
         margin-top: 8px;
     }
 
+    .titre-tribu-t {
+        font-size: 15pt;
+        margin-top: 20px;
+        color: #6D6DFE !important;
+    }
+
+    .descrp-tribu-t {
+        margin-left: 131px !important;
+        font-size: 9pt;
+    }
 
     .swal2-popup{
         margin-top: -160px;
@@ -239,6 +253,10 @@
 
     #restoPastilleModal{
         z-index: 10401;
+    }
+
+    #staticBackdrop{
+        z-index: 10405;
     }
 
     .scroll-mobile .navbar-nav .nav-item .nav-link{
@@ -649,7 +667,7 @@
 
     .navbar-brand-mobile svg {
         position: absolute;
-        top: 25vh;
+        top: 20vh;
         left: 85vw;
         z-index: 401;
     }
@@ -1049,6 +1067,22 @@
              margin-top: 15px; 
           } */
 
+    .apropos-tribu-t {
+        right: 18px !important;
+        height: 80vh !important;
+        width: 90% !important;
+    }
+
+    .btn-navright-tribut{
+        position: absolute;
+        top: 105px;
+        right: 0px;
+    }
+
+    .btn-ferme-tribut {
+        font-size: 16pt;
+    }
+
     .dropDownMenu {
         background-color: blue;
         text-align: justify !important;
@@ -1066,7 +1100,7 @@
         /* overflow-x: hidden; */
         position: relative !important;
         right: 0;
-        top: -60px !important;
+        top: 0 !important;
         padding: 0px !important;
         margin-left: 0px !important;
     }
@@ -1208,10 +1242,13 @@
         margin-right: 0px !important;
     }
 
-    .card-couverture-pub-tribu-t {
-        width: 100vw !important;
-        margin-top: -190px !important;
-    }
+   .card-couverture-pub-tribu-t {
+       width: 91vw !important;
+        height: 35vh !important;
+       margin-top: 0px !important;
+   }
+
+
 
     .card-couverture-pub-tribu-t .content-couverture {
         width: 100vw !important;
@@ -1239,7 +1276,7 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-        height: 50px !important;
+        height: 60px !important;
     }
 
     .content-tribu-t-name {
@@ -1307,7 +1344,11 @@
     }
 
     .leaflet-control-zoom.leaflet-bar.leaflet-control{
-        margin-top: 115px !important;
+        margin-top: 90px !important;
+    }
+
+    .modal-avie-resto-mobile-tomm-js{
+        z-index: 10405 !important;
     }
 
     .active-mobile{
@@ -1419,7 +1460,7 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
-        height: 17vh !important;
+        height: 1vh !important;
     }
     .account-profil-conected .pdp img {
         width: 110px !important;
@@ -2647,6 +2688,6 @@
 
 @media screen and (min-height: 600px)  and (max-height : 799px){
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
-        height: 21vh !important;
+        height: 15vh !important;
     }
 }

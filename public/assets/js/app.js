@@ -555,7 +555,7 @@ if (document.querySelector("#menu-mobile-tribut")) {
 
 if (document.querySelector(".tribu_t")) {
     document.querySelector(".tribu_t").onclick = () => {
-        alert("Please")
+        // alert("Please")
         // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
     }
 }
@@ -1883,3 +1883,12 @@ function expand(e){
     document.querySelector("#visioMessageElie").classList.remove("minRightModal")
     document.querySelector("#bodyVisioMessageElie").classList.remove("minRightVisioBody")
 }
+
+if (document.querySelector(".btn-navright-tribut-tomm-js")) {
+    document.querySelector(".btn-navright-tribut-tomm-js").addEventListener('click', () => {
+        document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+    })
+}
+

@@ -559,6 +559,7 @@ function showListAvie() {
     if( document.querySelectorAll(".card_avis_resto_jheo_js")){
         document.querySelectorAll(".card_avis_resto_jheo_js").forEach(item => item.remove())
 
+        
         document.querySelector(".all_avis_jheo_js").innerHTML = `
             <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
                 <div class="spinner-border m-3" role="status">
@@ -960,12 +961,13 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
             </div>
         </div>
     `
-
+    document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
     if (idRestaurant != 0 && screen.width <= 991) {
         document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML += singleAvisHtml;
-    }else{
-        document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
     }
+    // else {
+    //     document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
+    // }
 }
 
 function _kidMo(event) {

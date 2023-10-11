@@ -700,10 +700,14 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
 
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
+    
+
     if (screen.width <= 991) {
         remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+        
     } else {
         remove.setAttribute("class", "navleft-detail fixed-top ")
+        
     }
 
     const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
@@ -3341,6 +3345,8 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
 					</li>
                     
                 `
+
+                
             })
         })
 }

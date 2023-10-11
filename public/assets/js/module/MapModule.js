@@ -1022,71 +1022,81 @@ class MapModule{
     }
 
     openRightSideMobile(rightSideContentType){
-         if( document.querySelector(".close_details_jheo_js")){
-            document.querySelector(".close_details_jheo_js").click();
-        }
-
-        if( document.querySelector('.icon_close_nav_left_jheo_js')){
-            document.querySelector(".icon_close_nav_left_jheo_js").click();
-        }
-
-        const cart_width= '100%';
-        const cont_legent_width= '200%';
-        
-        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-
-            if( !document.querySelector(".title_right_side_jheo_js")){
-                console.log("Selector not found: '.title_right_side_jheo_js'")
-                return false;
-            }
-    
-            if( rightSideContentType === "info_golf_jheo_js"){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur le map.".toUpperCase();
-                injectStatusGolf();
-            }else if( rightSideContentType === "info_resto_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusResto();
-
-            }else if( rightSideContentType === "info_ferme_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusFerme();
-
-            }else if( rightSideContentType === "info_station_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusStation();
-
-            }else if( rightSideContentType === "info_tabac_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusTabac();
-
-            }else if( rightSideContentType === "info_tous_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                injectStatusTous();
-
-            }else if( rightSideContentType === "couche_tabac_jheo_js" ){
-                document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.".toUpperCase();
-                this.injectChooseCouche();
-            }else{ //// default tiles type
-                document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de map".toUpperCase();
-                this.injectTilesType();
-            }
-    
-            document.querySelector(".cart_map_jheo_js").style.width= cart_width;
-            document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
-            document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+        if(rightSideContentType === "reset_zoom_jheo_js" ){
+            this.resetZoom()
         }else{
-            console.log("Selector not found")
-            console.log("cart_map_jheo_js", "content_legende_jheo_js")
-        }
-    
-    
-        if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
-            document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-                this.closeRightSide();
-            })
-        }
+            if( document.querySelector(".close_details_jheo_js")){
+                document.querySelector(".close_details_jheo_js").click();
+            }
 
+            if( document.querySelector('.icon_close_nav_left_jheo_js')){
+                document.querySelector(".icon_close_nav_left_jheo_js").click();
+            }
+
+            const cart_width= '100%';
+            const cont_legent_width= '200%';
+            
+            if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+
+                if( !document.querySelector(".title_right_side_jheo_js")){
+                    console.log("Selector not found: '.title_right_side_jheo_js'")
+                    return false;
+                }
         
+                if( rightSideContentType === "info_golf_jheo_js"){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusGolf(); 
+        
+                    }else if( rightSideContentType === "resto_pastille_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
+                        this.injectListRestoPastille();
+        
+                    }else if( rightSideContentType === "info_resto_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusResto();
+        
+                    }else if( rightSideContentType === "info_ferme_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusFerme();
+        
+                    }else if( rightSideContentType === "info_station_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusStation();
+        
+                    }else if( rightSideContentType === "info_tabac_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusTabac();
+        
+                    }else if( rightSideContentType === "info_tous_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusTous();
+        
+                    }else if( rightSideContentType === "couche_tabac_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
+                        this.injectChooseCouche();
+        
+                    }else{ //// default tiles type
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
+                        this.injectTilesType();
+                    }
+        
+                document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+                document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
+                document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+            }else{
+                console.log("Selector not found")
+                console.log("cart_map_jheo_js", "content_legende_jheo_js")
+            }
+        
+        
+            if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
+                document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+                    this.closeRightSide();
+                })
+            }
+
+            
+        }
     }
 
     closeRightSide(){
