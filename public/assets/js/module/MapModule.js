@@ -255,7 +255,13 @@ class MapModule{
     }
 
     resetZoom(){
-        this.map.setView(L.latLng(this.defautLatitude, this.defaultLongitude), 6, { animation: true });
+        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+        if( memoryCenter.zoom !== 6 ){
+            this.lastMemoryCenter= memoryCenter;
+            this.map.setView(L.latLng(this.defautLatitude, this.defaultLongitude), 6, { animation: true });
+        }else{
+            this.map.setView(L.latLng(this.lastMemoryCenter.coord.lat,this.lastMemoryCenter.coord.lng), this.lastMemoryCenter.zoom, { animation: true });
+        }
     }
 
     addControlPlaceholders(map) {
