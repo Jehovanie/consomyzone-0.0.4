@@ -49,9 +49,15 @@
 
                     <div class="d-flex justify-content-center align-items-stretch flex-gap-2 content_btn_avis">
                         <span>
-                            <a id="see-tom-js" style="font-size:smaller" class="text-black btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
-                                <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
-                            </a>
+                           {% if app.user %}
+                                <a id="see-tom-js" style="font-size:smaller" class="btn btn-sm {{details.avis.nbr > 0 ? 'bg_vert': 'bg_orange' }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
+                                    <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
+                                </a>
+                            {% else %}
+                                <a id="see-tom-js" style="font-size:smaller" class="btn btn-sm {{details.avis.nbr > 0 ? 'bg_vert': 'bg_orange' }}" onclick="openSwalActif()">
+                                    <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
+                                </a>
+                           {% endif %}
                         </span>
                         {# {% if details.avis.isAlreadyCommented %}
                             <button type="button" class="mx-2 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="update" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto('{{details.id}}','{{details.}}','')">

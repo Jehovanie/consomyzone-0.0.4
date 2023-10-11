@@ -2320,3 +2320,15 @@ textarea {
     padding: 6px;
     border-radius: 5px 25px 25px 5px;
 }
+
+.bg_orange{
+    background-color: orange !important;
+    border-color: orange !important;
+    color : white !important;
+}
+
+.bg_vert{
+    background-color: green !important;
+    border-color: green !important;
+    color: white !important;
+}
