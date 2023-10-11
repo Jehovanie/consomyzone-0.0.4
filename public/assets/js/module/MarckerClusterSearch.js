@@ -319,8 +319,9 @@ class MarckerClusterSearch extends MapModule  {
             this.updateLastMarkerSelected(marker, "ferme");
 
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailFerme(item.departement, item.departementName, item.id, true)
+                // let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+                // getDetailHomeForMobile(pathDetails)
             } else {
                 // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailFerme(item.departement, item.departementName, item.id, true)
@@ -397,8 +398,9 @@ class MarckerClusterSearch extends MapModule  {
             this.updateLastMarkerSelected(marker, "resto");
             
             if (screen.width < 991) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
-                location.assign(pathDetails)
+                getDetailResto(item.dep, item.depName, item.id, true)
+                // var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
+                // location.assign(pathDetails)
             } else {
                 getDetailResto(item.dep, item.depName, item.id, true)
             }
@@ -476,8 +478,9 @@ class MarckerClusterSearch extends MapModule  {
             this.updateLastMarkerSelected(marker, "golf");
             
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
+                // let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
+                // getDetailHomeForMobile(pathDetails)
             } else {
                 // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
@@ -527,8 +530,9 @@ class MarckerClusterSearch extends MapModule  {
 
             
             if (screen.width < 991) {
-                let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
+                // let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
+                // getDetailHomeForMobile(pathDetails)
             } else {
                 // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailTabac(item.dep, item.nom_dep, item.id, true)

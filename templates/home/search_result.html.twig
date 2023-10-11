@@ -38,7 +38,7 @@
         {% include 'shard/navbar_mobile.twig' %}
     </div>
 
-    <div class="specific-detail responsif-none-pc">
+    <div class="specific-detail responsif-none-pc content_body_details_jheo_js " data-toggle-user-id="{{app.user ? app.user.id : 0}}">
         <nav class="navbar navbar-light d-flex content-spec-resto ">
             <div class="container-fluid scroll-mobile">
                 <ul class="navbar-nav mt-3 d-flex flex-row item-detail-recherche-tomm-js">
@@ -47,6 +47,11 @@
             </div>
         </nav>
     </div>
+
+    {% if app.user %}
+        <div class="d-none" id="is-connected-tomm-js"></div>
+    {% endif %}
+
 
     <div class="content_main">
             

@@ -528,6 +528,7 @@ class RestaurantController extends AbstractController
             array_push($idData, $data["id"]);
         }
        
+        
         return $this->json([
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
@@ -541,6 +542,155 @@ class RestaurantController extends AbstractController
             // "arrdssm" => $arrdssm,
             // "codinsee" => $codinsee
         ],);
+    }
+
+    #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{id_resto}", name: "app_specific_dep_restaurant_search", methods: ["GET"])]
+    public function getSpecificRestaurantSearch(
+        BddRestoRepository $bddResto,
+        Status $status,
+        $nom_dep,
+        $id_dep,
+        $id_resto,
+        CodeapeRepository $codeApeRep,
+        TributGService $tributGService,
+        Tribu_T_Service $tribu_T_Service,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        AvisRestaurantRepository $avisRestaurantRepository,
+    ) {
+
+        $userConnected = $status->userProfilService($this->getUser());
+        $datas = [];
+
+        $restos = $bddResto->getAllRestoIdForSpecificDepartementMobile($id_dep, $id_resto);
+
+        foreach ($restos as $data) {
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
+
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
+                }
+                $note_temp +=  $note["note"];
+            }
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
+
+
+            array_push($datas, $data);
+        }
+
+
+
+
+        $resultCount = $bddResto->getAccountRestauranting($id_dep);
+
+        ///current user connected
+        $user = $this->getUser();
+
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if ($user) {
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+
+                if ($user_amis) {
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+
+        $arrayTribu = [];
+        $arrayTribuRestoPast = [];
+        $arrayTribuRestoJoinedPast = [];
+
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            // dd($tribu_t_owned);
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtension = $tableTribu . "_restaurant";
+                if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $id_resto, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                    } else {
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                    }
+                }
+            }
+
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            // dd($tribu_t_joined);
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
+                if ($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0) {
+                    if ($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $id_resto, true)) {
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                    }
+                }
+            }
+        }
+
+        // dd($datas);
+
+        return $this->json([
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "userConnected" => $userConnected,
+            "type" => "resto",
+            "restaurants" => $datas,
+            "nomber_resto" => $resultCount,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode(),
+            "amisTributG" => $amis_in_tributG,
+            "tribu_t_can_pastille" => $arrayTribu,
+            "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+        ]);
     }
 
     #[Route("/restaurant/arrondissement", name: "app_dep_restaurant_arrondisme", methods: ["GET"])]

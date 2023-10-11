@@ -2825,7 +2825,288 @@ function getDataSpecificMobile(nom_dep, id_dep) {
         })    
 }
 
-function getRestoSpecSearchMobile(nom_dep, id_dep) {
+function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
+    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${idResto}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let restaurants = response.restaurants[0]
+            let idRestaurant = restaurants.id
+            let restaurantAvisNote = restaurants.avis.note !== 0 ? restaurants.avis.note - (restaurants.avis.note - 1) : 0; 
+            // Calculez le taux et les pourcentages jaunes et noirs
+            let rate = restaurantAvisNote;
+            let rateYellow = rate * 100;
+            let rateBlack = 100 - rateYellow;
+            let star = ''
+            for (let item = 0; item <= 3; item++) {
+                if (item < restaurants.avis.note - 1) {
+                    star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+                } else {
+                    if (rate !== 0) {
+                        star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`
+                        rate = 0;
+                    } else {
+                        star += `<i class="fa-solid fa-star" data-rank="1"></i>
+                        `
+                    }
+                }
+
+                
+            }
+            let restaurant = ''
+            let brasserie = ''
+            let creperie = ''
+            let fastFood = ''
+            let pizzeria = ''
+            let boulangerie = ''
+            let bar = ''
+            let cuisineMonde = ''
+            let cafe = ''
+            let salonThe = ''
+            if (restaurants.restaurant != 0) {
+                restaurant = `
+                    <i class="fa-solid fa-utensils"></i>
+                    restaurant
+                `
+            }
+            if (restaurants.brasserie != 0) {
+                brasserie = `
+                    <i class="fa-solid fa-beer-mug-empty"></i>
+                    Brasserie
+                `
+            }
+            if (restaurants.creperie != 0) {
+                creperie = `
+                    <i class="fa-solid fa-pancakes"></i>
+                    creperie
+                `
+            }
+            if (restaurants.fastFood != 0) {
+                fastFood = `
+                    <i class="fa-solid fa-burger"></i>
+                    fastFood
+                `
+            }
+            if (restaurants.boulangerie != 0) {
+                boulangerie = `
+                    <i class="fa-solid fa-pizza-slice"></i>
+                    pizzeria
+                `
+            }
+            if (restaurants.pizzeria != 0) {
+                pizzeria = `
+                    <i class="fa-solid fa-pie"></i>
+                    boulangerie
+                `
+            }
+            if (restaurants.bar != 0) {
+                bar = `
+                    <i class="fa-solid fa-martini-glass-empty"></i>
+                    bar
+                `
+            }
+            if (restaurants.cuisineMonde != 0) {
+                cuisineMonde = `
+                    <i class="fa-solid fa-hat-chef"></i>
+                    cuisine du monde
+                `
+            }
+            if (restaurants.cafe != 0) {
+                cafe = `
+                    <i class="fa-solid fa-coffee-pot"></i>
+                    café
+                `
+            }
+            if (restaurants.salonThe != 0) {
+                salonThe = `
+                    <i class="fa-solid fa-mug-tea"></i>
+                    salon de thé
+                `
+            }
+            let fourchettePrix1 = ''
+            if (restaurants.fourchettePrix1) {
+                fourchettePrix1 = `
+                    <span class="fw-bold">
+                    Fourchette de prix:</span><span>${restaurants.fourchettePrix1}</span>
+                `
+            }
+            let tel = ''
+            if (restaurants.tel) {
+                tel = `
+                    <span class="fw-bold">Téléphone :</span>
+                    <span>${restaurants.tel}</span>
+                `
+            }
+
+            let btnDonneAvie = ``
+            let btnPastille = ''
+            if (document.querySelector("#is-connected-tomm-js")) {
+                btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-toggle-id-resto="${idRestaurant}" data-bs-target="#modalAvisRestaurant${idRestaurant}">Donner votre avis</button>`
+                btnPastille = `<button type="button" data-name="${restaurants.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${idRestaurant}')">Pastiller</button>`
+            } else {
+                btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`
+
+            }
+
+            let isPastie = ""
+
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    let logoPathResto = ""
+                    let logoPathJoined = ""
+
+
+                    let tribu_t_resto_pastille = response.tribu_t_resto_pastille
+                    if (tribu_t_resto_pastille.length > 0) {
+                        for (item of tribu_t_resto_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    } 
+
+                    let tribu_t_resto_joined_pastille = response.tribu_t_resto_joined_pastille
+                    if (tribu_t_resto_joined_pastille.length > 0) {
+                        for (item of tribu_t_resto_joined_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    }
+
+                    isPastie = `
+                        <div class="super_container_js_nantenaina">
+                            <div class="mainContainerLogoTribu">
+                                ${logoPathResto}
+                                ${logoPathJoined}
+                            </div>
+                        </div>
+                        <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`
+
+                }
+            listSpecMobile.innerHTML = `
+                    <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${idRestaurant}">
+                            <div class="containt-specific">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('resto','${restaurants.depName}', '${restaurants.dep}', '${idRestaurant}')">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="text-point-12 fw-bold">${restaurants.nom}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            ${isPastie}
+                                        </div>
+                                    </div>    
+                                    <div class="content_note">
+                                        <div class=" start start_jheo_js${idRestaurant}" id="start-globale-mobile">
+                                            ${star}
+                                        </div>
+                                        <div class="nombre_avis"></div>
+                                    </div>
+                                    <p class="test-point-9">
+                                        <span class="fw-bold">
+                                            Adresse :
+                                        </span>
+                                        <span class="small ">
+                                            ${restaurants.add.toLowerCase()}
+                                        </span>
+                                    </p>
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Type restaurant:</span>
+                                        ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
+                                    </p>
+                                    <p class="text-point-9">
+                                        ${fourchettePrix1}
+                                    </p>
+
+                                    <p class="text-point-9">
+                                        ${tel}
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+                                    <span>
+                                        <a id="see-tom-js${idRestaurant}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${idRestaurant}" onclick="showListAvieMobile(${idRestaurant}, ${id_user})">
+                                            <span class="nbr_avis_resto_jheo_js">${restaurants.avis.nbr}    </span> avis
+                                        </a>
+                                    </span>
+                                    ${btnDonneAvie}
+                                    ${btnPastille}
+                                </div>
+                            </div>
+                    </li>
+                    
+                    
+
+                    <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${idRestaurant}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog  modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
+                                    <button type="button" class="btn-close" onclick="closeModalAvieDetail(${idRestaurant})"></button>
+                                </div>
+                                <div class="list-avis-ferme">
+                                    <div class="modal-body container-avis all_avis_${idRestaurant}_jheo_js">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${idRestaurant}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${idRestaurant}" onclick="showListAvieMobile(${idRestaurant}, ${id_user})"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                        <textarea class="form-control note_number_${idRestaurant}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${idRestaurant}"></textarea>
+                                        <label for="message-text" class="col-form-label">Commentaire:</label>
+                                        <textarea class="form-control note_avis_${idRestaurant}_jheo_js" id="message-text-mobile-${idRestaurant}"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+        })  
+    
+    if (screen.width < 991) {
+                querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => {
+                        if (items.querySelector(".flash-msg-ERREUR")) {
+                            items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
+                        }
+                        const value = e.target.value
+                        mustBeInferior4(value, e.target)
+                        
+                        
+                        setTimeout(() => {
+                            e.target.style = "border:2px solid black;"
+                            items.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;"
+                            })
+                        }, 5000)
+                    }
+                
+    }
+    // getDetailResto(id_dep, nom_dep, idResto, false)
     
 }
 

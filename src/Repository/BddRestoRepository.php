@@ -141,6 +141,56 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getAllRestoIdForSpecificDepartementMobile($dep,$idReso)
+    {
+        return $this->createQueryBuilder("r")
+            ->select(
+                "r.id,
+                r.denominationF as nom,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep", $dep)
+            ->andWhere("r.id =:id")
+            ->setParameter("id", $idReso)
+            ->getQuery()
+            ->getResult();
+    }
+
 
     public function getCoordinateAndRestoIdForSpecific($dep, $codinsee= null, $limit = 2000)
     {
