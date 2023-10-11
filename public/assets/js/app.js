@@ -1909,6 +1909,7 @@ function getToastMessage(){
                 generateOneToastMessage(
                     0,
                     "Veuillez vous connecter pour accéder à tous les informations importants sur notre application.",
+                    3,  //// type de notification : 0 alert, 1 primary, 2 news
                     10000
                 );
             }
@@ -1933,7 +1934,7 @@ function generateToastMessage(data){
                 generateOneToastMessage(
                     item.id,
                     item.toast_message,
-                    item.type,
+                    item.type, //// type de notification : 0 alert, 1 primary, 2 news
                     6000
                 );
             }, 1000 * (index + 1))

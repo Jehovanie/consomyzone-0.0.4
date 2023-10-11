@@ -461,8 +461,16 @@ class NotificationService extends PDOConnexionService{
         return $result["id"];
     }
 
+     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * où: on Utilise pour avoir les données dans le base de données les informations utils pour les internautes, 
+     * localisation du fichier: NotificationController.php
+     * @return [ [ id => ..., toast_message => ..., type: ..., is_update => ... ], ... ]
+     * type: { 0 : Message Alert, 1 : Message Information(mise à jour par ex), 2 : Message sur les nouveaux }
+     * is_update : = 1 Quand l'information est décider de ne plus afficher dans rendus, par défaut 0.
+     */
     public function getToastMessage(){
-        $table= "toast_message";
+        $table= "toast_message"; /// non de table dans la base de données
         $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE is_update = '0'");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
