@@ -59,7 +59,7 @@ class NotificationController extends AbstractController
     }
 
 
-    #[Route("/user/toast-message" , name : "app_toast_message")]
+    #[Route("/notification/toast-message" , name : "app_toast_message")]
     public function toastMessage(
         NotificationService $notificationsService
     )
@@ -68,24 +68,12 @@ class NotificationController extends AbstractController
             return $this->json([ "success" => false,  "toastMessage" => [] ]);
         }
 
-        $cookie = new Cookie( 'my_cookie', 1000, strtotime('tomorrow') );
-        $res = new Response();
-        
-        $data = $notificationsService->getToastMessage();
-        $res->headers->setCookie( $cookie );
-        
-        $result= [
-            "success" => true,
-            "toastMessage" => $data
-        ];
+        $result = $notificationsService->getToastMessage();
 
-        $res->setContent(json_encode($result, true));
-        // dd($res);
-        return $res;
-        // return $this->json([
-        //     "success" => true,
-        //     "toastMessage" => $result
-        // ]);
+        return $this->json([
+            "success" => true,
+            "toastMessage" => $result
+        ]);
     }
     
 }

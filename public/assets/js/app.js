@@ -1899,12 +1899,18 @@ function expand(e){
  * @return (resultat fetch) /// object { success: '', toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...] }
  */
 function getToastMessage(){
-    fetch("/user/toast-message")
+    fetch("/notification/toast-message")
         .then(response => response.json())
         .then(response => {
             if( response.success){
                 // response.toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...]
                 generateToastMessage(response.toastMessage)
+            }else{
+                generateOneToastMessage(
+                    0,
+                    "Veuillez vous connecter pour accéder à tous les informations importants sur notre application.",
+                    10000
+                );
             }
         })
 }
@@ -1921,11 +1927,13 @@ function getToastMessage(){
  */
 function generateToastMessage(data){
     data.forEach((item, index) => {
+
         if(!!isValueInCookie(`toast_message_${item.id}`) === false){
             setTimeout(() => {
                 generateOneToastMessage(
                     item.id,
                     item.toast_message,
+                    item.type,
                     6000
                 );
             }, 1000 * (index + 1))
@@ -1944,19 +1952,32 @@ function generateToastMessage(data){
  * 
  * @return call function to generate each toast message
  */
-function generateOneToastMessage(toastId, message, duration){
+function generateOneToastMessage(toastId, message,type, duration){
     const toastPosition = { gravity: 'bottom', position: 'right'}
 
     const contentDivElement= document.createElement('div');
-    contentDivElement.className = `toast_message_${toastId}_jheo_js`
+    contentDivElement.className = `toast_message_${toastId}_jheo_js`;
+
+    const btn_alert = 'btn btn-danger', btn_info= 'btn btn-primary', btn_news = 'btn btn-info' 
+
+    const className= parseInt(type) === 0 ? btn_alert : ( parseInt(type) === 1 ? btn_info :  btn_news);  
+    const btn = toastId  === 0 ? `
+        <a href="/connexion" class="${className}" style="float: right" onclick="saveToastMessage('${toastId}',true)">
+            Voulez-vous vous connecter?
+        </a>
+    ` : `<button type="button" class="${className}" style="float: right" onclick="saveToastMessage('${toastId}',true)">
+            Ok, j'ai compris...
+        </button>
+    `
     contentDivElement.innerHTML = `
         <div>
             <p>${message} </p>
         </div>
-        <button type="button" class="btn btn-primary" style="float: right" onclick="saveToastMessage('${toastId}',true)">
-            Ok, j'ai compris...
-        </button>
+        ${btn}
     `
+
+    const alert= "#842029", info= "#084298" , news= "#055160";
+    const bg_alert= "#f8d7da", bg_info= "#cfe2ff" , bg_news= "#cff4fc";
 
     Toastify({
         // text: message,
@@ -1969,8 +1990,8 @@ function generateOneToastMessage(toastId, message, duration){
         position: toastPosition.position, // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         style: {
-          color: '#084298',
-          background: "#cfe2ff",
+          color: parseInt(type) === 0 ? alert : ( parseInt(type) === 1 ? info :  news),
+          background:  parseInt(type) === 0 ? bg_alert : ( parseInt(type) === 1 ? bg_info : bg_news ),
           fontSize: '0.9rem',
           width: '350px'
         },

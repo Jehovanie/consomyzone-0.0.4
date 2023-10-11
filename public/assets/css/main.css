@@ -2293,3 +2293,14 @@ textarea {
 .labelPrisePhoto:hover{
     color: #0d6efd;
 }
+
+
+.toast-close{
+    color: black!important;
+    font-size: 1.2rem !important;
+    font-weight: bolder !important;
+    opacity: 1 !important;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
