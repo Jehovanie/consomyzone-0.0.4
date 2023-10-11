@@ -743,66 +743,73 @@ class MapModule{
 
     ///bind and add control on the right side of the map
     bindOtherControles(){
+        // let htmlControl = `
+        //     <button class="btn btn-warning right_control_jheo_js" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
+        //         <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
+        //     </button>
+        //     <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
+        //         <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
+        //     </button>
+        // `;
         let htmlControl = `
-            <button class="btn btn-warning" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
-                <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
-            </button>
-            <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
-                <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
-            </button>
+            ${this.createBtnControl("tiles_type_jheo_js","fa-solid fa-layer-group","btn btn-warning", "Sélectionner un type de carte.")}
+            ${this.createBtnControl("couche_tabac_jheo_js","fa-brands fa-connectdevelop","btn btn-primary", "Listes des contours géographiques.")}
         `;
         if( this.mapForType === "golf"){
             htmlControl += `
-                <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
-                </button>
+                ${this.createBtnControl("info_golf_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
             `
-            // <button class="btn btn-light" data-type="golf_pastille_jheo_js" style="font-size: 1.1rem;">
-            //     <i class="fa-solid fa-location-smile fa-flip" data-type="golf_pastille_jheo_js"></i>
-            // </button>
+        //     <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
+        //         <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
+        //     </button>
         }else if( this.mapForType === "resto" ){ 
             htmlControl += `
-                <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
-                </button>
-                <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
-                    <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
-                </button>
+                ${this.createBtnControl("info_resto_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
+                ${this.createBtnControl("resto_pastille_jheo_js","fa-solid fa-location-dot fa-flip text-danger","btn btn-light", "Liste des restaurants pastilles.")}
             `
+            // <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
+            //     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
+            // </button>
+            // <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+            //     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
+            // </button>
         }else if( this.mapForType === "tous"){
             htmlControl += `
-                <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
-                </button>
-                <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
-                    <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
-                </button>
+                ${this.createBtnControl("info_tous_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
+                ${this.createBtnControl("resto_pastille_jheo_js","fa-solid fa-location-dot fa-flip text-danger","btn btn-light", "Liste des restaurants pastilles.")}
             `
+            // <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
+            //     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
+            // </button>
+            // <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+            //     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
+            // </button>
         }else if( this.mapForType === "station"){
             htmlControl += `
-                <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
-                </button>
+                ${this.createBtnControl("info_station_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
             `
+            // <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
+            //     <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
+            // </button>
         }else if( this.mapForType === "ferme"){
             htmlControl += `
-                <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
-                </button>
+                ${this.createBtnControl("info_ferme_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
             `
+            // <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
+            //     <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
+            // </button>
         }else if( this.mapForType === "tabac"){
             htmlControl += `
-                <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
-                </button>
+                ${this.createBtnControl("info_tabac_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
             `
+            // <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
+            //     <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
+            // </button>
         }
 
         htmlControl += `
-                <button class="btn btn-dark" data-type="reset_zoom_jheo_js" style="font-size: 1.1rem;">
-                    <i class="fa-solid fa-arrows-rotate" data-type="reset_zoom_jheo_js"></i>
-                </button>
-            `
+            ${this.createBtnControl("reset_zoom_jheo_js","fa-solid fa-arrows-rotate","btn btn-dark", "Réstaure le niveau de zoom en position initiale.")}
+        `
 
         L.control.custom({
             // position: 'topright',
@@ -818,6 +825,7 @@ class MapModule{
                 'foo': 'bar',
             },
             events:{
+                hover: (data) => { console.log('hover works')},
                 click: (data) => {
                     this.openRightSide(data.srcElement.dataset.type);
                 },
@@ -831,7 +839,50 @@ class MapModule{
             }
         }).addTo(this.map);
 
+
+        //// bint event hover on btn control.
+        this.bindTooltipsOnHover();
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * Cette fonction est irrittér dans tous les rubriques, 
+     * localisation du fichier: cette meme fichier seulement.,
+     * je veux: faire construire une template dynamique des btn controles à adroite
+     * si une btn controle, on trouve une icon, couleur unique, message tooltip, action qui ouvre la partie droite.
+     */
+    createBtnControl(dataType, faSolidIcon, classBtn, messageTooltip){
+        return `
+            <div class="content_message_tooltip content_message_tooltip_jheo_js" data-type="${dataType}">
+                <div class="message_tooltip d-none message_tooltip_jheo_js">${messageTooltip}</div>
+                <button class="${classBtn} right_control_jheo_js" data-type="${dataType}"  style="font-size: 1.1rem;">
+                    <i class="${faSolidIcon}" data-type="${dataType}"></i>
+                </button>
+            </div>
+        `
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * Cette fonction est irrittér dans tous les rubriques, 
+     * localisation du fichier: cette meme fichier seulement.,
+     * je veux: faire afficher ou cache un message tooltip sur une btn control
+     */
+    bindTooltipsOnHover(){
+        const all_control= document.querySelectorAll(`.content_message_tooltip_jheo_js`);
+
+        all_control.forEach(item_control => {
+            item_control.addEventListener('mouseover',() => {
+                item_control.querySelector('.message_tooltip_jheo_js').classList.remove('d-none')
+            })
+
+            item_control.addEventListener('mouseout',() => {
+                item_control.querySelector('.message_tooltip_jheo_js').classList.add('d-none')
+            })
+        })
+    }
+
+
 
     leafletControlExtend(position= 'topright'){
         

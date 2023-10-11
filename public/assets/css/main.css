@@ -2304,3 +2304,19 @@ textarea {
     top: 5px;
     right: 5px;
 }
+
+.content_message_tooltip{
+    position: relative;
+}
+
+.message_tooltip{
+    display: block;
+    position: absolute;
+    top: 6px;
+    right: 50px;
+    width: 250px;
+    background-color: lightgreen;
+    color: black;
+    padding: 6px;
+    border-radius: 5px 25px 25px 5px;
+}
