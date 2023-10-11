@@ -154,6 +154,7 @@ function showBlockPub() {
                 document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
                 document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
                 document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
             if (document.querySelector("#activeTribu")) {
                 document.querySelector("#activeTribu").classList.remove("p-2")
                 document.querySelector("#activeTribu").classList.remove("list-nav-left")

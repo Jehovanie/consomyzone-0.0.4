@@ -436,6 +436,8 @@ class RestaurantController extends AbstractController
         Status $status,
         Request $request,
         CodeapeRepository $codeApeRep,
+        Tribu_T_Service $tribu_T_Service,
+        UserRepository $userRepository,
         $nom_dep,
         $id_dep,
         $limit,
@@ -444,17 +446,24 @@ class RestaurantController extends AbstractController
 
     ) {
         $datas = [];
+        $idData = [];
+        
         $restos = $bddResto->getCoordinateAndRestoIdForSpecificMobile($id_dep , null, $limit, $offset);
         $resultCount= $bddResto->getAccountRestauranting($id_dep);
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
         foreach ($restos as $data) {
+            $arrayTribu = [];
+            $arrayTribuRestoPast = [];
+            $arrayTribuRestoJoinedPast = [];
             $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
             $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
 
             $isAlreadyCommented = false;
             $avis = ["note" => null, "text" => null];
+
+
 
             $note_temp = 0;
             foreach ($global_note as $note) {
@@ -465,6 +474,9 @@ class RestaurantController extends AbstractController
                 $note_temp +=  $note["note"];
             }
 
+
+            
+
             $data["avis"] = [
                 "nbr" => $nbr_avis_resto,
                 "note" => $global_note ?  $note_temp / count($global_note) : 0,
@@ -472,11 +484,50 @@ class RestaurantController extends AbstractController
                 "avisPerso" => $avis
             ];
 
+            if ($this->getUser()) {
+
+                $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+
+                foreach ($tribu_t_owned as $key) {
+                    $tableTribu = $key["table_name"];
+                    $logo_path = $key["logo_path"];
+                    $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                    $tableExtension = $tableTribu . "_restaurant";
+                    if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
+                        if (!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $data["id"], true)) {
+                            array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        } else {
+                            array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        }
+                    }
+                }
+
+                $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+                // dd($tribu_t_joined);
+                foreach ($tribu_t_joined as $key) {
+                    $tbtJoined = $key["table_name"];
+                    $logo_path = $key["logo_path"];
+                    $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                    $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
+                    if ($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0) {
+                        if ($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $data["id"], true)) {
+                            array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        }
+                    }
+                }
+            }
+            $data["tribuTPastie"] =  [
+                "tribu_t_can_pastille" => $arrayTribu,
+                "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+                "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            ];
+            
 
             array_push($datas, $data);
+            array_push($idData, $data["id"]);
         }
-
-
+       
         return $this->json([
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,

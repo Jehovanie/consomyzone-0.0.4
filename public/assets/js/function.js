@@ -2449,6 +2449,7 @@ function getSpectRestoMobile(nom_dep, id_dep) {
  */
 let limitSpecTomm = 5
 let offsetTomm = 0
+let loadingScroll = ""
 if (document.querySelector(".scroll-mobile-tomm-js")) {
     let contentSpecMobile = document.querySelector(".scroll-mobile-tomm-js")
     contentSpecMobile.addEventListener('scroll', (event) => { 
@@ -2481,6 +2482,15 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
                 offsetTomm += limitSpecTomm
                 getDataSpecTabacMobile(nom_dep, id_dep)
             }
+
+            document.querySelector(".loading-tomm-js").innerHTML = `
+                 <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                     <div class="spinner-border m-3" role="status">
+                         <span class="visually-hidden">Loading...</span>
+                     </div>
+                 </div>
+                 
+             `
         }
     })
 }
@@ -2499,6 +2509,7 @@ function getDataSpecificMobile(nom_dep, id_dep) {
     fetch(request).then(res => res.json())
         
         .then(responses => {
+            document.querySelector(".loading-tomm-js").innerHTML = ''
             let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
             
             
@@ -2538,61 +2549,61 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                 let cuisineMonde = ''
                 let cafe = ''
                 let salonThe = ''
-                if (response.restaurant) {
+                if (response.restaurant != 0) {
                     restaurant = `
                         <i class="fa-solid fa-utensils"></i>
                         restaurant
                     `
                 }
-                if (response.brasserie) {
+                if (response.brasserie != 0) {
                     brasserie = `
                         <i class="fa-solid fa-beer-mug-empty"></i>
 						Brasserie
                     `
                 }
-                if (response.creperie) {
+                if (response.creperie != 0) {
                     creperie = `
                         <i class="fa-solid fa-pancakes"></i>
 						creperie
                     `
                 }
-                if (response.fastFood) {
+                if (response.fastFood != 0) {
                     fastFood = `
                         <i class="fa-solid fa-burger"></i>
 						fastFood
                     `
                 }
-                if (response.boulangerie) {
+                if (response.boulangerie != 0) {
                     boulangerie = `
                         <i class="fa-solid fa-pizza-slice"></i>
 						pizzeria
                     `
                 }
-                if (response.pizzeria) {
+                if (response.pizzeria != 0) {
                     pizzeria = `
                         <i class="fa-solid fa-pie"></i>
 						boulangerie
                     `
                 }
-                if (response.bar) {
+                if (response.bar != 0) {
                     bar = `
                         <i class="fa-solid fa-martini-glass-empty"></i>
 						bar
                     `
                 }
-                if (response.cuisineMonde) {
+                if (response.cuisineMonde != 0) {
                     cuisineMonde = `
                         <i class="fa-solid fa-hat-chef"></i>
 						cuisine du monde
                     `
                 }
-                if (response.cafe) {
+                if (response.cafe != 0) {
                     cafe = `
                         <i class="fa-solid fa-coffee-pot"></i>
 						café
                     `
                 }
-                if (response.salonThe) {
+                if (response.salonThe != 0) {
                     salonThe = `
                         <i class="fa-solid fa-mug-tea"></i>
 						salon de thé
@@ -2656,92 +2667,140 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                     fonctionalite1 = `<li>${response.fonctionalite1}</li>`
                 }
 
-                
-                
-                    listSpecMobile.innerHTML += `
-                        <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${response.id}">
-                            <a class="nav-link d-block">
-                                <div class="containt-specific">
-                                    <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
-                                        <p class="text-point-12 fw-bold">${response.nom}</p>
-                                        <div class="content_note">
-                                            <div class=" start start_jheo_js${response.id}" id="start-globale-mobile">
-                                                ${star}
-                                            </div>
-                                            <div class="nombre_avis"></div>
-                                        </div>
-                                        <p class="test-point-9">
-                                            <span class="fw-bold">
-                                                Adresse :
-                                            </span>
-                                            <span class="small ">
-                                                ${response.add.toLowerCase()}
-                                            </span>
-                                        </p>
-                                        <p class="activite text-point-9">
-                                            <span class="fw-bold">Type restaurant:</span>
-                                            ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
-                                        </p>
-                                        <p class="text-point-9">
-                                            ${fourchettePrix1}
-                                        </p>
+                let isPastie = ""
 
-                                        <p class="text-point-9">
-                                            ${tel}
-                                        </p>
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    let logoPathResto = ""
+                    let logoPathJoined = ""
+
+
+                    let tribu_t_resto_pastille = response.tribuTPastie.tribu_t_resto_pastille
+                    if (tribu_t_resto_pastille.length > 0) {
+                        for (item of tribu_t_resto_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    } 
+
+                    let tribu_t_resto_joined_pastille = response.tribuTPastie.tribu_t_resto_joined_pastille
+                    if (tribu_t_resto_joined_pastille.length > 0) {
+                        for (item of tribu_t_resto_joined_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    }
+
+                    isPastie = `
+                        <div class="super_container_js_nantenaina">
+                            <div class="mainContainerLogoTribu">
+                                ${logoPathResto}
+                                ${logoPathJoined}
+                            </div>
+                        </div>
+                        <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`
+
+                }
+
+                
+
+
+                
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${response.id}">
+                            <div class="containt-specific">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="text-point-12 fw-bold">${response.nom}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            ${isPastie}
+                                        </div>
+                                    </div>    
+                                    <div class="content_note">
+                                        <div class=" start start_jheo_js${response.id}" id="start-globale-mobile">
+                                            ${star}
+                                        </div>
+                                        <div class="nombre_avis"></div>
                                     </div>
-                                    <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
-                                        <span>
-                                            <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
-                                                <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
-                                            </a>
+                                    <p class="test-point-9">
+                                        <span class="fw-bold">
+                                            Adresse :
                                         </span>
-                                        ${btnDonneAvie}
-                                        ${btnPastille}
-                                    </div>
+                                        <span class="small ">
+                                            ${response.add.toLowerCase()}
+                                        </span>
+                                    </p>
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Type restaurant:</span>
+                                        ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
+                                    </p>
+                                    <p class="text-point-9">
+                                        ${fourchettePrix1}
+                                    </p>
+
+                                    <p class="text-point-9">
+                                        ${tel}
+                                    </p>
                                 </div>
-                            </a>
-                        </li>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+                                    <span>
+                                        <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
+                                            <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
+                                        </a>
+                                    </span>
+                                    ${btnDonneAvie}
+                                    ${btnPastille}
+                                </div>
+                            </div>
+                    </li>
+                    
+                    
 
-                        
-
-                        <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${response.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                            <div class="modal-dialog  modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-light">
-                                        <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
-                                        <button type="button" class="btn-close" onclick="closeModalAvieDetail(${response.id})"></button>
-                                    </div>
-                                    <div class="list-avis-ferme">
-                                        <div class="modal-body container-avis all_avis_${response.id}_jheo_js">
-                                        </div>
+                    <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${response.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog  modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
+                                    <button type="button" class="btn-close" onclick="closeModalAvieDetail(${response.id})"></button>
+                                </div>
+                                <div class="list-avis-ferme">
+                                    <div class="modal-body container-avis all_avis_${response.id}_jheo_js">
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${response.id}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form>
-                                            <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
-                                            <textarea class="form-control note_number_${response.id}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${response.id}"></textarea>
-                                            <label for="message-text" class="col-form-label">Commentaire:</label>
-                                            <textarea class="form-control note_avis_${response.id}_jheo_js" id="message-text-mobile-${response.id}"></textarea>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
-                                    </div>
+                    <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${response.id}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                        <textarea class="form-control note_number_${response.id}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${response.id}"></textarea>
+                                        <label for="message-text" class="col-form-label">Commentaire:</label>
+                                        <textarea class="form-control note_avis_${response.id}_jheo_js" id="message-text-mobile-${response.id}"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
                                 </div>
                             </div>
                         </div>
-                    `
+                    </div>
+                `
+                
             })
             if (screen.width < 991) {
                 const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
@@ -2764,6 +2823,10 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                 })
             }
         })    
+}
+
+function getRestoSpecSearchMobile(nom_dep, id_dep) {
+    
 }
 
 /**
@@ -2795,7 +2858,7 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => { 
-                
+            document.querySelector(".loading-tomm-js").innerHTML = ''
             let listSpecMobile = document.querySelector(".list-specific-ferme-mobile-tomm-js")
             responses.fermes.forEach(response => {
                 let genre = ''
@@ -3030,8 +3093,7 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
                     
                 `
             })
-            let lengthFerme = responses.fermes.length
-            console.log(lengthFerme)
+            
         })
 
 }
@@ -3053,10 +3115,11 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
         }
     })
     fetch(request).then(res => res.json())
-    .then(responses => { 
+        .then(responses => { 
+        document.querySelector(".loading-tomm-js").innerHTML = ''
         let listSpecMobile = document.querySelector(".list-specific-station-mobile-tomm-js")
         responses.stations.forEach(response => {
-            console.log(response)
+         
 
             let services = ''
             if (response.services) {
@@ -3194,7 +3257,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
-                console.log(responses)
+            document.querySelector(".loading-tomm-js").innerHTML = ''
 
             let listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
             responses.golf.forEach(response => { 
@@ -3211,7 +3274,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                     if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
                         valueContaintGolf = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
-                                <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
+                                <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
                                     <option value="0">Aucun</option>
                                     <option value="1">A faire</option>
                                     <option value="2">Fait</option>
@@ -3219,7 +3282,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                         valueContaintGolfDetail = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
                                     </label>
-                                    <select class="form-select-detail select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
+                                    <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
                                         <option value="0">Aucun</option>
                                         <option value="1">A faire</option>
                                         <option value="2">Fait</option>
@@ -3367,6 +3430,7 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
+            document.querySelector(".loading-tomm-js").innerHTML = ''
             console.log(responses)
             let listSpecMobile = document.querySelector(".list-specific-tabac-mobile-tomm-js")
             responses.tabac.forEach(response => { 

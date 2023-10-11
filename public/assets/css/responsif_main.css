@@ -6,7 +6,9 @@
         display: none ;
     } */
 
-    
+    .content_photos{
+        width: 71%;
+    }
     .leaflet-control-zoom{
         display: block !important;
     }
@@ -205,7 +207,7 @@
         font-size: 6pt !important;
     }
 
-    .form-select.select_action_golf_nanta_js {
+    .select_action_golf {
         font-size: 7pt !important;
         width: 20% !important;
         margin-top: -31px;
@@ -215,6 +217,10 @@
     .icon_golf_legend {
         width: 20px !important;
         height: 0 !important;
+    }
+
+    .span-btn-menu-tribut{
+        width: 130px !important;
     }
 
     .right_side_body {
@@ -1449,6 +1455,36 @@
         height: 12vh;
         z-index: 401;
         padding: 5px;
+    }
+
+    .apropos-tribu-g {
+        position: absolute !important;
+        top: 135px !important;
+        right: 15px !important;
+        width: 330px !important;
+    }
+
+    .content-pub {
+        margin-top: 273px !important;
+    }
+
+    .content_list_p_tG {
+        width: 100% !important;
+    }
+
+    .content_photos{
+        width: 100% !important;
+    }
+
+    .img_nantenaina img{
+        width: 25px;
+        clip-path: circle();
+    }
+    
+    .loading-tomm-js{
+        position: absolute;
+        top: 35%;
+        right: 0;
     }
 
 }
