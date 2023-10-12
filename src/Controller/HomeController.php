@@ -253,7 +253,7 @@ class HomeController extends AbstractController
         $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tabac" || $cles0 === "golf" || $cles0 === "tous"  );
         $type= $condition ? $cles0: $type;
         $cles0= $condition ? "": $cles0;
-        // dd($tabacRepository->getGolfByDep("Paris", 75));
+
         $size = 20;
 
         $otherResult = false;
@@ -263,15 +263,33 @@ class HomeController extends AbstractController
                 $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($ferme[0])>0){
                     $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResult = true;
+                    $ferme0 = $sortResultService->getDataByCommune($ferme, $cles1, "ferme", $cles0);
+                        
+                    if(count($ferme0["data"])>0){
+                        $ferme[0] = $ferme0["data"];
+                        $ferme[1] = $ferme0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
                 }
+                
                 $results = $ferme;
                 break;
             case "restaurant":
                 $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($resto[0])>0){
+
                     $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResult = true;
+
+                    $resto0 = $sortResultService->getDataByCommune($resto, $cles1, "restaurant", $cles0);
+                        
+                    if(count($resto0["data"])>0){
+                        $resto[0] = $resto0["data"];
+                        $resto[1] = $resto0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                
                 }
                 
                 if(count($resto) > 0){
@@ -287,7 +305,14 @@ class HomeController extends AbstractController
                 $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
                 if(!count($golf[0])>0){
                     $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
-                    $otherResult = true;
+                    $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf", $cles0);
+                        
+                    if(count($golf0["data"])>0){
+                        $golf[0] = $golf0["data"];
+                        $golf[1] = $golf0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
                 }
                 $results = $golf;
                 break;
@@ -295,7 +320,14 @@ class HomeController extends AbstractController
                 $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($tabac[0])>0){
                     $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResult = true;
+                    $tabac0 = $sortResultService->getDataByCommune($tabac, $cles1, "tabac", $cles0);
+                        
+                    if(count($tabac0["data"])>0){
+                        $tabac[0] = $tabac0["data"];
+                        $tabac[1] = $tabac0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
                 }
                 $results = $tabac;
                 break;
@@ -303,7 +335,13 @@ class HomeController extends AbstractController
                 $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($station[0])>0){
                     $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResult = true;
+                    $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
+                    if(count($station0["data"])>0){
+                        $station[0] = $station0["data"];
+                        $station[1] = $station0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
                 }
                 $results = $station;
                 break;
@@ -311,7 +349,13 @@ class HomeController extends AbstractController
                 $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($station[0])>0){
                     $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $otherResult = true;
+                    $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
+                    if(count($station0["data"])>0){
+                        $station[0] = $station0["data"];
+                        $station[1] = $station0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
                 }
                 $results = $station;
                 break;
@@ -326,7 +370,15 @@ class HomeController extends AbstractController
                     $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($resto[0])>0){
                         $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherResto = true;
+
+                        $resto0 = $sortResultService->getDataByCommune($resto, $cles1, "restaurant");
+                        
+                        if(count($resto0["data"])>0){
+                            $resto[0] = $resto0["data"];
+                            $resto[1] = $resto0["nombre"];
+                        }else{
+                            $otherResto = true;
+                        }
                     }
 
                     if($otherResto){
@@ -345,7 +397,14 @@ class HomeController extends AbstractController
                     $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
                     if(!count($golf[0])>0){
                         $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
-                        $otherGolf = true;
+                        $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf");
+                        
+                        if(count($golf0["data"])>0){
+                            $golf[0] = $golf0["data"];
+                            $golf[1] = $golf0["nombre"];
+                        }else{
+                            $otherGolf = true;
+                        }
                     }
 
                     if($otherGolf){
@@ -358,7 +417,14 @@ class HomeController extends AbstractController
                     $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($tabac[0])>0){
                         $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherTabac = true;
+                        $tabac0 = $sortResultService->getDataByCommune($tabac, $cles1, "tabac");
+                        
+                        if(count($tabac0["data"])>0){
+                            $tabac[0] = $tabac0["data"];
+                            $tabac[1] = $tabac0["nombre"];
+                        }else{
+                            $otherTabac = true;
+                        }
                     }
 
                     if($otherTabac){
@@ -371,7 +437,15 @@ class HomeController extends AbstractController
                     $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($ferme[0])>0){
                         $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherFerme = true;
+                        $ferme0 = $sortResultService->getDataByCommune($ferme, $cles1, "ferme");
+                        
+                        if(count($ferme0["data"])>0){
+                            $ferme[0] = $ferme0["data"];
+                            $ferme[1] = $ferme0["nombre"];
+                        }else{
+                            $otherFerme = true;
+                        }
+                        
                     }
 
                     if($otherFerme){
@@ -384,7 +458,15 @@ class HomeController extends AbstractController
                     $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($station[0])>0){
                         $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherStation = true;
+                        
+                        $station0 = $sortResultService->getDataByCommune($station, $cles1, "station");
+                        
+                        if(count($station0["data"])>0){
+                            $station[0] = $station0["data"];
+                            $station[1] = $station0["nombre"];
+                        }else{
+                            $otherStation = true;
+                        }
                     }
                     if($otherStation){
                         $otherResult = true;
@@ -396,13 +478,31 @@ class HomeController extends AbstractController
                     $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($ferme[0])>0){
                         $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherFerme = true;
+                        $ferme0 = $sortResultService->getDataByCommune($ferme, $cles1, "ferme", $cles0);
+                        
+                        if(count($ferme0["data"])>0){
+                            $ferme[0] = $ferme0["data"];
+                            $ferme[1] = $ferme0["nombre"];
+                        }else{
+                            $otherFerme = true;
+                        }
                     }
     
                     $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    
                     if(!count($resto[0])>0){
+
                         $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherResto = true;
+
+                        $resto0 = $sortResultService->getDataByCommune($resto, $cles1, "restaurant", $cles0);
+                        
+                        if(count($resto0["data"])>0){
+                            $resto[0] = $resto0["data"];
+                            $resto[1] = $resto0["nombre"];
+                        }else{
+                            $otherResto = true;
+                        }
+
                     }
 
                     if(count($resto) > 0){
@@ -414,20 +514,40 @@ class HomeController extends AbstractController
                     $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($golf[0])>0){
                         $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherGolf = true;
+                        $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf", $cles0);
+                        
+                        if(count($golf0["data"])>0){
+                            $golf[0] = $golf0["data"];
+                            $golf[1] = $golf0["nombre"];
+                        }else{
+                            $otherGolf = true;
+                        }
                     }
 
                     $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($tabac[0])>0){
                         $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherTabac = true;
+                        $tabac0 = $sortResultService->getDataByCommune($tabac, $cles1, "tabac", $cles0);
+                        if(count($tabac0["data"])>0){
+                            $tabac[0] = $tabac0["data"];
+                            $tabac[1] = $tabac0["nombre"];
+                        }else{
+                            $otherTabac = true;
+                        }
                     }
     
                     $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
 
                     if(!count($station[0])>0){
                         $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $otherStation = true;
+                        $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
+                        
+                        if(count($station0["data"])>0){
+                            $station[0] = $station0["data"];
+                            $station[1] = $station0["nombre"];
+                        }else{
+                            $otherStation = true;
+                        }
                     }
 
                     $results[0] = [];

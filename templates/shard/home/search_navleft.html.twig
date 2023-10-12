@@ -3,7 +3,7 @@
 		<div class="head-left mt-3">
 			<div class="row cmz-left-results-indications">
 				<div class="col-10">
-					<h6 class="modal-title" id="exampleModalLabel">
+					<h6 class="modal-title {% if results[1] < 1 %} d-none {% endif %}" id="exampleModalLabel">
 						
 						{% if cles0 != "" %}
 							{% if otherResult == true %}
@@ -17,13 +17,14 @@
 						{% else %}
 							{% set rubrique = type == "resto"?"restaurant":type %}
 							{% if otherResult == true %}
-								Désolé, nous n’avons pas de <span id="cles0"><b>{{rubrique|upper}}</b></span> à <span id="cles1">{{cles1}}</span><br>
+								{# Désolé, nous n’avons pas de <span id="cles0"><b>{{rubrique|upper}}</b></span> à <span id="cles1">{{cles1}}</span><br>
 								{% if results[1] >= 1 %}
 									Cependant ces résultats pourraient vous intéresser<br>
-								{% endif %}
+								{% endif %} #}
+								Désolé nous n'avons pas de résultat pour votre recherche, mais ce(s) résultat(s) peuvent vous intéreser.
 							{% else %}
 								{# <b>{{rubrique|upper}}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br> #}
-								<b> {{rubrique == "tous" ? "Restaurant,Ferme,Stations-services, Golf et Tabac": rubrique|upper }}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
+								<b> {{rubrique == "tous" ? "Le(s) resultat(s) de votre recheche": rubrique|upper }}</b> à <span id="cles1">{{ cles1|length > 2 ? cles1 : "département " ~ (cles1|length == 1 ? "0" ~ cles1 : cles1 ) }}</span><br>
 							{% endif %}
 						{% endif %}
                         
@@ -37,6 +38,9 @@
 							<i class="total_number_js">(Aucun résultat)</i>
 						{% endif %}
                     </h6>
+					<h6 class="modal-title {% if results[1] > 0 %} d-none {% endif %}" id="exampleModalLabel">
+						Désolé nous n'avons pas de résultat pour votre recherche. Essayez de corriger la faute d'orthographe.
+					</h6>
 				</div>
 				<div class="col-2">
                     <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-station"></i>
