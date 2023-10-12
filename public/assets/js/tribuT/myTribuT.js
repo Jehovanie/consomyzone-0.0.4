@@ -268,25 +268,30 @@ function showPartisan() {
                 let body_table = ``
 
                 jsons[0].forEach(json => {
-                    profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
-                    let lastName = profilInfo.lastName
-                    let firstName = profilInfo.firstName
-                    let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
 
-                    body_table += `
-                        <tr>
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
-                            </td>
-                            <td>
-                                <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
-                            </td>
-                            <td>
-                                TribuG ${tribuG.replaceAll("_", " ")}
-                            </td>
-                        </tr>
-                    `
+                    if(json.infos_profil){
+
+                        profilInfo = JSON.parse(json.infos_profil)
+                        let profil = profilInfo.photo_profil ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
+                        let lastName = profilInfo.lastName
+                        let firstName = profilInfo.firstName
+                        let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
+    
+                        body_table += `
+                            <tr>
+                                <td class="d-flex bd-highlight align-items-center">
+                                    <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
+                                </td>
+                                <td>
+                                    <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                </td>
+                                <td>
+                                    TribuG ${tribuG.replaceAll("_", " ")}
+                                </td>
+                            </tr>
+                        `
+                    }
+                    
                     // console.log(JSON.parse(json.infos_profil))
                     // document.querySelector("#tribu_t_conteuneur").innerHTML += `
                     //     <div class="card-partisons row">
@@ -1863,7 +1868,7 @@ function showInvitations() {
                             <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
                         </li>
                     </ul>
-                    <div id="blockSendEmailInvitation" style="display:none;" class="w-50 mt-4 px-3">
+                    <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
                         <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
@@ -1893,7 +1898,10 @@ function showInvitations() {
 
                             <div class="form-group mt-3">
                                 <label for="exampleFormControlTextarea1">Description</label>
-                                <textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                <div id="exampleFormControlTextarea32">
+                                    
+                                </div>
+                                <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
                             <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
                         </form>
@@ -1915,6 +1923,12 @@ function showInvitations() {
                     </div>
                 </div>
         `
+
+    editor_invitation = document.querySelector("#editorInvitationElie")
+    // console.log(editor);
+    document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
+    document.querySelector("#editorInvitationElie").classList.remove("d-none")
+    
     fetchAllTribuGMember()
 
     /** JEHOVANNIE SEND INVITATION BY EMAIL */
@@ -1997,9 +2011,13 @@ function showInvitations() {
             status = true;
         }
 
-        if (description.value != "") {
-            data = { ...data, "description": description.value }
-        }
+        // if (description.value != "") {
+        //     data = { ...data, "description": description.value }
+        // }
+
+        //Changing description check editor by Elie
+        data = { ...data, "description": editor.getData() }
+
         // console.log("data sending...")
         // console.log(data)
 
@@ -2020,8 +2038,13 @@ function showInvitations() {
             }).then(result => {
                 input_principal.value = null;
                 input_cc.value = null;
-                description.value = null;
+                // description.value = null;
                 object.value = null;
+                
+                //init Ckeditor for description by Elie
+
+                editor.setData("Ecrivez votre message ici.") 
+
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
                 })
@@ -2030,9 +2053,14 @@ function showInvitations() {
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
                 document.querySelector("#successSendingMail").style.display = "block"
 
+                swal({
+                    text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                    icon: "info",
+                });
+
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
-                }, 3000)
+                }, 5000)
 
             }).catch((e) => { console.log(e); });
 

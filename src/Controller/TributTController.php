@@ -1781,13 +1781,23 @@ class TributTController extends AbstractController
             */
             $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            $mailService->sendEmail(
-                $principal,
-                "Amis",
-                $object,
-                // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
-            );
+            // $mailService->sendEmail(
+            //     $principal,
+            //     "Amis",
+            //     $object,
+            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+            //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+            // );
+
+            $email_to = $principal;
+            $fullname = $from_fullname;
+
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = $url ;
+            $context["content_mail"] = $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+
+            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, $fullname, $context);
 
             $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
 
