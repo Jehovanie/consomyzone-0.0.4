@@ -1886,7 +1886,6 @@ function handleNewComment(userInformations, comment){
     content_comment.innerHTML= `
         <div class="h sa wf uk th ni ej">
             <a href="#"> <img class="profil_publication" src="${userInformations.profil !== "" ? userInformations.profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User"/> </a>
-            <span class="g l m xe qd th pi jj sj ra"></span>
         </div>
 
         <div>

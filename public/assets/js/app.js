@@ -1906,12 +1906,16 @@ function getToastMessage(){
                 // response.toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...]
                 generateToastMessage(response.toastMessage)
             }else{
-                generateOneToastMessage(
-                    0,
-                    "Veuillez vous connecter pour accéder à tous les informations importants sur notre application.",
-                    3,  //// type de notification : 0 alert, 1 primary, 2 news
-                    10000
-                );
+                const link_now= new URL(window.location.href)
+                const linkPathname= link_now.pathname;
+                if(!linkPathname.includes("/connexion")){
+                    generateOneToastMessage(
+                        0,
+                        "Veuillez vous connecter pour accéder à tous les informations importants sur notre application.",
+                        3,  //// type de notification : 0 alert, 1 primary, 2 news
+                        10000
+                    );
+                }
             }
         })
 }
