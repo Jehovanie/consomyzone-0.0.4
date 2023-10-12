@@ -50,7 +50,6 @@ class MarckerClusterSearch extends MapModule  {
             // const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
             // const latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
 
-
             const latLong= await this.getCenterFromOpenStreetMap();
             this.initMap(latLong.lat, latLong.long, latLong.zoom, this.isAddControl);
             this.bindAction();

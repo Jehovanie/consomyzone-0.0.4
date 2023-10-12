@@ -76,7 +76,6 @@ class MapModule{
     }
 
     async createMap(lat= null, long=null, zoom= null){
-
         if( lat !=null && long != null && zoom != null ){
             this.latitude = lat;
             this.longitude= long;
@@ -88,10 +87,12 @@ class MapModule{
 
         /// if there is departementSpecified
         this.settingLatLong();
-        
+
+        // ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter )
+        // si on est dans une departement specifique, ou on est dans le recherch, et memory Center est vide... 
         this.map = L.map('map', {
                 zoomControl: false,
-                center: ( this.id_dep || !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                center: ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
                 zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
                 // zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
                 layers: [this.tiles] 
@@ -831,7 +832,6 @@ class MapModule{
                 'foo': 'bar',
             },
             events:{
-                hover: (data) => { console.log('hover works')},
                 click: (data) => {
                     this.openRightSide(data.srcElement.dataset.type);
                 },
