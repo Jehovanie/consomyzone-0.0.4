@@ -2293,3 +2293,7 @@ textarea {
 .labelPrisePhoto:hover{
     color: #0d6efd;
 }
+
+.text_black{
+    color:black;
+}
