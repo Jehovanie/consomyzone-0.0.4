@@ -209,8 +209,7 @@ class MarckerClusterResto extends MapModule  {
             this.markers.refreshClusters();
 
             if (screen.width < 991) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                location.assign(pathDetails)
+                getDetailResto(item.dep, item.depName, item.id, false)
             } else {
                 getDetailResto(item.dep, item.depName, item.id, false)
             }

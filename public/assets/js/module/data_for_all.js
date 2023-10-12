@@ -382,6 +382,7 @@ function injectStatus(data){
                 </thead>
                 <tbody>
                     ${data}
+
                 </tbody>
             </table>
         </div>

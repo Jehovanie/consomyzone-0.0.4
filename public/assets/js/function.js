@@ -150,9 +150,9 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         
                         if (screemMax.matches) {
-
-                            const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                            location.assign(pathDetails)
+                            
+                            // const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                            // location.assign(pathDetails)
                         } else if (screemMin.matches) {
 
                             let remove = document.getElementById("remove-detail")
@@ -207,16 +207,16 @@ function addRestaurantToMap(nom_dep, code_dep) {
 
                     parsedResult.forEach(new_element => {
 
-                        // <div class="element" id="{{station.id}}">
+                        // <div class="element" id="{{station.id}">
                         const div_new_element = document.createElement("div");
                         div_new_element.setAttribute("class", "element")
                         div_new_element.setAttribute("id", new_element.id);
 
-                        // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
+                        // <p> <span class="id_departement">{{station.nom } </span> {{station.adresse}</p>
                         const s_p = document.createElement("p");
                         s_p.innerHTML = "<span class='id_departement'>" + new_element.nomFerme + " </span>" + new_element.adresseFerme
 
-                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
+                        // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }">
                         const a = document.createElement("a");
                         a.setAttribute("class", "plus")
                         a.setAttribute("href", "/ferme/departement/" + nom_dep + "/" + id_dep + "/details/" + new_element.id)
@@ -340,9 +340,10 @@ function addRestaurantToMap(nom_dep, code_dep) {
                         let screemMin = window.matchMedia("(min-width: 1000px)")
                         
                         if (screemMax.matches) {
+                            
 
-                            const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
-                            location.assign(pathDetails)
+                            // const pathDetails = `/restaurant-mobile/departement/${departementName}/${item.dep}/details/${item.id}`;
+                            // location.assign(pathDetails)
                         } else if (screemMin.matches) {
 
                             let remove = document.getElementById("remove-detail")
@@ -510,7 +511,11 @@ function getDetailStation(depart_name, depart_code, id, inHome = false) {
     let remove = !inHome ? document.getElementById("remove-detail-station") : document.getElementById("remove-detail-home");
     
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
     fetchDetails(id_selector,linkGetDetails)
@@ -623,7 +628,11 @@ function getDetailFerme(codeDepart, nameDepart, idFerme, inHome = false) {
     
     let remove = !inHome ? document.getElementById("remove-detail-ferme") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content-details-ferme" : "#content_details_home_js_jheo";
 
@@ -637,7 +646,11 @@ function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
 
     let remove = !inHome ? document.getElementById("remove-detail-golf") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content-details-golf" : "#content_details_home_js_jheo";
 
@@ -652,7 +665,11 @@ function getDetailTabac(codeDepart,nameDepart, golfID, inHome = false) {
 
     let remove = !inHome ? document.getElementById("remove-detail-tabac") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+    }
 
     const id_selector = !inHome ? "#content-details-tabac" : "#content_details_home_js_jheo";
 
@@ -683,46 +700,47 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome= false,select_de
 
     let remove = !inHome ? document.getElementById("remove-detail-resto") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
-    remove.setAttribute("class", "navleft-detail fixed-top")
+    
+
+    if (screen.width <= 991) {
+        remove.setAttribute("class", "navleft-detail-mobile fixed-top ")
+        
+    } else {
+        remove.setAttribute("class", "navleft-detail fixed-top ")
+        
+    }
 
     const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
 
     document.querySelector(id_selector).innerHTML = createMiniCMZloading()
 
-    // /restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}
     const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
     fetchDetails(id_selector, pathDetails);
 
 
-    // if (document.querySelector("#open-navleft-resto-mobile-tomm-js")) {
-    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-mobile-tomm-js"))
-    // } else if (document.querySelector("#open-navleft-resto-spec-mobile-tomm-js")) {
-    //     fetchAvies(idResto,document.querySelector("#open-navleft-resto-spec-mobile-tomm-js"))
-    // } else if (document.querySelector("#tout-dem")) {
-    //     fetchAvies(idResto,document.querySelector("#tout-dem"))
-    // }
 }
 
 
+
 function addListFermeMobile() {
-    document.querySelector("#open-navleft-mobile-tomm-js").addEventListener('click', () => {
-        document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 0
-        document.querySelector("#open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
-        if (document.querySelector("#list-depart-mobile-tomm-js")) {
-            document.querySelector("#list-depart-mobile-tomm-js").removeAttribute("style")
+    document.querySelector(".open-navleft-mobile-tomm-js").addEventListener('click', () => {
+        document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 0
+        document.querySelector(".open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
+        if (document.querySelector(".list-depart-mobile-tomm-js")) {
+            document.querySelector(".list-depart-mobile-tomm-js").removeAttribute("style")
         }
         fetch(`/ferme-mobile`)
             .then(response => {
                 return response.text()
             }).then(r => {
-                document.querySelector("#list-depart-mobile-tomm-js").innerHTML = null
-                document.querySelector("#list-depart-mobile-tomm-js").innerHTML = r
-                // firstX= document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().x+document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().width
-                // firstY=document.querySelector("#list-depart-mobile-tomm-js").getBoundingClientRect().y
+                document.querySelector(".list-depart-mobile-tomm-js").innerHTML = null
+                document.querySelector(".list-depart-mobile-tomm-js").innerHTML = r
+                // firstX= document.querySelector(".list-depart-mobile-tomm-js").getBoundingClientRect().x+document.querySelector(".list-depart-mobile-tomm-js").getBoundingClientRect().width
+                // firstY=document.querySelector(".list-depart-mobile-tomm-js").getBoundingClientRect().y
 
                 document.querySelector("#close-ferme").addEventListener('click', () => {
-                    document.querySelector("#list-depart-mobile-tomm-js").style.transform = "translateX(-100vw)"
-                    document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
+                    document.querySelector(".list-depart-mobile-tomm-js").style ="transform: translateX(-100vw);display: none;"
+                    document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 1
                 })
 
 
@@ -801,9 +819,6 @@ function lookupByDepCodeFerme(g) {
 
 // const nom_dep = 
 
-function addListDepartMobile(nom_dep, id_dep) {
-    location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
-}
 
 function addSpecificFermeMobile(nom_dep, id_dep) {
     document.querySelector("#open-navleft-mobile-tomm-js-specific").style.opacity = 0
@@ -819,7 +834,7 @@ function addSpecificFermeMobile(nom_dep, id_dep) {
             document.querySelector("#list-specific-depart-tomm-js").innerHTML = null
             document.querySelector("#list-specific-depart-tomm-js").innerHTML = r
             document.querySelector("#close-ferme-specific").addEventListener('click', () => {
-                document.querySelector("#list-specific-depart-tomm-js").style.transform = "translateX(-115vw)"
+                document.querySelector("#list-specific-depart-tomm-js").style = "transform: translateX(-115vw);display: none;"
                 document.querySelector("#open-navleft-mobile-tomm-js-specific").style.transition = "opacity 0.5s ease-in-out"
                 document.querySelector("#open-navleft-mobile-tomm-js-specific").style.opacity = 1
             })
@@ -863,34 +878,34 @@ if (document.querySelector("#list-depart-mobile-tomm-js")) {
 
             if (deltx < 0) { //gauche
                 //document.querySelector("body").style.transition = `all 3s ease-in-out !important`
-                document.querySelector("#list-depart-mobile-tomm-js").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
-                document.querySelector("#open-navleft-mobile-tomm-js").style.opacity = 1
-                // document.querySelector("#open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
+                document.querySelector(".list-depart-mobile-tomm-js").style.transform = `translateX(${deltx}px)` //left = `${deltx}px`
+                document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 1
+                // document.querySelector(".open-navleft-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out"
             }
         }
     }
 }
 
 function addListDepartRest() {
-    if(document.querySelector("#open-navleft-resto-mobile-tomm-js")){
-        document.querySelector("#open-navleft-resto-mobile-tomm-js").addEventListener('click', () => {
-            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 0
-            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+    if(document.querySelector(".open-navleft-resto-mobile-tomm-js")){
+        document.querySelector(".open-navleft-resto-mobile-tomm-js").addEventListener('click', () => {
+            document.querySelector(".open-navleft-resto-mobile-tomm-js").style.opacity = 0
+            document.querySelector(".open-navleft-resto-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
 
-            if (document.querySelector("#list-depart-resto-mobile-tomm-js")) {
-                document.querySelector("#list-depart-resto-mobile-tomm-js").removeAttribute("style")
+            if (document.querySelector(".list-depart-resto-mobile-tomm-js")) {
+                document.querySelector(".list-depart-resto-mobile-tomm-js").removeAttribute("style")
             }
 
             fetch(`/restaurant-mobile`)
                 .then(response => response.text())
                 .then(r => {
-                    if (document.querySelector("#list-depart-resto-mobile-tomm-js")) {
-                        document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = null
-                        document.querySelector("#list-depart-resto-mobile-tomm-js").innerHTML = r
+                    if (document.querySelector(".list-depart-resto-mobile-tomm-js")) {
+                        document.querySelector(".list-depart-resto-mobile-tomm-js").innerHTML = null
+                        document.querySelector(".list-depart-resto-mobile-tomm-js").innerHTML = r
 
                         document.querySelector("#close-resto").addEventListener('click', () => {
-                            document.querySelector("#list-depart-resto-mobile-tomm-js").style.transform = "translateX(-100vw)"
-                            document.querySelector("#open-navleft-resto-mobile-tomm-js").style.opacity = 1
+                            document.querySelector(".list-depart-resto-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
+                            document.querySelector(".open-navleft-resto-mobile-tomm-js").style.opacity = 1
                         })
                     }
                 })
@@ -911,18 +926,16 @@ function addListSpecResto(nom_dep, id_dep) {
         document.querySelector("#list-arrand-resto-tomm-js").removeAttribute("style")
     }
     fetch(`/restaurant-mobile/arrondissement?nom_dep=${nom_dep}&id_dep=${id_dep}`)
-        .then(response => {
-            return response.text()
-        }).then(r => {
-            // console.log(r)
-            document.querySelector("#list-arrand-resto-tomm-js").innerHTML = null
-            document.querySelector("#list-arrand-resto-tomm-js").innerHTML = r
-
-            document.querySelector("#close-resto-arrand").addEventListener('click', () => {
-                document.querySelector("#list-arrand-resto-tomm-js").style.transform = "translateX(-100vw)"
-                document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.opacity = 1
-            })
+    .then(response => {
+        return response.text()
+    }).then(r => {
+        document.querySelector("#list-arrand-resto-tomm-js").innerHTML = null
+        document.querySelector("#list-arrand-resto-tomm-js").innerHTML = r
+        document.querySelector("#close-resto-arrand").addEventListener('click', () => {
+            document.querySelector("#list-arrand-resto-tomm-js").style.transform = "translateX(-100vw)"
+            document.querySelector("#open-navleft-resto-mobile-tomm-js-arrand").style.opacity = 1
         })
+    })
 }
 
 
@@ -930,9 +943,7 @@ function getSpecArrand(nom_dep, id_dep, codinsee) {
     location.assign(`/restaurant/arrondissement/specific/?nom_dep=${nom_dep}&id_dep=${id_dep}&codinsee=${codinsee}`)
 }
 
-function getSpectResto(nom_dep, id_dep) {
-    location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`)
-}
+
 
 function addListSpecRestoMobile(nom_dep, id_dep, codinsee, arrdssm) {
     document.querySelector("#open-navleft-resto-spec-mobile-tomm-js").style.opacity = 0
@@ -959,9 +970,9 @@ function addListSpecRestoMobile(nom_dep, id_dep, codinsee, arrdssm) {
 
 function getDetailRetoMobile(nom_dep, id_dep, id_restaurant, codinsee = null) {
     if (id_dep == "75" && codinsee != null) {
-        location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}?codinsee=${codinsee}`)
+        // location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}?codinsee=${codinsee}`)
     } else {
-        location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}`)
+        // location.assign(`/restaurant-mobile/departement/${nom_dep}/${id_dep}/details/${id_restaurant}`)
     }
 }
 
@@ -2157,7 +2168,7 @@ function addListDepartGolf() {
                     document.querySelector("#list-depart-golf-mobile-tomm-js").innerHTML = r
 
                     document.querySelector("#close-golf-dep").addEventListener('click', () => {
-                        document.querySelector("#list-depart-golf-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                        document.querySelector("#list-depart-golf-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                         document.querySelector("#open-navleft-golf-mobile-tomm-js").style.opacity = 1
                     })
                 }
@@ -2166,6 +2177,8 @@ function addListDepartGolf() {
     }
     
 }
+
+
 
 function addSpecificgolfMobile(nom_dep, id_dep) {
     if(document.querySelector("#open-navleft-golf-mobile-specific-tomm-js")){
@@ -2184,8 +2197,62 @@ function addSpecificgolfMobile(nom_dep, id_dep) {
                 document.querySelector("#list-depart-golf-specific-mobile-tomm-js").innerHTML = r
     
                 document.querySelector("#close-golf-specific-tomm-js").addEventListener('click', () => {
-                    document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                    document.querySelector("#list-depart-golf-specific-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                     document.querySelector("#open-navleft-golf-mobile-specific-tomm-js").style.opacity = 1
+                })
+            }
+        })
+    }
+   
+}
+
+function addListDepartStation() {
+    if (document.querySelector("#open-navleft-station-mobile-tomm-js")) {
+        document.querySelector("#open-navleft-station-mobile-tomm-js").addEventListener("click", () => {
+            document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 0
+            document.querySelector("#open-navleft-station-mobile-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+
+            if (document.querySelector("#list-depart-station-mobile-tomm-js")) {
+                document.querySelector("#list-depart-station-mobile-tomm-js").removeAttribute("style")
+            }
+
+            fetch(`/station-mobile`)
+            .then(response => response.text())
+            .then(r => {
+                if (document.querySelector("#list-depart-station-mobile-tomm-js")) {
+                    document.querySelector("#list-depart-station-mobile-tomm-js").innerHTML = null
+                    document.querySelector("#list-depart-station-mobile-tomm-js").innerHTML = r
+
+                    document.querySelector("#close-station-dep").addEventListener('click', () => {
+                        document.querySelector("#list-depart-station-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
+                        document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 1
+                    })
+                }
+            })
+        })
+    }
+    
+}
+
+function addSpecificStationMobile(nom_dep, id_dep) {
+    if(document.querySelector("#open-navleft-station-mobile-specific-tomm-js")){
+        document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.opacity = 0
+        document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.transition = "opacity 0.5s ease-in-out";
+    
+        if (document.querySelector("#list-depart-station-specific-mobile-tomm-js")) {
+            document.querySelector("#list-depart-station-specific-mobile-tomm-js").removeAttribute("style")
+        }
+    
+        fetch(`/station-mobile/departement/${nom_dep}/${id_dep}`)
+        .then(response => response.text())
+        .then(r => {
+            if (document.querySelector("#list-depart-station-specific-mobile-tomm-js")) {
+                document.querySelector("#list-depart-station-specific-mobile-tomm-js").innerHTML = null
+                document.querySelector("#list-depart-station-specific-mobile-tomm-js").innerHTML = r
+    
+                document.querySelector("#close-station-specific-tomm-js").addEventListener('click', () => {
+                    document.querySelector("#list-depart-station-specific-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
+                    document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.opacity = 1
                 })
             }
         })
@@ -2211,7 +2278,7 @@ function addListDepartTabac() {
                     document.querySelector("#list-depart-tabac-mobile-tomm-js").innerHTML = r
 
                     document.querySelector("#close-tabac-dep").addEventListener('click', () => {
-                        document.querySelector("#list-depart-tabac-mobile-tomm-js").style.transform = "translateX(-100vw)"
+                        document.querySelector("#list-depart-tabac-mobile-tomm-js").style = "transform: translateX(-100vw);display: none;"
                         document.querySelector("#open-navleft-tabac-mobile-tomm-js").style.opacity = 1
                     })
                 }
@@ -2235,7 +2302,7 @@ function addListSpecificTabac(nom_dep, id_dep) {
             document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").innerHTML = r
 
             document.querySelector("#close-tabac-spec-dep").addEventListener('click', () => {
-                document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").style.transform = "translateX(-100vw)"
+                document.querySelector("#list-depart-tabac-mobile-spec-tomm-js").style = "transform: translateX(-100vw);display: none;"
                 document.querySelector("#open-navleft-tabac-spec-mobile-tomm-js").style.opacity = 1
             })
         }
@@ -2246,6 +2313,70 @@ function closeDetailGolfMob(nom_dep, id_dep) {
     location.assign(`/golf/departement/${nom_dep}/${id_dep}`)
 }
 
+function selectDepartRestoMobile() {
+    if (document.querySelector("#selectDepartRestoTommJs")) {
+        const selectOption = document.getElementById("selectDepartRestoTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/restaurant`) 
+        } else {
+            location.assign(`/restaurant/specific?nom_dep=${selectDepName}&id_dep=${selectId}`) 
+        }
+    }
+}
+
+function selectDepartFermeMobile() {
+    if (document.querySelector("#selectDepartFermeTommJs")) {
+        const selectOption = document.getElementById("selectDepartFermeTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/ferme`) 
+        } else {
+            location.assign(`/ferme/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
+
+function selectDepartStationMobile() {
+    if (document.querySelector("#selectDepartStationTommJs")) {
+        const selectOption = document.getElementById("selectDepartStationTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/station`) 
+        } else {
+            location.assign(`/station/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
+
+function selectDepartGolfMobile() {
+    if (document.querySelector("#selectDepartGolfTommJs")) {
+        const selectOption = document.getElementById("selectDepartGolfTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/golf`) 
+        } else {
+            location.assign(`/golf/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
+
+function selectDepartTabacMobile() {
+    if (document.querySelector("#selectDepartTabacTommJs")) {
+        const selectOption = document.getElementById("selectDepartTabacTommJs")
+        const selectId = selectOption.options[selectOption.selectedIndex].value
+        const selectDepName = selectOption.options[selectOption.selectedIndex].getAttribute("data-dep-name")
+        if (selectId == "Tous") {
+            location.assign(`/tabac`) 
+        } else {
+            location.assign(`/tabac/departement/${selectDepName}/${selectId}`) 
+        }
+    }
+}
 function convertUnicodeToUtf8(str){
     return unescape(str);
 }
@@ -2302,21 +2433,1942 @@ function showPastillTable(e,id){
     
 }
 
-/*function showImagePreview(e){
-    if(e.target.files.length > 0){
-        console.log(e.target.files);
-        let src = URL.createObjectURL(e.target.files[0]);
-        let preview = document.querySelector("#image-preview");
-        preview.src = src;
-        preview.setAttribute('name', `${new Date().getTime()}_${e.target.files[0].name}`);
-        preview.setAttribute('typeFile',e.target.files[0].type)
-        document.querySelector(".preview_image_nanta_js").classList.remove("d-none")
-        document.querySelector(".btnAddPhoto_nanta_js").classList.add("d-none")
-        $("#mediaModal").modal("hide")
-        $("#addPictureModal").modal("hide")
-        $("#createAgenda").modal("show")
-    }
-}*/
+
+
+function getSpectRestoMobile(nom_dep, id_dep) {
+    location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`)
+    
+}
+
+
+/**
+ * @author Tomm
+ * @action incrimentation specific liste
+ * @ou specific_mobile_depart....twig
+ */
+let limitSpecTomm = 5
+let offsetTomm = 0
+let loadingScroll = ""
+if (document.querySelector(".scroll-mobile-tomm-js")) {
+    let contentSpecMobile = document.querySelector(".scroll-mobile-tomm-js")
+    contentSpecMobile.addEventListener('scroll', (event) => { 
+        if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
+            
+            const rubricName = new URL(window.location.href).pathname.split("/")[1]
+            if (rubricName == 'restaurant') {
+                const id_dep = new URLSearchParams(window.location.href).get("id_dep")
+                const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
+                offsetTomm += limitSpecTomm
+                getDataSpecificMobile(nom_dep, id_dep)
+            } else if (rubricName == 'ferme') {
+                const id_dep = new URL(window.location.href).pathname.split('/')[4]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+                offsetTomm += limitSpecTomm
+                getDataSpecFermeMobile(nom_dep, id_dep)
+            } else if (rubricName == 'station') {
+                const id_dep = new URL(window.location.href).pathname.split('/')[3]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[4]
+                offsetTomm += limitSpecTomm
+                getDataSpecStationMobile(nom_dep, id_dep)
+            } else if (rubricName == 'golf') { 
+                const id_dep = new URL(window.location.href).pathname.split('/')[4]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+                offsetTomm += limitSpecTomm
+                getDataSpecGolfMobile(nom_dep, id_dep)
+            }else if (rubricName == 'tabac') { 
+                const id_dep = new URL(window.location.href).pathname.split('/')[4]
+                const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+                offsetTomm += limitSpecTomm
+                getDataSpecTabacMobile(nom_dep, id_dep)
+            }
+
+            document.querySelector(".loading-tomm-js").innerHTML = `
+                 <div class="d-flex justify-content-center align-items-center spinner_jheo_js">
+                     <div class="spinner-border m-3" role="status">
+                         <span class="visually-hidden">Loading...</span>
+                     </div>
+                 </div>
+                 
+             `
+        }
+    })
+}
+
+function getDataSpecificMobile(nom_dep, id_dep) {
+    
+    let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+    let id_resto = ''
+    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(responses => {
+            document.querySelector(".loading-tomm-js").innerHTML = ''
+            let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
+            
+            
+            responses.restaurants.forEach(response => {
+                
+                id_resto = response.id
+                
+
+                let restaurantAvisNote = response.avis.note !== 0 ? response.avis.note - (response.avis.note - 1) : 0; 
+                // Calculez le taux et les pourcentages jaunes et noirs
+                let rate = restaurantAvisNote;
+                let rateYellow = rate * 100;
+                let rateBlack = 100 - rateYellow;
+                let star = ''
+                for (let item = 0; item <= 3; item++) {
+                    if (item < response.avis.note - 1) {
+                        star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+                    } else {
+                        if (rate !== 0) {
+                            star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`
+                            rate = 0;
+                        } else {
+                            star += `<i class="fa-solid fa-star" data-rank="1"></i>
+                            `
+                        }
+                    }
+
+                    
+                }
+                let restaurant = ''
+                let brasserie = ''
+                let creperie = ''
+                let fastFood = ''
+                let pizzeria = ''
+                let boulangerie = ''
+                let bar = ''
+                let cuisineMonde = ''
+                let cafe = ''
+                let salonThe = ''
+                if (response.restaurant != 0) {
+                    restaurant = `
+                        <i class="fa-solid fa-utensils"></i>
+                        restaurant
+                    `
+                }
+                if (response.brasserie != 0) {
+                    brasserie = `
+                        <i class="fa-solid fa-beer-mug-empty"></i>
+						Brasserie
+                    `
+                }
+                if (response.creperie != 0) {
+                    creperie = `
+                        <i class="fa-solid fa-pancakes"></i>
+						creperie
+                    `
+                }
+                if (response.fastFood != 0) {
+                    fastFood = `
+                        <i class="fa-solid fa-burger"></i>
+						fastFood
+                    `
+                }
+                if (response.boulangerie != 0) {
+                    boulangerie = `
+                        <i class="fa-solid fa-pizza-slice"></i>
+						pizzeria
+                    `
+                }
+                if (response.pizzeria != 0) {
+                    pizzeria = `
+                        <i class="fa-solid fa-pie"></i>
+						boulangerie
+                    `
+                }
+                if (response.bar != 0) {
+                    bar = `
+                        <i class="fa-solid fa-martini-glass-empty"></i>
+						bar
+                    `
+                }
+                if (response.cuisineMonde != 0) {
+                    cuisineMonde = `
+                        <i class="fa-solid fa-hat-chef"></i>
+						cuisine du monde
+                    `
+                }
+                if (response.cafe != 0) {
+                    cafe = `
+                        <i class="fa-solid fa-coffee-pot"></i>
+						café
+                    `
+                }
+                if (response.salonThe != 0) {
+                    salonThe = `
+                        <i class="fa-solid fa-mug-tea"></i>
+						salon de thé
+                    `
+                }
+                let fourchettePrix1 = ''
+                if (response.fourchettePrix1) {
+                    fourchettePrix1 = `
+                        <span class="fw-bold">
+                        Fourchette de prix:</span><span>${response.fourchettePrix1}</span>
+                    `
+                }
+                let tel = ''
+                if (response.tel) {
+                    tel = `
+                        <span class="fw-bold">Téléphone :</span>
+                        <span>${response.tel}</span>
+                    `
+                }
+
+                let btnDonneAvie = ``
+                let btnPastille = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-toggle-id-resto="${response.id}" data-bs-target="#modalAvisRestaurant${response.id}">Donner votre avis</button>`
+                    btnPastille = `<button type="button" data-name="${response.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${response.id}')">Pastiller</button>`
+                } else {
+                    btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                    btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`
+
+                }
+
+                let repas1 = ''
+                if (response.repas1) {
+                    repas1 = `<li>${response.repas1}</li>`
+                }
+            
+                let regimeSpeciaux1 = ''
+                if (response.regimeSpeciaux1) {
+                    regimeSpeciaux1 = `<li>${response.regimeSpeciaux1}</li>`
+                }
+            
+                let prestation1 = ''
+                if (response.prestation1) {
+                    prestation1 = `<li>${response.prestation1}</li>`
+                }
+
+                let horaires1 = ''
+                if (response.horaires1) {
+                    horaires1 = `<li>${response.horaires1}</li>`
+                }
+                
+                let site1 = ''
+                if (response.site1) {
+                    site1 = `<div class="site_web non_active">
+                                <a class="btn btn-success" href="${response.site1}" target="_blank">Lien :  site Web</a>
+                            </div>`
+                }
+            
+                let fonctionalite1 = ''
+                if (response.fonctionalite1) {
+                    fonctionalite1 = `<li>${response.fonctionalite1}</li>`
+                }
+
+                let isPastie = ""
+
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    let logoPathResto = ""
+                    let logoPathJoined = ""
+
+
+                    let tribu_t_resto_pastille = response.tribuTPastie.tribu_t_resto_pastille
+                    if (tribu_t_resto_pastille.length > 0) {
+                        for (item of tribu_t_resto_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    } 
+
+                    let tribu_t_resto_joined_pastille = response.tribuTPastie.tribu_t_resto_joined_pastille
+                    if (tribu_t_resto_joined_pastille.length > 0) {
+                        for (item of tribu_t_resto_joined_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    }
+
+                    isPastie = `
+                        <div class="super_container_js_nantenaina">
+                            <div class="mainContainerLogoTribu">
+                                ${logoPathResto}
+                                ${logoPathJoined}
+                            </div>
+                        </div>
+                        <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`
+
+                }
+
+                
+
+
+                
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${response.id}">
+                            <div class="containt-specific">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="text-point-12 fw-bold">${response.nom}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            ${isPastie}
+                                        </div>
+                                    </div>    
+                                    <div class="content_note">
+                                        <div class=" start start_jheo_js${response.id}" id="start-globale-mobile">
+                                            ${star}
+                                        </div>
+                                        <div class="nombre_avis"></div>
+                                    </div>
+                                    <p class="test-point-9">
+                                        <span class="fw-bold">
+                                            Adresse :
+                                        </span>
+                                        <span class="small ">
+                                            ${response.add.toLowerCase()}
+                                        </span>
+                                    </p>
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Type restaurant:</span>
+                                        ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
+                                    </p>
+                                    <p class="text-point-9">
+                                        ${fourchettePrix1}
+                                    </p>
+
+                                    <p class="text-point-9">
+                                        ${tel}
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+                                    <span>
+                                        <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
+                                            <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
+                                        </a>
+                                    </span>
+                                    ${btnDonneAvie}
+                                    ${btnPastille}
+                                </div>
+                            </div>
+                    </li>
+                    
+                    
+
+                    <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${response.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog  modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
+                                    <button type="button" class="btn-close" onclick="closeModalAvieDetail(${response.id})"></button>
+                                </div>
+                                <div class="list-avis-ferme">
+                                    <div class="modal-body container-avis all_avis_${response.id}_jheo_js">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${response.id}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                        <textarea class="form-control note_number_${response.id}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${response.id}"></textarea>
+                                        <label for="message-text" class="col-form-label">Commentaire:</label>
+                                        <textarea class="form-control note_avis_${response.id}_jheo_js" id="message-text-mobile-${response.id}"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+                
+            })
+            if (screen.width < 991) {
+                const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
+                contentModalAvieResto.forEach(items => {
+                    items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => {
+                        if (items.querySelector(".flash-msg-ERREUR")) {
+                            items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
+                        }
+                        const value = e.target.value
+                        mustBeInferior4(value, e.target)
+                        
+                        
+                        setTimeout(() => {
+                            e.target.style = "border:2px solid black;"
+                            items.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;"
+                            })
+                        }, 5000)
+                    }
+                })
+            }
+        })    
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific resto du recherche
+ * @ou detail_searche.js 
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
+    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${idResto}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let restaurants = response.restaurants[0]
+            let idRestaurant = restaurants.id
+            let restaurantAvisNote = restaurants.avis.note !== 0 ? restaurants.avis.note - (restaurants.avis.note - 1) : 0; 
+            // Calculez le taux et les pourcentages jaunes et noirs
+            let rate = restaurantAvisNote;
+            let rateYellow = rate * 100;
+            let rateBlack = 100 - rateYellow;
+            let star = ''
+            for (let item = 0; item <= 3; item++) {
+                if (item < restaurants.avis.note - 1) {
+                    star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+                } else {
+                    if (rate !== 0) {
+                        star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`
+                        rate = 0;
+                    } else {
+                        star += `<i class="fa-solid fa-star" data-rank="1"></i>
+                        `
+                    }
+                }
+
+                
+            }
+            let restaurant = ''
+            let brasserie = ''
+            let creperie = ''
+            let fastFood = ''
+            let pizzeria = ''
+            let boulangerie = ''
+            let bar = ''
+            let cuisineMonde = ''
+            let cafe = ''
+            let salonThe = ''
+            if (restaurants.restaurant != 0) {
+                restaurant = `
+                    <i class="fa-solid fa-utensils"></i>
+                    restaurant
+                `
+            }
+            if (restaurants.brasserie != 0) {
+                brasserie = `
+                    <i class="fa-solid fa-beer-mug-empty"></i>
+                    Brasserie
+                `
+            }
+            if (restaurants.creperie != 0) {
+                creperie = `
+                    <i class="fa-solid fa-pancakes"></i>
+                    creperie
+                `
+            }
+            if (restaurants.fastFood != 0) {
+                fastFood = `
+                    <i class="fa-solid fa-burger"></i>
+                    fastFood
+                `
+            }
+            if (restaurants.boulangerie != 0) {
+                boulangerie = `
+                    <i class="fa-solid fa-pizza-slice"></i>
+                    pizzeria
+                `
+            }
+            if (restaurants.pizzeria != 0) {
+                pizzeria = `
+                    <i class="fa-solid fa-pie"></i>
+                    boulangerie
+                `
+            }
+            if (restaurants.bar != 0) {
+                bar = `
+                    <i class="fa-solid fa-martini-glass-empty"></i>
+                    bar
+                `
+            }
+            if (restaurants.cuisineMonde != 0) {
+                cuisineMonde = `
+                    <i class="fa-solid fa-hat-chef"></i>
+                    cuisine du monde
+                `
+            }
+            if (restaurants.cafe != 0) {
+                cafe = `
+                    <i class="fa-solid fa-coffee-pot"></i>
+                    café
+                `
+            }
+            if (restaurants.salonThe != 0) {
+                salonThe = `
+                    <i class="fa-solid fa-mug-tea"></i>
+                    salon de thé
+                `
+            }
+            let fourchettePrix1 = ''
+            if (restaurants.fourchettePrix1) {
+                fourchettePrix1 = `
+                    <span class="fw-bold">
+                    Fourchette de prix:</span><span>${restaurants.fourchettePrix1}</span>
+                `
+            }
+            let tel = ''
+            if (restaurants.tel) {
+                tel = `
+                    <span class="fw-bold">Téléphone :</span>
+                    <span>${restaurants.tel}</span>
+                `
+            }
+
+            let btnDonneAvie = ``
+            let btnPastille = ''
+            if (document.querySelector("#is-connected-tomm-js")) {
+                btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-toggle-id-resto="${idRestaurant}" data-bs-target="#modalAvisRestaurant${idRestaurant}">Donner votre avis</button>`
+                btnPastille = `<button type="button" data-name="${restaurants.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${idRestaurant}')">Pastiller</button>`
+            } else {
+                btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`
+
+            }
+
+            let isPastie = ""
+
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    let logoPathResto = ""
+                    let logoPathJoined = ""
+
+
+                    let tribu_t_resto_pastille = response.tribu_t_resto_pastille
+                    if (tribu_t_resto_pastille.length > 0) {
+                        for (item of tribu_t_resto_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    } 
+
+                    let tribu_t_resto_joined_pastille = response.tribu_t_resto_joined_pastille
+                    if (tribu_t_resto_joined_pastille.length > 0) {
+                        for (item of tribu_t_resto_joined_pastille ){
+                            if (item.logo_path !== "") {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            } else {
+                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                            }
+                        }
+                    }
+
+                    isPastie = `
+                        <div class="super_container_js_nantenaina">
+                            <div class="mainContainerLogoTribu">
+                                ${logoPathResto}
+                                ${logoPathJoined}
+                            </div>
+                        </div>
+                        <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`
+
+                }
+            listSpecMobile.innerHTML = `
+                    <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${idRestaurant}">
+                            <div class="containt-specific">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${restaurants.depName}', '${restaurants.dep}', '${idRestaurant}')">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="text-point-12 fw-bold">${restaurants.nom}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            ${isPastie}
+                                        </div>
+                                    </div>    
+                                    <div class="content_note">
+                                        <div class=" start start_jheo_js${idRestaurant}" id="start-globale-mobile">
+                                            ${star}
+                                        </div>
+                                        <div class="nombre_avis"></div>
+                                    </div>
+                                    <p class="test-point-9">
+                                        <span class="fw-bold">
+                                            Adresse :
+                                        </span>
+                                        <span class="small ">
+                                            ${restaurants.add.toLowerCase()}
+                                        </span>
+                                    </p>
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Type restaurant:</span>
+                                        ${restaurant}${brasserie}${creperie}${fastFood}${pizzeria}${boulangerie}${bar}${cuisineMonde}${cafe}${salonThe}
+                                    </p>
+                                    <p class="text-point-9">
+                                        ${fourchettePrix1}
+                                    </p>
+
+                                    <p class="text-point-9">
+                                        ${tel}
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+                                    <span>
+                                        <a id="see-tom-js${idRestaurant}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${idRestaurant}" onclick="showListAvieMobile(${idRestaurant}, ${id_user})">
+                                            <span class="nbr_avis_resto_jheo_js">${restaurants.avis.nbr}    </span> avis
+                                        </a>
+                                    </span>
+                                    ${btnDonneAvie}
+                                    ${btnPastille}
+                                </div>
+                            </div>
+                    </li>
+                    
+                    
+
+                    <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${idRestaurant}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog  modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
+                                    <button type="button" class="btn-close" onclick="closeModalAvieDetail(${idRestaurant})"></button>
+                                </div>
+                                <div class="list-avis-ferme">
+                                    <div class="modal-body container-avis all_avis_${idRestaurant}_jheo_js">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${idRestaurant}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${idRestaurant}" onclick="showListAvieMobile(${idRestaurant}, ${id_user})"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
+                                        <textarea class="form-control note_number_${idRestaurant}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${idRestaurant}"></textarea>
+                                        <label for="message-text" class="col-form-label">Commentaire:</label>
+                                        <textarea class="form-control note_avis_${idRestaurant}_jheo_js" id="message-text-mobile-${idRestaurant}"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+        })  
+    
+    if (screen.width < 991) {
+                const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
+                contentModalAvieResto.forEach(items => {
+                    items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => {
+                        if (items.querySelector(".flash-msg-ERREUR")) {
+                            items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
+                        }
+                        const value = e.target.value
+                        mustBeInferior4(value, e.target)
+                        
+                        
+                        setTimeout(() => {
+                            e.target.style = "border:2px solid black;"
+                            items.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;"
+                            })
+                        }, 5000)
+                    }
+                })
+            }
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific ferme du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getFermeSpecSearchMobile(nom_dep, id_dep,idFerme) {
+    const request = new Request(`/ferme-mobile/departement/${nom_dep}/${id_dep}/${idFerme}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let fermes = response.fermes[0]
+            let genre = ''
+                if (fermes.genre) {
+                    genre = `<span class="ferme-genre">
+                            ${fermes.genre}</span>`
+                }
+                
+                let agricultureBio = ''
+                if (fermes.agricultureBio) {
+                    agricultureBio = `
+                        <div class="row text-point-9">
+                            <div class="col-8">
+                                <p class="agribio fw-bold">
+                                    Agri biologie
+                                </p>
+                            </div>
+                            <div class="col-2">
+                                <img src="/public/assets/icon/icon-agri.png" alt="" width="50">
+                            </div>
+                            <div class="col-2">
+                                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    `
+                }
+
+
+                let horairesVenteAFerme = ''
+                if (fermes.horairesVenteAFerme) {
+                    horairesVenteAFerme = `<li class="text-point-9">
+                                                <h5 class="fw-bold">Horaires vente à la ferme</h5>
+                                                <span class="text-point-9">
+                                                    ${fermes.horairesVenteAFerme}
+                                                </span>
+                                            </li>`
+                }
+
+            
+                let btnAviMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                
+                
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${fermes.id}" onclick="getDetailFromListLeft('ferme','${fermes.depName}', '${fermes.dep}', '${fermes.id}')">
+									<p class="text-point-12 fw-bold">${fermes.nomFerme}
+										${genre}
+									</p>
+                                    <div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+
+                                    <p class="test-point-9">
+										<span class="fw-bold">
+											Adresse :
+										</span>
+										<span class="small ">
+											${fermes.adresseFerme}
+										</span>
+									</p>
+
+                                    <p class="activite text-point-9">
+                                        ${agricultureBio}
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Produit:</span>
+										${fermes.produitFerme}
+                                    </p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email:</span>
+										${fermes.email}
+                                    </p>
+
+								</div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAviMobile}
+								</div>
+							
+							</div>
+						</a>
+					</li>
+
+                    
+                `
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific station du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getStationSpecSearchMobile(nom_dep, id_dep,idStation) {
+    const request = new Request(`/station-mobile/departement/${nom_dep}/${id_dep}/${idStation}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let stations = response.stations[0]
+            let services = ''
+            if (stations.services) {
+                services = `
+                    <p class="text-point-9 mb-2">
+                        <span class="fw-bold">
+                            Services :
+                        </span>
+                        <span class="small  ">
+                            ${stations.services}
+                        </span>
+                    </p>
+                `
+            }
+
+            let prixE85 = ''
+            if (stations.prixE85 != 0 ) {
+                prixE85 = `<span class="btn btn-outline-success text-point-9 mb-2">E85 : ${stations.prixE85} €</span>`
+            }
+            
+            let prixGplc = ''
+            if (stations.prixGplc != 0) {
+                prixGplc = `<span class="btn btn-outline-success text-point-9 mb-2">GPLC : ${stations.prixGplc} €</span>`
+            }
+        
+            let prixSp95 = ''
+            if (stations.prixSp95 != 0) {
+                prixSp95 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95 : ${stations.prixSp95} €</span>`
+            }
+        
+            let prixSp95E10 = ''
+            if (stations.prixSp95E10 != 0) {
+                prixSp95E10 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95-E10 : ${stations.prixSp95E10} €</span>`
+            }
+        
+            let prixSp98 = ''
+            if (stations.prixSp98 != 0) {
+                prixSp98 = `<span class="btn btn-outline-success text-point-9 mb-2">SP98 : ${stations.prixSp98} €</span>`
+            }
+        
+            let prixGasoil = ''
+            if (stations.prixGasoil != 0) {
+                prixGasoil = `<span class="btn btn-outline-success text-point-9 mb-2">GASOIL : ${stations.prixGasoil} €</span>`
+            }
+
+            let horaires = ''
+            if (stations.horaies) { 
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							${stations.horaies }`
+            } else {
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							Non disponible.`
+            }
+
+            let automate2424 = ''
+            if (stations.automate2424) { 
+                automate2424 = `<span class="fw-bold text-point-9">Automate</span>
+							    : 24/24`
+            } else {
+                automate2424 = `<span class="fw-bold text-point-9">Automate :</span>
+							Non disponible.`
+            }
+
+            let departementCode = ''
+            if (stations.departementCode) { 
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+									${stations.departementCode}`
+            } else {
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+								    Non reconue.`
+            }
+
+            let departementName = ''
+            if (stations.departementName) { 
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+									${stations.departementName}`
+            } else {
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+								    Non reconue.`
+            }
+
+
+            listSpecMobile.innerHTML += `
+                <li class="nav-item icon-station me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${stations.id}" onclick="getDetailFromListLeft('station','${stations.depName}', '${stations.dep}', '${stations.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${stations.nom}
+
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">
+                                            Adresse :
+										</span>
+										<span class="small  ">
+                                            ${stations.adresse}
+                                        </span>
+									</p>
+                                    ${services}
+                                    
+									<div class="text-point-9">
+                                        ${prixE85}
+                                        ${prixGplc}
+                                        ${prixSp95}
+                                        ${prixSp95E10}
+                                        ${prixSp98}
+                                        ${prixGasoil}
+										
+									</div>
+
+								</div>
+
+							</div>
+						</a>
+					</li>
+            `
+            
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific golf du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getGolfSpecSearchMobile(nom_dep, id_dep,idGolf) {
+    const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${idGolf}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let golfs = response.golf[0]
+
+            let btnAviMobile = ''
+                let containerActionGolf = ''
+                let statusGolf = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                    let valueContaintGolf = ''
+                    let valueContaintGolfDetail = ''
+                    if (golfs.user_status["a_faire"] == null && golfs.user_status["fait"] == null) {
+                        valueContaintGolf = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                                <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(${golfs.id})">
+                                    <option value="0">Aucun</option>
+                                    <option value="1">A faire</option>
+                                    <option value="2">Fait</option>
+                                </select>`
+                        valueContaintGolfDetail = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
+                                    </label>
+                                    <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(${golfs.id})">
+                                        <option value="0">Aucun</option>
+                                        <option value="1">A faire</option>
+                                        <option value="2">Fait</option>
+                                    </select>`
+                        statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
+                    } else {
+                        valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${golfs.id}')">Oui</span>`
+                        valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${golfs.id}')">Oui</span>`
+                        if (golfs.user_status["a_faire"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
+                        }else if (golfs.user_status["fait"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
+                        } else {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
+                        }
+                    }
+                    containerActionGolf = `
+                        <div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
+                            ${valueContaintGolf}
+                        </div>
+                    `
+                
+
+                   
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                    
+                }
+
+               
+
+                
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobilGolf${golfs.id}" onclick="getDetailFromListLeft('golf','${golfs.depName}', '${golfs.dep}', '${golfs.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${golfs.name} 
+									</p>
+                                    <div class="start">
+                                        <i class="fa-solid fa-star" data-rank="1"></i>
+                                        <i class="fa-solid fa-star" data-rank="2"></i>
+                                        <i class="fa-solid fa-star" data-rank="3"></i>
+                                        <i class="fa-solid fa-star" data-rank="4"></i>
+                                    </div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse : </span> <span class="small  ">${golfs.adresse}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Tél : </span> <span class="small  ">${golfs.tel}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email : </span> <span class="small  ">${golfs.email}</span>
+									</p>
+								</div>
+								${containerActionGolf}
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js">
+											</span>
+											avis
+										</a>
+									</span>
+										${btnAviMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+                    
+                `
+            
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific tabac du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getTabacSpecSearchMobile(nom_dep, id_dep,idTabac) {
+    const request = new Request(`/tabac-mobile/departement/${nom_dep}/${id_dep}/${idTabac}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let tabacs = response.tabac[0]
+            let bar_tabac = ''
+                if (tabacs.bar_tabac != 0) {
+                    bar_tabac = `<span class="btn btn-outline-success text-point-9">Bar Tabac</span>`
+                }
+
+                let bureau_tabac = ''
+                if (tabacs.bureau_tabac != 0) {
+                    bureau_tabac = `<span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>`
+                }
+
+                let cafe_tabac = ''
+                if (tabacs.cafe_tabac != 0) {
+                    cafe_tabac = `<span class="btn btn-outline-success text-point-9">Cafe Tabac</span>`
+                }
+
+                let tabac_presse = ''
+                if (tabacs.tabac_presse != 0) {
+                    tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`
+                }
+
+                let horaires_1 = ''
+                if (tabacs.horaires_1 != 0) {
+                    horaires_1 = `<p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">${tabacs.horaires_1 }</span>
+									</p>`
+                }
+
+             
+
+               
+
+               
+
+                let btnAvieMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) { 
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail"  data-bs-toggle="modal" data-bs-target="#detailModalMobilTabac${tabacs.id}"  onclick="getDetailFromListLeft('tabac','${tabacs.depName}', '${tabacs.dep}', '${tabacs.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${tabacs.name  }
+									</p>
+									<div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse :
+										</span>
+										<span class="small  ">${tabacs.add }</span>
+									</p>
+                                    ${horaires_1}
+                                    <p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">${tabacs.tel }</span>
+									</p>
+									<div class="text-point-9">
+                                        ${bar_tabac}
+                                        ${bureau_tabac}
+                                        ${cafe_tabac}
+                                        ${tabac_presse}
+                                    </div>
+
+								</div>
+							
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAvieMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+
+                    
+                `
+            
+            
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action href list specic ferme mobile
+ * @ou  specific_mobile_depar...js.twig
+ * @utiliser dans specific_mobile_depar.twig
+ */
+function addListDepartMobile(nom_dep, id_dep) {
+    location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
+    
+}
+
+
+/**
+ * @author Tomm
+ * @action add list specic ferme mobile on scrollLeft
+ * @ou dans le specific_mobile_depar...twig
+ * @utiliser dans le ferme/specific_departement.js
+ */
+function getDataSpecFermeMobile(nom_dep, id_dep) {
+    let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+    const request = new Request(`/ferme-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => { 
+            document.querySelector(".loading-tomm-js").innerHTML = ''
+            let listSpecMobile = document.querySelector(".list-specific-ferme-mobile-tomm-js")
+            responses.fermes.forEach(response => {
+                let genre = ''
+                if (golfs.genre) {
+                    genre = `<span class="ferme-genre">
+                            ${tabacs.genre}</span>`
+                }
+                
+                let agricultureBio = ''
+                if (response.agricultureBio) {
+                    agricultureBio = `
+                        <div class="row text-point-9">
+                            <div class="col-8">
+                                <p class="agribio fw-bold">
+                                    Agri biologie
+                                </p>
+                            </div>
+                            <div class="col-2">
+                                <img src="/public/assets/icon/icon-agri.png" alt="" width="50">
+                            </div>
+                            <div class="col-2">
+                                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    `
+                }
+
+                let activite = ''
+                if (response.activite) {
+                    activite = `<div class="content_activite">
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Activite:</span>
+                                        ${response.activite}
+                                    </p>
+                                </div>`
+                }
+
+                let codePostal = ''
+                if (response.codePostal) {
+                    codePostal = `<div class="content_activite">
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold">Code Postal:</span>
+                                        ${response.codePostal}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                let ville = ''
+                if (response.ville) {
+                    ville = `<div class="content_activite">
+                                    <p class="activite text-point-9">
+                                        <span class="fw-bold ">Ville:</span>
+                                        ${response.ville}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                let produit1 = ''
+                if (response.produit1) {
+                    produit1 = `<li class="text-point-9">${response.produit1}</li>`
+                }
+
+                let produit2 = ''
+                if (response.produit2) {
+                    produit2 = `<li class="text-point-9">${response.produit2}</li>`
+                }
+                let produit3 = ''
+                if (response.produit3) {
+                    produit3 = `<li class="text-point-9">${response.produit3}</li>`
+                }
+                let produit4 = ''
+                if (response.produit4) {
+                    produit4 = `<li class="text-point-9">${response.produit4}</li>`
+                }
+                let produit5 = ''
+                if (response.produit5) {
+                    produit5 = `<li class="text-point-9">${response.produit5}</li>`
+                }
+                let produit6 = ''
+                if (response.produit6) {
+                    produit6 = `<li class="text-point-9">${response.produit6}</li>`
+                }
+                let produit7 = ''
+                if (response.produit7) {
+                    produit7 = `<li class="text-point-9">${response.produit7}</li>`
+                }
+                let produit8 = ''
+                if (response.produit8) {
+                    produit8 = `<li class="text-point-9">${response.produit8}</li>`
+                }
+
+                let carteBancaire = ''
+                if (response.carteBancaire) {
+                    carteBancaire = `<li class="text-point-9">Carte Bancaire possible.</li>`
+                }
+
+                let chequeVacance = ''
+                if (response.chequeVacance) {
+                    chequeVacance = `<li class="text-point-9">Accepter les chèques de Vacance.</li>`
+                }
+
+                let degustation = ''
+                if (response.degustation) {
+                    degustation = `<li class="text-point-9">Dégustation possible.</li>`
+                }
+                let animauxAutoriser = ''
+                if (response.animauxAutoriser) {
+                    animauxAutoriser = `<li class="text-point-9">Autorise de porte des animaux.</li>`
+                }
+                let venteEnLigne = ''
+                if (response.venteEnLigne) {
+                    venteEnLigne = `<li class="text-point-9">Vente en ligne possible.</li>`
+                }
+
+                let telephoneDomicile = ''
+                if (response.telephoneDomicile) {
+                    telephoneDomicile = `<li class="text-point-9">
+                                            <span class="fw-bold text-point-9">Tel Domicile:</span>
+                                            ${response.telephoneDomicile}
+                                        </li>`
+                }
+
+                let telephoneMobile = ''
+                if (response.telephoneMobile) {
+                    telephoneMobile = `<li class="text-point-9">
+                                            <span class="fw-bold text-point-9">Tel Mobile:</span>
+                                            ${response.telephoneMobile}
+                                        </li>`
+                }
+
+                let telephoneTravail = ''
+                if (response.telephoneTravail) {
+                    telephoneTravail = `<li class="text-point-9">
+                                            <span class="fw-bold text-point-9">Tel Travail:</span>
+                                            ${response.telephoneTravail}
+                                        </li>`
+                }
+
+                let horairesVenteAuMarche = ''
+                if (response.horairesVenteAuMarche) {
+                    horairesVenteAuMarche = `<li class="text-point-9">
+                                                <h5 class="fw-bold">Horaires vente au marché</h5>
+                                                <span class="text-point-9">
+                                                    ${response.horairesVenteAuMarche}
+                                                </span>
+                                            </li>`
+                }
+
+                let horairesVenteMagasinProd = ''
+                if (response.horairesVenteMagasinProd) {
+                    horairesVenteMagasinProd = `<li class="text-point-9">
+                                                    <h5 class="fw-bold">Horaires vente du magasin prod</h5>
+                                                    <span class="text-point-9">
+                                                        ${response.horairesVenteMagasinProd}
+                                                    </span>
+                                                </li>`
+                }
+
+                let horairesVenteAFerme = ''
+                if (response.horairesVenteAFerme) {
+                    horairesVenteAFerme = `<li class="text-point-9">
+                                                <h5 class="fw-bold">Horaires vente à la ferme</h5>
+                                                <span class="text-point-9">
+                                                    ${response.horairesVenteAFerme}
+                                                </span>
+                                            </li>`
+                }
+
+            
+                let btnAviMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                
+                
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">${response.nomFerme}
+										${genre}
+									</p>
+                                    <div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+
+                                    <p class="test-point-9">
+										<span class="fw-bold">
+											Adresse :
+										</span>
+										<span class="small ">
+											${response.adresseFerme}
+										</span>
+									</p>
+
+                                    <p class="activite text-point-9">
+                                        ${agricultureBio}
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Produit:</span>
+										${response.produitFerme}
+                                    </p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email:</span>
+										${response.email}
+                                    </p>
+
+								</div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAviMobile}
+								</div>
+							
+							</div>
+						</a>
+					</li>
+
+                    
+                `
+            })
+            
+        })
+
+}
+
+
+
+/**
+ * @author Tomm
+ * @action add list specic station mobile on scrollLeft
+ * @ou dans le specific_station_navleft_mobile.twig
+ * @utiliser dans le station/data_station.js
+ */
+function getDataSpecStationMobile(nom_dep, id_dep) {
+    const request = new Request(`/station-mobile/departement/${id_dep}/${nom_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => { 
+        document.querySelector(".loading-tomm-js").innerHTML = ''
+        let listSpecMobile = document.querySelector(".list-specific-station-mobile-tomm-js")
+        responses.stations.forEach(response => {
+         
+
+            let services = ''
+            if (response.services) {
+                services = `
+                    <p class="text-point-9 mb-2">
+                        <span class="fw-bold">
+                            Services :
+                        </span>
+                        <span class="small  ">
+                            ${response.services}
+                        </span>
+                    </p>
+                `
+            }
+
+            let prixE85 = ''
+            if (response.prixE85 != 0 ) {
+                prixE85 = `<span class="btn btn-outline-success text-point-9 mb-2">E85 : ${response.prixE85} €</span>`
+            }
+            
+            let prixGplc = ''
+            if (response.prixGplc != 0) {
+                prixGplc = `<span class="btn btn-outline-success text-point-9 mb-2">GPLC : ${response.prixGplc} €</span>`
+            }
+        
+            let prixSp95 = ''
+            if (response.prixSp95 != 0) {
+                prixSp95 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95 : ${response.prixSp95} €</span>`
+            }
+        
+            let prixSp95E10 = ''
+            if (response.prixSp95E10 != 0) {
+                prixSp95E10 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95-E10 : ${response.prixSp95E10} €</span>`
+            }
+        
+            let prixSp98 = ''
+            if (response.prixSp98 != 0) {
+                prixSp98 = `<span class="btn btn-outline-success text-point-9 mb-2">SP98 : ${response.prixSp98} €</span>`
+            }
+        
+            let prixGasoil = ''
+            if (response.prixGasoil != 0) {
+                prixGasoil = `<span class="btn btn-outline-success text-point-9 mb-2">GASOIL : ${response.prixGasoil} €</span>`
+            }
+
+            let horaires = ''
+            if (response.horaies) { 
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							${response.horaies }`
+            } else {
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							Non disponible.`
+            }
+
+            let automate2424 = ''
+            if (response.automate2424) { 
+                automate2424 = `<span class="fw-bold text-point-9">Automate</span>
+							    : 24/24`
+            } else {
+                automate2424 = `<span class="fw-bold text-point-9">Automate :</span>
+							Non disponible.`
+            }
+
+            let departementCode = ''
+            if (response.departementCode) { 
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+									${response.departementCode}`
+            } else {
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+								    Non reconue.`
+            }
+
+            let departementName = ''
+            if (response.departementName) { 
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+									${response.departementName}`
+            } else {
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+								    Non reconue.`
+            }
+
+
+            listSpecMobile.innerHTML += `
+                <li class="nav-item icon-station me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${response.nom}
+
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">
+                                            Adresse :
+										</span>
+										<span class="small  ">
+                                            ${response.adresse}
+                                        </span>
+									</p>
+                                    ${services}
+                                    
+									<div class="text-point-9">
+                                        ${prixE85}
+                                        ${prixGplc}
+                                        ${prixSp95}
+                                        ${prixSp95E10}
+                                        ${prixSp98}
+                                        ${prixGasoil}
+										
+									</div>
+
+								</div>
+
+							</div>
+						</a>
+					</li>
+            `
+        })
+    })
+}
+
+/**
+ * @author Tomm
+ * @action add list specic golf mobile on scrollLeft
+ * @ou dans le specific_golf_navleft.twig
+ * @utiliser dans le golf/data_golf.js
+ */
+function getDataSpecGolfMobile(nom_dep, id_dep) { 
+     const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => {
+            document.querySelector(".loading-tomm-js").innerHTML = ''
+
+            let listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+            responses.golf.forEach(response => { 
+
+                let btnAviMobile = ''
+                let containerActionGolf = ''
+                let containerActionGolfDetail = ''
+                let statusGolf = ''
+                let siteWeb = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                    let valueContaintGolf = ''
+                    let valueContaintGolfDetail = ''
+                    if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
+                        valueContaintGolf = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                                <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
+                                    <option value="0">Aucun</option>
+                                    <option value="1">A faire</option>
+                                    <option value="2">Fait</option>
+                                </select>`
+                        valueContaintGolfDetail = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
+                                    </label>
+                                    <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
+                                        <option value="0">Aucun</option>
+                                        <option value="1">A faire</option>
+                                        <option value="2">Fait</option>
+                                    </select>`
+                        statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
+                    } else {
+                        valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+                        valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+                        if (response.user_status["a_faire"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
+                        }else if (response.user_status["fait"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
+                        } else {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
+                        }
+                    }
+                    containerActionGolf = `
+                        <div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
+                            ${valueContaintGolf}
+                        </div>
+                    `
+                    containerActionGolfDetail = `
+                        <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
+                            ${valueContaintGolfDetail}
+                    `
+
+                    siteWeb = `<div class="site_web">
+                                    <a class="btn btn-outline-success" href="${response.web}" target="_blank">
+                                        Lien :  Site Web
+                                    </a>
+                                </div>`
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                    siteWeb = `<div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
+                                    <a class="btn btn-outline-success disabled">
+                                        Lien :  Site Web
+                                    </a>
+                                </div>` 
+                }
+
+                let codePostal = ''
+                if (response.cp) {
+                    codePostal = `<div class="content_activite">
+                                        <p class="activite">
+                                            <span class="fw-bold">Code Postal:</span>
+                                            ${response.cp}
+                                        </p>
+                                    </div>
+                                    <hr>`
+                }
+
+                let commune = ''
+                if (response.commune) {
+                    commune = `<div class="content_activite">
+                                    <p class="activite">
+                                        <span class="fw-bold">Commune:</span>
+                                        ${response.commune}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                let tel = ''
+                if (response.tel) {
+                    tel = `<div class="content_activite">
+                                    <p class="activite">
+                                        <span class="fw-bold">Telephone:</span>
+                                        ${response.tel}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+                
+                let adr1 = ''
+                if (response.adr1) {
+                    adr1 = `<div class="content_activite">
+                                    <p class="activite">
+                                        <span class="fw-bold">Adress:</span>
+                                        ${response.adr1}
+                                    </p>
+                                </div>
+                                <hr>`
+                }
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobilGolf${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${response.name} 
+									</p>
+                                    <div class="start">
+                                        <i class="fa-solid fa-star" data-rank="1"></i>
+                                        <i class="fa-solid fa-star" data-rank="2"></i>
+                                        <i class="fa-solid fa-star" data-rank="3"></i>
+                                        <i class="fa-solid fa-star" data-rank="4"></i>
+                                    </div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse : </span> <span class="small  ">${response.adresse}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Tél : </span> <span class="small  ">${response.tel}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email : </span> <span class="small  ">${response.email}</span>
+									</p>
+								</div>
+								${containerActionGolf}
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js">
+											</span>
+											avis
+										</a>
+									</span>
+										${btnAviMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+                    
+                `
+
+                
+            })
+        })
+}
+
+/**
+ * @author Tomm
+ * @action add list specic tabac mobile on scrollLeft
+ * @ou dans le specific_golf_navleft.twig
+ * @utiliser dans le tabac/data_tabac.js
+ */
+function getDataSpecTabacMobile(nom_dep, id_dep) { 
+    const request = new Request(`/tabac-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        .then(responses => {
+            document.querySelector(".loading-tomm-js").innerHTML = ''
+            console.log(responses)
+            let listSpecMobile = document.querySelector(".list-specific-tabac-mobile-tomm-js")
+            responses.tabac.forEach(response => { 
+                let bar_tabac = ''
+                if (response.bar_tabac != 0) {
+                    bar_tabac = `<span class="btn btn-outline-success text-point-9">Bar Tabac</span>`
+                }
+
+                let bureau_tabac = ''
+                if (response.bureau_tabac != 0) {
+                    bureau_tabac = `<span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>`
+                }
+
+                let cafe_tabac = ''
+                if (response.cafe_tabac != 0) {
+                    cafe_tabac = `<span class="btn btn-outline-success text-point-9">Cafe Tabac</span>`
+                }
+
+                let tabac_presse = ''
+                if (response.tabac_presse != 0) {
+                    tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`
+                }
+
+                let horaires_1 = ''
+                if (response.horaires_1 != 0) {
+                    horaires_1 = `<div class="content_activite">
+                                        <p class="activite">
+                                            <span class="fw-bold">Horaires:</span>
+                                            ${response.horaires_1}
+                                        </p>
+                                    </div>
+                                    <hr>`
+                }
+
+                let tel = ''
+                if (response.tel != 0) {
+                    tel = `<div class="content_activite">
+                                <p class="activite">
+                                    <span class="fw-bold">Telephone:</span>
+                                    ${response.tel}
+                                </p>
+                            </div>
+                            <hr>`
+                }
+
+                let codpost = ''
+                if (response.codpost != 0) {
+                    codpost = `<div class="content_activite">
+                                <p class="activite">
+                                    <span class="fw-bold">Code Postal:</span>
+                                    ${response.codpost}
+                                </p>
+                            </div>
+                            <hr>`
+                }
+
+                let commune = ''
+                if (response.commune != 0) {
+                    commune = `<div class="content_activite">
+                                <p class="activite">
+                                    <span class="fw-bold">Commune:</span>
+                                    ${response.commune}
+                                </p>
+                            </div>
+                            <hr>`
+                }
+
+                let btnAvieMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) { 
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail"  data-bs-toggle="modal" data-bs-target="#detailModalMobilTabac${response.id}"  onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${response.name  }
+									</p>
+									<div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse :
+										</span>
+										<span class="small  ">${response.add }</span>
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">${response.tel }</span>
+									</p>
+									<div class="text-point-9">
+                                        ${bar_tabac}
+                                        ${bureau_tabac}
+                                        ${cafe_tabac}
+                                        ${tabac_presse}
+                                    </div>
+
+								</div>
+							
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAvieMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+
+                    
+                `
+            })
+        })
+}
+
+/**
+ * @author Tomm
+ * @action fermer le modal du detail
+ * @ou dans le modale
+ * @utiliser dans getDataSpecFermeMobile()
+ */
+function closeModalDetail(id_resto) {
+    document.querySelector(`#ModalDetailMobile${id_resto}`).classList.remove("show")
+    document.querySelector(`#ModalDetailMobile${id_resto}`).style = "display: none"
+    document.querySelector(".modal-backdrop").remove()
+}
+
+/**
+ * @author Tomm
+ * fermer le modal du list avie resto
+ * action dans le modale
+ * utiliser dans getDataSpecFermeMobile()
+ */
+function closeModalAvieDetail(id_resto) {
+    document.querySelector(`#staticBackdrop${id_resto}`).classList.remove("show")
+    document.querySelector(`#staticBackdrop${id_resto}`).style = "display: none"
+    document.querySelector(".modal-backdrop").remove()
+}
+
 
 function showImagePreview(e){
 
@@ -2732,3 +4784,5 @@ function setGallerieImageV2(){
     }
     
 }
+
+

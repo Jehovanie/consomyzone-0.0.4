@@ -566,7 +566,7 @@ if (document.querySelector("#menu-mobile-tribut")) {
 
 if (document.querySelector(".tribu_t")) {
     document.querySelector(".tribu_t").onclick = () => {
-        alert("Please")
+        // alert("Please")
         // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
     }
 }
@@ -578,16 +578,24 @@ if (document.querySelector(".tribu_t")) {
 if (document.querySelector(".list-nav-bar")) {
     const activPage = window.location.pathname;
     
-    if( activPage.includes("/ferme")){
+    if (document.querySelector(".tout-dem-tomm-js")) {
+        document.querySelector("#tous-page").classList.add("active");
+        document.querySelector(".tous-page-mobile").classList.add("active-mobile");
+    }else if (activPage.includes("/ferme")) {
         document.querySelector("#ferme-page").classList.add("active");
+        document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/restaurant")){
         document.querySelector("#resto-page").classList.add("active");
+        document.querySelector(".resto-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/station")){
         document.querySelector("#station-page").classList.add("active");
+        document.querySelector(".station-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/golf")){
         document.querySelector("#golf-page").classList.add("active");
+        document.querySelector(".golf-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/tabac")){
         document.querySelector("#tabac-page").classList.add("active");
+        document.querySelector(".tabac-page-mobile").classList.add("active-mobile");
     }else if(activPage.length === 1 || activPage.includes("/search/tous") ){
         document.querySelector("#tous-page").classList.add("active");
     }
@@ -1987,7 +1995,8 @@ function generateOneToastMessage(toastId, message,type, duration){
     Toastify({
         // text: message,
         node: contentDivElement, 
-        duration: duration,
+        // duration: duration,
+        duration: -1,
         // destination: "https://github.com/apvarun/toastify-js",
         // newWindow: true,
         close: true,
@@ -1998,7 +2007,8 @@ function generateOneToastMessage(toastId, message,type, duration){
           color: parseInt(type) === 0 ? alert : ( parseInt(type) === 1 ? info :  news),
           background:  parseInt(type) === 0 ? bg_alert : ( parseInt(type) === 1 ? bg_info : bg_news ),
           fontSize: '0.9rem',
-          width: '350px'
+          width: '350px',
+          maxWidth: screen.width <= 375 ? '75vw': '93vw'
         },
         onClick: function(){ // Callback after click
             clickedOnToastMessage(toastId)
@@ -2047,7 +2057,7 @@ function askClientToUseCookie(){
             </p>
         </div>
         <div>
-            <button type="button" class="btn btn-danger" style="float: right" onclick="notCanUseCookie()">
+            <button type="button" class="btn btn-danger mb-2" style="float: right" onclick="notCanUseCookie()">
                 Non, merci
             </button>
             <button type="button" class="btn btn-primary me-2" style="float: right" onclick="showToastMessage()">
@@ -2070,7 +2080,8 @@ function askClientToUseCookie(){
           color: '#084298',
           background: "#cfe2ff",
           fontSize: '0.9rem',
-          width: '100vw'
+          width: screen.width < 369 ? '100vw' : '65vw',
+          maxWidth: '93vw'
         },
         onClick: function(){ // Callback after click
             console.log("onclick...")
@@ -2105,3 +2116,13 @@ function isValueInCookie(cName) {
 
     return res ? res.substring(name.length) : 0;
 }
+if (document.querySelector(".btn-navright-tribut-tomm-js")) {
+    document.querySelector(".btn-navright-tribut-tomm-js").addEventListener('click', () => {
+        document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
+        
+    })
+}
+

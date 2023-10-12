@@ -122,9 +122,7 @@ class FermeController extends AbstractController
     }
 
     /**
-
      * @Route("/ferme-mobile" , name="all_obile_departement" , methods={"GET", "POST"})
-
      */
 
     public function getAllMobilDepartement(CodeapeRepository $codeApeRep, Status $status, DepartementRepository $departementRepository, FermeGeomRepository $fermeGeomRepository, Request $request): Response
@@ -201,7 +199,7 @@ class FermeController extends AbstractController
                 }
             }
         }
-
+        // dd($fermeGeomRepository->getFermByDep($nom_dep, $id_dep, 0));
         return $this->render("ferme/specific_departement.html.twig", [
 
             "id_dep" => $id_dep,
@@ -225,24 +223,59 @@ class FermeController extends AbstractController
     }
 
     /**
-
-     * @Route("/ferme-mobile/departement/{nom_dep}/{id_dep}" , name="specific_mobile_departement", methods={"GET"} )
-
+     * @Route("/ferme-mobile/departement/{nom_dep}/{id_dep}/{limit}/{offset}" , name="specific_mobile_departement", methods={"GET"} )
      */
-
-    public function getSpecifiqueDepMobile(CodeapeRepository $codeApeRep, Status $status, FermeGeomRepository $fermeGeomRepository, $nom_dep, $id_dep)
+    public function getSpecifiqueDepMobile(
+        CodeapeRepository $codeApeRep, 
+        Status $status, 
+        FermeGeomRepository $fermeGeomRepository, 
+        $nom_dep,
+        $id_dep,
+        $limit,
+        $offset,
+        )
 
     {
 
         $statusProfile = $status->statusFondateur($this->getUser());
         $userConnected = $status->userProfilService($this->getUser());
-        return $this->render("shard/ferme/specific_mobile_departement.js.twig", [
-
+        return $this->json([
             "id_dep" => $id_dep,
 
             "nom_dep" => $nom_dep,
 
-            "fermes" => $fermeGeomRepository->getFermByDep($nom_dep, $id_dep, 0),
+            "fermes" => $fermeGeomRepository->getFermByDepMobile($nom_dep, $id_dep, $limit, $offset),
+
+            "nomber_ferme" => $fermeGeomRepository->getCountFerme($nom_dep, $id_dep)[0]["1"],
+
+            "profil" => $statusProfile["profil"],
+
+            "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
+            "codeApes" => $codeApeRep->getCode()
+        ]);
+    }
+
+    /**
+     * @Route("/ferme-mobile/departement/{nom_dep}/{id_dep}/{id_ferme}" , name="specific_mobile_search_departement", methods={"GET"} )
+     */
+    public function getSpecifiqueDepSearchMobile(
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        FermeGeomRepository $fermeGeomRepository,
+        $nom_dep,
+        $id_dep,
+        $id_ferme,
+    ) {
+
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
+        return $this->json([
+            "id_dep" => $id_dep,
+
+            "nom_dep" => $nom_dep,
+
+            "fermes" => $fermeGeomRepository->getFermByDepSearchMobile($nom_dep, $id_dep, $id_ferme),
 
             "nomber_ferme" => $fermeGeomRepository->getCountFerme($nom_dep, $id_dep)[0]["1"],
 

@@ -1,5 +1,19 @@
 function getDetailFromListLeft(type, depart_name, depart_code, id) { 
     OBJECT_MARKERS_SEARCH.clickOnMarker(id)
+
+    if (type === "resto") {
+        getRestoSpecSearchMobile(depart_name, depart_code, id)
+        
+    } else if (type === "ferme") {
+        getFermeSpecSearchMobile(depart_name, depart_code, id)
+    } else if (type === "station") {
+        getStationSpecSearchMobile(depart_name, depart_code, id)
+    }else if (type === "golf") {
+        getGolfSpecSearchMobile(depart_name, depart_code, id)
+    }
+    else if (type === "tabac") {
+        getTabacSpecSearchMobile(depart_name, depart_code, id)
+    }
 }
 
 

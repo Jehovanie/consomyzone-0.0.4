@@ -151,7 +151,10 @@ function showBlockPub() {
     for (let array of arrays) {
         array.onclick = (async (e) => {
             e.preventDefault();
-
+                document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
             if (document.querySelector("#activeTribu")) {
                 document.querySelector("#activeTribu").classList.remove("p-2")
                 document.querySelector("#activeTribu").classList.remove("list-nav-left")
@@ -548,15 +551,15 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                     <div class="row content-tribu-t">
                         <div class="col-lg-3 col-4">
                             <div class="row">
-                                <div class="col-lg-6 col-6">
+                                <div class="col-lg-6 col-3">
                                     ${image_tribu_t}
                                 </div>
                                 ${canChangeTribuPicture}
                             </div>
                         </div>
                         <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
-                            <p class="ms-2 text-white">
+                            <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+                            <p class="text-white descrp-tribu-t">
                             ${tribu_t[0].description.replace(/"/gi,'')}
                             </p>
                         </div>
@@ -1357,7 +1360,7 @@ if (document.querySelector("#resto-rech")) {
     const src_resto = document.querySelector("#resto-rech")
 
     src_resto.addEventListener("keyup", function onEvent(event) {
-        alert("ato")
+        // alert("ato")
         // const q = event.target.value.toLowerCase();
 
         // if (event.keyCode === 13) {
