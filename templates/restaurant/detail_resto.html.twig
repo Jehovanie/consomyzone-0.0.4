@@ -72,7 +72,7 @@
                         {% else %}
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalActifPastille()">Pastiller</button>
-                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#userModifResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalActif()"><i class="bi bi-pencil-square"></i></button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalActif()"><i class="bi bi-pencil-square"></i></button>
                         {% endif %}
 
                         <div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}" ></div>

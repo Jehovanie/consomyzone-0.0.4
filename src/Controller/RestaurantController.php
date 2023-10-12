@@ -977,9 +977,9 @@ class RestaurantController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    #[Route("/user/make/modif", name:"app_make_modif", methods:["POST"])]
+    #[Route("/user/make/modif/new/resto", name:"app_make_modif_user_resto", methods:["POST"])]
     public function makeModif(Request $request,BddRestoUserModifRepository $bddRepo){
-        try{
+        // try{
         $contents=json_decode($request->getContent(),true);
         $bddRestoUserModif=new BddRestoUserModif();
         $bddRestoUserModif->setDenominationF(json_encode($contents["denomination_f"]))
@@ -1007,13 +1007,13 @@ class RestaurantController extends AbstractController
             ->setRestoId(intval(($contents["restoId"])));
 
             $bddRepo->save($bddRestoUserModif,true);
-        }catch(Exception $e){
-            if($_ENV["APP_ENV"]=="dev")
-                dump($e);
-            $response = new Response();
-            $response->setStatusCode(500);
-            return $response;
-        }
+        // }catch(Exception $e){
+        //     if($_ENV["APP_ENV"]=="dev")
+        //         dd($e);
+        //     $response = new Response();
+        //     $response->setStatusCode(500);
+        //     return $response;
+        // }
         
         $response = new Response();
         $response->setStatusCode(201);

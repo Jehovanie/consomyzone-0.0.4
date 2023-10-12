@@ -961,4 +961,45 @@ class MarckerClusterHome extends MapModule  {
 
         this.markers.refreshClusters();
     }
+
+    /**
+     *@author Nantenaina a ne pas contacté pendant les congés 
+      où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+     * localisation du fichier: dans MarkerClusterHome.js,
+     * je veux: rendre le marker draggable
+     * si un utilisateur veut modifier une ou des informations
+     * @param {} id 
+     */
+      makeMarkerDraggable(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
+                let initialPos=marker.getLatLng();
+                marker.dragging.enable()
+                
+                marker.on("dragend",(e)=>{
+                    let position = marker.getLatLng();
+                    let lat=position.lat
+                    let lng=position.lng
+                    $("#userModifResto").modal("show")
+                    document.querySelector("#newLatitude").value = lat
+                    document.querySelector("#newLongitude").value = lng
+                    document.querySelector("#newIdResto").value = id
+                    setTimeout(()=>{
+                        swal("Ça fait 10 minutes que vous n'avez effectué aucune modification sur le marquer, le mode interactif sur le marquer sera désactivé.").then(()=>{
+                            marker.setLatLng(initialPos, {
+                                draggable: 'false'
+                            })
+                            marker.dragging.disable()
+
+                        })
+                        
+                    },600000)
+
+                    console.log(position)
+                })
+
+                console.log(marker)
+            }
+        });
+    }
 }

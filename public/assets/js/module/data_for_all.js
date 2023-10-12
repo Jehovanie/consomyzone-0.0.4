@@ -528,7 +528,6 @@ function makeMarkerDraggable(id){
 *
 */
 function makeUserModifResto(){
-
     let denomination_f = document.querySelector("#restoNewDenominationF").value
     let numvoie = document.querySelector("#newNumVoie").value
     let typevoie = document.querySelector("#newTypeVoie").value
@@ -550,6 +549,8 @@ function makeUserModifResto(){
     let poix = document.querySelector("#newLongitude").value
     let poiy = document.querySelector("#newLatitude").value
     let restoId = document.querySelector("#newIdResto").value
+
+   
 
     let data = {
         denomination_f:denomination_f,
@@ -576,7 +577,7 @@ function makeUserModifResto(){
         restoId:restoId
     }
 
-    let request = new Request("/user/make/modif", {
+    let request = new Request("/user/make/modif/new/resto", {
         body : JSON.stringify(data),
         method:"POST",
         headers: {
@@ -588,7 +589,17 @@ function makeUserModifResto(){
     fetch(request)
         .then(response=>{
             if(response.status === 201){
-                swal("Votre modification a été prise en compte, nous procéderons à des vérifications puis nous vous recontacterons très prochainement. Merci !")
+                $("#userModifResto").modal("hide")
+                swal("Votre modification a été prise en compte, "+
+                "nous procéderons à des vérifications puis nous"+ 
+                "vous recontacterons très prochainement. Merci !").then(()=>{
+
+                    CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
+                        if (parseInt(marker.options.id) === parseInt(restoId) ) {
+                            marker.dragging.disable()
+                        }
+                    });
+                })
             }
         })
 
