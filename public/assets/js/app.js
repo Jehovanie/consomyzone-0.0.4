@@ -1984,7 +1984,7 @@ function generateOneToastMessage(toastId, message,type, duration){
     `
     contentDivElement.innerHTML = `
         <div>
-            <p>${message} </p>
+            <p>${JSON.parse(message)} </p>
         </div>
         ${btn}
     `
@@ -1995,8 +1995,7 @@ function generateOneToastMessage(toastId, message,type, duration){
     Toastify({
         // text: message,
         node: contentDivElement, 
-        // duration: duration,
-        duration: -1,
+        duration: duration,
         // destination: "https://github.com/apvarun/toastify-js",
         // newWindow: true,
         close: true,
@@ -2080,7 +2079,7 @@ function askClientToUseCookie(){
           color: '#084298',
           background: "#cfe2ff",
           fontSize: '0.9rem',
-          width: screen.width < 369 ? '100vw' : '65vw',
+          width: screen.width < 369 ? '100vw' : '45vw',
           maxWidth: '93vw'
         },
         onClick: function(){ // Callback after click
