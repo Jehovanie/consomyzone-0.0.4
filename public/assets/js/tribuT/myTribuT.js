@@ -268,25 +268,28 @@ function showPartisan() {
                 let body_table = ``
 
                 jsons[0].forEach(json => {
-                    profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
-                    let lastName = profilInfo.lastName
-                    let firstName = profilInfo.firstName
-                    let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
 
-                    body_table += `
-                        <tr>
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
-                            </td>
-                            <td>
-                                <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
-                            </td>
-                            <td>
-                                TribuG ${tribuG.replaceAll("_", " ")}
-                            </td>
-                        </tr>
-                    `
+                    if( json.infos_profil !== null ){
+                        profilInfo = JSON.parse(json.infos_profil)
+                        let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
+                        let lastName = profilInfo.lastName
+                        let firstName = profilInfo.firstName
+                        let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
+    
+                        body_table += `
+                            <tr>
+                                <td class="d-flex bd-highlight align-items-center">
+                                    <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
+                                </td>
+                                <td>
+                                    <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                </td>
+                                <td>
+                                    TribuG ${tribuG.replaceAll("_", " ")}
+                                </td>
+                            </tr>
+                        `
+                    }
                     // console.log(JSON.parse(json.infos_profil))
                     // document.querySelector("#tribu_t_conteuneur").innerHTML += `
                     //     <div class="card-partisons row">
