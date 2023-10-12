@@ -316,6 +316,84 @@ class StationController extends AbstractController
     }
 
     /**
+     * @Route("/station-mobile/departement/{depart_code}/{depart_name}/{id_station}" , name="specific_station_departement_search_mobile", methods={"GET"})
+     */
+    public function specifiStationDepartementSearchMobile(
+        $depart_code,
+        $depart_name,
+        $id_station,
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+    ) {
+        $depart_code = strlen($depart_code) === 1 ? "0" . $depart_code : $depart_code;
+        $userConnected = $status->userProfilService($this->getUser());
+        ///current user connected
+        $user = $this->getUser();
+
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if ($user) {
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+
+                if ($user_amis) {
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+
+        return $this->json([
+
+            "departCode" => $depart_code,
+            "userConnected" => $userConnected,
+            "departName" => $depart_name,
+
+            "type" => "station",
+
+            // "stations"   => $stationServiceFrGeomRepository->getStationByDepartement($depart_code, $depart_name, 0),
+            "stations"   => $stationServiceFrGeomRepository->getAllStationInDepartementSearchMobile($depart_code, $depart_name, $id_station),
+
+            "number_station" => $stationServiceFrGeomRepository->getCountStation($depart_code, $depart_name)[0]["1"],
+
+            "profil" => $statusProfile["profil"],
+
+            "statusTribut" => $statusProfile["statusTribut"],
+
+            "codeApes" => $codeApeRep->getCode(),
+
+            "amisTributG" => $amis_in_tributG
+        ]);
+    }
+
+    /**
     * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
     */
     public function getStationInSpecifiqueDepart(DepartementRepository $departementRepository): Response

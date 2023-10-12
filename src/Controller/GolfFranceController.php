@@ -265,6 +265,80 @@ class GolfFranceController extends AbstractController
             "userConnected" => $userConnected,
         ]);
     }
+    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{id_golf}', name: 'golf_dep_france_search_mobile', methods: ["GET", "POST"])]
+    public function specifiqueDepartementSearchMobile(
+        $nom_dep,
+        $id_dep,
+        $id_golf,
+        GolfFranceRepository $golfFranceRepository,
+        Status $status,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+    ) {
+
+        ///current user connected
+        $user = $this->getUser();
+        $userConnected = $status->userProfilService($this->getUser());
+        $userID = ($user) ? $user->getId() : null;
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if ($user) {
+
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+
+                if ($user_amis) {
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+
+        return $this->json([
+
+            "id_dep" => $id_dep,
+
+            "nom_dep" => $nom_dep,
+
+            "type" => "golf",
+
+            "golf" => $golfFranceRepository->getGolfByDepSearchMobile($nom_dep, $id_dep, $userID, $id_golf),
+
+            "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
+
+            "profil" => $statusProfile["profil"],
+
+            "statusTribut" => $statusProfile["statusTribut"],
+
+            "amisTributG" => $amis_in_tributG,
+
+            "userConnected" => $userConnected,
+        ]);
+    }
     
 
     #[Route('/api/golf/departement/{nom_dep}/{id_dep}', name: 'api_golf_dep_france', methods: ["GET", "POST"])]

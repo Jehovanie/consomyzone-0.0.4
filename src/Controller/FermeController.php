@@ -256,6 +256,37 @@ class FermeController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/ferme-mobile/departement/{nom_dep}/{id_dep}/{id_ferme}" , name="specific_mobile_search_departement", methods={"GET"} )
+     */
+    public function getSpecifiqueDepSearchMobile(
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        FermeGeomRepository $fermeGeomRepository,
+        $nom_dep,
+        $id_dep,
+        $id_ferme,
+    ) {
+
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
+        return $this->json([
+            "id_dep" => $id_dep,
+
+            "nom_dep" => $nom_dep,
+
+            "fermes" => $fermeGeomRepository->getFermByDepSearchMobile($nom_dep, $id_dep, $id_ferme),
+
+            "nomber_ferme" => $fermeGeomRepository->getCountFerme($nom_dep, $id_dep)[0]["1"],
+
+            "profil" => $statusProfile["profil"],
+
+            "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
+            "codeApes" => $codeApeRep->getCode()
+        ]);
+    }
+
 
 
     /**

@@ -2825,6 +2825,12 @@ function getDataSpecificMobile(nom_dep, id_dep) {
         })    
 }
 
+/**
+ * @author Tomm
+ * @action incrimentation specific resto du recherche
+ * @ou detail_searche.js 
+ * @utiliser dans home/search_resilt.html.twig
+ */
 function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
     const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${idResto}`, {
         method: "GET",
@@ -3000,7 +3006,7 @@ function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
             listSpecMobile.innerHTML = `
                     <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${idRestaurant}">
                             <div class="containt-specific">
-                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('resto','${restaurants.depName}', '${restaurants.dep}', '${idRestaurant}')">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${restaurants.depName}', '${restaurants.dep}', '${idRestaurant}')">
                                     <div class="row">
                                         <div class="col-6">
                                             <p class="text-point-12 fw-bold">${restaurants.nom}</p>
@@ -3089,7 +3095,9 @@ function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
         })  
     
     if (screen.width < 991) {
-                querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => {
+                const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
+                contentModalAvieResto.forEach(items => {
+                    items.querySelector(".text-note-mobile-tomm-js").onkeyup = (e) => {
                         if (items.querySelector(".flash-msg-ERREUR")) {
                             items.querySelector(".flash-msg-ERREUR").parentNode.removeChild(items.querySelector(".flash-msg-ERREUR"))
                         }
@@ -3104,10 +3112,509 @@ function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
                             })
                         }, 5000)
                     }
+                })
+            }
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific ferme du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getFermeSpecSearchMobile(nom_dep, id_dep,idFerme) {
+    const request = new Request(`/ferme-mobile/departement/${nom_dep}/${id_dep}/${idFerme}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let fermes = response.fermes[0]
+            let genre = ''
+                if (fermes.genre) {
+                    genre = `<span class="ferme-genre">
+                            ${fermes.genre}</span>`
+                }
                 
-    }
-    // getDetailResto(id_dep, nom_dep, idResto, false)
-    
+                let agricultureBio = ''
+                if (fermes.agricultureBio) {
+                    agricultureBio = `
+                        <div class="row text-point-9">
+                            <div class="col-8">
+                                <p class="agribio fw-bold">
+                                    Agri biologie
+                                </p>
+                            </div>
+                            <div class="col-2">
+                                <img src="/public/assets/icon/icon-agri.png" alt="" width="50">
+                            </div>
+                            <div class="col-2">
+                                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    `
+                }
+
+
+                let horairesVenteAFerme = ''
+                if (fermes.horairesVenteAFerme) {
+                    horairesVenteAFerme = `<li class="text-point-9">
+                                                <h5 class="fw-bold">Horaires vente à la ferme</h5>
+                                                <span class="text-point-9">
+                                                    ${fermes.horairesVenteAFerme}
+                                                </span>
+                                            </li>`
+                }
+
+            
+                let btnAviMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                
+                
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${fermes.id}" onclick="getDetailFromListLeft('ferme','${fermes.depName}', '${fermes.dep}', '${fermes.id}')">
+									<p class="text-point-12 fw-bold">${fermes.nomFerme}
+										${genre}
+									</p>
+                                    <div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+
+                                    <p class="test-point-9">
+										<span class="fw-bold">
+											Adresse :
+										</span>
+										<span class="small ">
+											${fermes.adresseFerme}
+										</span>
+									</p>
+
+                                    <p class="activite text-point-9">
+                                        ${agricultureBio}
+									</p>
+                                    <p class="text-point-9">
+										<span class="fw-bold">Produit:</span>
+										${fermes.produitFerme}
+                                    </p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email:</span>
+										${fermes.email}
+                                    </p>
+
+								</div>
+                                <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAviMobile}
+								</div>
+							
+							</div>
+						</a>
+					</li>
+
+                    
+                `
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific station du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getStationSpecSearchMobile(nom_dep, id_dep,idStation) {
+    const request = new Request(`/station-mobile/departement/${nom_dep}/${id_dep}/${idStation}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let stations = response.stations[0]
+            let services = ''
+            if (stations.services) {
+                services = `
+                    <p class="text-point-9 mb-2">
+                        <span class="fw-bold">
+                            Services :
+                        </span>
+                        <span class="small  ">
+                            ${stations.services}
+                        </span>
+                    </p>
+                `
+            }
+
+            let prixE85 = ''
+            if (stations.prixE85 != 0 ) {
+                prixE85 = `<span class="btn btn-outline-success text-point-9 mb-2">E85 : ${stations.prixE85} €</span>`
+            }
+            
+            let prixGplc = ''
+            if (stations.prixGplc != 0) {
+                prixGplc = `<span class="btn btn-outline-success text-point-9 mb-2">GPLC : ${stations.prixGplc} €</span>`
+            }
+        
+            let prixSp95 = ''
+            if (stations.prixSp95 != 0) {
+                prixSp95 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95 : ${stations.prixSp95} €</span>`
+            }
+        
+            let prixSp95E10 = ''
+            if (stations.prixSp95E10 != 0) {
+                prixSp95E10 = `<span class="btn btn-outline-success text-point-9 mb-2">SP95-E10 : ${stations.prixSp95E10} €</span>`
+            }
+        
+            let prixSp98 = ''
+            if (stations.prixSp98 != 0) {
+                prixSp98 = `<span class="btn btn-outline-success text-point-9 mb-2">SP98 : ${stations.prixSp98} €</span>`
+            }
+        
+            let prixGasoil = ''
+            if (stations.prixGasoil != 0) {
+                prixGasoil = `<span class="btn btn-outline-success text-point-9 mb-2">GASOIL : ${stations.prixGasoil} €</span>`
+            }
+
+            let horaires = ''
+            if (stations.horaies) { 
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							${stations.horaies }`
+            } else {
+                horaires = `<span class="fw-bold text-point-9">Horaires :</span>
+							Non disponible.`
+            }
+
+            let automate2424 = ''
+            if (stations.automate2424) { 
+                automate2424 = `<span class="fw-bold text-point-9">Automate</span>
+							    : 24/24`
+            } else {
+                automate2424 = `<span class="fw-bold text-point-9">Automate :</span>
+							Non disponible.`
+            }
+
+            let departementCode = ''
+            if (stations.departementCode) { 
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+									${stations.departementCode}`
+            } else {
+                departementCode = `<span class="fw-bold text-point-9">Code de departement :</span>
+								    Non reconue.`
+            }
+
+            let departementName = ''
+            if (stations.departementName) { 
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+									${stations.departementName}`
+            } else {
+                departementName = `<span class="fw-bold text-point-9">Nom de departement :</span>
+								    Non reconue.`
+            }
+
+
+            listSpecMobile.innerHTML += `
+                <li class="nav-item icon-station me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobil${stations.id}" onclick="getDetailFromListLeft('station','${stations.depName}', '${stations.dep}', '${stations.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${stations.nom}
+
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">
+                                            Adresse :
+										</span>
+										<span class="small  ">
+                                            ${stations.adresse}
+                                        </span>
+									</p>
+                                    ${services}
+                                    
+									<div class="text-point-9">
+                                        ${prixE85}
+                                        ${prixGplc}
+                                        ${prixSp95}
+                                        ${prixSp95E10}
+                                        ${prixSp98}
+                                        ${prixGasoil}
+										
+									</div>
+
+								</div>
+
+							</div>
+						</a>
+					</li>
+            `
+            
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific golf du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getGolfSpecSearchMobile(nom_dep, id_dep,idGolf) {
+    const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${idGolf}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let golfs = response.golf[0]
+
+            let btnAviMobile = ''
+                let containerActionGolf = ''
+                let statusGolf = ''
+                if (document.querySelector("#is-connected-tomm-js")) {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                    let valueContaintGolf = ''
+                    let valueContaintGolfDetail = ''
+                    if (golfs.user_status["a_faire"] == null && golfs.user_status["fait"] == null) {
+                        valueContaintGolf = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                                <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(${golfs.id})">
+                                    <option value="0">Aucun</option>
+                                    <option value="1">A faire</option>
+                                    <option value="2">Fait</option>
+                                </select>`
+                        valueContaintGolfDetail = ` 
+                                <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
+                                    </label>
+                                    <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(${golfs.id})">
+                                        <option value="0">Aucun</option>
+                                        <option value="1">A faire</option>
+                                        <option value="2">Fait</option>
+                                    </select>`
+                        statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
+                    } else {
+                        valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${golfs.id}')">Oui</span>`
+                        valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${golfs.id}')">Oui</span>`
+                        if (golfs.user_status["a_faire"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
+                        }else if (golfs.user_status["fait"] == 1) {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
+                        } else {
+                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
+                        }
+                    }
+                    containerActionGolf = `
+                        <div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
+                            ${valueContaintGolf}
+                        </div>
+                    `
+                
+
+                   
+                } else {
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                    
+                }
+
+               
+
+                
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobilGolf${golfs.id}" onclick="getDetailFromListLeft('golf','${golfs.depName}', '${golfs.dep}', '${golfs.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${golfs.name} 
+									</p>
+                                    <div class="start">
+                                        <i class="fa-solid fa-star" data-rank="1"></i>
+                                        <i class="fa-solid fa-star" data-rank="2"></i>
+                                        <i class="fa-solid fa-star" data-rank="3"></i>
+                                        <i class="fa-solid fa-star" data-rank="4"></i>
+                                    </div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse : </span> <span class="small  ">${golfs.adresse}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Tél : </span> <span class="small  ">${golfs.tel}</span>
+									</p>
+									<p class="text-point-9">
+										<span class="fw-bold">Email : </span> <span class="small  ">${golfs.email}</span>
+									</p>
+								</div>
+								${containerActionGolf}
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+									
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js">
+											</span>
+											avis
+										</a>
+									</span>
+										${btnAviMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+                    
+                `
+            
+        })  
+}
+
+/**
+ * @author Tomm
+ * @action incrimentation specific tabac du recherche
+ * @ou detail_searche.js
+ * @utiliser dans home/search_resilt.html.twig
+ */
+function getTabacSpecSearchMobile(nom_dep, id_dep,idTabac) {
+    const request = new Request(`/tabac-mobile/departement/${nom_dep}/${id_dep}/${idTabac}`, {
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    })
+    fetch(request).then(res => res.json())
+        
+        .then(response => {
+            console.log(response)
+            let listSpecMobile = document.querySelector(".item-detail-recherche-tomm-js")
+            let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+            let tabacs = response.tabac[0]
+            let bar_tabac = ''
+                if (tabacs.bar_tabac != 0) {
+                    bar_tabac = `<span class="btn btn-outline-success text-point-9">Bar Tabac</span>`
+                }
+
+                let bureau_tabac = ''
+                if (tabacs.bureau_tabac != 0) {
+                    bureau_tabac = `<span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>`
+                }
+
+                let cafe_tabac = ''
+                if (tabacs.cafe_tabac != 0) {
+                    cafe_tabac = `<span class="btn btn-outline-success text-point-9">Cafe Tabac</span>`
+                }
+
+                let tabac_presse = ''
+                if (tabacs.tabac_presse != 0) {
+                    tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`
+                }
+
+                let horaires_1 = ''
+                if (tabacs.horaires_1 != 0) {
+                    horaires_1 = `<p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">${tabacs.horaires_1 }</span>
+									</p>`
+                }
+
+             
+
+               
+
+               
+
+                let btnAvieMobile = ''
+                if (document.querySelector("#is-connected-tomm-js")) { 
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                } else {
+                    btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+                }
+
+                listSpecMobile.innerHTML += `
+                    <li class="nav-item icon-tabac me-3">
+						<a class="nav-link d-block">
+							<div class="containt-specific">
+								<div class="click-detail"  data-bs-toggle="modal" data-bs-target="#detailModalMobilTabac${tabacs.id}"  onclick="getDetailFromListLeft('tabac','${tabacs.depName}', '${tabacs.dep}', '${tabacs.id}')">
+									<p class="text-point-12 fw-bold">
+                                        ${tabacs.name  }
+									</p>
+									<div class="start">
+										<i class="fa-solid fa-star" data-rank="1"></i>
+										<i class="fa-solid fa-star" data-rank="2"></i>
+										<i class="fa-solid fa-star" data-rank="3"></i>
+										<i class="fa-solid fa-star" data-rank="4"></i>
+									</div>
+									<p class="text-point-9">
+										<span class="fw-bold">Adresse :
+										</span>
+										<span class="small  ">${tabacs.add }</span>
+									</p>
+                                    ${horaires_1}
+                                    <p class="text-point-9">
+										<span class="fw-bold">Tèl :
+										</span>
+										<span class="small  ">${tabacs.tel }</span>
+									</p>
+									<div class="text-point-9">
+                                        ${bar_tabac}
+                                        ${bureau_tabac}
+                                        ${cafe_tabac}
+                                        ${tabac_presse}
+                                    </div>
+
+								</div>
+							
+								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
+
+									<span>
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+											<span class="nbr_avis_resto_jheo_js"></span>
+											avis
+										</a>
+									</span>
+									${btnAvieMobile}
+								</div>
+							</div>
+						</a>
+					</li>
+
+                    
+                `
+            
+            
+        })  
 }
 
 /**
@@ -3143,9 +3650,9 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
             let listSpecMobile = document.querySelector(".list-specific-ferme-mobile-tomm-js")
             responses.fermes.forEach(response => {
                 let genre = ''
-                if (response.genre) {
+                if (golfs.genre) {
                     genre = `<span class="ferme-genre">
-                            ${response.genre}</span>`
+                            ${tabacs.genre}</span>`
                 }
                 
                 let agricultureBio = ''

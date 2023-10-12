@@ -265,7 +265,8 @@ class MarckerClusterSearch extends MapModule  {
 
             // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
             if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + item.dep.toString().trim() + "/" + item.depName.trim().replace("?", "") + "/details/" + item.id)
+                getDetailStation(item.depName.trim().replace("?", ""), item.dep.toString().trim(),item.id, true)
+                // getDetailHomeForMobile("/station/departement/" + item.dep.toString().trim() + "/" + item.depName.trim().replace("?", "") + "/details/" + item.id)
             } else {
                 getDetailStation(item.depName.trim().replace("?", ""), item.dep.toString().trim(),item.id, true)
             }
@@ -444,7 +445,7 @@ class MarckerClusterSearch extends MapModule  {
 
             const itemID= item.id
             const golfUpdate = this.data.results[0].find(jtem => jtem.hasOwnProperty('golf') && parseInt(jtem.id) === itemID );
-            console.log(golfUpdate)
+            // console.log(golfUpdate)
             this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
 
 
@@ -479,10 +480,7 @@ class MarckerClusterSearch extends MapModule  {
             
             if (screen.width < 991) {
                 getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
-                // let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
-                // getDetailHomeForMobile(pathDetails)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             }
 
@@ -531,10 +529,7 @@ class MarckerClusterSearch extends MapModule  {
             
             if (screen.width < 991) {
                 getDetailTabac(item.dep, item.nom_dep, item.id, true)
-                // let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
-                // getDetailHomeForMobile(pathDetails)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailTabac(item.dep, item.nom_dep, item.id, true)
             }
 
