@@ -1947,7 +1947,7 @@ function generateToastMessage(data){
                     item.id,
                     item.toast_message,
                     item.type, //// type de notification : 0 alert, 1 primary, 2 news
-                    6000
+                    10000
                 );
             }, 1000 * (index + 1))
         }
