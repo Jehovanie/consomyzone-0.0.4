@@ -953,10 +953,8 @@
     }
 
     .container-invitation {
-        margin-left: 120px !important;
-        margin-top: 115px !important;
-        /* width: 100vw !important; */
-
+        margin-left: 70px !important;
+        margin-top: 165px !important;
     }
 
     .container-invitation-menu {
@@ -1469,7 +1467,7 @@
         position: absolute !important;
         top: 135px !important;
         right: 15px !important;
-        width: 330px !important;
+        width: 360px !important;
     }
 
     .content-pub {
@@ -1503,6 +1501,10 @@
         z-index: 1;
     }
 
+    .margin-top-280{
+        margin-top: 280px !important;
+    }
+
 }
 
 @media screen and (max-width:400px) and (min-width:300px) {
@@ -1511,9 +1513,9 @@
 
     }
 
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
+    /* .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 1vh !important;
-    }
+    } */
     .account-profil-conected .pdp img {
         width: 110px !important;
     }
