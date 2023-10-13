@@ -403,12 +403,18 @@ if(document.getElementById("open_menu")){
 
 
 window.addEventListener('load', () => {
-    if(!!isValueInCookie("isCanUseCookie") === false){
-        askClientToUseCookie();
-    }else{
-        if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
-            getToastMessage()
+    const link_now= new URL(window.location.href)
+    const linkPathname= link_now.pathname;
+    if(!linkPathname.includes("/actualite-non-active")){
+        
+        if(!!isValueInCookie("isCanUseCookie") === false){
+            askClientToUseCookie();
+        }else{
+            if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
+                getToastMessage()
+            }
         }
+
     }
 })
 /// --------------- end of this rtesponsive for mobile ---------
@@ -992,6 +998,18 @@ function openSwalNonActif(){
 
     swal({
         text: "Cette fonctionnalité est en cours de développement, merci de votre compréhension.",
+        icon: "info",
+      });
+}
+
+/**
+ * Function opening a sweet alert on click button inactif
+ * @constructor
+ */
+function openSwalProfilUnCompleted(){
+
+    swal({
+        text: "Votre profil est incomplet, veuillez le compléter, pour acceder à ce menu.",
         icon: "info",
       });
 }

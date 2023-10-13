@@ -100,7 +100,11 @@ class UserController extends AbstractController
     ): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
-        //dd($userConnected);
+        
+        if( $userConnected["userType"] === "Type"){
+            return $this->redirectToRoute('app_actu_non_active');
+        }
+
         $userId= $this->getUser()->getId();
         $tribuG= $userConnected['tableTribuG'];
         $publications = [];
