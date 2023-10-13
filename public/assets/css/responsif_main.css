@@ -219,8 +219,16 @@
         height: 0 !important;
     }
 
+    .text-point-7{
+        font-size: 7pt !important;
+    }
+
     .span-btn-menu-tribut{
         width: 130px !important;
+    }
+
+    .span-btn-menu-en-lign{
+        width: 180px !important;
     }
 
     .right_side_body {
@@ -1465,7 +1473,7 @@
     }
 
     .content-pub {
-        margin-top: 273px !important;
+        margin-top: 0px !important;
     }
 
     .content_list_p_tG {
@@ -1485,6 +1493,14 @@
         position: absolute;
         top: 35%;
         right: 0;
+    }
+
+    .en-lign-mobile{
+        position: absolute;
+        background: #fff;
+        width: 100%;
+        height: 85vh;
+        z-index: 1;
     }
 
 }

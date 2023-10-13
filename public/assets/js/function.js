@@ -2452,7 +2452,7 @@ let offsetTomm = 0
 let loadingScroll = ""
 if (document.querySelector(".scroll-mobile-tomm-js")) {
     let contentSpecMobile = document.querySelector(".scroll-mobile-tomm-js")
-    contentSpecMobile.addEventListener('scroll', (event) => { 
+    contentSpecMobile.addEventListener('touchmove', (event) => { 
         if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
             
             const rubricName = new URL(window.location.href).pathname.split("/")[1]
