@@ -690,9 +690,12 @@ if(dropZones.length > 0 && dropZones!=null){
   }
 
 let editor;
+let editor_invitation;
 initCKEditor("editor",showModalEditor);
 initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
+initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+
 
 /**
  * 
