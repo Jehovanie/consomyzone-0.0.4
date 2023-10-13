@@ -2146,3 +2146,13 @@ if (document.querySelector(".btn-navright-tribut-tomm-js")) {
     })
 }
 
+if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
+    document.querySelector(".btn-navright-en-lign-tomm-js").addEventListener('click', () => {
+        document.querySelector(".en-lign-mobile-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".fermet-en-lign-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".menu-en-lign-tomm-js").classList.toggle('span-btn-menu-en-lign')
+        
+    })
+}
+

@@ -2459,6 +2459,8 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
         //alert(contentSpecMobile.scrollWidth-contentSpecMobile.clientWidth+" "+ contentSpecMobile.scrollLeft)
       
         if (Math.ceil(contentSpecMobile.scrollWidth-contentSpecMobile.clientWidth) ===Math.ceil(contentSpecMobile.scrollLeft)) {
+    // contentSpecMobile.addEventListener('touchmove', (event) => { 
+    //     if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
             
             const rubricName = new URL(window.location.href).pathname.split("/")[1]
             if (rubricName == 'restaurant') {
