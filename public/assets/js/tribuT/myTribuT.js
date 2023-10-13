@@ -1860,6 +1860,7 @@ function showInvitations() {
     document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
     // document.querySelector("#list-publicatiotion-tribu-t").innerHTML = ""
     // document.querySelector("#createPubBloc").style.display = "none";
+    //setActiveTab(this)
     document.querySelector("#tribu_t_conteuneur").innerHTML = `
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
@@ -1867,7 +1868,7 @@ function showInvitations() {
                             <a data-element="table-tribuG-member" class="nav-link active text-secondary" aria-current="page" href="#" onclick="setActiveTab(this)">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="openSwalNonActif()">Email</a>
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
@@ -1925,7 +1926,7 @@ function showInvitations() {
                     </div>
                 </div>
         `
-
+    
     editor_invitation = document.querySelector("#editorInvitationElie")
     // console.log(editor);
     document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);

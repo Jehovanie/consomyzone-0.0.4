@@ -1,4 +1,4 @@
-const IS_DEV_MODE=true;
+const IS_DEV_MODE=false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -403,12 +403,18 @@ if(document.getElementById("open_menu")){
 
 
 window.addEventListener('load', () => {
-    if(!!isValueInCookie("isCanUseCookie") === false){
-        askClientToUseCookie();
-    }else{
-        if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
-            getToastMessage()
+    const link_now= new URL(window.location.href)
+    const linkPathname= link_now.pathname;
+    if(!linkPathname.includes("/actualite-non-active")){
+        
+        if(!!isValueInCookie("isCanUseCookie") === false){
+            askClientToUseCookie();
+        }else{
+            if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
+                getToastMessage()
+            }
         }
+
     }
 })
 /// --------------- end of this rtesponsive for mobile ---------
@@ -991,8 +997,22 @@ function openSwalActifPastille() {
 function openSwalNonActif(){
 
     swal({
-        text: "Cette fonctionnalité est en cours de développement, merci de votre compréhension.",
+        text: "Cette fonctionnalité est en cours de développement ou en maintenance, merci de votre compréhension.",
         icon: "info",
+      });
+}
+
+/**
+ * Function opening a sweet alert on click button inactif
+ * @constructor
+ */
+function openSwalProfilUnCompleted(){
+
+    swal({
+        text: "Votre profil est incomplet, veuillez le compléter, pour acceder à ce menu.",
+        icon: "info",
+      }).then(()=>{
+         location.href="/actualite-non-active"
       });
 }
 
@@ -2124,6 +2144,16 @@ if (document.querySelector(".btn-navright-tribut-tomm-js")) {
         document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
         document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
         document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
+        
+    })
+}
+
+if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
+    document.querySelector(".btn-navright-en-lign-tomm-js").addEventListener('click', () => {
+        document.querySelector(".en-lign-mobile-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".fermet-en-lign-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".menu-en-lign-tomm-js").classList.toggle('span-btn-menu-en-lign')
         
     })
 }

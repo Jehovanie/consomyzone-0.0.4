@@ -153,7 +153,6 @@ class SecurityController extends AbstractController
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
@@ -173,6 +172,12 @@ class SecurityController extends AbstractController
             "codeApes" => $codeApeRep->getCode(),
             "form_inscription" => $form->createView(),
             "flash" => $flash,
+        ]);
+    }
+
+    #[Route(path: '/actualite-non-active', name: 'app_actu_non_active')]
+    public function errorLoginProfil(){
+        return $this->render('authenticator/actu_non_active.html.twig', [
         ]);
     }
 
@@ -412,7 +417,7 @@ class SecurityController extends AbstractController
         $user->setPseudo(trim($data['pseudo']));
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
-        $user->setVerifiedMail(false);
+        $user->setVerifiedMail(true);
         $user->setIsConnected(true);
 
 
@@ -457,6 +462,8 @@ class SecurityController extends AbstractController
         $user->setTablenotification("tablenotification_" . $numero_table);
         $user->setTablerequesting("tablerequesting_" . $numero_table);
         $user->setNomTableAgenda("agenda_" . $numero_table);
+        $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
+
 
 
 
@@ -588,6 +595,7 @@ class SecurityController extends AbstractController
     #[Route(path: "/verification_email", name:"verification_email", methods: ["GET", "POST"])]
     public function verification_email(
         Request $request,
+        Status $status,
         UserRepository $userRepository,
         NotificationService $notificationService,
         TributGService $tributGService,
@@ -602,7 +610,10 @@ class SecurityController extends AbstractController
         $userToVerifie = $userRepository->find($request->query->get('id'));
 
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            $userConnected= $status->userProfilService($this->getUser());
+            if( $userConnected["userType"] !== "Type"){
+                return $this->redirectToRoute('app_home');
+            }
         }
 
 
