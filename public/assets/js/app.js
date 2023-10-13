@@ -1919,7 +1919,7 @@ function getToastMessage(){
                 if(!linkPathname.includes("/connexion")){
                     generateOneToastMessage(
                         0,
-                        "Veuillez vous connecter pour accéder à tous les informations importants sur notre application.",
+                        JSON.stringify("Veuillez vous connecter pour accéder à tous les informations importants sur notre application."),
                         3,  //// type de notification : 0 alert, 1 primary, 2 news
                         10000
                     );
@@ -1941,7 +1941,8 @@ function getToastMessage(){
 function generateToastMessage(data){
     data.forEach((item, index) => {
 
-        if(!!isValueInCookie(`toast_message_${item.id}`) === false){
+        // if(!!isValueInCookie(`toast_message_${item.id}`) === false){
+        if(parseInt(isValueInCookie(`toast_message_${item.id}`)) !== 1 ){
             setTimeout(() => {
                 generateOneToastMessage(
                     item.id,
@@ -2009,9 +2010,9 @@ function generateOneToastMessage(toastId, message,type, duration){
           width: '350px',
           maxWidth: screen.width <= 375 ? '75vw': '93vw'
         },
-        onClick: function(){ // Callback after click
-            clickedOnToastMessage(toastId)
-        } 
+        // onClick: function(){ // Callback after click
+        //     clickedOnToastMessage(toastId)
+        // } 
     }).showToast();
 }
 
@@ -2079,7 +2080,7 @@ function askClientToUseCookie(){
           color: '#084298',
           background: "#cfe2ff",
           fontSize: '0.9rem',
-          width: screen.width < 369 ? '100vw' : '45vw',
+          width: screen.width < 991 ? '100vw' : '45vw',
           maxWidth: '93vw'
         },
         onClick: function(){ // Callback after click

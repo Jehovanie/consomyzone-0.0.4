@@ -2444,7 +2444,8 @@ function getSpectRestoMobile(nom_dep, id_dep) {
 /**
  * @author Tomm
  * @action incrimentation specific liste
- * @ou specific_mobile_depart....twig
+ * @ou s
+ * pecific_mobile_depart....twig
  */
 let limitSpecTomm = 5
 let offsetTomm = 0
@@ -2452,7 +2453,12 @@ let loadingScroll = ""
 if (document.querySelector(".scroll-mobile-tomm-js")) {
     let contentSpecMobile = document.querySelector(".scroll-mobile-tomm-js")
     contentSpecMobile.addEventListener('scroll', (event) => { 
-        if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
+        //alert("mandeha"+contentSpecMobile.scrollLeft+" "+contentSpecMobile.clientWidth+" "+ contentSpecMobile.scrollWidth)
+        //$scrollWidth - $width === $scrollLeft
+        //contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth
+        //alert(contentSpecMobile.scrollWidth-contentSpecMobile.clientWidth+" "+ contentSpecMobile.scrollLeft)
+      
+        if (Math.ceil(contentSpecMobile.scrollWidth-contentSpecMobile.clientWidth) ===Math.ceil(contentSpecMobile.scrollLeft)) {
             
             const rubricName = new URL(window.location.href).pathname.split("/")[1]
             if (rubricName == 'restaurant') {
@@ -3649,9 +3655,9 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
             let listSpecMobile = document.querySelector(".list-specific-ferme-mobile-tomm-js")
             responses.fermes.forEach(response => {
                 let genre = ''
-                if (golfs.genre) {
+                if (response.genre) {
                     genre = `<span class="ferme-genre">
-                            ${tabacs.genre}</span>`
+                            ${response.genre}</span>`
                 }
                 
                 let agricultureBio = ''

@@ -1469,7 +1469,8 @@
     }
 
     .content-pub {
-        margin-top: 273px !important;
+        /* margin-top: 273px !important; */
+        margin-top: 0px !important;
     }
 
     .content_list_p_tG {
