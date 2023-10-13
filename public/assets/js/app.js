@@ -1,4 +1,4 @@
-const IS_DEV_MODE=false;
+const IS_DEV_MODE=true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -690,9 +690,12 @@ if(dropZones.length > 0 && dropZones!=null){
   }
 
 let editor;
+let editor_invitation;
 initCKEditor("editor",showModalEditor);
 initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
+initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+
 
 /**
  * 
@@ -1941,14 +1944,13 @@ function getToastMessage(){
 function generateToastMessage(data){
     data.forEach((item, index) => {
 
-        // if(!!isValueInCookie(`toast_message_${item.id}`) === false){
         if(parseInt(isValueInCookie(`toast_message_${item.id}`)) !== 1 ){
             setTimeout(() => {
                 generateOneToastMessage(
                     item.id,
                     item.toast_message,
                     item.type, //// type de notification : 0 alert, 1 primary, 2 news
-                    6000
+                    10000
                 );
             }, 1000 * (index + 1))
         }

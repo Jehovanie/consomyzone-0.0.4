@@ -2383,3 +2383,6 @@ textarea {
 .dropdown-toggle::after {
     display: none !important;
 }
+.text_black{
+    color:black;
+}

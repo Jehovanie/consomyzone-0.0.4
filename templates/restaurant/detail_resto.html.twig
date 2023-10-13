@@ -68,9 +68,17 @@
                         {% if app.user %}
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-primary  btn_modal_avis_resto_jheo_js modal-note-tomm-js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
                             <button style="font-size:smaller" type="button" data-name="{{details.denominationF | raw}}" class="mx-2  btn  btn-sm btn-success btn_modal_pastille_resto_nanta_js" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'{{id_restaurant}}')">Pastiller</button>
+                            <button type="button" class="btn btn-primary btn-sm" 
+                            onclick="makeMarkerDraggable({{details.id}})" 
+                            data-bs-toggle="tooltip" data-bs-placement="top" 
+                            title="Modifier votre établissement">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            {# <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#userModifResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement"><i class="bi bi-pencil-square"></i></button> #}
                         {% else %}
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalActifPastille()">Pastiller</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalActif()"><i class="bi bi-pencil-square"></i></button>
                         {% endif %}
 
                         <div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}" ></div>
@@ -97,6 +105,9 @@
                             <img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png" onclick="findInNet('michelin','{{details.denominationF | raw}}','{{adresse | trim}}')">
                         </div>
                     </div>
+                    {# <div class="mb-3 text-center">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#userModifResto">Modifier les informations</button>
+                    </div> #}
                 </div>
             </div>
 

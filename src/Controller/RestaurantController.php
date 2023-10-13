@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
+use App\Entity\BddRestoUserModif;
 use App\Entity\Codinsee;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
@@ -14,12 +15,15 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
+use App\Repository\BddRestoUserModifRepository;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class RestaurantController extends AbstractController
 {
@@ -1317,5 +1321,48 @@ class RestaurantController extends AbstractController
         $json = $serializer->serialize($response, 'json');
         return new JsonResponse($json, 200, [], true);
     }
+
+    #[Route("/user/make/modif/new/resto", name:"app_make_modif_user_resto", methods:["POST"])]
+    public function makeModif(Request $request,BddRestoUserModifRepository $bddRepo){
+        // try{
+        $contents=json_decode($request->getContent(),true);
+        $bddRestoUserModif=new BddRestoUserModif();
+        $bddRestoUserModif->setDenominationF(json_encode($contents["denomination_f"]))
+            ->setNumvoie(($contents["numvoie"]))
+            ->setTypevoie(json_encode($contents["typevoie"]))
+            ->setNomvoie(json_encode($contents["nomvoie"]))
+            ->setCompvoie(json_encode($contents["compvoie"]))
+            ->setCodpost(($contents["codpost"]))
+            ->setVillenorm(json_encode($contents["villenorm"]))
+            ->setCommune(json_encode($contents["commune"]))
+            ->setTel(($contents["tel"]))
+            ->setRestaurant(intval(($contents["restaurant"])))
+            ->setBrasserie(intval(($contents["brasserie"])))
+            ->setCreperie(intval(($contents["creperie"])))
+            ->setFastFood(intval(($contents["fastFood"])))
+            ->setPizzeria(intval(($contents["pizzeria"])))
+            ->setBoulangerie(intval(($contents["boulangerie"])))
+            ->setBar(intval(($contents["bar"])))
+            ->setCuisineMonde(intval(($contents["cuisineMonde"])))
+            ->setCafe(intval(($contents["cafe"])))
+            ->setSalonThe(intval(($contents["the"])))
+            ->setPoiX(doubleval(($contents["poix"])))
+            ->setPoiY(doubleval(($contents["poiy"])))
+            ->setUserId(intval($this->getUser()->getId()))
+            ->setRestoId(intval(($contents["restoId"])));
+
+            $bddRepo->save($bddRestoUserModif,true);
+        // }catch(Exception $e){
+        //     if($_ENV["APP_ENV"]=="dev")
+        //         dd($e);
+        //     $response = new Response();
+        //     $response->setStatusCode(500);
+        //     return $response;
+        // }
+        
+        $response = new Response();
+        $response->setStatusCode(201);
+        return $response;
+    } 
     
 }
