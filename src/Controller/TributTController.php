@@ -1789,15 +1789,12 @@ class TributTController extends AbstractController
             //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
             // );
 
-            $email_to = $principal;
-            $fullname = $from_fullname;
-
             $context["object_mail"] = $object;
             $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
             $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+            $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
 
-            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, $fullname, $context);
+            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
 
             $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
 
@@ -1816,13 +1813,20 @@ class TributTController extends AbstractController
             $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
             $tribuTService->addMemberTemp($table, $principal);
             // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
-            $mailService->sendEmail(
-                $principal,
-                "Amis",
-                $object,
-                // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
-            );
+            // $mailService->sendEmail(
+            //     $principal,
+            //     "Amis",
+            //     $object,
+            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+            //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
+            // );
+
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = $url ;
+            $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+
+            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
         }
 
         if( count($cc) > 0 ){
@@ -1836,13 +1840,20 @@ class TributTController extends AbstractController
                     */
                     $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
         
-                    $mailService->sendEmail(
-                        $c,
-                        "Amis",
-                        $object,
-                        // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                        $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
-                    );
+                    // $mailService->sendEmail(
+                    //     $c,
+                    //     "Amis",
+                    //     $object,
+                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                    //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+                    // );
+
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = $url ;
+                    $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
         
                     $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
         
@@ -1863,13 +1874,20 @@ class TributTController extends AbstractController
                     $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
                     
                     // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-                    $mailService->sendEmail(
-                        $c,
-                        "Amis",
-                        $object,
-                        // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                        $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
-                    );
+                    // $mailService->sendEmail(
+                    //     $c,
+                    //     "Amis",
+                    //     $object,
+                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                    //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+                    // );
+
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = $url ;
+                    $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
                 }
 
             }
