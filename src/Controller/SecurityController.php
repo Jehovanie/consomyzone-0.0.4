@@ -818,10 +818,17 @@ class SecurityController extends AbstractController
         EntityManagerInterface $entityManager,
         VerifyEmailHelperInterface $verifyEmailHelper,
         CodeapeRepository $codeApeRep,
-        AgendaService $agendaService
+        AgendaService $agendaService,
+        RequestingService $requesting,
     ) {
 
         if ($this->getUser() || !$request->query->get("email") || !$request->query->get("tribu")) {
+            return $this->redirectToRoute("app_home");
+        }
+
+
+        //// check if this table tribu T exist
+        if(!$tribuTService->isTableExist($request->query->get("tribu"))){
             return $this->redirectToRoute("app_home");
         }
 
@@ -880,8 +887,6 @@ class SecurityController extends AbstractController
             $user->setPassword($data['password']);
             $user->setVerifiedMail(true);
             $user->setRoles(["ROLE_USER"]);
-            $user->setTribuT("[\"" . $request->query->get("tribu") . "\"]");
-
 
             ///property temp
             $user->setType("Type");
@@ -923,8 +928,40 @@ class SecurityController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $tribuTService->confirmMemberTemp($request->query->get("tribu"), $user->getId(), $data["email"]);
+            
 
+            ////name tribu to join
+            $tribuTtoJoined= $request->query->get("tribu");
+                
+            //// apropos user fondateur tribuT with user fondateur
+            $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
+
+            $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+
+            $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+            $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+            foreach($arrayTribuT as $tribuT){
+                if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                    $apropos_tribuTtoJoined= $tribuT;
+                    break;
+                }
+            }
+
+            //// set tribu T for this new user.
+            $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $numero_table,"tribu_t_joined", $tribuTtoJoined);
+            
+            // update requesting table 
+            $tableRequestingNameOtherUser = $userRepository->find($userPostID)->getTablerequesting();
+            $requesting->setIsAccepted($tableRequestingNameOtherUser, $tribuTtoJoined, intval($userPostID), $numero_table);
+
+            //// send notification for user send invitation.
+            $content = $user->getEmail() . " a accepté l'invitation de rejoindre la tribu " . $tribuTtoJoined;
+            $type = "Invitation pour rejoindre la tribu " . $tribuTtoJoined;
+            $notificationService->sendNotificationForOne($numero_table, intval($userPostID), $type, $content);
+
+
+            ///update status of the user in table tribu T
+            $tribuTService->confirmMemberTemp($request->query->get("tribu"), $user->getId(), $user->getEmail());
 
             /**
              * Persist user on confidentiality table

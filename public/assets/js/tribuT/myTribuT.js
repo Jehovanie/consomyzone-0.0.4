@@ -1860,6 +1860,7 @@ function showInvitations() {
     document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
     // document.querySelector("#list-publicatiotion-tribu-t").innerHTML = ""
     // document.querySelector("#createPubBloc").style.display = "none";
+    //setActiveTab(this)
     document.querySelector("#tribu_t_conteuneur").innerHTML = `
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
@@ -1901,7 +1902,11 @@ function showInvitations() {
                             <div class="form-group mt-3">
                                 <label for="exampleFormControlTextarea1">Description</label>
                                 <div id="exampleFormControlTextarea32">
-                                    
+                                    <div class="wrapper pt-3 pb-3">
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
+                        
+                                        <pre id="output"></pre>
+                                    </div>
                                 </div>
                                 <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
@@ -1925,11 +1930,11 @@ function showInvitations() {
                     </div>
                 </div>
         `
-
-    editor_invitation = document.querySelector("#editorInvitationElie")
-    // console.log(editor);
-    document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
-    document.querySelector("#editorInvitationElie").classList.remove("d-none")
+    initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+    // editor_invitation = document.querySelector("#editorInvitationElie")
+    // // console.log(editor);
+    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
+    // document.querySelector("#editorInvitationElie").classList.remove("d-none")
     
     fetchAllTribuGMember()
 
