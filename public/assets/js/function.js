@@ -662,7 +662,6 @@ function getDetailGolf(codeDepart,nameDepart, golfID, inHome = false) {
 
 
 function getDetailTabac(codeDepart,nameDepart, golfID, inHome = false) {
-
     let remove = !inHome ? document.getElementById("remove-detail-tabac") : document.getElementById("remove-detail-home")
     remove.removeAttribute("class", "hidden");
     if (screen.width <= 991) {
@@ -2509,7 +2508,9 @@ function getDataSpecificMobile(nom_dep, id_dep) {
     fetch(request).then(res => res.json())
         
         .then(responses => {
-            document.querySelector(".loading-tomm-js").innerHTML = ''
+            if (document.querySelector(".loading-tomm-js")) {
+                document.querySelector(".loading-tomm-js").innerHTML = ''
+            }
             let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
             
             
@@ -4218,7 +4219,9 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
-            document.querySelector(".loading-tomm-js").innerHTML = ''
+            if (document.querySelector(".loading-tomm-js")) {
+                document.querySelector(".loading-tomm-js").innerHTML = ''
+            }
             console.log(responses)
             let listSpecMobile = document.querySelector(".list-specific-tabac-mobile-tomm-js")
             responses.tabac.forEach(response => { 
