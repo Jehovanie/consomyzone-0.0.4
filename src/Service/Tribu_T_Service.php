@@ -17,6 +17,7 @@ class Tribu_T_Service extends PDOConnexionService
     
     
     /**
+     * @deprecated
      * create data_base table tribu-T
      * 
      */

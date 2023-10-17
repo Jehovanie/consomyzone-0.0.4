@@ -41,6 +41,7 @@ use App\Repository\CommuneRepository;
 use App\Form\InscriptionPartenaireType;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -361,7 +362,8 @@ class SecurityController extends AbstractController
         MessageService $messageService,
         VerifyEmailHelperInterface $verifyEmailHelper,
         AgendaService $agendaService,
-        CodeapeRepository $codeApeRep
+        CodeapeRepository $codeApeRep,
+        Tribu_T_ServiceNew $tribu_T_ServiceNew
     ) {
 
         $result = true;
@@ -419,6 +421,7 @@ class SecurityController extends AbstractController
         $user->setPassword($data['password']);
         $user->setVerifiedMail(true);
         $user->setIsConnected(true);
+        
 
 
 
@@ -463,6 +466,8 @@ class SecurityController extends AbstractController
         $user->setTablerequesting("tablerequesting_" . $numero_table);
         $user->setNomTableAgenda("agenda_" . $numero_table);
         $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
+        $user->setTribuT("tribu_t_o_".$numero_table );
+        $user->setTribuTJoined("tribu_t_j_".$numero_table );
 
 
 
@@ -473,7 +478,7 @@ class SecurityController extends AbstractController
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
-        
+        $tribu_T_ServiceNew->createTableTribuTForUser($user);
 
         ///keep the change in the user information
         $entityManager->persist($user);
@@ -585,8 +590,6 @@ class SecurityController extends AbstractController
             "EMAIL CONFIRMATION", //// title of email
             "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
         );
-
-
 
         return $this->json("success");
     }

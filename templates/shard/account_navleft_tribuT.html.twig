@@ -19,7 +19,7 @@
 
 		<p class="fw-bold mb-2">Tribu-T que vous avez créé</p>
 		<ul>
-			
+			{% if tribu_T_owned is defined %}
 			{% for  tribus in tribu_T_owned %}
 			  		{# {{dump(tribus,tribus|length)}}   #}
 					{% if tribus.logo_path  is defined %}
@@ -58,6 +58,7 @@
 					{% endif %}
 					
 				{% endfor %}
+			{% endif %}
 					
 		</ul>
 		
@@ -66,6 +67,7 @@
 
 		<p class="fw-bold mb-2">Tribu-T dont vous êtes membre</p>
 		<ul>
+			{% if tribu_T_owned is defined %}
 			{% for  tribus in tribu_T_joined %}
 				{% if tribus.logo_path  is defined %}
 						<li class="mb-2">
@@ -103,7 +105,7 @@
 				{% endif %}
 				
 			{% endfor %}
-			
+			{% endif %}
 		</ul>
 
 	</div>
