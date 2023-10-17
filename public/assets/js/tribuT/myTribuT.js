@@ -533,9 +533,9 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     }
 
     let canChangeTribuPicture = "";
-    if (document.querySelector("#activeTribu")) {
+    if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
@@ -1868,7 +1868,7 @@ function showInvitations() {
                             <a data-element="table-tribuG-member" class="nav-link active text-secondary" aria-current="page" href="#" onclick="setActiveTab(this)">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="openSwalNonActif()">Email</a>
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
@@ -2614,13 +2614,13 @@ function settingTribuT(e, tribuTName) {
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
         // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
+        if (currentTribuT.extension=="on" || currentTribuT.extension?.restaurant  ) {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension.golf) {
+        if (currentTribuT.extension?.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false

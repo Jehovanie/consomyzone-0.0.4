@@ -71,7 +71,7 @@ class FermeController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -169,7 +169,7 @@ class FermeController extends AbstractController
 
         $amis_in_tributG = [];
         $userConnected = $status->userProfilService($this->getUser());
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 

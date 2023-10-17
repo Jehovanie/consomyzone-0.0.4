@@ -5,7 +5,7 @@
                 <div class="titre text-center">
                     <div class="mb-2 restoNameWithLogoTribu">
                         <div class="mt-2 ms-3 me-1 text-center"><b>{{details.denominationF | raw}}</b></div>
-                        {% if (app.user) %}
+                        {% if (app.user and app.user.type!='Type') %}
                             <div class="super_container_js_nantenaina">
                                 <div class="mainContainerLogoTribu">
                                     {% if tribu_t_resto_pastille|length > 0 %}
@@ -49,8 +49,12 @@
 
                     <div class="d-flex justify-content-center align-items-stretch flex-gap-2 content_btn_avis">
                         <span>
-                           {% if app.user %}
+                           {% if (app.user and app.user.type!='Type') %}
                                 <a id="see-tom-js" style="font-size:smaller" class="btn btn-sm {{details.avis.nbr > 0 ? 'bg_vert': 'bg_orange' }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
+                                    <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
+                                </a>
+                            {% elseif ( app.user and app.user.type is same as('Type') )%}
+                                <a id="see-tom-js" style="font-size:smaller" class="btn btn-sm btn-secondary" onclick="openSwalProfilUnCompleted()">
                                     <span class="nbr_avis_resto_jheo_js">{{details.avis.nbr}}</span> avis
                                 </a>
                             {% else %}
@@ -65,7 +69,7 @@
                             </button>
                         {% else %} #}
 
-                        {% if app.user %}
+                        {% if (app.user and app.user.type!='Type') %}
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-primary  btn_modal_avis_resto_jheo_js modal-note-tomm-js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
                             <button style="font-size:smaller" type="button" data-name="{{details.denominationF | raw}}" class="mx-2  btn  btn-sm btn-success btn_modal_pastille_resto_nanta_js" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'{{id_restaurant}}')">Pastiller</button>
                             <button type="button" class="btn btn-primary btn-sm" 
@@ -74,7 +78,11 @@
                             title="Modifier votre établissement">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
-                            {# <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#userModifResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement"><i class="bi bi-pencil-square"></i></button> #}
+                        {% elseif ( app.user and app.user.type is same as('Type') )%}
+                            <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalProfilUnCompleted()">Donner votre avis</button>
+                            <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalProfilUnCompleted()">Pastiller</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalProfilUnCompleted()"><i class="bi bi-pencil-square"></i></button>
+{# <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#userModifResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement"><i class="bi bi-pencil-square"></i></button> #}
                         {% else %}
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                             <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalActifPastille()">Pastiller</button>

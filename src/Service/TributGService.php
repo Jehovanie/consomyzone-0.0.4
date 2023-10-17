@@ -63,9 +63,9 @@ class TributGService extends PDOConnexionService{
 
                 user_id int(11) NOT NULL,
 
-                name VARCHAR(250) NOT NULL DEFAULT '".$depart_tributG_name."',
+                name VARCHAR(250) NOT NULL DEFAULT :name,
 
-                description VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '$description',
+                description VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT :description,
 
                 avatar VARCHAR(250) NULL,
 
@@ -82,7 +82,10 @@ class TributGService extends PDOConnexionService{
             )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
             try {
-                $this->getPDO()->exec($sql);
+                $db=$this->getPDO()->prepare($sql);
+                $db->bindParam(":description",$description,PDO::PARAM_STR);
+                $db->bindParam(":name",$depart_tributG_name,PDO::PARAM_STR);
+                $db->execute();
             }catch(Error $error ){
                 throw $error;
             }

@@ -18,7 +18,7 @@ class Status {
     }
 
     public function statusFondateur($user){
-        if (!$user) {
+        if (!$user || $user->getType()=="Type") {
             return [ "profil" => "", "statusTribut" => "" ];
         }
         
@@ -31,6 +31,7 @@ class Status {
         } else {
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
+       
         return [
             "profil" => $profil,
             "statusTribut" => $this->tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)

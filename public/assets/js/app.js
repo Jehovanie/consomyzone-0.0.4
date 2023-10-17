@@ -1,4 +1,4 @@
-const IS_DEV_MODE=false;
+const IS_DEV_MODE=true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -997,7 +997,7 @@ function openSwalActifPastille() {
 function openSwalNonActif(){
 
     swal({
-        text: "Cette fonctionnalité est en cours de développement, merci de votre compréhension.",
+        text: "Cette fonctionnalité est en cours de développement ou en maintenance, merci de votre compréhension.",
         icon: "info",
       });
 }
@@ -1011,6 +1011,8 @@ function openSwalProfilUnCompleted(){
     swal({
         text: "Votre profil est incomplet, veuillez le compléter, pour acceder à ce menu.",
         icon: "info",
+      }).then(()=>{
+         location.href="/actualite-non-active"
       });
 }
 
