@@ -2387,7 +2387,8 @@ function showPastillTable(e,id){
     document.querySelector(".list_resto_detail_for_pastille > table > tbody").innerHTML=""
     document.querySelector(".modal_liste_resto_pastille_nante_js").click()
     
-    fetch("/restaurant/pastilled/checking/"+parseInt(id)).then(response=>{
+    fetch("/restaurant/pastilled/checking/" + parseInt(id)).then(response => {
+        console.log(response)
         if(response.status=200 && response.ok){
             response.json().then(data=>{
                 if(data.length > 0){
@@ -2429,6 +2430,72 @@ function showPastillTable(e,id){
             })
         }
     })
+    
+}
+
+
+/**
+ * @author Tomm
+ * @action get list tribu T pastiller avec golf
+ * @ou dans detail.js
+ */
+function showPastillGolfTribuT(id_golf){
+    
+    
+    fetch(`/golf/pastilled/checking/${id_golf}`)
+        .then(response => response.json())
+        .then(datas => {
+            let listTibuTPast = ""
+            datas.forEach(data => {
+                
+                listTibuTPast += `
+                    <tr>
+                        <td>${data.logo_path}</td>
+                        <td>${data.name_tribu_t_muable}</td>
+                        <td><button type="button" class="btn btn-success">Pastiller</button></td>
+                    </tr>
+                `
+
+            })
+            let modalPastillGolf = `
+            <div class="content-modal-pastille-golf">
+                <div class="modal-pastille-golf">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header mb-4">
+                                <h5 class="modal-title">Modal title</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <hr>
+                            <div class="modal-body mt-4 mb-4">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Logo</th>
+                                            <th scope="col">Tribu T</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${listTibuTPast}
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `
+            if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
+                document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
+            }
+
+
+            
+        })
+    
     
 }
 
@@ -4053,9 +4120,14 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
-            document.querySelector(".loading-tomm-js").innerHTML = ''
-
-            let listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+            if (document.querySelector(".loading-tomm-js")) {
+                document.querySelector(".loading-tomm-js").innerHTML = ''
+            }
+                let listSpecMobile = ""
+            if (document.querySelector(".list-specific-golf-mobile-tomm-js")) {
+                listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+            }
+            
             responses.golf.forEach(response => { 
 
                 let btnAviMobile = ''
@@ -4795,5 +4867,6 @@ function setGallerieImageV2(){
     }
     
 }
+
 
 

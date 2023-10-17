@@ -2688,8 +2688,9 @@ function updateTribuTInfos(e) {
 
 }
 
-function showGolf(){
 
+
+function showGolf(){
     let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
 
     if (document.querySelector("li.listNavBarTribu > a.active")) {
@@ -2717,7 +2718,8 @@ function showGolf(){
 
     fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
     .then(response =>  response.json())
-    .then(data => {
+        .then(data => {
+        console.log(data)
         if(data.length > 0){
             let tr = ""
             let i = 0
@@ -2927,6 +2929,7 @@ function pastilleGolf(element){
             .then(message=>{
                 new swal("Succès !", "Golf pastillé avec succès", "success")
                     .then((value) => {
+                        
                         element.classList = "btn btn-secondary ms-1"
                         element.textContent = "Pastillé"
                         element.setAttribute("disabled", true)

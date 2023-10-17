@@ -15,7 +15,10 @@ function setGolfTodo(goldID){
 }
 
 function setMonGolf(goldID){
-    fecthGolfAction(goldID, "for_me")
+    // fecthGolfAction(goldID, "for_me")
+
+    showPastillGolfTribuT(goldID)
+    
 }
 
 function setGolfFinished(goldID){
@@ -38,10 +41,11 @@ function executeActionForPastGolf(goldID){
     }else if(action == "2"){
         setGolfFinished(goldID)
         OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
-    }else if(action == "3"){
+    } else if (action == "3") {
+        
         setMonGolf(goldID)
         //Mon golf
-        OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
+        // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
     }else if(action == "0"){
         setGolfNone(goldID)
         OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
@@ -169,3 +173,6 @@ function fecthGolfAction(goldID, action){
         })
 
 }
+
+
+
