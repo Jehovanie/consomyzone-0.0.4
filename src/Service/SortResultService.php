@@ -193,4 +193,411 @@ class SortResultService extends StringTraitementService
         return preg_match("/\b{$needle}\b/", $haystack) === 1;
     }
 
+    /**
+     * @author Nantenaina <nantenainasoa39@gmail.com>
+     * où: On utilise cette fonction dans HomeController.php
+     * localisation du fichier: dans SortResultService.php,
+     * je veux: optimiser le moteur de recherche par rapport au nom de la commune
+     * si l'adresse saisie par l'internaute ne contient pas de chiffres on se focalise sur la recherche communale 
+     * @param array $data
+     * @param string $cles1,
+     *  @param string $type
+     * @return array
+     */
+    function getDataByCommune($data, $cles1, $type="restaurant", $cle0=""){
+        $data0 = [];
+        $results = [];
+        $text = $cles1;
+        $adrs = explode(" ",trim($text));
+        $hasCP = false;
+        $hasNumVoie = false;
+        $cpInput = "";
+
+        foreach($adrs as $mot){
+            if(is_numeric($mot) && strlen($mot) == 5)
+                $hasCP = true;
+                $cpInput = $mot;
+            if(is_numeric($mot) && strlen($mot) < 5)
+                $hasNumVoie = true;
+        }
+
+        $i = 0;
+
+        foreach ($data[0] as $key) {
+
+            if($type=="restaurant"){
+
+                if($cle0 !=""){
+                    if(str_contains($key["nom"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                            $levCommune = levenshtein(strtoupper(($key["villenorm"])), strtoupper($cles1));
+        
+                            if($hasCP){//&& $cpInput == $key["codpost"]
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($key["villenorm"]), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            $levStreet = levenshtein(strtoupper($key["numvoie"]." ".$key["typevoie"]." ".$key["nomvoie"]), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper(trim($key["add"])), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                        $levCommune = levenshtein(strtoupper(($key["villenorm"])), strtoupper($cles1));
+    
+                        if($hasCP){//&& $cpInput == $key["codpost"]
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($key["villenorm"]), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        $levStreet = levenshtein(strtoupper($key["numvoie"]." ".$key["typevoie"]." ".$key["nomvoie"]), strtoupper(trim($cles1)));
+                        if($levStreet <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper(trim($key["add"])), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
+
+            }elseif($type=="ferme"){
+
+                if($cle0 !=""){
+                    if(str_contains($key["nom"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                            $levCommune = levenshtein(strtoupper($key["ville"]), strtoupper($cles1));
+        
+                            if($hasCP){
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($key["ville"]), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+        
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            $street = explode(trim($key["codePostal"]),trim($key["add"]));
+                            $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper($key["add"]), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                        $levCommune = levenshtein(strtoupper($key["ville"]), strtoupper($cles1));
+    
+                        if($hasCP){
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($key["ville"]), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+    
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        $street = explode(trim($key["codePostal"]),trim($key["add"]));
+                        $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                        if($levStreet <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper($key["add"]), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
+
+            }elseif($type=="station"){
+
+                $keyAdd = trim($key["add"]);
+                $adresse = explode(" ",$keyAdd);
+                $cp = "";
+
+                foreach($adresse as $mot){
+                    if(is_numeric($mot) && strlen($mot) == 5){
+                        $cp = $mot;
+                    }
+                }
+
+                if($cle0 !=""){
+                    if(str_contains($key["nom"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){   
+                            $keyVille = "";
+                            if(strlen($cp) == 5){
+                                $ville = explode($cp,$keyAdd);
+                                $keyVille = $ville[1];
+                                $levStreet = levenshtein(strtoupper(trim($keyVille)), strtoupper(trim($cles1)));
+                                if($levStreet <= 3){
+                                    array_push($data0, $key);
+                                    $i++;
+                                }
+                            }
+        
+                            $levCommune = levenshtein(strtoupper($keyVille), strtoupper($cles1));
+        
+                            if($hasCP){//&& $cpInput == $cp
+        
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($keyVille), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+        
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            if(strlen($cp) == 5){
+                                $street = explode($cp,$keyAdd);
+                                $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                                if($levStreet <= 3){
+                                    array_push($data0, $key);
+                                    $i++;
+                                }
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper($keyAdd), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){   
+                        $keyVille = "";
+                        if(strlen($cp) == 5){
+                            $ville = explode($cp,$keyAdd);
+                            $keyVille = $ville[1];
+                            $levStreet = levenshtein(strtoupper(trim($keyVille)), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+    
+                        $levCommune = levenshtein(strtoupper($keyVille), strtoupper($cles1));
+    
+                        if($hasCP){//&& $cpInput == $cp
+    
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($keyVille), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+    
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        if(strlen($cp) == 5){
+                            $street = explode($cp,$keyAdd);
+                            $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper($keyAdd), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
+
+            }elseif($type=="golf"){
+
+                if($cle0 !=""){
+                    if(str_contains($key["nom"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                            $levCommune = levenshtein(strtoupper($key["nom_commune"]), strtoupper($cles1));
+        
+                            if($hasCP){
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($key["nom_commune"]), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+        
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            $street = explode(trim($key["cp"]),trim($key["add"]));
+                            $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper($key["add"]), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                        $levCommune = levenshtein(strtoupper($key["nom_commune"]), strtoupper($cles1));
+    
+                        if($hasCP){
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($key["nom_commune"]), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+    
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        $street = explode(trim($key["cp"]),trim($key["add"]));
+                        $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                        if($levStreet <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper($key["add"]), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
+
+            }elseif($type=="tabac"){
+                if($cle0 !=""){
+                    if(str_contains($key["nom"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                            $levCommune = levenshtein(strtoupper($key["villenorm"]), strtoupper($cles1));
+        
+                            if($hasCP){
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($key["villenorm"]), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+        
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            $street = explode(trim($key["codpost"]),trim($key["add"]));
+                            $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper($key["add"]), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                        $levCommune = levenshtein(strtoupper($key["villenorm"]), strtoupper($cles1));
+    
+                        if($hasCP){
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($key["villenorm"]), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+    
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        $street = explode(trim($key["codpost"]),trim($key["add"]));
+                        $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                        if($levStreet <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper($key["add"]), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
+            }
+
+        }
+        
+        $results["nombre"] = $i;
+
+        $results["data"] = $data0;
+
+        return $results;
+    }
+
 }

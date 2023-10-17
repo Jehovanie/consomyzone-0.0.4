@@ -228,7 +228,7 @@
     }
 
     .span-btn-menu-en-lign{
-        width: 180px !important;
+        width: 215px !important;
     }
 
     .right_side_body {
@@ -300,6 +300,7 @@
 
     .content-nav-left{
         margin-top: 15px ;
+        z-index: 1031 !important;
     }
 
     #list-depart-mobile {
@@ -1356,7 +1357,11 @@
     }
 
     .leaflet-control-zoom.leaflet-bar.leaflet-control{
-        margin-top: 90px !important;
+        margin-top: 70px !important;
+    }
+
+    .btn_group_vertical {
+        margin-top: 10px !important;
     }
 
     .modal-avie-resto-mobile-tomm-js{
@@ -1471,6 +1476,7 @@
     }
 
     .content-pub {
+        /* margin-top: 273px !important; */
         margin-top: 0px !important;
     }
 
@@ -1492,6 +1498,7 @@
         top: 35%;
         right: 0;
     }
+    
 
     .en-lign-mobile{
         position: absolute;
@@ -1503,6 +1510,12 @@
 
     .margin-top-280{
         margin-top: 280px !important;
+    }
+
+    .modal_visio {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
     }
 
 }

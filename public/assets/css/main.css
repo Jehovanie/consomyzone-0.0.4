@@ -2323,3 +2323,66 @@ textarea {
 .labelPrisePhoto:hover{
     color: #0d6efd;
 }
+
+
+.toast-close{
+    color: black!important;
+    font-size: 1.2rem !important;
+    font-weight: bolder !important;
+    opacity: 1 !important;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.content_message_tooltip{
+    position: relative;
+}
+
+.message_tooltip{
+    display: block;
+    position: absolute;
+    top: 6px;
+    right: 58px;
+    width: 250px;
+    background-color: lightgreen;
+    color: black;
+    padding: 6px;
+    border-radius: 5px;
+}
+.message_tooltip:after {
+    position: absolute;
+    content: "";
+    top: 18%;
+    right: -15px;
+    border-top: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 10px solid lightgreen;
+}
+
+.bg_orange{
+    background-color: #ff7900 !important;
+    border-color: #ff7900 !important;
+    color : white !important;
+}
+
+.bg_vert{
+    background-color: green !important;
+    border-color: green !important;
+    color: white !important;
+}
+
+
+.drop_down_map{
+    font-size: 1.2rem;
+    color: black;
+    margin-left: 10px;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+.text_black{
+    color:black;
+}

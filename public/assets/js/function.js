@@ -1896,7 +1896,6 @@ function handleNewComment(userInformations, comment){
     content_comment.innerHTML= `
         <div class="h sa wf uk th ni ej">
             <a href="#"> <img class="profil_publication" src="${userInformations.profil !== "" ? userInformations.profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User"/> </a>
-            <span class="g l m xe qd th pi jj sj ra"></span>
         </div>
 
         <div>
@@ -2444,15 +2443,23 @@ function getSpectRestoMobile(nom_dep, id_dep) {
 /**
  * @author Tomm
  * @action incrimentation specific liste
- * @ou specific_mobile_depart....twig
+ * @ou s
+ * pecific_mobile_depart....twig
  */
 let limitSpecTomm = 5
 let offsetTomm = 0
 let loadingScroll = ""
 if (document.querySelector(".scroll-mobile-tomm-js")) {
     let contentSpecMobile = document.querySelector(".scroll-mobile-tomm-js")
-    contentSpecMobile.addEventListener('touchmove', (event) => { 
-        if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
+    contentSpecMobile.addEventListener('scroll', (event) => { 
+        //alert("mandeha"+contentSpecMobile.scrollLeft+" "+contentSpecMobile.clientWidth+" "+ contentSpecMobile.scrollWidth)
+        //$scrollWidth - $width === $scrollLeft
+        //contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth
+        //alert(contentSpecMobile.scrollWidth-contentSpecMobile.clientWidth+" "+ contentSpecMobile.scrollLeft)
+      
+        if (Math.ceil(contentSpecMobile.scrollWidth-contentSpecMobile.clientWidth) ===Math.ceil(contentSpecMobile.scrollLeft)) {
+    // contentSpecMobile.addEventListener('touchmove', (event) => { 
+    //     if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
             
             const rubricName = new URL(window.location.href).pathname.split("/")[1]
             if (rubricName == 'restaurant') {
@@ -3651,9 +3658,9 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
             let listSpecMobile = document.querySelector(".list-specific-ferme-mobile-tomm-js")
             responses.fermes.forEach(response => {
                 let genre = ''
-                if (golfs.genre) {
+                if (response.genre) {
                     genre = `<span class="ferme-genre">
-                            ${tabacs.genre}</span>`
+                            ${response.genre}</span>`
                 }
                 
                 let agricultureBio = ''

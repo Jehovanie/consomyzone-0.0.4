@@ -2046,7 +2046,15 @@ a:focus {
     background-color: #ccc;
     color: #02042A;
 }
-.y-photo label:hover {
+.cta_param_account{
+    background-color: #ccc !important;
+    color: #02042A !important;
+}
+.y-photo label:hover{
+    background-color: #02042A;
+    color: #ccc;
+}
+.cta_param_account:hover {
     background-color: #02042A;
     color: #ccc;
 }

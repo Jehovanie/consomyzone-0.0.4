@@ -23,7 +23,7 @@ class PDOConnexionService
     }
 
 
-    protected function isTableExist($tableName){
+    public function isTableExist($tableName){
         $db = $_ENV["DATABASENAME"];
 
         $query = "SHOW TABLES FROM $db like '$tableName'";

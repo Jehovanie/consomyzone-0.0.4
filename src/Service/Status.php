@@ -18,7 +18,7 @@ class Status {
     }
 
     public function statusFondateur($user){
-        if (!$user) {
+        if (!$user || $user->getType()=="Type") {
             return [ "profil" => "", "statusTribut" => "" ];
         }
         
@@ -31,6 +31,7 @@ class Status {
         } else {
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
+       
         return [
             "profil" => $profil,
             "statusTribut" => $this->tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
@@ -61,12 +62,12 @@ class Status {
             "id" => $user->getId(),
             "email" => $user->getEmail(),
             "pseudo" => $user->getPseudo(),
-            "firstname" => $profil->getFirstname(),
-            "lastname" => $profil->getLastname(),
-            "photo_profil" => $profil->getPhotoProfil(),
+            "firstname" =>$profil ?  $profil->getFirstname() : "",
+            "lastname" => $profil ? $profil->getLastname() : "",
+            "photo_profil" => $profil ? $profil->getPhotoProfil() : "",
             "userType" => $userType,
-            "tableTribuG" => $profil->getTributG(),
-            "status_tribuG" => strtoupper($this->tributGService->getStatus($profil->getTributG(),$user->getId())),
+            "tableTribuG" => $profil ? $profil->getTributG() : "",
+            "status_tribuG" => $profil ? strtoupper($this->tributGService->getStatus($profil->getTributG(),$user->getId())) : "",
             "tableNotification" => $user->getTablenotification(),
             "tableMessage" => $user->getTablemessage(),
             "isSuperAdmin" => in_array("ROLE_GODMODE",$user->getRoles()),

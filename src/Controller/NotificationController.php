@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Service\NotificationService;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -53,6 +55,24 @@ class NotificationController extends AbstractController
 
         return $this->json([
             "result" => $result
+        ]);
+    }
+
+
+    #[Route("/notification/toast-message" , name : "app_toast_message")]
+    public function toastMessage(
+        NotificationService $notificationsService
+    )
+    {
+        if(!$this->getUser()){
+            return $this->json([ "success" => false,  "toastMessage" => [] ]);
+        }
+
+        $result = $notificationsService->getToastMessage();
+
+        return $this->json([
+            "success" => true,
+            "toastMessage" => $result
         ]);
     }
     

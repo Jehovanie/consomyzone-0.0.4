@@ -74,30 +74,29 @@ window.addEventListener('load', () => {
         }
     }
 
-    if(document.querySelector("#text-note-modif")){
-        document.querySelector("#text-note-modif").onkeyup = (e) => { 
-            if (document.querySelector(".flash-msg-ERREUR")) {
-                document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
-            }
-            const value = e.target.value
-            mustBeInferior4(value, e.target)
+    // if(document.querySelector("#text-note-modif")){
+    //     document.querySelector("#text-note-modif").onkeyup = (e) => { 
+    //         if (document.querySelector(".flash-msg-ERREUR")) {
+    //             document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+    //         }
+    //         const value = e.target.value
+    //         mustBeInferior4(value, e.target)
             
             
-            setTimeout(() => {
-                e.target.style="border:2px solid black;" 
-                document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
-                    i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+    //         setTimeout(() => {
+    //             e.target.style="border:2px solid black;" 
+    //             document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+    //                 i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
                     
-                })
-            }, 5000)   
-        }
-        console.log("Selector found: '#text-note-modif'")
-    }else{
-        console.log("Selector not found: '#text-note-modif'")
-    }
+    //             })
+    //         }, 5000)   
+    //     }
+    //     console.log("Selector found: '#text-note-modif'")
+    // }else{
+    //     console.log("Selector not found: '#text-note-modif'")
+    // }
 
     if (document.querySelector("#UpDate-Avis-tom-js")) {
-        console.log(" executed")
         document.querySelector("#UpDate-Avis-tom-js").onclick = () => { 
             let newIdResto = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
             let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
@@ -144,8 +143,6 @@ window.addEventListener('load', () => {
                 }
             }
         }
-    }else{
-        console.log("never executed")
     }
 
 

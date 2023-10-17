@@ -488,3 +488,120 @@ function showNoteGlobale(idRestaurant) {
         
     })
 }
+/**
+ *@author Nantenaina a ne pas contacté pendant les congés 
+où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+* localisation du fichier: dans data_for_all.js,
+* je veux: rendre le marker draggable
+* si un utilisateur veut modifier une ou des informations
+* @param {} id 
+*/
+function makeMarkerDraggable(id){
+    swal("Vous allez entrer en mode interactif, pour pouvoir modifier les informations sur cet établissement.",
+    {
+        buttons:{
+            cancel:"Annuler.",
+            ok:{
+                text:"Poursuivre.",
+                value: "ok"
+            }
+        }
+    }).then(value=>{
+        switch(value){
+            case "ok":{
+                swal("Vous pouvez maintenant déplacer le marquer.😊").then(()=>{
+                    CURRENT_MAP_INSTANCE.makeMarkerDraggable(id)
+                })
+                
+                break;
+            }
+            default :swal("Merci et revenez la prochaine fois!")
+        }
+    })
+}
+
+/**
+ *@author Nantenaina a ne pas contacté pendant les congés 
+*où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+* localisation du fichier: dans data_for_all.js,
+* je veux: modifier les informations relatives à un établissement
+* si un utilisateur veut modifier une ou des informations
+*
+*/
+function makeUserModifResto(){
+    let denomination_f = document.querySelector("#restoNewDenominationF").value
+    let numvoie = document.querySelector("#newNumVoie").value
+    let typevoie = document.querySelector("#newTypeVoie").value
+    let nomvoie = document.querySelector("#newNomVoie").value
+    let compvoie = document.querySelector("#newCompVoie").value
+    let codpost = document.querySelector("#newCP").value
+    let villenorm = document.querySelector("#newVille").value
+    let tel = document.querySelector("#newPhoneNumber").value
+    let restaurant = document.querySelector("#trueResto").checked ? 1 : 0
+    let brasserie = document.querySelector("#trueBrasserie").checked ? 1 : 0
+    let creperie = document.querySelector("#trueCreperie").checked ? 1 : 0
+    let fastFood = document.querySelector("#trueFastFood").checked ? 1 : 0
+    let pizzeria = document.querySelector("#truePizzeria").checked ? 1 : 0
+    let boulangerie = document.querySelector("#trueBoulangerie").checked ? 1 : 0
+    let bar = document.querySelector("#trueBar").checked ? 1 : 0
+    let cuisineMonde = document.querySelector("#trueCuisineMonde").checked ? 1 : 0
+    let cafe = document.querySelector("#trueCafe").checked ? 1 : 0
+    let the = document.querySelector("#trueSalonThe").checked ? 1 : 0
+    let poix = document.querySelector("#newLongitude").value
+    let poiy = document.querySelector("#newLatitude").value
+    let restoId = document.querySelector("#newIdResto").value
+
+   
+
+    let data = {
+        denomination_f:denomination_f,
+        numvoie:numvoie,
+        typevoie:typevoie,
+        nomvoie:nomvoie,
+        compvoie:compvoie,
+        codpost:codpost,
+        villenorm:villenorm,
+        commune:villenorm,
+        tel:tel,
+        restaurant:restaurant,
+        brasserie:brasserie,
+        creperie:creperie,
+        fastFood:fastFood,
+        pizzeria:pizzeria,
+        boulangerie:boulangerie,
+        bar:bar,
+        cuisineMonde:cuisineMonde,
+        cafe:cafe,
+        the:the,
+        poix:poix,
+        poiy:poiy,
+        restoId:restoId
+    }
+
+    let request = new Request("/user/make/modif/new/resto", {
+        body : JSON.stringify(data),
+        method:"POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+
+    fetch(request)
+        .then(response=>{
+            if(response.status === 201){
+                $("#userModifResto").modal("hide")
+                swal("Votre modification a été prise en compte, "+
+                "nous procéderons à des vérifications puis nous"+ 
+                "vous recontacterons très prochainement. Merci !").then(()=>{
+
+                    CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
+                        if (parseInt(marker.options.id) === parseInt(restoId) ) {
+                            marker.dragging.disable()
+                        }
+                    });
+                })
+            }
+        })
+
+}
