@@ -2732,3 +2732,59 @@ function setGallerieImageV2(){
     }
     
 }
+
+
+/**
+ * @constructor
+ * @author Elie <eliefenohasina@gmail.com>
+ * @Fonction sauvegarde de l'historique de l'invitation
+ * @param {string} table_trib 
+ * @param {string} email 
+ * @param {int} invite_to 
+ */
+function saveInvitationStory(table_trib, email, invite_to) {
+    fetch("/tribu/invitation/save_story/"+table_trib, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "invite_to": invite_to,
+            "email" : email
+        })
+    }).then(r=>r.json())
+    .then(res=>{
+        if(res.status == "ok"){
+            swal({
+                text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
+                icon: "info",
+            });
+        }else if(res.status == "!ok" ){
+            swal({
+                text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+                icon: "warning",
+            });
+        }
+        // console.log(res);
+    })
+}
+
+/**
+ * @author Elie <eliefenohasina@gmail.com>
+ * @constructor mise à jour de l'historique d'invitation
+ * @param {string} table 
+ * @param {*} is_valid
+ * @param {in} id
+ */
+function updateInvitationStory(table, is_valid, email) {
+    fetch('/tribu/invitation/update_story/'+table+'/'+is_valid+'/'+email)
+    .then(resp=>resp.json())
+    .then(result=>{
+        // swal({
+        //     text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+        //     icon: "success",
+        // });
+        console.log(result);
+    })
+}

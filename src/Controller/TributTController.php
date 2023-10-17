@@ -2550,7 +2550,77 @@ class TributTController extends AbstractController
         dd($tabPhoto);
     }
 
-    
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de sauvegarde de l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/save_story/{table}",name:"app_save_story_invitation",methods:["POST"])]
+    public function saveStoryInvitation($table , Request $request, Tribu_T_Service $tribuTService ){
+
+        $user = $this->getUser();
+        $user_id = $user->getId();
+
+        $table_invitation = $table . "_invitation";
+
+        $json=json_decode($request->getContent(),true);
+        $invite_to=$json["invite_to"];
+        $email=$json["email"];
+
+        $result= $tribuTService->saveInvitationStory($table_invitation, $user_id, $invite_to, $email);
+
+        if($result == true){
+            return $this->json(["status"=>"ok"]);
+        }else{
+            return $this->json(["status"=>"!ok"]);
+        }
+       
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de fetching l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/get_all_story/{table}",name:"app_get_all_story_invitation",methods:["GET"])]
+    public function getAllStoryInvitation($table , Tribu_T_Service $tribuTService, UserService $user_serv ){
+
+        $table_invitation = $table . "_invitation";
+
+        $result= $tribuTService->getAllInvitationStory($table_invitation);
+
+        $hist = [];
+
+        if(count($result)>0){
+            foreach ($result as $user) {
+                $pp = null;
+                if($user['id']){
+                    $pp = $user_serv->getUserProfileFromId($user['id']);
+                }
+                array_push($hist, ['user'=>$pp, 
+                'is_valid'=>$user['is_valid'], 
+                'date'=>$user['datetime'],
+                'email'=>$user['email']
+            ]);
+            }
+        }
+
+        return $this->json($hist);
+       
+    }
+
+     /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/update_story/{table}/{is_valid}/{email}",name:"app_up_valid_story_invitation",methods:["POST"])]
+    public function updateStoryInvitation($table ,  $is_valid, $email, Tribu_T_Service $tribuTService){
+
+        $table_invitation = $table . "_invitation";
+
+        $tribuTService->updateInvitationStory($table_invitation, $is_valid, $email);
+
+        return $this->json(["message"=>"Mise à jour sauvegardé!"]);
+       
+    }
 
 }
 

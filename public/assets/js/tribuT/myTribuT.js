@@ -1851,21 +1851,25 @@ if (document.querySelector("#submit-publication-tribu-t")) {
 }
 
 function showInvitations() {
-
+    
     if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
     }
     document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
     // document.querySelector("#list-publicatiotion-tribu-t").innerHTML = ""
     // document.querySelector("#createPubBloc").style.display = "none";
+    editor_invitation = document.querySelector("#editorInvitationElie")
     document.querySelector("#tribu_t_conteuneur").innerHTML = `
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
                         <li class="nav-item">
-                            <a data-element="table-tribuG-member" class="nav-link active text-secondary" aria-current="page" href="#" onclick="setActiveTab(this)">Tribu G</a>
+                            <a data-element="table-tribuG-member" class="nav-link active text-secondary tab_invite_elie" aria-current="page" href="#" onclick="setActiveTab(this, 'tribu_g')">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Email</a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-element="blockHistInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'historique')">Historiques</a>
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
@@ -1899,7 +1903,11 @@ function showInvitations() {
                             <div class="form-group mt-3">
                                 <label for="exampleFormControlTextarea1">Description</label>
                                 <div id="exampleFormControlTextarea32">
-                                    
+                                    <div class="wrapper pt-3 pb-3">
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
+
+                                        <pre id="output"></pre>
+                                    </div>
                                 </div>
                                 <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
@@ -1921,14 +1929,31 @@ function showInvitations() {
                             </tbody>
                         </table>
                     </div>
+                    <div id="blockHistInvitation" class="mt-2 d-none">
+                        <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Partisan</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all_historique">
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
         `
 
-    editor_invitation = document.querySelector("#editorInvitationElie")
-    // console.log(editor);
-    document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
-    document.querySelector("#editorInvitationElie").classList.remove("d-none")
-    
+    initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+
+    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation)
+    // document.querySelector("#exampleFormControlTextarea32 > #editorInvitationElie").classList.remove("d-none")
+    // document.querySelector("#editorInvitationElie").classList.remove("d-none")
+
     fetchAllTribuGMember()
 
     /** JEHOVANNIE SEND INVITATION BY EMAIL */
@@ -2036,7 +2061,7 @@ function showInvitations() {
                 }
                 return response.json()
             }).then(result => {
-                input_principal.value = null;
+                // input_principal.value = null;
                 input_cc.value = null;
                 // description.value = null;
                 object.value = null;
@@ -2044,6 +2069,15 @@ function showInvitations() {
                 //init Ckeditor for description by Elie
 
                 editor.setData("Ecrivez votre message ici.") 
+
+                //Send data invitation story into tribu
+                let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
+
+                // sauvegarde de l'invitation
+                saveInvitationStory(table_trib, input_principal.value, null);
+
+                input_principal.value = null;
+
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2053,10 +2087,10 @@ function showInvitations() {
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
                 document.querySelector("#successSendingMail").style.display = "block"
 
-                swal({
-                    text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
-                    icon: "info",
-                });
+                // swal({
+                //     text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                //     icon: "info",
+                // });
 
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
@@ -2066,20 +2100,49 @@ function showInvitations() {
 
         }
     })
-
+    
     /** END JEHOVANNIE*/
 }
 
-function setActiveTab(elem) {
+function setActiveTab(elem, param) {
+
+    document.querySelectorAll(".tab_invite_elie").forEach(it=>{
+        it.classList.remove("active")
+    })
+
     if (!elem.classList.contains("active")) {
         elem.classList.add("active")
         document.querySelector("#" + elem.dataset.element).style = "";
-        if (elem.parentElement.nextElementSibling) {
-            elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
+        // if (elem.parentElement.nextElementSibling) {
+        //     elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
+        //     document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
+        // } else {
+        //     elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
+        //     document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+        // }
+    }
+    switch(param){
+        case "tribu_g" :{
+            document.querySelector("#blockHistInvitation").classList.add("d-none")
+            document.querySelector("#blockSendEmailInvitation").classList.add("d-none")
+            document.querySelector("#table-tribuG-member").classList.remove("d-none")
             document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
-        } else {
-            elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
+            break;
+        }
+        case "email" :{
+            document.querySelector("#blockHistInvitation").classList.add("d-none")
+            document.querySelector("#blockSendEmailInvitation").classList.remove("d-none")
+            document.querySelector("#table-tribuG-member").classList.add("d-none")
             document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+            break;
+        }
+        case "historique" :{
+            document.querySelector("#blockSendEmailInvitation").classList.add("d-none")
+            document.querySelector("#blockHistInvitation").classList.remove("d-none")
+            document.querySelector("#table-tribuG-member").classList.add("d-none")
+            document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+            fetchAllInvitationStory()
+            break;
         }
     }
 }
@@ -2109,7 +2172,7 @@ function fetchAllTribuGMember() {
                             ancorOrbutton = `<button class="btn btn-sm btn-secondary" disabled="true">Membre</button>`;
                         }
                     } else {
-                        ancorOrbutton = `<button data-id="${item.id}" type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
+                        ancorOrbutton = `<button data-id="${item.id}" data-email="${item.email}"type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
                     }
                     tbody.innerHTML += `<tr>
                             <td class="non_active"><a class="disabled-link" style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
@@ -2154,6 +2217,13 @@ function inviteUser(elem) {
         elem.setAttribute("disabled", true);
         elem.innerHTML = http.responseText.replace(/"/g, "").replace(/ee/g, "ée");
     }
+
+    // sauvegarde storage
+
+    let table_trib = document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim()
+
+    // sauvegarde de l'invitation
+    saveHistoryInvitation(table_trib, elem.dataset.email, elem.dataset.id);
 
 }
 
@@ -2978,4 +3048,48 @@ function depastilleGolf(selector){
                     });
             })
             .catch(error=>console.log(error))
+}
+
+/**
+ * @constructor
+ * @author Elie <eliefenhasina@gmail.com>
+ * @Fonction fetch toutes les historiques dans la tribu T et affichage dans un tableau
+ */
+function fetchAllInvitationStory() {
+    let table = document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim()
+    let tbody_hist = document.querySelector("#all_historique")
+    tbody_hist.innerHTML = `<td colspan="4"><div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div></td>`
+    fetch("/tribu/invitation/get_all_story/" + table)
+        .then(response => response.json())
+        .then(response => {
+            // console.log(response)
+            if (response.length > 0) {
+                tbody_hist.innerHTML = ""
+                for (const item of response) {
+
+                    console.log(item);
+                    
+                    tbody_hist.innerHTML += `<tr>
+                            <td>${item.email}</td>
+                            <td class="">${item.date}</td>
+                            <td class="">${item.user ? `<span class="badge text-bg-success">Compte existe</span>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`}</td>
+                            <td>${item.is_valid == 1? `<span class="badge text-bg-success">Validé</span>` : `<span class="badge text-bg-warning">En attente</span>`}</td>
+                        </tr>
+                    `
+                }
+                $('#table-tribuG-member > table').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
+            } else {
+                tbody_hist.innerHTML = "Aucun historique enregistré pour le moment!"
+            }
+
+        })
+        .catch(error => console.log(error))
 }

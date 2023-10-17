@@ -686,7 +686,7 @@ let editor_invitation;
 initCKEditor("editor",showModalEditor);
 initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
-initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+
 
 
 /**
