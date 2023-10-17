@@ -533,9 +533,9 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     }
 
     let canChangeTribuPicture = "";
-    if (document.querySelector("#activeTribu")) {
+    if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
@@ -1902,7 +1902,11 @@ function showInvitations() {
                             <div class="form-group mt-3">
                                 <label for="exampleFormControlTextarea1">Description</label>
                                 <div id="exampleFormControlTextarea32">
-                                    
+                                    <div class="wrapper pt-3 pb-3">
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
+                        
+                                        <pre id="output"></pre>
+                                    </div>
                                 </div>
                                 <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
@@ -1926,11 +1930,11 @@ function showInvitations() {
                     </div>
                 </div>
         `
-    
-    editor_invitation = document.querySelector("#editorInvitationElie")
+    initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+    //editor_invitation = document.querySelector("#editorInvitationElie")
     // console.log(editor);
-    document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
-    document.querySelector("#editorInvitationElie").classList.remove("d-none")
+    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
+    //document.querySelector("#editorInvitationElie").classList.remove("d-none")
     
     fetchAllTribuGMember()
 
@@ -2610,13 +2614,13 @@ function settingTribuT(e, tribuTName) {
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
         // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
+        if (currentTribuT.extension=="on" || currentTribuT.extension?.restaurant  ) {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension.golf) {
+        if (currentTribuT.extension?.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false
