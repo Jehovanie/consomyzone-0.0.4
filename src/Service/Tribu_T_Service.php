@@ -122,11 +122,10 @@ class Tribu_T_Service extends PDOConnexionService
                     $query_table_invitation = "CREATE TABLE " . $output . "_invitation(
                         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                         user_id int(11) NOT NULL,
-                        invite_to int(11) DEFAULT NULL,
                         email varchar(255) NOT NULL,
                         is_valid tinyint(1) NOT NULL DEFAULT 0,
-                        datetime date NOT NULL DEFAULT current_timestamp()
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+                        datetime DATETIME NOT NULL DEFAULT current_timestamp()
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
                     $this->getPDO()->exec($query_table_invitation);
 
@@ -2021,7 +2020,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction de sauvegarde de l'historique de l'invitation dans la tribu T
      */
-    function saveInvitationStory($table_invitation, $user_id, $invite_to, $email){
+    function saveInvitationStory($table_invitation, $user_id, $email){
 
         $sql = "SELECT count(*) as is_invited FROM $table_invitation WHERE email = :email ";
         
@@ -2035,13 +2034,11 @@ class Tribu_T_Service extends PDOConnexionService
 
         if($is_invited <= 0){
 
-            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, invite_to, email) values (:user_id, :invite_to, :email)");
+            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, email) values (:user_id, :email)");
 
             $userfullname = $this->getFullName($user_id);
     
             $statement->bindParam(':user_id', $user_id);
-    
-            $statement->bindParam(':invite_to', $invite_to);
     
             $statement->bindParam(':email', $email);
     
@@ -2093,6 +2090,7 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
 
     }
+
 
 }
 

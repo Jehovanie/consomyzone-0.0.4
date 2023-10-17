@@ -1272,7 +1272,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
                                 <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
-                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span> 
+                                <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
                                 <!--</a>-->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
@@ -1868,7 +1868,7 @@ function showInvitations() {
                             <a data-element="table-tribuG-member" class="nav-link active text-secondary tab_invite_elie" aria-current="page" href="#" onclick="setActiveTab(this, 'tribu_g')">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Par Email</a>
                         </li>
                         <li class="nav-item">
                             <a data-element="blockHistInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'historique')">Historiques</a>
@@ -1932,7 +1932,7 @@ function showInvitations() {
                         </table>
                     </div>
                     <div id="blockHistInvitation" class="mt-2 d-none">
-                        <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations</h5>
+                        <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations par e-mail</h5>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -2075,7 +2075,7 @@ function showInvitations() {
                 let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
 
                 // sauvegarde de l'invitation
-                saveInvitationStory(table_trib, input_principal.value, null);
+                saveInvitationStory(table_trib, input_principal.value);
 
                 input_principal.value = null;
 
@@ -2218,13 +2218,6 @@ function inviteUser(elem) {
         elem.setAttribute("disabled", true);
         elem.innerHTML = http.responseText.replace(/"/g, "").replace(/ee/g, "ée");
     }
-
-    // sauvegarde storage
-
-    let table_trib = document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim()
-
-    // sauvegarde de l'invitation
-    saveHistoryInvitation(table_trib, elem.dataset.email, elem.dataset.id);
 
 }
 
@@ -3077,7 +3070,7 @@ function fetchAllInvitationStory() {
                     tbody_hist.innerHTML += `<tr>
                             <td>${item.email}</td>
                             <td class="">${item.date}</td>
-                            <td class="">${item.user ? `<span class="badge text-bg-success">Compte existe</span>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`}</td>
+                            <td class="">${item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.user.firstname + " " +item.user.lastname}</a>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`}</td>
                             <td>${item.is_valid == 1? `<span class="badge text-bg-success">Validé</span>` : `<span class="badge text-bg-warning">En attente</span>`}</td>
                         </tr>
                     `

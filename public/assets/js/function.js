@@ -4802,7 +4802,7 @@ function setGallerieImageV2(){
  * @param {string} email 
  * @param {int} invite_to 
  */
-function saveInvitationStory(table_trib, email, invite_to) {
+function saveInvitationStory(table_trib, email) {
     fetch("/tribu/invitation/save_story/"+table_trib, {
         method: "POST",
         headers: {
@@ -4810,7 +4810,6 @@ function saveInvitationStory(table_trib, email, invite_to) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "invite_to": invite_to,
             "email" : email
         })
     }).then(r=>r.json())
