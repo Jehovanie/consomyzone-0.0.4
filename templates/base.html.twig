@@ -66,6 +66,10 @@
         {% endblock %}
 
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js" defer></script>
+
+        {# CDN API TOASTIFY JS #}
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
         
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}{% endblock %}
@@ -74,7 +78,8 @@
     </head>
     <body x-data="{ page: 'profile', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
     darkMode = JSON.parse(localStorage.getItem('darkMode'));
-    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))" :class="{'b yn mj': darkMode === true}" class="">
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))" :class="{'b yn mj': darkMode === true}" class="" >
+
 	
 
         {% block body %}{% endblock %}

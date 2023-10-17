@@ -1,0 +1,15 @@
+<div class="specific-detail responsif-none-pc content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
+	<nav class="navbar navbar-light d-flex content-spec-resto ">
+		<div class="container-fluid scroll-mobile scroll-mobile-tomm-js">
+			<ul class="navbar-nav mt-3 d-flex flex-row list-specific-station-mobile-tomm-js">
+				{# list creer par le scroll-mobile-tomm-js dan le fonction#}
+				<div class="loading-tomm-js"></div>
+			</ul>
+		</div>
+	</nav>
+</div>
+
+{% if app.user %}
+	{# identifier si connecter en js #}
+	<div class="d-none" id="is-connected-tomm-js"></div>
+{% endif %}

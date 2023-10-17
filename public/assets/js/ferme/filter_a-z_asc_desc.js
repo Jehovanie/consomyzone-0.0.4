@@ -14,7 +14,11 @@ const class_content_trie = screen.width < 991 ? "pagination_alphabet_mobile_jheo
 const element = document.querySelector(`.${class_content_trie} ul`);
 
 //calling function with passing parameters and adding inside element which is ul tag
-element.innerHTML = createPagination(totalPages, page);
+if (screen.width <= 991) {
+    
+} else {
+    element.innerHTML = createPagination(totalPages, page);
+}
 
 
 function createPagination(totalPages, page){

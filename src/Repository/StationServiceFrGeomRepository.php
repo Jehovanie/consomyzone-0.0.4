@@ -84,6 +84,8 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             ->select('p.id',
                      'p.nom',
                      'p.latitude',
+                     'p.horaies',
+                     'p.automate2424',
                      'p.latitude as lat',
                      'p.longitude',
                      'p.longitude as long',
@@ -96,6 +98,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                      'p.prixSp98',
                      'p.prixGasoil',
                      'p.departementName',
+                     'p.services',
                      'p.departementName depName',
                      'p.departementCode',
                      'p.departementCode as dep')
@@ -113,6 +116,104 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
             // ->setParameter('k', '%'. $new_nom_dep. '%' );
 
         $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
+        return $query->execute();
+    }
+
+    //tomm: prendre tous les lists de stations dans un department donnéer pour mobile.
+    public function getAllStationInDepartementMobile($code, $name = null, $limit = 2000, $offset = 0)
+    {
+
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nom',
+                'p.latitude',
+                'p.horaies',
+                'p.automate2424',
+                'p.latitude as lat',
+                'p.longitude',
+                'p.longitude as long',
+                'p.adresse',
+                'p.adresse as add',
+                'p.prixE85',
+                'p.prixGplc',
+                'p.prixSp95',
+                'p.prixSp95E10',
+                'p.prixSp98',
+                'p.prixGasoil',
+                'p.departementName',
+                'p.services',
+                'p.departementName depName',
+                'p.departementCode',
+                'p.departementCode as dep'
+            )
+            ->orderBy("p.nom", 'ASC');
+        if ($code === "20") {
+            $qb->where('p.departementCode = :q')
+            ->orWhere('p.departementCode = :k')
+            ->setParameter('q',  "2A")
+                ->setParameter('k',  "2B");
+        } else {
+            $qb->where('p.departementCode = :q')
+            ->setParameter('q', $code);
+        }
+        // ->andWhere('p.departementName LIKE :k')
+        // ->setParameter('k', '%'. $new_nom_dep. '%' );
+
+        $query = $qb
+            ->orderBy("p.nom", 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery();
+        return $query->execute();
+    }
+
+    //tomm: prendre tous les lists de stations dans un department donnéer pour mobile.
+    public function getAllStationInDepartementSearchMobile($code, $name = null, $id_station)
+    {
+
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nom',
+                'p.latitude',
+                'p.horaies',
+                'p.automate2424',
+                'p.latitude as lat',
+                'p.longitude',
+                'p.longitude as long',
+                'p.adresse',
+                'p.adresse as add',
+                'p.prixE85',
+                'p.prixGplc',
+                'p.prixSp95',
+                'p.prixSp95E10',
+                'p.prixSp98',
+                'p.prixGasoil',
+                'p.departementName',
+                'p.services',
+                'p.departementName depName',
+                'p.departementCode',
+                'p.departementCode as dep'
+            )
+            ->orderBy("p.nom", 'ASC');
+        if ($code === "20") {
+            $qb->where('p.departementCode = :q')
+            ->orWhere('p.departementCode = :k')
+            ->setParameter('q',  "2A")
+            ->setParameter('k',  "2B");
+        } else {
+            $qb->where('p.departementCode = :q')
+            ->setParameter('q', $code);
+        }
+        // ->andWhere('p.departementName LIKE :k')
+        // ->setParameter('k', '%'. $new_nom_dep. '%' );
+
+        $query = $qb
+            ->orderBy("p.nom", 'ASC')
+            ->orWhere('p.id = :id')
+            ->setParameter('id', $id_station)
+            ->getQuery();
         return $query->execute();
     }
 

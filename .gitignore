@@ -18,6 +18,7 @@
 /public/assets/publications/photos/
 /var/
 /vendor/
+/uploads/
 /jwt/
 ###< symfony/framework-bundle ###
 

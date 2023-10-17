@@ -50,8 +50,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
-
-
 class UserAuthenticator extends AbstractLoginFormAuthenticator
 
 {
@@ -137,10 +135,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
                             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
 
                         }
-
-                        $tribuG = $profil[0]->getTributG();
-
-                        $isBanished = (bool)$this->trib->getBanishedStatus($tribuG, $userId);
+                        
+                        if( count($profil) !== 0 ){
+                            $tribuG = $profil[0]->getTributG();
+                            $isBanished = (bool)$this->trib->getBanishedStatus($tribuG, $userId);
+                        }
 
                     }
 
@@ -163,12 +162,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
                     }else if(!$this->passwordHasher->isPasswordValid($user, $request->request->get('password'))){
 
                          throw new CustomUserMessageAuthenticationException("Mot de passe incorrecte");
-
                     }
-
-                    
-
-
 
                 return $user;
 

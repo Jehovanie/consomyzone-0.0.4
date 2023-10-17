@@ -35,6 +35,19 @@
 	<div class="nh">
 		{% include 'shard/account_navleft_new.html.twig' %}
 		{% include 'shard/account_navbar_new.html.twig' %}
+		<div class="fixed-top">
+			<button  class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-tribut-tomm-js">
+				<span class="jc h cg bf sd span-btn-menu-tribut menu-tribut-tomm-js">
+					<span class="du-block g m yd vc span-menu-tribut-tomm-js">
+						<span class="">Menu tribu T</span>
+					</span>
+					<i class="fa-solid fa-xmark btn-ferme-tribut fermet-tribu-t-tomm-js responsif-none"></i>
+				</span>
+			</button>
+		</div>
+
+		
+
 		<!-- ===== Main Content Start ===== -->
 		<main class="gv hm hv content-actualite-connected">
 			<div
@@ -79,7 +92,8 @@
 
 				<!-- ====== Chart Two Start -->
 
-				<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none back-tribu-t" id="apropos-tribu-t">
+				<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al  back-tribu-t apropos-tribu-t-tomm-js responsif-none"  id="apropos-tribu-t">
+					
 					{% include "shard/account_navleft_tribuT.html.twig" %}
 				</div>
 				<!-- ====== Chart Two End -->
@@ -191,7 +205,7 @@
 						</div>
 
 						<center class="mt-3">
-							<button class="btn btn-primary btn-update" id="updateTribuInfo" type="button" onclick="updateTribuTInfos(event)">Modifier</button>
+							<button data-tbttbl="" class="btn btn-primary btn-update" id="updateTribuInfo" type="button" onclick="updateTribuTInfos(event)">Modifier</button>
 						</center>
 					</div>
 				</div>
@@ -319,5 +333,10 @@
 	</div> #}
 
 	{% include 'shard/modal/commentaire.html.twig' %}
+	<div class="textEditorElie d-none" id="editorInvitationElie">
+		{# {% import 'tribu_t/textEditorInvitation.twig' as ck %} #}
+		{% import 'shard/input/textEditor.twig' as editor %}
+		{{ editor.textEditor(3)}}
+	</div>
 
 {% endblock %}

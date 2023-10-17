@@ -60,6 +60,8 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.id',
                 'p.nomFerme',
                 'p.nomFerme as nom',
+                'p.codePostal',
+                'p.lienSiteWeb',
                 'p.departement',
                 'p.departement as dep',
                 'p.departementName',
@@ -72,7 +74,44 @@ class FermeGeomRepository extends ServiceEntityRepository
                 'p.latitude as lat',
                 'p.longitude',
                 'p.longitude as long',
-                'p.addBy'
+                'p.addBy',
+                'p.activite',
+                'p.produit1',
+                'p.produit2',
+                'p.produit3',
+                'p.produit4',
+                'p.produit5',
+                'p.produit6',
+                'p.produit7',
+                'p.produit8',
+                'p.produitFerme',
+                'p.animauxAutoriser',
+                'p.carteBancaire',
+                'p.chequeVacance',
+                'p.degustation',
+                'p.venteEnLigne',
+                'p.siteWeb',
+                'p.telephoneDomicile',
+                'p.telephoneMobile',
+                'p.horairesVenteAFerme',
+                'p.horairesVenteMagasinProd',
+                'p.horairesVenteAuMarche',
+                'p.accesHandicape',
+                'p.accesHandicapAuditif',
+                'p.accesHandicapMental',
+                'p.accesHandicapMotrice',
+                'p.accesHandicapVisuel',
+                'p.accesVoiture',
+                'p.adherentAdeve',
+                'p.agricultureBio',
+                'p.atelier',
+                'p.marcherProduit',
+                'p.stationVerte',
+                'p.ticketsRestaurant',
+                'p.motDuFermier',
+                'p.ville',
+                'p.telephoneTravail',
+                'p.nomProprietaire',
             )
             // ->setMaxResults(10)
             ->setFirstResult($page_current)
@@ -83,6 +122,174 @@ class FermeGeomRepository extends ServiceEntityRepository
             // ->setParameter('q', '%' . $new_nom_dep . '%')
             ->setParameter('k',  $id_dep)
             ->setParameter('disabled',0);
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    public function getFermByDepMobile($nom_dep, $id_dep,$limit = 2000,$offset = 0)
+    {
+
+       
+
+        ///correction des carractères speciaux;
+        $car_speciaux = array("é", "è", "ô");
+        $car_correction   = array("e", "e", "o");
+        $new_nom_dep = str_replace($car_speciaux, $car_correction, $nom_dep);
+
+        // dd($id_dep, $new_nom_dep);
+
+        ///lancement de requette
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nomFerme',
+                'p.nomFerme as nom',
+                'p.codePostal',
+                'p.lienSiteWeb',
+                'p.departement',
+                'p.departement as dep',
+                'p.departementName',
+                'p.departementName as depName',
+                'p.genre',
+                'p.email',
+                'p.adresseFerme',
+                'p.adresseFerme as add',
+                'p.latitude',
+                'p.latitude as lat',
+                'p.longitude',
+                'p.longitude as long',
+                'p.addBy',
+                'p.activite',
+                'p.produit1',
+                'p.produit2',
+                'p.produit3',
+                'p.produit4',
+                'p.produit5',
+                'p.produit6',
+                'p.produit7',
+                'p.produit8',
+                'p.produitFerme',
+                'p.animauxAutoriser',
+                'p.carteBancaire',
+                'p.chequeVacance',
+                'p.degustation',
+                'p.venteEnLigne',
+                'p.siteWeb',
+                'p.telephoneDomicile',
+                'p.telephoneMobile',
+                'p.horairesVenteAFerme',
+                'p.horairesVenteMagasinProd',
+                'p.horairesVenteAuMarche',
+                'p.accesHandicape',
+                'p.accesHandicapAuditif',
+                'p.accesHandicapMental',
+                'p.accesHandicapMotrice',
+                'p.accesHandicapVisuel',
+                'p.accesVoiture',
+                'p.adherentAdeve',
+                'p.agricultureBio',
+                'p.atelier',
+                'p.marcherProduit',
+                'p.stationVerte',
+                'p.ticketsRestaurant',
+                'p.motDuFermier',
+                'p.ville',
+                'p.telephoneTravail',
+                'p.nomProprietaire',
+            )
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            // ->where('p.adresseFerme LIKE :q')
+            ->where('p.departement = :k')
+            ->andWhere("p.disabled = :disabled")
+            ->orderBy("p.nomFerme", 'ASC')
+            // ->setParameter('q', '%' . $new_nom_dep . '%')
+            ->setParameter('k',  $id_dep)
+            ->setParameter('disabled', 0);
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    public function getFermByDepSearchMobile($nom_dep, $id_dep, $id_ferme)
+    {
+
+
+
+        ///correction des carractères speciaux;
+        $car_speciaux = array("é", "è", "ô");
+        $car_correction   = array("e", "e", "o");
+        $new_nom_dep = str_replace($car_speciaux, $car_correction, $nom_dep);
+
+        // dd($id_dep, $new_nom_dep);
+
+        ///lancement de requette
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.nomFerme',
+                'p.nomFerme as nom',
+                'p.codePostal',
+                'p.lienSiteWeb',
+                'p.departement',
+                'p.departement as dep',
+                'p.departementName',
+                'p.departementName as depName',
+                'p.genre',
+                'p.email',
+                'p.adresseFerme',
+                'p.adresseFerme as add',
+                'p.latitude',
+                'p.latitude as lat',
+                'p.longitude',
+                'p.longitude as long',
+                'p.addBy',
+                'p.activite',
+                'p.produit1',
+                'p.produit2',
+                'p.produit3',
+                'p.produit4',
+                'p.produit5',
+                'p.produit6',
+                'p.produit7',
+                'p.produit8',
+                'p.produitFerme',
+                'p.animauxAutoriser',
+                'p.carteBancaire',
+                'p.chequeVacance',
+                'p.degustation',
+                'p.venteEnLigne',
+                'p.siteWeb',
+                'p.telephoneDomicile',
+                'p.telephoneMobile',
+                'p.horairesVenteAFerme',
+                'p.horairesVenteMagasinProd',
+                'p.horairesVenteAuMarche',
+                'p.accesHandicape',
+                'p.accesHandicapAuditif',
+                'p.accesHandicapMental',
+                'p.accesHandicapMotrice',
+                'p.accesHandicapVisuel',
+                'p.accesVoiture',
+                'p.adherentAdeve',
+                'p.agricultureBio',
+                'p.atelier',
+                'p.marcherProduit',
+                'p.stationVerte',
+                'p.ticketsRestaurant',
+                'p.motDuFermier',
+                'p.ville',
+                'p.telephoneTravail',
+                'p.nomProprietaire',
+            )
+            ->where('p.departement = :k')
+            ->andWhere("p.disabled = :disabled")
+            ->andWhere("p.id = :id")
+            ->orderBy("p.nomFerme", 'ASC')
+            ->setParameter('k',  $id_dep)
+            ->setParameter('disabled', 0)
+            ->setParameter('id', $id_ferme);
         $query = $qb->getQuery();
 
         return $query->execute();

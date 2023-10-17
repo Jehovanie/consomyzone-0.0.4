@@ -1,3 +1,8 @@
+window.addEventListener('load', () => { 
+    const id_dep = new URL(window.location.href).pathname.split('/')[4]
+    const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+    getDataSpecTabacMobile(nom_dep, id_dep)
+})
 
 function hideRightSide(){
     if( document.querySelector(".close_right_side_jheo_js")){

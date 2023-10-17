@@ -33,7 +33,10 @@
 {% endblock %}
 
 {% block body %}
-	
+	{% include 'shard/station/specific_station_navleft_mobile.twig' %}
+	<div class="responsif-none-pc navbar-mobile-all">
+		{% include 'shard/navbar_mobile.twig' %}
+	</div>
 	{# {% include 'shard/modalSearch.twig' %} #}
 	<div class="content_main">
 		<div class="row">
@@ -43,7 +46,24 @@
 			<div class="responsif-none">
 				{% include 'shard/navbar.twig' %}
 			</div>
+			{% if (app.user) %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+            {% else %}
+                <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-tomm-js">
+            {% endif %}
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                    
+                <div id="list-depart-station-mobile-tomm-js"></div>
+			
+			{# <div class="open-navleft-mobile responsif-none-pc tc _o" id="open-navleft-station-mobile-specific-tomm-js"  onclick="addSpecificStationMobile('{{departCode}}', '{{departName}}')">
+				<i class="fa-solid fa-bars"></i>
+			</div>
+
+			<div id="list-depart-station-specific-mobile-tomm-js"></div> #}
+
 			<div class="content_info_js" data-dep-code="{{departCode}}" data-dep-name="{{departName}}" >
+				{# <button class="btn btn-primary btn-spec responsif-none-pc"  id="open-navleft-station-mobile-specific-tomm-js" onclick="addSpecificStationMobile('{{departCode}}', '{{departName}}')"><i class="fa-solid fa-bars"></i> Stations à {{departCode}}</button> #}
 				{# modal filter it's show when the screen is like mobile #}
 				{# <button type="button" class="btn btn-primary cta_filter_mobile" data-bs-toggle="modal" data-bs-target="#exampleModal">
 					<i class="fa-solid fa-filter"></i>
@@ -80,9 +100,9 @@
                         {# ========================= END MAP  ========================= #}
 
                         {# ========================= FETCH LIST FOR MOBILE ========================= #}
-						<div class="content_show_list_mobile fetch_list_departement_specifique_jheo_js">
+						{# <div class="content_show_list_mobile fetch_list_departement_specifique_jheo_js">
                              <i class="fa-solid fa-bars"></i>
-                        </div>
+                        </div> #}
                         {# ===================== END FETCH LIST FOR MOBILE ========================= #}
 					</div>
 				</div>

@@ -174,8 +174,8 @@ class MapAdminRestaurant{
             
             if (screemMax.matches) {
 
-                const pathDetails = `/restaurant-mobile/departement/${data.depName}/${data.dep}/details/${data.id}`;
-                location.assign(pathDetails)
+                // const pathDetails = `/restaurant-mobile/departement/${data.depName}/${data.dep}/details/${data.id}`;
+                // location.assign(pathDetails)
             } else if (screemMin.matches) {
 
                 let remove = document.getElementById("remove-detail")

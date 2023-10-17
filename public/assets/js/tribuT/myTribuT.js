@@ -151,7 +151,10 @@ function showBlockPub() {
     for (let array of arrays) {
         array.onclick = (async (e) => {
             e.preventDefault();
-
+                document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
             if (document.querySelector("#activeTribu")) {
                 document.querySelector("#activeTribu").classList.remove("p-2")
                 document.querySelector("#activeTribu").classList.remove("list-nav-left")
@@ -268,25 +271,29 @@ function showPartisan() {
                 let body_table = ``
 
                 jsons[0].forEach(json => {
-                    profilInfo = JSON.parse(json.infos_profil)
-                    let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
-                    let lastName = profilInfo.lastName
-                    let firstName = profilInfo.firstName
-                    let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
 
-                    body_table += `
-                        <tr>
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
-                            </td>
-                            <td>
-                                <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
-                            </td>
-                            <td>
-                                TribuG ${tribuG.replaceAll("_", " ")}
-                            </td>
-                        </tr>
-                    `
+                    if( json.infos_profil !== null ){
+                        profilInfo = JSON.parse(json.infos_profil)
+                        let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
+                        let lastName = profilInfo.lastName
+                        let firstName = profilInfo.firstName
+                        let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
+    
+                        body_table += `
+                            <tr>
+                                <td class="d-flex bd-highlight align-items-center">
+                                    <div class="elie-img-pastilled"><img src="${profil}" alt=""></div>
+                                </td>
+                                <td>
+                                    <a target="_blank" href="/user/profil/${profilInfo.user_id}" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                </td>
+                                <td>
+                                    TribuG ${tribuG.replaceAll("_", " ")}
+                                </td>
+                            </tr>
+                        `
+                    }
+                    
                     // console.log(JSON.parse(json.infos_profil))
                     // document.querySelector("#tribu_t_conteuneur").innerHTML += `
                     //     <div class="card-partisons row">
@@ -526,9 +533,9 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     }
 
     let canChangeTribuPicture = "";
-    if (document.querySelector("#activeTribu")) {
+    if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
@@ -545,15 +552,15 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                     <div class="row content-tribu-t">
                         <div class="col-lg-3 col-4">
                             <div class="row">
-                                <div class="col-lg-6 col-6">
+                                <div class="col-lg-6 col-3">
                                     ${image_tribu_t}
                                 </div>
                                 ${canChangeTribuPicture}
                             </div>
                         </div>
                         <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
-                            <p class="ms-2 text-white">
+                            <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+                            <p class="text-white descrp-tribu-t">
                             ${tribu_t[0].description.replace(/"/gi,'')}
                             </p>
                         </div>
@@ -1354,7 +1361,7 @@ if (document.querySelector("#resto-rech")) {
     const src_resto = document.querySelector("#resto-rech")
 
     src_resto.addEventListener("keyup", function onEvent(event) {
-        alert("ato")
+        // alert("ato")
         // const q = event.target.value.toLowerCase();
 
         // if (event.keyCode === 13) {
@@ -1853,6 +1860,7 @@ function showInvitations() {
     document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
     // document.querySelector("#list-publicatiotion-tribu-t").innerHTML = ""
     // document.querySelector("#createPubBloc").style.display = "none";
+    //setActiveTab(this)
     document.querySelector("#tribu_t_conteuneur").innerHTML = `
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
@@ -1860,10 +1868,10 @@ function showInvitations() {
                             <a data-element="table-tribuG-member" class="nav-link active text-secondary" aria-current="page" href="#" onclick="setActiveTab(this)">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="setActiveTab(this)">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="openSwalNonActif()">Email</a>
                         </li>
                     </ul>
-                    <div id="blockSendEmailInvitation" style="display:none;" class="w-50 mt-4 px-3">
+                    <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
                         <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
@@ -1893,7 +1901,14 @@ function showInvitations() {
 
                             <div class="form-group mt-3">
                                 <label for="exampleFormControlTextarea1">Description</label>
-                                <textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                <div id="exampleFormControlTextarea32">
+                                    <div class="wrapper pt-3 pb-3">
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
+                        
+                                        <pre id="output"></pre>
+                                    </div>
+                                </div>
+                                <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
                             <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
                         </form>
@@ -1915,6 +1930,12 @@ function showInvitations() {
                     </div>
                 </div>
         `
+    initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+    // editor_invitation = document.querySelector("#editorInvitationElie")
+    // // console.log(editor);
+    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
+    // document.querySelector("#editorInvitationElie").classList.remove("d-none")
+    
     fetchAllTribuGMember()
 
     /** JEHOVANNIE SEND INVITATION BY EMAIL */
@@ -1997,9 +2018,13 @@ function showInvitations() {
             status = true;
         }
 
-        if (description.value != "") {
-            data = { ...data, "description": description.value }
-        }
+        // if (description.value != "") {
+        //     data = { ...data, "description": description.value }
+        // }
+
+        //Changing description check editor by Elie
+        data = { ...data, "description": editor.getData() }
+
         // console.log("data sending...")
         // console.log(data)
 
@@ -2020,8 +2045,13 @@ function showInvitations() {
             }).then(result => {
                 input_principal.value = null;
                 input_cc.value = null;
-                description.value = null;
+                // description.value = null;
                 object.value = null;
+                
+                //init Ckeditor for description by Elie
+
+                editor.setData("Ecrivez votre message ici.") 
+
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
                 })
@@ -2030,9 +2060,14 @@ function showInvitations() {
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
                 document.querySelector("#successSendingMail").style.display = "block"
 
+                swal({
+                    text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                    icon: "info",
+                });
+
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
-                }, 3000)
+                }, 5000)
 
             }).catch((e) => { console.log(e); });
 
@@ -2579,13 +2614,13 @@ function settingTribuT(e, tribuTName) {
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
         // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
+        if (currentTribuT.extension=="on" || currentTribuT.extension?.restaurant  ) {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension.golf) {
+        if (currentTribuT.extension?.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false

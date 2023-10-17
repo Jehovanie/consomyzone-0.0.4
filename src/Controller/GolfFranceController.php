@@ -38,7 +38,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -133,7 +133,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
 
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -165,6 +165,9 @@ class GolfFranceController extends AbstractController
             }
         }
 
+        $golfs = $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
+   
+
         return $this->render("golf/specific_departement.html.twig", [
 
             "id_dep" => $id_dep,
@@ -173,7 +176,7 @@ class GolfFranceController extends AbstractController
 
             "type" => "golf",
 
-            "golf" => $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID),
+            "golfs" => $golfs,
 
             "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
 
@@ -187,10 +190,12 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
-    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}', name: 'golf_dep_france_mobile', methods: ["GET", "POST"])]
+    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{limit}/{offset}', name: 'golf_dep_france_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementMobile(
         $nom_dep,
         $id_dep,
+        $limit,
+        $offset,
         GolfFranceRepository $golfFranceRepository,
         Status $status,
         TributGService $tributGService,
@@ -207,7 +212,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if ($user) {
+        if ($user && $user->getType()!="Type") {
 
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -239,7 +244,7 @@ class GolfFranceController extends AbstractController
             }
         }
 
-        return $this->render("shard/golf/specific_golf_navleft_mobile.twig", [
+        return $this->json([
 
             "id_dep" => $id_dep,
 
@@ -247,7 +252,81 @@ class GolfFranceController extends AbstractController
 
             "type" => "golf",
 
-            "golf" => $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID),
+            "golf" => $golfFranceRepository->getGolfByDepMobile($nom_dep, $id_dep, $userID, $limit, $offset),
+
+            "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
+
+            "profil" => $statusProfile["profil"],
+
+            "statusTribut" => $statusProfile["statusTribut"],
+
+            "amisTributG" => $amis_in_tributG,
+
+            "userConnected" => $userConnected,
+        ]);
+    }
+    #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{id_golf}', name: 'golf_dep_france_search_mobile', methods: ["GET", "POST"])]
+    public function specifiqueDepartementSearchMobile(
+        $nom_dep,
+        $id_dep,
+        $id_golf,
+        GolfFranceRepository $golfFranceRepository,
+        Status $status,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+    ) {
+
+        ///current user connected
+        $user = $this->getUser();
+        $userConnected = $status->userProfilService($this->getUser());
+        $userID = ($user) ? $user->getId() : null;
+        // return $this->redirectToRoute("restaurant_all_dep");
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if ($user && $user->getType()!="Type") {
+
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+
+                if ($user_amis) {
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+
+        return $this->json([
+
+            "id_dep" => $id_dep,
+
+            "nom_dep" => $nom_dep,
+
+            "type" => "golf",
+
+            "golf" => $golfFranceRepository->getGolfByDepSearchMobile($nom_dep, $id_dep, $userID, $id_golf),
 
             "nomber_golf" => $golfFranceRepository->getCount($nom_dep, $id_dep),
 

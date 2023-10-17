@@ -588,7 +588,7 @@ class Tribu_T_Service extends PDOConnexionService
         $list = $result[$tribu_t_owned_or_join];
 
         $tmp = [];
-   
+        
         if (isset($list)) {
 
             $jsonInitial= json_decode($list, true);

@@ -100,7 +100,11 @@ class UserController extends AbstractController
     ): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
-        //dd($userConnected);
+        
+        if( $userConnected["userType"] === "Type"){
+            return $this->redirectToRoute('app_actu_non_active');
+        }
+
         $userId= $this->getUser()->getId();
         $tribuG= $userConnected['tableTribuG'];
         $publications = [];
@@ -817,7 +821,9 @@ class UserController extends AbstractController
         
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+        // $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
+
 
         //Editing by Elie for a tribu g and t partisans
         

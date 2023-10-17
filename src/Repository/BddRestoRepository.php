@@ -141,8 +141,58 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getAllRestoIdForSpecificDepartementMobile($dep,$idReso)
+    {
+        return $this->createQueryBuilder("r")
+            ->select(
+                "r.id,
+                r.denominationF as nom,
+                r.denominationF,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep", $dep)
+            ->andWhere("r.id =:id")
+            ->setParameter("id", $idReso)
+            ->getQuery()
+            ->getResult();
+    }
 
-    public function getCoordinateAndRestoIdForSpecific($dep, $codinsee= null)
+
+    public function getCoordinateAndRestoIdForSpecific($dep, $codinsee= null, $limit = 2000)
     {
         $dep= strlen($dep) === 1  ? "0" . $dep : $dep;
         $query= $this->createQueryBuilder("r")
@@ -198,9 +248,74 @@ class BddRestoRepository extends ServiceEntityRepository
         }
 
         return $query->orderBy('RAND()')
-                ->setMaxResults(2000)
+                ->setMaxResults($limit)
                 ->getQuery()
                 ->getResult();
+    }
+
+    public function getCoordinateAndRestoIdForSpecificMobile($dep, $codinsee = null, $limit = 2000, $offset = 0) 
+    {
+        $dep = strlen($dep) === 1  ? "0" . $dep : $dep;
+        $query = $this->createQueryBuilder("r")
+            ->select(
+                        "r.id,
+                        r.denominationF,
+                        r.denominationF as nom,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.restaurant as resto,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiX,
+                        r.poiY,
+                        r.poiX as long,
+                        r.poiY as lat,
+                        CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
+                        CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep", $dep)
+            ->groupBy("r.denominationF, r.poiX, r.poiY")
+            ->having('count(r.denominationF)=1')
+            ->andHaving('count(r.poiX)=1')
+            ->andHaving('count(r.poiY) =1');
+
+        if ($codinsee) {
+            $query = $query->andWhere("r.codinsee =:codinsee")
+            ->setParameter("codinsee", $codinsee);
+        }
+
+        return $query
+            ->orderBy('r.id','ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
     public function getCoordinateAndRestoIdForSpecificParis($dep)
