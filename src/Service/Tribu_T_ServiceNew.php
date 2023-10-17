@@ -10,11 +10,8 @@ use PDOException;
 use ArgumentCountError;
 use App\Repository\BddRestoRepository;
 
-class Tribu_T_Service extends PDOConnexionService
+class Tribu_T_ServiceJSON extends PDOConnexionService
 {
-    
-
-    
     
     /**
      * create data_base table tribu-T
@@ -24,31 +21,18 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-
-
         $db = $_ENV["DATABASENAME"];
-
-
 
         $query = "SHOW TABLES FROM $db like 'tribu_t_" . $user_id . "_" . $tableName . "'";
 
-
-
         $sql = $this->getPDO()->query($query);
-
-
 
         $resultat = $sql->rowCount();
 
-
-
         $output = 0;
-
-
 
         if ($resultat > 0) {
             $output = 0;
-
         } else {
 
             $sql = "CREATE TABLE tribu_t_" . $user_id . "_" . $tableName . " (
@@ -67,19 +51,11 @@ class Tribu_T_Service extends PDOConnexionService
 				
 				)ENGINE=InnoDB";
 
-
-
             $this->getPDO()->exec($sql);
-
-
 
             $data = "Insert into tribu_t_" . $user_id . "_" . $tableName . " (id, user_id, roles, status) values (UUID(), $user_id, 'Fondateur', 1)";
 
-
-
             $final = $this->getPDO()->exec($data);
-
-
 
             if ($final > 0) {
 
@@ -109,11 +85,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                     )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
-
-
                 $final2 = $this->getPDO()->exec($query);
-
-
 
                 if ($final2 == 0) {
 
@@ -143,11 +115,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                         )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
-
-
                     $this->getPDO()->exec($sql);
-
-
 
                     $sql = "CREATE TABLE " . $output . "_reaction(
 
@@ -174,10 +142,6 @@ class Tribu_T_Service extends PDOConnexionService
                         )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
                     $this->getPDO()->exec($sql);
-
-
-
-                    
 
                     $sql = "CREATE TABLE " . $output . "_agenda(
 
@@ -219,8 +183,6 @@ class Tribu_T_Service extends PDOConnexionService
 
                     ) ENGINE=InnoDB";
                     // $this->getPDO()->exec($sql);
-
-
                     $sql = "CREATE TABLE " . $output . "_agenda_action(
 
                         `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -246,9 +208,6 @@ class Tribu_T_Service extends PDOConnexionService
                         ON UPDATE CASCADE
 
                       ) ENGINE=InnoDB";
-
-                    
-
                     // $this->getPDO()->exec($sql);
                 }
             }
