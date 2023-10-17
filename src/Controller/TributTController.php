@@ -2638,40 +2638,44 @@ class TributTController extends AbstractController
 
         $email =$request->query->get("email");
 
-        if($table && $email){
-
-            ////name tribu to join
-            $tribuTtoJoined = $table;
-                
-            //// apropos user fondateur tribuT with user fondateur
-            $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
-
-            $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
-
-            $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
-            $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
-
-            foreach($arrayTribuT as $tribuT){
-                
-                if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                    $apropos_tribuTtoJoined= $tribuT;
-                    break;
-                }
-            }
-
-            //// set tribu T for this new user.
-            $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
-            
-
-            $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
-
-        }
 
         if($this->getUser()){
 
+            if($table && $email){
+
+                ////name tribu to join
+                $tribuTtoJoined = $table;
+                    
+                //// apropos user fondateur tribuT with user fondateur
+                $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
+    
+                $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+    
+                $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+                $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+    
+                foreach($arrayTribuT as $tribuT){
+                    
+                    if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                        $apropos_tribuTtoJoined= $tribuT;
+                        break;
+                    }
+                }
+    
+                //// set tribu T for this new user.
+                $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
+                
+    
+                $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+    
+            }
+
             return $this->redirectToRoute('app_my_tribu_t');
+
         }else{
+
             return $this->redirectToRoute('app_login');
+            
         }
 
        
