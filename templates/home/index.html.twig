@@ -32,6 +32,9 @@
     <div class="responsif-none">
         {% include 'shard/navbar.twig' %}
     </div>
+    <div class="responsif-none-pc navbar-mobile-all tout-dem-tomm-js">
+        {% include 'shard/navbar_mobile.twig' %}
+    </div>
     
     <div class="content_body">
         {% if (app.user) %}
@@ -129,4 +132,5 @@
 	{{ include('shard/restaurant/list_avis.html.twig') }}
 	{{ include('shard/restaurant/modal_avis_resto.html.twig') }}
 	{{ include('shard/restaurant/modal_modif_avis.html.twig') }}
+    {{ include('shard/restaurant/modal_user_modif_resto.twig') }}
 {% endblock %}

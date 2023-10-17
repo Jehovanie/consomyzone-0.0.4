@@ -1,5 +1,6 @@
 window.addEventListener('load', () => {
-
+	addListFermeMobile()
+    
 	/*format numero*/
 	// let items = document.querySelector("#content-details-ferme > div > div.left_content_home > div > div > div.content_tel > ul > li")
 	let items = document.querySelectorAll("body > main > div.content_global > div > div > div.left_content_home > div > div > div.content_tel > ul > li")

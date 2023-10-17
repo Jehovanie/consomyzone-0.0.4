@@ -155,8 +155,7 @@ class MarckerClusterFerme extends MapModule {
 
                 
                 if (screen.width < 991) {
-                    let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-                    getDetailHomeForMobile(pathDetails)
+                    getDetailFerme(item.departement, item.departementName, item.id)
                 } else {
                     // getDetailsFerme(pathDetails, true)getDetailStation
                     getDetailFerme(item.departement, item.departementName, item.id)
@@ -258,7 +257,7 @@ class MarckerClusterFerme extends MapModule {
 
             const response = await fetch(`/getLatitudeLongitudeFerme${param}`);
             let new_data = await response.json();
-            console.log(new_data);
+            // console.log(new_data);
             new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
          
             this.addMarker(this.checkeFilterType(new_data));

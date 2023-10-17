@@ -151,7 +151,10 @@ function showBlockPub() {
     for (let array of arrays) {
         array.onclick = (async (e) => {
             e.preventDefault();
-
+                document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+                document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
             if (document.querySelector("#activeTribu")) {
                 document.querySelector("#activeTribu").classList.remove("p-2")
                 document.querySelector("#activeTribu").classList.remove("list-nav-left")
@@ -269,10 +272,9 @@ function showPartisan() {
 
                 jsons[0].forEach(json => {
 
-                    if(json.infos_profil){
-
+                    if( json.infos_profil !== null ){
                         profilInfo = JSON.parse(json.infos_profil)
-                        let profil = profilInfo.photo_profil ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
+                        let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
                         let lastName = profilInfo.lastName
                         let firstName = profilInfo.firstName
                         let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
@@ -531,9 +533,9 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     }
 
     let canChangeTribuPicture = "";
-    if (document.querySelector("#activeTribu")) {
+    if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
@@ -550,15 +552,15 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                     <div class="row content-tribu-t">
                         <div class="col-lg-3 col-4">
                             <div class="row">
-                                <div class="col-lg-6 col-6">
+                                <div class="col-lg-6 col-3">
                                     ${image_tribu_t}
                                 </div>
                                 ${canChangeTribuPicture}
                             </div>
                         </div>
                         <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 style="color: #6D6DFE !important;" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
-                            <p class="ms-2 text-white">
+                            <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+                            <p class="text-white descrp-tribu-t">
                             ${tribu_t[0].description.replace(/"/gi,'')}
                             </p>
                         </div>
@@ -1359,7 +1361,7 @@ if (document.querySelector("#resto-rech")) {
     const src_resto = document.querySelector("#resto-rech")
 
     src_resto.addEventListener("keyup", function onEvent(event) {
-        alert("ato")
+        // alert("ato")
         // const q = event.target.value.toLowerCase();
 
         // if (event.keyCode === 13) {
@@ -1858,7 +1860,7 @@ function showInvitations() {
     document.querySelector("li.listNavBarTribu.invitation > a").classList.add("active")
     // document.querySelector("#list-publicatiotion-tribu-t").innerHTML = ""
     // document.querySelector("#createPubBloc").style.display = "none";
-    editor_invitation = document.querySelector("#editorInvitationElie")
+    //setActiveTab(this)
     document.querySelector("#tribu_t_conteuneur").innerHTML = `
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
@@ -1905,7 +1907,7 @@ function showInvitations() {
                                 <div id="exampleFormControlTextarea32">
                                     <div class="wrapper pt-3 pb-3">
                                         <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
-
+                        
                                         <pre id="output"></pre>
                                     </div>
                                 </div>
@@ -1947,13 +1949,12 @@ function showInvitations() {
                     </div>
                 </div>
         `
-
     initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
-
-    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation)
-    // document.querySelector("#exampleFormControlTextarea32 > #editorInvitationElie").classList.remove("d-none")
+    // editor_invitation = document.querySelector("#editorInvitationElie")
+    // // console.log(editor);
+    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
     // document.querySelector("#editorInvitationElie").classList.remove("d-none")
-
+    
     fetchAllTribuGMember()
 
     /** JEHOVANNIE SEND INVITATION BY EMAIL */
@@ -2677,13 +2678,13 @@ function settingTribuT(e, tribuTName) {
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
         // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
+        if (currentTribuT.extension=="on" || currentTribuT.extension?.restaurant  ) {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension.golf) {
+        if (currentTribuT.extension?.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false

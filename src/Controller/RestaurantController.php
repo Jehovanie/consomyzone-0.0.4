@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
+use App\Entity\BddRestoUserModif;
 use App\Entity\Codinsee;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
@@ -14,12 +15,15 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
+use App\Repository\BddRestoUserModifRepository;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class RestaurantController extends AbstractController
 {
@@ -46,7 +50,7 @@ class RestaurantController extends AbstractController
         $amis_in_tributG = [];
 
         $userConnected = $status->userProfilService($this->getUser());
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -329,14 +333,51 @@ class RestaurantController extends AbstractController
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        Tribu_T_Service $tribu_T_Service,
     ) {
 
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
         $userConnected = $status->userProfilService($this->getUser());
-        $datas = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
+        $datas = [];
+       
+        $restos = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
+        
+        foreach ($restos as $data){
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]  ) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
+                }
+                $note_temp +=  $note["note"];
+            }
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
+            
+
+            array_push($datas, $data);
+
+            
+        }
+
+        
+
+       
         $resultCount = $bddResto->getAccountRestauranting($codeDep);
 
         ///current user connected
@@ -346,7 +387,7 @@ class RestaurantController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -377,6 +418,8 @@ class RestaurantController extends AbstractController
             }
         }
 
+        // dd($datas);
+
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
@@ -391,27 +434,108 @@ class RestaurantController extends AbstractController
         ]);
     }
 
-    #[Route("/restaurant-mobile/specific", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
+    #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{limit}/{offset}", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
     public function getSpecificRestaurantMobile(
         BddRestoRepository $bddResto,
         Status $status,
         Request $request,
         CodeapeRepository $codeApeRep,
+        Tribu_T_Service $tribu_T_Service,
+        UserRepository $userRepository,
+        $nom_dep,
+        $id_dep,
+        $limit,
+        $offset,
+        AvisRestaurantRepository $avisRestaurantRepository,
+
     ) {
-        $dataRequest = $request->query->all();
-        $nomDep = $dataRequest["nom_dep"];
-        $codeDep = $dataRequest["id_dep"];
-        $codinsee = $dataRequest["codinsee"];
-        $arrdssm = $dataRequest["arrdssm"];
+        $datas = [];
+        $idData = [];
         
-        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep);
-        $resultCount= $bddResto->getAccountRestauranting($codeDep);
+        $restos = $bddResto->getCoordinateAndRestoIdForSpecificMobile($id_dep , null, $limit, $offset);
+        $resultCount= $bddResto->getAccountRestauranting($id_dep);
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
+        foreach ($restos as $data) {
+            $arrayTribu = [];
+            $arrayTribuRestoPast = [];
+            $arrayTribuRestoJoinedPast = [];
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
-        return $this->render("shard/restaurant/specific_mobile_departement.js.twig", [
-            "id_dep" => $codeDep,
-            "nom_dep" => $nomDep,
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
+                }
+                $note_temp +=  $note["note"];
+            }
+
+
+            
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
+
+            if ($this->getUser()) {
+
+                $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+
+                foreach ($tribu_t_owned as $key) {
+                    $tableTribu = $key["table_name"];
+                    $logo_path = $key["logo_path"];
+                    $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                    $tableExtension = $tableTribu . "_restaurant";
+                    if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
+                        if (!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $data["id"], true)) {
+                            array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        } else {
+                            array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        }
+                    }
+                }
+
+                $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+                // dd($tribu_t_joined);
+                foreach ($tribu_t_joined as $key) {
+                    $tbtJoined = $key["table_name"];
+                    $logo_path = $key["logo_path"];
+                    $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                    $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
+                    if ($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0) {
+                        if ($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $data["id"], true)) {
+                            array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        }
+                    }
+                }
+            }
+            $data["tribuTPastie"] =  [
+                "tribu_t_can_pastille" => $arrayTribu,
+                "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+                "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            ];
+            
+
+            array_push($datas, $data);
+            array_push($idData, $data["id"]);
+        }
+       
+        
+        return $this->json([
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
             "restaurants" => $datas,
             "nomber_resto" => $resultCount,
             "profil" => $statusProfile["profil"],
@@ -419,10 +543,157 @@ class RestaurantController extends AbstractController
             "userConnected" => $userConnected,
             "codeApes" => $codeApeRep->getCode(),
             "type" => "resto",
-            "arrdssm" => $arrdssm,
-            "codinsee" => $codinsee
+            // "arrdssm" => $arrdssm,
+            // "codinsee" => $codinsee
+        ],);
+    }
+
+    #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{id_resto}", name: "app_specific_dep_restaurant_search", methods: ["GET"])]
+    public function getSpecificRestaurantSearch(
+        BddRestoRepository $bddResto,
+        Status $status,
+        $nom_dep,
+        $id_dep,
+        $id_resto,
+        CodeapeRepository $codeApeRep,
+        TributGService $tributGService,
+        Tribu_T_Service $tribu_T_Service,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        AvisRestaurantRepository $avisRestaurantRepository,
+    ) {
+
+        $userConnected = $status->userProfilService($this->getUser());
+        $datas = [];
+
+        $restos = $bddResto->getAllRestoIdForSpecificDepartementMobile($id_dep, $id_resto);
+
+        foreach ($restos as $data) {
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
+
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
+                }
+                $note_temp +=  $note["note"];
+            }
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
 
 
+            array_push($datas, $data);
+        }
+
+
+
+
+        $resultCount = $bddResto->getAccountRestauranting($id_dep);
+
+        ///current user connected
+        $user = $this->getUser();
+
+        $statusProfile = $status->statusFondateur($user);
+
+        $amis_in_tributG = [];
+
+        if ($user) {
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+
+            ///to contains profil user information
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+
+                if ($user_amis) {
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+
+        $arrayTribu = [];
+        $arrayTribuRestoPast = [];
+        $arrayTribuRestoJoinedPast = [];
+
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            // dd($tribu_t_owned);
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtension = $tableTribu . "_restaurant";
+                if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $id_resto, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                    } else {
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                    }
+                }
+            }
+
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            // dd($tribu_t_joined);
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
+                if ($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0) {
+                    if ($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $id_resto, true)) {
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                    }
+                }
+            }
+        }
+
+        // dd($datas);
+
+        return $this->json([
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "userConnected" => $userConnected,
+            "type" => "resto",
+            "restaurants" => $datas,
+            "nomber_resto" => $resultCount,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode(),
+            "amisTributG" => $amis_in_tributG,
+            "tribu_t_can_pastille" => $arrayTribu,
+            "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
         ]);
     }
 
@@ -457,7 +728,7 @@ class RestaurantController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -538,6 +809,7 @@ class RestaurantController extends AbstractController
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
+        AvisRestaurantRepository $avisRestaurantRepository,
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -546,7 +818,38 @@ class RestaurantController extends AbstractController
         $arrdssm = $dataRequest["arrdssm"];
 
 
-        $datas = $bddResto->getRestoByCodinsee($codinsee, $codeDep);
+        $datas = [];
+
+        $restos = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
+        foreach ($restos as $data){
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
+
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"] ) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" => $note["avis"]];
+                }
+                $note_temp += $note["note"];
+            }
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
+            
+
+            array_push($datas, $data);
+
+            
+        }
         $resultCount = count($datas);
         $statusProfile = $status->statusFondateur($this->getUser());
         $userConnected = $status->userProfilService($this->getUser());
@@ -557,7 +860,7 @@ class RestaurantController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -617,9 +920,34 @@ class RestaurantController extends AbstractController
         Status $status,
         $nom_dep,
         $id_dep,
-        $id_restaurant
+        $id_restaurant,
+        AvisRestaurantRepository $avisRestaurantRepository
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
+        $details = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented = false;
+        $avis = ["note" => null, "text" => null];
+
+        $note_temp = 0;
+        foreach ($global_note as $note) {
+            if ($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()) {
+                $isAlreadyCommented = true;
+                $avis = ["note" => $note->getNote(), "text" => $note->getAvis()];
+            }
+            $note_temp += $note->getNote();
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
 
         // return $this->json([
         //     "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
@@ -632,7 +960,7 @@ class RestaurantController extends AbstractController
         // ], 200);
 
         return $this->render("shard/restaurant/details.js.twig", [
-            "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
+            "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],
@@ -736,7 +1064,6 @@ class RestaurantController extends AbstractController
             }
 
         }
-
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -747,7 +1074,7 @@ class RestaurantController extends AbstractController
             "codeApes" => $codeApeRep->getCode(),
             "tribu_t_can_pastille" => $arrayTribu,
             "tribu_t_resto_pastille" => $arrayTribuRestoPast,
-            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast
+            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
         ]);
     }
 
@@ -837,15 +1164,37 @@ class RestaurantController extends AbstractController
     
         $codinsee = array_key_exists('codinsee', $dataRequest)? $dataRequest["codinsee"]: null;
 
-        $resto = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
+        $details = $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented = false;
+        $avis = ["note" => null, "text" => null];
+
+        $note_temp = 0;
+        foreach ($global_note as $note) {
+            if ($this->getUser() && $this->getUser()->getID() === $note->getUser()->getID()) {
+                $isAlreadyCommented = true;
+                $avis = ["note" => $note->getNote(), "text" => $note->getAvis()];
+            }
+            $note_temp += $note->getNote();
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
         // $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($resto[0]["id"]);
         // dd($nbr_avis_resto);
 
         // $response = $serializer->serialize(["nombre_avis" => $nbr_avis_resto], 'json');
         
         return $this->render("shard/restaurant/details_mobile.js.twig", [
-            "details" => $resto,
+            "details" => $details,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "codinsee" => $codinsee,
@@ -972,5 +1321,48 @@ class RestaurantController extends AbstractController
         $json = $serializer->serialize($response, 'json');
         return new JsonResponse($json, 200, [], true);
     }
+
+    #[Route("/user/make/modif/new/resto", name:"app_make_modif_user_resto", methods:["POST"])]
+    public function makeModif(Request $request,BddRestoUserModifRepository $bddRepo){
+        // try{
+        $contents=json_decode($request->getContent(),true);
+        $bddRestoUserModif=new BddRestoUserModif();
+        $bddRestoUserModif->setDenominationF(json_encode($contents["denomination_f"]))
+            ->setNumvoie(($contents["numvoie"]))
+            ->setTypevoie(json_encode($contents["typevoie"]))
+            ->setNomvoie(json_encode($contents["nomvoie"]))
+            ->setCompvoie(json_encode($contents["compvoie"]))
+            ->setCodpost(($contents["codpost"]))
+            ->setVillenorm(json_encode($contents["villenorm"]))
+            ->setCommune(json_encode($contents["commune"]))
+            ->setTel(($contents["tel"]))
+            ->setRestaurant(intval(($contents["restaurant"])))
+            ->setBrasserie(intval(($contents["brasserie"])))
+            ->setCreperie(intval(($contents["creperie"])))
+            ->setFastFood(intval(($contents["fastFood"])))
+            ->setPizzeria(intval(($contents["pizzeria"])))
+            ->setBoulangerie(intval(($contents["boulangerie"])))
+            ->setBar(intval(($contents["bar"])))
+            ->setCuisineMonde(intval(($contents["cuisineMonde"])))
+            ->setCafe(intval(($contents["cafe"])))
+            ->setSalonThe(intval(($contents["the"])))
+            ->setPoiX(doubleval(($contents["poix"])))
+            ->setPoiY(doubleval(($contents["poiy"])))
+            ->setUserId(intval($this->getUser()->getId()))
+            ->setRestoId(intval(($contents["restoId"])));
+
+            $bddRepo->save($bddRestoUserModif,true);
+        // }catch(Exception $e){
+        //     if($_ENV["APP_ENV"]=="dev")
+        //         dd($e);
+        //     $response = new Response();
+        //     $response->setStatusCode(500);
+        //     return $response;
+        // }
+        
+        $response = new Response();
+        $response->setStatusCode(201);
+        return $response;
+    } 
     
 }

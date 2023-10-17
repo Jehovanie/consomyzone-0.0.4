@@ -90,7 +90,7 @@ class ToutsController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user){
+        if($user && $user->getType()!="Type"){
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -379,7 +379,7 @@ class ToutsController extends AbstractController
             ]);
         }
 
-        $taille= 1500;
+        $taille= 1000;
         $userID= $this->getUser() ? $this->getUser()->getId(): null;
 
         $restos = $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto);

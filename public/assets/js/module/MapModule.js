@@ -76,7 +76,6 @@ class MapModule{
     }
 
     async createMap(lat= null, long=null, zoom= null){
-
         if( lat !=null && long != null && zoom != null ){
             this.latitude = lat;
             this.longitude= long;
@@ -88,10 +87,12 @@ class MapModule{
 
         /// if there is departementSpecified
         this.settingLatLong();
-        
+
+        // ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter )
+        // si on est dans une departement specifique, ou on est dans le recherch, et memory Center est vide... 
         this.map = L.map('map', {
                 zoomControl: false,
-                center: ( this.id_dep || !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
+                center: ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
                 zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
                 // zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
                 layers: [this.tiles] 
@@ -831,9 +832,14 @@ class MapModule{
                 'foo': 'bar',
             },
             events:{
-                hover: (data) => { console.log('hover works')},
                 click: (data) => {
-                    this.openRightSide(data.srcElement.dataset.type);
+                    if (screen.width < 991) { 
+                        this.openRightSideMobile(data.srcElement.dataset.type);
+                        
+                    } else {
+                        this.openRightSide(data.srcElement.dataset.type);
+                    }
+                    
                 },
                 dblclick: function(){
                     closeRightSide();
@@ -1070,6 +1076,84 @@ class MapModule{
                     this.closeRightSide();
                 })
             }
+        }
+    }
+
+    openRightSideMobile(rightSideContentType){
+        if(rightSideContentType === "reset_zoom_jheo_js" ){
+            this.resetZoom()
+        }else{
+            if( document.querySelector(".close_details_jheo_js")){
+                document.querySelector(".close_details_jheo_js").click();
+            }
+
+            if( document.querySelector('.icon_close_nav_left_jheo_js')){
+                document.querySelector(".icon_close_nav_left_jheo_js").click();
+            }
+
+            const cart_width= '100%';
+            const cont_legent_width= '200%';
+            
+            if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+
+                if( !document.querySelector(".title_right_side_jheo_js")){
+                    console.log("Selector not found: '.title_right_side_jheo_js'")
+                    return false;
+                }
+        
+                if( rightSideContentType === "info_golf_jheo_js"){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusGolf(); 
+        
+                    }else if( rightSideContentType === "resto_pastille_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
+                        this.injectListRestoPastille();
+        
+                    }else if( rightSideContentType === "info_resto_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusResto();
+        
+                    }else if( rightSideContentType === "info_ferme_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusFerme();
+        
+                    }else if( rightSideContentType === "info_station_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusStation();
+        
+                    }else if( rightSideContentType === "info_tabac_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusTabac();
+        
+                    }else if( rightSideContentType === "info_tous_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+                        injectStatusTous();
+        
+                    }else if( rightSideContentType === "couche_tabac_jheo_js" ){
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
+                        this.injectChooseCouche();
+        
+                    }else{ //// default tiles type
+                        document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
+                        this.injectTilesType();
+                    }
+        
+                document.querySelector(".cart_map_jheo_js").style.width= cart_width;
+                document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
+                document.querySelector(".content_legende_jheo_js").style.padding= '25px';
+            }else{
+                console.log("Selector not found")
+                console.log("cart_map_jheo_js", "content_legende_jheo_js")
+            }
+        
+        
+            if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
+                document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+                    this.closeRightSide();
+                })
+            }
+
+            
         }
     }
 

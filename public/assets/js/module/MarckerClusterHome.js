@@ -210,7 +210,7 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(stationMarker, "station");
             
             if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + dataStation.departementCode.toString().toString().trim() + "/" + dataStation.departementName.toString().trim().replace("?", "") + "/details/" + dataStation.id)
+                getDetailStation( dataStation.departementName.toString().trim().replace("?", ""), dataStation.departementCode.toString().toString().trim(), dataStation.id, true)
             } else {
                 getDetailStation( dataStation.departementName.toString().trim().replace("?", ""), dataStation.departementCode.toString().toString().trim(), dataStation.id, true)
             }
@@ -254,10 +254,8 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(fermeMarker, "ferme")
 
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${dataFerme.departementName}/${dataFerme.departement}/details/${dataFerme.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true)
             }
 
@@ -333,8 +331,7 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(restoMarker, "resto")
             
             if (screen.width < 991) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
-                location.assign(pathDetails)
+                getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true)
             } else {
                 getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true)
             }
@@ -413,10 +410,8 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(golfMarker, "golf")
             
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             }
 
@@ -462,10 +457,8 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(tabacMarker, "tabac")
 
             if (screen.width < 991) {
-                let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailTabac(item.dep, item.nom_dep, item.id, true)
             }
         })
@@ -960,5 +953,46 @@ class MarckerClusterHome extends MapModule  {
         });
 
         this.markers.refreshClusters();
+    }
+
+    /**
+     *@author Nantenaina a ne pas contacté pendant les congés 
+      où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+     * localisation du fichier: dans MarkerClusterHome.js,
+     * je veux: rendre le marker draggable
+     * si un utilisateur veut modifier une ou des informations
+     * @param {} id 
+     */
+      makeMarkerDraggable(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
+                let initialPos=marker.getLatLng();
+                marker.dragging.enable()
+                
+                marker.on("dragend",(e)=>{
+                    let position = marker.getLatLng();
+                    let lat=position.lat
+                    let lng=position.lng
+                    $("#userModifResto").modal("show")
+                    document.querySelector("#newLatitude").value = lat
+                    document.querySelector("#newLongitude").value = lng
+                    document.querySelector("#newIdResto").value = id
+                    setTimeout(()=>{
+                        swal("Ça fait 10 minutes que vous n'avez effectué aucune modification sur le marquer, le mode interactif sur le marquer sera désactivé.").then(()=>{
+                            marker.setLatLng(initialPos, {
+                                draggable: 'false'
+                            })
+                            marker.dragging.disable()
+
+                        })
+                        
+                    },600000)
+
+                    console.log(position)
+                })
+
+                console.log(marker)
+            }
+        });
     }
 }

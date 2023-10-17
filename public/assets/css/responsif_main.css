@@ -6,7 +6,9 @@
         display: none ;
     } */
 
-    
+    .content_photos{
+        width: 71%;
+    }
     .leaflet-control-zoom{
         display: block !important;
     }
@@ -107,17 +109,172 @@
         margin-left: 84vw;
     }
 
+    .scroll-mobile{
+        overflow-x: scroll;
+        overflow-y: hidden;
+    }
 
+    .content_filter_dep {
+        top: 170px !important;
+        left: 119px !important;
+    }
+
+    .liste-depart-tomm{
+        z-index: 401;
+        position: absolute;
+        top: 170px;
+        left: 150px;
+        height: 30px;
+        border-radius: 15px;
+        padding: 3px;
+    }
+
+    .content_right_actualite .exprime-pub {
+        margin-top: 0px !important;
+    }
+
+    .btn-spec{
+        position: absolute;
+        top: 170px;
+        left: 140px;
+        z-index: 401;
+        font-size: 8pt;
+        width: 150px;
+    }
+
+    .marge-top-mobile-logo{
+        margin-top: 200px;
+    }
+
+    .modal-content-mobile{
+        height: 98vh;
+
+    }
+
+    .modal-body-mobile{
+        height: 75vh;
+        overflow-y: scroll;
+    }
+
+    .content-type-mobile{
+        width: 100%;
+        height: 75vh !important;
+        z-index: 10401;
+        margin-top: 160px;
+    }
+
+    .content_header_right_side{
+        margin-top: 0 !important;
+    }
+
+    .content_legende{
+        height: 80vh;
+        margin-top: 151px;
+        z-index: 10401;
+    }
+
+    .form-check{
+        font-size: 6pt !important;
+    }
+    .leaflet-control-layers-selector {
+        top: 3px !important;
+    }
+
+    .title_right_side{
+        font-size: 9pt !important;
+    }
+
+    .right_side_body .table thead{
+        font-size: 9pt !important;
+    }
+
+    .content_start i{
+        font-size: 9pt;
+    }
+
+    .font-point-6{
+        font-size: 6pt !important;
+    }
+
+   
+
+    .content_profil_image .profil_image{
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    .right_side_body .table tbody{
+        font-size: 6pt !important;
+    }
+
+    .select_action_golf {
+        font-size: 7pt !important;
+        width: 20% !important;
+        margin-top: -31px;
+        padding: 3px;
+        margin-left: 243px;
+    }
+    .icon_golf_legend {
+        width: 20px !important;
+        height: 0 !important;
+    }
+
+    .text-point-7{
+        font-size: 7pt !important;
+    }
+
+    .span-btn-menu-tribut{
+        width: 130px !important;
+    }
+
+    .span-btn-menu-en-lign{
+        width: 215px !important;
+    }
+
+    .right_side_body {
+        margin-top: 30px !important;
+    }
+
+    .right_side_body .form-check-input{
+        margin-top: 8px;
+    }
+
+    .titre-tribu-t {
+        font-size: 15pt;
+        margin-top: 20px;
+        color: #6D6DFE !important;
+    }
+
+    .descrp-tribu-t {
+        margin-left: 131px !important;
+        font-size: 9pt;
+    }
+
+    .swal2-popup{
+        margin-top: -160px;
+    }
 
     .navleft-mobile{
         background-color: #fff;
         width: 100vw;
         border-radius: 5px;
         height: 100vh;
+        margin-top: 155px;
         box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
         position: fixed;
-        
-        z-index: 1030;
+        z-index: 10402;
+    }
+
+    #restoPastilleModal{
+        z-index: 10401;
+    }
+
+    #staticBackdrop{
+        z-index: 10405;
+    }
+
+    .scroll-mobile .navbar-nav .nav-item .nav-link{
+        font-size: 9pt;
     }
 
     .logo-consomyzone-specific img {
@@ -143,6 +300,7 @@
 
     .content-nav-left{
         margin-top: 15px ;
+        z-index: 1031 !important;
     }
 
     #list-depart-mobile {
@@ -338,10 +496,20 @@
     }
 
     .close-ferme {
-        margin-top: -100px;
+        margin-top: -40px;
         margin-left: 90vw;
+        
     }
-
+    
+    .text-point-9{
+        font-size: 9pt !important;
+    }
+    .text-point-10{
+        font-size: 10pt !important;
+    }
+    .text-point-12{
+        font-size: 12pt !important;
+    }
     .swipe-me-reverse {
 
         transform: translateX(-50vh);
@@ -356,15 +524,20 @@
         z-index: 1400 !important;
         background-color: #fff;
         width: 100vw;
-        height: 100vh;
+        height: 80vh;
+        margin-top: 155px;
         padding-top: 25px;
         /* overflow-y: scroll !important; */
     }
 
     .list-depart-all-mobile {
         position: relative;
-        height: 75vh;
+        height: 47vh;
         overflow-y: scroll !important;
+    }
+
+    .list-depart-all-mobile {
+        height: 60vh;
     }
 
 
@@ -405,11 +578,20 @@
         fill: #000;
         transform: scale(1.2);
     }
+    .form-select-detail.select_action_golf_nanta_js {
+        font-size: 12pt !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        padding: 3px;
+        margin-left: 0!important;
+        border: #000 1px solid;
+        border-radius: 3px;
+    }
 
     .open-navleft-mobile i {
         position: absolute;
         left: 15px;
-        top: 15px;
+        top: 160px;
         z-index: 401;
         background-color: #2343ac;
         width: 50px;
@@ -419,7 +601,18 @@
         color: #fff;
         padding-top: 12px;
         font-size: 18pt;
+        animation: 1s linear 1s infinite alternate slidein;
     }
+
+        @keyframes slidein {
+            from {
+                transform: scale(100%);
+            }
+    
+            to {
+                transform: scale(80%);
+            }
+        }
 
     .open-search-mobil  i {
         position: absolute;
@@ -444,8 +637,38 @@
         z-index: 401;
     }
 
+    .content-search-mob{
+        width: 100%;
+    }
+
+    #modalAvisRestaurant{
+        z-index: 10404;
+    }
+
+    #restoPastilleModal{
+        z-index: 10405;
+    }
+    .modal-backdrop{
+        z-index: 10405;
+    }
+    
+    .navleft-detail-mobile {
+        transform: translate(1vw, 1vh) !important;
+        width: 355px;
+        z-index: 10404 !important;
+    }
+    .swal-overlay--show-modal{
+        z-index: 10405 !important;
+    }
+
+   
+    .content_description {
+        height: 95vh !important;
+    }
+
     .content-logo-shearch {
-        width: 300px !important;
+        width: 100% !important;
+        margin-left: 0px !important;
     }
 
     .search-resto-mobil-none{
@@ -455,6 +678,13 @@
     .navbar-brand img {
         width: 6rem !important;
         margin-top: 0.7rem !important;
+    }
+
+    .navbar-brand-mobile svg {
+        position: absolute;
+        top: 20vh;
+        left: 85vw;
+        z-index: 401;
     }
 
     .logo-consomyzone {
@@ -471,11 +701,15 @@
         overflow-x: hidden;
     }
 
+    .list-depart-golf-specific {
+        height: 60vh;
+    }
+
     .list-depart-all-specific ul .card-list {
         list-style: none;
         background-color: #e7e7e7;
         width: 84vw;
-        height: 34vh;
+        height: auto !important;
         margin-left: 0px;
         margin-bottom: 20px;
         border-radius: 12px;
@@ -577,10 +811,14 @@
 
     .list-depart-all {
         position: relative;
-        height: 75vh;
+        height: 55vh;
         overflow-y: scroll !important;
         padding-left: 50px !important;
-        
+        overflow-x: hidden;
+    }
+
+    .list-depart-arrand{
+        height: 60vh;
     }
 
 
@@ -633,11 +871,12 @@
 
     .content-mobil-ferme {
         position: relative;
-        z-index: 401 !important;
+        z-index: 10401 !important;
         background-color: #fff;
         width: 100vw;
-        height: 100vh;
-        padding-top: 50px;
+        height: 80vh;
+        margin-top: 155px;
+        padding-top: 10px;
     }
 
     .content_list_menu {
@@ -715,10 +954,8 @@
     }
 
     .container-invitation {
-        margin-left: 120px !important;
-        margin-top: 115px !important;
-        /* width: 100vw !important; */
-
+        margin-left: 70px !important;
+        margin-top: 165px !important;
     }
 
     .container-invitation-menu {
@@ -843,6 +1080,22 @@
              margin-top: 15px; 
           } */
 
+    .apropos-tribu-t {
+        right: 18px !important;
+        height: 80vh !important;
+        width: 90% !important;
+    }
+
+    .btn-navright-tribut{
+        position: absolute;
+        top: 105px;
+        right: 0px;
+    }
+
+    .btn-ferme-tribut {
+        font-size: 16pt;
+    }
+
     .dropDownMenu {
         background-color: blue;
         text-align: justify !important;
@@ -860,7 +1113,7 @@
         /* overflow-x: hidden; */
         position: relative !important;
         right: 0;
-        top: -60px !important;
+        top: 0 !important;
         padding: 0px !important;
         margin-left: 0px !important;
     }
@@ -1002,10 +1255,13 @@
         margin-right: 0px !important;
     }
 
-    .card-couverture-pub-tribu-t {
-        width: 100vw !important;
-        margin-top: -190px !important;
-    }
+   .card-couverture-pub-tribu-t {
+       width: 91vw !important;
+        height: 35vh !important;
+       margin-top: 0px !important;
+   }
+
+
 
     .card-couverture-pub-tribu-t .content-couverture {
         width: 100vw !important;
@@ -1033,7 +1289,7 @@
     }
 
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture img {
-        height: 50px !important;
+        height: 60px !important;
     }
 
     .content-tribu-t-name {
@@ -1094,6 +1350,174 @@
         background-color: transparent;
     } */
 
+    .navbar-mobile-all{
+        position: absolute;
+        width: 100% !important;
+        z-index: 401;
+    }
+
+    .leaflet-control-zoom.leaflet-bar.leaflet-control{
+        margin-top: 70px !important;
+    }
+
+    .btn_group_vertical {
+        margin-top: 10px !important;
+    }
+
+    .modal-avie-resto-mobile-tomm-js{
+        z-index: 10405 !important;
+    }
+
+    .active-mobile{
+        background-color: #1111fe;
+        color: #fff !important;
+        border-radius: 5px;
+        width: 75px;
+        height: 55px;
+    }
+
+    .active-mobile svg{
+        fill: #fff !important;
+        border: 2px solid #fff !important;
+    }
+
+    .spec-dep {
+        margin-top: 20px;
+    }
+
+    .specific-detail{
+        width: 100%;
+        position: absolute;
+        bottom: 10px;
+    }
+
+    .swal-overlay{
+        z-index: 10403;
+    }
+
+    
+
+    .containt-specific{
+        
+        background-color: #fff;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        width: 85vw;
+        height: 28vh;
+        z-index: 401;
+        padding: 5px;
+    }
+
+    .containt-specific p{
+        /* margin-bottom: -5px; */
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .containt-specific-detail{
+        background-color: #fff;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        width: 85vw;
+        height: 28vh;
+        z-index: 402;
+        padding: 5px;
+    }
+
+    #form {
+        height: 60vh !important;
+        margin-top: 10px !important;
+    }
+
+    .swal2-popup{
+        z-index: 10402 !important;
+    }
+
+    .all-z-index{
+        z-index: 1401 !important;
+    }
+    #modalAvisRestaurant {
+        margin-top: 0 !important;
+    }
+
+    .content_home_detail_mobile{
+        margin-top: 10rem !important;
+    }
+
+    .list-depart-resto-mobile-tomm-js{
+        position: absolute;
+        z-index: 10000;
+    }
+
+    .ferme-genre{
+        font-size: 8pt !important;
+        background-color: #b1b1b1;
+        padding: 2px;
+        
+    }
+
+    .containt-specific-arrandismant {
+        background-color: #fff;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        width: 60vw;
+        height: 12vh;
+        z-index: 401;
+        padding: 5px;
+    }
+
+    .apropos-tribu-g {
+        position: absolute !important;
+        top: 135px !important;
+        right: 15px !important;
+        width: 360px !important;
+    }
+
+    .content-pub {
+        /* margin-top: 273px !important; */
+        margin-top: 0px !important;
+    }
+
+    .content_list_p_tG {
+        width: 100% !important;
+    }
+
+    .content_photos{
+        width: 100% !important;
+    }
+
+    .img_nantenaina img{
+        width: 25px;
+        clip-path: circle();
+    }
+    
+    .loading-tomm-js{
+        position: absolute;
+        top: 35%;
+        right: 0;
+    }
+    
+
+    .en-lign-mobile{
+        position: absolute;
+        background: #fff;
+        width: 100%;
+        height: 85vh;
+        z-index: 1;
+    }
+
+    .margin-top-280{
+        margin-top: 280px !important;
+    }
+
+    .modal_visio {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
 }
 
 @media screen and (max-width:400px) and (min-width:300px) {
@@ -1102,9 +1526,9 @@
 
     }
 
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
-        height: 17vh !important;
-    }
+    /* .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
+        height: 1vh !important;
+    } */
     .account-profil-conected .pdp img {
         width: 110px !important;
     }
@@ -2331,25 +2755,6 @@
 
 @media screen and (min-height: 600px)  and (max-height : 799px){
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
-        height: 21vh !important;
+        height: 15vh !important;
     }
 }
-
-/* @media screen and (min-height: 800px) and (max-height : 1056px) {
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
-        height: 216px !important;
-    }
-
-    .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
-        height: 157px !important;
-    }
-
-
-    .content_right_actualite .card-couverture-pub-tribu-t {
-        height: 25vh !important;
-    }
-
-    .listTribu_t_mobile {
-        margin-top: -115px !important;
-    }
-}   */

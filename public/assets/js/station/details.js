@@ -1,5 +1,21 @@
 function getDetailFromListLeft(depart_name, depart_code, id) { 
-    OBJECT_MARKERS_STATION.clickOnMarker(id)
+    if(OBJECT_MARKERS_STATION.clickOnMarker(id)){
+        OBJECT_MARKERS_STATION.clickOnMarker(id)
+    }else{
+        if (screen.width < 991) {
+            // var pathDetails = `/station/departement/${depart_name}/${depart_code}/details/${id}`;
+            // location.assign(pathDetails)
+            getDetailStation(depart_code, depart_name, id, false,select_dem)
+            
+        } else {
+            const select_dem = document.querySelector("#open-navleft-resto-spec-mobile-tomm-js")
+            getDetailStation(depart_code, depart_name, id, false,select_dem)
+        }
+
+        /// update card and the markers new
+        OBJECT_MARKERS_RESTO.fetchOneData(id)
+    }
+    
 }
 
 let remove = document.getElementById("remove-detail-station")

@@ -50,7 +50,6 @@ class MarckerClusterSearch extends MapModule  {
             // const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
             // const latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
 
-
             const latLong= await this.getCenterFromOpenStreetMap();
             this.initMap(latLong.lat, latLong.long, latLong.zoom, this.isAddControl);
             this.bindAction();
@@ -265,7 +264,8 @@ class MarckerClusterSearch extends MapModule  {
 
             // @Route("/station/departement/{depart_code}/{depart_name}/details/{id}" , name="station_details", methods={"GET"})
             if (screen.width < 991) {
-                getDetailHomeForMobile("/station/departement/" + item.dep.toString().trim() + "/" + item.depName.trim().replace("?", "") + "/details/" + item.id)
+                getDetailStation(item.depName.trim().replace("?", ""), item.dep.toString().trim(),item.id, true)
+                // getDetailHomeForMobile("/station/departement/" + item.dep.toString().trim() + "/" + item.depName.trim().replace("?", "") + "/details/" + item.id)
             } else {
                 getDetailStation(item.depName.trim().replace("?", ""), item.dep.toString().trim(),item.id, true)
             }
@@ -319,8 +319,9 @@ class MarckerClusterSearch extends MapModule  {
             this.updateLastMarkerSelected(marker, "ferme");
 
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailFerme(item.departement, item.departementName, item.id, true)
+                // let pathDetails = `/ferme/departement/${item.departementName}/${item.departement}/details/${item.id}`
+                // getDetailHomeForMobile(pathDetails)
             } else {
                 // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailFerme(item.departement, item.departementName, item.id, true)
@@ -397,8 +398,9 @@ class MarckerClusterSearch extends MapModule  {
             this.updateLastMarkerSelected(marker, "resto");
             
             if (screen.width < 991) {
-                var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
-                location.assign(pathDetails)
+                getDetailResto(item.dep, item.depName, item.id, true)
+                // var pathDetails = `/restaurant-mobile/departement/${departementName}/${dataResto.dep}/details/${dataResto.id}`;
+                // location.assign(pathDetails)
             } else {
                 getDetailResto(item.dep, item.depName, item.id, true)
             }
@@ -442,7 +444,7 @@ class MarckerClusterSearch extends MapModule  {
 
             const itemID= item.id
             const golfUpdate = this.data.results[0].find(jtem => jtem.hasOwnProperty('golf') && parseInt(jtem.id) === itemID );
-            console.log(golfUpdate)
+            // console.log(golfUpdate)
             this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
 
 
@@ -476,10 +478,8 @@ class MarckerClusterSearch extends MapModule  {
             this.updateLastMarkerSelected(marker, "golf");
             
             if (screen.width < 991) {
-                let pathDetails = `/ferme/departement/${golfUpdate.nom_dep}/${golfUpdate.dep}/details/${golfUpdate.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
             }
 
@@ -527,10 +527,8 @@ class MarckerClusterSearch extends MapModule  {
 
             
             if (screen.width < 991) {
-                let pathDetails = `/tabac/departement/${item.nom_dep}/${item.dep}/details/${item.id}`
-                getDetailHomeForMobile(pathDetails)
+                getDetailTabac(item.dep, item.nom_dep, item.id, true)
             } else {
-                // getDetailsFerme(pathDetails, true)getDetailStation
                 getDetailTabac(item.dep, item.nom_dep, item.id, true)
             }
 
@@ -988,6 +986,47 @@ class MarckerClusterSearch extends MapModule  {
         });
 
         this.markers.refreshClusters();
+    }
+
+    /**
+     *@author Nantenaina a ne pas contacté pendant les congés 
+      où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+     * localisation du fichier: dans MarkerClusterSearch.js,
+     * je veux: rendre le marker draggable
+     * si un utilisateur veut modifier une ou des informations
+     * @param {} id 
+     */
+      makeMarkerDraggable(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id)  && marker.options.type === "resto" ) {
+                let initialPos=marker.getLatLng();
+                marker.dragging.enable()
+                
+                marker.on("dragend",(e)=>{
+                    let position = marker.getLatLng();
+                    let lat=position.lat
+                    let lng=position.lng
+                    $("#userModifResto").modal("show")
+                    document.querySelector("#newLatitude").value = lat
+                    document.querySelector("#newLongitude").value = lng
+                    document.querySelector("#newIdResto").value = id
+                    setTimeout(()=>{
+                        swal("Ça fait 10 minutes que vous n'avez effectué aucune modification sur le marquer, le mode interactif sur le marquer sera désactivé.").then(()=>{
+                            marker.setLatLng(initialPos, {
+                                draggable: 'false'
+                            })
+                            marker.dragging.disable()
+
+                        })
+                        
+                    },600000)
+
+                    console.log(position)
+                })
+
+                console.log(marker)
+            }
+        });
     }
 
 }

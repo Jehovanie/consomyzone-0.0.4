@@ -403,12 +403,18 @@ if(document.getElementById("open_menu")){
 
 
 window.addEventListener('load', () => {
-    if(!!isValueInCookie("isCanUseCookie") === false){
-        askClientToUseCookie();
-    }else{
-        if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
-            getToastMessage()
+    const link_now= new URL(window.location.href)
+    const linkPathname= link_now.pathname;
+    if(!linkPathname.includes("/actualite-non-active")){
+        
+        if(!!isValueInCookie("isCanUseCookie") === false){
+            askClientToUseCookie();
+        }else{
+            if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
+                getToastMessage()
+            }
         }
+
     }
 })
 /// --------------- end of this rtesponsive for mobile ---------
@@ -566,7 +572,7 @@ if (document.querySelector("#menu-mobile-tribut")) {
 
 if (document.querySelector(".tribu_t")) {
     document.querySelector(".tribu_t").onclick = () => {
-        alert("Please")
+        // alert("Please")
         // document.querySelector(".content_list_menu_tribut_mob").classList.toggle("transition-mob")
     }
 }
@@ -578,16 +584,24 @@ if (document.querySelector(".tribu_t")) {
 if (document.querySelector(".list-nav-bar")) {
     const activPage = window.location.pathname;
     
-    if( activPage.includes("/ferme")){
+    if (document.querySelector(".tout-dem-tomm-js")) {
+        document.querySelector("#tous-page").classList.add("active");
+        document.querySelector(".tous-page-mobile").classList.add("active-mobile");
+    }else if (activPage.includes("/ferme")) {
         document.querySelector("#ferme-page").classList.add("active");
+        document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/restaurant")){
         document.querySelector("#resto-page").classList.add("active");
+        document.querySelector(".resto-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/station")){
         document.querySelector("#station-page").classList.add("active");
+        document.querySelector(".station-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/golf")){
         document.querySelector("#golf-page").classList.add("active");
+        document.querySelector(".golf-page-mobile").classList.add("active-mobile");
     }else if( activPage.includes("/tabac")){
         document.querySelector("#tabac-page").classList.add("active");
+        document.querySelector(".tabac-page-mobile").classList.add("active-mobile");
     }else if(activPage.length === 1 || activPage.includes("/search/tous") ){
         document.querySelector("#tous-page").classList.add("active");
     }
@@ -983,8 +997,22 @@ function openSwalActifPastille() {
 function openSwalNonActif(){
 
     swal({
-        text: "Cette fonctionnalité est en cours de développement, merci de votre compréhension.",
+        text: "Cette fonctionnalité est en cours de développement ou en maintenance, merci de votre compréhension.",
         icon: "info",
+      });
+}
+
+/**
+ * Function opening a sweet alert on click button inactif
+ * @constructor
+ */
+function openSwalProfilUnCompleted(){
+
+    swal({
+        text: "Votre profil est incomplet, veuillez le compléter, pour acceder à ce menu.",
+        icon: "info",
+      }).then(()=>{
+         location.href="/actualite-non-active"
       });
 }
 
@@ -1914,7 +1942,7 @@ function getToastMessage(){
                 if(!linkPathname.includes("/connexion")){
                     generateOneToastMessage(
                         0,
-                        "Veuillez vous connecter pour accéder à tous les informations importants sur notre application.",
+                        JSON.stringify("Veuillez vous connecter pour accéder à tous les informations importants sur notre application."),
                         3,  //// type de notification : 0 alert, 1 primary, 2 news
                         10000
                     );
@@ -1936,13 +1964,13 @@ function getToastMessage(){
 function generateToastMessage(data){
     data.forEach((item, index) => {
 
-        if(!!isValueInCookie(`toast_message_${item.id}`) === false){
+        if(parseInt(isValueInCookie(`toast_message_${item.id}`)) !== 1 ){
             setTimeout(() => {
                 generateOneToastMessage(
                     item.id,
                     item.toast_message,
                     item.type, //// type de notification : 0 alert, 1 primary, 2 news
-                    6000
+                    10000
                 );
             }, 1000 * (index + 1))
         }
@@ -1979,7 +2007,7 @@ function generateOneToastMessage(toastId, message,type, duration){
     `
     contentDivElement.innerHTML = `
         <div>
-            <p>${message} </p>
+            <p>${JSON.parse(message)} </p>
         </div>
         ${btn}
     `
@@ -2001,11 +2029,12 @@ function generateOneToastMessage(toastId, message,type, duration){
           color: parseInt(type) === 0 ? alert : ( parseInt(type) === 1 ? info :  news),
           background:  parseInt(type) === 0 ? bg_alert : ( parseInt(type) === 1 ? bg_info : bg_news ),
           fontSize: '0.9rem',
-          width: '350px'
+          width: '350px',
+          maxWidth: screen.width <= 375 ? '75vw': '93vw'
         },
-        onClick: function(){ // Callback after click
-            clickedOnToastMessage(toastId)
-        } 
+        // onClick: function(){ // Callback after click
+        //     clickedOnToastMessage(toastId)
+        // } 
     }).showToast();
 }
 
@@ -2050,7 +2079,7 @@ function askClientToUseCookie(){
             </p>
         </div>
         <div>
-            <button type="button" class="btn btn-danger" style="float: right" onclick="notCanUseCookie()">
+            <button type="button" class="btn btn-danger mb-2" style="float: right" onclick="notCanUseCookie()">
                 Non, merci
             </button>
             <button type="button" class="btn btn-primary me-2" style="float: right" onclick="showToastMessage()">
@@ -2073,7 +2102,8 @@ function askClientToUseCookie(){
           color: '#084298',
           background: "#cfe2ff",
           fontSize: '0.9rem',
-          width: '100vw'
+          width: screen.width < 991 ? '100vw' : '45vw',
+          maxWidth: '93vw'
         },
         onClick: function(){ // Callback after click
             console.log("onclick...")
@@ -2108,3 +2138,23 @@ function isValueInCookie(cName) {
 
     return res ? res.substring(name.length) : 0;
 }
+if (document.querySelector(".btn-navright-tribut-tomm-js")) {
+    document.querySelector(".btn-navright-tribut-tomm-js").addEventListener('click', () => {
+        document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
+        
+    })
+}
+
+if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
+    document.querySelector(".btn-navright-en-lign-tomm-js").addEventListener('click', () => {
+        document.querySelector(".en-lign-mobile-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".fermet-en-lign-tomm-js").classList.toggle('responsif-none')
+        document.querySelector(".menu-en-lign-tomm-js").classList.toggle('span-btn-menu-en-lign')
+        
+    })
+}
+

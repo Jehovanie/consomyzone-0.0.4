@@ -460,7 +460,7 @@ body {
  .icon-ferme a svg{
     width: 25px;
     height: 25px;
-    border: 2px solid #fe1111 !important;
+    border: 2px solid #fe1111;
     border-radius: 8px;
     fill: #fe1111;
 }
@@ -488,7 +488,7 @@ body {
  .icon-resto a svg {
     width: 25px;
     height: 25px;
-    border: 2px solid #000 !important;
+    border: 2px solid #000;
     border-radius: 8px;
     fill: #000;
 }
@@ -503,20 +503,20 @@ body {
 
 
  .icon-station {
-    color: #28BE21;
+    color: #0D6EFD;
 }
 
 .icon-station .list-nav-bar:hover{
-    background-color: #28BE21;
+    background-color: #0D6EFD;
     color: #fff;
 }
 
  .icon-station a svg {
     width: 25px;
     height: 25px;
-    border: 2px solid #28BE21 !important;
+    border: 2px solid #0D6EFD ;
     border-radius: 8px;
-    fill: #28BE21;
+    fill: #0D6EFD;
 }
 
 .icon-station a:hover svg {
@@ -526,6 +526,8 @@ body {
     border-radius: 8px;
     fill: #fff;
 }
+
+
 
 
  .icon-recherche a svg {
@@ -541,25 +543,27 @@ body {
     height: 25px;
     border: 2px solid #fff !important;
     border-radius: 8px;
-    fill: #fff;
+    fill: #66A65A;
 }
 
 .icon-golf a svg {
     width: 25px;
     height: 25px;
-    border: 2px solid #0D6EFD !important;
+    border: 2px solid #66A65A;
     border-radius: 8px;
-    fill: #0D6EFD;
+    fill: #66A65A;
 }
 
 .icon-golf .list-nav-bar:hover {
-    background-color: #0D6EFD;
+    background-color: #66A65A;
     color: #fff;
 }
 .icon-golf .list-nav-bar:hover {
-    background-color: #0D6EFD;
+    background-color: #66A65A;
     color: #fff;
 }
+
+
 
  .icon-recherche a svg:hover {
     width: 25px;
@@ -569,6 +573,32 @@ body {
     background-color: #B40404;
     fill: #fff;
     /* transform: scale(1.3); */
+}
+
+.icon-tabac a:hover svg {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #fff !important;
+    border-radius: 8px;
+    fill: #DA341E;
+}
+
+.icon-tabac a svg {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #DA341E;
+    border-radius: 8px;
+    fill: #DA341E;
+}
+
+.icon-tabac .list-nav-bar:hover {
+    background-color: #DA341E;
+    color: #fff;
+}
+
+.icon-tabac .list-nav-bar:hover {
+    background-color: #DA341E;
+    color: #fff;
 }
 
 .navbar-light-bar .icon-connexion .svg-1{
@@ -2341,4 +2371,18 @@ textarea {
     background-color: green !important;
     border-color: green !important;
     color: white !important;
+}
+
+
+.drop_down_map{
+    font-size: 1.2rem;
+    color: black;
+    margin-left: 10px;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+.text_black{
+    color:black;
 }
