@@ -1155,7 +1155,7 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null, $limit= 200){
         $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
@@ -1215,8 +1215,8 @@ class BddRestoRepository extends ServiceEntityRepository
                            ->setParameter("codinsee", $codinsee);
         }
 
-        return $query->orderBy('RAND()')
-                    ->setMaxResults(200)
+        return $query
+                    ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
     }

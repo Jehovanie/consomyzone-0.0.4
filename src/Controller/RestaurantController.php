@@ -141,7 +141,7 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, null,100);
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -149,13 +149,14 @@ class RestaurantController extends AbstractController
             //merge of resto data and note 
             // $l=array_map("self::mergeDatasAndAvis",$datas,$moyenneNote);
             return $this->json([
-                "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
+                // "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
+                "data" => [],
                 "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }
 
         //// data resto all departement
-        $datas= $bddResto->getSomeDataShuffle(2000);
+        $datas= $bddResto->getSomeDataShuffle(1000);
 
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);

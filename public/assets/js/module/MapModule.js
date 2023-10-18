@@ -52,10 +52,10 @@ class MapModule{
         this.tiles = L.tileLayer(this.listTales[0].link, {
             // attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            minZoom: 1,
+            minZoom: 6,
             maxZoom: 19
         })
-    } /// - //{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png
+    }
 
 
     getUserLocation(){
@@ -742,7 +742,8 @@ class MapModule{
     
     //// get Max
     getMax(max,min){
-        if(Math.abs(max)<Math.abs(min))
+        // if(Math.abs(max)<Math.abs(min))
+        if(parseFloat(max)<parseFloat(min))
             return {max:min,min:max} 
         else
            return {max:max,min:min}
@@ -1531,5 +1532,11 @@ class MapModule{
             shadowSize: [68, 95],
             shadowAnchor: [22, 94],
         })
+    }
+
+
+
+    filterSomeData(entierDecimal, ratio){
+
     }
 }
