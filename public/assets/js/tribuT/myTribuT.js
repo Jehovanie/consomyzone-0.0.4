@@ -2163,6 +2163,7 @@ function fetchAllTribuGMember() {
             if (response.length > 0) {
                 tbody.innerHTML = ""
                 for (const item of response) {
+                    console.log(item);
                     let ancorOrbutton = ""
                     if (item.isMember != "not_invited") {
                         if (item.isMember == "refuse") {

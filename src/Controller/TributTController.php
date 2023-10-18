@@ -2652,20 +2652,29 @@ class TributTController extends AbstractController
                 $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
     
                 $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+
                 $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
-    
-                foreach($arrayTribuT as $tribuT){
+
+                if(array_key_exists("name", $arrayTribuT)){
+                    if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                        $apropos_tribuTtoJoined= $arrayTribuT;
+                    }
+                }else{
+                    foreach($arrayTribuT as $tribuT){
                     
-                    if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                        $apropos_tribuTtoJoined= $tribuT;
-                        break;
+                        if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                            $apropos_tribuTtoJoined= $tribuT;
+                            break;
+                        }
                     }
                 }
-    
+
                 //// set tribu T for this new user.
                 $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
                 
-    
+                ///update status of the user in table tribu T
+                $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
+
                 $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
     
             }
