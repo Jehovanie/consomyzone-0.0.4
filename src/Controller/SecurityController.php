@@ -106,7 +106,6 @@ class SecurityController extends AbstractController
     ): Response {
 
         if ($this->getUser()) {
-
             return $this->redirectToRoute('app_account');
         }
 

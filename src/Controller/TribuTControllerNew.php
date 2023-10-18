@@ -78,15 +78,16 @@ class TribuTControllerNew extends AbstractController{
     private $filesyst;
 
     function __construct(
-    MailService $mailService, 
+        MailService $mailService, 
 
-    EntityManagerInterface $entityManager, 
+        EntityManagerInterface $entityManager, 
 
-    KernelInterface $appKernel, 
+        KernelInterface $appKernel, 
 
-    RequestingService $requesting,
+        RequestingService $requesting,
 
-    Filesystem $filesyst)
+        Filesystem $filesyst
+    )
 
     {
 
@@ -101,13 +102,31 @@ class TribuTControllerNew extends AbstractController{
         $this->filesyst = $filesyst;
 
     }
-    #[Route("/tribu/my-tribu-t/accueil", name: "app_my_tribu_t_new")]
+
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique création tribu T cmz, 
+     * localisation du fichier: dans TribuTControllerNew.php,
+     * je veux: créer une tribu T
+     *
+     */
+    #[Route("/user/tribu/my-tribu-t/accueil", name: "app_my_tribu_t_new")]
     public function MyTribuT(
         Status $status,
         Request $request, 
         Tribu_T_ServiceNew $srvTribuT,
-        HachageTribuTNameRepository $hachageRepo
+        HachageTribuTNameRepository $hachageRepo,
+        Filesystem $filesyst
     ){
+        $user=$this->getUser();
+
+        if(!$user) {
+            return $this->redirectToRoute('app_account');
+        }
+
+        $userId = intval($user->getId());
+        $userType = $user->getType();
         $userConnected= $status->userProfilService($this->getUser());
         $defaultData = ['message' => 'reseigner le champ avec vos mots.'];
         $form = $this->createFormBuilder($defaultData)
@@ -139,9 +158,7 @@ class TribuTControllerNew extends AbstractController{
                     'required' => false
                 ])
                 ->getForm();
-        $user=$this->getUser();
-        $userId = intval($user->getId());
-        $userType = $user->getType();
+        
         if ($userType == "consumer") {
 
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
@@ -152,48 +169,86 @@ class TribuTControllerNew extends AbstractController{
         $form->handleRequest($request);
         //TODO handle submit
         if ($form->isSubmitted() && $form->isValid()){
+            $now = time();
+            //key fera office de nom de la table de la tribuT créée
+            $key='t'.$now.'u'.$userId;
             $data = $form->getData();
-            
             $logoTribuT=null;
-            if($data["upload"]){
-                
-                dd($data["upload"],$data["upload"]->getMimeType());
+            $imgTribuTDir=null;
+            $newImageName = null;
+            $dataImg = $data["upload"];
+            if($dataImg){
+                $imgExtension = $dataImg->guessExtension();
+                $newImageName = "img_".$now.".".$imgExtension;
+                $path = '/uploads/tribu_t/photo/'.$key."/";
+                $imgTribuTDir = $this->getParameter('kernel.project_dir')."/public".$path;
+                if(!($filesyst->exists($imgTribuTDir)))
+                        $filesyst->mkdir($imgTribuTDir,0777);
+                        
+                $logoTribuT = $path.$newImageName;
+
             }else{
-                $logoTribuT=$data["upload"];
+                $logoTribuT="/uploads/tribu_t/photo/avatar_tribu.jpg";
             }
           
-            // $nomTribuT=json_encode($data["tribuTName"]);
-            // //key fera office de nom de la table de la tribuT créée
-            // $key='t'.time().'u'.$userId;
-            // $extensionRestaurent=$data["extension"];
-            // $extensionGolf=$data["extension_golf"];
-            // $description=json_encode($data["description"]);
+            $nomTribuT=json_encode($data["tribuTName"]);
+
+            $extensionRestaurent=$data["extension"];
+
+            $extensionGolf=$data["extension_golf"];
+
+            $description=json_encode($data["description"]);
             
+            //TODO insert one row in tribu T Owned table
+            $lastIdTribuTCreated=$srvTribuT->addTribuTOwned($user,$nomTribuT,$description,
+            $logoTribuT, $key,$extensionRestaurent,$extensionGolf);
 
-            // $logopath="";
-            // //TODO set into table tribu t owned 
-            // $lastIdTribuTCreated=$srvTribuT->createTribuTOwned($user,$nomTribuT,$description,
-            // $logopath, $key,$extensionRestaurent,$extensionGolf);
+            //TODO set into table hashing
+             $srvTribuT->createHachage($hachageRepo,$key,$lastIdTribuTCreated, $userId );
 
-            // //TODO set into table hashing
-            //  $srvTribuT->createHachage($hachageRepo,$key,$lastIdTribuTCreated, $userId );
+            //TODO create table tribu t
+            $srvTribuT->generateTribuTTables($key,$userId);
 
-            //  dd($data);
+            //TODO check if extensions are activated
+            if ($extensionRestaurent) {
+                $srvTribuT->createExtensionDynamicTable($key, "restaurant");
+            }
 
-            // //TODO create table tribu t
+            if ($extensionGolf) {
+                $srvTribuT->createExtensionDynamicTable($key, "golf");
+            }
 
-
-            // //TODO SAVE image
-
-
+            // $srvTribuT->addTribuTJoined($user, $userId, $key);
+            //TODO SAVE image
+            if($imgTribuTDir)
+                $dataImg->move($imgTribuTDir, $newImageName);
+            
+            $message = "Tribu " . $nomTribuT . " créée avec succes.";   
+            return $this->redirectToRoute("app_my_tribu_t_new" ,["message" => $message]);
         }
 
+        $tribuTOwned = $srvTribuT->getAllTribuTOwnedInfos($user);
+
+        $tribuTJoined = $srvTribuT->getAllTribuTJoinedInfos($user);
+
         //TODO get all publications of tribu T
+        $publications= [];
+        $allTribusT = array_merge($tribuTOwned, $tribuTJoined);
+        if(count($allTribusT) > 0 ){
+            $all_pub_tribuT= [];
+            foreach($allTribusT as $tribuT){
+                $temp_pub= $srvTribuT->getAllPublicationForOneTribuT($tribuT['nom_table_trbT']);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
 
-
-        return $this->render('tribu_t/tribuT.html copy.twig',[
+        return $this->render('tribu_t/tribuT.html.twig',[
+            "publications" => $publications,
             "userConnected" => $userConnected,
             "profil" => $profil,
+            "tribu_T_owned" => $tribuTOwned,
+            "tribu_T_joined" => $tribuTJoined,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
             "form" => $form->createView(),
         ]);
