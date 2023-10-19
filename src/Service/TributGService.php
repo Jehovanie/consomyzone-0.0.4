@@ -358,13 +358,18 @@ class TributGService extends PDOConnexionService{
         $userId = $user->getId();
 
         ////profil user connected
-        if($userType == "consumer") {
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        if($userType != 'Type'){
+            if($userType == "consumer") {
+                $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+            }else{
+                $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            }
+    
+            return $profil;
         }else{
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            return null;
         }
-
-        return $profil;
+        
     }
 
 
@@ -1260,7 +1265,7 @@ class TributGService extends PDOConnexionService{
         foreach($all_tables as $table ){
             try{
                 $tab= $table["table_name"];
-                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
+                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab INNER JOIN user ON $tab.user_id = user.id WHERE user.type != 'Type'");
                 $statement->execute();
                 $temp = $statement->fetch(PDO::FETCH_ASSOC);
                 array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
@@ -1290,7 +1295,7 @@ class TributGService extends PDOConnexionService{
                     $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
                 }
             }
-            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id";
+            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id WHERE user.type != 'Type'";
             
             //dd($sql);
             $query = $this->getPDO()->prepare($sql);

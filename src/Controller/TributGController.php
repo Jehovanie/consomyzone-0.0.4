@@ -289,21 +289,25 @@ class TributGController extends AbstractController
         foreach ($all_user_id_tribug as $user_id) {
             $user = $userRepository->find(intval($user_id["user_id"]));
 
-            $single_user = [
+            if($user && $user->getType()!= 'Type'){
 
-                "id" => $user->getId(),
+                $single_user = [
+    
+                    "id" => $user->getId(),
+    
+                    "email" => $user->getEmail(),
+    
+                    "firstname" => $userService->getUserFirstName($user->getId()),
+    
+                    "lastname" => $userService->getUserLastName($user->getId()),
+    
+                    "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId())
+    
+                ];
+    
+                array_push($memberTributG, $single_user);
+            }
 
-                "email" => $user->getEmail(),
-
-                "firstname" => $userService->getUserFirstName($user->getId()),
-
-                "lastname" => $userService->getUserLastName($user->getId()),
-
-                "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId())
-
-            ];
-
-            array_push($memberTributG, $single_user);
         }
 
 

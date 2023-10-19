@@ -50,7 +50,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 
-                if( $user_amis ){
+                if($user_amis && $user_amis->getType() != 'Type'){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -146,7 +146,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 
-                if( $user_amis ){
+                if($user_amis && $user_amis->getType() != 'Type' ){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -225,7 +225,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if ($user_amis) {
+                if ($user_amis && $user_amis->getType() != 'Type') {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -299,7 +299,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if ($user_amis) {
+                if ($user_amis && $user_amis->getType() != 'Type') {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [

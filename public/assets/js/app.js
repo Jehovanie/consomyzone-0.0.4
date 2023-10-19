@@ -2158,3 +2158,12 @@ if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
     })
 }
 
+/**
+ * @author Elie
+ * @Setting view message for partage agenda
+ */
+document.querySelectorAll("div.qf > div > div.bloc-text-message").forEach(div_mess=>{
+    if(!div_mess.parentElement.parentElement.classList.contains("rb")){
+        div_mess.classList.remove("text-white")
+    }
+})

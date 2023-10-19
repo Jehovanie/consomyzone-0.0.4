@@ -535,7 +535,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let canChangeTribuPicture = "";
     if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
+                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
@@ -2163,7 +2163,7 @@ function fetchAllTribuGMember() {
             if (response.length > 0) {
                 tbody.innerHTML = ""
                 for (const item of response) {
-                    console.log(item);
+                    // console.log(item);
                     let ancorOrbutton = ""
                     if (item.isMember != "not_invited") {
                         if (item.isMember == "refuse") {

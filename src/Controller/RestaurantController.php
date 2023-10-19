@@ -63,7 +63,7 @@ class RestaurantController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                
-                if( $user_amis ){
+                if( $user_amis && $user_amis->getType() != 'Type' ){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -399,7 +399,7 @@ class RestaurantController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                
-                if( $user_amis ){
+                if( $user_amis && $user_amis->getType() != 'Type'){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -620,7 +620,7 @@ class RestaurantController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if ($user_amis) {
+                if ($user_amis && $user_amis->getType() != 'Type') {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -740,20 +740,24 @@ class RestaurantController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
 
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                if($user_amis && $user_amis->getType()!="Type"){
+
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+    
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
  
@@ -872,20 +876,24 @@ class RestaurantController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
 
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                if($user_amis && $user_amis->getType() != 'Type'){
+
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
+    
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
  
