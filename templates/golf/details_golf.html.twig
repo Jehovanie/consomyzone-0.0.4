@@ -2,24 +2,32 @@
     <div class="content_titre_details">
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
-                <p> 
-                    {{details.nomGolf | upper}}  
-                    {% if (app.user and app.user.type!='Type') %}
-                        {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
-                            <span class="badge bg-info golf_status golf_status_jheo_js"></span>
-                        {% else %}
-                            {% if details.user_status["a_faire"] == "1" %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
-                            {% elseif details.user_status["fait"] == "1" %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
-                            {% elseif details.user_status["mon_golf"] == "1" %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
-                            {% else %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
+                <div class="row">
+                    <div class="col-8">
+                        <p> 
+                            {{details.nomGolf | upper}}  
+                            {% if (app.user and app.user.type!='Type') %}
+                                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                                    <span class="badge bg-info golf_status golf_status_jheo_js"></span>
+                                {% else %}
+                                    {% if details.user_status["a_faire"] == "1" %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
+                                    {% elseif details.user_status["fait"] == "1" %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
+                                    {% elseif details.user_status["mon_golf"] == "1" %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
+                                    {% else %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    {% endif %}
-                </p>
+                        </p>
+                    </div>
+                    <div class="col-4">
+                        <div class="logo-pastille-golf-tomm-js"></div>
+                    </div>
+                </div>
+                
                
             </blockquote>
             <figcaption class="blockquote-footer">
@@ -28,9 +36,9 @@
 
             {% if (app.user and app.user.type!='Type') %}
                 <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
-                    {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                    {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
                         <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
-                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange="executeActionForPastGolf({{details.id}})">
+                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf("{{details.id}}","{{details.nomGolf}}","{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
                             <option value="0">Aucun</option>
                             <option value="1">A faire</option>
                             <option value="2">Fait</option>
@@ -38,11 +46,27 @@
                         </select>
                         
                         {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
+                   
+                    
+
                     {% else %}
                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
                     {% endif %}
+
+                    {% if details.user_status["mon_golf"] == 1 and details.user_status["mon_golf"] == null %}
+                        <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
+                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf("{{details.id}}","{{details.nomGolf}}","{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+
+                            <option value="0">Aucun</option>
+                            <option value="1">A faire</option>
+                            <option value="2">Fait</option>
+                            <option value="3">Mon golf</option>
+                        </select>
+                    {% endif %}
                 </div>
             {% endif %}
+                <button class="btn btn-success" value="3" onclick="executeActionForPastMonGolf('{{details.id}}','{{details.nomGolf}}','{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}' )">Mon golf</button>
+
 
             {# {% set adresse = details.adr1|lower ~" "~ details.cp|lower ~" "~ details.nomCommune|lower %}
             <button class="btn btn-outline-primary mx-auto w-50 mb-2 mt-2" onclick="openVoirPlusChearch('{{details.nomGolf | raw}}','{{adresse | trim}}', 'golf')">Voir plus</button>  #}

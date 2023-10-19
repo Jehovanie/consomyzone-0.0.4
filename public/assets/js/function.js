@@ -2434,37 +2434,54 @@ function showPastillTable(e,id){
 }
 
 
+
+
 /**
  * @author Tomm
  * @action get list tribu T pastiller avec golf
  * @ou dans detail.js
  */
-function showPastillGolfTribuT(id_golf){
-    
-    
+function showPastillGolfTribuT(id_golf, name_golf, adress_golf){
     fetch(`/golf/pastilled/checking/${id_golf}`)
         .then(response => response.json())
         .then(datas => {
+            
             let listTibuTPast = ""
             datas.forEach(data => {
+                console.log(data)
+                if (data.isPastilled == true) {
+                    listTibuTPast += `
+                        <tr>
+                            <td>${data.logo_path}</td>
+                            <td>${data.name_tribu_t_muable}</td>
+                            <td>
+                                <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                            </td>
+                        </tr>
+                    `
+                } else {
+                    listTibuTPast += `
+                        <tr>
+                            <td>${data.logo_path}</td>
+                            <td>${data.name_tribu_t_muable}</td>
+                            <td>
+                                <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this)">Pastillez</button>
+                            </td>
+                        </tr>
+                    `
+                   
+                }
                 
-                listTibuTPast += `
-                    <tr>
-                        <td>${data.logo_path}</td>
-                        <td>${data.name_tribu_t_muable}</td>
-                        <td><button type="button" class="btn btn-success">Pastiller</button></td>
-                    </tr>
-                `
 
             })
             let modalPastillGolf = `
-            <div class="content-modal-pastille-golf">
+            <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
                 <div class="modal-pastille-golf">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header mb-4">
-                                <h5 class="modal-title">Modal title</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h5 class="modal-title">Tribu T pastiller</h5>
+                                <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
                             </div>
                             <hr>
                             <div class="modal-body mt-4 mb-4">
@@ -2478,7 +2495,6 @@ function showPastillGolfTribuT(id_golf){
                                     </thead>
                                     <tbody>
                                         ${listTibuTPast}
-                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -2488,17 +2504,31 @@ function showPastillGolfTribuT(id_golf){
                 </div>
             </div>
             `
+           
             if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
                 document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
             }
 
-
+            
+            
             
         })
+    
+        
     
     
 }
 
+/**
+ * @author Tomm
+ * @action close modal pastill golf
+ * @ou dans le fuction.js
+ */
+function closePastillGolf(id_golf) {
+    document.querySelector(".modal-pastille-golf-tomm-js").remove()
+    //.select_action_golf_tomm_js
+    document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0
+}
 
 
 function getSpectRestoMobile(nom_dep, id_dep) {
@@ -4868,5 +4898,333 @@ function setGallerieImageV2(){
     
 }
 
+/**
+ * @author nantenaina
+ */
+function pastilleGolf(element) {
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    console.log(data);
+
+    let request = new Request("/user/tribu_t/pastille/golf", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                new swal("Succès !", "Golf pastillé avec succès", "success")
+                    .then((value) => {
+                        
+                        element.classList = "btn btn-secondary ms-1"
+                        element.textContent = "Pastillé"
+                        element.setAttribute("disabled", true)
+                        showGolf(tbl)
+                        document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
+                    });          
+            })
+        .catch(error => console.log(error))
+    fecthGolfAction(id, "for_me")
+    OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", id)
+}
+
+function depastilleGolf(selector){
+    let id = selector.dataset.id
+    let name = selector.dataset.name
+    let tbl = selector.dataset.tbname
+    let data = {
+        id : id,
+        name : name,
+        tbl : tbl
+    }
+
+    let request = new Request("/user/tribu_t/depastille/golf", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request)
+            .then(response=>response.json())
+            .then(message=>{
+                    new swal("Succès !", "Golf dépastillé avec succès", "success")
+                    .then((value) => {
+                            $("#detailOptionGolf").modal("hide")
+                            document.querySelector("#golf_"+id).remove()
+                    });
+            })
+        .catch(error => console.log(error))
+    fecthGolfAction(id, "cancel")
+
+    if (document.querySelector(".select_action_golf_tomm_js")) {
+        document.querySelector(".select_action_golf_tomm_js").selectedIndex = 0
+    }
+    if (document.querySelector(".modal-pastille-golf-tomm-js")) {
+        document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
+    }
+}
+
+/**
+ * @author tomm 
+ * @action get list golf pastile
+ * @ou dans mytribuT.js
+ */
+function showGolf(tableGolfPastilled){
+    // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+
+    if (document.querySelector("li.listNavBarTribu > a.active")) {
+        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    }
+
+    if (document.querySelector("li.listNavBarTribu.golfNotHide > a")) {
+        document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+    }
+    
+
+    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+
+    golfContainer.innerHTML = `
+                                <div class="row mt-3 p-3">
+                                    <div class="col-12">
+                                        <div id="form_past"></div>
+                                        <div class="g-3">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+                                            </div>
+                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+
+    fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
+    .then(response =>  response.json())
+        .then(data => {
+        console.log(data)
+        if(data.length > 0){
+            let tr = ""
+            let i = 0
+            for (const item of data) {
+                    if(item.isPastilled){
+                        i++
+                        let nbrAvis = item.nbrAvis
+                        let note = item.globalNote ? item.globalNote : 0
+                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+                        tr += `<tr id="golf_${item.id_golf}">
+                            <td class="d-flex bd-highlight align-items-center">
+                                <div class="elie-img-pastilled">
+                                ${image_tribu_t}
+                                </div>
+                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
+                            </td>
+                            <td class="data-note-${item.id}">${note}/4</td>
+                            <td>
+                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}")'><i class="fas fa-plus"></i> Plus</button>
+                            </td>
+                        </tr>`
+
+                    }
+            }
+
+            if(i>0){
+
+                golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom de golf</th>
+                                                <th>Note</th>
+                                                <th>Avis</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${tr}
+                                        </tbody>
+                                    </table>`
+
+                $('#table_golf_pastilled').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
+            }else{
+                golfContainer.style.textAlign = "center"
+                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+            }
 
 
+        }else{
+            golfContainer.style.textAlign = "center"
+            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+        }
+
+        golfContainer.classList.add("bg-white");
+        golfContainer.classList.add("p-2");
+        golfContainer.style.display = "block"
+
+    })
+
+}
+
+
+/**
+ * @author tomm
+ * @action fetch les action du golf
+ * @ou dans detail.js
+ */
+function fecthGolfAction(goldID, action){
+
+    // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
+    let url = ""
+    
+    if(action === "finished"){
+        url = '/user/setGolf/finished'
+    }else if(action === "todo"){
+        url = '/user/setGolf/todo'
+    }else if(action === "for_me"){
+        url = '/user/setGolf/for_me'
+    }else if(action === "none"){
+        url = '/user/setGolf/none'
+    }else{
+        url = '/user/setGolf/unfinished'
+    }
+    
+    const request = new Request(url, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'  
+        },
+        body: JSON.stringify({
+            golfID : goldID,
+        })
+    })
+
+    fetch(request)
+        .then(response=>response.json())
+        .then(response => {
+            
+            if( response.success){
+                if( action === "finished"){
+                    new swal("Bravo !","Vous avez marqué ce golf comme fait !", "success")
+                    .then((value) => {
+                        if( document.querySelector(".content_btn_golf_did_jheo_js")){
+                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
+                            `
+                        }
+        
+                        if( document.querySelector(".golf_status_jheo_js")){
+                            document.querySelector(".golf_status_jheo_js").innerText= "FAIT"
+                        }
+                    });  
+
+                    if (document.querySelector(".select_action_golf_tomm_js")) {
+                        document.querySelector(".select_action_golf_tomm_js").selectedIndex = 0
+                    }
+
+                }else if( action === "for_me"){
+                    new swal("Bravo !","Vous avez marqué ce golf comme Mon Golf !", "success")
+                    .then((value) => {
+                        // if( document.querySelector(".content_btn_golf_did_jheo_js")){
+                        //     document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                        //         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
+                        //     `
+                        // }
+                        
+                        if( document.querySelector(".golf_status_jheo_js")){
+                            document.querySelector(".golf_status_jheo_js").innerText= "MON GOLF"
+                        }
+                    });  
+                    if (document.querySelector(".modal-pastille-golf-tomm-js")) {
+                        document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
+                    }
+
+                    if (document.querySelector(".select_action_golf_tomm_js")) {
+                        document.querySelector(".select_action_golf_tomm_js").selectedIndex = 0
+                    }
+
+                }else if( action === "todo"){
+
+                    new swal("Bravo !","Vous avez marqué ce golf comme à faire !", "success")
+                    .then((value) => {
+                        if( document.querySelector(".content_btn_golf_did_jheo_js")){
+                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
+                            `
+                        }
+        
+                        if( document.querySelector(".golf_status_jheo_js")){
+                            document.querySelector(".golf_status_jheo_js").innerText= "A FAIRE"
+                        }
+                    });  
+                    if (document.querySelector(".select_action_golf_tomm_js")) {
+                        document.querySelector(".select_action_golf_tomm_js").selectedIndex = 0
+                    }
+
+                }
+                // else if (action === "none") {
+
+                //     new swal("Bravo !","Vous avez choisi de ne rien faire avec ce golf.", "success")
+                //     .then((value) => {
+                //         if(document.querySelector(".content_btn_golf_did_jheo_js")){
+                //             document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                //                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
+                //             `
+                //         }
+        
+                //         if( document.querySelector(".golf_status_jheo_js")){
+                //             document.querySelector(".golf_status_jheo_js").innerText= ""
+                //         }
+                //     });  
+
+                // }
+                else {
+
+                    new swal("Bravo !","Vous venez d'annuler votre choix !", "success")
+                        .then((value) => {
+                        if( document.querySelector(".content_btn_golf_did_jheo_js")){
+                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                            <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                            <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${goldID}" onchange="executeActionForPastGolf('${goldID}')">
+                                <option value="0">Aucun</option>
+                                <option value="1">A faire</option>
+                                <option value="2">Fait</option>
+                                <option value="3">Mon golf</option>
+                            </select>
+                            `
+                        }
+        
+                        if( document.querySelector(".golf_status_jheo_js")){
+                                document.querySelector(".golf_status_jheo_js").innerText= ""
+                        }
+
+                        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+                    })
+
+                }
+            }
+        })
+
+}

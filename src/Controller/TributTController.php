@@ -2569,7 +2569,7 @@ class TributTController extends AbstractController
                 $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
                 $tableExtension = $tableTribu . "_golf";
 
-                if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
                     if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
