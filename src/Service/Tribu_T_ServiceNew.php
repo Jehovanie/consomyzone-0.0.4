@@ -150,6 +150,27 @@ class Tribu_T_ServiceNew extends PDOConnexionService
         }
         
     }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique tribu T cmz, 
+     * localisation du fichier: dans Tribu_T_ServiceNew.php,
+     * je veux: avoir le nom complet d'un partisan     
+     * @param int $userId : l'identifiant du partisan
+     */
+    public function getFullName($userId)
+
+    {
+
+        $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result["fullname"];
+
+    }
     
     /**
      * @author Nantenaina
@@ -396,7 +417,113 @@ class Tribu_T_ServiceNew extends PDOConnexionService
       $publications = $statement->fetchAll(PDO::FETCH_ASSOC);
 
       return $publications;
-  }
+    }
+
+    /**
+     * @author Nantenaina
+     * où: On utilise cette fonction pour retrouver les informations d'une tribu T cmz, 
+     * localisation du fichier: dans Tribu_T_ServiceNew.php,
+     * je veux: avoir les informations d'une tribu T
+     * @param string $tableTribuT: le nom de la table tribu T
+     * @return array associative
+     */
+    public function getApropos($tableTribuT,$user=null){
+      $userIdOwned = explode("u",$tableTribuT)[1];
+      $userIdOwned = intval($userIdOwned);
+      $userOwnedFullname = $this->getFullName($userIdOwned);
+      $tableTribuTUserOwned = "tribu_t_o_".$userIdOwned;
+      $db =$this->getPDO();
+      $statement = $db->prepare("SELECT * FROM $tableTribuTUserOwned where nom_table_trbT = :nom_table_trbT");
+      $statement->bindParam(":nom_table_trbT",$tableTribuT, PDO::PARAM_STR);
+      $statement->execute();
+      $apropos = $statement->fetch(PDO::FETCH_ASSOC);
+      
+      if($user){
+        $userId = $user->getId();
+        if($userId == $userIdOwned){
+          $apropos["isFondateur"] = true;
+        }else{
+          $apropos["isFondateur"] = false;
+        }
+      }
+
+      $apropos["fondateurName"] = $userOwnedFullname;
+      $apropos["name_tribu_t_muable"] = json_decode($this->convertUnicodeToUtf8($apropos["name_tribu_t_muable"]),true);
+      $apropos["description"] = json_decode($this->convertUnicodeToUtf8($apropos["description"]),true);
+      return $apropos;
+    }
+
+    /**
+     * @author Nantenaina
+     * où: On utilise cette fonction pour retrouver toutes les publications, commentaires et réactions dans une tribu T cmz, 
+     * localisation du fichier: dans Tribu_T_ServiceNew.php,
+     * je veux: avoir toutes les publications, commentaires et réactions dans une tribu T
+     * @param string $tableTribu: 
+    */
+    public function getPubCommentAndReaction($tableTribu,$min=null, $max=null){
+
+      $resultats = [];
+ 
+      $apropo_tribuT = $this->getApropos($tableTribu);
+     
+      if( !$apropo_tribuT ){
+          return $resultats;
+      }
+
+      $publications = $this->getAllPublicationForOneTribuT($tableTribu);
+
+      $db = $this->getPDO();
+      
+      if(count($publications) > 0 ){
+
+          foreach( $publications as $d_pub ){
+  
+              $publication_id = $d_pub["id"];
+              $publication_user_id= $d_pub["user_id"];
+              $statement_photos = $db->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+              $statement_photos->execute();
+              $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
+              $statement = $db->prepare("SELECT * FROM $tableTribu"."_commentaire WHERE pub_id = '" .$publication_id . "'");
+              $statement->execute();
+              $comments = $statement->fetchAll(PDO::FETCH_ASSOC); /// [...comments ]
+              $statement = $db->prepare("SELECT * FROM $tableTribu"."_reaction WHERE pub_id = '" .$publication_id . "' AND reaction= '1'");
+              $statement->execute();
+              $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
+             
+              $data= [
+                  "userOwnPub" => [
+                      "id" => $d_pub["user_id"],
+                      "profil" => $photo_profil["photo_profil"],
+                      "fullName" => json_decode($this->convertUnicodeToUtf8($d_pub["userfullname"]),true),
+                  ],
+                  
+                  "publication" => [
+                      "id" => $d_pub["id"],
+                      "confidentiality" => $d_pub['confidentiality'],
+                      "description" => json_decode($this->convertUnicodeToUtf8($d_pub['publication']), true),
+                      "image" => $d_pub['photo'],
+                      "createdAt" => $d_pub["datetime"],
+                      "comments" => $comments,
+                      "reactions" => $reactions,
+                  ],
+                  "tribu" => [
+                      "type" => "Tribu T",
+                      "name" => json_decode($this->convertUnicodeToUtf8($apropo_tribuT['name_tribu_t_muable']),true),
+                      "description" => json_decode($this->convertUnicodeToUtf8($apropo_tribuT['description']),true),
+                      "avatar" =>  $apropo_tribuT['logo_path'],
+                      "table" => $tableTribu,
+                      "ext_restaurant" => $apropo_tribuT['ext_restaurant'],
+                      "ext_golf" => $apropo_tribuT['ext_golf'],
+                      "date_creation" => $apropo_tribuT['date_creation']
+                  ]
+              ];
+  
+              array_push($resultats, $data);
+          }
+      }
+
+      return $resultats; 
+    }
 
 }
 

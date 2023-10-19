@@ -146,31 +146,34 @@ document.getElementById("form_upload_update").onchange = (e) => {
     reader.readAsDataURL(e.target.files[0])
 };
 
-function showBlockPub() {
+/**
+ * @deprecated
+ */
+async function showBlockPub() {
     const arrays = Array.from(document.querySelectorAll(".tribu_t"))
-    for (let array of arrays) {
-        array.onclick = (async (e) => {
-            e.preventDefault();
-                document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
-                document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
-                document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
-                document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
-            if (document.querySelector("#activeTribu")) {
-                document.querySelector("#activeTribu").classList.remove("p-2")
-                document.querySelector("#activeTribu").classList.remove("list-nav-left")
-                document.querySelector("#activeTribu").classList.remove("active")
-                document.querySelector("#activeTribu").removeAttribute("id")
-            }
-            e.target.id = "activeTribu"
-            e.target.classList.add("p-2")
-            e.target.classList.add("list-nav-left")
-            e.target.classList.add("active")//p-2 list-nav-left active
-            const id_c_u = e.target.dataset.tribuRank
-            const type = e.target.classList[1];
-            // const tribu_t_name=e.target.textContent  data-table-name
-            const tribu_t_name = e.target.dataset.tableName; ///  data-table-name
-            let data = await showdData(tribu_t_name)
-            showdDataContent(data, type, tribu_t_name, id_c_u)
+    //for (let array of arrays) {
+        //array.onclick = (async (e) => {
+            // e.preventDefault();
+            //     document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
+            //     document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
+            //     document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
+            //     document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
+            // if (document.querySelector("#activeTribu")) {
+            //     document.querySelector("#activeTribu").classList.remove("p-2")
+            //     document.querySelector("#activeTribu").classList.remove("list-nav-left")
+            //     document.querySelector("#activeTribu").classList.remove("active")
+            //     document.querySelector("#activeTribu").removeAttribute("id")
+            // }
+            // e.target.id = "activeTribu"
+            // e.target.classList.add("p-2")
+            // e.target.classList.add("list-nav-left")
+            // e.target.classList.add("active")//p-2 list-nav-left active
+            // const id_c_u = e.target.dataset.tribuRank
+            // const type = e.target.classList[1];
+            // // const tribu_t_name=e.target.textContent  data-table-name
+            // const tribu_t_name = e.target.dataset.tableName; ///  data-table-name
+            //let data = await showdData(tribu_t_name)
+            showdDataContent(nomTableTribuT,id_c_u)
 
             /**render pastiled resto */
             if (document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
@@ -220,11 +223,14 @@ function showBlockPub() {
                 showPartisan()
             }
             /**end */
-        })
-    }
+        //})
+    //}
 }
 
-showBlockPub()
+/**
+ * @ignore
+ */
+//showBlockPub()
 
 /*------------end render tribu_t section--------------*/
 
@@ -483,137 +489,9 @@ function sendPublication(formData) {
  * @param {*} type 
  * @param {*} tribu_t_name 
  */
-function showdDataContent(data, type, tribu_t_name, id_c_u) {
-
-    let detailsTribuT = null
-
-    if (type === "owned")
-        detailsTribuT = data.tribu_t_owned
-    else
-        detailsTribuT = data.tribu_t_joined
-
-    // console.log(JSON.parse(detailsTribuT).tribu_t)
-
-    let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
-    tribu_t_name_0 = tribu_t[0].name
-    descriptionTribuT = tribu_t[0].description
-    let restExtension = ""
-    let golfExtension = ""
-
-    // extension 'on' correspond à extension 
-    //restaurant dans les anciens version
-    // ce bout de code est là pour assurer une prise en charge recurssive
-    if(tribu_t[0].extension=="on" || tribu_t[0].extension=="restaurant" ){
-        restExtension = ` <li class="listNavBarTribu restoNotHide">
-                        <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
-                    </li>`
-    }else{
-        if(tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1 ) {
-            restExtension = ` <li class="listNavBarTribu restoNotHide">
-                                <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
-                            </li>`
-        }
-        if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
-            golfExtension = ` <li class="listNavBarTribu golfNotHide">
-                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
-                            </li>`
-        }
-    }
-
-    
-
-
-    if (tribu_t[0].logo_path) {
-        // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
-        //public
-        image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
-        // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
-    } else {
-        image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`
-    }
-
-    let canChangeTribuPicture = "";
-    if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
-        canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
-                                        <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
-                                    </label>
-                                    <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
-                                </div>` : ""
-    }
-
-    let canUpdateTribuInfo = !document.querySelector("#activeTribu").classList.contains("other") ? `<li class="listNavBarTribu">
-                                <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
-                            </li>` : "";
-
-    document.querySelector("#content-pub-js").innerHTML = `
-            <div class="card-couverture-pub-tribu-t ">
-                <div class="content-couverture mt-3">
-                    <div class="row content-tribu-t">
-                        <div class="col-lg-3 col-4">
-                            <div class="row">
-                                <div class="col-lg-6 col-3">
-                                    ${image_tribu_t}
-                                </div>
-                                ${canChangeTribuPicture}
-                            </div>
-                        </div>
-                        <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
-                            <p class="text-white descrp-tribu-t">
-                            ${tribu_t[0].description.replace(/"/gi,'')}
-                            </p>
-                        </div>
-                    </div>
-                    
-                </div>
-                <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
-                     <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
-                </div>
-                <nav class=" mx-auto">
-                    <ul id="navBarTribu" class="navBarTribu-t">
-                        <li class="listNavBarTribu">
-                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
-                        </li>
-
-
-                        ${restExtension}
-                        ${golfExtension}
-
-                        <li class="listNavBarTribu invitation">
-                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
-                        </li>
-                        <li class="listNavBarTribu partisantT">
-                            <a style="cursor:pointer;">Partisans</a>
-                        </li>
-                        <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" id="see-gallery">Photos</a>
-                        </li>
-
-                        ${canUpdateTribuInfo}
-
-                    </ul>
-                </nav>
-            </div>
-
-            <div id="tribu_t_conteuneur" class="exprime-pub">
-                <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
-                    <!-- ====== Chart pub One Start -->
-                    <div class="2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
-                        <div class="head-pub">
-                            <div class="pdp-content">
-                                <img src="${document.querySelector(".userProfil > img").src}" alt="">
-                            </div>
-                            <div class="name-content-h">
-                                <div class="name-content">
-                                    <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Exprimez-vous...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ====== Chart pub One End -->
-                </div>
-                <div class="publication-content">
+function showdDataContent(nomTableTribuT,  id_c_u) {
+    document.querySelector("#content-pub-js").innerHTML += `
+            <div class="publication-content">
                     <div class="list-pub-new">
                         <div id="list-publicatiotion-tribu-t">
                             
@@ -623,11 +501,9 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                     </div>
                     
                 </div>
-            </div>
-            
-    `
+  `
     //
-    worker.postMessage([tribu_t_name_0, 0, 20]);
+    worker.postMessage([nomTableTribuT, 0, 20]);
     // console.log('Message envoyé au worker');
     worker.onmessage = (event) => {
         // console.log(event.data)
@@ -666,6 +542,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             </div>
                                         </div>
                                     </div>` : ""
+
                 let canUpdateOrDeletePub = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div id="contentUpdateOrDelete">
                                         <span class="float-end dropstart">
                                             <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
@@ -687,7 +564,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                     </div>` : ""
 
 
-                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -697,7 +574,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t_name_0}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -721,7 +598,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
+                                                            onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -758,7 +635,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
                     contentPublication = `
-                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -768,7 +645,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t_name_0}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -823,7 +700,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -900,7 +777,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                 console.log("data N°: " + i)
                                 console.log(data[i])
                                 const contentPublication = `
-                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
+                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -910,7 +787,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
+                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t_name_0}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -964,7 +841,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -1136,7 +1013,7 @@ function test() {
 
 async function showdData(tribu_t_name) {
 
-    const request1 = new Request(`/user/tribu_one/${tribu_t_name}`, {
+    const request1 = new Request(`/user/tribu-t/${tribu_t_name}/accueil`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
@@ -2588,20 +2465,7 @@ function settingTribuT(e, tribuTName) {
         let tbt = JSON.parse(response.tribu_t_owned)
         let selectTribuOwned = Array.isArray(tbt.tribu_t) ? tbt.tribu_t.filter((tribu) => tribu.name == tribuTName) : [tbt.tribu_t];
         let currentTribuT = selectTribuOwned[0]
-        // let selectTribuOwned = []
 
-        // if(Array.isArray(tbt.tribu_t)){
-        //     selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
-        // }else{
-        //     selectTribuOwned.push(tbt.tribu_t)
-        // }
-        // // selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
-        // let currentTribuT = selectTribuOwned[0]
-        // // console.log(currentTribuT)
-        // e.target.classList.add("active")
-        // document.querySelector("#tribu_t_conteuneur").innerHTML = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Modifier les informations de la tribu T</h5>
-        //    <button type="button" class="btn btn-primary mt-4 float-end">Modifier</button>
-        // `
         $("#ModalUpdateTribuT").modal("show")
 
         document.querySelector("#updateTribuInfo").dataset.name = ""

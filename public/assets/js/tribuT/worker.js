@@ -18,6 +18,7 @@ onmessage = (e) => {
         }
         
     })
+    
     fetch(request).then((response) => response.json()).then((json) => { 
         postMessage(json)
     })

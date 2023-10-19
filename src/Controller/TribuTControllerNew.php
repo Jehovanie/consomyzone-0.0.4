@@ -77,6 +77,8 @@ class TribuTControllerNew extends AbstractController{
 
     private $filesyst;
 
+    private $srvTribuT;
+
     function __construct(
         MailService $mailService, 
 
@@ -86,7 +88,8 @@ class TribuTControllerNew extends AbstractController{
 
         RequestingService $requesting,
 
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        Tribu_T_ServiceNew $srvTribuT
     )
 
     {
@@ -100,6 +103,8 @@ class TribuTControllerNew extends AbstractController{
         $this->requesting = $requesting;
 
         $this->filesyst = $filesyst;
+
+        $this->srvTribuT = $srvTribuT;
 
     }
 
@@ -115,9 +120,8 @@ class TribuTControllerNew extends AbstractController{
     public function MyTribuT(
         Status $status,
         Request $request, 
-        Tribu_T_ServiceNew $srvTribuT,
         HachageTribuTNameRepository $hachageRepo,
-        Filesystem $filesyst
+    
     ){
         $user=$this->getUser();
 
@@ -128,6 +132,138 @@ class TribuTControllerNew extends AbstractController{
         $userId = intval($user->getId());
         $userType = $user->getType();
         $userConnected= $status->userProfilService($this->getUser());
+       
+        //render form create tribu-T
+        $form=$this->renderFormer(
+           $request,
+            $user,
+            $userId,
+            $userType,
+            $hachageRepo,
+            "app_my_tribu_t_new"
+        );
+
+        
+        //get Profil partisant or partenaire
+        if ($userType == "consumer") {
+
+            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+
+
+        $tribuTOwned = $this->srvTribuT->getAllTribuTOwnedInfos($user);
+        
+        $tribuTJoined = $this->srvTribuT->getAllTribuTJoinedInfos($user);
+
+        //TODO get all publications of tribu T
+        $publications= [];
+        $allTribusT = array_merge($tribuTOwned, $tribuTJoined);
+        if(count($allTribusT) > 0 ){
+            $all_pub_tribuT= [];
+            foreach($allTribusT as $tribuT){
+                $temp_pub= $this->srvTribuT->getPubCommentAndReaction($tribuT['nom_table_trbT']);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
+            }
+            $publications= array_merge($publications, $all_pub_tribuT);
+        }
+
+        return $this->render('tribu_t/tribuT.html.twig',[
+            "publications" => $publications,
+            "userConnected" => $userConnected,
+            "profil" => $profil,
+            "tribu_T_owned" => $tribuTOwned,
+            "tribu_T_joined" => $tribuTJoined,
+            "kernels_dir" => $this->getParameter('kernel.project_dir'), 
+            "form" => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans l'affichage d'une tribu T cmz, 
+     * localisation du fichier: dans TribuTControllerNew.php,
+     * je veux: afficher une tribu T
+     *
+     */
+    #[Route('/user/tribu-t/{name_tribu_t}/accueil', name: 'show_one_tribu_infos')]
+    public function showAccueilForOneTribuT($name_tribu_t,
+    Tribu_T_ServiceNew $tribu_t_serv,
+    SerializerInterface $serializer){
+        $user = $this->getUser();
+        $data=$tribu_t_serv->getApropos($name_tribu_t,$user);
+        $jsonUsers = $serializer->serialize($data, 'json');
+        return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
+    }
+
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction pour l'affichage du contenu d'une tribu T cmz, 
+     * localisation du fichier: dans TribuTControllerNew.php,
+     * je veux: afficher le contenu d'une tribu T
+    */
+    #[Route('/user/tribu-t/contenu/{name_tribu_t}/{id}', name:'tribu_t_content')]
+    public function showTribuTContents
+    (
+        $name_tribu_t,
+        $id,
+        Tribu_T_ServiceNew $tribu_t_serv,
+        Status $status,
+        Request $request,
+        HachageTribuTNameRepository $hachageRepo,
+    )
+    {
+        $user= $this->getUser();
+        $userId = intval($user->getId());
+        $userType = $user->getType();
+        $userConnected= $status->userProfilService($this->getUser());
+        $infos = $tribu_t_serv->getApropos($name_tribu_t,$user);
+       //TODO get All data
+
+       $userConnected= $status->userProfilService($user);
+
+       $tribuTOwned = $this->srvTribuT->getAllTribuTOwnedInfos($user);
+        
+        $tribuTJoined = $this->srvTribuT->getAllTribuTJoinedInfos($user);
+       
+        //render form create tribu-T
+        $form = $this->renderFormer(
+            $request,
+             $user,
+             $userId,
+             $userType,
+             $hachageRepo,
+             "app_my_tribu_t_new"
+         );
+         if ($userType == "consumer") {
+
+            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+
+       return $this->render('tribu_t/tribu_t_specific.html.twig',[
+            "profil" => $profil,
+            "tribu"=> $infos,
+            "userConnected" => $userConnected,
+            "form" => $form->createView(),
+            "tribu_T_owned" => $tribuTOwned,
+            "tribu_T_joined" => $tribuTJoined
+       ]);
+    }
+
+    private function renderFormer(
+        Request $request,
+        $user,
+        $userId,
+        $userType,
+        $hachageRepo,
+        $routeName
+    ){
         $defaultData = ['message' => 'reseigner le champ avec vos mots.'];
         $form = $this->createFormBuilder($defaultData)
                 ->add('upload', FileType::class, [
@@ -159,13 +295,6 @@ class TribuTControllerNew extends AbstractController{
                 ])
                 ->getForm();
         
-        if ($userType == "consumer") {
-
-            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
-        } else {
-
-            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
-        }
         $form->handleRequest($request);
         //TODO handle submit
         if ($form->isSubmitted() && $form->isValid()){
@@ -182,8 +311,8 @@ class TribuTControllerNew extends AbstractController{
                 $newImageName = "img_".$now.".".$imgExtension;
                 $path = '/uploads/tribu_t/photo/'.$key."/";
                 $imgTribuTDir = $this->getParameter('kernel.project_dir')."/public".$path;
-                if(!($filesyst->exists($imgTribuTDir)))
-                        $filesyst->mkdir($imgTribuTDir,0777);
+                if(!($this->filesyst->exists($imgTribuTDir)))
+                        $this->filesyst->mkdir($imgTribuTDir,0777);
                         
                 $logoTribuT = $path.$newImageName;
 
@@ -200,22 +329,22 @@ class TribuTControllerNew extends AbstractController{
             $description=json_encode($data["description"]);
             
             //TODO insert one row in tribu T Owned table
-            $lastIdTribuTCreated=$srvTribuT->addTribuTOwned($user,$nomTribuT,$description,
+            $lastIdTribuTCreated=$this->srvTribuT->addTribuTOwned($user,$nomTribuT,$description,
             $logoTribuT, $key,$extensionRestaurent,$extensionGolf);
 
             //TODO set into table hashing
-             $srvTribuT->createHachage($hachageRepo,$key,$lastIdTribuTCreated, $userId );
+             $this->srvTribuT->createHachage($hachageRepo,$key,$lastIdTribuTCreated, $userId );
 
             //TODO create table tribu t
-            $srvTribuT->generateTribuTTables($key,$userId);
+            $this->srvTribuT->generateTribuTTables($key,$userId);
 
             //TODO check if extensions are activated
             if ($extensionRestaurent) {
-                $srvTribuT->createExtensionDynamicTable($key, "restaurant");
+                $this->srvTribuT->createExtensionDynamicTable($key, "restaurant");
             }
 
             if ($extensionGolf) {
-                $srvTribuT->createExtensionDynamicTable($key, "golf");
+                $this->srvTribuT->createExtensionDynamicTable($key, "golf");
             }
 
             // $srvTribuT->addTribuTJoined($user, $userId, $key);
@@ -224,33 +353,27 @@ class TribuTControllerNew extends AbstractController{
                 $dataImg->move($imgTribuTDir, $newImageName);
             
             $message = "Tribu " . $nomTribuT . " créée avec succes.";   
-            return $this->redirectToRoute("app_my_tribu_t_new" ,["message" => $message]);
+            return $this->redirectToRoute($routeName ,["message" => $message]);
         }
-
-        $tribuTOwned = $srvTribuT->getAllTribuTOwnedInfos($user);
-
-        $tribuTJoined = $srvTribuT->getAllTribuTJoinedInfos($user);
-
-        //TODO get all publications of tribu T
-        $publications= [];
-        $allTribusT = array_merge($tribuTOwned, $tribuTJoined);
-        if(count($allTribusT) > 0 ){
-            $all_pub_tribuT= [];
-            foreach($allTribusT as $tribuT){
-                $temp_pub= $srvTribuT->getAllPublicationForOneTribuT($tribuT['nom_table_trbT']);
-                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
-            }
-            $publications= array_merge($publications, $all_pub_tribuT);
-        }
-
-        return $this->render('tribu_t/tribuT.html.twig',[
-            "publications" => $publications,
-            "userConnected" => $userConnected,
-            "profil" => $profil,
-            "tribu_T_owned" => $tribuTOwned,
-            "tribu_T_joined" => $tribuTJoined,
-            "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "form" => $form->createView(),
-        ]);
+        return $form;
     }
+
+    //TO DO route for this   $temp_pub= $this->srvTribuT->getPubCommentAndReaction($tribuT['nom_table_trbT']);
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction pour l'affichage de publications d'une tribu T cmz, 
+     * localisation du fichier: dans TribuTControllerNew.php,
+     * je veux: afficher les publications d'une tribu T
+    */
+    #[Route('/user/get/{tableTribuT}/{tribuTId}/publications', name:'tribu_t_specific_publication')]
+    public function getPubsCommentsReactions
+    (
+        $tableTribuT,
+        $tribuTId
+    )
+    {
+        $data = $this->srvTribuT->getPubCommentAndReaction($tableTribuT);
+        return $this->json($data);
+    }
+
 }
