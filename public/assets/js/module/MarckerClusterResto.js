@@ -9,6 +9,7 @@ class MarckerClusterResto extends MapModule  {
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
+            this.initMap(null, null, null, isAddControl);
 
             /// Three possiblities : all departement, arrondissement, in departement
             const linkArrond = this.codinsee ? `/Coord/All/Restaurant/specific/arrondissement/${this.id_dep}/${this.codinsee}` : null;
@@ -20,6 +21,12 @@ class MarckerClusterResto extends MapModule  {
                 const lastSearchPosition= getDataInSessionStorage("lastSearchPosition") ? JSON.parse(getDataInSessionStorage("lastSearchPosition")) : null;
                 const { minx, miny, maxx, maxy }= lastSearchPosition.position;
                 param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
+            } 
+            else{
+                const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+                const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+                const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+                param= "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
             }
 
             // "data" => $datas,
@@ -32,8 +39,6 @@ class MarckerClusterResto extends MapModule  {
             this.data=  this.default_data; 
             
             this.listRestoPastille= responseJson.allIdRestoPastille;
-
-            this.initMap(null, null, null, isAddControl);
             this.bindAction();
 
             if(getDataInSessionStorage("lastSearchPosition")){
@@ -55,9 +60,10 @@ class MarckerClusterResto extends MapModule  {
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
             spiderfyOnEveryZoom: true,
+            disableClusteringAtZoom: true,
+            spiderfyOnEveryZoom: true,
             animate: true,
             // maxClusterRadius: 40,
-            disableClusteringAtZoom: true,
             // iconCreateFunction: function (cluster) {
             //     console.log(cluster)
             //     return L.divIcon({
@@ -118,11 +124,51 @@ class MarckerClusterResto extends MapModule  {
 
 
     addMarker(newData){
+        const zoom = this.map._zoom;
+        const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const  minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : 1);
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        console.log(ratioMin, ratioMax);
+
+        const dataMax= zoom === 19 ? 50 : ( zoom > 17 ? 25 : ( zoom > 15 ? 20 : ( zoom > 13 ? 10 : 5  )));
+        const dataFiltered= [ ];
+
+        let iterate_ratio= 1/(10**ratio)
+
+        let init_iterate_ratio = ratioMin;
+        while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
+            if( !dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
+                dataFiltered.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
+            }
+
+            init_iterate_ratio +=iterate_ratio;
+        }
+        console.log("dataFiltered")
+        console.log(dataFiltered);
+
         newData.forEach(item => {
-            this.settingSingleMarker(item, false)
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
+        console.log(dataFiltered);
 
         this.map.addLayer(this.markers);
+
     }
 
     settingSingleMarker(item, isSelected= false){
@@ -539,7 +585,6 @@ class MarckerClusterResto extends MapModule  {
 
 
     updateMarkersDisplay(newSize){
-        console.clear();
 
         const zoom = this.map._zoom;
         const { minx, maxx, miny, maxy } = newSize;
@@ -566,7 +611,7 @@ class MarckerClusterResto extends MapModule  {
         /// add same data must be show
         if( zoom > 8 ){
             const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : 1);
-            const dataMax= zoom > 14 ? 30 : ( zoom > 12 ? 20 : 15 );
+            const dataMax= zoom === 19 ? 50 : ( zoom > 17 ? 25 : ( zoom > 15 ? 20 : ( zoom > 13 ? 10 : 5  )));
             const dataFilteredDerive= [ ];
 
             this.markers.eachLayer((marker) => {
@@ -625,7 +670,7 @@ class MarckerClusterResto extends MapModule  {
                         }
                     })
     
-                    if( !isAlreadyDisplay && countMarkers < 100  ){
+                    if( !isAlreadyDisplay ){
                         if(dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
                             const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
                             if( itemDataDerive && itemDataDerive.data.length < dataMax){
@@ -635,7 +680,6 @@ class MarckerClusterResto extends MapModule  {
                                         ktem.data.push(item)
                                     }
                                 })
-                                countMarkers++;
                             }
                         }
                     }
