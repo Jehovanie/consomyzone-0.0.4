@@ -149,8 +149,8 @@ class RestaurantController extends AbstractController
             //merge of resto data and note 
             // $l=array_map("self::mergeDatasAndAvis",$datas,$moyenneNote);
             return $this->json([
-                // "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
-                "data" => [],
+                "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
+                // "data" => [],
                 "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }

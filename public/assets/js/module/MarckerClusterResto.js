@@ -299,7 +299,7 @@ class MarckerClusterResto extends MapModule  {
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
             this.addPeripheriqueMarker(new_size)
-            this.updateMarkersDisplay(new_size);
+           
         })
 
     }
@@ -399,9 +399,12 @@ class MarckerClusterResto extends MapModule  {
             let new_data = responseJson.data;
             
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
-            new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)))
-            this.addMarker(this.checkeFilterType(new_data));
+            new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)));
+
+            // this.addMarker(this.checkeFilterType(new_data));
             this.default_data= this.default_data.concat(new_data)
+
+            this.updateMarkersDisplay(new_size);
 
         } catch (e) {
             console.log(e)
@@ -536,15 +539,21 @@ class MarckerClusterResto extends MapModule  {
 
 
     updateMarkersDisplay(newSize){
+        console.clear();
+
         const zoom = this.map._zoom;
         const { minx, maxx, miny, maxy } = newSize;
+
+        console.log("Zoom: " + zoom )
+        console.log("newSize: " + " " + minx +" "+ maxx + " " +  miny + " " + maxy);
+
         let countMarkers= 0;
 
         //// REMOVE the outside the box
         this.markers.eachLayer((marker) => {
             const { lat, lng } = marker.getLatLng();
             const isInDisplay = ( lat > parseFloat(miny) && lat < parseFloat(maxy)) && ( lng > parseFloat(minx) && lng < parseFloat(maxx));
-            if( !isInDisplay ){
+            if( !isInDisplay || countMarkers > 100 ){
                 this.markers.removeLayer(marker);
             }else{
                 countMarkers++;
@@ -556,6 +565,55 @@ class MarckerClusterResto extends MapModule  {
         // memoryCenter.zoom
         /// add same data must be show
         if( zoom > 8 ){
+            const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : 1);
+            const dataMax= zoom > 14 ? 30 : ( zoom > 12 ? 20 : 15 );
+            const dataFilteredDerive= [ ];
+
+            this.markers.eachLayer((marker) => {
+                const temp= marker.getLatLng()
+                if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
+
+                    dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                    ] })
+
+                }else{
+                    dataFilteredDerive.forEach(ktem => {
+                        if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
+                            if( ktem.data.length < dataMax ){
+                                ktem.data.push(
+                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                )
+                            }else{
+                                this.markers.removeLayer(marker);
+                            }
+                        }
+                    })
+                }
+            });
+
+            const ratioMin= parseFloat(parseFloat(miny).toFixed(ratio))
+            const ratioMax= parseFloat(parseFloat(maxy).toFixed(ratio))
+            
+            let iterate_ratio= 1/(10**ratio)
+
+            let init_iterate_ratio = ratioMin;
+            while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
+                if( !dataFilteredDerive.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
+                    dataFilteredDerive.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
+                }
+
+                init_iterate_ratio +=iterate_ratio;
+            }
+
+            console.log("dataFilteredDerive");
+            console.log(dataFilteredDerive);
+
+            console.log("Ratio: " + ratio)
+            console.log("rationMin: " + ratioMin)
+            console.log("rationMax: " + ratioMax)
+            console.log(iterate_ratio)
+
             this.default_data.forEach(item => {
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
@@ -567,15 +625,29 @@ class MarckerClusterResto extends MapModule  {
                         }
                     })
     
-                    if( !isAlreadyDisplay ){
-                        this.settingSingleMarker(item, false)
+                    if( !isAlreadyDisplay && countMarkers < 100  ){
+                        if(dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
+                            const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
+                            if( itemDataDerive && itemDataDerive.data.length < dataMax){
+                                this.settingSingleMarker(item, false)
+                                dataFilteredDerive.forEach(ktem => {
+                                    if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
+                                        ktem.data.push(item)
+                                    }
+                                })
+                                countMarkers++;
+                            }
+                        }
                     }
                 }
             })
+
+            console.log("dataFilteredDerive");
+            console.log(dataFilteredDerive);
+
         }else{
-            console.log("Zoom: " + zoom )
             console.log("Afficher same marker...");
-            console.log(minx, maxx, miny, maxy);
+            
             const ratio= zoom > 7 ? 1 : 0;
             const dataMax= 5;
             const dataFiltered= [ ];
@@ -591,7 +663,7 @@ class MarckerClusterResto extends MapModule  {
                     })
                 }
             })
-            console.log(dataFiltered) ////tokony haseho....
+            console.log("isany tokony haseho: " + dataFiltered.length) ////tokony haseho....
 
 
             const dateFilteredPrime= [];
@@ -611,7 +683,7 @@ class MarckerClusterResto extends MapModule  {
                     })
                 }
             });
-            console.log(dateFilteredPrime) //// efa miseho
+            console.log("isany efa haseho: " + dateFilteredPrime.length) //// efa miseho
 
             dataFiltered.forEach(item => {
                 if(dateFilteredPrime.find(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
@@ -628,7 +700,8 @@ class MarckerClusterResto extends MapModule  {
                 }
                
             })
-
+            console.log("dataFiltered");
+            console.log(dataFiltered)
             // this.default_data.forEach(item => {
             //     const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
@@ -654,9 +727,7 @@ class MarckerClusterResto extends MapModule  {
 
 
         let countMarkerst= 0;
-        this.markers.eachLayer((marker) => {
-            countMarkerst++;
-        });
-        console.log(countMarkerst)
+        this.markers.eachLayer((marker) => {  countMarkerst++; });
+        console.log("Total marker afficher: " + countMarkerst)
     }
 }
