@@ -36,7 +36,6 @@ function cancelGolfFinished(goldID){
 
 function executeActionForPastGolf(goldID, golfName, golfAdress) {
     let action = document.querySelector(".select_action_golf_nanta_js").value
-    console.log(action)
     if(action == "1"){
         setGolfTodo(goldID)
         OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
