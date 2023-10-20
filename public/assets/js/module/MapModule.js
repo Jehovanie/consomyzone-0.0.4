@@ -52,7 +52,7 @@ class MapModule{
         this.tiles = L.tileLayer(this.listTales[0].link, {
             // attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            minZoom: 6,
+            minZoom: 1,
             maxZoom: 20
         })
     }

@@ -8,6 +8,7 @@ class MarckerClusterResto extends MapModule  {
     async onInit(isAddControl=false){
         this.ALREADY_INIT = false;
         try{
+            this.extendAnnimation();
             this.createMarkersCluster();
             this.initMap(null, null, null, isAddControl);
 
@@ -61,6 +62,11 @@ class MarckerClusterResto extends MapModule  {
             chunkedLoading: true,
             animate: true,
             disableClusteringAtZoom: true,
+            animateAddingMarkers:true,
+            chunkedLoading: true,
+            chunkInterval: 500, 
+            chunkDelay: 100,
+            // chunkProgress: null,
             // maxClusterRadius: 40,
             // iconCreateFunction: function (cluster) {
             //     console.log(cluster)
@@ -110,6 +116,7 @@ class MarckerClusterResto extends MapModule  {
         this.addMarker(this.data);
         this.setNumberOfMarker();
         this.addEventOnMap(this.map);
+
     }
 
     getAlreadyInit(){
@@ -351,6 +358,44 @@ class MarckerClusterResto extends MapModule  {
 
     }
 
+    extendAnnimation(){
+
+        // L.MarkerClusterGroup.prototype.removeLayer = function (layer) {
+        //     // Custom animation, e.g., fade out
+        //     const self = this
+        //     layer.setOpacity(1); // Start with full opacity
+        //     let opacity = 1;
+        //     let animationInterval = setInterval(function () {
+        //         if (opacity > 0) {
+        //             opacity -= 0.1; // Adjust the decrement for speed
+        //             layer.setOpacity(opacity);
+        //         } else {
+        //             clearInterval(animationInterval);
+        //             self._removeLayer(layer);
+        //         }
+        //     }, 50); // Adjust the interval for smoothness
+        // };
+
+        // console.log( L.MarkerClusterGroup())
+        // L.MarkerClusterGroup.prototype.addLayer = function (layer) {
+        //     console.log(this._zoom)
+        //     this._addLayer(layer, this._zoom)
+
+        //     layer.setOpacity(0); // Start with full opacity
+        //     let opacity = 0;
+        //     let animationInterval = setInterval(function () {
+        //         if (opacity < 1 ) {
+        //             opacity += 0.1; // Adjust the decrement for speed
+        //             layer.setOpacity(opacity);
+        //         } else {
+        //             clearInterval(animationInterval);
+        //         }
+        //     }, 100); // Adjust the interval for smoothness
+        // };
+
+     
+    }
+
 
     setNumberOfMarker(){
         if( !this.id_dep){
@@ -444,12 +489,15 @@ class MarckerClusterResto extends MapModule  {
             const response = await fetch(`${this.api_data}${param}`);
             const responseJson = await response.json();
             let new_data = responseJson.data;
-            
+
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)));
+            this.dataInside= new_data;
 
             // this.addMarker(this.checkeFilterType(new_data));
             this.default_data= this.default_data.concat(new_data)
+
+            // this.updateMarkersDisplay(new_size);
         } catch (e) {
             console.log(e)
         }
@@ -608,6 +656,11 @@ class MarckerClusterResto extends MapModule  {
 
         /// add same data must be show
         if( zoom > 8 ){
+
+            console.log("data Inside...")
+            console.log(this.dataInside)
+
+
             const dataFilteredDerive= [ ]; //// pour stocker les données filtres
 
             this.markers.eachLayer((marker) => {
@@ -625,9 +678,10 @@ class MarckerClusterResto extends MapModule  {
                                 ktem.data.push(
                                     this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
                                 )
-                            }else{
-                                this.markers.removeLayer(marker);
                             }
+                            // else{
+                            //     this.markers.removeLayer(marker);
+                            // }
                         }
                     })
                 }
@@ -658,7 +712,7 @@ class MarckerClusterResto extends MapModule  {
             this.default_data.forEach(item => {
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
-                if( isCanDisplay ){
+                if( isCanDisplay || this.dataInside.some(jtem => parseInt(jtem.id) === parseInt(item.id)) ){
                     let isAlreadyDisplay= false;
                     this.markers.eachLayer((marker) => {
                         if( parseInt(marker.options.id) === parseInt(item.id)){
@@ -677,6 +731,8 @@ class MarckerClusterResto extends MapModule  {
                                     }
                                 })
                             }
+                        }else if(this.dataInside.some(jtem => parseInt(jtem.id) === parseInt(item.id)) ){
+                            this.settingSingleMarker(item, false)
                         }
                     }
                 }
