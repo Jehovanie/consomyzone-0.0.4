@@ -7,7 +7,7 @@ use PDOException;
 class PDOConnexionService
 {
     private $pdo;
-    protected function getPDO()
+    public function getPDO()
     {
         $servername = $_ENV["SERVERNAME"];
         $username = $_ENV["USER"];
@@ -33,11 +33,11 @@ class PDOConnexionService
         return $resultat > 0 ? true : false;
     }
 
-    protected function convertUtf8ToUnicode($str){
+    public function convertUtf8ToUnicode($str){
         return json_encode($str);
     }
 
-    protected function convertUnicodeToUtf8($str){
+    public function convertUnicodeToUtf8($str){
         return preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
                     return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
                 },$str);

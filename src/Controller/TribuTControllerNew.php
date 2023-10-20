@@ -365,15 +365,259 @@ class TribuTControllerNew extends AbstractController{
      * localisation du fichier: dans TribuTControllerNew.php,
      * je veux: afficher les publications d'une tribu T
     */
-    #[Route('/user/get/{tableTribuT}/{tribuTId}/publications', name:'tribu_t_specific_publication')]
+    #[Route('/user/get/{tableTribuT}/{tribuTId}/publications/', name:'tribu_t_specific_publication',methods:["GET"])]
     public function getPubsCommentsReactions
     (
         $tableTribuT,
-        $tribuTId
+        $tribuTId,
+        Request $request,
     )
     {
-        $data = $this->srvTribuT->getPubCommentAndReaction($tableTribuT);
+        $idMin=$request->query->get('idmin');
+        $limits=$request->query->get('limits');
+        $data = $this->srvTribuT->getPublicationSpecificTribuT($tableTribuT,$idMin,$limits);
         return $this->json($data);
+    }
+
+    #[Route("/user/create-one/publication", name:"user_create_publication")]
+    public function createOnePublication(
+        Request $request       
+    ){
+        $user=$this->getUser();
+        $userId= $user->getId();
+        $jsonParsed=json_decode($request->getContent(),true);
+        $tribu_t_name =  $jsonParsed["tribu_t_name"];
+        $publication= json_encode($jsonParsed["contenu"]);
+        $confid=$jsonParsed["confidentialite"];
+        $image= $jsonParsed["base64"];
+        $extImg = explode("/",$jsonParsed["photoType"]);
+        $imageName = "img_".time()."_u_".$userId.".".$extImg[1];
+        $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
+        if (!($this->filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $this->filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        $fileUtils=new FilesUtils();
+        if (intval($jsonParsed["photoSize"], 10) > 0) {
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
+            $result =  $this->srvTribuT->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid, $path . $imageName);
+        }else{
+            $result =  $this->srvTribuT->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
+        }
+        
+
+        $response = new Response();
+        if($result){
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response->setStatusCode(500);
+            return $response;
+        }
+
+    }
+
+    #[Route("/user/tribu_t/pastille/resto", name:"tribu_t_pastille_resto", methods:["POST"])]
+    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $resto_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdResto = $this->srvTribuT->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
+
+        if(count($checkIdResto) > 0){
+            $this->srvTribuT->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, true);
+        }else{
+            $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
+        }
+        
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    }
+
+    #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
+    public function dePastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $resto_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdResto = $this->srvTribuT->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
+
+        if($checkIdResto > 0){
+            $this->srvTribuT->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
+        }
+
+        // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
+        
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    }
+
+    #[Route("/user/tribu_t/pastille/golf", name:"tribu_t_pastille_golf", methods:["POST"])]
+    public function pastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $golf_name =  $jsonParsed["name"];
+
+        $golf_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdResto = $this->srvTribuT->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
+
+        if(count($checkIdResto) > 0){
+            $this->srvTribuT->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, true);
+        }else{
+            $agendaService->saveRestaurant($tribu_t."_golf", $golf_name, $golf_id);
+        }
+        
+        return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
+    }
+
+    #[Route("/user/tribu_t/depastille/golf", name:"tribu_t_depastille_golf", methods:["POST"])]
+    public function dePastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $golf_id = $jsonParsed["id"];
+
+        $tribu_t = $jsonParsed["tbl"];
+
+        $checkIdGolf = $this->srvTribuT->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
+
+        if($checkIdGolf > 0){
+            $this->srvTribuT->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, false);
+        }
+        
+        return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
+    }
+
+    #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
+
+    public function getRestoPastilles(
+        $table_resto,
+        SerializerInterface $serialize,
+        Tribu_T_ServiceNew $tribu_t_serv): Response
+
+    {
+
+        $tableComment=$table_resto."_commentaire";
+      
+
+        $has_restaurant = $tribu_t_serv->hasTableResto($table_resto);
+        
+        $restos = array();
+
+        if($has_restaurant == true){
+            $restos =$tribu_t_serv->getRestoPastilles($table_resto, $tableComment);
+			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+        }
+		
+		$r=$serialize->serialize($restos,'json');
+		
+		return new JsonResponse($r, Response::HTTP_OK, [], true);
+
+    }
+
+    #[Route("/push/comment/resto/pastilled",name:"push_comment_pastilled_resto",methods:["POST"])]
+    public function push_comment_pastilled_resto(Request $request){
+
+        $user = $this->getUser();
+        $json=json_decode($request->getContent(),true);
+        $tableName=$json["tableName"];
+        $idResto=$json["idResto"];
+        $idUser=$user->getId();
+        // $idUser=$json["idUser"];
+        $note = $json["note"];
+        $commentaire = $json["commentaire"];
+        $result= $this->srvTribuT->sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire);
+        if($result){
+            $response = new Response();
+            $response->setStatusCode(200);
+            return $response;
+        }else{
+            $response = new Response();
+            $response->setStatusCode(500);
+            return $response;
+        }
+    }
+
+    #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
+
+    public function getRestoPastillesCommentaire($table_resto,$id): Response
+
+    {
+
+        $tableComment = $table_resto . "_commentaire";
+
+        $has_restaurant = $this->srvTribuT->hasTableResto($table_resto);
+
+        $restos = array();
+
+        if ($has_restaurant == true) {
+            
+            $restos = $this->srvTribuT->getAllAvisByRestName($tableComment,$id);
+        }
+        return $this->json($restos);
+    }
+
+    #[Route("/user/tribu/update-tribu_t-info", name: "update_my_tribu_t")]
+    public function updateTribuTInfos
+    ( 
+    Request $request,
+    UserRepository $userRepository
+    ){
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $jsonParsed=json_decode($request->getContent(),true);
+
+        extract($jsonParsed);
+
+        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
+        $pathToBase='/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
+        $imgURL = null;
+        if($photoName != ""){
+            if (!($this->filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $this->filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    
+            $fileUtils = new FilesUtils();
+    
+            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $base64, time().$photoName);
+
+            $imgURL = $pathToBase.time().$photoName;
+        }
+
+        $ext_restaurant = ($restaurant == "on") ? 1 : 0;
+
+        $ext_golf = ($golf == "on") ? 1 : 0;
+
+        $logo_path_old = $this->srvTribuT->getApropos($tableTribuT)["logo_path"];
+
+        $logo_path = $imgURL ? $imgURL : $logo_path_old;
+
+        $this->srvTribuT->updateTribuTInfos($tableTribuT, json_encode($nomTribuT), json_encode($description), $logo_path, $ext_restaurant, $ext_golf);
+
+        if ($restaurant == "on") {
+            $this->srvTribuT->createExtensionDynamicTable($tableTribuT, "restaurant");
+        }
+
+        if ($golf == "on") {
+            $this->srvTribuT->createExtensionDynamicTable($tableTribuT, "golf");
+        }
+
+        return $this->json("Information modifié avec succès");
+
     }
 
 }

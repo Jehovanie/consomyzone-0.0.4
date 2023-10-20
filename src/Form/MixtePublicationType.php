@@ -23,6 +23,7 @@ class MixtePublicationType extends AbstractType
     {
         $isHasTribuT=  (count($options['data']['tribuTList']) > 0 ) ?  true : false ;
         $tribuTList= $options['data']['tribuTList'];
+       
         $builder
             ->add('legend', TextareaType::class, ['label' => false, 'required' => false])
             ->add('photo', FileType::class, [

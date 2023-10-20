@@ -42,6 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\AdressIpAndPositionRepository;
 use App\Repository\StationServiceFrGeomRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -346,7 +347,7 @@ class ToutsController extends AbstractController
         TabacRepository $tabacRepository,
         AvisRestaurantRepository $avisRestaurantRepository,
         RestaurantController $restaurantController,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_ServiceNew $tribu_T_Service
     ){
 
         $arrayIdResto = [];

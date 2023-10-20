@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
 use App\Repository\BddRestoUserModifRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -123,7 +124,7 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $tribu_T_Service,
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
@@ -225,7 +226,7 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $tribu_T_Service,
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
@@ -278,7 +279,7 @@ class RestaurantController extends AbstractController
         BddRestoRepository $bddResto,
         SerializerInterface $serialize,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $tribu_T_Service,
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
@@ -440,7 +441,7 @@ class RestaurantController extends AbstractController
         Status $status,
         Request $request,
         CodeapeRepository $codeApeRep,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $tribu_T_Service,
         UserRepository $userRepository,
         $nom_dep,
         $id_dep,
@@ -492,34 +493,12 @@ class RestaurantController extends AbstractController
 
                 $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
-
-                foreach ($tribu_t_owned as $key) {
-                    $tableTribu = $key["table_name"];
-                    $logo_path = $key["logo_path"];
-                    $name_tribu_t_muable = $key["name_tribu_t_muable"];
-                    $tableExtension = $tableTribu . "_restaurant";
-                    if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
-                        if (!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $data["id"], true)) {
-                            array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                        } else {
-                            array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                        }
-                    }
-                }
+                $arrayTribuRestoPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_owned, $data["id"], $arrayTribuRestoPast);
 
                 $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
-                // dd($tribu_t_joined);
-                foreach ($tribu_t_joined as $key) {
-                    $tbtJoined = $key["table_name"];
-                    $logo_path = $key["logo_path"];
-                    $name_tribu_t_muable = $key["name_tribu_t_muable"];
-                    $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
-                    if ($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0) {
-                        if ($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $data["id"], true)) {
-                            array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                        }
-                    }
-                }
+
+                $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $data["id"], $arrayTribuRestoJoinedPast);
+
             }
             $data["tribuTPastie"] =  [
                 "tribu_t_can_pastille" => $arrayTribu,
@@ -557,7 +536,7 @@ class RestaurantController extends AbstractController
         $id_resto,
         CodeapeRepository $codeApeRep,
         TributGService $tributGService,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $tribu_T_Service,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         AvisRestaurantRepository $avisRestaurantRepository,
@@ -647,35 +626,12 @@ class RestaurantController extends AbstractController
 
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
-            // dd($tribu_t_owned);
-
-            foreach ($tribu_t_owned as $key) {
-                $tableTribu = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable = $key["name_tribu_t_muable"];
-                $tableExtension = $tableTribu . "_restaurant";
-                if ($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0) {
-                    if (!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $id_resto, true)) {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                    } else {
-                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                    }
-                }
-            }
+            $arrayTribuRestoPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_owned, $id_resto, $arrayTribuRestoPast);
 
             $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
-            // dd($tribu_t_joined);
-            foreach ($tribu_t_joined as $key) {
-                $tbtJoined = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable = $key["name_tribu_t_muable"];
-                $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
-                if ($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0) {
-                    if ($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $id_resto, true)) {
-                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                    }
-                }
-            }
+
+            $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $id_resto, $arrayTribuRestoJoinedPast);
+            
         }
 
         // dd($datas);
@@ -740,20 +696,22 @@ class RestaurantController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
+                if( $user_amis  && $user_amis->getType()!="Type"){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
 
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
  
@@ -872,25 +830,25 @@ class RestaurantController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
+                if( $user_amis  && $user_amis->getType()!="Type"){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "is_online" => $user_amis->getIsConnected(),
+                    ];
 
-                ///get it
-                array_push($amis_in_tributG, $amis);
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
             }
         }
  
-
-
         return $this->render("restaurant/specific_departement.html.twig", [
             "id_dep" => $codeDep,
             "nom_dep" => $nomDep,
@@ -985,7 +943,7 @@ class RestaurantController extends AbstractController
         $id_dep,
         $id_restaurant,
         UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $tribu_T_Service,
         AvisRestaurantRepository $avisRestaurantRepository
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
@@ -1033,35 +991,11 @@ class RestaurantController extends AbstractController
 
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
-            // dd($tribu_t_owned);
-    
-            foreach ($tribu_t_owned as $key) {
-                $tableTribu = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable = $key["name_tribu_t_muable"];
-                $tableExtension = $tableTribu . "_restaurant";
-                if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"], true)){
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                    }else{
-                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                    }
-                }
-            }
+            $arrayTribuRestoPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_owned, $id_restaurant, $arrayTribuRestoPast);
 
             $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
-            // dd($tribu_t_joined);
-            foreach ($tribu_t_joined as $key) {
-                $tbtJoined = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable = $key["name_tribu_t_muable"];
-                $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
-                if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
-                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
-                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
-                    }
-                }
-            }
+
+            $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $id_restaurant, $arrayTribuRestoJoinedPast);
 
         }
         return $this->render("restaurant/detail_resto.html.twig", [
@@ -1085,7 +1019,7 @@ class RestaurantController extends AbstractController
     #[Route("/restaurant/pastilled/checking/{idRestaurant}", name:"app_resto_pastilled_checked",methods:["GET"])]
     public function checkedIfRestaurantIsPastilled($idRestaurant,
     UserRepository $userRepository,
-    Tribu_T_Service $tribu_T_Service,
+    Tribu_T_ServiceNew $tribu_T_Service,
     SerializerInterface $serializerInterface
     ){
         $arrayTribu = [];
@@ -1093,19 +1027,7 @@ class RestaurantController extends AbstractController
 
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
             
-            foreach ($tribu_t_owned as $key) {
-                $tableTribu = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"]:null;
-                $tableExtension = $tableTribu . "_restaurant";
-                if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
-                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant, true)){
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path,"isPastilled"=>false]);
-                    }else{
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled"=>true]);
-                    }
-                }
-            }
+            $arrayTribu = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_owned, $idRestaurant, $arrayTribu);
         }
 
         $datas = $serializerInterface->serialize($arrayTribu, 'json');
@@ -1363,6 +1285,37 @@ class RestaurantController extends AbstractController
         $response = new Response();
         $response->setStatusCode(201);
         return $response;
-    } 
+    }
+
+    /**
+     * @author Nantenaina
+     * où: On utilise cette fonction dans les rubriques resto, tous et recherche cmz, 
+     * localisation du fichier: dans RestaurantController.php,
+     * je veux: avoir toutes les tribus pour un resto
+     * @param Tribu_T_ServiceNew $tribu_T_Service: Obejt Tribu_T_ServiceNew
+     * @param array $arrayTribuTOwnedOrJoined : Tableu de tribus T Owned or Joined
+     * @param array $results : Tableu retourné
+     * @param int $idRestaurant : identifiant d'un restaurant
+    */
+    public function getTribuTForRestoPastilled($tribu_T_Service, $arrayTribuTOwnedOrJoined, $idRestaurant, $results){
+        
+        foreach ($arrayTribuTOwnedOrJoined as $key) {
+            $tableTribu = $key["nom_table_trbT"];
+            $logo_path = $key["logo_path"];
+            $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"]:null;
+            $tableExtension = $tableTribu . "_restaurant";
+            if($key["ext_restaurant"]){
+                if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant, true)){
+                    array_push($results, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path,"isPastilled"=>false]);
+                }else{
+                    array_push($results, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled"=>true]);
+                }
+            }
+            
+        }
+
+        return $results;
+
+    }
     
 }
