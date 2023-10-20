@@ -156,7 +156,7 @@ class RestaurantController extends AbstractController
         }
 
         //// data resto all departement
-        $datas= $bddResto->getSomeDataShuffle(1000);
+        $datas= $bddResto->getSomeDataShuffle(2000);
 
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);

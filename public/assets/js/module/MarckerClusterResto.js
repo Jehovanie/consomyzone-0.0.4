@@ -22,12 +22,12 @@ class MarckerClusterResto extends MapModule  {
                 const { minx, miny, maxx, maxy }= lastSearchPosition.position;
                 param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
             } 
-            else{
-                const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-                const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-                const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
-                param= "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
-            }
+            // else{
+            //     const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            //     const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+            //     const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+            //     param= "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+            // }
 
             // "data" => $datas,
             // "allIdRestoPastille" => $arrayIdResto
@@ -59,10 +59,8 @@ class MarckerClusterResto extends MapModule  {
         const that= this;
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            spiderfyOnEveryZoom: true,
-            disableClusteringAtZoom: true,
-            spiderfyOnEveryZoom: true,
             animate: true,
+            disableClusteringAtZoom: true,
             // maxClusterRadius: 40,
             // iconCreateFunction: function (cluster) {
             //     console.log(cluster)
@@ -129,14 +127,16 @@ class MarckerClusterResto extends MapModule  {
         const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
         const  minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
 
-        const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : 1);
+        const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : (zoom > 7 ? 1 : 0));
         const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
         const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
-
-        console.log(ratioMin, ratioMax);
-
-        const dataMax= zoom === 19 ? 50 : ( zoom > 17 ? 25 : ( zoom > 15 ? 20 : ( zoom > 13 ? 10 : 5  )));
+        
+        const dataMax= zoom === 19 ? 25 : ( zoom > 17 ? 20 : ( zoom > 15 ? 15 : ( zoom > 13 ? 10 : ( zoom > 11 ? 5 : 3 ))));
         const dataFiltered= [ ];
+
+        // console.log(ratioMin, ratioMax);
+        // console.log(dataMax)
+        
 
         let iterate_ratio= 1/(10**ratio)
 
@@ -148,8 +148,8 @@ class MarckerClusterResto extends MapModule  {
 
             init_iterate_ratio +=iterate_ratio;
         }
-        console.log("dataFiltered")
-        console.log(dataFiltered);
+        // console.log("dataFiltered")
+        // console.log(dataFiltered);
 
         newData.forEach(item => {
             const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
@@ -261,6 +261,7 @@ class MarckerClusterResto extends MapModule  {
 
         marker.on('click', (e) => {
             ////close right if this open
+            console.log(marker)
             this.closeRightSide();
 
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
@@ -344,8 +345,8 @@ class MarckerClusterResto extends MapModule  {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.addPeripheriqueMarker(new_size)
-           
+            this.updateMarkersDisplay(new_size);
+            this.addPeripheriqueMarker(new_size);
         })
 
     }
@@ -449,9 +450,6 @@ class MarckerClusterResto extends MapModule  {
 
             // this.addMarker(this.checkeFilterType(new_data));
             this.default_data= this.default_data.concat(new_data)
-
-            this.updateMarkersDisplay(new_size);
-
         } catch (e) {
             console.log(e)
         }
@@ -574,10 +572,10 @@ class MarckerClusterResto extends MapModule  {
                         
                     },600000)
 
-                    console.log(position)
+                    // console.log(position)
                 })
 
-                console.log(marker)
+                // console.log(marker)
             }
         });
     }
@@ -589,30 +587,28 @@ class MarckerClusterResto extends MapModule  {
         const zoom = this.map._zoom;
         const { minx, maxx, miny, maxy } = newSize;
 
-        console.log("Zoom: " + zoom )
-        console.log("newSize: " + " " + minx +" "+ maxx + " " +  miny + " " + maxy);
+        // console.log("Zoom: " + zoom )
+        // console.log("newSize: " + " " + minx +" "+ maxx + " " +  miny + " " + maxy);
+
+        const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : (zoom > 7 ? 1 : 0));
+        const dataMax= zoom === 19 ? 30 : ( zoom > 17 ? 25 : ( zoom > 15 ? 20 : ( zoom > 13 ? 10 : ( zoom > 11 ? 5 : 3 ))));
 
         let countMarkers= 0;
 
         //// REMOVE the outside the box
         this.markers.eachLayer((marker) => {
             const { lat, lng } = marker.getLatLng();
-            const isInDisplay = ( lat > parseFloat(miny) && lat < parseFloat(maxy)) && ( lng > parseFloat(minx) && lng < parseFloat(maxx));
-            if( !isInDisplay || countMarkers > 100 ){
+            const isInDisplay = ( lat > parseFloat(miny) && lat < parseFloat(maxy)) && ( lng > parseFloat(minx) && lng < parseFloat(maxx) );
+            if( !isInDisplay || countMarkers > dataMax ){
                 this.markers.removeLayer(marker);
             }else{
                 countMarkers++;
             }
         });
 
-
-        // const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-        // memoryCenter.zoom
         /// add same data must be show
         if( zoom > 8 ){
-            const ratio= zoom > 14 ? 3 : ( zoom > 11 ? 2 : 1);
-            const dataMax= zoom === 19 ? 50 : ( zoom > 17 ? 25 : ( zoom > 15 ? 20 : ( zoom > 13 ? 10 : 5  )));
-            const dataFilteredDerive= [ ];
+            const dataFilteredDerive= [ ]; //// pour stocker les données filtres
 
             this.markers.eachLayer((marker) => {
                 const temp= marker.getLatLng()
@@ -651,13 +647,13 @@ class MarckerClusterResto extends MapModule  {
                 init_iterate_ratio +=iterate_ratio;
             }
 
-            console.log("dataFilteredDerive");
-            console.log(dataFilteredDerive);
+            // console.log("Ratio: " + ratio);
+            // console.log("rationMin: " + ratioMin);
+            // console.log("rationMax: " + ratioMax);
+            // console.log("dataFilteredDerive");
+            // console.log(dataFilteredDerive);
+            // console.log(iterate_ratio)
 
-            console.log("Ratio: " + ratio)
-            console.log("rationMin: " + ratioMin)
-            console.log("rationMax: " + ratioMax)
-            console.log(iterate_ratio)
 
             this.default_data.forEach(item => {
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
@@ -686,14 +682,10 @@ class MarckerClusterResto extends MapModule  {
                 }
             })
 
-            console.log("dataFilteredDerive");
-            console.log(dataFilteredDerive);
+            // console.log("dataFilteredDerive");
+            // console.log(dataFilteredDerive);
 
         }else{
-            console.log("Afficher same marker...");
-            
-            const ratio= zoom > 7 ? 1 : 0;
-            const dataMax= 5;
             const dataFiltered= [ ];
 
             this.default_data.forEach(item => {
@@ -707,7 +699,9 @@ class MarckerClusterResto extends MapModule  {
                     })
                 }
             })
-            console.log("isany tokony haseho: " + dataFiltered.length) ////tokony haseho....
+
+            // console.log("isany tokony haseho: ") ////tokony haseho....
+            // console.log(dataFiltered)
 
 
             const dateFilteredPrime= [];
@@ -727,7 +721,9 @@ class MarckerClusterResto extends MapModule  {
                     })
                 }
             });
-            console.log("isany efa haseho: " + dateFilteredPrime.length) //// efa miseho
+
+            // console.log("isany efa miseho: ") //// efa miseho
+            // console.log(dateFilteredPrime)
 
             dataFiltered.forEach(item => {
                 if(dateFilteredPrime.find(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
@@ -744,8 +740,8 @@ class MarckerClusterResto extends MapModule  {
                 }
                
             })
-            console.log("dataFiltered");
-            console.log(dataFiltered)
+            // console.log("dataFiltered");
+            // console.log(dataFiltered)
             // this.default_data.forEach(item => {
             //     const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
@@ -763,15 +759,35 @@ class MarckerClusterResto extends MapModule  {
             //     }
             // })
         }
-        // this.markers.eachLayer((marker) => {
-        //     if( id_layer_remove.find(id => id === marker.options.id)){
-        //         console.log(marker.options.id)
-        //     }
-        // })
 
+        // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+        const depart= 15;
+        this.markers.eachLayer(marker => {
+            if (marker.options.icon.options.hasOwnProperty('iconUrl')){
+                const icon= marker.options.icon.options;
+                marker.setIcon(
+                    L.icon({
+                        ...icon,
+                        iconSize : [depart+zoom, depart+zoom +9],
+                    })
+                )
+            }else{
+                const divIcon= marker.options.icon.options;
+                marker.setIcon(
+                    new L.DivIcon({
+                        ...divIcon,
+                        iconSize : [depart+zoom, depart+zoom +9],
+                    })
+                )
+            }
+        })
+
+        // this.markers.refreshClusters();
 
         let countMarkerst= 0;
         this.markers.eachLayer((marker) => {  countMarkerst++; });
-        console.log("Total marker afficher: " + countMarkerst)
+        console.log("Total marker afficher: " + countMarkerst);
+
+        console.log("Total default data: " + this.default_data.length)
     }
 }

@@ -53,7 +53,7 @@ class MapModule{
             // attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             minZoom: 6,
-            maxZoom: 19
+            maxZoom: 20
         })
     }
 
@@ -95,7 +95,8 @@ class MapModule{
                 center: ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
                 zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
                 // zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
-                layers: [this.tiles] 
+                layers: [this.tiles],
+                preferCanvas: true,
             }
         );
 
@@ -232,7 +233,6 @@ class MapModule{
                 }
                 setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
             }
-
 
             if( document.querySelector(".icon_close_nav_left_jheo_js")){
                 if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
@@ -843,7 +843,7 @@ class MapModule{
                     
                 },
                 dblclick: function(){
-                    closeRightSide();
+                    console.log("dblclick")
                 },
                 contextmenu: function(data){
                     console.log('wrapper div element contextmenu');
@@ -1486,6 +1486,9 @@ class MapModule{
         // const taille=0
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
         let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+
+        // src="/public/${isSelected ? poi_icon_Selected : poi_icon}"
+        let  pathIcon = IS_DEV_MODE ? ( isSelected ?  poi_icon_Selected : poi_icon  ) : "/public/" + (isSelected ?  poi_icon_Selected : poi_icon ); ///on dev
         return new L.Marker(latLng, {
             icon: new L.DivIcon({
                 className: 'my-div-icon',
@@ -1493,7 +1496,7 @@ class MapModule{
                         <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                         background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                         border-radius: 50%;">${noteMoyenne}</span>
-                      <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                        <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${pathIcon}"/>
                        `,
                 //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
                 iconAnchor: [11, 30],
@@ -1517,14 +1520,18 @@ class MapModule{
     setSpecialIcon(item, isSelected=false, poi_icon, poi_icon_Selected, taille){
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
         let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+
+        // src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+        let  pathIcon = IS_DEV_MODE ? ( isSelected ? poi_icon_Selected : poi_icon ) : "/public/" + (isSelected ?  poi_icon_Selected : poi_icon ); ///on dev
+
         return new L.DivIcon({
             className: 'my-div-icon',
             html: noteMoyenne > 0 ? ` 
                     <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                     background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                     border-radius: 50%;">${noteMoyenne}</span>
-                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
-                   `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${pathIcon}"/>
+                   `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="${pathIcon}"/>
                    `,
             //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
             iconAnchor: [11, 30],

@@ -1192,7 +1192,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.poiX as long,
                         r.poiY as lat"
                     )
-                    // ->where("ABS(r.poiX) >=ABS(:minx) ")
+                    // ->where("(ABS(r.poiX) >=ABS(:minx))")
                     ->where(" r.poiX >= :minx")
                     ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
                     ->andWhere("ABS(r.poiY) >=ABS(:miny)")
