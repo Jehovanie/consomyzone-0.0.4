@@ -2430,6 +2430,32 @@ function showPastillTable(e,id){
             })
         }
     })
+
+    /**
+     * @author Elie
+     * Setting variable into html tribu G
+     */
+    const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim()+"_restaurant"
+    document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id)
+    document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name)
+    fetch("/user/tribu_g/isPastilled/"+tribu_g_r+"/"+id)
+    .then(res=>res.json())
+    .then(isOk=>{
+        if(isOk){
+            document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, false,"+id+",'"+e.target.dataset.name+"')")
+            document.querySelector("#btn-pastille-elie-tbg").innerText ="Dépastiller"
+            document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-success")
+            document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-info")
+        }else{
+            document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, true, "+id+",'"+e.target.dataset.name+"')")
+            document.querySelector("#btn-pastille-elie-tbg").innerText ="Pastiller"
+            document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-success")
+            document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-info")
+        }
+    })
+    // document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-tribu", id)
+    // document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-tbname", id)
+    // document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-velona", id)
     
 }
 
@@ -4846,4 +4872,53 @@ function updateInvitationStory(table, is_valid, email) {
         // });
         console.log(result);
     })
+}
+
+function pastilleForTribuG(e, type, id, name){
+    
+    const data = {
+        name : name,
+        id : id,
+        tbl : document.querySelector("#my_tribu_g").textContent.trim()
+    }
+    // For pastille
+    if(type == true){
+        fetch("/user/tribu_g/pastille/resto",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Restaurant pastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+            }
+        })
+    }
+    // For depastille
+    else{
+        fetch("/user/tribu_g/depastille/resto",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Restaurant dépastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+            }
+        })
+    }
 }

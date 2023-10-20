@@ -2167,3 +2167,16 @@ document.querySelectorAll("div.qf > div > div.bloc-text-message").forEach(div_me
         div_mess.classList.remove("text-white")
     }
 })
+
+function setViewTribu(a , b){
+    document.querySelector('.elie-tribu-'+b).classList.add('active');
+    document.querySelector('.elie-tribu-'+a).classList.remove('active');
+
+    if(a == 'g'){
+        document.querySelector(".content_list_resto_js").classList.remove("d-none")
+        document.querySelector(".content_list_resto_js_g").classList.add("d-none")
+    }else{
+        document.querySelector(".content_list_resto_js").classList.add("d-none")
+        document.querySelector(".content_list_resto_js_g").classList.remove("d-none")
+    }
+}
