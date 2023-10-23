@@ -2412,3 +2412,15 @@ textarea {
     margin-right: 80px;
     margin-top: -35px !important;
 }
+
+.logo_path_pastille{
+    width: 35px;
+}
+
+.logo_path_pastille_details {
+    float: left;
+    height: 50px;
+    margin-left: -10px;
+    cursor: pointer;
+    clip-path: circle();
+}

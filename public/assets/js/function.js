@@ -2478,7 +2478,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf){
                 if (data.isPastilled == true) {
                     listTibuTPast += `
                         <tr>
-                            <td>${data.logo_path}</td>
+                            <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
                             <td>${data.name_tribu_t_muable}</td>
                             <td>
                                 <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
@@ -2489,7 +2489,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf){
                 } else {
                     listTibuTPast += `
                         <tr>
-                            <td>${data.logo_path}</td>
+                            <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
                             <td>${data.name_tribu_t_muable}</td>
                             <td>
                                 <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this)">Pastillez</button>
@@ -4973,6 +4973,7 @@ function pastilleGolf(element) {
 
 function depastilleGolf(selector){
     let id = selector.dataset.id
+    console.log(id)
     let name = selector.dataset.name
     let tbl = selector.dataset.tbname
     let data = {

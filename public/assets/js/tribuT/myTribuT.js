@@ -2729,9 +2729,9 @@ function updateTribuTInfos(e) {
 
 }
 
-function showGolf() {
+function showGolf(tableGolfPastilled) {
 
-    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+    // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
 
     if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
@@ -2759,6 +2759,7 @@ function showGolf() {
     fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             if (data.length > 0) {
                 let tr = ""
                 let i = 0
@@ -2773,14 +2774,14 @@ function showGolf() {
                                 <div class="elie-img-pastilled">
                                 ${image_tribu_t}
                                 </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
+                                <span class="ms-3" style="font-size:12pt;">${item.denomination_f}</span>
                             </td>
                             <td class="data-note-${item.id}">${note}/4</td>
                             <td>
                                 <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
                             </td>
                             <td>
-                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
                             </td>
                         </tr>`
 
@@ -2877,7 +2878,7 @@ function findGolf(val, localisation = "") {
                 const idDep = json.id_dep;
                 const nomDep = json.departement;
                 const idEtab = json.id_etab;
-                const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
+                const table = document.querySelector("#tribu_t_name_main_head").getAttribute("data-tribu")
 
                 body_table += `
                                 <tr>
@@ -2943,45 +2944,9 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
 
 }
 
-function pastilleGolf(element) {
-    let id = element.dataset.id
-    let name = element.dataset.name
-    let tbl = element.dataset.tbname
-    let data = {
-        id: id,
-        name: name,
-        tbl: tbl
-    }
-
-    console.log(data);
-
-    let request = new Request("/user/tribu_t/pastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-
-    fetch(request)
-        .then(response => response.json())
-        .then(message => {
-            new swal("Succès !", "Golf pastillé avec succès", "success")
-                .then((value) => {
-                    element.classList = "btn btn-secondary ms-1"
-                    element.textContent = "Pastillé"
-                    element.setAttribute("disabled", true)
-                    showGolf()
-                    document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                });
-        })
-        .catch(error => console.log(error))
-}
-
 function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse = null) {
 
-    let tableTribu = document.querySelector("#activeTribu").dataset.tableName
+    let tableTribu = document.querySelector("#tribu_t_name_main_head").getAttribute("data-tribu")
 
     $("#detailOptionGolf").modal("show")
 
@@ -2992,42 +2957,12 @@ function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse 
     let btn = document.querySelector("#data-depastilleGolf-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = document.querySelector("#tribu_t_name_main_head").getAttribute("data-tribu")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = tableTribu
 }
 
-function depastilleGolf(selector) {
-    let id = selector.dataset.id
-    let name = selector.dataset.name
-    let tbl = selector.dataset.tbname
-    let data = {
-        id: id,
-        name: name,
-        tbl: tbl
-    }
-
-    let request = new Request("/user/tribu_t/depastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-
-    fetch(request)
-        .then(response=>response.json())
-        .then(message=>{
-                new swal("Succès !", "Golf dépastillé avec succès", "success")
-                .then((value) => {
-                        $("#detailOptionGolf").modal("hide")
-                        document.querySelector("#golf_"+id).remove()
-                });
-        })
-        .catch(error=>console.log(error))
-}
 
 
 /**

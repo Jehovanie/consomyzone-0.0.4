@@ -1506,31 +1506,31 @@ class TributTController extends AbstractController
 
     // }
 
-    #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
+    // #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
 
-    public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
+    // public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
 
-    {
-        $table_golf = $table_tribu."_golf";
+    // {
+    //     $table_golf = $table_tribu."_golf";
 
-        $tableComment=$table_golf."_commentaire";
-        $tribu_t = new Tribu_T_Service();
+    //     $tableComment=$table_golf."_commentaire";
+    //     $tribu_t = new Tribu_T_Service();
 
-        $has_golf = $tribu_t->hasTableResto($table_golf);
+    //     $has_golf = $tribu_t->hasTableResto($table_golf);
        
-        $golfs = array();
+    //     $golfs = array();
        
-        if($has_golf == true){
-            $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
+    //     if($has_golf == true){
+    //         $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
             
-            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
-			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
-        }
-		$r=$serialize->serialize($golfs,'json');
+    //         /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+	// 		// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+    //     }
+	// 	$r=$serialize->serialize($golfs,'json');
 		
-		return new JsonResponse($r, Response::HTTP_OK, [], true);
+	// 	return new JsonResponse($r, Response::HTTP_OK, [], true);
 
-    }
+    // }
 
 
     // #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
@@ -2563,37 +2563,37 @@ class TributTController extends AbstractController
     }
 
 
-    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
-    public function checkedIfRestaurantIsPastilled(
-        $id_golf,
-        UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service,
-        SerializerInterface $serializerInterface
-    ) {
-        $arrayTribu = [];
-        if ($this->getUser()) {
+    // #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    // public function checkedIfRestaurantIsPastilled(
+    //     $id_golf,
+    //     UserRepository $userRepository,
+    //     Tribu_T_Service $tribu_T_Service,
+    //     SerializerInterface $serializerInterface
+    // ) {
+    //     $arrayTribu = [];
+    //     if ($this->getUser()) {
 
-            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+    //         $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
-            foreach ($tribu_t_owned as $key) {
-                $tableTribu = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
-                $tableExtension = $tableTribu . "_golf";
+    //         foreach ($tribu_t_owned as $key) {
+    //             $tableTribu = $key["table_name"];
+    //             $logo_path = $key["logo_path"];
+    //             $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+    //             $tableExtension = $tableTribu . "_golf";
 
-                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
-                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
-                    } else {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
-                    }
-                }
-            }
-        }
+    //             if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+    //                 if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+    //                     array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+    //                 } else {
+    //                     array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        $datas = $serializerInterface->serialize($arrayTribu, 'json');
-        return new JsonResponse($datas, 200, [], true);
-    }
+    //     $datas = $serializerInterface->serialize($arrayTribu, 'json');
+    //     return new JsonResponse($datas, 200, [], true);
+    // }
 
     /**
      * @author Elie <eliefenohasina@gmail.com>
