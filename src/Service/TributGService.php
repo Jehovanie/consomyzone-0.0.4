@@ -204,6 +204,25 @@ class TributGService extends PDOConnexionService{
 
                     $this->getPDO()->exec($sql_restaurant);
 
+                    $sql_restaurant_comment = "CREATE TABLE ".$name_table_tribuG."_restaurant_commentaire(
+
+                        id_resto_comment int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        id_restaurant varchar(250) NOT NULL,
+
+                        id_user varchar(250) NOT NULL,
+
+                        note decimal(3,2) DEFAULT NULL,
+
+                        commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+                    $this->getPDO()->exec($sql_restaurant_comment);
+
                     /** End restaurant table */
 
 
@@ -1539,5 +1558,20 @@ class TributGService extends PDOConnexionService{
         $statement->bindParam(':id', $id);
 
         $statement->execute();
+    }
+
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of tribu G exists
+     */
+    public function getAllRestoTribuG($table_name){
+
+        $table_resto = $table_name."_restaurant";
+
+        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. '');
+
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -702,4 +702,23 @@ class TributGController extends AbstractController
             return $this->json(false);
         }
     }
+
+    /**
+     * @author Elie
+     * Fonction fetch resto pastille
+     */
+    #[Route("/tributG/restaurant", name: "app_restaurant_tributG")]
+
+    public function fetchAllRestoTributG(
+        TributGService $tributGService,
+    ){
+        // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
+        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
+        // getAllRestoTribuG($table_name)
+
+
+        return $this->json($tributGService->getAllRestoTribuG($table_tributG_name));
+    }
 }
