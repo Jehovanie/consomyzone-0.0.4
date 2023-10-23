@@ -65,7 +65,7 @@ class Tribu_T_ServiceNew extends PDOConnexionService
      * @param object $user : l'utilisateur connecté
      */
     public function addTribuTOwned($user, $name_tribu_t_muable, $description, 
-            $logo_path, $nomTableTribuT,$extensionRestaurant, $extensiongolf
+        $logo_path, $nomTableTribuT,$extensionRestaurant, $extensiongolf
     )
     {
       
@@ -351,6 +351,9 @@ class Tribu_T_ServiceNew extends PDOConnexionService
      */
   public function getAllTribuTOwnedInfos($user){
     $results= [];
+    if( !$user ){
+      return $results;
+    }
 
     $tribuTOwned = $user->getTribuT();
 

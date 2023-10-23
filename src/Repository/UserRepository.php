@@ -93,6 +93,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getListTableTribuT_owned(){
         $results= [];
+
+        if(!$this->sec->getUser()){
+            return $results;
+        }
+
         $pdo = new PDOConnexionService();
         $tribuTOwned = $this->sec->getUser()->getTribuT();
 
@@ -113,6 +118,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getListTalbeTribuT_joined(){
         $results= [ ];
+
+        if(!$this->sec->getUser()){
+            return $results;
+        }
+        
         $pdo = new PDOConnexionService();
         $tribuTJoined = $this->sec->getUser()->getTribuTJoined();
 
