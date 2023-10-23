@@ -65,7 +65,8 @@ class Tribu_T_ServiceNew extends PDOConnexionService
      * @param object $user : l'utilisateur connecté
      */
     public function addTribuTOwned($user, $name_tribu_t_muable, $description, 
-    $logo_path, $nomTableTribuT,$extensionRestaurant, $extensiongolf)
+            $logo_path, $nomTableTribuT,$extensionRestaurant, $extensiongolf
+    )
     {
       
       $tribuTOwned = $user->getTribuT();
@@ -349,7 +350,14 @@ class Tribu_T_ServiceNew extends PDOConnexionService
      * @param object $user: l'utilisateur connecté
      */
   public function getAllTribuTOwnedInfos($user){
+    $results= [];
+
     $tribuTOwned = $user->getTribuT();
+
+    if( !$tribuTOwned ){
+      return $results;
+    }
+    
     $sql = "SELECT * FROM $tribuTOwned";
     $db = $this->getPDO();
     $stm = $db->prepare($sql);
@@ -366,7 +374,13 @@ class Tribu_T_ServiceNew extends PDOConnexionService
    * @param object $user: l'utilisateur connecté
    */
   public function getAllTribuTJoined($user){
+    $results= [];
     $tribuTJoined = $user->getTribuTJoined();
+
+    if( !$tribuTJoined ){
+      return $results;
+    }
+
     $sql = "SELECT * FROM $tribuTJoined";
     $db = $this->getPDO();
     $stm = $db->prepare($sql);
