@@ -2430,6 +2430,32 @@ function showPastillTable(e,id){
             })
         }
     })
+
+    /**
+     * @author Elie
+     * Setting variable into html tribu G
+     */
+    const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim()+"_restaurant"
+    document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id)
+    document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name)
+    fetch("/user/tribu_g/isPastilled/"+tribu_g_r+"/"+id)
+    .then(res=>res.json())
+    .then(isOk=>{
+        if(isOk){
+            document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, false,"+id+",'"+e.target.dataset.name+"')")
+            document.querySelector("#btn-pastille-elie-tbg").innerText ="Dépastiller"
+            document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-success")
+            document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-info")
+        }else{
+            document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, true, "+id+",'"+e.target.dataset.name+"')")
+            document.querySelector("#btn-pastille-elie-tbg").innerText ="Pastiller"
+            document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-success")
+            document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-info")
+        }
+    })
+    // document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-tribu", id)
+    // document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-tbname", id)
+    // document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-velona", id)
     
 }
 
@@ -5231,4 +5257,106 @@ function fecthGolfAction(goldID, action){
             }
         })
 
+}
+/**
+ * @constructor
+ * @author Elie <eliefenohasina@gmail.com>
+ * @Fonction sauvegarde de l'historique de l'invitation
+ * @param {string} table_trib 
+ * @param {string} email 
+ * @param {int} invite_to 
+ */
+function saveInvitationStory(table_trib, email) {
+    fetch("/tribu/invitation/save_story/"+table_trib, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "email" : email
+        })
+    }).then(r=>r.json())
+    .then(res=>{
+        if(res.status == "ok"){
+            swal({
+                text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
+                icon: "info",
+            });
+        }else if(res.status == "!ok" ){
+            swal({
+                text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+                icon: "warning",
+            });
+        }
+        // console.log(res);
+    })
+}
+
+/**
+ * @author Elie <eliefenohasina@gmail.com>
+ * @constructor mise à jour de l'historique d'invitation
+ * @param {string} table 
+ * @param {*} is_valid
+ * @param {in} id
+ */
+function updateInvitationStory(table, is_valid, email) {
+    fetch('/tribu/invitation/update_story/'+table+'/'+is_valid+'/'+email)
+    .then(resp=>resp.json())
+    .then(result=>{
+        // swal({
+        //     text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+        //     icon: "success",
+        // });
+        console.log(result);
+    })
+}
+
+function pastilleForTribuG(e, type, id, name){
+    
+    const data = {
+        name : name,
+        id : id,
+        tbl : document.querySelector("#my_tribu_g").textContent.trim()
+    }
+    // For pastille
+    if(type == true){
+        fetch("/user/tribu_g/pastille/resto",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Restaurant pastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+            }
+        })
+    }
+    // For depastille
+    else{
+        fetch("/user/tribu_g/depastille/resto",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Restaurant dépastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+            }
+        })
+    }
 }

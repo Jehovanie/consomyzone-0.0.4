@@ -555,9 +555,9 @@ function getChat(user_id) {
 
                     } else {
 
-                        document.querySelector("#conversation").innerHTML += `<div class="qf disc_${message.id}">
+                        document.querySelector("#conversation").innerHTML += `<div class="qf-chat disc_${message.id}">
                             <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                            <p>${content.text}</p>
+                            <p>${content.text.replace('text-white','')}</p>
                                 ${img_doc}
                                 ${file_doc}
                             </div>

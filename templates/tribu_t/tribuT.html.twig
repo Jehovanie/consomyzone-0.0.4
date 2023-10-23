@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'shard/input/textEditor.twig' as editor %}
 
 {% block title %}
 	ConsoMyZone : Mes Tribus T
@@ -27,6 +28,7 @@
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
+	<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
 
 {% endblock %}
 
@@ -333,10 +335,5 @@
 	</div> #}
 
 	{% include 'shard/modal/commentaire.html.twig' %}
-	<div class="textEditorElie d-none" id="editorInvitationElie">
-		{# {% import 'tribu_t/textEditorInvitation.twig' as ck %} #}
-		{% import 'shard/input/textEditor.twig' as editor %}
-		{{ editor.textEditor(3)}}
-	</div>
 
 {% endblock %}

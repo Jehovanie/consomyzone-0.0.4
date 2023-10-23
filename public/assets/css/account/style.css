@@ -3382,6 +3382,8 @@ div.code-toolbar > .toolbar > .toolbar-item > span:focus {
 .head-pub{
   padding: 15px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .head-pub h5{

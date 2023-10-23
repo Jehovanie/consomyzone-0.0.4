@@ -902,6 +902,7 @@ class SecurityController extends AbstractController
                 $user->getPassword()
             );
             $user->setPassword($hashedPassword);
+            $user->setIsConnected(false);
 
             ///stock the user
             $entityManager->persist($user);
@@ -925,6 +926,7 @@ class SecurityController extends AbstractController
             $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
 
 
+
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -940,7 +942,9 @@ class SecurityController extends AbstractController
 
             $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
             $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+
             foreach($arrayTribuT as $tribuT){
+                
                 if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
                     $apropos_tribuTtoJoined= $tribuT;
                     break;
@@ -989,6 +993,17 @@ class SecurityController extends AbstractController
                 $user->getEmail(), /// email destionation use for verifier
                 ['id' => $user->getId()] /// param id
             );
+
+            /**
+             * update invitation story in tribu T
+             * @author Elie <eliefenohasina@gmail.com>
+             */ 
+
+             $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"));
+
+            /**
+             * end Elie
+             */
 
             /// redirect user to the inscription type------------///
             return $this->redirect($signatureComponents->getSignedUrl());
