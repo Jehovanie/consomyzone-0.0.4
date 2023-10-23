@@ -50,11 +50,8 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
             .then(response => response.json())
             .then( response => {
                 console.log(response);
-                if( response.length > 0 ){
-
-                    let body = ""
-
-                    let  text = `<div class="content_list_p_tG">
+                
+                let  text = `<div class="content_list_p_tG">
                                     <div class="card mb-2">
                                         <div class="card-header">
                                             <h4>Restaurant pastillé dans la tribu G</h4>
@@ -78,6 +75,15 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                     </div>
                                 </div>`
 
+                    if( document.querySelector(".content_bloc_jheo_js")){
+                        document.querySelector(".content_bloc_jheo_js").innerHTML = text;
+
+                    }
+
+                    if( response.length > 0 ){
+
+                    let body = ""
+                
                     for(let resto of response){
                         body +=`
                         <tr>
@@ -88,14 +94,10 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                         </tr>`
                     }
 
-                    if( document.querySelector(".content_bloc_jheo_js")){
-                        document.querySelector(".content_bloc_jheo_js").innerHTML = text;
-
-                    }
                     document.querySelector("#restaurant-tg-elie-js").innerHTML = body;
 
                 }else{
-                    document.querySelector("#restaurant-tg-elie-js").innerHTML = "Aucun restaurant pastillé dans votre tribu G";
+                    document.querySelector("#restaurant-tg-elie-js").innerHTML = "<label class='mt-4'>Aucun restaurant pastillé dans votre tribu G</label>";
                 }
             })
     })
