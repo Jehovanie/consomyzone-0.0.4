@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\StationServiceFrGeomRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
@@ -188,7 +189,7 @@ class HomeController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
-        Tribu_T_Service $tribu_T_Service,
+        Tribu_T_ServiceNew $srvTribuT,
         CommuneGeoCoderRepository $communeGeoCoderRepository,
         GolfFranceRepository $golfFranceRepository,
         TabacRepository $tabacRepository,
@@ -220,7 +221,7 @@ class HomeController extends AbstractController
             $profil = $tributGService->getProfil($user, $entityManager);
 
             $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
+           
             ///to contains profil user information
             
             foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
@@ -228,7 +229,7 @@ class HomeController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if($user_amis && $user_amis->getType() != 'Type'){
+                if( $user_amis && $user_amis->getType() != 'Type'){
 
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
@@ -246,6 +247,7 @@ class HomeController extends AbstractController
                     array_push($amis_in_tributG, $amis);
                 }
             }
+            //dd($userId, $id_amis_tributG);
         }
 
         $origin_cles1= $request->query->get("cles1"); //// use for searching geojson API OpenStreetMap
@@ -601,12 +603,10 @@ class HomeController extends AbstractController
         ///// les resto pastille si l'utilisateur connecter
         $arrayIdResto = [];
         //// all my tribu t.
-        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
-
+        //$tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+        $tribu_t_owned = $tribuTOwned = $srvTribuT->getAllTribuTOwnedInfos($user);
         //// description tribu T with ID restaurant pastille
-        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
-
-
+        $arrayIdResto = $srvTribuT->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
         if(str_contains($request->getPathInfo(), '/api/search')){
             return $this->json([
                 "results" => $results,

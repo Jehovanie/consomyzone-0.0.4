@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tabac ConsoMyZone{% endblock %}
+{% block title %}ConsoMyZone: Tabac {% endblock %}
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/css/tabac/app.css')}}">
@@ -22,7 +22,7 @@
 
     <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/tabac/tabac.js') }}" defer></script>
-    {# <script src="{{asset('assets/js/tabac/details.js')}}" defer></script> #}
+    <script src="{{asset('assets/js/tabac/details.js')}}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -84,6 +84,6 @@
     
     
     {% include 'shard/chatBot.html.twig' %}
-    {# {% include 'shard/tabac/detail_tabac_navleft.twig' %}
-    {% include 'shard/tabac/modalDetailMobil.html.twig' %} #}
+    {% include 'shard/tabac/detail_tabac_navleft.twig' %}
+    {# {% include 'shard/tabac/modalDetailMobil.html.twig' %} #}
 {% endblock %}

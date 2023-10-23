@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Supplier;
 use App\Entity\User;
+use App\Service\PDOConnexionService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -91,66 +92,39 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
 
     public function getListTableTribuT_owned(){
+        $results= [];
+        $pdo = new PDOConnexionService();
+        $tribuTOwned = $this->sec->getUser()->getTribuT();
 
-        $results= [ ];
-        $json_tribuT_owned= $this->sec->getUser() ? $this->sec->getUser()->getTribuT() : false;
-        if( $json_tribuT_owned ){
-            $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
-            $arrayTribu_T_Owned = $decode_tribuT_owned['tribu_t'];
-            if(!array_key_exists("name", $arrayTribu_T_Owned)){
-                foreach($arrayTribu_T_Owned as $tribuT){
-                    extract($tribuT);  /// $name
-                    $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
-                    
-                    array_push($results, [
-                            "table_name" => $name, 
-                            "name_tribu_t_muable" => $name_tribu_t_muable,
-                            "logo_path" => $logo_path
-                        ]
-                    );
-                }
-            }else{
-                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Owned) ? $arrayTribu_T_Owned["name_tribu_t_muable"]:null;
-                array_push($results, [
-                        "table_name" => $arrayTribu_T_Owned['name'],
-                        "name_tribu_t_muable" => $name_tribu_t_muable,
-                        "logo_path" => $arrayTribu_T_Owned['logo_path']
-                    ]
-                );
-            }
-            
+        if(!$tribuTOwned){
+            return $results;
         }
 
+        $sql = "SELECT * FROM $tribuTOwned";
+        $db = $pdo->getPDO();
+        $stm = $db->prepare($sql);
+        $stm->execute();
+        $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
         return $results;
+                  
     }
 
 
     public function getListTalbeTribuT_joined(){
         $results= [ ];
+        $pdo = new PDOConnexionService();
+        $tribuTJoined = $this->sec->getUser()->getTribuTJoined();
 
-        $json_tribuT_joined = $this->sec->getUser() ?  $this->sec->getUser()->getTribuTJoined() : false;
-        if( $json_tribuT_joined ){
-
-            $decode_tribuT_joined = json_decode($json_tribuT_joined , true);
-
-            $arrayTribu_T_Joined = $decode_tribuT_joined['tribu_t'];
-           
-            if( !array_key_exists("name", $arrayTribu_T_Joined) ){
-                foreach($arrayTribu_T_Joined as $tribuT){
-                    extract($tribuT);  /// $name
-                    $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
-                    array_push($results, ["table_name" => $name ,
-                    "name_tribu_t_muable" => $name_tribu_t_muable, 
-                    "logo_path" => $logo_path] );
-                }
-            }else{
-                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Joined) ? $arrayTribu_T_Joined["name_tribu_t_muable"]:null;
-                array_push($results, ["table_name" => $arrayTribu_T_Joined['name'], 
-                "name_tribu_t_muable" => $name_tribu_t_muable,
-                "logo_path" => $arrayTribu_T_Joined['logo_path']]);
-            }
-
+        if(!$tribuTJoined){
+            return $results;
         }
+
+        $sql = "SELECT * FROM $tribuTJoined";
+        $db = $pdo->getPDO();
+        $stm = $db->prepare($sql);
+        $stm->execute();
+        $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
         return $results;
     }

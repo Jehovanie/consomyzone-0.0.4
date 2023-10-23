@@ -314,7 +314,7 @@ class AgendaService extends PDOConnexionService
     public function getRestoAgenda($table_resto_pastille, $value){
 
         $membre = "SELECT id, 1 as isPelleted, denomination_f, '' as adresse from $table_resto_pastille where denomination_f like '%$value%' UNION 
-        SELECT id as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND id NOT IN (Select id_resto from $table_resto_pastille)";
+        SELECT id as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND id NOT IN (Select extensionId from $table_resto_pastille)";
 
         $stm = $this->getPDO()->prepare($membre);
 
@@ -334,7 +334,7 @@ class AgendaService extends PDOConnexionService
 
     public function saveRestaurant($table_resto_pastille, $name,$resto_id){
 
-        $sql = "INSERT INTO $table_resto_pastille (denomination_f, id_resto) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
+        $sql = "INSERT INTO $table_resto_pastille (denomination_f, extensionId) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
 
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->bindParam(1, $name);

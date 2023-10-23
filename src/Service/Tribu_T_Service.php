@@ -17,6 +17,7 @@ class Tribu_T_Service extends PDOConnexionService
     
     
     /**
+     * @deprecated
      * create data_base table tribu-T
      * 
      */
@@ -428,16 +429,16 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
-    public function getIdRestoOnTableExtension($table, $idResto){
+    // public function getIdRestoOnTableExtension($table, $idResto){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
+    //     $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto");
 
-        $statement->execute();
+    //     $statement->execute();
 
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    //     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 
 
@@ -494,8 +495,6 @@ class Tribu_T_Service extends PDOConnexionService
         return $result["result"];
 
     }
-
-
 
     /**
      * @author tommyramihoatrarivo@gmail.com <email>
@@ -578,93 +577,93 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    /**
-     * @author nantenainasoa39@gmail.com <email>
-     * createjson for tribu-t
-     * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
-     * @param string $description it's can be change. This is the description of the tribu T
-     * @param string $path  it's can be change. This is the logo path of the tribu T
-     * @param array $extension it's can be change. This is the extension we can associate with the tribu T
-     * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
-     * @param string $nomTribuT it's can be change. The name of the tribu T
-     */
-    function updateTribuTInfos($tribu_T_name_table, $description, $path, $extension, $userId, $tribu_t_owned_or_join, $nomTribuT)
+    // /**
+    //  * @author nantenainasoa39@gmail.com <email>
+    //  * createjson for tribu-t
+    //  * @param string $tribu_T_name_table it's can't be change. This value is the name of table in CMZ data base
+    //  * @param string $description it's can be change. This is the description of the tribu T
+    //  * @param string $path  it's can be change. This is the logo path of the tribu T
+    //  * @param array $extension it's can be change. This is the extension we can associate with the tribu T
+    //  * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
+    //  * @param string $nomTribuT it's can be change. The name of the tribu T
+    //  */
+    // function updateTribuTInfos($tribu_T_name_table, $description, $path, $extension, $userId, $tribu_t_owned_or_join, $nomTribuT)
 
-    {
+    // {
 
-        $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
+    //     $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
 
-        $fetch->execute();
+    //     $fetch->execute();
 
-        $result = $fetch->fetch(PDO::FETCH_ASSOC);
+    //     $result = $fetch->fetch(PDO::FETCH_ASSOC);
 
-        $date = \getdate();
-        $list = $result[$tribu_t_owned_or_join];
+    //     $date = \getdate();
+    //     $list = $result[$tribu_t_owned_or_join];
 
-        $tmp = [];
+    //     $tmp = [];
         
-        if (isset($list)) {
+    //     if (isset($list)) {
 
-            $jsonInitial= json_decode($list, true);
+    //         $jsonInitial= json_decode($list, true);
             
-            $array1 = $jsonInitial["tribu_t"];
+    //         $array1 = $jsonInitial["tribu_t"];
 
-            if(array_key_exists("name", $array1)){
-                $table = $array1["name"];
-                if($tribu_T_name_table == $table){
-                    array_push($tmp, 
-                    array("name" => $table,  
-                    "name_tribu_t_muable"=> $nomTribuT, 
-                    "description" => $description, 
-                    "extension" => $extension, 
-                    "logo_path" => $path != null ? $path : $array1["logo_path"], 
-                    "date" =>  $date));
-                }else{
-                    array_push($tmp, $array1);
-                }
-            }else{
-                for ($i=0; $i < count($array1); $i++) {
+    //         if(array_key_exists("name", $array1)){
+    //             $table = $array1["name"];
+    //             if($tribu_T_name_table == $table){
+    //                 array_push($tmp, 
+    //                 array("name" => $table,  
+    //                 "name_tribu_t_muable"=> $nomTribuT, 
+    //                 "description" => $description, 
+    //                 "extension" => $extension, 
+    //                 "logo_path" => $path != null ? $path : $array1["logo_path"], 
+    //                 "date" =>  $date));
+    //             }else{
+    //                 array_push($tmp, $array1);
+    //             }
+    //         }else{
+    //             for ($i=0; $i < count($array1); $i++) {
                     
-                    $table = $array1[$i]["name"];
+    //                 $table = $array1[$i]["name"];
 
-                    if($tribu_T_name_table == $table){
-                        array_push($tmp, 
-                        array("name" => $table,  
-                        "name_tribu_t_muable"=> $nomTribuT, 
-                        "description" => $description, 
-                        "extension" => $extension, 
-                        "logo_path" => $path != null ? $path : $array1[$i]["logo_path"], 
-                        "date" =>  $date));
-                    }else{
-                        array_push($tmp, $array1[$i]);
-                    }
+    //                 if($tribu_T_name_table == $table){
+    //                     array_push($tmp, 
+    //                     array("name" => $table,  
+    //                     "name_tribu_t_muable"=> $nomTribuT, 
+    //                     "description" => $description, 
+    //                     "extension" => $extension, 
+    //                     "logo_path" => $path != null ? $path : $array1[$i]["logo_path"], 
+    //                     "date" =>  $date));
+    //                 }else{
+    //                     array_push($tmp, $array1[$i]);
+    //                 }
     
-                }
-            }
+    //             }
+    //         }
 
-            $array = array("tribu_t" => $tmp);
+    //         $array = array("tribu_t" => $tmp);
 
-            if ($_ENV['APP_ENV'] == 'dev')
-                dump($tmp);
+    //         if ($_ENV['APP_ENV'] == 'dev')
+    //             dump($tmp);
             
-            $jsontribuT = json_encode($array);
+    //         $jsontribuT = json_encode($array);
 
-            //$jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
+    //         //$jsontribuT=str_replace("\\u","\\\\u",$jsontribuT);
 
-            $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
-            $statement->bindParam(":jsonArray",$jsontribuT);
-            $statement->bindParam(":userid",$userId);
+    //         $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = :jsonArray WHERE id  = :userid");
+    //         $statement->bindParam(":jsonArray",$jsontribuT);
+    //         $statement->bindParam(":userid",$userId);
 
-            // $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = `".$jsontribuT."` WHERE id  = $userId");
-            // // $statement->bindParam(":jsonArray",$jsontribuT);
-            // $statement->bindParam(":userid",$userId);
+    //         // $statement = $this->getPDO()->prepare("UPDATE user SET $tribu_t_owned_or_join = `".$jsontribuT."` WHERE id  = $userId");
+    //         // // $statement->bindParam(":jsonArray",$jsontribuT);
+    //         // $statement->bindParam(":userid",$userId);
 
-            $statement->execute();
+    //         $statement->execute();
 
-        }
+    //     }
 
 
-    }
+    // }
 
 
     /**
@@ -677,8 +676,6 @@ class Tribu_T_Service extends PDOConnexionService
         $exec->execute();
         return $resultat = $exec->fetch(PDO::FETCH_ASSOC);
         
-       
-
     }
 
 
@@ -740,31 +737,31 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo){
+    // function createOnePub($table_pub, $user_id, $publication, $confidentiality, $photo){
 
-        $statement = $this->getPDO()->prepare("INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) values (:user_id, :publication, :confidentiality, :photo, :userfullname)");
+    //     $statement = $this->getPDO()->prepare("INSERT INTO $table_pub (user_id, publication, confidentiality, photo, userfullname) values (:user_id, :publication, :confidentiality, :photo, :userfullname)");
 
-        $userfullname = $this->getFullName($user_id);
+    //     $userfullname = $this->getFullName($user_id);
 
-        $statement->bindParam(':user_id', $user_id);
+    //     $statement->bindParam(':user_id', $user_id);
 
-        $statement->bindParam(':publication', $publication);
+    //     $statement->bindParam(':publication', $publication);
 
-        $statement->bindParam(':confidentiality', $confidentiality);
+    //     $statement->bindParam(':confidentiality', $confidentiality);
 
-        $statement->bindParam(':photo', $photo);
+    //     $statement->bindParam(':photo', $photo);
 
-        $statement->bindParam(':userfullname', $userfullname);
-
-
-
-        $result = $statement->execute();
+    //     $statement->bindParam(':userfullname', $userfullname);
 
 
 
-        return $result;
+    //     $result = $statement->execute();
 
-    }
+
+
+    //     return $result;
+
+    // }
 
 
 
@@ -777,7 +774,7 @@ class Tribu_T_Service extends PDOConnexionService
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        // dd($result);
+
         return $result["fullname"];
 
     }
@@ -1407,19 +1404,19 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
-    public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
-        $values=array(":id_restaurant"=>$idResto,
-            ":id_user"=>$idUser,
-            ":note"=>$note,
-            ":commentaire"=>$commentaire
-        );
-        $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
-                  "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
-        $stmt = $this->getPDO()->prepare($sql);
+    // public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
+    //     $values=array(":id_restaurant"=>$idResto,
+    //         ":id_user"=>$idUser,
+    //         ":note"=>$note,
+    //         ":commentaire"=>$commentaire
+    //     );
+    //     $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
+    //               "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    //     $stmt = $this->getPDO()->prepare($sql);
 
-        return $stmt->execute($values);
+    //     return $stmt->execute($values);
             
-    }
+    // }
 
     public function upCommentRestoPastilled($tableName,  $note, $commentaire,$idRestoComment, $my_id)
     {
@@ -1534,16 +1531,16 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    public function getAllAvisByRestName($tableResto,$id){
-        $data=[
-            ":id"=>$id
-        ];
-        $sql="SELECT * FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.id_user = t2.id where t1.id_restaurant = :id";
-        $stmt = $this->getPDO()->prepare($sql);
-        $stmt->execute($data);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
+    // public function getAllAvisByRestName($tableResto,$id){
+    //     $data=[
+    //         ":id"=>$id
+    //     ];
+    //     $sql="SELECT * FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.id_user = t2.id where t1.id_restaurant = :id";
+    //     $stmt = $this->getPDO()->prepare($sql);
+    //     $stmt->execute($data);
+    //     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     return $result;
+    // }
     
     public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits){
         $resultF=[];
@@ -1944,39 +1941,60 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    /**
-     * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
-     * 
-     * @param string $tableNameExtension: le nom de la table extension
-     * 
-     * @param int $idResto: l'extension
-     * @return number $result: 0 or if(not exists) else positive number
-     */
-    public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto, $isPastilled){
+    // /**
+    //  * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
+    //  * 
+    //  * @param string $tableNameExtension: le nom de la table extension
+    //  * 
+    //  * @param int $idResto: l'extension
+    //  * @return number $result: 0 or if(not exists) else positive number
+    //  */
+    // public function checkIfCurrentRestaurantPastilled($tableNameExtension, int $idResto, $isPastilled){
 
         
-        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto AND isPastilled = $isPastilled");
+    //     $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idResto AND isPastilled = $isPastilled");
+
+    //     $statement->execute();
+
+    //     $result = $statement->fetch();
+
+    //     if(is_array($result)){
+    //         return true;
+    //     }else{
+    //         return false;
+    //     }
+
+    // }
+
+    /**
+     * @author Tomm 
+     * @action get list tribu t pastille
+     * @ou golfControlleur
+     */
+    public function checkIfCurrentGolfPastilled($tableNameExtension, int $golf, $isPastilled)
+    {
+
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $golf AND isPastilled = $isPastilled");
 
         $statement->execute();
 
         $result = $statement->fetch();
 
-        if(is_array($result)){
+        if (is_array($result)) {
             return true;
-        }else{
+        } else {
             return false;
         }
-
     }
 
-     public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
-        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
-        $stmt = $this->getPDO()->prepare($sql);
-        $stmt->bindParam(":isPastilled", $isPastilled);
-        $stmt->bindParam(":resto_id", $resto_id);
-        $stmt->execute();
-
-    }
+    //  public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
+    //     $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+    //     $stmt = $this->getPDO()->prepare($sql);
+    //     $stmt->bindParam(":isPastilled", $isPastilled);
+    //     $stmt->bindParam(":resto_id", $resto_id);
+    //     $stmt->execute();
+    // }
 
 
     /**

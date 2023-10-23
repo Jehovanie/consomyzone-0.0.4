@@ -1,15 +1,15 @@
 /**
  * global variable 
  */
-var tribu_t_name_0 = "";
-var id_c_u //id du user courant
+var tribu_t_name_0 = document.querySelector("#content-pub-js").dataset.name;
+var id_c_u = document.querySelector("#content-pub-js").dataset.cu;//id du user courant
 let image_listss = [];
 let dataExtension = [];
 var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worker('/public/assets/js/tribuT/worker.js');
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
 
-var image_tribu_t
+var image_tribu_t = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
 var descriptionTribuT = ""
 /**
  * create tribu_t section
@@ -146,83 +146,60 @@ document.getElementById("form_upload_update").onchange = (e) => {
     reader.readAsDataURL(e.target.files[0])
 };
 
-function showBlockPub() {
-    const arrays = Array.from(document.querySelectorAll(".tribu_t"))
-    for (let array of arrays) {
-        array.onclick = (async (e) => {
+
+async function showBlockPub() {
+    showdDataContent(id_c_u)
+
+    /**render pastiled resto */
+    if (document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
+        document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => {
             e.preventDefault();
-                document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')
-                document.querySelector(".span-menu-tribut-tomm-js").classList.toggle('responsif-none')
-                document.querySelector(".fermet-tribu-t-tomm-js").classList.toggle('responsif-none')
-                document.querySelector(".menu-tribut-tomm-js").classList.toggle('span-btn-menu-tribut')
-            if (document.querySelector("#activeTribu")) {
-                document.querySelector("#activeTribu").classList.remove("p-2")
-                document.querySelector("#activeTribu").classList.remove("list-nav-left")
-                document.querySelector("#activeTribu").classList.remove("active")
-                document.querySelector("#activeTribu").removeAttribute("id")
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
             }
-            e.target.id = "activeTribu"
-            e.target.classList.add("p-2")
-            e.target.classList.add("list-nav-left")
-            e.target.classList.add("active")//p-2 list-nav-left active
-            const id_c_u = e.target.dataset.tribuRank
-            const type = e.target.classList[1];
-            // const tribu_t_name=e.target.textContent  data-table-name
-            const tribu_t_name = e.target.dataset.tableName; ///  data-table-name
-            let data = await showdData(tribu_t_name)
-            showdDataContent(data, type, tribu_t_name, id_c_u)
+            document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showResto(tribu_t_name_0 + "_restaurant", id_c_u)
 
-            /**render pastiled resto */
-            if (document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a"))
-                document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").onclick = (e => {
-                    e.preventDefault();
-                    if (document.querySelector("li.listNavBarTribu > a.active")) {
-                        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-                    }
-                    document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a").classList.add("active")
-                    document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-                    showResto(tribu_t_name + "_restaurant", id_c_u)
-
-                })
-            /**end */
-
-            /**render photo gallery*/
-            document.querySelector("#see-gallery").onclick = (e => {
-                e.preventDefault();
-                if (document.querySelector("li.listNavBarTribu > a.active")) {
-                    document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-                }
-                document.querySelector("#see-gallery").classList.add("active")
-                document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-                showPhotos()
-
-            })
-            /**end */
-
-            /**change pdp tribu_t */
-            if (document.querySelector("#fileInputModifTribuT")) {
-
-                document.querySelector("#fileInputModifTribuT").onchange = (e) => {
-                    let files = e.target.files[0]
-                    updatePdpTribu_T(files)
-                }
-            }
-            /**end */
-
-
-            /**render partisant*/
-            document.querySelector(".partisantT").onclick = (e) => {
-                if (document.querySelector("li.listNavBarTribu > a.active")) {
-                    document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-                }
-                document.querySelector(".partisantT > a").classList.add("active")
-                document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-                showPartisan()
-            }
-            /**end */
         })
+    /**end */
+
+    /**render photo gallery*/
+    document.querySelector("#see-gallery").onclick = (e => {
+        e.preventDefault();
+        if (document.querySelector("li.listNavBarTribu > a.active")) {
+            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+        }
+        document.querySelector("#see-gallery").classList.add("active")
+        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+        showPhotos()
+
+    })
+    /**end */
+
+    /**change pdp tribu_t */
+    if (document.querySelector("#fileInputModifTribuT")) {
+
+        document.querySelector("#fileInputModifTribuT").onchange = (e) => {
+            let files = e.target.files[0]
+            updatePdpTribu_T(files)
+        }
     }
+    /**end */
+
+
+    /**render partisant*/
+    document.querySelector(".partisantT").onclick = (e) => {
+        if (document.querySelector("li.listNavBarTribu > a.active")) {
+            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+        }
+        document.querySelector(".partisantT > a").classList.add("active")
+        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+        showPartisan()
+    }
+
 }
+
 
 showBlockPub()
 
@@ -237,6 +214,7 @@ btnSubmitPublication.onclick = (e) => {
     e.preventDefault();
     const formData = new FormData(document.querySelector("#form-publication-tribu-t"))
     sendPublication(formData)
+
 }
 
 /*---------------end send publication section--------------------*/
@@ -272,13 +250,13 @@ function showPartisan() {
 
                 jsons[0].forEach(json => {
 
-                    if( json.infos_profil !== null ){
+                    if (json.infos_profil !== null) {
                         profilInfo = JSON.parse(json.infos_profil)
                         let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
                         let lastName = profilInfo.lastName
                         let firstName = profilInfo.firstName
                         let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
-    
+
                         body_table += `
                             <tr>
                                 <td class="d-flex bd-highlight align-items-center">
@@ -293,7 +271,7 @@ function showPartisan() {
                             </tr>
                         `
                     }
-                    
+
                     // console.log(JSON.parse(json.infos_profil))
                     // document.querySelector("#tribu_t_conteuneur").innerHTML += `
                     //     <div class="card-partisons row">
@@ -352,31 +330,31 @@ function updatePdpTribu_T(files) {
          * i want upload an image less than 2Mo
          */
 
-        const listExt= ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
-        const octetMax= 2e+6; //2Mo 
+        const listExt = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe'];
+        const octetMax = 2e+6; //2Mo 
 
         /// file as url
         const uploaded_image = fR.result;
 
-        if( !checkFileExtension(listExt,uploaded_image)){
+        if (!checkFileExtension(listExt, uploaded_image)) {
 
             swal({
                 title: "Le format de fichier n\'est pas pris en charge!",
                 text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe)",
                 icon: "error",
                 button: "OK",
-                });
+            });
 
-        }else{
-            if(!checkTailleImage(octetMax, uploaded_image)){
+        } else {
+            if (!checkTailleImage(octetMax, uploaded_image)) {
                 swal({
                     title: "Le fichier est trop volumineux!",
                     text: "La taille de l\'image doit être inférieure à 2Mo.",
                     icon: "error",
                     button: "OK",
-                    });
-                
-            }else{
+                });
+
+            } else {
                 const param = {
                     base64: evt.target.result,
                     photoName: files.name,
@@ -402,7 +380,7 @@ function updatePdpTribu_T(files) {
                             text: "L\'avatar de la tribu est à jour avec succès!",
                             icon: "success",
                             button: "OK",
-                            });
+                        });
                     }
                 })
             }
@@ -424,7 +402,7 @@ function sendPublication(formData) {
     /**
      * tester si on utilise la capture media
      */
-    if(document.querySelector("#image-publication-tribu-t").getAttribute("data-file")=="image"){
+    if (document.querySelector("#image-publication-tribu-t").getAttribute("data-file") == "image") {
         fR.addEventListener("load", (evt) => {
 
             let base64 = document.querySelector("#image-publication-tribu-t").src
@@ -434,7 +412,7 @@ function sendPublication(formData) {
                 photoType: 'image/png',
                 photoSize: 300000,
                 contenu: formData.get("contenu"),
-                tribu_t_name: tribu_t_name_0,
+                tribu_t_name: document.querySelector("#content-pub-js").dataset.name,
                 confidentialite: formData.get("confidentialite")
             }
             // console.log(formData.get('photo'));
@@ -447,10 +425,16 @@ function sendPublication(formData) {
                 },
                 body: JSON.stringify(param)
             })
-            fetch(request)
+            fetch(request).then(r => {
+                if (r.status == 200 && r.ok) {
+                    swal("Bravo!", "Votre publication a bien été partagé.", "success").then(() => {
+                        window.location.reload();
+                    })
+                }
+            })
         })
         fR.readAsDataURL(dataURLtoFile(document.querySelector("#image-publication-tribu-t").src, `capture-${new Date().getTime()}.png`));
-    }else{
+    } else {
         fR.addEventListener("load", (evt) => {
 
             let param = {
@@ -459,9 +443,10 @@ function sendPublication(formData) {
                 photoType: formData.get("photo").type,
                 photoSize: formData.get("photo").size,
                 contenu: formData.get("contenu"),
-                tribu_t_name: tribu_t_name_0,
+                tribu_t_name: document.querySelector("#content-pub-js").dataset.name,
                 confidentialite: formData.get("confidentialite")
             }
+
             const request = new Request("/user/create-one/publication", {
                 method: "POST",
                 headers: {
@@ -470,11 +455,17 @@ function sendPublication(formData) {
                 },
                 body: JSON.stringify(param)
             })
-            fetch(request)
+            fetch(request).then(r => {
+                if (r.status == 200 && r.ok) {
+                    swal("Bravo!", "Votre publication a bien été partagé.", "success").then(() => {
+                        window.location.reload();
+                    })
+                }
+            })
         })
         fR.readAsDataURL(formData.get('photo'));
     }
-    
+
 }
 
 /**
@@ -483,137 +474,140 @@ function sendPublication(formData) {
  * @param {*} type 
  * @param {*} tribu_t_name 
  */
-function showdDataContent(data, type, tribu_t_name, id_c_u) {
+// function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
-    let detailsTribuT = null
+//     let detailsTribuT = null
 
-    if (type === "owned")
-        detailsTribuT = data.tribu_t_owned
-    else
-        detailsTribuT = data.tribu_t_joined
+//     if (type === "owned")
+//         detailsTribuT = data.tribu_t_owned
+//     else
+//         detailsTribuT = data.tribu_t_joined
 
-    // console.log(JSON.parse(detailsTribuT).tribu_t)
+//     // console.log(JSON.parse(detailsTribuT).tribu_t)
 
-    let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
-    tribu_t_name_0 = tribu_t[0].name
-    descriptionTribuT = tribu_t[0].description
-    let restExtension = ""
-    let golfExtension = ""
+//     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
+//     tribu_t_name_0 = tribu_t[0].name
+//     descriptionTribuT = tribu_t[0].description
+//     let restExtension = ""
+//     let golfExtension = ""
 
-    // extension 'on' correspond à extension 
-    //restaurant dans les anciens version
-    // ce bout de code est là pour assurer une prise en charge recurssive
-    if(tribu_t[0].extension=="on" || tribu_t[0].extension=="restaurant" ){
-        restExtension = ` <li class="listNavBarTribu restoNotHide">
-                        <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
-                    </li>`
-    }else{
-        if(tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1 ) {
-            restExtension = ` <li class="listNavBarTribu restoNotHide">
-                                <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
-                            </li>`
-        }
-        if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
-            golfExtension = ` <li class="listNavBarTribu golfNotHide">
-                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
-                            </li>`
-        }
-    }
+//     // extension 'on' correspond à extension 
+//     //restaurant dans les anciens version
+//     // ce bout de code est là pour assurer une prise en charge recurssive
+//     if(tribu_t[0].extension=="on" || tribu_t[0].extension=="restaurant" ){
+//         restExtension = ` <li class="listNavBarTribu restoNotHide">
+//                         <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+//                     </li>`
+//     }else{
+//         if(tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1 ) {
+//             restExtension = ` <li class="listNavBarTribu restoNotHide">
+//                                 <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+//                             </li>`
+//         }
+//         if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
+//             golfExtension = ` <li class="listNavBarTribu golfNotHide">
+//                                 <a style="cursor:pointer;" class="" onclick="showGolf('${tribu_t_name_0}')" data-value="golf">Mon Golf</a>
+//                             </li>`
+//         }
+//     }
 
     
 
 
-    if (tribu_t[0].logo_path) {
-        // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
-        //public
-        image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
-        // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
-    } else {
-        image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`
-    }
+//     if (tribu_t[0].logo_path) {
+//         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+//         //public
+//         image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
+//         // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
+//     } else {
+//         image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`
+//     }
 
-    let canChangeTribuPicture = "";
-    if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
-        canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
-                                        <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
-                                    </label>
-                                    <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
-                                </div>` : ""
-    }
+//     let canChangeTribuPicture = "";
+//     if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
+//         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
+//                                     <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
+//                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+//                                     </label>
+//                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
+//                                 </div>` : ""
+//     }
 
-    let canUpdateTribuInfo = !document.querySelector("#activeTribu").classList.contains("other") ? `<li class="listNavBarTribu">
-                                <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
-                            </li>` : "";
+//     let canUpdateTribuInfo = !document.querySelector("#activeTribu").classList.contains("other") ? `<li class="listNavBarTribu">
+//                                 <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
+//                             </li>` : "";
 
-    document.querySelector("#content-pub-js").innerHTML = `
-            <div class="card-couverture-pub-tribu-t ">
-                <div class="content-couverture mt-3">
-                    <div class="row content-tribu-t">
-                        <div class="col-lg-3 col-4">
-                            <div class="row">
-                                <div class="col-lg-6 col-3">
-                                    ${image_tribu_t}
-                                </div>
-                                ${canChangeTribuPicture}
-                            </div>
-                        </div>
-                        <div class="col-lg-8 col-8 content-tribu-t-name">
-                            <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
-                            <p class="text-white descrp-tribu-t">
-                            ${tribu_t[0].description.replace(/"/gi,'')}
-                            </p>
-                        </div>
-                    </div>
+//     document.querySelector("#content-pub-js").innerHTML = `
+//             <div class="card-couverture-pub-tribu-t ">
+//                 <div class="content-couverture mt-3">
+//                     <div class="row content-tribu-t">
+//                         <div class="col-lg-3 col-4">
+//                             <div class="row">
+//                                 <div class="col-lg-6 col-3">
+//                                     ${image_tribu_t}
+//                                 </div>
+//                                 ${canChangeTribuPicture}
+//                             </div>
+//                         </div>
+//                         <div class="col-lg-8 col-8 content-tribu-t-name">
+//                             <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+//                             <p class="text-white descrp-tribu-t">
+//                             ${tribu_t[0].description.replace(/"/gi,'')}
+//                             </p>
+//                         </div>
+//                     </div>
                     
-                </div>
-                <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
-                     <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
-                </div>
-                <nav class=" mx-auto">
-                    <ul id="navBarTribu" class="navBarTribu-t">
-                        <li class="listNavBarTribu">
-                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
-                        </li>
+//                 </div>
+//                 <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
+//                      <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
+//                 </div>
+//                 <nav class=" mx-auto">
+//                     <ul id="navBarTribu" class="navBarTribu-t">
+//                         <li class="listNavBarTribu">
+//                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
+//                         </li>
 
 
-                        ${restExtension}
-                        ${golfExtension}
+//                         ${restExtension}
+//                         ${golfExtension}
 
-                        <li class="listNavBarTribu invitation">
-                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
-                        </li>
-                        <li class="listNavBarTribu partisantT">
-                            <a style="cursor:pointer;">Partisans</a>
-                        </li>
-                        <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" id="see-gallery">Photos</a>
-                        </li>
+//                         <li class="listNavBarTribu invitation">
+//                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
+//                         </li>
+//                         <li class="listNavBarTribu partisantT">
+//                             <a style="cursor:pointer;">Partisans</a>
+//                         </li>
+//                         <li class="listNavBarTribu">
+//                             <a style="cursor:pointer;" id="see-gallery">Photos</a>
+//                         </li>
 
-                        ${canUpdateTribuInfo}
+//                         ${canUpdateTribuInfo}
 
-                    </ul>
-                </nav>
-            </div>
+//                     </ul>
+//                 </nav>
+//             </div>
 
-            <div id="tribu_t_conteuneur" class="exprime-pub">
-                <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
-                    <!-- ====== Chart pub One Start -->
-                    <div class="2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
-                        <div class="head-pub">
-                            <div class="pdp-content">
-                                <img src="${document.querySelector(".userProfil > img").src}" alt="">
-                            </div>
-                            <div class="name-content-h">
-                                <div class="name-content">
-                                    <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Exprimez-vous...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ====== Chart pub One End -->
-                </div>
-                <div class="publication-content">
+//             <div id="tribu_t_conteuneur" class="exprime-pub">
+//                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+//                     <!-- ====== Chart pub One Start -->
+//                     <div class="2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
+//                         <div class="head-pub">
+//                             <div class="pdp-content">
+//                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
+//                             </div>
+//                             <div class="name-content-h">
+//                                 <div class="name-content">
+//                                     <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Exprimez-vous...</p>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                     <!-- ====== Chart pub One End -->
+//                 </div>
+//                 <div class="publication-content">
+function showdDataContent(id_c_u, lastId = 0) {
+    document.querySelector("#tribu_t_conteuneur").innerHTML += `
+            <div class="publication-content">
                     <div class="list-pub-new">
                         <div id="list-publicatiotion-tribu-t">
                             
@@ -623,15 +617,18 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                     </div>
                     
                 </div>
-            </div>
-            
-    `
-    //
-    worker.postMessage([tribu_t_name_0, 0, 20]);
-    // console.log('Message envoyé au worker');
+  `
+
+    const nomTableTribuT = document.querySelector("#content-pub-js").dataset.name
+    const idTribuT = document.querySelector("#content-pub-js").dataset.id
+    worker.postMessage([nomTableTribuT, idTribuT, lastId, 20]);
+
     worker.onmessage = (event) => {
         // console.log(event.data)
-        let data = event.data
+        let data = event.data["publication"]
+
+        //la variable qui contient les description de la tribuT
+        let dataAbout = event.data["about"]
         // console.log(data);
 
         /*---------show 5 pub par defaut-----------------*/
@@ -666,6 +663,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             </div>
                                         </div>
                                     </div>` : ""
+
                 let canUpdateOrDeletePub = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div id="contentUpdateOrDelete">
                                         <span class="float-end dropstart">
                                             <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
@@ -687,7 +685,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                     </div>` : ""
 
 
-                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -697,7 +695,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${dataAbout["name_tribu_t_muable"]}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -710,7 +708,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi, '')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -721,7 +719,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
+                                                            onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -758,7 +756,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
                     contentPublication = `
-                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -768,7 +766,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="name-content-h">
                                                         <div class="name-content">
                                                             <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
+                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${dataAbout["name_tribu_t_muable"]}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${data[i].datetime}</p>
@@ -812,7 +810,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
+                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi, '')}</p>
                                                     ${pub_photo}
                                                 </div>
 
@@ -823,7 +821,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -872,7 +870,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             const gen = genDataPubOfAllPartisans(data, 5)
             const gen_length = (data.length - 5)
             //const gen_length = (data.length)
-            // console.log("gen_length : "+gen_length)
+            console.log("gen_length : " + gen_length)
 
 
             let lastId = 0;
@@ -886,94 +884,96 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                     const scrolled = window.scrollY
                     if (Math.ceil(scrolled) === scrollable) {
                         if (data) {
-                            lastId = data.id
-                            console.log(genCursorPos)
                             if (genCursorPos === gen_length) {
 
-                                worker.postMessage([tribu_t_name_0, lastId, 20]);
+                                //worker.postMessage([tribu_t_name_0, lastId, 20]);
+                                //TODO appel recurcive
+                                showdDataContent(id_c_u, lastId);
+                            } else {
+                                lastId = data.id
+                                console.log(data)
+                                console.log("last id " + lastId)
+                                data = gen.next().value
 
-                            }
-
-                            data = gen.next().value
-                            console.log(data)
-                            if (data) {
-                                console.log("data N°: " + i)
-                                console.log(data[i])
-                                const contentPublication = `
-                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${tribu_t[0].name}_${data[i].id}_jheo_js">
-                                            <!-- ====== Chart One Start -->
-                                            <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
-                                                <div class="head-pub">
-                                                    <div class="pdp-content">
-                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
-                                                    </div>
-                                                    <div class="name-content-h">
-                                                        <div class="name-content">
-                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
-                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
+                                if (data) {
+                                    const contentPublication = `
+                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data.id}_jheo_js">
+                                                <!-- ====== Chart One Start -->
+                                                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+                                                    <div class="head-pub">
+                                                        <div class="pdp-content">
+                                                            <img src="/public/assets/image/img_avatar3.png" alt="">
                                                         </div>
-                                                        <div class="status-content d-flex">
-                                                            <p class="p-heure"> ${data[i].datetime}</p>
-                                                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                                                
-                                                                <div class="btn-group" role="group">
+                                                        <div class="name-content-h">
+                                                            <div class="name-content">
+                                                                <h5> &ensp;${data.userfullname} &ensp;</h5>
+                                                                <div class="publiate_on"><p  class="p-title"> a publié sur <span>${dataAbout["name_tribu_t_muable"]}</span></p></div>
+                                                            </div>
+                                                            <div class="status-content d-flex">
+                                                                <p class="p-heure"> ${data.datetime}</p>
+                                                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                                                     
-                                                                    <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </span>
-                                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                                        <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
-                                                                        <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+                                                                    <div class="btn-group" role="group">
+                                                                        
+                                                                        <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </span>
+                                                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                                            <a data-id="${data.id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                                            <a data-id="${data.id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
 
-                                                            
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        <div id="contentUpdateOrDelete">
+                                                            <span class="dropend">
+                                                                <span style="cursor:pointer" data-bs-toggle="dropdown">
+                                                                    <i class="bi bi-three-dots" style="cursor:pointer"></i>
+                                                                </span>
+                                                                <ul class="dropdown-menu">
+                                                                    <li>
+                                                                        <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                                    </li>
+                                                                    <li>
+
+                                                                        <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item">
+                                                                            <i class="bi bi-trash3" aria-hidden="true"></i>
+                                                                            Supprimer
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </span>
+                                                        </div>
+
+                                                    </div>
+                                                        
+                                                    <div class="card-pub-actu">
+                                                        <p class="text-pub"> ${data.publication.replace(/"/gi, '')}</p>
+                                                        ${pub_photo}
+                                                    </div>
+
+                                                    <div class="card-reaction">
+                                                        <p class="text-comment content_nbr_comment_jheo_js">
+                                                            <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
+                                                        </p>
+
+                                                        <div class="reaction-icon d-flex">
+                                                            <i class="bi-heart like non_active"></i>
+                                                            <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                            onclick="getAllComment('${data.id}', '${data.nom_table_trbT}', '${data.user_id}')"></i>
                                                         </div>
                                                     </div>
-                                                    <div id="contentUpdateOrDelete">
-                                                        <span class="dropend">
-                                                            <span style="cursor:pointer" data-bs-toggle="dropdown">
-                                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                                            </span>
-                                                            <ul class="dropdown-menu">
-                                                                <li>
-                                                                    <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
-                                                                </li>
-                                                                <li>
-
-                                                                    <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item">
-                                                                        <i class="bi bi-trash3" aria-hidden="true"></i>
-                                                                        Supprimer
-                                                                    </button>
-                                                                </li>
-                                                            </ul>
-                                                        </span>
-                                                    </div>
-
-                                                </div>
                                                     
-                                                <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[i].publication.replace(/"/gi,'')}</p>
-                                                    ${pub_photo}
                                                 </div>
-
-                                                <div class="card-reaction">
-                                                    <p class="text-comment content_nbr_comment_jheo_js">
-                                                        <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
-                                                    </p>
-
-                                                    <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like non_active"></i>
-                                                        <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
-                                                    </div>
-                                                </div>
-                                                
+                                                <!-- ====== Chart One End -->
                                             </div>
-                                            <!-- ====== Chart One End -->
-                                        </div>
-                                    `
-                                document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+                                        `
+                                    if(document.querySelector("#list-publicatiotion-tribu-t"))
+                                        document.querySelector("#list-publicatiotion-tribu-t").innerHTML += contentPublication
+                                }
                             }
+
                             genCursorPos++;
 
                         }
@@ -1136,7 +1136,7 @@ function test() {
 
 async function showdData(tribu_t_name) {
 
-    const request1 = new Request(`/user/tribu_one/${tribu_t_name}`, {
+    const request1 = new Request(`/user/tribu-t/${tribu_t_name}/accueil`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
@@ -1218,6 +1218,7 @@ function showResto(table_rst_pastilled, id_c_u) {
         let restos = e.data
         // console.log("workerresto :::::");
         // console.log(restos);
+        console.log(restos)
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
@@ -1231,25 +1232,25 @@ function showResto(table_rst_pastilled, id_c_u) {
             for (let resto of restos) {
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
-                if(resto.isPastilled){
+                if (resto.isPastilled) {
 
                     let id = resto.id
-                    let id_resto = resto.id_resto
+                    let id_resto = resto.extensionId
                     let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
-    
+
                     let id_user = resto.All_user != null ? resto.All_user.split(",") : []
                     // console.log(id_user)
                     let denominationsF = resto.denomination_f
                     let nbrAvis = resto.nbrAvis
                     let key = 0
                     let note = resto.globalNote ? resto.globalNote : 0
-    
-                    let adresse = resto.numvoie +" "+resto.nomvoie+" "+resto.codpost+" "+resto.dep_name
-    
+
+                    let adresse = resto.numvoie + " " + resto.nomvoie + " " + resto.codpost + " " + resto.dep_name
+
                     let text1 = ""
-    
+
                     let action = ""
-    
+
                     for (let [k, v] of id_user.entries()) {
                         if (v === id_c_u)
                             key = k
@@ -1258,7 +1259,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                         // console.log("up " + denominationsF)
                         // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
                         action = "update"
-    
+
                         text1 = "Modifiez votre avis"
                     } else {
                         // console.log("crt " + denominationsF)
@@ -1266,14 +1267,17 @@ function showResto(table_rst_pastilled, id_c_u) {
                         action = "create"
                         text1 = "Notez"
                     }
-    
+
                     body_table += `
-                        <tr id="restaurant_${resto.id_resto}">
+                        <tr id="restaurant_${resto.extensionId}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
                                 <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
                                 <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
-                                <!--</a>-->
+                                
+                                <!-- <a target="_blank" href="/restaurant?id=${resto.extensionId}" class="text-decoration-none">
+                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span>
+                                </a> -->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
                             <td>
@@ -1840,17 +1844,17 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites() {
-    document.querySelector("#activeTribu").click();
+    showBlockPub();
 }
 
 
-if (document.querySelector("#submit-publication-tribu-t")) {
-    document.querySelector("#submit-publication-tribu-t").addEventListener("click", () => {
-        document.querySelector("#form-publication-tribu-t > div > div > div.modal-header > button").click();
-        setTimeout(showActualites, 5000);
-        //showActualites();
-    })
-}
+// if (document.querySelector("#submit-publication-tribu-t")) {
+//     document.querySelector("#submit-publication-tribu-t").addEventListener("click", () => {
+//         document.querySelector("#form-publication-tribu-t > div > div > div.modal-header > button").click();
+//         setTimeout(showActualites, 5000);
+//         //showActualites();
+//     })
+// }
 
 function showInvitations() {
     
@@ -1949,12 +1953,12 @@ function showInvitations() {
                     </div>
                 </div>
         `
-    initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+    initCKEditor("exampleFormControlTextarea1", showReponsePartenaire);
     // editor_invitation = document.querySelector("#editorInvitationElie")
     // // console.log(editor);
     // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
     // document.querySelector("#editorInvitationElie").classList.remove("d-none")
-    
+
     fetchAllTribuGMember()
 
     /** JEHOVANNIE SEND INVITATION BY EMAIL */
@@ -2066,10 +2070,10 @@ function showInvitations() {
                 input_cc.value = null;
                 // description.value = null;
                 object.value = null;
-                
+
                 //init Ckeditor for description by Elie
 
-                editor.setData("Ecrivez votre message ici.") 
+                editor.setData("Ecrivez votre message ici.")
 
                 //Send data invitation story into tribu
                 let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
@@ -2373,9 +2377,9 @@ function listResto() {
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
     if (adresse.trim() != "" || inputName.trim() != "") {
-        if(document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")){
+        if (document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")) {
             findGolf(inputName, adresse)
-        }else if(document.querySelector(".restoNotHide > a").classList.contains("active")){
+        } else if (document.querySelector(".restoNotHide > a").classList.contains("active")) {
             findResto(inputName, adresse)
         }
         $("#modalForExtension").modal("show")
@@ -2595,8 +2599,8 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 
-    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
-    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
+    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote(" + id_pastille + ",\'" + action + "\')")
+    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent(" + id_pastille + ",\'" + denomination_f + "\',\'" + adresse + "\',\'" + action + "\')")
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
@@ -2643,48 +2647,31 @@ function settingTribuT(e, tribuTName) {
 
     data.then(response => {
 
-        let tbt = JSON.parse(response.tribu_t_owned)
-        let selectTribuOwned = Array.isArray(tbt.tribu_t) ? tbt.tribu_t.filter((tribu) => tribu.name == tribuTName) : [tbt.tribu_t];
-        let currentTribuT = selectTribuOwned[0]
-        // let selectTribuOwned = []
+        let tbt = response
 
-        // if(Array.isArray(tbt.tribu_t)){
-        //     selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
-        // }else{
-        //     selectTribuOwned.push(tbt.tribu_t)
-        // }
-        // // selectTribuOwned = tbt.tribu_t.filter((tribu) => tribu.name == tribuTName);
-        // let currentTribuT = selectTribuOwned[0]
-        // // console.log(currentTribuT)
-        // e.target.classList.add("active")
-        // document.querySelector("#tribu_t_conteuneur").innerHTML = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Modifier les informations de la tribu T</h5>
-        //    <button type="button" class="btn btn-primary mt-4 float-end">Modifier</button>
-        // `
+        let currentTribuT = tbt
+
         $("#ModalUpdateTribuT").modal("show")
 
         document.querySelector("#updateTribuInfo").dataset.name = ""
         document.querySelector("#updateTribuInfo").dataset.url = ""
 
-        document.querySelector("#updateTribuTName").value = currentTribuT.name_tribu_t_muable ? currentTribuT.name_tribu_t_muable : currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ") //currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+        document.querySelector("#updateTribuTName").value = currentTribuT.name_tribu_t_muable
         document.querySelector("#update_description").value = currentTribuT.description
-        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
+        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path
 
-        // extension 'on' correspond à extension 
-        //restaurant dans les anciens version
-        // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension=="on" || currentTribuT.extension?.restaurant  ) {
+        if (currentTribuT.ext_restaurant) {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension?.golf) {
+        if (currentTribuT.ext_golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false
         }
 
-       
         document.querySelector("#updateTribuInfo").dataset.tbttbl = tribuTName
 
     })
@@ -2730,23 +2717,19 @@ function updateTribuTInfos(e) {
         .then(res => {
             console.log(res)
             $("#ModalUpdateTribuT").modal("hide")
-            document.querySelector("#activeTribu").textContent = "Tribu T " + nomTribuT
             swal({
                 title: "Bravo !",
                 text: "Information modifiée avec succès",
                 icon: "success",
                 button: "Fermer",
             }).then((value) => {
-                if (photoName != "") {
-                    document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.querySelector('img').src = base64
-                }
-                document.querySelector("#activeTribu").click()
+                location.reload()
             });
         })
 
 }
 
-function showGolf(){
+function showGolf() {
 
     let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
 
@@ -2773,14 +2756,14 @@ function showGolf(){
                                     </div>
                                 `
 
-    fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
-    .then(response =>  response.json())
-    .then(data => {
-        if(data.length > 0){
-            let tr = ""
-            let i = 0
-            for (const item of data) {
-                    if(item.isPastilled){
+    fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                let tr = ""
+                let i = 0
+                for (const item of data) {
+                    if (item.isPastilled) {
                         i++
                         let nbrAvis = item.nbrAvis
                         let note = item.globalNote ? item.globalNote : 0
@@ -2802,11 +2785,11 @@ function showGolf(){
                         </tr>`
 
                     }
-            }
+                }
 
-            if(i>0){
+                if (i > 0) {
 
-                golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+                    golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
                                     <table id="table_golf_pastilled" class="ta" style="width:100%">
                                         <thead>
                                             <tr>
@@ -2821,27 +2804,28 @@ function showGolf(){
                                         </tbody>
                                     </table>`
 
-                $('#table_golf_pastilled').DataTable({
-                    "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                    }
-                });
-            }else{
+                    $('#table_golf_pastilled').DataTable({
+                        "language": {
+                            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        }
+                    });
+                } else {
+                    golfContainer.style.textAlign = "center"
+                    golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+                }
+
+
+            } else {
                 golfContainer.style.textAlign = "center"
                 golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
             }
 
+            golfContainer.classList.add("bg-white");
+            golfContainer.classList.add("p-2");
+            golfContainer.style.display = "block"
 
-        }else{
-            golfContainer.style.textAlign = "center"
-            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-        }
 
-        golfContainer.classList.add("bg-white");
-        golfContainer.classList.add("p-2");
-        golfContainer.style.display = "block"
-
-    })
+        })
 
 }
 
@@ -2894,7 +2878,7 @@ function findGolf(val, localisation = "") {
                 const nomDep = json.departement;
                 const idEtab = json.id_etab;
                 const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
-                
+
                 body_table += `
                                 <tr>
                                     <td>${name}</td>
@@ -2925,8 +2909,8 @@ function findGolf(val, localisation = "") {
 }
 
 
-function showEtabDetail(event,nom_dep, id_dep, id_etab) {
-    
+function showEtabDetail(event, nom_dep, id_dep, id_etab) {
+
     const request = new Request(`/api/agenda/golf/${nom_dep}/${id_dep}/detail/${id_etab}`)
 
     $("#modalForExtension").modal("hide")
@@ -2946,7 +2930,7 @@ function showEtabDetail(event,nom_dep, id_dep, id_etab) {
                                 </p>
                             </div>`
 
-    modalBody.innerHTML =  `<div class="d-flex justify-content-center">
+    modalBody.innerHTML = `<div class="d-flex justify-content-center">
                                                 <div class="spinner-border" role="status">
                                                     <span class="sr-only">Loading...</span>
                                                 </div>
@@ -2956,17 +2940,17 @@ function showEtabDetail(event,nom_dep, id_dep, id_etab) {
         .then(res => res.text()).then(html => {
             modalBody.innerHTML = html
         });
-    
+
 }
 
-function pastilleGolf(element){
+function pastilleGolf(element) {
     let id = element.dataset.id
     let name = element.dataset.name
     let tbl = element.dataset.tbname
     let data = {
-        id : id,
-        name : name,
-        tbl : tbl
+        id: id,
+        name: name,
+        tbl: tbl
     }
 
     console.log(data);
@@ -2975,27 +2959,27 @@ function pastilleGolf(element){
         method: "POST",
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
 
     fetch(request)
-            .then(response=>response.json())
-            .then(message=>{
-                new swal("Succès !", "Golf pastillé avec succès", "success")
-                    .then((value) => {
-                        element.classList = "btn btn-secondary ms-1"
-                        element.textContent = "Pastillé"
-                        element.setAttribute("disabled", true)
-                        showGolf()
-                        document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                    });          
-            })
-            .catch(error=>console.log(error))
+        .then(response => response.json())
+        .then(message => {
+            new swal("Succès !", "Golf pastillé avec succès", "success")
+                .then((value) => {
+                    element.classList = "btn btn-secondary ms-1"
+                    element.textContent = "Pastillé"
+                    element.setAttribute("disabled", true)
+                    showGolf()
+                    document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
+                });
+        })
+        .catch(error => console.log(error))
 }
 
-function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null) {
+function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse = null) {
 
     let tableTribu = document.querySelector("#activeTribu").dataset.tableName
 
@@ -3014,36 +2998,37 @@ function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null
     btn.dataset.tbname = tableTribu
 }
 
-function depastilleGolf(selector){
+function depastilleGolf(selector) {
     let id = selector.dataset.id
     let name = selector.dataset.name
     let tbl = selector.dataset.tbname
     let data = {
-        id : id,
-        name : name,
-        tbl : tbl
+        id: id,
+        name: name,
+        tbl: tbl
     }
 
     let request = new Request("/user/tribu_t/depastille/golf", {
         method: "POST",
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
 
     fetch(request)
-            .then(response=>response.json())
-            .then(message=>{
-                    new swal("Succès !", "Golf dépastillé avec succès", "success")
-                    .then((value) => {
-                            $("#detailOptionGolf").modal("hide")
-                            document.querySelector("#golf_"+id).remove()
-                    });
-            })
-            .catch(error=>console.log(error))
+        .then(response=>response.json())
+        .then(message=>{
+                new swal("Succès !", "Golf dépastillé avec succès", "success")
+                .then((value) => {
+                        $("#detailOptionGolf").modal("hide")
+                        document.querySelector("#golf_"+id).remove()
+                });
+        })
+        .catch(error=>console.log(error))
 }
+
 
 /**
  * @constructor
