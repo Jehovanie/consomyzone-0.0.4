@@ -285,7 +285,9 @@ class MarckerClusterGolf extends MapModule {
         });
     }
 
-    updateStateGolf(status, id){
+    updateStateGolf(status, id) {
+        
+  
         let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false }
         
         this.markers.eachLayer((marker) => {

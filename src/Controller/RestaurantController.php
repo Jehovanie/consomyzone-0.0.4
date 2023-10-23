@@ -1112,6 +1112,8 @@ class RestaurantController extends AbstractController
         return new JsonResponse($datas, 200, [], true);
     }
 
+    
+
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
      * 
