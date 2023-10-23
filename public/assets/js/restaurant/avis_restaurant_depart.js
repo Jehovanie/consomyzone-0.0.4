@@ -669,28 +669,7 @@ function createNombreAvisContainer(parent,nombre) {
 }
 
 
-function mustBeInferior4(value,target, isThrowException) {
 
-    console.log(value === "" )
-
-    regex=/[^0-9,\.]+/
-    if (parseFloat(value) > 4.00) {
-        target.style = "border:2px solid red;"
-        msgFlash("doit être inférieur ou égale à 4", target)
-        if(isThrowException)
-           throw new Error("note sup à 4")
-    } else if (regex.test(value)) {
-        target.style = "border:2px solid red;"
-        msgFlash("veulliez saisir un type numerique", target)
-        if(isThrowException)
-           throw new Error("non numerique")
-    } else if( value === "" ){
-        target.style = "border:2px solid red;"
-        msgFlash("veulliez saisir un note de 0 à 4", target)
-        if(isThrowException)
-           throw new Error("note not found")
-    }
-}
 
 function msgFlash(msg,target) {
     const div = document.createElement("div")
