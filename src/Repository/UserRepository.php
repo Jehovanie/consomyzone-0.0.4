@@ -94,7 +94,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getListTableTribuT_owned(){
         $results= [];
         $pdo = new PDOConnexionService();
-        $tribuTOwned = $this->sec->getUser()->getTribuT();
+        $tribuTOwned = $this->sec->getUser()? $this->sec->getUser()->getTribuT() : null;
 
         if(!$tribuTOwned){
             return $results;
@@ -114,7 +114,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getListTalbeTribuT_joined(){
         $results= [ ];
         $pdo = new PDOConnexionService();
-        $tribuTJoined = $this->sec->getUser()->getTribuTJoined();
+        $tribuTJoined = $this->sec->getUser()? $this->sec->getUser()->getTribuTJoined() : null;
 
         if(!$tribuTJoined){
             return $results;
@@ -126,7 +126,26 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $stm->execute();
         $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $results;
+        $bb = [];
+
+        // dd($results);
+
+        if(count($results)>0){
+            foreach($results as $r){
+                $tab = $r['nom_table_trbT'];
+                // dd($tab);
+                $sql = "SELECT * FROM $r";
+
+                dd($sql);
+                $db = $pdo->getPDO();
+                $stm = $db->prepare($sql);
+                $stm->execute();
+                //$results = $stm->fetchAll(\PDO::FETCH_ASSOC);
+                array_push($bb,$stm->fetch(\PDO::FETCH_ASSOC));
+            }
+        }
+
+        return $bb;
     }
 
     public function getListTableTribuT(){

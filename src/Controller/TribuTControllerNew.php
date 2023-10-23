@@ -177,7 +177,7 @@ class TribuTControllerNew extends AbstractController{
             "tribu_T_owned" => $tribuTOwned,
             "tribu_T_joined" => $tribuTJoined,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "form" => $form->createView(),
+            "form" => $form->createView()
         ]);
     }
 
