@@ -1483,8 +1483,10 @@ class TributTController extends AbstractController
         $restos = array();
 
         if($has_restaurant == true){
-            $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
-			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+            $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment); 
+
+            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+			// $restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
 		
 		$r=$serialize->serialize($restos,'json');
@@ -1504,14 +1506,15 @@ class TributTController extends AbstractController
         $tribu_t = new Tribu_T_Service();
 
         $has_golf = $tribu_t->hasTableResto($table_golf);
-        
+       
         $golfs = array();
-
+       
         if($has_golf == true){
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+            
+            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
-		
 		$r=$serialize->serialize($golfs,'json');
 		
 		return new JsonResponse($r, Response::HTTP_OK, [], true);
