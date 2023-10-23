@@ -701,6 +701,7 @@ initCKEditor("editor",showModalEditor);
 initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
 initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+initCKEditor("editor-agenda-non-inscrit",showModalEditor);
 
 
 /**
@@ -751,7 +752,7 @@ function initCKEditor(idElement,callback){
                 ]
             },
             // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
-            placeholder: 'Welcome to CKEditor&nbsp;5!',
+            placeholder: 'Ecrivez votre message ici.',
             // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
             fontFamily: {
                 options: [
@@ -1131,9 +1132,7 @@ function showPartenairAsk(){
 
 function showReponsePartenaire(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
-    return html=`
-        <p>Ecrivez votre message ici.</p>
-        `
+    return html=``
 }
 
 function getListeDemandePartenariat(e){

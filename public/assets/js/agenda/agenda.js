@@ -1635,7 +1635,7 @@ if(document.querySelector("#shareAgendaBtn")){
 /** END BLOC */
 
 function tableActiveFilterPartisant(e) {
-    const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "list_partisant_emailing_jheo_js"];
+    const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "email_non_inscrit", "invitation_story", "list_partisant_emailing_jheo_js"];
     const current_class_active = allTypeActive.find(item => e.classList.contains(item))
     const other_not_active = allTypeActive.filter(item => item != current_class_active)
 
@@ -1647,13 +1647,32 @@ function tableActiveFilterPartisant(e) {
         document.querySelector("#agenda-emailing").style.display = "block"
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "none"
     }else if(e.classList.contains("agenda-tribu-g")){
         document.querySelector("#agenda-tribu-g").style.display = "block"
         document.querySelector("#agenda-emailing").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "none"
+    }else if(e.classList.contains("email_non_inscrit")){
+        document.querySelector("#agenda-tribu-g").style.display = "none"
+        document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "block"
+        document.querySelector("#invitation-story").style.display = "none"
+    }else if(e.classList.contains("invitation_story")){
+        document.querySelector("#agenda-tribu-g").style.display = "none"
+        document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "block"
+        invitationStoryAgenda()
     }else{
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "block"
 
     }

@@ -476,6 +476,7 @@ class SecurityController extends AbstractController
         $messageService->createTable("tablemessage_" . $numero_table);
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
+        $agendaService->createAgendaStoryTable($numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
         $tribu_T_ServiceNew->createTableTribuTForUser($user);
 
@@ -1024,7 +1025,6 @@ class SecurityController extends AbstractController
         ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
-        dump($requestContent);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         foreach($receivers as $receiver){
@@ -1044,6 +1044,7 @@ class SecurityController extends AbstractController
                     $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 }
+                
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');
         return new JsonResponse($r, 200, [], true);

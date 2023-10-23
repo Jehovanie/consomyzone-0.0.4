@@ -4,35 +4,38 @@ namespace App\Controller;
 
 
 
-use App\Service\Status;
+use App\Entity\User;
 
+use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\FilesUtils;
+use App\Entity\GolfFinished;
 use App\Service\MailService;
 use App\Service\UserService;
 use App\Service\AgendaService;
 use App\Service\TributGService;
+
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
-
+use App\Service\RequestingService;
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
-use App\Repository\CodeinseeRepository;
 use App\Repository\ConsumerRepository;
+use App\Repository\SupplierRepository;
+use App\Repository\CodeinseeRepository;
+use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
-use App\Repository\GolfFranceRepository;
-use App\Repository\SupplierRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Entity\GolfFinished;
 
 ini_set('max_execution_time', '600');
 
@@ -695,6 +698,8 @@ class AgendaController extends AbstractController
         }
 
         $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+        // dd($tribu_t_owned);
 
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
@@ -1806,25 +1811,29 @@ class AgendaController extends AbstractController
         foreach ($under_tributG as $tributG) {
 
             $user = $userRepository->find(intval($tributG["user_id"]));
-            if ($user->getType() === "consumer") {
-                $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
-            } else {
-                $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
-            }
-            // dd($user_profil);
-            $result = [
-                "id" => $tributG["user_id"],
-                "roles" => $tributG["roles"],
-                "email" => $user->getEmail(),
-                "firstname" => $user_profil->getFirstname(),
-                "lastname" => $user_profil->getLastname(),
-                "commune" => $user_profil->getCommune(),
-                "photoProfil" => $user_profil->getphotoProfil(),
-                "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
-            ];
+            $user_profil = null;
+            if($user){
 
-            if($tributG["user_id"] != $userId)
-                array_push($results, $result);
+                if ($user->getType() === "consumer") {
+                    $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                } else {
+                    $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                }
+                // dd($user_profil);
+                $result = [
+                    "id" => $tributG["user_id"],
+                    "roles" => $tributG["roles"],
+                    "email" => $user->getEmail(),
+                    "firstname" => $user_profil->getFirstname(),
+                    "lastname" => $user_profil->getLastname(),
+                    "commune" => $user_profil->getCommune(),
+                    "photoProfil" => $user_profil->getphotoProfil(),
+                    "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
+                ];
+    
+                if($tributG["user_id"] != $userId)
+                    array_push($results, $result);
+            }
         }
 
         quit:
@@ -1840,4 +1849,111 @@ class AgendaController extends AbstractController
         ]);
     }
 
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique partage agenda cmz, 
+     * localisation du fichier: dans AgendaController.php,
+     * je veux: partager mon agenda pour l'utilisateur non inscrit
+     */
+    #[Route("/user/agenda/invitation/not/partisan" , name:"invitation_not_partisan", methods:"POST")]
+    public function sendInvitationNotPartisan(
+        Request $request,
+        UserRepository $userRepository,
+        MailService $mailService,
+        UserService $userService,
+        EntityManagerInterface $entityManager,
+        AgendaService $agendaService
+    )
+    {
+        if(!$this->getUser()){
+            return $this->json(["result" => "error"] , 401);
+        }
+
+        $userId = $this->getUser()->getId();
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data); ///$table, $principal, $cc ,$object, $description, $agendaId
+
+        if($userRepository->findOneBy(["email" => $principal])){
+
+            $userTo = $userRepository->findOneBy(["email" => $principal]);
+            $idUserTo = $userTo->getId();
+            $fullNameUserTo = $userService->getUserFirstName($idUserTo) . " " . $userService->getUserLastName($idUserTo);
+            $agendaID = $agendaId;
+            $to_id=$idUserTo;
+            $email_to=$principal;
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = "";
+            $context["content_mail"] = $description;
+            $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
+            $table_agenda_partage_name="partage_agenda_".$userId;
+            $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $fullNameUserTo);
+
+        }else{
+            $email_to=$principal;
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = "";
+            $context["content_mail"] = $description;
+            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
+            $userTemp = new User();
+            // ADD USER TEMP
+            $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Non Inscrit");
+        }
+
+        if( count($cc) > 0 ){
+
+            foreach($cc as $c){
+
+                if($userRepository->findOneBy(["email" => $c])){
+
+                    $userTo = $userRepository->findOneBy(["email" => $c]);
+                    $idUserTo = $userTo->getId();
+                    $fullNameUserTo = $userService->getUserFirstName($idUserTo) . " " . $userService->getUserLastName($idUserTo);
+                    $agendaID = $agendaId;
+                    $to_id=$idUserTo;
+                    $email_to=$c;
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = "";
+                    $context["content_mail"] = $description;
+                    $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
+                    $table_agenda_partage_name="partage_agenda_".$userId;
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $fullNameUserTo);
+        
+                }else{
+                    $email_to=$c;
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = "";
+                    $context["content_mail"] = $description;
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
+                    // ADD USER TEMP
+                    $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Non Inscrit");
+                }
+
+            }
+        }
+        return $this->json("Invitation envoyée avec succès");
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique historique invitation agenda agenda cmz, 
+     * localisation du fichier: dans AgendaController.php,
+     * je veux: voir l'historique d'invitation de mon agenda
+     */
+    #[Route("/user/invitation/story/agenda" , name:"invitation_story_agenda", methods:"GET")]
+    public function invitationStoryAgenda(AgendaService $agendaService){
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $stories = $agendaService->invitationStoryAgenda("agenda_".$userId."_story");
+        return $this->json($stories);
+    }
 }

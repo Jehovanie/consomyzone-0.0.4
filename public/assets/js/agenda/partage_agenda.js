@@ -429,3 +429,44 @@ function resetFilePartage(){
     sessionStorage.removeItem("csvContent");   
     sessionStorage.removeItem("headerIndex");
 }
+
+function invitationStoryAgenda(){
+    
+    fetch("/user/invitation/story/agenda")
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            if(data.length > 0){
+                let tr = ""
+                for (const story of data) {
+                    tr += `<tr class="">
+                    <td>${story.email}</td>
+                    <td>${story.partisan}</td>
+                    
+                    <td>
+                    ${story.datetime}
+                    </td>
+                </tr>`
+                }
+            }
+            let table = `<table id="story-partage-agenda" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Email</th>
+                            <th scope="col">Partisan</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr class="">
+                            <td>test@gmail.com</td>
+                            <td>Test</td>
+                            
+                            <td>
+                                23-10-2023 10:15:01
+                            </td>
+                        </tr>
+                    </tbody>   
+                </table>`
+        })
+}
