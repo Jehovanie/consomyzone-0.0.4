@@ -115,7 +115,6 @@ class UserController extends AbstractController
 
         //// ALL PUBLICATION FOR ALL TRIBU T /////
         $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
-      
        
         if(count($all_tribuT) > 0 ){
             $all_pub_tribuT= [];
