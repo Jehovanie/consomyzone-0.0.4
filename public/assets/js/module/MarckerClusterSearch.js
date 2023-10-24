@@ -97,17 +97,28 @@ class MarckerClusterSearch extends MapModule  {
                 const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`;
                 let responsePos = await fetch(apiOpenStreetMap)
                 let address = await responsePos.json();
-                
+
                 if( address.length === 0) {
                     responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
                     address = await responsePos.json();
 
                     if( address.length === 0 ){
-                        const cleWord= this.data.origin_cles1.split(" ");
+                        const cleWord= this.data.origin_cles1.replaceAll("-", " ").replaceAll("_", " ").split(" ");
+                        const regexCodepostal=/[\d]{5}/g;
 
-                        for(let i=0; i<cleWord.length; i++){
-                            responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
-                            address = await responsePos.json();
+                        for(let i=0; i < cleWord.length; i++){
+                            const cle= cleWord[i];
+
+                            if(regexCodepostal.test(cle)){
+                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cle}&country=France&limit=1`)
+                                address = await responsePos.json();
+
+                            }else{
+                                // responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
+                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`)
+                                address = await responsePos.json();
+                            }
+
                             if(address.length !== 0 ){
                                 break;
                             }
