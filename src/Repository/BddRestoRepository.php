@@ -1194,7 +1194,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     )
                     // ->where("(ABS(r.poiX) >=ABS(:minx))")
                     ->where(" r.poiX >= :minx")
-                    ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
+                    ->andWhere("r.poiX <= :maxx")
                     ->andWhere("ABS(r.poiY) >=ABS(:miny)")
                     ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
                     ->setParameter("minx", $minx)
