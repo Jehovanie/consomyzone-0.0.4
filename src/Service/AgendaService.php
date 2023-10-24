@@ -1116,6 +1116,8 @@ class AgendaService extends PDOConnexionService
 
         $this->createTableAgenda("agenda_" . $userId);
 
+        return $userId;
+
     }
 
     /**

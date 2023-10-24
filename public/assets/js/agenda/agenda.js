@@ -1855,7 +1855,7 @@ function showPartisanAgenda(tribu_t_name) {
 
                 $('#list-partisans-tribuT').DataTable({
                     language: {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                         "search": "Recherche global",
                         "emptyTable": "Aucun partisan à part vous dans ce tribu",
             

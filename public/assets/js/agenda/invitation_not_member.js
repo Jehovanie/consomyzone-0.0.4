@@ -1,22 +1,20 @@
 
 if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
-    console.log("input_cc tsy tafiditra");
-
     const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
     const input_principal = form_parent.querySelector(".single_destination_js_jheo")
     const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
     const object = form_parent.querySelector(".object_js_jheo");
     const description = editor.getData()
 
-    console.log(input_cc);
+    /*console.log(input_cc);
 
     document.querySelectorAll(".invitation_email_js_jheo").forEach((item) => {
         item.addEventListener("click", () => {
             const parentElement = item.parentElement.parentElement;
             document.querySelector("#modal_sendEmail").setAttribute("data-table", parentElement.getAttribute("data-table"))
         })
-    })
+    })*/
 
 
 
@@ -35,7 +33,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
 
 
-    input_cc.addEventListener("keyup", (e) => {
+    /*input_cc.addEventListener("keyup", (e) => {
 
         console.log("Code : " + e.code);
 
@@ -56,49 +54,70 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                 input_cc.style.border = "1px solid red";
             }
         }
-    })
+    })*/
 
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
 
         ////get cc
         let cc_destinataire = [];
-        document.querySelectorAll(".chip span").forEach(item => {
+        /*document.querySelectorAll(".chip span").forEach(item => {
             cc_destinataire.push(item.innerText)
-        })
+        })*/
+
 
         let agenda = JSON.parse(sessionStorage.getItem("agenda"))
 
         let agendaId = agenda.id
 
-        let data = {"principal": "", "cc": cc_destinataire, "object": "", "description": "", agendaId:agendaId}
-
-
-        console.log(data);
-
-        let status = false;
+        let status = true;
+        
+        let data = {"principal": "", "cc": [], "object": "", "description": "", agendaId:agendaId}
 
         if (input_principal.value === "") {
-            alert("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
-        }
+            status = false;
+            swal("Attention!", "Veuillez saisir un adresse email pour le destinataire.", "error")
+        }else{
+            if (verifieEmailValid(input_principal.value)) {
 
+                data = { ...data, "principal": input_principal.value }
 
+                if (input_cc.value != "") {
+                    if(verifieEmailValid(input_cc.value)){
+                        cc_destinataire.push(input_cc.value)
+                        data = { ...data, "cc": cc_destinataire }
 
-        if (verifieEmailValid(input_principal.value)) {
-            data = { ...data, "principal": input_principal.value }
-            status = true;
-        } else {
-            input_principal.style.border = "1px solid red";
-        }
+                        ///object
+                        if (object.value === "") {
+                            object.style.border = "1px solid red";
+                            status = false;
+                            swal("Attention!", "Veuillez saisir l'objet.", "error")
+                        } else {
+                            data = { ...data, "object": object.value }
+                        }
 
-        ///object
-        if (object.value === "") {
-            alert("Veillez entre un Object.")
-            object.style.border = "1px solid red";
-        } else {
-            data = { ...data, "object": object.value }
-            status = true;
+                    }else {
+                        input_cc.style.border = "1px solid red";
+                        status = false;
+                        swal("Attention!", "Veuillez saisir un adresse email valide pour le cc.", "error")
+                    }
+                }else{
+                    ///object
+                    if (object.value === "") {
+                        object.style.border = "1px solid red";
+                        status = false;
+                        swal("Attention!", "Veuillez saisir l'objet.", "error")
+                    } else {
+                        data = { ...data, "object": object.value }
+                    }
+                }
+
+            } else {
+                input_principal.style.border = "1px solid red";
+                status = false;
+                swal("Attention!", "Veuillez saisir un adresse email valide pour le destinataire.", "error")
+            }
         }
 
         var tempDiv = document.createElement('div');
@@ -108,7 +127,6 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
         data = { ...data, "description": tempDiv.outerHTML }
 
-        console.log("data sending...")
         console.log(data)
         console.log(editor.getData())
 
@@ -143,7 +161,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                     .then((value)=>{
                         input_principal.value = null;
                         input_cc.value = null;
-                        editor.setData("");
+                        // editor.setData("");
                         object.value = null;
                         document.querySelectorAll(".chip").forEach(item => {
                             item.parentElement.removeChild(item);

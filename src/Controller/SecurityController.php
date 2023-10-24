@@ -1023,6 +1023,13 @@ class SecurityController extends AbstractController
         MailService $mailService,
         AgendaService $agendaService
         ){
+
+        if(!$this->getUser()){
+            return $this->json(["result" => "error"] , 401);
+        }
+
+        $userId = $this->getUser()->getId();
+
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
         $receivers=$requestContent["receiver"];
@@ -1041,8 +1048,9 @@ class SecurityController extends AbstractController
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
 
                 if(!is_null($to_id)){
-                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Déjà confirmé");
                 }
                 
         }

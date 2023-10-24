@@ -453,7 +453,7 @@ function invitationStoryAgenda(){
                 }
             }else{
                 tr += `<tr class="text-center">
-                            <td colspan="3">${story.email}</td>
+                            <td colspan="3">Aucune invitation par email envoyée</td>
                         </tr>`
             }
             let table = `<table id="story-partage-agenda" class="table table-striped">
@@ -470,10 +470,10 @@ function invitationStoryAgenda(){
                 </table>`
 
             document.querySelector("#invitation-story").innerHTML = table
-
-            $('#story-partage-agenda').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
-                },})
+            if(data.length > 0)
+                $('#story-partage-agenda').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
+                    },})
         })
 }
