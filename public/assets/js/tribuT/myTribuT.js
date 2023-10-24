@@ -1886,16 +1886,16 @@ function showInvitations() {
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
                                 <label for="exampleFormControlInput1">Destinataires</label>
-                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="name@example.com">
-                                <a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de destinataire">
+                                <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
-                                </a>
+                                </a>-->
                             </div>
 
-                            <div class="collapse mt-3" id="tribut-collapse">
+                            <div class="mt-3" id="tribut-collapse">
                                 <div class="form-group multiple_destination_css">
                                     <label for="exampleFormControlInput1">Ajouter de Cc</label>
-                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'email puis tapez la touche Entrée">
+                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
                                     <div class="content_chip content_chip_js_jheo">
                                         
                                     </div>
@@ -1982,26 +1982,26 @@ function showInvitations() {
         object.style.border = "1px solid black";
     })
 
-    input_cc.addEventListener("keyup", (e) => {
+    // input_cc.addEventListener("keyup", (e) => {
 
-        if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
-            if (verifieEmailValid(input_cc.value.replace(",", ""))) {
-                ////create single email
-                // <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
-                const div = document.createElement("div");
-                div.classList.add("chip");
-                const span = document.createElement("span");
-                span.innerText = input_cc.value.replace(",", "");
-                div.appendChild(span);
-                div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
-                document.querySelector(".content_chip_js_jheo").appendChild(div);
+    //     if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
+    //         if (verifieEmailValid(input_cc.value.replace(",", ""))) {
+    //             ////create single email
+    //             // <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
+    //             const div = document.createElement("div");
+    //             div.classList.add("chip");
+    //             const span = document.createElement("span");
+    //             span.innerText = input_cc.value.replace(",", "");
+    //             div.appendChild(span);
+    //             div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
+    //             document.querySelector(".content_chip_js_jheo").appendChild(div);
 
-                input_cc.value = null
-            } else {
-                input_cc.style.border = "1px solid red";
-            }
-        }
-    })
+    //             input_cc.value = null
+    //         } else {
+    //             input_cc.style.border = "1px solid red";
+    //         }
+    //     }
+    // })
 
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
@@ -2010,9 +2010,13 @@ function showInvitations() {
 
         ////get cc
         let cc_destinataire = [];
-        document.querySelectorAll(".chip span").forEach(item => {
-            cc_destinataire.push(item.innerText)
-        })
+        // document.querySelectorAll(".chip span").forEach(item => {
+        //     cc_destinataire.push(item.innerText)
+        // })
+
+        if (input_cc.value != "") {
+            cc_destinataire.push(input_cc.value)
+        }
 
         let data = { "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), "principal": "", "cc": cc_destinataire, "object": "", "description": "" }
 
@@ -2067,7 +2071,6 @@ function showInvitations() {
                 return response.json()
             }).then(result => {
                 // input_principal.value = null;
-                input_cc.value = null;
                 // description.value = null;
                 object.value = null;
 
@@ -2080,9 +2083,10 @@ function showInvitations() {
 
                 // sauvegarde de l'invitation
                 saveInvitationStory(table_trib, input_principal.value);
+                saveInvitationStory(table_trib, input_cc.value);
 
                 input_principal.value = null;
-
+                input_cc.value = null;
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2609,34 +2613,6 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
     // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
 
-}
-
-/**
- * @constructor : Ouverture de modal detail resto
- * @param {*} nom_resto 
- * @param {*} adresse 
- * @param {*} nom_dep 
- * @param {*} id_dep 
- * @param {*} id_restaurant 
- */
-function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
-
-    fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
-        .then(response => response.text())
-        .then(result => {
-
-            $("#modalDetailResto").modal("show")
-
-            document.querySelector("#restoModalLabel").innerHTML = `
-        <div>
-        <h1 class="modal-title fs-5">${nom_resto}</h1>
-        <span>${adresse.toLowerCase()}</span>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        `
-
-            document.querySelector("#elie-resto-detail").innerHTML = result
-        })
 }
 
 function settingTribuT(e, tribuTName) {

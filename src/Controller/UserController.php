@@ -116,8 +116,6 @@ class UserController extends AbstractController
         //// ALL PUBLICATION FOR ALL TRIBU T /////
         $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
 
-        dd($all_tribuT);
-      
        
         if(count($all_tribuT) > 0 ){
             $all_pub_tribuT= [];
@@ -841,7 +839,7 @@ class UserController extends AbstractController
             foreach ($all_user_id_tribug as $user_id_tribu_g) {
                 $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
                 
-                if( $friend->getType()!='Type' && $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
+                if( $friend && $friend->getType()!='Type' && $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
     
                     $single_user = [
                         "id" => intval($friend->getId()),
@@ -855,22 +853,31 @@ class UserController extends AbstractController
     
                 }
             }
+
+            $all_tribuT = $userRepository->getListTableTribuT();
+
+            // dd($all_tribuT);
     
-            $all_tribuT = $userService->getTribuByIdUser($user_id);
+            // $all_tribuT = $userService->getTribuByIdUser($user_id);
+
+            $new_tribu_srv = new Tribu_T_ServiceNew();
     
             for($i=0; $i < count($all_tribuT); $i++ ){
     
                 $tribut= $all_tribuT[$i];
-    
-                $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
-    
-                $membres = $userService->getMembreTribuT($tribut["table_name"]);
+
+                $tribuT_apropos = $new_tribu_srv->getApropos($tribut["nom_table_trbT"]);
+
+                // $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
+                
+                $membres = $userService->getMembreTribuT($tribut["nom_table_trbT"]);
+                
                 for($j=0; $j< count($membres); $j++ ){
     
                     $partisant= $membres[$j];
                     $friendT = $userRepository->find(intval($partisant["user_id"]));
-    
-                    if( $friendT->getType() != 'Type' ){
+
+                    if( $friendT && $friendT->getType() != 'Type' ){
                         $single_user = [
                             "id" => intval($friendT->getId()),
                             "email" => $friendT->getEmail(),

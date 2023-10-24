@@ -128,17 +128,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $bb = [];
 
-        // dd($results);
-
         if(count($results)>0){
             foreach($results as $r){
-                $tab = $r['nom_table_trbT'];
+                $tab = "tribu_t_o_".$r['user_id_owened'];
                 // dd($tab);
-                $sql = "SELECT * FROM $r";
+                $sql = "SELECT * FROM $tab WHERE nom_table_trbT =:nom_table_trbT";
 
-                dd($sql);
+                // dd($sql);
                 $db = $pdo->getPDO();
                 $stm = $db->prepare($sql);
+                $stm->bindParam(':nom_table_trbT',$r['nom_table_trbT']);
                 $stm->execute();
                 //$results = $stm->fetchAll(\PDO::FETCH_ASSOC);
                 array_push($bb,$stm->fetch(\PDO::FETCH_ASSOC));

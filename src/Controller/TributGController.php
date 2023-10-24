@@ -719,6 +719,6 @@ class TributGController extends AbstractController
         // getAllRestoTribuG($table_name)
 
 
-        return $this->json($tributGService->getAllRestoTribuG($table_tributG_name));
+        return $this->json($tributGService->getRestoPastillesTribuG($table_tributG_name));
     }
 }

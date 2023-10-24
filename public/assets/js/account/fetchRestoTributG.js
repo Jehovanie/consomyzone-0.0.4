@@ -49,7 +49,6 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
         fetch("/tributG/restaurant")
             .then(response => response.json())
             .then( response => {
-                console.log(response);
                 
                 let  text = `<div class="content_list_p_tG">
                                     <div class="card mb-2">
@@ -57,14 +56,13 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                             <h4>Restaurant pastillé dans la tribu G</h4>
                                         </div>
                                         <div class="card-body" style="overflow-x:auto;">
-                                            <table class="table table-responsive">
+                                            <table class="table table-responsive" id="table-resto-tribu-g-elie">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">Nom de restaurant</th>
                                                         <th scope="col">Note</th>
                                                         <th scope="col">Avis</th>
                                                         <th scope="col">Actions</th>
-                                                        <th></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="restaurant-tg-elie-js">
@@ -83,22 +81,94 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                     if( response.length > 0 ){
 
                     let body = ""
+
+                    let id_c_u = document.querySelector(".main_user_id").getAttribute("data-my-id")
                 
                     for(let resto of response){
-                        body +=`
-                        <tr>
-                            <td>${resto.denomination_f}</td>
-                            <td>0/4</td>
-                            <td>0 Avis</td>
-                            <td class="text-primary">Dépastiller</td>
-                        </tr>`
+
+                        if (resto.isPastilled) {
+
+                            // console.log(resto);
+
+                            let id = resto.id
+                            let id_resto = resto.id_resto
+                            let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
+        
+                            let id_user = resto.All_user != null ? resto.All_user.split(",") : []
+                            let denominationsF = resto.denomination_f
+                            let nbrAvis = resto.nbrAvis
+                            let key = 0
+                            let note = resto.globalNote ? resto.globalNote : 0
+        
+                            let adresse = resto.numvoie + " " + resto.nomvoie + " " + resto.codpost + " " + resto.dep_name
+        
+                            let text1 = ""
+        
+                            let action = ""
+        
+                            for (let [k, v] of id_user.entries()) {
+                                if (v === id_c_u)
+                                    key = k
+                            }
+                            if (id_user.includes(id_c_u)) {
+                                action = "update"
+        
+                                text1 = "Modifiez votre avis"
+                            } else {
+                                action = "create"
+                                text1 = "Notez"
+                            }
+        
+                            body += `
+                                <tr id="restaurant_${resto.id_resto}">
+                                    <td class="d-flex bd-highlight align-items-center">
+                                        <div class="elie-img-pastilled"><img src="${document.querySelector('#profilTribu').src}"></div>
+                                        <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
+                                    </td>
+                                    <td class="data-note-${resto.id}">${note}/4</td>
+                                    <td>
+                                        <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                                    </td>
+                                </tr>
+                            `
+                        }
+
                     }
 
                     document.querySelector("#restaurant-tg-elie-js").innerHTML = body;
+
+                    $('#table-resto-tribu-g-elie').DataTable({
+                        "language": {
+                            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        }
+                    });
 
                 }else{
                     document.querySelector("#restaurant-tg-elie-js").innerHTML = "<label class='mt-4'>Aucun restaurant pastillé dans votre tribu G</label>";
                 }
             })
     })
+}
+
+function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
+
+    $("#detailOptionResto").modal("show")
+
+    document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
+
+    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote(" + id_pastille + ",\'" + action + "\')")
+    document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent(" + id_pastille + ",\'" + denomination_f + "\',\'" + adresse + "\',\'" + action + "\')")
+    let btn = document.querySelector("#data-depastille-nanta-js")
+    btn.dataset.id = id_pastille
+    btn.dataset.name = denomination_f
+    // btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
+
+    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
+    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
+    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+
 }

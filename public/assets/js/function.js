@@ -5386,3 +5386,33 @@ function mustBeInferior4(value,target, isThrowException) {
            throw new Error("note not found")
     }
 }
+
+
+
+/**
+ * @constructor : Ouverture de modal detail resto
+ * @param {*} nom_resto 
+ * @param {*} adresse 
+ * @param {*} nom_dep 
+ * @param {*} id_dep 
+ * @param {*} id_restaurant 
+ */
+function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
+
+    fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
+        .then(response => response.text())
+        .then(result => {
+
+            $("#modalDetailResto").modal("show")
+
+            document.querySelector("#restoModalLabel").innerHTML = `
+        <div>
+        <h1 class="modal-title fs-5">${nom_resto}</h1>
+        <span>${adresse.toLowerCase()}</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        `
+
+            document.querySelector("#elie-resto-detail").innerHTML = result
+        })
+}
