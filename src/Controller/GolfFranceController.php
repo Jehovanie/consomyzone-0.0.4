@@ -12,6 +12,7 @@ use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\GolfFinishedRepository;
+use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -50,7 +51,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 
-                if( $user_amis ){
+                if($user_amis && $user_amis->getType() != 'Type'){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -146,7 +147,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 
-                if( $user_amis ){
+                if($user_amis && $user_amis->getType() != 'Type' ){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -225,7 +226,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if ($user_amis) {
+                if ($user_amis && $user_amis->getType() != 'Type') {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -299,7 +300,7 @@ class GolfFranceController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if ($user_amis) {
+                if ($user_amis && $user_amis->getType() != 'Type') {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -367,16 +368,44 @@ class GolfFranceController extends AbstractController
     public function oneGolf(
         $nom_dep, $id_dep, $golfID,
         GolfFranceRepository $golfFranceRepository,
+        Tribu_T_Service $tribu_T_Service,
+        UserRepository $userRepository,
         Status $status, 
     ){
         ///current user connected
         $user = $this->getUser();
         $userID = ($user) ? intval($user->getId()) : null;
-        // dd($golfFranceRepository->getOneGolf(intval($golfID)));
+
+        $arrayTribu = [];
+        $isPastilled = false;
+
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $golfID, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        $isPastilled = true;
+                    }
+                }
+            }
+        }
+        
+
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "details" => $golfFranceRepository->getOneGolf(intval($golfID),$userID),
+            "isPastilleds" => $isPastilled
         ]);
     }
 

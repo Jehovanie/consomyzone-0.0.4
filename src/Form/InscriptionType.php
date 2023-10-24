@@ -29,17 +29,17 @@ class InscriptionType extends AbstractType
 
 
                 ->add('nom', TextType::class,array(
-                    'required' => false
+                    'required' => true
                 ))
                 ->add('prenom', TextType::class,array(
-                    'required' => false
+                    'required' => true
                 ))
                 // ->add('pseudo', TextType::class,array(
                 //     'required' => false
                 // ))
                 ->add('num_rue', TextType::class)
                 ->add('telephone', TelType::class,array(
-                    'required' => false
+                    'required' => true
                 ))
                 ->add('departement', HiddenType::class,array(
                     'required' => false
@@ -47,7 +47,7 @@ class InscriptionType extends AbstractType
                 // ->add('ville', TextType::class)
 
                 ->add('code_postal', TextType::class, array(
-                    'required' => false
+                    'required' => true
                 ))
 
                 ->add("faux_commune", ChoiceType::class, array(

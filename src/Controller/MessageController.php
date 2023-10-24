@@ -69,7 +69,7 @@ class MessageController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if( $user_amis && $user_amis->getIsConnected()){
+                if($user_amis && $user_amis->getType() != 'Type' && $user_amis->getIsConnected()){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -99,7 +99,7 @@ class MessageController extends AbstractController
                 if( intval($result["user_id"]) !== intval($userId) ){
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     
-                    if( $user_amis && $user_amis->getIsConnected()){
+                    if($user_amis && $user_amis->getType() != 'Type' && $user_amis->getIsConnected()){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "id" => $result["user_id"],
@@ -149,6 +149,7 @@ class MessageController extends AbstractController
 
         ///user to chat
         $user_to = $userRepository->find($id_user_to_chat);
+
         $user_to= $user_to === null ? $user : $user_to;
         //// set show and read all last messages.
 
@@ -166,32 +167,42 @@ class MessageController extends AbstractController
         }
 
         ///profile the user to chat
-        $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+        // $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
 
-        $user_to_profil = [
-            "id" => $user_to->getId(),
-            "email" => $user_to->getEmail(),
-            "photo_profile" => $profil_user_to->getPhotoProfil(),
-            "firstname" => $profil_user_to->getFirstname(),
-            "lastname" => $profil_user_to->getLastname(),
-            "image_profil" => $profil_user_to->getPhotoProfil(),
-            "messages" => $old_message,
-            "status" => strtoupper($user_to->getType())
-        ];
+        if($tributGService->getProfil($user_to, $entityManager)){
 
-        return $this->render('user/message/amis.html.twig', [
-            "userConnected" => $userConnected,
-            "profil" => $profil,
-            "statusTribut" => $tributGService->getStatusAndIfValid(
-                $profil[0]->getTributg(),
-                $profil[0]->getIsVerifiedTributGAdmin(),
-                $userId
-            ),
-            "userToProfil" => $user_to_profil,
-            "amisTributG" => $amis_in_tributG,
-            "allTribuT" => $all_tribuT_user,
-            "isInTribut" => $request->query->get("tribuT") ? true : false
-        ]);
+            $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+
+
+            $user_to_profil = [
+                "id" => $user_to->getId(),
+                "email" => $user_to->getEmail(),
+                "photo_profile" => $profil_user_to->getPhotoProfil(),
+                "firstname" => $profil_user_to->getFirstname(),
+                "lastname" => $profil_user_to->getLastname(),
+                "image_profil" => $profil_user_to->getPhotoProfil(),
+                "messages" => $old_message,
+                "status" => strtoupper($user_to->getType())
+            ];
+
+            return $this->render('user/message/amis.html.twig', [
+                "userConnected" => $userConnected,
+                "profil" => $profil,
+                "statusTribut" => $tributGService->getStatusAndIfValid(
+                    $profil[0]->getTributg(),
+                    $profil[0]->getIsVerifiedTributGAdmin(),
+                    $userId
+                ),
+                "userToProfil" => $user_to_profil,
+                "amisTributG" => $amis_in_tributG,
+                "allTribuT" => $all_tribuT_user,
+                "isInTribut" => $request->query->get("tribuT") ? true : false
+            ]);
+
+        }else{
+            return $this->redirectToRoute('app_message');
+        }
+
     }
 
 

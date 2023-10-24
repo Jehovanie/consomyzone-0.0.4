@@ -821,97 +821,102 @@ class UserController extends AbstractController
             array_push($images_trie, $images[$i]);
         }
 
-        
-
-        $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-        // $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
-        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
-
-
-        //Editing by Elie for a tribu g and t partisans
-        
-        $partisansG = [];
-        $partisansT = [];
-
-        $tributG_name = $tributGService->getTribuGtableForNotif($user_id);
-
-        $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
-
-        foreach ($all_user_id_tribug as $user_id_tribu_g) {
-            $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
-            
-            if( $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
-
-                $single_user = [
-                    "id" => intval($friend->getId()),
-                    "email" => $friend->getEmail(),
-                    "firstname" => $userService->getUserFirstName($friend->getId()),
-                    "lastname" => $userService->getUserLastName($friend->getId()),
-                    "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
-                ];
+        if($profil){
+            $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
+            // $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+            $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
     
-                array_push($partisansG, $single_user);
-
-            }
-        }
-
-        $all_tribuT = $userService->getTribuByIdUser($user_id);
-
-        for($i=0; $i < count($all_tribuT); $i++ ){
-
-            $tribut= $all_tribuT[$i];
-
-            $tribuT_apropos= $tributTService->getApropos($tribut["nom_table_trbT"]);
-
-            $membres = $userService->getMembreTribuT($tribut["nom_table_trbT"]);
-            for($j=0; $j< count($membres); $j++ ){
-
-                $partisant= $membres[$j];
-                $friendT = $userRepository->find(intval($partisant["user_id"]));
-
-                if( $friendT ){
+    
+            //Editing by Elie for a tribu g and t partisans
+            
+            $partisansG = [];
+            $partisansT = [];
+    
+            $tributG_name = $tributGService->getTribuGtableForNotif($user_id);
+    
+            $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
+    
+            foreach ($all_user_id_tribug as $user_id_tribu_g) {
+                $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
+                
+                if( $friend->getType()!='Type' && $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
+    
                     $single_user = [
-                        "id" => intval($friendT->getId()),
-                        "email" => $friendT->getEmail(),
-                        "firstname" => $userService->getUserFirstName($friendT->getId()),
-                        "lastname" => $userService->getUserLastName($friendT->getId()),
-                        "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
-                        "role" =>$partisant["roles"],
+                        "id" => intval($friend->getId()),
+                        "email" => $friend->getEmail(),
+                        "firstname" => $userService->getUserFirstName($friend->getId()),
+                        "lastname" => $userService->getUserLastName($friend->getId()),
+                        "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
                     ];
         
-                    array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+                    array_push($partisansG, $single_user);
+    
                 }
             }
-
-        }
-
-        return $this->render('user/profil.html.twig', [
-            "userConnected" => $userConnected,
-            "profil" => $myProfil,
-            "autre_profil" => $profil,
-            "type" => $type,
-            "images" => $images_trie,
-            "statusTribut" => $tributGService->getStatusAndIfValid(
-                $profil[0]->getTributg(),
-                $profil[0]->getIsVerifiedTributGAdmin(),
-                intval($user_id)
-            ),
-
-            "tributG" => [
-                "table" => $profil[0]->getTributg(),
-
-                "profil" => $tributGService->getProfilTributG(
+    
+            $all_tribuT = $userService->getTribuByIdUser($user_id);
+    
+            for($i=0; $i < count($all_tribuT); $i++ ){
+    
+                $tribut= $all_tribuT[$i];
+    
+                $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
+    
+                $membres = $userService->getMembreTribuT($tribut["table_name"]);
+                for($j=0; $j< count($membres); $j++ ){
+    
+                    $partisant= $membres[$j];
+                    $friendT = $userRepository->find(intval($partisant["user_id"]));
+    
+                    if( $friendT->getType() != 'Type' ){
+                        $single_user = [
+                            "id" => intval($friendT->getId()),
+                            "email" => $friendT->getEmail(),
+                            "firstname" => $userService->getUserFirstName($friendT->getId()),
+                            "lastname" => $userService->getUserLastName($friendT->getId()),
+                            "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
+                            "role" =>$partisant["roles"],
+                        ];
+            
+                        array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+                    }
+                }
+    
+            }
+    
+            return $this->render('user/profil.html.twig', [
+                "userConnected" => $userConnected,
+                "profil" => $myProfil,
+                "autre_profil" => $profil,
+                "type" => $type,
+                "images" => $images_trie,
+                "statusTribut" => $tributGService->getStatusAndIfValid(
                     $profil[0]->getTributg(),
+                    $profil[0]->getIsVerifiedTributGAdmin(),
                     intval($user_id)
                 ),
-            ],
-
-            "nombre_partisant" => $nombre_partisant,
-            "status_tribuT_autre_profil" =>$status_tribuT_autre_profil,
-            "tribu_g_friend" => $partisansG,
-            "tribu_t_friend" => $partisansT,
-
-        ]);
+    
+                "tributG" => [
+                    "table" => $profil[0]->getTributg(),
+    
+                    "profil" => $tributGService->getProfilTributG(
+                        $profil[0]->getTributg(),
+                        intval($user_id)
+                    ),
+                ],
+    
+                "nombre_partisant" => $nombre_partisant,
+                "status_tribuT_autre_profil" =>$status_tribuT_autre_profil,
+                "tribu_g_friend" => $partisansG,
+                "tribu_t_friend" => $partisansT,
+    
+            ]);
+        }else{
+            return $this->render('user/user_not_found.twig',[
+                "user_id"=>$user_id
+            ]);
+        }
+        
     }
 
 
@@ -1051,25 +1056,27 @@ class UserController extends AbstractController
         foreach ($under_tributG as $tributG) {
 
             $user = $userRepository->find(intval($tributG["user_id"]));
-            if ($user->getType() === "consumer") {
-                $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
-            } else {
-                $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+
+            if($user->getType() != 'Type'){
+
+                if ($user->getType() === "consumer") {
+                    $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                } else {
+                    $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                }
+    
+                $result = [
+                    "id" => $tributG["user_id"],
+                    "roles" => $tributG["roles"],
+                    "email" => $user->getEmail(),
+                    "firstname" => $user_profil->getFirstname(),
+                    "lastname" => $user_profil->getLastname(),
+                    "commune" => $user_profil->getCommune(),
+                    "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
+                ];
+    
+                array_push($results, $result);
             }
-
-            $result = [
-                "id" => $tributG["user_id"],
-                "roles" => $tributG["roles"],
-                "email" => $user->getEmail(),
-                "firstname" => $user_profil->getFirstname(),
-                "lastname" => $user_profil->getLastname(),
-                "commune" => $user_profil->getCommune(),
-                "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
-            ];
-
-
-
-            array_push($results, $result);
         }
 
 
@@ -1303,7 +1310,7 @@ class UserController extends AbstractController
             $user_temp = $userRepository->find(intval($member["user_id"]));
             $profil_temp =  $userService->getUserProfileFromId(intval($member["user_id"]));
 
-            if ($user_temp &&  $profil_temp) {
+            if ($user_temp->getType() != 'Type' &&  $profil_temp) {
 
                 $result = [
                     "id" => $member["user_id"],

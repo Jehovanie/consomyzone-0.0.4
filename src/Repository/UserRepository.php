@@ -93,27 +93,49 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getListTableTribuT_owned(){
         $results= [];
+
+        if(!$this->sec->getUser()){
+            return $results;
+        }
+
         $pdo = new PDOConnexionService();
         $tribuTOwned = $this->sec->getUser()->getTribuT();
+
+        if(!$tribuTOwned){
+            return $results;
+        }
+
         $sql = "SELECT * FROM $tribuTOwned";
         $db = $pdo->getPDO();
         $stm = $db->prepare($sql);
         $stm->execute();
         $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
         return $results;
-                    
+                  
     }
 
 
     public function getListTalbeTribuT_joined(){
         $results= [ ];
+
+        if(!$this->sec->getUser()){
+            return $results;
+        }
+        
         $pdo = new PDOConnexionService();
         $tribuTJoined = $this->sec->getUser()->getTribuTJoined();
+
+        if(!$tribuTJoined){
+            return $results;
+        }
+
         $sql = "SELECT * FROM $tribuTJoined";
         $db = $pdo->getPDO();
         $stm = $db->prepare($sql);
         $stm->execute();
         $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
         return $results;
     }
 

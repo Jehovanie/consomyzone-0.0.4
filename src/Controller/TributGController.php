@@ -289,7 +289,9 @@ class TributGController extends AbstractController
         foreach ($all_user_id_tribug as $user_id) {
 
             $user = $userRepository->find(intval($user_id["user_id"]));
-            if($user && $user->getType() != "Type") {
+
+            if($user && $user->getType()!= 'Type'){
+
                 $single_user = [
     
                     "id" => $user->getId(),
@@ -306,6 +308,7 @@ class TributGController extends AbstractController
     
                 array_push($memberTributG, $single_user);
             }
+
         }
 
 
@@ -640,5 +643,64 @@ class TributGController extends AbstractController
         // return $this->redirectToRoute('app_account');
 
         return $this->json("Publication ajouté avec succès");
+    }
+
+    #[Route("/user/tribu_g/pastille/resto", name:"tribu_g_pastille_resto", methods:["POST"])]
+    public function pastilleRestoForTribuT(Request $resquest, TributGService $tribuGService){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $resto_id = $jsonParsed["id"];
+
+        $tribu_g = $jsonParsed["tbl"];
+
+        $isPastilled = $tribuGService->getIdRestoOnTableExtension($tribu_g."_restaurant", $resto_id);
+
+        if(count($isPastilled)<=0){
+
+            $tribuGService->pastilleRestaurant($tribu_g."_restaurant", $resto_name, $resto_id);
+
+        }else{
+
+            $tribuGService->depastilleOrPastilleRestaurant($tribu_g."_restaurant", $resto_id, 1);
+
+        }
+
+        return $this->json(["status"=>"ok","id_resto"=>$resto_id, "table"=>$tribu_g."_restaurant", "resto"=> $resto_name]);
+        
+        
+    }
+
+    #[Route("/user/tribu_g/depastille/resto", name:"tribu_g_depastille_resto", methods:["POST"])]
+    public function depastilleRestoForTribuT(Request $resquest, TributGService $tribuGService){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $resto_name =  $jsonParsed["name"];
+
+        $resto_id = $jsonParsed["id"];
+
+        $tribu_g = $jsonParsed["tbl"];
+
+        $tribuGService->depastilleOrPastilleRestaurant($tribu_g."_restaurant", $resto_id, 0);
+
+        return $this->json(["status"=>"ok","id_resto"=>$resto_id, "table"=>$tribu_g."_restaurant", "resto"=> $resto_name]);
+
+        
+    }
+
+    #[Route("/user/tribu_g/isPastilled/{table}/{id_resto}", name:"tribu_g_isPastilled", methods:["GET"])]
+    public function isPastilled($table, $id_resto, Request $resquest, TributGService $tribuGService){
+
+        $res = $tribuGService->isPastilled($table, $id_resto);
+
+        if(count($res)>0){
+
+            return $this->json(true);
+        }else{
+            return $this->json(false);
+        }
     }
 }

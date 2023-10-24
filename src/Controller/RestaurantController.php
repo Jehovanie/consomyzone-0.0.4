@@ -64,7 +64,7 @@ class RestaurantController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                
-                if( $user_amis ){
+                if( $user_amis && $user_amis->getType() != 'Type' ){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -400,7 +400,7 @@ class RestaurantController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                
-                if( $user_amis ){
+                if( $user_amis && $user_amis->getType() != 'Type'){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -599,7 +599,7 @@ class RestaurantController extends AbstractController
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
 
-                if ($user_amis) {
+                if ($user_amis && $user_amis->getType() != 'Type') {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -696,7 +696,9 @@ class RestaurantController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                if( $user_amis  && $user_amis->getType()!="Type"){
+
+                if($user_amis && $user_amis->getType()!="Type"){
+
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -708,7 +710,7 @@ class RestaurantController extends AbstractController
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "is_online" => $user_amis->getIsConnected(),
                     ];
-
+    
                     ///get it
                     array_push($amis_in_tributG, $amis);
                 }
@@ -830,7 +832,9 @@ class RestaurantController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                if( $user_amis  && $user_amis->getType()!="Type"){
+
+                if($user_amis && $user_amis->getType() != 'Type'){
+
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -842,7 +846,7 @@ class RestaurantController extends AbstractController
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "is_online" => $user_amis->getIsConnected(),
                     ];
-
+    
                     ///get it
                     array_push($amis_in_tributG, $amis);
                 }
@@ -1033,6 +1037,8 @@ class RestaurantController extends AbstractController
         $datas = $serializerInterface->serialize($arrayTribu, 'json');
         return new JsonResponse($datas, 200, [], true);
     }
+
+    
 
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 

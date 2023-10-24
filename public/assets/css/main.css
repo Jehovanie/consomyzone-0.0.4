@@ -2386,3 +2386,30 @@ textarea {
 .text_black{
     color:black;
 }
+
+.content-modal-pastille-golf{
+    position: absolute;
+    top: 0;
+    z-index: 100000;
+    background-color: rgba(0, 0 ,0 , 0.6);
+    width: 100%;
+    height: 100%;
+}
+
+.modal-pastille-golf{
+    width: 40%;
+    height: auto;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.3);
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 250px;
+    padding: 20px;
+}
+
+.pwd-eye{
+    margin-right: 80px;
+    margin-top: -35px !important;
+}
+

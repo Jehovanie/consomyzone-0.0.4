@@ -702,8 +702,6 @@ initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
 initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
 initCKEditor("editor-agenda-non-inscrit",showModalEditor);
-
-
 /**
  * 
  * @param {*} idElement please give id 
@@ -2157,3 +2155,25 @@ if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
     })
 }
 
+/**
+ * @author Elie
+ * @Setting view message for partage agenda
+ */
+document.querySelectorAll("div.qf > div > div.bloc-text-message").forEach(div_mess=>{
+    if(!div_mess.parentElement.parentElement.classList.contains("rb")){
+        div_mess.classList.remove("text-white")
+    }
+})
+
+function setViewTribu(a , b){
+    document.querySelector('.elie-tribu-'+b).classList.add('active');
+    document.querySelector('.elie-tribu-'+a).classList.remove('active');
+
+    if(a == 'g'){
+        document.querySelector(".content_list_resto_js").classList.remove("d-none")
+        document.querySelector(".content_list_resto_js_g").classList.add("d-none")
+    }else{
+        document.querySelector(".content_list_resto_js").classList.add("d-none")
+        document.querySelector(".content_list_resto_js_g").classList.remove("d-none")
+    }
+}

@@ -184,6 +184,28 @@ class TributGService extends PDOConnexionService{
 
                     $this->getPDO()->exec($sql);
 
+                    /** 
+                     * @author Elie
+                     * Create a table for pastille restaurant */
+
+                    $sql_restaurant = "CREATE TABLE ".$name_table_tribuG."_restaurant(
+
+                        id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+                        id_resto int(11) NOT NULL,
+
+                        denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+                        isPastilled TINYINT(1) DEFAULT 1,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+                    $this->getPDO()->exec($sql_restaurant);
+
+                    /** End restaurant table */
+
 
                     // Create table agenda for  tribu G
 
@@ -358,13 +380,18 @@ class TributGService extends PDOConnexionService{
         $userId = $user->getId();
 
         ////profil user connected
-        if($userType == "consumer") {
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        if($userType != 'Type'){
+            if($userType == "consumer") {
+                $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+            }else{
+                $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            }
+    
+            return $profil;
         }else{
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            return null;
         }
-
-        return $profil;
+        
     }
 
 
@@ -1260,7 +1287,7 @@ class TributGService extends PDOConnexionService{
         foreach($all_tables as $table ){
             try{
                 $tab= $table["table_name"];
-                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
+                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab INNER JOIN user ON $tab.user_id = user.id WHERE user.type != 'Type'");
                 $statement->execute();
                 $temp = $statement->fetch(PDO::FETCH_ASSOC);
                 array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
@@ -1290,7 +1317,7 @@ class TributGService extends PDOConnexionService{
                     $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
                 }
             }
-            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id";
+            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id WHERE user.type != 'Type'";
             
             //dd($sql);
             $query = $this->getPDO()->prepare($sql);
@@ -1433,5 +1460,84 @@ class TributGService extends PDOConnexionService{
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $results;
+    }
+
+    /**
+     * @author Elie
+     * Fonction checking si le resto est déjà pastillé
+     */
+    public function getIdRestoOnTableExtension($table, $idResto){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fonction checking si le resto est déjà pastillé
+     */
+    public function isPastilled($table, $idResto){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto and isPastilled = 1");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fonction depastille restaurant
+     */
+    public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
+
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(":isPastilled", $isPastilled);
+
+        $stmt->bindParam(":resto_id", $resto_id);
+
+        $stmt->execute();
+
+    }
+
+    /**
+     * @author Elie
+     * Fonction Pastille resto
+     */
+    public function pastilleRestaurant($table_resto_pastille, $name,$resto_id){
+
+        $sql = "INSERT INTO $table_resto_pastille (denomination_f, id_resto) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $name);
+
+        $stmt->bindParam(2, $resto_id);
+
+        $stmt->bindParam(3, $name);
+
+        $stmt->execute();
+
+    }
+
+    public function depastilleRestaurant($table, $id){
+
+        $sql= "DELETE FROM $table WHERE id = :id";
+
+        $statement = $this->getPDO()->prepare($sql);
+
+        $statement->bindParam(':id', $id);
+
+        $statement->execute();
     }
 }

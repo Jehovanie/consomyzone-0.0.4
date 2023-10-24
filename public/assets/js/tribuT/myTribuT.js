@@ -474,6 +474,137 @@ function sendPublication(formData) {
  * @param {*} type 
  * @param {*} tribu_t_name 
  */
+// function showdDataContent(data, type, tribu_t_name, id_c_u) {
+
+//     let detailsTribuT = null
+
+//     if (type === "owned")
+//         detailsTribuT = data.tribu_t_owned
+//     else
+//         detailsTribuT = data.tribu_t_joined
+
+//     // console.log(JSON.parse(detailsTribuT).tribu_t)
+
+//     let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t) ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(e => e.name == tribu_t_name) : [JSON.parse(detailsTribuT).tribu_t];
+//     tribu_t_name_0 = tribu_t[0].name
+//     descriptionTribuT = tribu_t[0].description
+//     let restExtension = ""
+//     let golfExtension = ""
+
+//     // extension 'on' correspond à extension 
+//     //restaurant dans les anciens version
+//     // ce bout de code est là pour assurer une prise en charge recurssive
+//     if(tribu_t[0].extension=="on" || tribu_t[0].extension=="restaurant" ){
+//         restExtension = ` <li class="listNavBarTribu restoNotHide">
+//                         <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+//                     </li>`
+//     }else{
+//         if(tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1 ) {
+//             restExtension = ` <li class="listNavBarTribu restoNotHide">
+//                                 <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
+//                             </li>`
+//         }
+//         if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
+//             golfExtension = ` <li class="listNavBarTribu golfNotHide">
+//                                 <a style="cursor:pointer;" class="" onclick="showGolf('${tribu_t_name_0}')" data-value="golf">Mon Golf</a>
+//                             </li>`
+//         }
+//     }
+
+    
+
+
+//     if (tribu_t[0].logo_path) {
+//         // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+//         //public
+//         image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">` //PROD
+//         // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
+//     } else {
+//         image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`
+//     }
+
+//     let canChangeTribuPicture = "";
+//     if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
+//         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
+//                                     <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" data-bs-toggle="modal" data-bs-target="#addPictureModalTribu">
+//                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
+//                                     </label>
+//                                     <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
+//                                 </div>` : ""
+//     }
+
+//     let canUpdateTribuInfo = !document.querySelector("#activeTribu").classList.contains("other") ? `<li class="listNavBarTribu">
+//                                 <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
+//                             </li>` : "";
+
+//     document.querySelector("#content-pub-js").innerHTML = `
+//             <div class="card-couverture-pub-tribu-t ">
+//                 <div class="content-couverture mt-3">
+//                     <div class="row content-tribu-t">
+//                         <div class="col-lg-3 col-4">
+//                             <div class="row">
+//                                 <div class="col-lg-6 col-3">
+//                                     ${image_tribu_t}
+//                                 </div>
+//                                 ${canChangeTribuPicture}
+//                             </div>
+//                         </div>
+//                         <div class="col-lg-8 col-8 content-tribu-t-name">
+//                             <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${tribu_t[0].name}">${tribu_t[0].name_tribu_t_muable ? tribu_t[0].name_tribu_t_muable : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</h1>
+//                             <p class="text-white descrp-tribu-t">
+//                             ${tribu_t[0].description.replace(/"/gi,'')}
+//                             </p>
+//                         </div>
+//                     </div>
+                    
+//                 </div>
+//                 <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
+//                      <p class="text-light">Tribu-t fondée par <span class="fw-bold">${data.pseudo}</span></p>
+//                 </div>
+//                 <nav class=" mx-auto">
+//                     <ul id="navBarTribu" class="navBarTribu-t">
+//                         <li class="listNavBarTribu">
+//                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
+//                         </li>
+
+
+//                         ${restExtension}
+//                         ${golfExtension}
+
+//                         <li class="listNavBarTribu invitation">
+//                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
+//                         </li>
+//                         <li class="listNavBarTribu partisantT">
+//                             <a style="cursor:pointer;">Partisans</a>
+//                         </li>
+//                         <li class="listNavBarTribu">
+//                             <a style="cursor:pointer;" id="see-gallery">Photos</a>
+//                         </li>
+
+//                         ${canUpdateTribuInfo}
+
+//                     </ul>
+//                 </nav>
+//             </div>
+
+//             <div id="tribu_t_conteuneur" class="exprime-pub">
+//                 <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+//                     <!-- ====== Chart pub One Start -->
+//                     <div class="2xl:ud-max-w-230 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub pub-t">
+//                         <div class="head-pub">
+//                             <div class="pdp-content">
+//                                 <img src="${document.querySelector(".userProfil > img").src}" alt="">
+//                             </div>
+//                             <div class="name-content-h">
+//                                 <div class="name-content">
+//                                     <p class="form-pub"  data-bs-toggle="modal" data-bs-target="#modal_publication" data-bs-whatever="@mdo">Exprimez-vous...</p>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                     <!-- ====== Chart pub One End -->
+//                 </div>
+//                 <div class="publication-content">
 function showdDataContent(id_c_u, lastId = 0) {
     document.querySelector("#tribu_t_conteuneur").innerHTML += `
             <div class="publication-content">
@@ -1141,9 +1272,12 @@ function showResto(table_rst_pastilled, id_c_u) {
                         <tr id="restaurant_${resto.extensionId}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
-                                <!--<a target="_blank" href="/restaurant?id=${resto.extensionId}" class="text-decoration-none">-->
-                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span> 
-                                <!--</a>-->
+                                <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
+                                <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
+                                
+                                <!-- <a target="_blank" href="/restaurant?id=${resto.extensionId}" class="text-decoration-none">
+                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span>
+                                </a> -->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
                             <td>
@@ -1723,7 +1857,7 @@ function showActualites() {
 // }
 
 function showInvitations() {
-
+    
     if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
     }
@@ -1735,10 +1869,13 @@ function showInvitations() {
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
                         <li class="nav-item">
-                            <a data-element="table-tribuG-member" class="nav-link active text-secondary" aria-current="page" href="#" onclick="setActiveTab(this)">Tribu G</a>
+                            <a data-element="table-tribuG-member" class="nav-link active text-secondary tab_invite_elie" aria-current="page" href="#" onclick="setActiveTab(this, 'tribu_g')">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="openSwalNonActif()">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Par Email</a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-element="blockHistInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'historique')">Historiques</a>
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
@@ -1794,6 +1931,22 @@ function showInvitations() {
                                 </tr>
                             </thead>
                             <tbody id="all_tribu_g_members">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="blockHistInvitation" class="mt-2 d-none">
+                        <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations par e-mail</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Partisan</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all_historique">
                                 
                             </tbody>
                         </table>
@@ -1913,7 +2066,7 @@ function showInvitations() {
                 }
                 return response.json()
             }).then(result => {
-                input_principal.value = null;
+                // input_principal.value = null;
                 input_cc.value = null;
                 // description.value = null;
                 object.value = null;
@@ -1921,6 +2074,15 @@ function showInvitations() {
                 //init Ckeditor for description by Elie
 
                 editor.setData("Ecrivez votre message ici.")
+
+                //Send data invitation story into tribu
+                let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
+
+                // sauvegarde de l'invitation
+                saveInvitationStory(table_trib, input_principal.value);
+
+                input_principal.value = null;
+
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -1930,10 +2092,10 @@ function showInvitations() {
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
                 document.querySelector("#successSendingMail").style.display = "block"
 
-                swal({
-                    text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
-                    icon: "info",
-                });
+                // swal({
+                //     text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                //     icon: "info",
+                // });
 
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
@@ -1943,20 +2105,49 @@ function showInvitations() {
 
         }
     })
-
+    
     /** END JEHOVANNIE*/
 }
 
-function setActiveTab(elem) {
+function setActiveTab(elem, param) {
+
+    document.querySelectorAll(".tab_invite_elie").forEach(it=>{
+        it.classList.remove("active")
+    })
+
     if (!elem.classList.contains("active")) {
         elem.classList.add("active")
         document.querySelector("#" + elem.dataset.element).style = "";
-        if (elem.parentElement.nextElementSibling) {
-            elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
+        // if (elem.parentElement.nextElementSibling) {
+        //     elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
+        //     document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
+        // } else {
+        //     elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
+        //     document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+        // }
+    }
+    switch(param){
+        case "tribu_g" :{
+            document.querySelector("#blockHistInvitation").classList.add("d-none")
+            document.querySelector("#blockSendEmailInvitation").classList.add("d-none")
+            document.querySelector("#table-tribuG-member").classList.remove("d-none")
             document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
-        } else {
-            elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
+            break;
+        }
+        case "email" :{
+            document.querySelector("#blockHistInvitation").classList.add("d-none")
+            document.querySelector("#blockSendEmailInvitation").classList.remove("d-none")
+            document.querySelector("#table-tribuG-member").classList.add("d-none")
             document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+            break;
+        }
+        case "historique" :{
+            document.querySelector("#blockSendEmailInvitation").classList.add("d-none")
+            document.querySelector("#blockHistInvitation").classList.remove("d-none")
+            document.querySelector("#table-tribuG-member").classList.add("d-none")
+            document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+            fetchAllInvitationStory()
+            break;
         }
     }
 }
@@ -1976,6 +2167,7 @@ function fetchAllTribuGMember() {
             if (response.length > 0) {
                 tbody.innerHTML = ""
                 for (const item of response) {
+                    // console.log(item);
                     let ancorOrbutton = ""
                     if (item.isMember != "not_invited") {
                         if (item.isMember == "refuse") {
@@ -1986,7 +2178,7 @@ function fetchAllTribuGMember() {
                             ancorOrbutton = `<button class="btn btn-sm btn-secondary" disabled="true">Membre</button>`;
                         }
                     } else {
-                        ancorOrbutton = `<button data-id="${item.id}" type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
+                        ancorOrbutton = `<button data-id="${item.id}" data-email="${item.email}"type="button" class="btn btn-primary btn-sm" onclick="inviteUser(this)">Inviter</button>`;
                     }
                     tbody.innerHTML += `<tr>
                             <td class="non_active"><a class="disabled-link" style="text-decoration:none;" href="/user/profil/${item.id}">${item.fullName}</a></td>
@@ -2632,6 +2824,7 @@ function showGolf() {
             golfContainer.classList.add("p-2");
             golfContainer.style.display = "block"
 
+
         })
 
 }
@@ -2825,13 +3018,58 @@ function depastilleGolf(selector) {
     })
 
     fetch(request)
-        .then(response => response.json())
-        .then(message => {
-            new swal("Succès !", "Golf dépastillé avec succès", "success")
+        .then(response=>response.json())
+        .then(message=>{
+                new swal("Succès !", "Golf dépastillé avec succès", "success")
                 .then((value) => {
-                    $("#detailOptionGolf").modal("hide")
-                    document.querySelector("#golf_" + id).remove()
+                        $("#detailOptionGolf").modal("hide")
+                        document.querySelector("#golf_"+id).remove()
                 });
+        })
+        .catch(error=>console.log(error))
+}
+
+
+/**
+ * @constructor
+ * @author Elie <eliefenhasina@gmail.com>
+ * @Fonction fetch toutes les historiques dans la tribu T et affichage dans un tableau
+ */
+function fetchAllInvitationStory() {
+    let table = document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim()
+    let tbody_hist = document.querySelector("#all_historique")
+    tbody_hist.innerHTML = `<td colspan="4"><div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div></td>`
+    fetch("/tribu/invitation/get_all_story/" + table)
+        .then(response => response.json())
+        .then(response => {
+            // console.log(response)
+            if (response.length > 0) {
+                tbody_hist.innerHTML = ""
+                for (const item of response) {
+
+                    console.log(item);
+                    
+                    tbody_hist.innerHTML += `<tr>
+                            <td>${item.email}</td>
+                            <td class="">${item.date}</td>
+                            <td class="">${item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.user.firstname + " " +item.user.lastname}</a>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`}</td>
+                            <td>${item.is_valid == 1? `<span class="badge text-bg-success">Validé</span>` : `<span class="badge text-bg-warning">En attente</span>`}</td>
+                        </tr>
+                    `
+                }
+                $('#table-tribuG-member > table').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
+            } else {
+                tbody_hist.innerHTML = "Aucun historique enregistré pour le moment!"
+            }
+
         })
         .catch(error => console.log(error))
 }

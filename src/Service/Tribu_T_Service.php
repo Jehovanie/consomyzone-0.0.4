@@ -110,13 +110,25 @@ class Tribu_T_Service extends PDOConnexionService
 
                     )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
-
-
                 $final2 = $this->getPDO()->exec($query);
 
 
 
                 if ($final2 == 0) {
+
+                    /**
+                     * @author Elie <eliefenohasina@gmail.com>
+                     * Creation d'un table invitation story pour tribu T
+                     */
+                    $query_table_invitation = "CREATE TABLE " . $output . "_invitation(
+                        id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                        user_id int(11) NOT NULL,
+                        email varchar(255) NOT NULL,
+                        is_valid tinyint(1) NOT NULL DEFAULT 0,
+                        datetime DATETIME NOT NULL DEFAULT current_timestamp()
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+                    $this->getPDO()->exec($query_table_invitation);
 
                     $sql = "CREATE TABLE " . $output . "_commentaire(
 
@@ -1954,13 +1966,34 @@ class Tribu_T_Service extends PDOConnexionService
 
     // }
 
+    /**
+     * @author Tomm 
+     * @action get list tribu t pastille
+     * @ou golfControlleur
+     */
+    public function checkIfCurrentGolfPastilled($tableNameExtension, int $golf, $isPastilled)
+    {
+
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $golf AND isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if (is_array($result)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     //  public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
     //     $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
     //     $stmt = $this->getPDO()->prepare($sql);
     //     $stmt->bindParam(":isPastilled", $isPastilled);
     //     $stmt->bindParam(":resto_id", $resto_id);
     //     $stmt->execute();
-
     // }
 
 
@@ -2000,6 +2033,82 @@ class Tribu_T_Service extends PDOConnexionService
 
         return $arrayIdResto;
     }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * @Fonction de sauvegarde de l'historique de l'invitation dans la tribu T
+     */
+    function saveInvitationStory($table_invitation, $user_id, $email){
+
+        $sql = "SELECT count(*) as is_invited FROM $table_invitation WHERE email = :email ";
+        
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(':email', $email);
+
+        $stmt->execute();
+
+        $is_invited = $stmt->fetch(PDO::FETCH_ASSOC)['is_invited'];
+
+        if($is_invited <= 0){
+
+            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, email) values (:user_id, :email)");
+
+            $userfullname = $this->getFullName($user_id);
+    
+            $statement->bindParam(':user_id', $user_id);
+    
+            $statement->bindParam(':email', $email);
+    
+            $statement->execute();
+    
+            return true;
+
+            
+        }else{
+
+            return false;
+
+        }
+
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * @Fonction fetching de l'historique de l'invitation dans la tribu T
+     */
+    function getAllInvitationStory($table_invitation){
+
+        $sql = "SELECT user.id as id, is_valid, $table_invitation ". ".email, datetime FROM $table_invitation LEFT JOIN user ON $table_invitation".".email = user.email";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+
+    }
+
+     /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * @Fonction mise à jour de l'historique de l'invitation dans la tribu T
+     */
+    function updateInvitationStory($table_invitation, $is_valid, $email){
+
+        $sql = "UPDATE $table_invitation SET is_valid = :is_valid WHERE email = :email";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(":is_valid", $is_valid);
+
+        $stmt->bindParam(":email", $email);
+
+        $stmt->execute();
+
+    }
+
 
 }
 

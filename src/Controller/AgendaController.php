@@ -1168,16 +1168,20 @@ class AgendaController extends AbstractController
             $user = $userRepository->find(intval($user_id["user_id"]));
             if( !$user ){ continue; }
 
-            $single_user = [
-                "id" => intval($user->getId()),
-                "email" => $user->getEmail(),
-                "firstname" => $userService->getUserFirstName($user->getId()),
-                "lastname" => $userService->getUserLastName($user->getId()),
-                "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId()),
-                "tribu" => [$tribuG_apropos]
-            ];
+            if($user->getType() != 'Type'){
 
-            array_push($partisants, $single_user);
+                $single_user = [
+                    "id" => intval($user->getId()),
+                    "email" => $user->getEmail(),
+                    "firstname" => $userService->getUserFirstName($user->getId()),
+                    "lastname" => $userService->getUserLastName($user->getId()),
+                    "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId()),
+                    "tribu" => [$tribuG_apropos]
+                ];
+    
+                array_push($partisants, $single_user);
+            }
+
         }
 
         $all_tribuT= $userRepository->getListTableTribuT();
@@ -1198,16 +1202,19 @@ class AgendaController extends AbstractController
                     $user = $userRepository->find(intval($partisant["userID"]));
                     if( !$user ){ continue; }
         
-                    $single_user = [
-                        "id" => intval($user->getId()),
-                        "email" => $user->getEmail(),
-                        "firstname" => $userService->getUserFirstName($user->getId()),
-                        "lastname" => $userService->getUserLastName($user->getId()),
-                        "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId()),
-                        "tribu" =>[ $tribuT_apropos ],
-                    ];
-        
-                    array_push($partisants, $single_user);
+                    if($user->getType() != 'Type'){
+
+                        $single_user = [
+                            "id" => intval($user->getId()),
+                            "email" => $user->getEmail(),
+                            "firstname" => $userService->getUserFirstName($user->getId()),
+                            "lastname" => $userService->getUserLastName($user->getId()),
+                            "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId()),
+                            "tribu" =>[ $tribuT_apropos ],
+                        ];
+            
+                        array_push($partisants, $single_user);
+                    }
                 }
             }
         }
@@ -1811,7 +1818,7 @@ class AgendaController extends AbstractController
 
             $user = $userRepository->find(intval($tributG["user_id"]));
             $user_profil = null;
-            if($user){
+            if($user && $user->getType()!='Type'){
 
                 if ($user->getType() === "consumer") {
                     $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);

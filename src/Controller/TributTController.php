@@ -24,8 +24,8 @@ use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
-use App\Service\StringTraitementService;
 use App\Form\PublicationType;
+use App\Service\AgendaService;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -35,16 +35,18 @@ use App\Repository\UserRepository;
 use App\Service\RequestingService;
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
-use App\Repository\DepartementRepository;
-use App\Service\AgendaService;
+use App\Repository\ConsumerRepository;
+use App\Repository\SupplierRepository;
+use App\Service\StringTraitementService;
+
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\DepartementRepository;
 
 use function PHPUnit\Framework\assertFalse;
 
 use Symfony\Component\Filesystem\Filesystem;
-
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -57,9 +59,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -180,7 +182,16 @@ class TributTController extends AbstractController
     SerializerInterface $serializer){
         $tableTribuTName=$request->query->get("tbl_tribu_T_name");
         $v=$serv->getPartisanOfTribuT($tableTribuTName);
-        $results = array_merge(["curent_user" => $this->getUser()->getId()], array($v));
+
+        $v_2 = [];
+
+        foreach ($v as $k) {
+            if($k['type'] != 'Type'){
+
+                array_push($v_2,$k);
+            }
+        }
+        $results = array_merge(["curent_user" => $this->getUser()->getId()], array($v_2));
         $json = $serializer->serialize($results, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -1482,10 +1493,12 @@ class TributTController extends AbstractController
         
     //     $restos = array();
 
-    //     if($has_restaurant == true){
-    //         $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
-	// 		$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
-    //     }
+        // if($has_restaurant == true){
+        //     $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment); 
+
+        //     /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+		// 	 $restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+        // }
 		
 	// 	$r=$serialize->serialize($restos,'json');
 		
@@ -1504,14 +1517,15 @@ class TributTController extends AbstractController
         $tribu_t = new Tribu_T_Service();
 
         $has_golf = $tribu_t->hasTableResto($table_golf);
-        
+       
         $golfs = array();
-
+       
         if($has_golf == true){
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+            
+            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
-		
 		$r=$serialize->serialize($golfs,'json');
 		
 		return new JsonResponse($r, Response::HTTP_OK, [], true);
@@ -1779,7 +1793,9 @@ class TributTController extends AbstractController
             /** URL FOR MEMBER
              * EDITED By Nantenaina
             */
-            $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $url = $router->generate('app_confirm_invitation_tribu', ['email' => $principal,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+            // $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
 
             // $mailService->sendEmail(
             //     $principal,
@@ -1792,7 +1808,7 @@ class TributTController extends AbstractController
             $context["object_mail"] = $object;
             $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
             $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+            $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
             $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
 
@@ -1824,7 +1840,7 @@ class TributTController extends AbstractController
             $context["object_mail"] = $object;
             $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
             $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+            $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
             $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
         }
@@ -1851,7 +1867,7 @@ class TributTController extends AbstractController
                     $context["object_mail"] = $object;
                     $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
                     $context["link_confirm"] = $url ;
-                    $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+                    $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
                     $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
         
@@ -1885,7 +1901,7 @@ class TributTController extends AbstractController
                     $context["object_mail"] = $object;
                     $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
                     $context["link_confirm"] = $url ;
-                    $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+                    $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
                     $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
                 }
@@ -2546,7 +2562,174 @@ class TributTController extends AbstractController
         dd($tabPhoto);
     }
 
+
+    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    public function checkedIfRestaurantIsPastilled(
+        $id_golf,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        SerializerInterface $serializerInterface
+    ) {
+        $arrayTribu = [];
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                    }
+                }
+            }
+        }
+
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de sauvegarde de l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/save_story/{table}",name:"app_save_story_invitation",methods:["POST"])]
+    public function saveStoryInvitation($table , Request $request, Tribu_T_Service $tribuTService ){
+
+        $user = $this->getUser();
+        $user_id = $user->getId();
+
+        $table_invitation = $table . "_invitation";
+
+        $json=json_decode($request->getContent(),true);
+        $email=$json["email"];
+
+        $result= $tribuTService->saveInvitationStory($table_invitation, $user_id, $email);
+
+        if($result == true){
+            return $this->json(["status"=>"ok"]);
+        }else{
+            return $this->json(["status"=>"!ok"]);
+        }
+       
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de fetching l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/get_all_story/{table}",name:"app_get_all_story_invitation",methods:["GET"])]
+    public function getAllStoryInvitation($table , Tribu_T_Service $tribuTService, UserService $user_serv){
+
+        $table_invitation = $table . "_invitation";
+
+        $result= $tribuTService->getAllInvitationStory($table_invitation);
+        
+        $hist = [];
+
+        if(count($result)>0){
+            foreach ($result as $user) {
+                $pp = null;
+
+                if($user['id']){
+                    $pp = $user_serv->getUserProfileFromId( $user['id'] );
+                }
+                
+                array_push($hist, ['user'=>$pp, 
+                'is_valid'=>$user['is_valid'], 
+                'date'=>$user['datetime'],
+                'email'=>$user['email']
+            ]);
+            }
+        }
+
+        return $this->json($hist);
+       
+    }
+
+     /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/update_story/{table}/{is_valid}/{email}",name:"app_up_valid_story_invitation",methods:["POST"])]
+    public function updateStoryInvitation($table ,  $is_valid, $email, Tribu_T_Service $tribuTService){
+
+        $table_invitation = $table . "_invitation";
+
+        $tribuTService->updateInvitationStory($table_invitation, $is_valid, $email);
+
+        return $this->json(["message"=>"Mise à jour sauvegardé!"]);
+       
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
+    public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request){
+
+        $table =$request->query->get("tribu");
+
+        $email =$request->query->get("email");
+
+
+        if($this->getUser()){
+
+            if($table && $email){
+
+                ////name tribu to join
+                $tribuTtoJoined = $table;
+                    
+                //// apropos user fondateur tribuT with user fondateur
+                $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
     
+                $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+    
+                $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+
+                $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+
+                if(array_key_exists("name", $arrayTribuT)){
+                    if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                        $apropos_tribuTtoJoined= $arrayTribuT;
+                    }
+                }else{
+                    foreach($arrayTribuT as $tribuT){
+                    
+                        if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                            $apropos_tribuTtoJoined= $tribuT;
+                            break;
+                        }
+                    }
+                }
+
+                //// set tribu T for this new user.
+                $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
+                
+                ///update status of the user in table tribu T
+                $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
+
+                $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+    
+            }
+
+            return $this->redirectToRoute('app_my_tribu_t');
+
+        }else{
+
+            return $this->redirectToRoute('app_login');
+            
+        }
+
+       
+    }
 
 }
 
