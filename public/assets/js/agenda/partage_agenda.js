@@ -431,23 +431,30 @@ function resetFilePartage(){
 }
 
 function invitationStoryAgenda(){
+
+    document.querySelector("#invitation-story").innerHTML = `<div class="d-flex justify-content-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>`
     
     fetch("/user/invitation/story/agenda")
         .then(response => response.json())
         .then(data => {
             console.log(data)
+            let tr = ""
             if(data.length > 0){
-                let tr = ""
                 for (const story of data) {
                     tr += `<tr class="">
-                    <td>${story.email}</td>
-                    <td>${story.partisan}</td>
-                    
-                    <td>
-                    ${story.datetime}
-                    </td>
-                </tr>`
+                            <td>${story.email}</td>
+                            <td>${story.partisan}</td>
+                            <td>${story.datetime}</td>
+                        </tr>`
                 }
+            }else{
+                tr += `<tr class="text-center">
+                            <td colspan="3">${story.email}</td>
+                        </tr>`
             }
             let table = `<table id="story-partage-agenda" class="table table-striped">
                     <thead>
@@ -458,15 +465,15 @@ function invitationStoryAgenda(){
                         </tr>
                     </thead>
                     <tbody >
-                        <tr class="">
-                            <td>test@gmail.com</td>
-                            <td>Test</td>
-                            
-                            <td>
-                                23-10-2023 10:15:01
-                            </td>
-                        </tr>
+                        ${tr}
                     </tbody>   
                 </table>`
+
+            document.querySelector("#invitation-story").innerHTML = table
+
+            $('#story-partage-agenda').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
+                },})
         })
 }

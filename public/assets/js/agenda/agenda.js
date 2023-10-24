@@ -1689,7 +1689,7 @@ if (document.querySelector('#list-tribu-partage-agenda')) {
 
     $('#list-tribu-partage-agenda').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
 
         },})
@@ -1698,7 +1698,7 @@ if (document.querySelector('#list-tribu-g-partage-agenda')) {
     // new DataTable('#list-tribu-g-partage-agenda');
     $('#list-tribu-g-partage-agenda').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
             "emptyTable": "Aucun partisan à part vous dans ce tribu",
 
@@ -1708,7 +1708,7 @@ if (document.querySelector('#list-tribu-t-partage-agenda')) {
     // new DataTable('#list-tribu-t-partage-agenda');
     $('#list-tribu-t-partage-agenda').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
 
         },})
@@ -1718,7 +1718,7 @@ if (document.querySelector('#list-partisans-tribu-selection')) {
     // new DataTable('#list-partisans-tribu-selection');
     $('#list-partisans-tribu-selection').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
 
         },})

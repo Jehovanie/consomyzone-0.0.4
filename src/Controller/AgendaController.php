@@ -1902,7 +1902,7 @@ class AgendaController extends AbstractController
             $userTemp = new User();
             // ADD USER TEMP
             $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
-            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Non Inscrit");
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé");
         }
 
         if( count($cc) > 0 ){
@@ -1935,7 +1935,7 @@ class AgendaController extends AbstractController
                     $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
                     // ADD USER TEMP
                     $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
-                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Non Inscrit");
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé");
                 }
 
             }
