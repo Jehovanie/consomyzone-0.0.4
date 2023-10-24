@@ -46,7 +46,7 @@ class Tribu_T_ServiceNew extends PDOConnexionService
 
         $sql2 = "CREATE TABLE IF NOT EXISTS $tribuTJoined (
             `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `user_id_owened` int(11) NOT NULL,s
+            `user_id_owened` int(11) NOT NULL,
             `nom_table_trbT` varchar(255) NOT NULL,
             `date_adhesion` datetime NOT NULL DEFAULT current_timestamp()
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
@@ -760,6 +760,30 @@ public function getAllAvisByRestName($tableResto,$id){
       $statement->bindParam(":ext_golf",$ext_golf);
       $statement->bindParam(":tableTribuT",$tableTribuT);
       $statement->execute();
+    }
+
+     /**
+     * Update Status of pedding invitation to accepted on the tribut T
+     * @param string $tableName: Name of the table
+     * @param int $user_id: ID of the user
+     * @param int $status: Status of the invitation to accepted on the tribut
+     * 
+     */
+    public function updateMember($tableName, $user_id, $status)
+
+    {
+        $query = "UPDATE $tableName set status = ? WHERE user_id = ?";
+        $stmt = $this->getPDO()->prepare($query);
+        $stmt->execute([$status, $user_id]);
+    }
+
+    function getRole($table, $userId)
+    {
+        $statement = $this->getPDO()->prepare("SELECT roles as result FROM $table WHERE user_id  = $userId LIMIT 1");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result["result"];
+
     }
 
 }

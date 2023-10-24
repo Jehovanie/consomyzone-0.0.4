@@ -294,7 +294,7 @@ function showPartisan() {
 
                 $('#table_partisan_elie_js').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             })
@@ -1171,7 +1171,7 @@ function showResto(table_rst_pastilled, id_c_u) {
 
             $('#table_resto_pastilled').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 
@@ -1471,7 +1471,7 @@ function findResto(val, localisation = "") {
             // new DataTable('#resto-a-pastiller-list');
             $('#resto-a-pastiller-list').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 
@@ -1998,7 +1998,7 @@ function fetchAllTribuGMember() {
                 }
                 $('#table-tribuG-member > table').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             } else {
@@ -2614,7 +2614,7 @@ function showGolf() {
 
                     $('#table_golf_pastilled').DataTable({
                         "language": {
-                            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                         }
                     });
                 } else {
@@ -2703,7 +2703,7 @@ function findGolf(val, localisation = "") {
 
             $('#resto-a-pastiller-list').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 

@@ -261,10 +261,12 @@ class MessageController extends AbstractController
                 $agendaID = $key["agendaId"];
                 $from_id=$key["from_id"];
                 $to_id=$key["to_id"];
-
                 if(!is_null($to_id)){
+                    $userTo = $userRepository->findOneBy(["id" => intval($to_id)]);
+                    $email_to = $userTo->getEmail();
                     $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $email_to, "Déjà confirmé");
                 }
             }
         }else{

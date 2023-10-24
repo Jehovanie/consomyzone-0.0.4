@@ -304,32 +304,32 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-    /**
-     * Update Status of pedding invitation to accepted on the tribut T
-     * @param string $tableName: Name of the table
-     * @param int $user_id: ID of the user
-     * @param int $status: Status of the invitation to accepted on the tribut
-     * 
-     */
-    public function updateMember($tableName, $user_id, $status)
+    // /**
+    //  * Update Status of pedding invitation to accepted on the tribut T
+    //  * @param string $tableName: Name of the table
+    //  * @param int $user_id: ID of the user
+    //  * @param int $status: Status of the invitation to accepted on the tribut
+    //  * 
+    //  */
+    // public function updateMember($tableName, $user_id, $status)
 
-    {
-
-
-
-        $query = "UPDATE $tableName set status = ? WHERE user_id = ?";
+    // {
 
 
 
-        $stmt = $this->getPDO()->prepare($query);
+    //     $query = "UPDATE $tableName set status = ? WHERE user_id = ?";
 
 
 
-        $stmt->execute([$status, $user_id]);
+    //     $stmt = $this->getPDO()->prepare($query);
 
 
 
-    }
+    //     $stmt->execute([$status, $user_id]);
+
+
+
+    // }
 
 	
 	public function invitationCancelOrDelete($tableName, $user_id)
@@ -462,27 +462,27 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function getRole($table, $userId)
+    // function getRole($table, $userId)
 
-    {
-
-
-
-        $statement = $this->getPDO()->prepare("SELECT roles as result FROM $table WHERE user_id  = $userId LIMIT 1");
+    // {
 
 
 
-        $statement->execute();
+    //     $statement = $this->getPDO()->prepare("SELECT roles as result FROM $table WHERE user_id  = $userId LIMIT 1");
 
 
 
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
+    //     $statement->execute();
 
 
 
-        return $result["result"];
+    //     $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-    }
+
+
+    //     return $result["result"];
+
+    // }
 
     /**
      * @author tommyramihoatrarivo@gmail.com <email>

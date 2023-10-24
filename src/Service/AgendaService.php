@@ -601,7 +601,7 @@ class AgendaService extends PDOConnexionService
      * @author Tommy
      */
     public function createTableAgenda($table_agenda_name){
-        $sql= "CREATE TABLE $table_agenda_name (".
+        $sql= "CREATE TABLE IF NOT EXISTS $table_agenda_name (".
             "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
             "`title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
             "`description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
@@ -634,7 +634,7 @@ class AgendaService extends PDOConnexionService
      * 
      */
     public function createTablePartageAgenda($table_partage_agenda_name){
-        $sql= "CREATE TABLE $table_partage_agenda_name (".
+        $sql= "CREATE TABLE IF NOT EXISTS $table_partage_agenda_name (".
             "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
             "`agenda_id` int(11) NOT NULL,".
             "`user_id` int(11) NOT NULL,".

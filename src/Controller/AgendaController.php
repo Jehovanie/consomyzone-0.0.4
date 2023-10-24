@@ -128,12 +128,11 @@ class AgendaController extends AbstractController
     }
 
     #[Route('/agenda/make/confirmation/{fromId}/{toId}/{agendaId}/{isYes}', name: 'agenda_make_confirmation', methods: ["GET","POST"])]
-    public function makeConfirmationAgenda($fromId,$toId,$agendaId, $isYes){
-
+    public function makeConfirmationAgenda($fromId,$toId,$agendaId, $isYes, UserRepository $userRepository){
         $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
-       
-        return $this->json($confirm);
-      
+        $userTo = $userRepository->findOneBy(["id" => $toId]);
+        $type = $userTo->getType();
+        return $this->json(["response"=>$confirm["response"], "type"=>$type]);
     }
 
     #[Route('/user/get_agenda_by_date/{table}/{datetime}', name: 'get_agenda_by_date', methods: ["GET","POST"])]
@@ -1959,7 +1958,7 @@ class AgendaController extends AbstractController
 
     /**
      * @author Nantenaina
-     * où: on Utilise cette fonction dans la rubrique historique invitation agenda agenda cmz, 
+     * où: on Utilise cette fonction dans la rubrique historique invitation agenda cmz, 
      * localisation du fichier: dans AgendaController.php,
      * je veux: voir l'historique d'invitation de mon agenda
      */
@@ -1970,4 +1969,5 @@ class AgendaController extends AbstractController
         $stories = $agendaService->invitationStoryAgenda("agenda_".$userId."_story");
         return $this->json($stories);
     }
+
 }

@@ -620,4 +620,18 @@ class TribuTControllerNew extends AbstractController{
 
     }
 
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction pour l'affichage des infos d'une tribu T, 
+     * localisation du fichier: dans TribuTControllerNew.php,
+     * je veux: afficher les infos d'une tribu T
+    */
+    #[Route("/user/{tribu}/show/tribu_t-info", name: "show_my_tribu_t_info")]
+    public function showTribuTInfos
+    ( 
+        $tribu
+    ){
+        return $this->json($this->srvTribuT->getApropos($tribu));
+    }
+
 }

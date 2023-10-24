@@ -373,29 +373,26 @@ class SecurityController extends AbstractController
         // dd($data);
         extract($data);
 
-
-
-
         ///data user.
 
         if( !$mailService->valid_email($data['email'])){
             $result = false;
             $type = "email-nv"; ///email not valid
-
             goto quit;
         }
 
-
-
+        $oldUser = null;
         ///check the email if already exist
         if ($userRepository->findOneBy(['email' => $data['email']])) {
-            $result = false;
-            $type = "email-ae"; /// email already exist
-
-            goto quit;
+            $userExist = $userRepository->findOneBy(['email' => $data['email']]);
+            if($userExist->getType() == "Type"){
+                $oldUser = $userExist;
+            }else{
+                $result = false;
+                $type = "email-ae"; /// email already exist
+                goto quit;
+            }
         }
-
-
 
         ////valid password
         if (strcmp($data['password'], $data['confirmpassword']) != 0) {
@@ -411,18 +408,19 @@ class SecurityController extends AbstractController
             goto quit;
         }
 
-
-
         /// new instance for user.
-        $user = new User();
+        if($oldUser){
+            $user = $oldUser;
+        }else{
+
+            $user = new User();
+        }
+        
         $user->setPseudo(trim($data['pseudo']));
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
         $user->setVerifiedMail(true);
         $user->setIsConnected(true);
-        
-
-
 
         ////setting roles for user admin.
         if (count($userRepository->findAll()) === 0) {
@@ -448,13 +446,9 @@ class SecurityController extends AbstractController
         );
         $user->setPassword($hashedPassword);
 
-
-
         ///save the user
         $entityManager->persist($user);
         $entityManager->flush();
-
-
 
         ///change the value temp: now this user have an ID, so change temp value
         $numero_table = $user->getId();
@@ -468,9 +462,6 @@ class SecurityController extends AbstractController
         $user->setTribuT("tribu_t_o_".$numero_table );
         $user->setTribuTJoined("tribu_t_j_".$numero_table );
 
-
-
-
         ///create table dynamique
         $notificationService->createTable("tablenotification_" . $numero_table);
         $messageService->createTable("tablemessage_" . $numero_table);
@@ -483,10 +474,6 @@ class SecurityController extends AbstractController
         ///keep the change in the user information
         $entityManager->persist($user);
         $entityManager->flush();
-
-
-
-
 
         /**
          * Persist user on confidentiality table
@@ -1046,11 +1033,11 @@ class SecurityController extends AbstractController
                 $context["link_confirm"]="";
                 $context["content_mail"]=$content;
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+                $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Déjà confirmé");
 
                 if(!is_null($to_id)){
                     $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Déjà confirmé");
                 }
                 
         }

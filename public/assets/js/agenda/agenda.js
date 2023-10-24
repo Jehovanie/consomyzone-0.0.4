@@ -1941,7 +1941,7 @@ function generateDataTable(selector, limite,turnOffLogo=false) {
         limite = document.querySelectorAll(selector + ' thead tr:nth-child(2) > th').length
         var table = $(selector).DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 "search": "Recherche global",
 
             },
