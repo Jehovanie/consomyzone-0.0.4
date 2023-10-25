@@ -36,10 +36,12 @@
                     <div class="col-4">
                         <div class="logo-pastille-golf-tomm-js">
                             {% for tribu_t_pastilled in tribu_t_pastilleds %}
-                                {% if tribu_t_pastilled['logo_path'] %}
-                                    {% if tribu_t_pastilled['logo_path'] == "" %}
-                                        <img class="logo_path_pastille_details" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
-                                    {% else %}
+                                {# {{ dump(tribu_t_pastilled) }} #}
+                                {% if tribu_t_pastilled['logo_path'] == "" %}
+                                    <img class="logo_path_pastille_details" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                {% else %}
+                                    {% if tribu_t_pastilled['isPastilled'] == true %}
+                                    
                                         <img class="logo_path_pastille_details" src="{{tribu_t_pastilled['logo_path']}}" alt="">
                                     {% endif %}
                                 {% endif %}

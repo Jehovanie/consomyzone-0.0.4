@@ -2419,7 +2419,7 @@ textarea {
 
 .logo_path_pastille_details {
     float: left;
-    height: 50px;
+    height: 35px;
     margin-left: -10px;
     cursor: pointer;
     clip-path: circle();
