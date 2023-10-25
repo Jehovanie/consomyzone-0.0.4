@@ -41,7 +41,6 @@
                                     <img class="logo_path_pastille_details" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
                                 {% else %}
                                     {% if tribu_t_pastilled['isPastilled'] == true %}
-                                    
                                         <img class="logo_path_pastille_details" src="{{tribu_t_pastilled['logo_path']}}" alt="">
                                     {% endif %}
                                 {% endif %}
@@ -86,11 +85,19 @@
                         </select>
                     {% endif %} #}
                 </div>
-            {% endif %}
+
                 <div class="mon-golf">
                     <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
                     <button class="btn btn-success" value="3" onclick="executeActionForPastMonGolf('{{details.id}}','{{details.nomGolf}}','{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}' )">Mon golf</button>
                 </div>
+            {% else %}
+                <div class="mon-golf">
+                    <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
+                    <button class="btn btn-secondary" value="3" onclick="openSwalActif()">Mon golf</button>
+                </div>
+            {% endif %}
+                
+                
 
 
             {# {% set adresse = details.adr1|lower ~" "~ details.cp|lower ~" "~ details.nomCommune|lower %}

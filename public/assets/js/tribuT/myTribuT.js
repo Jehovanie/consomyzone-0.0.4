@@ -2764,17 +2764,18 @@ function showGolf(tableGolfPastilled) {
                 let tr = ""
                 let i = 0
                 for (const item of data) {
+                    console.log(item)
                     if (item.isPastilled) {
                         i++
                         let nbrAvis = item.nbrAvis
                         let note = item.globalNote ? item.globalNote : 0
                         let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
                         tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled">
+                            <td class="d-flex bd-highlight align-items-center" data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+                                <div class="elie-img-pastilled"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">
                                 ${image_tribu_t}
                                 </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.denomination_f}</span>
+                                <span class="ms-3" style="font-size:12pt;"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">${item.denomination_f}</span>
                             </td>
                             <td class="data-note-${item.id}">${note}/4</td>
                             <td>
@@ -2932,10 +2933,10 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
                             </div>`
 
     modalBody.innerHTML = `<div class="d-flex justify-content-center">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-                                                </div>`
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            </div>`
 
     fetch(request)
         .then(res => res.text()).then(html => {

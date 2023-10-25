@@ -10,7 +10,8 @@ function getDetailFromListLeft(depart_name, depart_code, id) {
    
 }
 
-function setGolfTodo(goldID){
+function setGolfTodo(goldID) {
+    
     fecthGolfAction(goldID, "todo")
 }
 
@@ -22,7 +23,7 @@ function setMonGolf(goldID, golfName, golfAdress){
     
 }
 
-function setGolfFinished(goldID){
+function setGolfFinished(goldID) {
     fecthGolfAction(goldID, "finished")
 }
 

@@ -245,7 +245,7 @@ class TribuTControllerNew extends AbstractController{
 
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-
+        
        return $this->render('tribu_t/tribu_t_specific.html.twig',[
             "profil" => $profil,
             "tribu"=> $infos,
