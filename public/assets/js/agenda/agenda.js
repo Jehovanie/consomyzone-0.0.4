@@ -1634,6 +1634,12 @@ if(document.querySelector("#shareAgendaBtn")){
 
 /** END BLOC */
 
+/**
+ * @Author Nantenaina
+ * où: on Utilise cette fonction dans la rubrique partage agenda cmz, 
+ * localisation du fichier: dans agenda.js,
+ * je veux: choisir un autre menu
+*/
 function tableActiveFilterPartisant(e) {
     const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "email_non_inscrit", "invitation_story", "list_partisant_emailing_jheo_js"];
     const current_class_active = allTypeActive.find(item => e.classList.contains(item))

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\PDOConnexionService;
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
 use App\Entity\BddRestoUserModif;
@@ -780,7 +781,7 @@ class RestaurantController extends AbstractController
 
         $datas = [];
 
-        $restos = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
+        $restos = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep,$codinsee);
         foreach ($restos as $data){
             $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
@@ -1002,6 +1003,7 @@ class RestaurantController extends AbstractController
             $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $id_restaurant, $arrayTribuRestoJoinedPast);
 
         }
+
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -1304,11 +1306,11 @@ class RestaurantController extends AbstractController
      * @param int $idRestaurant : identifiant d'un restaurant
     */
     public function getTribuTForRestoPastilled($tribu_T_Service, $arrayTribuTOwnedOrJoined, $idRestaurant, $results){
-        
+        $pdoService = new PDOConnexionService();
         foreach ($arrayTribuTOwnedOrJoined as $key) {
             $tableTribu = $key["nom_table_trbT"];
             $logo_path = $key["logo_path"];
-            $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"]:null;
+            $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? json_decode($pdoService->convertUnicodeToUtf8($key["name_tribu_t_muable"]), true):null;
             $tableExtension = $tableTribu . "_restaurant";
             if($key["ext_restaurant"]){
                 if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant, true)){

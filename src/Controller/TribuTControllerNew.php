@@ -36,6 +36,7 @@ use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
 use App\Repository\DepartementRepository;
 use App\Service\AgendaService;
+use App\Service\SortResultService;
 use App\Service\Tribu_T_ServiceNew;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -121,7 +122,7 @@ class TribuTControllerNew extends AbstractController{
         Status $status,
         Request $request, 
         HachageTribuTNameRepository $hachageRepo,
-    
+        SortResultService $sortResultService,
     ){
         $user=$this->getUser();
 
@@ -169,6 +170,9 @@ class TribuTControllerNew extends AbstractController{
             }
             $publications= array_merge($publications, $all_pub_tribuT);
         }
+
+        //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
+        $publications= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
 
         return $this->render('tribu_t/tribuT.html.twig',[
             "publications" => $publications,

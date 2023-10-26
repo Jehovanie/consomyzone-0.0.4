@@ -414,6 +414,7 @@ class MarckerClusterResto extends MapModule  {
      * si une POI a une note, la note se montre en haut à gauche du POI 
      */
     showNoteMoyenneRealTime(idResto, note){
+        console.log("Nety eeee")
         let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
         let isPastille = resultRestoPastille.length > 0 ? 2 : 0;

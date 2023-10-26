@@ -128,7 +128,6 @@ class UserController extends AbstractController
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
         $publicationSorted= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
-        // dd($publicationSorted);
 
         ///all publication on tribu T use for new publications
         $choiceTribuT= [];

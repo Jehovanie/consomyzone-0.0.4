@@ -9,7 +9,7 @@ var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worke
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
 
-var image_tribu_t = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
+var image_tribu_t = document.querySelector("#avatarTribuT") ? `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">` : ""
 var descriptionTribuT = ""
 /**
  * create tribu_t section
@@ -165,16 +165,17 @@ async function showBlockPub() {
     /**end */
 
     /**render photo gallery*/
-    document.querySelector("#see-gallery").onclick = (e => {
-        e.preventDefault();
-        if (document.querySelector("li.listNavBarTribu > a.active")) {
-            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-        }
-        document.querySelector("#see-gallery").classList.add("active")
-        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-        showPhotos()
+    if(document.querySelector("#see-gallery"))
+        document.querySelector("#see-gallery").onclick = (e => {
+            e.preventDefault();
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+            }
+            document.querySelector("#see-gallery").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showPhotos()
 
-    })
+        })
     /**end */
 
     /**change pdp tribu_t */
@@ -189,14 +190,15 @@ async function showBlockPub() {
 
 
     /**render partisant*/
-    document.querySelector(".partisantT").onclick = (e) => {
-        if (document.querySelector("li.listNavBarTribu > a.active")) {
-            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    if(document.querySelector(".partisantT"))
+        document.querySelector(".partisantT").onclick = (e) => {
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+            }
+            document.querySelector(".partisantT > a").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showPartisan()
         }
-        document.querySelector(".partisantT > a").classList.add("active")
-        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-        showPartisan()
-    }
 
 }
 
@@ -606,6 +608,7 @@ function sendPublication(formData) {
 //                 </div>
 //                 <div class="publication-content">
 function showdDataContent(id_c_u, lastId = 0) {
+    if(document.querySelector("#tribu_t_conteuneur"))
     document.querySelector("#tribu_t_conteuneur").innerHTML += `
             <div class="publication-content">
                     <div class="list-pub-new">
@@ -685,7 +688,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                     </div>` : ""
 
 
-                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -719,7 +722,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
+                                                            onclick="getAllComment('${data[i].id}', '${tribu_t_name_0}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -756,7 +759,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
                     contentPublication = `
-                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -821,7 +824,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${data[i].id}', '${tribu_t_name_0}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -897,7 +900,7 @@ function showdDataContent(id_c_u, lastId = 0) {
 
                                 if (data) {
                                     const contentPublication = `
-                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data.id}_jheo_js">
+                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data.id}_jheo_js">
                                                 <!-- ====== Chart One Start -->
                                                 <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                     <div class="head-pub">
@@ -961,7 +964,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                         <div class="reaction-icon d-flex">
                                                             <i class="bi-heart like non_active"></i>
                                                             <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data.id}', '${data.nom_table_trbT}', '${data.user_id}')"></i>
+                                                            onclick="getAllComment('${data.id}', '${tribu_t_name_0}', '${data.user_id}')"></i>
                                                         </div>
                                                     </div>
                                                     

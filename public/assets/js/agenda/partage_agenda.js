@@ -430,6 +430,12 @@ function resetFilePartage(){
     sessionStorage.removeItem("headerIndex");
 }
 
+/**
+ * @Author Nantenaina
+ * où: on Utilise cette fonction dans la rubrique historiques des invitations agenda cmz, 
+ * localisation du fichier: dans partage_agenda.js,
+ * je veux: voir les historiques des invitations
+*/
 function invitationStoryAgenda(){
 
     document.querySelector("#invitation-story").innerHTML = `<div class="d-flex justify-content-center">

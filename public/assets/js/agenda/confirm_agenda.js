@@ -3,6 +3,13 @@ let currentURL = window.location.pathname
 let fromId = currentURL.split("/")[3]
 let toId = currentURL.split("/")[4]
 let agendaId = currentURL.split("/")[5]
+
+/**
+ * @Author Nantenaina
+ * où: on Utilise cette événement dans la rubrique confirmation d'invitation agenda cmz, 
+ * localisation du fichier: dans confirm_agenda.js,
+ * je veux: confirmer une invitation
+*/
 if(document.querySelector("#accept_from_page_email_Nantenaina_js_css")){
     document.querySelector("#accept_from_page_email_Nantenaina_js_css").onclick=e=>{
       
@@ -59,7 +66,6 @@ if(document.querySelector("#accept_from_page_email_Nantenaina_js_css")){
                     }
                 }
             })
-     
     }
 }
 
