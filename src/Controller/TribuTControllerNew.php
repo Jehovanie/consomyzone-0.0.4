@@ -638,4 +638,29 @@ class TribuTControllerNew extends AbstractController{
         return $this->json($this->srvTribuT->getApropos($tribu));
     }
 
+    #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
+
+    public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
+
+    {
+        $table_golf = $table_tribu."_golf";
+
+        $tableComment=$table_golf."_commentaire";
+
+        $has_golf = $this->srvTribuT->hasTableResto($table_golf);
+       
+        $golfs = array();
+       
+        if($has_golf == true){
+            $golfs = $this->srvTribuT->getGolfPastilles($table_golf, $tableComment);
+            
+            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+        }
+		$r=$serialize->serialize($golfs,'json');
+		
+		return new JsonResponse($r, Response::HTTP_OK, [], true);
+
+    }
+
 }

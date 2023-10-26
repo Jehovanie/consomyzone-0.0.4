@@ -526,26 +526,26 @@ function showNemberOfAvis(idRestaurant,parent) {
 }
 
 
-/**
- * Get global note avis resto  and setting
- * @param {*} idRestaurant 
- */
-function showNoteGlobale(idRestaurant) { 
-    fetch(`/avis/restaurant/global/${idRestaurant}`, {
-        methode:"GET"
-    }).then(r => r.json())
-    .then(response => {
-        let globalNote=0.00;
-        let totalNote=0.00;
-        if( response.length > 0 ){
-            for (let avis of response) {
-                totalNote+=parseFloat(avis["note"])
-            }
-            globalNote= totalNote /(response.length);
-            createGlobalNote(globalNote,idRestaurant)
-        }
-    })
-}
+// /**
+//  * Get global note avis resto  and setting
+//  * @param {*} idRestaurant 
+//  */
+// function showNoteGlobale(idRestaurant) { 
+//     fetch(`/avis/restaurant/global/${idRestaurant}`, {
+//         methode:"GET"
+//     }).then(r => r.json())
+//     .then(response => {
+//         let globalNote=0.00;
+//         let totalNote=0.00;
+//         if( response.length > 0 ){
+//             for (let avis of response) {
+//                 totalNote+=parseFloat(avis["note"])
+//             }
+//             globalNote= totalNote /(response.length);
+//             createGlobalNote(globalNote,idRestaurant)
+//         }
+//     })
+// }
 
 
 /**

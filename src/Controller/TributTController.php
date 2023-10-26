@@ -1506,31 +1506,31 @@ class TributTController extends AbstractController
 
     // }
 
-    #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
+    // #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
 
-    public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
+    // public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
 
-    {
-        $table_golf = $table_tribu."_golf";
+    // {
+    //     $table_golf = $table_tribu."_golf";
 
-        $tableComment=$table_golf."_commentaire";
-        $tribu_t = new Tribu_T_Service();
+    //     $tableComment=$table_golf."_commentaire";
+    //     $tribu_t = new Tribu_T_Service();
 
-        $has_golf = $tribu_t->hasTableResto($table_golf);
+    //     $has_golf = $tribu_t->hasTableResto($table_golf);
        
-        $golfs = array();
+    //     $golfs = array();
        
-        if($has_golf == true){
-            $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
+    //     if($has_golf == true){
+    //         $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
             
-            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
-			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
-        }
-		$r=$serialize->serialize($golfs,'json');
+    //         /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+	// 		// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+    //     }
+	// 	$r=$serialize->serialize($golfs,'json');
 		
-		return new JsonResponse($r, Response::HTTP_OK, [], true);
+	// 	return new JsonResponse($r, Response::HTTP_OK, [], true);
 
-    }
+    // }
 
 
     // #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]

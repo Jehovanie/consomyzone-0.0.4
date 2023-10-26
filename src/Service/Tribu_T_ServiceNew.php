@@ -711,6 +711,33 @@ class Tribu_T_ServiceNew extends PDOConnexionService
 
 }
 
+public function getGolfPastilles($tableGolf, $tableComment){
+    
+  // $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
+  //         GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+  //         GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+  // as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+
+  // $stmt = $this->getPDO()->prepare($sql);
+   
+  // $stmt->execute();
+  // $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  // return $result;
+
+  $sql="SELECT * FROM (SELECT t1.id , t2.id as id_resto_comment, t1.extensionId as id_golf,t1.denomination_f, 
+                          t1.isPastilled, t2.extensionId as id_golf_comment, t2.userId as id_user,t2.note,t2.commentaire,
+                          GROUP_CONCAT(t2.userId) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.extensionId) as nbrAvis ,
+                          GROUP_CONCAT(t2.id) as All_id_r_com
+                          FROM  $tableGolf as t1 left join $tableComment  as t2 on t1.extensionId=t2.extensionId where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+          INNER JOIN golffrance ON tableRestCom.id_golf=golffrance.id";
+    $stmt = $this->getPDO()->prepare($sql);
+     
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+
+}
+
 public function hasTableResto($table){
 
   $db = $_ENV["DATABASENAME"];

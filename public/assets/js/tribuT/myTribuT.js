@@ -2734,7 +2734,7 @@ function updateTribuTInfos(e) {
 
 function showGolf() {
 
-    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+    let tableGolfPastilled = tribu_t_name_0
 
     if (document.querySelector("li.listNavBarTribu > a.active")) {
         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
@@ -2880,7 +2880,7 @@ function findGolf(val, localisation = "") {
                 const idDep = json.id_dep;
                 const nomDep = json.departement;
                 const idEtab = json.id_etab;
-                const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
+                const table = tribu_t_name_0
 
                 body_table += `
                                 <tr>
@@ -2984,7 +2984,7 @@ function pastilleGolf(element) {
 
 function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse = null) {
 
-    let tableTribu = document.querySelector("#activeTribu").dataset.tableName
+    let tableTribu = tribu_t_name_0
 
     $("#detailOptionGolf").modal("show")
 
