@@ -92,9 +92,12 @@ class MessageController extends AbstractController
         
         $all_tribuT_user= [];
         $all_tribuT= $userRepository->getListTableTribuT();
+
+        // dd($all_tribuT);
+
         foreach($all_tribuT as $tribuT){
             $tribuT['amis'] = [];
-            $results=$tributTService->getAllPartisanProfil($tribuT['table_name']);
+            $results=$tributTService->getAllPartisanProfil($tribuT['nom_table_trbT']);
             foreach($results as $result){
                 if( intval($result["user_id"]) !== intval($userId) ){
                     $user_amis = $userRepository->find(intval($result["user_id"]));

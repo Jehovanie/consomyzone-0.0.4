@@ -696,6 +696,8 @@ class AgendaController extends AbstractController
 
         $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
+        // dd($tribu_t_owned);
+
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],

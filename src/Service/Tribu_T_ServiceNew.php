@@ -759,7 +759,9 @@ public function getAllAvisByRestName($tableResto,$id){
   $data=[
       ":id"=>$id
   ];
-  $sql="SELECT * FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.userId = t2.id where t1.extensionId = :id";
+  $sql="SELECT * FROM (SELECT t1.id as id_comment, extensionId, userId, note, commentaire, datetime, t2.pseudo FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.userId = t2.id where t1.extensionId = :id ) as tab 
+        INNER JOIN (SELECT concat(firstname, ' ', lastname) as fullname, photo_profil, user_id FROM consumer UNION SELECT concat(firstname, ' ', lastname) as fullname, photo_profil, user_id FROM supplier) as profil 
+        ON tab.userId = profil.user_id";
   $stmt = $this->getPDO()->prepare($sql);
   $stmt->execute($data);
   $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -789,6 +791,22 @@ public function getAllAvisByRestName($tableResto,$id){
       $statement->bindParam(":tableTribuT",$tableTribuT);
       $statement->execute();
     }
+
+    /**
+     * @author Elie
+     */
+
+     function getFondateur($table_tribu){
+
+      $statement = $this->getPDO()->prepare("SELECT user_id as fondateur_id FROM $table_tribu WHERE roles = 'fondateur' or roles = 'Fondateur'");
+
+      $statement->execute();
+
+      $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+      return $result;
+
+     }
 
 }
 

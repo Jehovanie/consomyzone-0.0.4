@@ -1944,7 +1944,7 @@ class TributTController extends AbstractController
         $json = json_decode($request->getContent(), true);
         $tableName = $json["tableName"];
 
-        $idRestoComment = strval($json["idRestoComment"]);
+        $idRestoComment = strval($json["id"]);
 
         // $idUser = $json["idUser"];
         $note = $json["note"];

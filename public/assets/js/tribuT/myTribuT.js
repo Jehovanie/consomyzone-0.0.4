@@ -1230,6 +1230,7 @@ function showResto(table_rst_pastilled, id_c_u) {
         if (restos.length > 0) {
 
             for (let resto of restos) {
+
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
                 if (resto.isPastilled) {
@@ -1247,54 +1248,27 @@ function showResto(table_rst_pastilled, id_c_u) {
 
                     let adresse = resto.numvoie + " " + resto.nomvoie + " " + resto.codpost + " " + resto.dep_name
 
-                    let text1 = ""
+                    let text1 = "Notez"
 
-                    let action = ""
+                    let action = "create"
 
                     for (let [k, v] of id_user.entries()) {
                         if (v === id_c_u)
                             key = k
                     }
-                    if (id_user.includes(id_c_u)) {
-                        // console.log("up " + denominationsF)
-                        // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
-                        action = "update"
-
-                        text1 = "Modifiez votre avis"
-                    } else {
-                        // console.log("crt " + denominationsF)
-                        // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
-                        action = "create"
-                        text1 = "Notez"
-                    }
 
                     body_table += `
-                        <tr id="restaurant_${resto.extensionId}">
+                        <tr id="restaurant_${resto.id_resto}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
-                                <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
                                 <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
-                                
-                                <!-- <a target="_blank" href="/restaurant?id=${resto.extensionId}" class="text-decoration-none">
-                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span>
-                                </a> -->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
                             <td>
-                                <!--<div id="etoile_${id_resto}" class="non_active">
-                                    <i class="fa-solid fa-star" data-rank="1"></i>
-                                    <i class="fa-solid fa-star" data-rank="2"></i>
-                                    <i class="fa-solid fa-star" data-rank="3"></i>
-                                    <i class="fa-solid fa-star" data-rank="4"> </i>-->
-                                    <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
-                                <!--</div>-->
+                                <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
                             </td>
                             <td>
                                 <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
-                                <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
-                                
-                                <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
                             </td>
                         </tr>
                     `
@@ -1320,15 +1294,6 @@ function showResto(table_rst_pastilled, id_c_u) {
         }
 
         restoContainer.style.display = "block"
-        // invitationsContainer.innerHTML = "";               
-        // invitationsContainer.style.display = "none"
-        // photosContainer.innerHTML = "";
-        // photosContainer.style.display = "none"
-        // showCreatePub.style.display = "none"
-        //  showCreatePub_mobile.style.display = "none"
-        // showPub.style.display = "none"
-
-
 
     });
 
@@ -1410,6 +1375,14 @@ function printNodeGlobale(element, globalNote) {
         }
     }
 }
+
+/**
+ * @author Elie
+ * @constructor Sauvegarde note et commentaire resto pastille pour tribu T
+ * @param {*} note 
+ * @param {*} commentaire 
+ * @param {*} _idResto 
+ */
 function sendNote(note, commentaire, _idResto) {
 
     const content = {
@@ -1441,9 +1414,6 @@ function sendNote(note, commentaire, _idResto) {
 
             document.querySelector(".data-avis-" + _idResto).setAttribute("onclick", "openAvis(" + parseInt(last_avis + 1) + "," + _idResto + ")")
 
-            const openPopup = document.querySelector(".elie-plus-" + _idResto).getAttribute("onclick")
-
-            document.querySelector(".elie-plus-" + _idResto).setAttribute("onclick", openPopup.replaceAll("create", "update").replaceAll("Notez", "Modifier votre avis"))
 
             swal({
                 title: "Noté!",
@@ -1463,159 +1433,57 @@ function sendNote(note, commentaire, _idResto) {
         }
     })
 }
-function updateNote(note, commentaire, id_resto) {
+
+/**
+ * @author Elie
+ * @constructor Mise à jour note et commentaire resto pastille tribu T
+ * @param {*} id_resto 
+ * @param {*} id_bdd_resto 
+ */
+function updateNote(id_resto, id_bdd_resto) {
 
     const table_resto_comment = tribu_t_name_0 + "_restaurant_commentaire"
+    let note = document.querySelector("#text-note").value
+    let commentaire = document.querySelector("#message-text").value
 
-    fetch('/user/comment/tribu/restos-pastilles/' + tribu_t_name_0 + '_restaurant/' + id_resto)
-        .then(response => response.json())
-        .then(avis => {
+    let data = {
+        tableName : table_resto_comment,
+        id : id_resto,
+        note : note,
+        commentaire : commentaire
+    }
 
-            if (avis.length > 0) {
+    console.log(data);
 
-                for (let av of avis) {
-                    const content = {
-                        tableName: table_resto_comment,
-                        note: note,
-                        commentaire: commentaire,
-                        idRestoComment: av.id_resto_comment
-                    }
-                    const jsonStr = JSON.stringify(content)
-                    const request = new Request("/up/comment/resto/pastilled", {
-                        method: "POST",
-                        body: jsonStr,
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                    })
-                    fetch(request)
-                }
-
-            }
-
-        })
-
-
-    document.querySelector(".data-note-" + id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
-
-    swal({
-        title: "A jour!",
-        text: "Note modifié avec succès!",
-        icon: "success",
-        button: "Ok",
-    });
-
-
-}
-
-function findResto(val, localisation = "") {
-
-    const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
-        method: 'GET'
+    const jsonStr = JSON.stringify(data)
+    const request = new Request("/up/comment/resto/pastilled", {
+        method: "POST",
+        body: jsonStr,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
     })
+    fetch(request).then(res=>{
+        if(res.ok && res.status == 200){
 
-    document.querySelector("#result_resto_past").style.display = "block;"
+            console.log(res);
 
+            document.querySelector(".data-note-" + id_bdd_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
 
-    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
-    document.querySelector("#elie-restou").innerHTML =
-        `<div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        </div>`
-
-
-    fetch(request).then(response => response.json()).then(data => {
-
-        let jsons = data.results[0]
-
-        jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
-
-        let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th>Nom de restaurant</th>
-                <th>Type</th>
-                <th>Adresse</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>`
-
-        let foot_table = `</tbody>
-        </table>`
-
-        let body_table = "";
-
-        if (jsons.length > 0) {
-
-
-            for (let json of jsons) {
-
-                const name = json.denominationF;
-                const dep = json.dep;
-                const depName = json.depName;
-                const commune = json.commune;
-                const codePost = json.codpost;
-                const nomvoie = json.nomvoie;
-                const numvoie = json.numvoie;
-                const typevoie = json.typevoie;
-                // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-                const adresse = json.add;
-                const bar = json.bar != "0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : ''
-                const boulangerie = json.boulangerie != "0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
-                const brasserie = json.brasserie != "0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
-                const cafe = json.cafe != "0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : ''
-                const cuisineMonde = json.cuisineMonde != "0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : ''
-                const fastFood = json.fastFood != "0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : ''
-                const creperie = json.creperie != "0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : ''
-                const salonThe = json.salonThe != "0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : ''
-                const pizzeria = json.pizzeria != "0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : ''
-
-                body_table += `
-                                <tr>
-                                    <td>${name}</td>
-                                    <td>
-                                        <!--<div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>-->
-                                        <div class="d-flex bd-highlight">
-                                            <div class="">${boulangerie}</div>
-                                            <div class="">${bar}</div>
-                                            <div class="">${brasserie}</div>
-                                            <div class="">${cafe}</div>
-                                            <div class="">${cuisineMonde}</div>
-                                            <div class="">${fastFood}</div>
-                                            <div class="">${creperie}</div>
-                                            <div class="">${salonThe}</div>
-                                            <div class="">${pizzeria}</div>
-                                        </div>
-                                    </td>
-                                    <td>${adresse}</td>
-                                    <td class="d-flex bd-highlight">
-                                        <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
-                                        <button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
-                                    </td>
-                                </tr>
-                            `
-            }
-
-            document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
-
-            // new DataTable('#resto-a-pastiller-list');
-            $('#resto-a-pastiller-list').DataTable({
-                "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                }
+            swal({
+                title: "A jour!",
+                text: "Note modifié avec succès!",
+                icon: "success",
+                button: "Ok",
             });
-
-        } else {
-            document.querySelector("#elie-restou").style.display = "block"
-            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
+        
         }
     })
 
 }
+
+
 
 function showTypeResto(event) {
     let b = event.target.parentNode.parentNode
@@ -1633,6 +1501,13 @@ function showTypeResto(event) {
 
 }
 
+/**
+ * @author Elie
+ * @constructor pastiller resto pour tribu T
+ * @param {*} element 
+ * @param {*} id 
+ * @param {*} nom 
+ */
 function pastillerPast(element, id, nom) {
     // let modal = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
     let modal = element.parentElement.parentElement.parentElement
@@ -1659,6 +1534,12 @@ function pastillerPast(element, id, nom) {
 
 }
 
+/**
+ * @author Elie
+ * @constructor setting resto extension data
+ * @param {*} id 
+ * @param {*} nom 
+ */
 function setRestoForPast(id, nom) {
 
     if (nom != "" && id != null) {
@@ -1674,7 +1555,11 @@ function setRestoForPast(id, nom) {
 
 }
 
-/**save resto pastilled */
+/**
+ * @author Elie
+ * @constructor Sauvegarde de pastille resto tribu T
+ * save resto pastilled 
+ */
 function saveRestaurantPast(id, nom) {
     let data = {
         name: nom,
@@ -2375,29 +2260,7 @@ if (searchParams.has('message')) {
 }
 
 
-function listResto() {
 
-    document.querySelector("#elie-restou").innerHTML = ""
-    let inputName = document.querySelector("#resto-rech").value;
-    let adresse = document.querySelector("#resto-rech-ou").value;
-    if (adresse.trim() != "" || inputName.trim() != "") {
-        if (document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")) {
-            findGolf(inputName, adresse)
-        } else if (document.querySelector(".restoNotHide > a").classList.contains("active")) {
-            findResto(inputName, adresse)
-        }
-        $("#modalForExtension").modal("show")
-    } else {
-
-        swal({
-            // title: "Succès",
-            text: "Champ invalide!",
-            icon: "error",
-            button: "Ok",
-        });
-
-    }
-}
 
 // function closeModal(){
 //     document.querySelector(".main-search-resto").style.display = "none";
@@ -2445,6 +2308,8 @@ function openAvis(nb_avis, id_resto) {
                 // console.log(avis);
                 for (let avi of avis) {
 
+                    console.log(avi);
+
                     let noteEtoile = ""
 
                     switch (parseInt(avi.note)) {
@@ -2464,33 +2329,57 @@ function openAvis(nb_avis, id_resto) {
                             noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
                     }
 
+                    let edit_avis_e = ''
+
+                    if(avi.userId == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
+                        edit_avis_e = `<div class="content_action">
+                            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
+                                data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
+                                onclick="setUpdateNote(this, ${avi.id_comment}, ${avi.note}, '${avi.commentaire}', ${id_resto})">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                        `
+                    }
+
                     document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
                         `<div class="card mb-2 card_avis_resto_jheo_js">
                             <div class="card-body">
-                                <div class="avis_content">
-                                    <div class="d-flex justify-content-between align-items-end">
-                                        <h5>
-                                            <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
-                                            ${avi.commentaire}
-                                        </h5>	
-                                        <p>
-                                            ${noteEtoile}
-                                            <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-                                            <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-                                            <i class="fa-solid fa-star"></i>
-                                            <i class="fa-solid fa-star"></i>-->
-                                        </p>
+
+                            <div class="avis_content">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="content_profil_image me-2">
+                                            <img class="profil_image" src="${avi.photo_profil ? avi.photo_profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+                                            </div>
+                                            <div class="content_info">
+                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.fullname}</small></h3>
+                                                <cite class="font-point-6"> ${avi.datetime}</cite>
+                                            </div>
+                                        </div>
+                                        <div class="content_start">
+                                            <p class="mb-2"> ${noteEtoile}</p>
+
+                                            ${edit_avis_e}
+
+                                        </div>
                                     </div>
-                                    <p>${avi.datetime}</p>
+
+                                    <div class="mt-2">
+                                        <p class="text-point-9">${avi.commentaire}</p>
+                                    </div>
                                 </div>
+                            </div>
+
                             </div>
                         </div>
                         `
                 }
 
-                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+                // document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
 
-                document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
+                // document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
             })
 
 
@@ -2510,80 +2399,6 @@ function openAvis(nb_avis, id_resto) {
         // do something...
         document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
     })
-
-}
-
-/**
- * @author elie
- * @constructor : fonction de parametrage d'id resto dans un template
- * @localisation : myTribuT.js
- * @utilisation dans le template tribuT.html.twig
- * @param {element} params : element ou le fonction se place
- * @param {int} id_pastille : id resto
- */
-function setSendNote(params, id_pastille) {
-
-    const action = params.getAttribute("data-action")
-
-    const avis = params.parentElement.previousElementSibling.querySelector("#message-text")
-    const note = params.parentElement.previousElementSibling.querySelector("#text-note")
-
-    if (action == "create") {
-
-        if (parseFloat(note.value) > 4) {
-            swal({
-                title: "Erreur de saisie de note!",
-                text: "Une note doit être inférieur ou égale à 4",
-                icon: "error",
-                button: "Ok",
-            });
-
-        } else {
-
-            sendNote(parseFloat(note.value), avis.value, id_pastille)
-        }
-
-    } else {
-        updateNote(parseFloat(note.value), avis.value, id_pastille)
-    }
-}
-
-/**
- * @author elie
- * @constructor Fonction d'ouverture de note de resto pastillé
- * @localisation : myTribuT.js
- * @utilisation dans le template tribuT.html.twig
- * @param {int} id_pastille : id resto
- * @param {string} action : action à faire pour le bouton
- */
-function openOnNote(id_pastille, action) {
-
-    document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
-    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
-
-}
-
-/**
- * @constructor Fonction d'ouverture d'un evenement
- * @author elie
- * @param {int} id : id resto
- * @param {string} nom : nom de resto
- * @param {string} adresse : adresse de resto
- * @param {string} action : action à faire pour le resto
- */
-function openOnEvent(id, nom, adresse, action) {
-
-    document.querySelector("#nomEtabEvent").value = nom
-
-    document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
-
-    let date = new Date();
-    let currentDate = date.toISOString().substring(0, 10);
-
-    document.getElementById('eventStart').value = currentDate;
-    document.getElementById('eventEnd').value = currentDate;
-    document.getElementById('timeStart').value = '00:00';
-    document.getElementById('timeEnd').value = '23:00';
 
 }
 
@@ -2608,7 +2423,7 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = document.querySelector("#tribu_t_name_main_head").getAttribute("data-tribu")
     // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
     // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
     // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")

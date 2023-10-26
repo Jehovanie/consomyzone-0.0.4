@@ -52,6 +52,22 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                 
                 let  text = `<div class="content_list_p_tG">
                                     <div class="card mb-2">
+
+                                        <div class="row mt-3 p-3">
+                                            <div class="col-12">
+                                                <div id="form_past"></div>
+                                                <div class="g-3">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                        <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+                                                        <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+                                                    </div>
+                                                    <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="card-header">
                                             <h4>Restaurant pastillé dans la tribu G</h4>
                                         </div>
@@ -88,7 +104,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
 
                         if (resto.isPastilled) {
 
-                            // console.log(resto);
+                            console.log(resto);
 
                             let id = resto.id
                             let id_resto = resto.id_resto
@@ -102,21 +118,13 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
         
                             let adresse = resto.numvoie + " " + resto.nomvoie + " " + resto.codpost + " " + resto.dep_name
         
-                            let text1 = ""
+                            let text1 = "Notez"
         
-                            let action = ""
-        
+                            let action = "create"
+
                             for (let [k, v] of id_user.entries()) {
                                 if (v === id_c_u)
                                     key = k
-                            }
-                            if (id_user.includes(id_c_u)) {
-                                action = "update"
-        
-                                text1 = "Modifiez votre avis"
-                            } else {
-                                action = "create"
-                                text1 = "Notez"
                             }
         
                             body += `
@@ -127,10 +135,10 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                     </td>
                                     <td class="data-note-${resto.id}">${note}/4</td>
                                     <td>
-                                        <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                        <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvisRestoG(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
                                     </td>
                                     <td>
-                                        <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                                        <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupActionRestoG('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
                                     </td>
                                 </tr>
                             `
@@ -153,7 +161,17 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
     })
 }
 
-function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
+/**
+ * @constructor Ouvrir le popup action pour resto tribu G
+ * @param {*} id_pastille 
+ * @param {*} denomination_f 
+ * @param {*} adresse 
+ * @param {*} latitude 
+ * @param {*} longitude 
+ * @param {*} text1 
+ * @param {*} action 
+ */
+function openPopupActionRestoG(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
 
     $("#detailOptionResto").modal("show")
 
@@ -164,11 +182,285 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    // btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
     btn.dataset.tbname = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
 
-    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+}
 
+
+/**
+ * @author elie
+ * @constructor
+ * Function affichage de la liste des avis de resto pastillé dans un tribu T
+ * @localisation: myTribuT.js
+ * @utilisation : dans le template tribuT.html.twig
+ * @param {int} nb_avis : afficher dans le template
+ * @param {int} id_resto : id de la bdd_resto
+ */
+function openAvisRestoG(nb_avis, id_resto) {
+
+    if (parseInt(nb_avis) > 0) {
+
+        $("#avisRestoPastille").modal("show")
+
+        const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")+"_restaurant"
+
+        fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
+            .then(response => response.json())
+            .then(avis => {
+                for (let avi of avis) {
+
+                    let noteEtoile = ""
+
+                    
+
+                    switch (parseInt(avi.note)) {
+                        case 1:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 2:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 3:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
+                            break;
+                        case 4:
+                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+                            break;
+                        default:
+                            noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+                    }
+
+                    let edit_avis_e = ''
+
+                    if(avi.userId == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
+                        edit_avis_e = `<div class="content_action">
+                            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
+                                data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
+                                onclick="setUpdateNote(this, ${avi.id_comment}, ${avi.note}, '${avi.commentaire}', ${id_resto})">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                        `
+                    }
+
+                    document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
+                        `<div class="card mb-2 card_avis_resto_jheo_js">
+                            <div class="card-body">
+
+                            <div class="avis_content">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="content_profil_image me-2">
+                                                <img class="profil_image" src="${avi.photo_profil ? avi.photo_profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+                                            </div>
+                                            <div class="content_info">
+                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.fullname}</small></h3>
+                                                <cite class="font-point-6"> ${avi.datetime}</cite>
+                                            </div>
+                                        </div>
+                                        <div class="content_start">
+                                            <p class="mb-2"> ${noteEtoile}</p>
+
+                                            ${edit_avis_e}
+
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-2">
+                                        <p class="text-point-9">${avi.commentaire}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
+                        </div>
+                        `
+                }
+
+            })
+
+
+    } else {
+
+        swal({
+            title: "Opps!",
+            text: "Aucun avis pour ce restaurant",
+            icon: "warning",
+            button: "Ok",
+        });
+
+    }
+
+    const myModalEl = document.getElementById('avisRestoPastille')
+    myModalEl.addEventListener('hidden.bs.modal', event => {
+        // do something...
+        document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
+    })
+
+}
+
+/**
+ * @author elie
+ * @constructor insertion commentaire/note resto pastille tribu G
+ * @param {*} note 
+ * @param {*} commentaire 
+ * @param {*} _idResto 
+ */
+function sendNoteTribuG(note, commentaire, _idResto) {
+
+    const content = {
+        // idUser: _idUser,
+        idResto: _idResto,
+        tableName: document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant_commentaire",
+        note: note,
+        commentaire: commentaire
+    }
+
+    const jsonStr = JSON.stringify(content)
+    //  console.log(jsonStr)
+    const request = new Request("/push/comment/resto/pastilled", {
+        method: "POST",
+        body: jsonStr,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+    fetch(request).then(response => {
+        if (response.status == 200 && response.ok) {
+
+            document.querySelector(".data-note-" + _idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
+
+            let last_avis = parseInt(document.querySelector(".data-avis-" + _idResto).textContent.replaceAll(/[^0-9]/g, ""))
+
+            document.querySelector(".data-avis-" + _idResto).innerHTML = parseInt(last_avis + 1) + " Avis";
+
+            document.querySelector(".data-avis-" + _idResto).setAttribute("onclick", "openAvisRestoG(" + parseInt(last_avis + 1) + "," + _idResto + ")")
+
+            swal({
+                title: "Noté!",
+                text: "Note ajouté avec succès",
+                icon: "success",
+                button: "Ok",
+            });
+
+        } else {
+            swal({
+                title: "Erreur!",
+                text: "Note non envoyé, veuillez réessayer!",
+                icon: "error",
+                button: "Ok",
+            });
+
+        }
+    })
+}
+
+/**
+ * @author elie
+ * @constructor mise à jour note et commentaire resto pastille tribu G
+ * @param {int} id_resto 
+ */
+function updateNoteTribuG(id_resto, id_bdd_resto) {
+
+    let note = document.querySelector("#text-note").value
+    let commentaire = document.querySelector("#message-text").value
+
+    const tribu_t_name_0 = document.querySelector("#my_tribu_g").textContent.trim()
+
+    const table_resto_comment = tribu_t_name_0+ "_restaurant_commentaire"
+
+    let data = {
+        tableName : table_resto_comment,
+        id : id_resto,
+        note : note,
+        commentaire : commentaire
+    }
+
+    fetch("/update/note-g/resto/pastilled", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then(res=>{
+        if(res.ok && res.status==200){
+            swal({
+                title: "A jour!",
+                text: "Note modifié avec succès!",
+                icon: "success",
+                button: "Ok",
+            });
+            
+        }
+    })
+
+
+}
+
+
+/**
+ * @author Elie
+ * @constructor pastille resto into tribu G
+ * @param {node} e element of node
+ * @param {boolean} type oui si pastille, non si depastille
+ * @param {integer} id id_restaurant
+ * @param {string} name nom resto
+ */
+function pastilleForTribuG(e, type, id, name){
+    
+    const data = {
+        name : name,
+        id : id,
+        tbl : document.querySelector("#my_tribu_g").textContent.trim()
+    }
+    // For pastille
+    if(type == true){
+
+        fetch("/user/tribu_g/pastille/resto",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Restaurant pastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+
+                e.classList = "btn btn-success ms-1"
+                e.innerText = "Pastillé"
+            }
+        })
+    }
+    // For depastille
+    else{
+        fetch("/user/tribu_g/depastille/resto",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Restaurant dépastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+
+                e.classList = "btn btn-success ms-1"
+                e.innerText = "Dépastillé"
+            }
+        })
+    }
 }

@@ -456,7 +456,8 @@ class TribuTControllerNew extends AbstractController{
 
         // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
         
-        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant", "is_fondateur"=>true]);
+
     }
 
     #[Route("/user/tribu_t/pastille/golf", name:"tribu_t_pastille_golf", methods:["POST"])]
@@ -618,6 +619,25 @@ class TribuTControllerNew extends AbstractController{
 
         return $this->json("Information modifié avec succès");
 
+    }
+
+    #[Route('/user/tribu/get_fondateur/{table_tribu}', name: 'app_get_fondateur_tribu')]
+
+    public function getFondateur($table_tribu): Response {
+
+        $tribu_t_serv = new Tribu_T_ServiceNew();
+
+        $fondateur_id = $tribu_t_serv->getFondateur($table_tribu)['fondateur_id'];
+
+        if($this->getUser()->getId() !=$fondateur_id){
+
+            return $this->json(["is_fondateur"=>false]);
+
+        }else{
+
+            return $this->json(["is_fondateur"=>true]);
+
+        }
     }
 
 }

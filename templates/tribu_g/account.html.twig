@@ -17,6 +17,7 @@
     {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
     <script  src="{{ asset('assets/js/account/profil_tribuG.js') }}" defer></script>
     {# <script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script> #}
+	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
     
     <script  src="{{ asset('assets/js/account/fetchMemberTributG.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/fetchActualiteTributG.js') }}" defer></script>
@@ -84,6 +85,7 @@
 					<div class="-ud-ml-5 -ud-mb-9">
                         <div class="mb-5">
                             <h4 class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name={{tributG.profil.name}}>{{tributG.profil.name}}</h4>
+                            <label class="d-none" id="my_tribu_g">{{tributG.table}}</label>
                             <small>
                                 <i>{{tributG.profil.description }}</i>
                             </small>
@@ -151,6 +153,41 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalDetailResto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+            <div class="modal-header" id="restoModalLabel"></div>
+            <div class="modal-body">
+                <div id="elie-resto-detail"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalForExtension" tabindex="-1" aria-labelledby="extModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable modal-xl">
+		<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5 text-primary" id="extModalLabel">Resultat de recherche restaurant</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div id="elie-restou"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+{% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
+
 
 
 {% endblock %}
