@@ -35,20 +35,23 @@ function cancelGolfFinished(goldID){
     fecthGolfAction(goldID, "cancel")
 }
 
-function executeActionForPastGolf(goldID, golfName, golfAdress) {
-    let action = document.querySelector(".select_action_golf_nanta_js").value
+function executeActionForPastGolf(event,goldID, golfName, golfAdress) {
+    let selectElement=event.target
+    let action = selectElement.options[selectElement.selectedIndex].value;
     if(action == "1"){
         setGolfTodo(goldID)
         OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
     }else if(action == "2"){
         setGolfFinished(goldID)
         OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
-    } else if (action == "3") {
-        setMonGolf(goldID, golfName, golfAdress)
-        // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
-    }else if(action == "0"){
+    }
+    // else if (action == "3") {
+    //     setMonGolf(goldID, golfName, golfAdress)
+    //     // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
+    // }
+    else if (action == "0") {
         setGolfNone(goldID)
-        // OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
     }else{
         cancelGolfFinished(goldID)
         // OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)

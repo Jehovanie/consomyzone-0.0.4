@@ -7,7 +7,8 @@
                         <p> 
                             {{details.nomGolf | upper}}  
                             {% if (app.user and app.user.type!='Type') %}
-                                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                                {# {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %} #}
+                                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null  %}
                                     <span class="badge bg-info golf_status golf_status_jheo_js"></span>
                                 {% else %}
                                     {% if details.user_status["a_faire"] == "1" %}
@@ -59,7 +60,10 @@
                 <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
                     {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
                         <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
-                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf("{{details.id}}","{{details.nomGolf}}","{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+{# ,"{{details.nomGolf|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}","{{details.adr1|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomcommune  | raw}}"  #}
+<select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf(event,{{details.id}})'>
+
+                        {# <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='alert("tedy")'> #}
                             <option value="0">Aucun</option>
                             <option value="1">A faire</option>
                             <option value="2">Fait</option>
@@ -88,7 +92,7 @@
 
                 <div class="mon-golf">
                     <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
-                    <button class="btn btn-success" value="3" onclick="executeActionForPastMonGolf('{{details.id}}','{{details.nomGolf}}','{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}' )">Mon golf</button>
+                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>Mon golf</button>
                 </div>
             {% else %}
                 <div class="mon-golf">
