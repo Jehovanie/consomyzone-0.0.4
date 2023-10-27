@@ -1537,7 +1537,7 @@ class TributGService extends PDOConnexionService{
      */
     public function isPastilled($table, $idResto){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto and isPastilled = 1");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto and isPastilled = 1");
 
         $statement->execute();
 
