@@ -239,6 +239,20 @@ class Tribu_T_ServiceNew extends PDOConnexionService
 
           if ($final2 == 0) {
 
+              /**
+               * @author Elie <eliefenohasina@gmail.com>
+               * Creation d'un table invitation story pour tribu T
+              */
+              $query_table_invitation = "CREATE TABLE IF NOT EXISTS " . $tableTribuT . "_invitation(
+                id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                user_id int(11) NOT NULL,
+                email varchar(255) NOT NULL,
+                is_valid tinyint(1) NOT NULL DEFAULT 0,
+                datetime DATETIME NOT NULL DEFAULT current_timestamp()
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+             $this->getPDO()->exec($query_table_invitation);
+
               $sql = "CREATE TABLE IF NOT EXISTS " . $tableTribuT . "_commentaire(
 
                   id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 

@@ -5386,3 +5386,11 @@ function mustBeInferior4(value,target, isThrowException) {
            throw new Error("note not found")
     }
 }
+
+function msgFlash(msg,target) {
+    const div = document.createElement("div")
+    div.classList.add("flash-msg-ERREUR")
+    div.innerHTML= msg
+    target.parentNode.insertBefore(div,target.nextSibling)
+    
+}

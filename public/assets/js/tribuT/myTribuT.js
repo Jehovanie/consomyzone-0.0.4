@@ -235,7 +235,7 @@ function showPartisan() {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-                console.log(jsons)
+                // console.log(jsons)
 
                 let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
                     <thead>
@@ -364,7 +364,7 @@ function updatePdpTribu_T(files) {
                     photoSize: files.size,
                     tribu_t_name: tribu_t_name_0,
                 }
-                console.log(param)
+                // console.log(param)
                 const request = new Request("/user/tribu/set/pdp", {
                     method: "POST",
                     headers: {
@@ -376,7 +376,7 @@ function updatePdpTribu_T(files) {
                 fetch(request).then(responses => {
                     if (responses.ok && responses.status === 200) {
                         document.querySelector("#avatarTribuT").src = evt.target.result
-                        document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+                        // document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
                         swal({
                             title: "Succès!",
                             text: "L\'avatar de la tribu est à jour avec succès!",
@@ -418,7 +418,7 @@ function sendPublication(formData) {
                 confidentialite: formData.get("confidentialite")
             }
             // console.log(formData.get('photo'));
-            console.log(param)
+            // console.log(param)
             const request = new Request("/user/create-one/publication", {
                 method: "POST",
                 headers: {
@@ -873,7 +873,7 @@ function showdDataContent(id_c_u, lastId = 0) {
             const gen = genDataPubOfAllPartisans(data, 5)
             const gen_length = (data.length - 5)
             //const gen_length = (data.length)
-            console.log("gen_length : " + gen_length)
+            // console.log("gen_length : " + gen_length)
 
 
             let lastId = 0;
@@ -894,8 +894,8 @@ function showdDataContent(id_c_u, lastId = 0) {
                                 showdDataContent(id_c_u, lastId);
                             } else {
                                 lastId = data.id
-                                console.log(data)
-                                console.log("last id " + lastId)
+                                // console.log(data)
+                                // console.log("last id " + lastId)
                                 data = gen.next().value
 
                                 if (data) {
@@ -993,7 +993,7 @@ function showdDataContent(id_c_u, lastId = 0) {
 
 function showCommentaireTribu_T(event, idmin = 0, b) {
     event.preventDefault();
-    console.log(idmin)
+    // console.log(idmin)
     const table_cmmnt = tribu_t_name_0 + "_commentaire"
     const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
 
@@ -1014,13 +1014,13 @@ function showComment(id_resto) {
     // alert(id_resto)
 
     workerGetCommentaireTribuT.onmessage = (e) => {
-        console.log("afffichage comment");
-        console.log(e.data)
+        // console.log("afffichage comment");
+        // console.log(e.data)
         const datas = e.data[0]
         const index = e.data[0].length
 
         for (let i = 0; i < index; i++) {
-            console.log(i)
+            // console.log(i)
             let lapstime = calculateDurationOfComment(datas[i].datetime)
             let commentaire = `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
@@ -1117,7 +1117,7 @@ function putComment(event) {
         }
 
     })
-    console.log(pubId, commentaire)
+    // console.log(pubId, commentaire)
 }
 
 
@@ -1219,9 +1219,6 @@ function showResto(table_rst_pastilled, id_c_u) {
 
     workerRestoPastilled.onmessage = (e => {
         let restos = e.data
-        // console.log("workerresto :::::");
-        // console.log(restos);
-        console.log(restos)
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
@@ -1231,14 +1228,13 @@ function showResto(table_rst_pastilled, id_c_u) {
         }
 
         if (restos.length > 0) {
-
             for (let resto of restos) {
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
                 if (resto.isPastilled) {
 
                     let id = resto.id
-                    let id_resto = resto.extensionId
+                    let id_resto = resto.id_resto
                     let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
 
                     let id_user = resto.All_user != null ? resto.All_user.split(",") : []
@@ -1272,13 +1268,13 @@ function showResto(table_rst_pastilled, id_c_u) {
                     }
 
                     body_table += `
-                        <tr id="restaurant_${resto.extensionId}">
+                        <tr id="restaurant_${id_resto}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
                                 <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
                                 <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
                                 
-                                <!-- <a target="_blank" href="/restaurant?id=${resto.extensionId}" class="text-decoration-none">
+                                <!-- <a target="_blank" href="/restaurant?id=${id_resto}" class="text-decoration-none">
                                     <span class="ms-3" style="font-size:12pt;">${denominationsF} </span>
                                 </a> -->
                             </td>
@@ -2024,7 +2020,7 @@ function showInvitations() {
         let status = false;
 
         if (input_principal.value === "") {
-            console.log("Entre au moin une destination.")
+            // console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
         }
 
@@ -2037,7 +2033,7 @@ function showInvitations() {
 
         ///object
         if (object.value === "") {
-            console.log("Veillez entre un Object.")
+            // console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
         } else {
             data = { ...data, "object": object.value }
@@ -2313,7 +2309,7 @@ function updatePublication() {
         }
     } else {
         if (document.querySelector("#" + dataId + " .publication-picture").style.display == "none") {
-            console.log("Ok");
+            // console.log("Ok");
         } else {
             if (document.querySelector("#" + dataId + " .publication-picture").src.includes("data:image/")) {
                 imgSrc = document.querySelector("#" + dataId + " .publication-picture").src
@@ -2607,10 +2603,7 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = tribu_t_name_0
 
 }
 
@@ -2995,7 +2988,7 @@ function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse 
     let btn = document.querySelector("#data-depastilleGolf-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = tribu_t_name_0
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = tableTribu
@@ -3004,12 +2997,14 @@ function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse 
 function depastilleGolf(selector) {
     let id = selector.dataset.id
     let name = selector.dataset.name
-    let tbl = selector.dataset.tbname
+    let tbl = tribu_t_name_0
     let data = {
         id: id,
         name: name,
         tbl: tbl
     }
+
+    console.log(data)
 
     let request = new Request("/user/tribu_t/depastille/golf", {
         method: "POST",
@@ -3076,3 +3071,40 @@ function fetchAllInvitationStory() {
         })
         .catch(error => console.log(error))
 }
+
+if(document.querySelector("#text-note"))
+    document.querySelector("#text-note").onkeyup = (e) => { 
+        if (document.querySelector(".flash-msg-ERREUR")) {
+            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        }
+        const value = e.target.value
+        mustBeInferior4(value, e.target)
+        console.log(value, e.target)
+        
+        
+        setTimeout(() => {
+            e.target.style="border:2px solid black;" 
+            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                
+            })
+        }, 5000)   
+    }
+
+if(document.querySelector("#text-note-modif"))
+    document.querySelector("#text-note-modif").onkeyup = (e) => { 
+        if (document.querySelector(".flash-msg-ERREUR")) {
+            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        }
+        const value = e.target.value
+        mustBeInferior4(value, e.target)
+        
+        
+        setTimeout(() => {
+            e.target.style="border:2px solid black;" 
+            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                
+            })
+        }, 5000)   
+    }

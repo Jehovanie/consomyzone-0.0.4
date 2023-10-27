@@ -135,7 +135,7 @@ class TribuTControllerNew extends AbstractController{
         $userConnected= $status->userProfilService($this->getUser());
        
         //render form create tribu-T
-        $form=$this->renderFormer(
+        $objet=$this->renderFormer(
            $request,
             $user,
             $userId,
@@ -144,6 +144,16 @@ class TribuTControllerNew extends AbstractController{
             "app_my_tribu_t_new"
         );
 
+        if($objet["afakaRedirect"]){
+            return $this->redirectToRoute("tribu_t_content",
+            [
+                "name_tribu_t" => $objet["name_tribu_t"],
+                "id" => $objet["id"],
+                "message" => $objet["message"]
+            ]
+
+            ); 
+        }
         
         //get Profil partisant or partenaire
         if ($userType == "consumer") {
@@ -173,7 +183,7 @@ class TribuTControllerNew extends AbstractController{
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
         $publications= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
-
+        
         return $this->render('tribu_t/tribuT.html.twig',[
             "publications" => $publications,
             "userConnected" => $userConnected,
@@ -181,7 +191,7 @@ class TribuTControllerNew extends AbstractController{
             "tribu_T_owned" => $tribuTOwned,
             "tribu_T_joined" => $tribuTJoined,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "form" => $form->createView(),
+            "form" => $objet["form"]->createView()
         ]);
     }
 
@@ -234,7 +244,7 @@ class TribuTControllerNew extends AbstractController{
         $tribuTJoined = $this->srvTribuT->getAllTribuTJoinedInfos($user);
        
         //render form create tribu-T
-        $form = $this->renderFormer(
+        $objet = $this->renderFormer(
             $request,
              $user,
              $userId,
@@ -242,6 +252,17 @@ class TribuTControllerNew extends AbstractController{
              $hachageRepo,
              "app_my_tribu_t_new"
          );
+
+        if($objet["afakaRedirect"]){
+            return $this->redirectToRoute("tribu_t_content" ,
+            [
+                "name_tribu_t" => $objet["name_tribu_t"],
+                "id" => $objet["id"],
+                "message" => $objet["message"],
+            ]
+        ); 
+        }
+
          if ($userType == "consumer") {
 
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
@@ -254,9 +275,10 @@ class TribuTControllerNew extends AbstractController{
             "profil" => $profil,
             "tribu"=> $infos,
             "userConnected" => $userConnected,
-            "form" => $form->createView(),
+            "form" => $objet["form"]->createView(),
             "tribu_T_owned" => $tribuTOwned,
-            "tribu_T_joined" => $tribuTJoined
+            "tribu_T_joined" => $tribuTJoined,
+            "canActiveTribu" => true
        ]);
     }
 
@@ -299,7 +321,11 @@ class TribuTControllerNew extends AbstractController{
                 ])
                 ->getForm();
         
+        $isRedirect = false;
+        $message = "";
         $form->handleRequest($request);
+        $lastIdTribuTCreated = null;
+        $key="";
         //TODO handle submit
         if ($form->isSubmitted() && $form->isValid()){
             $now = time();
@@ -356,10 +382,17 @@ class TribuTControllerNew extends AbstractController{
             if($imgTribuTDir)
                 $dataImg->move($imgTribuTDir, $newImageName);
             
-            $message = "Tribu " . $nomTribuT . " créée avec succes.";   
-            return $this->redirectToRoute($routeName ,["message" => $message]);
+            $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";   
+            $isRedirect = true;
         }
-        return $form;
+
+        $objet = [];
+        $objet["form"] = $form;
+        $objet["afakaRedirect"] = $isRedirect;
+        $objet["message"] = $message;
+        $objet["id"] = $lastIdTribuTCreated;
+        $objet["name_tribu_t"] = $key;
+        return $objet;
     }
 
     //TO DO route for this   $temp_pub= $this->srvTribuT->getPubCommentAndReaction($tribuT['nom_table_trbT']);

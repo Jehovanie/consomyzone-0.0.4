@@ -668,17 +668,6 @@ function createNombreAvisContainer(parent,nombre) {
     parent.textContent= nombre+" avis"
 }
 
-
-
-
-function msgFlash(msg,target) {
-    const div = document.createElement("div")
-    div.classList.add("flash-msg-ERREUR")
-    div.innerHTML= msg
-    target.parentNode.insertBefore(div,target.nextSibling)
-    
-}
-
 function showAvis(currentUserId, idRestaurant) {
 
     const btn_update = document.querySelector(".send_avis_jheo_js");
