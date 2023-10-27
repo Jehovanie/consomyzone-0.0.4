@@ -35,17 +35,19 @@
                         </p>
                     </div>
                     <div class="col-4">
-                        <div class="logo-pastille-golf-tomm-js">
+                        <div class="logo-pastille-golf-tomm-js" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
                             {% for tribu_t_pastilled in tribu_t_pastilleds %}
                                 {# {{ dump(tribu_t_pastilled) }} #}
-                                {% if tribu_t_pastilled['logo_path'] == "" %}
-                                    <img class="logo_path_pastille_details" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
-                                {% else %}
-                                    {% if tribu_t_pastilled['isPastilled'] == true %}
-                                        <img class="logo_path_pastille_details" src="{{tribu_t_pastilled['logo_path']}}" alt="">
+                                {% if tribu_t_pastilled['isPastilled'] == true %}
+                                    {% if tribu_t_pastilled['logo_path'] == "" %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                    {% else %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="{{tribu_t_pastilled['logo_path']}}" alt="">
                                     {% endif %}
                                 {% endif %}
+                                
                             {% endfor %}
+                            
                         </div>
                     </div>
                 </div>
@@ -60,20 +62,12 @@
                 <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
                     {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
                         <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
-{# ,"{{details.nomGolf|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}","{{details.adr1|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomcommune  | raw}}"  #}
-<select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf(event,{{details.id}})'>
-
-                        {# <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='alert("tedy")'> #}
+                        {# ,"{{details.nomGolf|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}","{{details.adr1|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomcommune  | raw}}"  #}
+                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf(event,{{details.id}})'>
                             <option value="0">Aucun</option>
                             <option value="1">A faire</option>
                             <option value="2">Fait</option>
-                            {# <option value="3">Mon golf</option> #}
                         </select>
-                        
-                        {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
-                   
-                    
-
                     {% else %}
                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
                     {% endif %}

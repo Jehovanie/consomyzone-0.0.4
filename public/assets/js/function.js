@@ -2496,7 +2496,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                             <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
                             <td>${data.name_tribu_t_muable}</td>
                             <td>
-                                <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this)">Pastillez</button>
+                                <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
                             </td>
                         </tr>
                     `
@@ -4933,7 +4933,7 @@ function setGallerieImageV2(){
 /**
  * @author nantenaina
  */
-function pastilleGolf(element) {
+function pastilleGolf(element, table_tribu_t) {
     let id = element.dataset.id
     let name = element.dataset.name
     let tbl = element.dataset.tbname
@@ -4953,16 +4953,45 @@ function pastilleGolf(element) {
 
     fetch(request)
         .then(response=>response.json())
-        .then(message=>{
+        .then(message => {
+            
             new swal("Succès !", "Golf pastillé avec succès", "success")
                 .then((value) => {
-                    console.log(value)
                     element.classList = "btn btn-secondary ms-1"
                     element.textContent = "Pastillé"
                     element.setAttribute("disabled", true)
                     showGolf(tbl)
-                    document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                });          
+                    if (document.querySelector("#tribu_t_conteuneur")) {
+                        document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
+                    }
+                    
+                });
+            
+            if (message.id_golf) {
+                fetch(`/golf/pastilled/checking/${message.id_golf}`)
+                    .then(response => response.json())
+                    .then(datas => {
+                        let logoPath = ""
+                        for (data of datas) {
+                            if (data['logo_path'] != "") {
+                                if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
+                                    logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="${data['logo_path']}" alt="">`
+                                }
+                                
+                            } else {
+                                if (data['isPastilled'] == true  && table_tribu_t == data['table_name']) {
+                                    logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`
+                                }
+                            }
+                        }
+
+                        // if (datas.length > 4) {
+                        //         document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `${logoPath} <span class="length-pastille-plus">${datas.length}+</span>`
+                        // }
+                        document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath
+                    })
+            }
+            
         })
     .catch(error => console.log(error))
     if (document.querySelector(".modal-pastille-golf-tomm-js")) {
@@ -4996,12 +5025,30 @@ function depastilleGolf(selector){
 
     fetch(request)
             .then(response=>response.json())
-            .then(message=>{
+        .then(message => {
                     new swal("Succès !", "Golf dépastillé avec succès", "success")
                     .then((value) => {
-                            $("#detailOptionGolf").modal("hide")
+                        $("#detailOptionGolf").modal("hide")
+                        if (document.querySelector("#golf_"+id)) {
                             document.querySelector("#golf_"+id).remove()
+                        }
                     });
+            if (message.id_golf) {
+                fetch(`/golf/pastilled/checking/${message.id_golf}`)
+                    .then(response => response.json())
+                    .then(datas => {
+                        for (data of datas) {
+                            console.log(data)
+                            if (data['isPastilled'] != true ) {
+                                if (document.querySelector(`.logo_path_${data['table_name']}_tomm_js`)) {
+                                    document.querySelector(`.logo_path_${data['table_name']}_tomm_js`).remove()
+                                }
+                                
+                            }
+                        }
+                    })
+            }
+                
             })
         .catch(error => console.log(error))
     // fecthGolfAction(id, "cancel")
@@ -5399,5 +5446,65 @@ function mustBeInferior4(value,target, isThrowException) {
     }
 }
 
+/**
+ * @author tomm
+ * @action get list des pastill
+ * @ou details_golf.html.twig
+ */
+function isPastilledList(id_golf, name_golf) {
+    fetch(`/golf/pastilled/checking/${id_golf}`)
+                    .then(response => response.json())
+                    .then(datas => {
+                        let listTibuTPast = ""
+                        for (let data of datas) {
+                            if (data['isPastilled'] == true) {
+                                
+                               listTibuTPast += `
+                                    <tr>
+                                        <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                                        <td>${data.name_tribu_t_muable}</td>
+                                        <td>
+                                            <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                                        </td>
+                                    </tr>
+                                `
+                           }
+                        }
 
+                        let modalPastillGolf = `
+                        <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
+                            <div class="modal-pastille-golf">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header mb-4">
+                                            <h5 class="modal-title">les listes de mon golf</h5>
+                                            <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
+                                        </div>
+                                        <hr>
+                                        <div class="modal-body mt-4 mb-4">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Logo</th>
+                                                        <th scope="col">Tribu T</th>
+                                                        <th scope="col">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${listTibuTPast}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `
+                    
+                        if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
+                            document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
+                        }
+                    })
+}
 
