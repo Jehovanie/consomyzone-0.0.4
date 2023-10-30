@@ -1889,8 +1889,6 @@ function showInvitations() {
 
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
-        form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
-        form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
 
         ////get cc
         let cc_destinataire = [];
@@ -1940,6 +1938,8 @@ function showInvitations() {
         // console.log(data)
 
         if (status) {
+            form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
+            form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
             //////fetch data
             fetch("/user/tribu/email/invitation", {
                 method: "POST",
@@ -1966,8 +1966,11 @@ function showInvitations() {
                 let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
 
                 // sauvegarde de l'invitation
-                saveInvitationStory(table_trib, input_principal.value);
-                saveInvitationStory(table_trib, input_cc.value);
+                if(input_principal.value)
+                    saveInvitationStory(table_trib, input_principal.value);
+
+                if(input_cc.value)
+                    saveInvitationStory(table_trib, input_cc.value);
 
                 input_principal.value = null;
                 input_cc.value = null;
