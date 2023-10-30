@@ -235,81 +235,83 @@ class TributTController extends AbstractController
         }
     }
 
-    #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
-    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
+    // #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
+    // public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
         
-        $user = $this->getUser();
-        $userId = $user->getId();
-        $userTribu_T=json_decode($user->getTribuT(),true);
+    //     $user = $this->getUser();
+    //     $userId = $user->getId();
+    //     $userTribu_T=json_decode($user->getTribuT(),true);
         
-        $jsonParsed = json_decode($request->getContent(), true);
-        $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $image =  $jsonParsed["base64"] ;
+    //     $jsonParsed = json_decode($request->getContent(), true);
+    //     $tribu_t_name =  $jsonParsed["tribu_t_name"];
+    //     $image =  $jsonParsed["base64"] ;
        
-        $imageName = $jsonParsed["photoName"];
+    //     $imageName = $jsonParsed["photoName"];
         
-        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
-        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
-            $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    //     $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
+    //     if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+    //         $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
         
-        $fileUtils = new FilesUtils();
-        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+    //     $fileUtils = new FilesUtils();
+    //     $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
 
-        foreach ($userTribu_T["tribu_t"] as $k =>$v) {
-            if(is_array($v)){
-                if (in_array($tribu_t_name, $v)) {
-                    $v["logo_path"]=str_replace("/public","",$path.$imageName);
-                    $userTribu_T["tribu_t"][$k]= $v;
-                }
-            }else{
-                if($k== "logo_path"){
-                    $v=str_replace("/public","",$path.$imageName);
-                    $userTribu_T["tribu_t"][$k]= $v;
-                }
-            }
+    //     foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+    //         if(is_array($v)){
+    //             if (in_array($tribu_t_name, $v)) {
+    //                 $v["logo_path"]=str_replace("/public","",$path.$imageName);
+    //                 $userTribu_T["tribu_t"][$k]= $v;
+    //             }
+    //         }else{
+    //             if($k== "logo_path"){
+    //                 $v=str_replace("/public","",$path.$imageName);
+    //                 $userTribu_T["tribu_t"][$k]= $v;
+    //             }
+    //         }
             
-        }
+    //     }
 
-        $membre = $tribu_T_Service->showMember($tribu_t_name);
+    //     $membre = $tribu_T_Service->showMember($tribu_t_name);
         
-        $response = new Response();
+    //     $response = new Response();
 
-        try{
-            foreach ($membre as $key) {
-                if($key["roles"] == "Fondateur"){
-                    $userRep->updatePdpTribu_T(json_encode($userTribu_T));
-                }else{
-                    $user = $userRep->findOneBy(["id"=>$key["user_id"]]);
-                    $userTribu_T = json_decode($user->getTribuTJoined(),true);
-                    foreach ($userTribu_T["tribu_t"] as $k =>$v) {
-                        if(is_array($v)){
-                            if (in_array($tribu_t_name, $v)) {
-                                $v["logo_path"]=str_replace("/public","",$path.$imageName);
-                                $userTribu_T["tribu_t"][$k]= $v;
-                            }
-                        }else{
-                            if($k== "logo_path"){
-                                $v=str_replace("/public","",$path.$imageName);
-                                $userTribu_T["tribu_t"][$k]= $v;
-                            }
-                        }
+    //     try{
+    //         foreach ($membre as $key) {
+    //             if($key["roles"] == "Fondateur"){
+    //                 $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+    //             }else{
+    //                 $user = $userRep->findOneBy(["id"=>$key["user_id"]]);
+    //                 $userTribu_T = json_decode($user->getTribuTJoined(),true);
+    //                 foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+    //                     if(is_array($v)){
+    //                         if (in_array($tribu_t_name, $v)) {
+    //                             $v["logo_path"]=str_replace("/public","",$path.$imageName);
+    //                             $userTribu_T["tribu_t"][$k]= $v;
+    //                         }
+    //                     }else{
+    //                         if($k== "logo_path"){
+    //                             $v=str_replace("/public","",$path.$imageName);
+    //                             $userTribu_T["tribu_t"][$k]= $v;
+    //                         }
+    //                     }
                         
-                    }
-                    $userRep->updatePdpTribu_T_Joined(json_encode($userTribu_T), $user);
-                }
-            }
+    //                 }
+    //                 $userRep->updatePdpTribu_T_Joined(json_encode($userTribu_T), $user);
+    //             }
+    //         }
 
-            $response->setStatusCode(200);
+    //         $tibut->updatePDPTribuT($tableTribuT,$logo_path);
 
-            return $response;
-        }catch(\Exception $e){
-            $response->setStatusCode(500);
-            return $response;
-        }
+    //         $response->setStatusCode(200);
+
+    //         return $response;
+    //     }catch(\Exception $e){
+    //         $response->setStatusCode(500);
+    //         return $response;
+    //     }
      
       
        
-    }
+    // }
 
 
     #[Route('/user/tribu/add_to/{tableName}/{user_id}/{notif_id}', name: 'add_personne')]

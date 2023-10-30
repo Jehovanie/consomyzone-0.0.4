@@ -1,53 +1,53 @@
 <?php
 namespace  App\Controller;
 
-use App\Repository\HachageTribuTNameRepository;
-use App\Service\Status;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use DateTime;
-
 use Normalizer;
-
 use App\Entity\User;
-
-
+use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
+
 use App\Service\FilesUtils;
+
 use App\Entity\PublicationG;
 
+
 use App\Form\FileUplaodType;
-
 use App\Service\MailService;
-
 use App\Service\UserService;
-use App\Service\StringTraitementService;
 use App\Form\PublicationType;
+
+use App\Service\AgendaService;
+
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
-
 use App\Repository\UserRepository;
-
 use App\Service\RequestingService;
-use App\Service\NotificationService;
-use App\Repository\BddRestoRepository;
-use App\Repository\DepartementRepository;
-use App\Service\AgendaService;
 use App\Service\SortResultService;
+
 use App\Service\Tribu_T_ServiceNew;
-use Doctrine\ORM\EntityManagerInterface;
 
-use function PHPUnit\Framework\assertFalse;
+use App\Service\NotificationService;
+
+use App\Service\PDOConnexionService;
+use App\Repository\BddRestoRepository;
 use function PHPUnit\Framework\isNull;
-
+use App\Service\StringTraitementService;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
+use function PHPUnit\Framework\assertFalse;
 use Symfony\Component\Filesystem\Filesystem;
 
-
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\Routing\RouterInterface;
+
+
+use App\Repository\HachageTribuTNameRepository;
+use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Constraints\Uuid;
@@ -64,6 +64,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TribuTControllerNew extends AbstractController{
     private $form;
@@ -935,7 +936,7 @@ class TribuTControllerNew extends AbstractController{
         if ($this->getUser()) {
 
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
-
+            $pdoService = new PDOConnexionService();
             foreach ($tribu_t_owned as $key) {
                 $tableTribu = $key["nom_table_trbT"];
                 $logo_path = $key["logo_path"];
@@ -944,9 +945,9 @@ class TribuTControllerNew extends AbstractController{
 
                 if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
                     if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => json_decode($pdoService->convertUnicodeToUtf8($name_tribu_t_muable),true), "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => json_decode($pdoService->convertUnicodeToUtf8($name_tribu_t_muable),true), "logo_path" => $logo_path, "isPastilled" => true]);
                     }
                 }
             }
@@ -954,6 +955,46 @@ class TribuTControllerNew extends AbstractController{
 
         $datas = $serializerInterface->serialize($arrayTribu, 'json');
         return new JsonResponse($datas, 200, [], true);
+    }
+
+    #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
+    public function update_pdp_tribu(Request $request){
+        
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+        
+        $jsonParsed = json_decode($request->getContent(), true);
+
+        $tribu_t_name =  $jsonParsed["tribu_t_name"];
+
+        $image =  $jsonParsed["base64"] ;
+       
+        $imageName = time().$jsonParsed["photoName"];
+        
+        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
+        if (!($this->filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+            $this->filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        
+        $fileUtils = new FilesUtils();
+
+        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+        
+        $response = new Response();
+
+        try{
+
+            $this->srvTribuT->updatePDPTribuT($tribu_t_name,'/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/".$imageName);
+
+            $response->setStatusCode(200);
+
+            return $response;
+
+        }catch(\Exception $e){
+            $response->setStatusCode(500);
+            return $response;
+        }
+
     }
 
 }

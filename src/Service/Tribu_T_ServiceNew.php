@@ -1058,5 +1058,22 @@ public function getAllAvisByRestName($tableResto,$id){
 
     }
 
+    /**
+   * @author nantenainasoa39@gmail.com <email>
+   * 
+   */
+  function updatePDPTribuT($tableTribuT,$logo_path)
+
+  {
+    $userIdOwned = explode("u", $tableTribuT)[1];
+    $userIdOwned = intval($userIdOwned);
+    $tableTribuTUserOwned = "tribu_t_o_" . $userIdOwned;
+    $db = $this->getPDO();
+    $statement = $db->prepare("UPDATE $tableTribuTUserOwned SET logo_path = :logo_path WHERE nom_table_trbT  = :tableTribuT");
+    $statement->bindParam(":logo_path", $logo_path);
+    $statement->bindParam(":tableTribuT", $tableTribuT);
+    $statement->execute();
+  }
+
 }
 
