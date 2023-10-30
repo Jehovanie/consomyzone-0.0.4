@@ -183,7 +183,7 @@ class TribuTControllerNew extends AbstractController{
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
         $publications= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
-        
+
         return $this->render('tribu_t/tribuT.html.twig',[
             "publications" => $publications,
             "userConnected" => $userConnected,

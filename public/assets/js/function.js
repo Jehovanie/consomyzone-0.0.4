@@ -5141,6 +5141,7 @@ function showGolf(tableGolfPastilled){
     .then(response =>  response.json())
         .then(data => {
         if(data.length > 0){
+            let imgTbt = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
             let tr = ""
             let i = 0
             for (const item of data) {
@@ -5152,7 +5153,7 @@ function showGolf(tableGolfPastilled){
                         tr += `<tr id="golf_${item.id_golf}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">
-                                ${item.image_tribu_t}
+                                ${imgTbt}
                                 </div>
                                 <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
                             </td>
