@@ -344,16 +344,16 @@ class Tribu_T_Service extends PDOConnexionService
     // }
 
 	
-	public function invitationCancelOrDelete($tableName, $user_id)
-    {
+	// public function invitationCancelOrDelete($tableName, $user_id)
+    // {
 
-        $query = "DELETE FROM $tableName WHERE user_id = ?";
+    //     $query = "DELETE FROM $tableName WHERE user_id = ?";
 
-        $stmt = $this->getPDO()->prepare($query);
+    //     $stmt = $this->getPDO()->prepare($query);
 
-        $stmt->execute([$user_id]);
+    //     $stmt->execute([$user_id]);
 
-    }
+    // }
 
     public function showTribuT($user_id, $option= null)
 

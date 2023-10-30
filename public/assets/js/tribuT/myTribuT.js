@@ -627,7 +627,7 @@ function showdDataContent(id_c_u, lastId = 0) {
     worker.postMessage([nomTableTribuT, idTribuT, lastId, 20]);
 
     worker.onmessage = (event) => {
-        // console.log(event.data)
+        
         let data = event.data["publication"]
 
         //la variable qui contient les description de la tribuT
@@ -1728,7 +1728,8 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites() {
-    showBlockPub();
+    location.reload()
+    // showBlockPub();
 }
 
 
@@ -2820,7 +2821,7 @@ function fetchAllInvitationStory() {
                 }
                 $('#table-tribuG-member > table').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             } else {

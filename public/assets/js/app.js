@@ -1368,7 +1368,7 @@ function getListeDemandePartenariat(e){
             let limite = thead.querySelectorAll('tr:nth-child(2) > th').length
             $(table).DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     "search": "Recherche global",
 
                 },

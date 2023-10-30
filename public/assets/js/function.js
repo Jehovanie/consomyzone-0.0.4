@@ -5188,7 +5188,7 @@ function showGolf(tableGolfPastilled){
 
                 $('#table_golf_pastilled').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             }else{
@@ -5612,7 +5612,7 @@ function findResto(val, localisation = "") {
             // new DataTable('#resto-a-pastiller-list');
             $('#resto-a-pastiller-list').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 

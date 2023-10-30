@@ -2073,6 +2073,7 @@ class UserController extends AbstractController
         NotificationService $notificationService,
         TributGService $tr,
         UserRepository $userRepository,
+        Tribu_T_ServiceNew $tribut,
         $is_tribu
     ): Response {
         $tableRequestingName = $this->getUser()->getTablerequesting();
@@ -2082,17 +2083,18 @@ class UserController extends AbstractController
         $tableRequestingNameOtherUser = $userRepository->find($idR)->getTablerequesting();
 
         if ($is_tribu == 1) {/* Add By Nantenaina */
+            $nomTribuT =  $tribut->getApropos($balise);
+            $tributName  = $nomTribuT["name_tribu_t_muable"];
 
-            $tribut = new Tribu_T_Service();
             $tribut->invitationCancelOrDelete($balise, $userPosterId);
             $requesting->setIsRejected($tableRequestingName, $balise, intval($idR), $userPosterId);
             $requesting->setIsRejected($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
 
-            $type = "Invitation pour rejoindre la tribu " . $balise;
+            $type = "Invitation pour rejoindre la tribu " . $tributName;
 
             $userFullname = $tribut->getFullName($userPosterId);
 
-            $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $balise;
+            $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $tributName;
 
             // $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
             $notificationService->sendNotificationForOne($userPosterId, intval($idR), $type, $content);
@@ -2120,6 +2122,7 @@ class UserController extends AbstractController
         NotificationService $notificationService,
         TributGService $tr,
         UserRepository $userRepository,
+        Tribu_T_ServiceNew $tribut,
         $is_tribu
     ): Response {
         $tableRequestingName = $this->getUser()->getTablerequesting();
@@ -2132,7 +2135,6 @@ class UserController extends AbstractController
         $pseudo = $userPoster->getPseudo();
 
         if ($is_tribu == 1) {/* Add By Nantenaina */
-            $tribut = new Tribu_T_Service();
             $tribut->invitationCancelOrDelete($balise, intval($idR));
             $requesting->setIsCancel($tableRequestingName, $balise, $userPosterId, intval($idR));
             $requesting->setIsCancel($tableRequestingNameOtherUser, $balise, $userPosterId, intval($idR));

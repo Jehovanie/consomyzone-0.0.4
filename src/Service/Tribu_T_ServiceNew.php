@@ -1047,5 +1047,16 @@ public function getAllAvisByRestName($tableResto,$id){
 
      }
 
+     public function invitationCancelOrDelete($tableName, $user_id)
+    {
+
+        $query = "DELETE FROM $tableName WHERE user_id = ?";
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute([$user_id]);
+
+    }
+
 }
 
