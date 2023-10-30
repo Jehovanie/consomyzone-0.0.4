@@ -100,7 +100,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
 
         $pdo = new PDOConnexionService();
-        $tribuTOwned = $this->sec->getUser()->getTribuT();
+        $tribuTOwned = $this->sec->getUser()? $this->sec->getUser()->getTribuT() : null;
 
         if(!$tribuTOwned){
             return $results;

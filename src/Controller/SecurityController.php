@@ -870,6 +870,8 @@ class SecurityController extends AbstractController
                 goto quit;
             }
 
+            $t_sr = new Tribu_T_ServiceNew();
+
             /// new instance for user.
             $user = new User();
             $user->setPseudo(trim($data['pseudo']));
@@ -906,9 +908,17 @@ class SecurityController extends AbstractController
             $user->setNomTableAgenda("agenda_" . $numero_table);
             $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
 
+            /**
+             * @author Elie
+             *  Creation table tribu User
+             * */
+            $user->setTribuT("tribu_t_o_".$numero_table );
+            $user->setTribuTJoined("tribu_t_j_".$numero_table );
+            $t_sr->createTableTribuTForUser($user);
 
 
-            ///create table dynamique
+
+            //create table dynamique
             $notificationService->createTable("tablenotification_" . $numero_table);
             $messageService->createTable("tablemessage_" . $numero_table);
             $this->requesting->createTable("tablerequesting_" . $numero_table);
@@ -920,7 +930,6 @@ class SecurityController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            
 
             ////name tribu to join
             $tribuTtoJoined= $request->query->get("tribu");
@@ -928,21 +937,34 @@ class SecurityController extends AbstractController
             //// apropos user fondateur tribuT with user fondateur
             $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
 
+            // // $userFondateurTribuT = $t_sr->getApropos($tribuTtoJoined);
+            
+            // dd($userFondateurTribuT);
+            
             $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
 
-            $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
-            $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+            $t_sr->addTribuTJoined($user, $userPostID, $tribuTtoJoined);
 
-            foreach($arrayTribuT as $tribuT){
+            // // $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+            // $data = $userFondateurTribuT["tribu_t_owned"];
+            
+
+            $apropos_tribuTtoJoined = $t_sr->getApropos($tribuTtoJoined);
+
+            // dd($apropos_tribuTtoJoined);
+
+            // $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+
+            // foreach($arrayTribuT as $tribuT){
                 
-                if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                    $apropos_tribuTtoJoined= $tribuT;
-                    break;
-                }
-            }
+            //     if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+            //         $apropos_tribuTtoJoined= $tribuT;
+            //         break;
+            //     }
+            // }
 
             //// set tribu T for this new user.
-            $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $numero_table,"tribu_t_joined", $tribuTtoJoined);
+            // $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $numero_table,"tribu_t_joined", $tribuTtoJoined);
             
             // update requesting table 
             $tableRequestingNameOtherUser = $userRepository->find($userPostID)->getTablerequesting();

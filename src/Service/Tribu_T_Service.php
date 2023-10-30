@@ -1426,7 +1426,7 @@ class Tribu_T_Service extends PDOConnexionService
             ":idRestoComment"=> $idRestoComment,
             ":my_id" => $my_id
         );
-        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id_resto_comment=:idRestoComment and id_user=:my_id";
+        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id=:idRestoComment and userId=:my_id";
         $stmt = $this->getPDO()->prepare($sql);
 
         return $stmt->execute($values);

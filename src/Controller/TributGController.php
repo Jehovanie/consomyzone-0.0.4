@@ -12,6 +12,8 @@ use App\Service\UserService;
 
 use App\Service\TributGService;
 
+use App\Service\Tribu_T_Service;
+
 use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
@@ -702,5 +704,75 @@ class TributGController extends AbstractController
         }else{
             return $this->json(false);
         }
+    }
+
+    /**
+     * @author Elie
+     * Fonction fetch resto pastille
+     */
+    #[Route("/tributG/restaurant", name: "app_restaurant_tributG")]
+
+    public function fetchAllRestoTributG(
+        TributGService $tributGService,
+    ){
+        // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
+        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
+        // getAllRestoTribuG($table_name)
+
+
+        return $this->json($tributGService->getRestoPastillesTribuG($table_tributG_name));
+    }
+
+    /**
+     * @author Elie
+     * Route fetching resto commentaire / avis pastille
+     */
+    #[Route('/user/comment/tribu-g/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_t_g_commentaire')]
+
+    public function getRestoPastillesCommentaire($table_resto,$id, TributGService $tributGService): Response
+
+    {
+
+        $tableComment = $table_resto . "_commentaire";
+
+        $srvTribuT = new Tribu_T_Service();
+
+        $has_restaurant = $srvTribuT->hasTableResto($table_resto);
+
+        $restos = array();
+
+        if ($has_restaurant == true) {
+            
+            $restos = $tributGService->getAllAvisByRestName($tableComment,$id);
+        }
+        return $this->json($restos);
+    }
+
+    #[Route("/update/note-g/resto/pastilled", name: "update_note_g_pastilled_resto", methods: ["POST"])]
+    public function up_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService) : Response
+    {
+        $my_id = $this->getUser()->getId();
+        $json = json_decode($request->getContent(), true);
+        $tableName = $json["tableName"];
+
+        $idRestoComment = strval($json["id"]);
+
+        // $idUser = $json["idUser"];
+        $note = $json["note"];
+        $commentaire = $json["commentaire"];
+        
+        $result = $tribuTService->upCommentRestoPastilled($tableName, $note, $commentaire,$idRestoComment, $my_id);
+        if ($result) {
+            $response = new Response();
+            $response->setStatusCode(200);
+            return $response;
+        } else {
+            $response = new Response();
+            $response->setStatusCode(500);
+            return $response;
+        }
+
     }
 }
