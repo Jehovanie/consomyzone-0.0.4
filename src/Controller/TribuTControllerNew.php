@@ -440,7 +440,6 @@ class TribuTControllerNew extends AbstractController{
             $result =  $this->srvTribuT->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
         }
         
-
         $response = new Response();
         if($result){
             $response->setStatusCode(200);

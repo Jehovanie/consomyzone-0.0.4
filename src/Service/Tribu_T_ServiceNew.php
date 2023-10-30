@@ -557,7 +557,7 @@ class Tribu_T_ServiceNew extends PDOConnexionService
           "userOwnPub" => [
             "id" => $d_pub["user_id"],
             "profil" => $photo_profil["photo_profil"],
-            "fullName" => json_decode($this->convertUnicodeToUtf8($d_pub["userfullname"]), true),
+            "fullName" => $d_pub["userfullname"],
           ],
 
           "publication" => [
@@ -571,8 +571,8 @@ class Tribu_T_ServiceNew extends PDOConnexionService
           ],
           "tribu" => [
             "type" => "Tribu T",
-            "name" => json_decode($this->convertUnicodeToUtf8($apropo_tribuT['name_tribu_t_muable']), true),
-            "description" => json_decode($this->convertUnicodeToUtf8($apropo_tribuT['description']), true),
+            "name" => $apropo_tribuT['name_tribu_t_muable'],
+            "description" => $apropo_tribuT['description'],
             "avatar" =>  $apropo_tribuT['logo_path'],
             "table" => $tableTribu,
             "ext_restaurant" => $apropo_tribuT['ext_restaurant'],

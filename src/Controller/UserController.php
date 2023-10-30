@@ -224,7 +224,7 @@ class UserController extends AbstractController
                     $tribuGService->createOnePub($tribuG. "_publication", $userId, $legend, intval($confid), $newFilename);
                 }else{
                     $tribu = $new_publication['tribu']->getData();
-                    $tribuTService->createOnePub($tribu . '_publication', $userId, $legend, intval($confid), $newFilename);
+                    $tribuTService->createOnePub($tribu . '_publication', $userId, json_encode($legend), intval($confid), $newFilename);
                 }
             }
 
