@@ -270,7 +270,7 @@ class TribuTControllerNew extends AbstractController{
 
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-
+        
        return $this->render('tribu_t/tribu_t_specific.html.twig',[
             "profil" => $profil,
             "tribu"=> $infos,
@@ -923,7 +923,38 @@ class TribuTControllerNew extends AbstractController{
             return $this->json(["is_fondateur"=>true]);
 
         }
+    }
 
+    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    public function checkedIfRestaurantIsPastilled(
+        $id_golf,
+        UserRepository $userRepository,
+        Tribu_T_ServiceNew $tribu_T_Service,
+        SerializerInterface $serializerInterface
+    ) {
+        $arrayTribu = [];
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["nom_table_trbT"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                    }
+                }
+            }
+        }
+
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
     }
 
 }

@@ -118,7 +118,6 @@ class MarckerClusterGolf extends MapModule {
             marker.on('click', (e) => {
                 ////close right if this open
                 this.closeRightSide();
-
                 const itemID= item.id
                 const golfUpdate = this.data.find(jtem =>parseInt(jtem.id) === itemID);
                 this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);

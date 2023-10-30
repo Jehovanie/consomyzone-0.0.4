@@ -2518,105 +2518,107 @@ function updateTribuTInfos(e) {
 
 }
 
-function showGolf() {
+// function showGolf(tableGolfPastilled) {
 
-    let tableGolfPastilled = tribu_t_name_0
+//     let tableGolfPastilled = tribu_t_name_0
 
-    if (document.querySelector("li.listNavBarTribu > a.active")) {
-        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-    }
-    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+//     if (document.querySelector("li.listNavBarTribu > a.active")) {
+//         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+//     }
+//     document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
 
-    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+//     let golfContainer = document.querySelector("#tribu_t_conteuneur")
 
-    golfContainer.innerHTML = `
-                                <div class="row mt-3 p-3">
-                                    <div class="col-12">
-                                        <div id="form_past"></div>
-                                        <div class="g-3">
-                                            <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
-                                            </div>
-                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
-                                            </div>
-                                        </div>
-                                    </div>
-                                `
+//     golfContainer.innerHTML = `
+//                                 <div class="row mt-3 p-3">
+//                                     <div class="col-12">
+//                                         <div id="form_past"></div>
+//                                         <div class="g-3">
+//                                             <div class="input-group mb-3">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+//                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+//                                             </div>
+//                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+//                                             </div>
+//                                         </div>
+//                                     </div>
+//                                 `
 
-    fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length > 0) {
-                let tr = ""
-                let i = 0
-                for (const item of data) {
-                    if (item.isPastilled) {
-                        i++
-                        let nbrAvis = item.nbrAvis
-                        let note = item.globalNote ? item.globalNote : 0
-                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
-                        tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled">
-                                ${image_tribu_t}
-                                </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
-                            </td>
-                            <td class="data-note-${item.id}">${note}/4</td>
-                            <td>
-                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
-                            </td>
-                        </tr>`
+//     fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log(data)
+//             if (data.length > 0) {
+//                 let tr = ""
+//                 let i = 0
+//                 for (const item of data) {
+//                     console.log(item)
+//                     if (item.isPastilled) {
+//                         i++
+//                         let nbrAvis = item.nbrAvis
+//                         let note = item.globalNote ? item.globalNote : 0
+//                         let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+//                         tr += `<tr id="golf_${item.id_golf}">
+//                             <td class="d-flex bd-highlight align-items-center" data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+//                                 <div class="elie-img-pastilled"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">
+//                                 ${image_tribu_t}
+//                                 </div>
+//                                 <span class="ms-3" style="font-size:12pt;"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">${item.denomination_f}</span>
+//                             </td>
+//                             <td class="data-note-${item.id}">${note}/4</td>
+//                             <td>
+//                                 <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+//                             </td>
+//                             <td>
+//                                 <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+//                             </td>
+//                         </tr>`
 
-                    }
-                }
+//                     }
+//                 }
 
-                if (i > 0) {
+//                 if (i > 0) {
 
-                    golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
-                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom de golf</th>
-                                                <th>Note</th>
-                                                <th>Avis</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${tr}
-                                        </tbody>
-                                    </table>`
+//                     golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+//                                     <table id="table_golf_pastilled" class="ta" style="width:100%">
+//                                         <thead>
+//                                             <tr>
+//                                                 <th>Nom de golf</th>
+//                                                 <th>Note</th>
+//                                                 <th>Avis</th>
+//                                                 <th>Action</th>
+//                                             </tr>
+//                                         </thead>
+//                                         <tbody>
+//                                             ${tr}
+//                                         </tbody>
+//                                     </table>`
 
-                    $('#table_golf_pastilled').DataTable({
-                        "language": {
-                            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                        }
-                    });
-                } else {
-                    golfContainer.style.textAlign = "center"
-                    golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-                }
-
-
-            } else {
-                golfContainer.style.textAlign = "center"
-                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-            }
-
-            golfContainer.classList.add("bg-white");
-            golfContainer.classList.add("p-2");
-            golfContainer.style.display = "block"
+//                     $('#table_golf_pastilled').DataTable({
+//                         "language": {
+//                             url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+//                         }
+//                     });
+//                 } else {
+//                     golfContainer.style.textAlign = "center"
+//                     golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//                 }
 
 
-        })
+//             } else {
+//                 golfContainer.style.textAlign = "center"
+//                 golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//             }
 
-}
+//             golfContainer.classList.add("bg-white");
+//             golfContainer.classList.add("p-2");
+//             golfContainer.style.display = "block"
+
+
+//         })
+
+// }
 
 function findGolf(val, localisation = "") {
 
@@ -2720,52 +2722,16 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
                             </div>`
 
     modalBody.innerHTML = `<div class="d-flex justify-content-center">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-                                                </div>`
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            </div>`
 
     fetch(request)
         .then(res => res.text()).then(html => {
             modalBody.innerHTML = html
         });
 
-}
-
-function pastilleGolf(element) {
-    let id = element.dataset.id
-    let name = element.dataset.name
-    let tbl = element.dataset.tbname
-    let data = {
-        id: id,
-        name: name,
-        tbl: tbl
-    }
-
-    console.log(data);
-
-    let request = new Request("/user/tribu_t/pastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-
-    fetch(request)
-        .then(response => response.json())
-        .then(message => {
-            new swal("Succès !", "Golf pastillé avec succès", "success")
-                .then((value) => {
-                    element.classList = "btn btn-secondary ms-1"
-                    element.textContent = "Pastillé"
-                    element.setAttribute("disabled", true)
-                    showGolf()
-                    document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                });
-        })
-        .catch(error => console.log(error))
 }
 
 function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse = null) {
@@ -2787,7 +2753,7 @@ function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse 
     btn.dataset.tbname = tableTribu
 }
 
-function depastilleGolf(selector) {
+/*function depastilleGolf(selector) {
     let id = selector.dataset.id
     let name = selector.dataset.name
     let tbl = tribu_t_name_0
@@ -2814,11 +2780,11 @@ function depastilleGolf(selector) {
                 new swal("Succès !", "Golf dépastillé avec succès", "success")
                 .then((value) => {
                         $("#detailOptionGolf").modal("hide")
-                        document.querySelector("#golf_"+id).remove()
+                        document.querySelector("#golf_"+id).remove() 
                 });
         })
         .catch(error=>console.log(error))
-}
+}*/
 
 
 /**
