@@ -95,14 +95,21 @@ class Tribu_T_ServiceNew extends PDOConnexionService
      */
     public function addTribuTJoined($user, $userIdOwned, $tableTribuT)
     {
-      $tribuTJoined = $user->getTribuTJoined();
-      $sql = "INSERT INTO $tribuTJoined (user_id_owened, nom_table_trbT) VALUE (:user_id_owened, :nom_table_trbT)";
       $db=$this->getPDO();
-      $prepare=$db->prepare($sql);
-      $prepare->bindParam(":user_id_owened",$userIdOwned,PDO::PARAM_INT);
-      $prepare->bindParam(":nom_table_trbT",$tableTribuT,PDO::PARAM_STR);
-      $prepare->execute();
+      $tribuTJoined = $user->getTribuTJoined();
+      $psql = "SELECT * FROM $tribuTJoined WHERE user_id_owened = " . $userIdOwned . " AND nom_table_trbT = '" . $tableTribuT . "'";
+      $stmt=$db->prepare($psql);
+      $stmt->execute();
+      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if(!count($result) > 0) {
+        $sql = "INSERT INTO $tribuTJoined (user_id_owened, nom_table_trbT) VALUE (:user_id_owened, :nom_table_trbT)";
+        $prepare=$db->prepare($sql);
+        $prepare->bindParam(":user_id_owened",$userIdOwned,PDO::PARAM_INT);
+        $prepare->bindParam(":nom_table_trbT",$tableTribuT,PDO::PARAM_STR);
+        $prepare->execute();
+      }
     }
+
 
     /**
      * @author Nantenaina
@@ -853,6 +860,92 @@ public function getAllAvisByRestName($tableResto,$id){
           return $results;
       }
       return [];
+  }
+
+  public function addMember($tableName, $user_id)
+    {
+
+        $query = "Insert into $tableName (id, user_id, roles) values (UUID(), $user_id, 'Membre')";
+
+
+
+        $statement = $this->getPDO()->exec($query);
+
+
+
+        $response = "";
+
+        if ($statement == 1) {
+
+            $response = "Acceptée";
+
+        } else {
+
+            $response = "Non acceptée";
+
+        }
+
+        return $response;
+
+    }
+
+    public function addMemberTemp($tableName, $email)
+    {
+        $query = "Insert into $tableName (id , roles, email) values (UUID(),'Membre','$email')";
+        $statement = $this->getPDO()->exec($query);
+        
+    }
+
+    public function testSiMembre($table, $user_id)
+
+    {
+
+        $statement = $this->getPDO()->prepare("SELECT id, status FROM $table WHERE user_id = $user_id");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        if(count($result) > 0){
+
+            if($result[0]["status"] == 0){
+
+                return "pending";
+
+            }elseif($result[0]["status"] == 1){
+
+                return "accepted";
+
+            }if($result[0]["status"] == 2){
+
+                return "refuse";
+
+            }
+
+        }else{
+
+            return "not_invited";
+
+        }
+
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * @Fonction mise à jour de l'historique de l'invitation dans la tribu T
+     */
+    function updateInvitationStory($table_invitation, $is_valid, $email){
+
+      $sql = "UPDATE $table_invitation SET is_valid = :is_valid WHERE email = :email";
+
+      $stmt = $this->getPDO()->prepare($sql);
+
+      $stmt->bindParam(":is_valid", $is_valid);
+
+      $stmt->bindParam(":email", $email);
+
+      $stmt->execute();
+
   }
 
 }

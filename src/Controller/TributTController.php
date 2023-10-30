@@ -1755,164 +1755,166 @@ class TributTController extends AbstractController
     }
 
 
-    #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
-    public function sendInvitationPerEmail(
-        Request $request,
-        UserRepository $userRepository,
-        MailService $mailService,
-        UserService $userService,
-        RouterInterface $router,
-        Tribu_T_Service $tribuTService,
-        NotificationService $notification
-    )
-    {
-        if(!$this->getUser()){
-            return $this->json(["result" => "error"] , 401);
-        }
+    // #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
+    // public function sendInvitationPerEmail(
+    //     Request $request,
+    //     UserRepository $userRepository,
+    //     MailService $mailService,
+    //     UserService $userService,
+    //     RouterInterface $router,
+    //     Tribu_T_Service $tribuTService,
+    //     NotificationService $notification
+    // )
+    // {
+    //     if(!$this->getUser()){
+    //         return $this->json(["result" => "error"] , 401);
+    //     }
 
-        $userId = $this->getUser()->getId();
+    //     $userId = $this->getUser()->getId();
 
-        //$userEmail = $this->getUser()->getEmail();
+    //     //$userEmail = $this->getUser()->getEmail();
 
-        $data = json_decode($request->getContent(), true);
+    //     $data = json_decode($request->getContent(), true);
 
-        extract($data); ///$table, $principal, $cc ,$object, $description
+    //     extract($data); ///$table, $principal, $cc ,$object, $description
 
-        $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
+    //     $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
 
-        $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
+    //     $nomTribuT =  $tribut->getApropos($balise);
+
+    //     $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
         
-        $type = "invitation";
+    //     $type = "invitation";
 
-        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+    //     $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
     
         
          
-        if($userRepository->findOneBy(["email" => $principal])){
+    //     if($userRepository->findOneBy(["email" => $principal])){
 
-            /** URL FOR MEMBER
-             * EDITED By Nantenaina
-            */
+    //         /** URL FOR MEMBER
+    //          * EDITED By Nantenaina
+    //         */
 
-            $url = $router->generate('app_confirm_invitation_tribu', ['email' => $principal,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
-            // $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
+    //         $url = $router->generate('app_confirm_invitation_tribu', ['email' => $principal,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+    //         // $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            // $mailService->sendEmail(
-            //     $principal,
-            //     "Amis",
-            //     $object,
-            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
-            // );
+    //         // $mailService->sendEmail(
+    //         //     $principal,
+    //         //     "Amis",
+    //         //     $object,
+    //         //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //         //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+    //         // );
 
-            $context["object_mail"] = $object;
-            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-            $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+    //         $context["object_mail"] = $object;
+    //         $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //         $context["link_confirm"] = $url ;
+    //         $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
-            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
+    //         $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
 
-            $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
+    //         $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
 
-            $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+    //         $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
 
-            if ($isMembre == "not_invited") {
-                $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
-                $tribuTService->addMember($table, $id_receiver);
-                $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
-                $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
-                $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
-            }
+    //         if ($isMembre == "not_invited") {
+    //             $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+    //             $tribuTService->addMember($table, $id_receiver);
+    //             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+    //             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+    //             $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+    //         }
 
-        }else{
-            //// prepare email which we wish send
-            $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
-            $tribuTService->addMemberTemp($table, $principal);
-            // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
-            // $mailService->sendEmail(
-            //     $principal,
-            //     "Amis",
-            //     $object,
-            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
-            // );
+    //     }else{
+    //         //// prepare email which we wish send
+    //         $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+    //         $tribuTService->addMemberTemp($table, $principal);
+    //         // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
+    //         // $mailService->sendEmail(
+    //         //     $principal,
+    //         //     "Amis",
+    //         //     $object,
+    //         //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //         //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
+    //         // );
 
-            $context["object_mail"] = $object;
-            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-            $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+    //         $context["object_mail"] = $object;
+    //         $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //         $context["link_confirm"] = $url ;
+    //         $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
-            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
-        }
+    //         $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
+    //     }
 
-        if( count($cc) > 0 ){
+    //     if( count($cc) > 0 ){
 
-            foreach($cc as $c){
+    //         foreach($cc as $c){
 
-                if($userRepository->findOneBy(["email" => $c])){
+    //             if($userRepository->findOneBy(["email" => $c])){
 
-                    /** URL FOR MEMBER
-                     * EDITED By Nantenaina
-                    */
-                    $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
+    //                 /** URL FOR MEMBER
+    //                  * EDITED By Nantenaina
+    //                 */
+    //                 $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
         
-                    // $mailService->sendEmail(
-                    //     $c,
-                    //     "Amis",
-                    //     $object,
-                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                    //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
-                    // );
+    //                 // $mailService->sendEmail(
+    //                 //     $c,
+    //                 //     "Amis",
+    //                 //     $object,
+    //                 //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //                 //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+    //                 // );
 
-                    $context["object_mail"] = $object;
-                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-                    $context["link_confirm"] = $url ;
-                    $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+    //                 $context["object_mail"] = $object;
+    //                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //                 $context["link_confirm"] = $url ;
+    //                 $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
-                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
+    //                 $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
         
-                    $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
+    //                 $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
         
-                    $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+    //                 $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
         
-                    if ($isMembre == "not_invited") {
-                        $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
-                        $tribuTService->addMember($table, $id_receiver);
-                        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
-                        $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
-                        $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
-                    }
+    //                 if ($isMembre == "not_invited") {
+    //                     $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+    //                     $tribuTService->addMember($table, $id_receiver);
+    //                     $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+    //                     $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+    //                     $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+    //                 }
         
-                }else{
-                    $tribuTService->addMemberTemp($table, $c);
+    //             }else{
+    //                 $tribuTService->addMemberTemp($table, $c);
 
-                    //// prepare email which we wish send
-                    $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+    //                 //// prepare email which we wish send
+    //                 $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
                     
-                    // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-                    // $mailService->sendEmail(
-                    //     $c,
-                    //     "Amis",
-                    //     $object,
-                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                    //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
-                    // );
+    //                 // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
+    //                 // $mailService->sendEmail(
+    //                 //     $c,
+    //                 //     "Amis",
+    //                 //     $object,
+    //                 //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //                 //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+    //                 // );
 
-                    $context["object_mail"] = $object;
-                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-                    $context["link_confirm"] = $url ;
-                    $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+    //                 $context["object_mail"] = $object;
+    //                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //                 $context["link_confirm"] = $url ;
+    //                 $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
-                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
-                }
+    //                 $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
+    //             }
 
-            }
-        }
+    //         }
+    //     }
 
-        return $this->json([
-            "result" => "success"
-        ], 201 );
-    }
+    //     return $this->json([
+    //         "result" => "success"
+    //     ], 201 );
+    // }
 
     // #[Route("/push/comment/resto/pastilled",name:"push_comment_pastilled_resto",methods:["POST"])]
     // public function push_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService ){
@@ -2668,68 +2670,67 @@ class TributTController extends AbstractController
        
     }
 
-    /**
-     * @author Elie <eliefenohasina@gmail.com>
-     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
-     */
-    #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
-    public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request){
+    // /**
+    //  * @author Elie <eliefenohasina@gmail.com>
+    //  * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+    //  */
+    // #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
+    // public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request){
 
-        $table =$request->query->get("tribu");
+    //     $table =$request->query->get("tribu");
 
-        $email =$request->query->get("email");
+    //     $email =$request->query->get("email");
 
+    //     if($this->getUser()){
 
-        if($this->getUser()){
+    //         if($table && $email){
 
-            if($table && $email){
-
-                ////name tribu to join
-                $tribuTtoJoined = $table;
+    //             ////name tribu to join
+    //             $tribuTtoJoined = $table;
                     
-                //// apropos user fondateur tribuT with user fondateur
-                $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
+    //             //// apropos user fondateur tribuT with user fondateur
+    //             $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
     
-                $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+    //             $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
     
-                $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+    //             $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
 
-                $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+    //             $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
 
-                if(array_key_exists("name", $arrayTribuT)){
-                    if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                        $apropos_tribuTtoJoined= $arrayTribuT;
-                    }
-                }else{
-                    foreach($arrayTribuT as $tribuT){
+    //             if(array_key_exists("name", $arrayTribuT)){
+    //                 if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+    //                     $apropos_tribuTtoJoined= $arrayTribuT;
+    //                 }
+    //             }else{
+    //                 foreach($arrayTribuT as $tribuT){
                     
-                        if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                            $apropos_tribuTtoJoined= $tribuT;
-                            break;
-                        }
-                    }
-                }
+    //                     if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+    //                         $apropos_tribuTtoJoined= $tribuT;
+    //                         break;
+    //                     }
+    //                 }
+    //             }
 
-                //// set tribu T for this new user.
-                $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
+    //             //// set tribu T for this new user.
+    //             $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
                 
-                ///update status of the user in table tribu T
-                $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
+    //             ///update status of the user in table tribu T
+    //             $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
 
-                $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+    //             $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
     
-            }
+    //         }
 
-            return $this->redirectToRoute('app_my_tribu_t');
+    //         return $this->redirectToRoute('app_my_tribu_t');
 
-        }else{
+    //     }else{
 
-            return $this->redirectToRoute('app_login');
+    //         return $this->redirectToRoute('app_login');
             
-        }
+    //     }
 
        
-    }
+    // }
 
 }
 
