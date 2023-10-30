@@ -2424,3 +2424,19 @@ textarea {
     cursor: pointer;
     clip-path: circle();
 }
+
+.length-pastille-plus{
+    background-color: #ccc;
+    position: absolute;
+    color: #000;
+    right: 0;
+    font-size: 11pt;
+    width: 25px;
+    clip-path: circle();
+    z-index: 1;
+}
+
+.modal-body-pastille-golf{
+    overflow-y: scroll;
+    height: 270px;
+}

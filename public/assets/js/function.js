@@ -2515,7 +2515,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                                 <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
                             </div>
                             <hr>
-                            <div class="modal-body mt-4 mb-4">
+                            <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
@@ -4971,8 +4971,15 @@ function pastilleGolf(element, table_tribu_t) {
                 fetch(`/golf/pastilled/checking/${message.id_golf}`)
                     .then(response => response.json())
                     .then(datas => {
+                        
                         let logoPath = ""
+                        let i = 0
+                        let countIsPastilled = 0;
                         for (data of datas) {
+                            i += 500
+                            if (data.isPastilled === true) {
+                                countIsPastilled++;
+                            }
                             if (data['logo_path'] != "") {
                                 if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
                                     logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="${data['logo_path']}" alt="">`
@@ -4983,12 +4990,24 @@ function pastilleGolf(element, table_tribu_t) {
                                     logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`
                                 }
                             }
-                        }
 
-                        // if (datas.length > 4) {
-                        //         document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `${logoPath} <span class="length-pastille-plus">${datas.length}+</span>`
-                        // }
+                            if (document.querySelector('.logo-pastille-golf-tomm-js')) {
+                                document.querySelector('.logo-pastille-golf-tomm-js').style.width = i + 'px';
+                            }
+                            
+                        
+                        }
+                        
+                        if (countIsPastilled > 4) {
+                            document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`
+                        } else {
+                            document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
+                            
+                        }
                         document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath
+                        if (document.querySelector("length-pastille-plus")) {
+                            document.querySelector("length-pastille-plus").remove()
+                        }
                     })
             }
             
@@ -5037,8 +5056,11 @@ function depastilleGolf(selector){
                 fetch(`/golf/pastilled/checking/${message.id_golf}`)
                     .then(response => response.json())
                     .then(datas => {
+                        let countIsPastilled = 0;
                         for (data of datas) {
-                            console.log(data)
+                            if (data.isPastilled === true) {
+                                countIsPastilled++;
+                            }
                             if (data['isPastilled'] != true ) {
                                 if (document.querySelector(`.logo_path_${data['table_name']}_tomm_js`)) {
                                     document.querySelector(`.logo_path_${data['table_name']}_tomm_js`).remove()
@@ -5046,8 +5068,15 @@ function depastilleGolf(selector){
                                 
                             }
                         }
+
+                        if (countIsPastilled) {
+                            document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`
+                        }
+                        if (document.querySelector("length-pastille-plus")) {
+                            document.querySelector("length-pastille-plus").remove()
+                        }
                     })
-            }
+                }
                 
             })
         .catch(error => console.log(error))
@@ -5057,6 +5086,7 @@ function depastilleGolf(selector){
     if (document.querySelector(".modal-pastille-golf-tomm-js")) {
         document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
     }
+    
 }
 
 /**
@@ -5481,7 +5511,7 @@ function isPastilledList(id_golf, name_golf) {
                                             <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
                                         </div>
                                         <hr>
-                                        <div class="modal-body mt-4 mb-4">
+                                        <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>

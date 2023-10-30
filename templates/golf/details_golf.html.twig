@@ -1,4 +1,5 @@
 <div class="description content_body_details_jheo_js" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomGolf}}">
+
     <div class="content_titre_details">
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
@@ -35,19 +36,31 @@
                         </p>
                     </div>
                     <div class="col-4">
-                        <div class="logo-pastille-golf-tomm-js" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
+                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
+                            
+                            {% set count = 0 %}
                             {% for tribu_t_pastilled in tribu_t_pastilleds %}
                                 {# {{ dump(tribu_t_pastilled) }} #}
+                                    {% if tribu_t_pastilled.isPastilled == true %}
+                                        {% set count = count + 1 %}
+                                    {% endif %}
                                 {% if tribu_t_pastilled['isPastilled'] == true %}
                                     {% if tribu_t_pastilled['logo_path'] == "" %}
                                         <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
                                     {% else %}
                                         <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="{{tribu_t_pastilled['logo_path']}}" alt="">
                                     {% endif %}
+                                    
+                                
                                 {% endif %}
                                 
                             {% endfor %}
                             
+                            {% if count > 4 %}
+                                <span class="length-pastille-plus">{{ count }}+</span>
+                            {% else %}
+                                <span class="length-pastille-plus"></span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
