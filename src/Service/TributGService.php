@@ -1642,4 +1642,18 @@ class TributGService extends PDOConnexionService{
         return $result;
       }
 
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of golf tribu G exists
+     */
+    public function getAllGolfTribuG($table_name){
+
+        $table_resto = $table_name."_golf";
+
+        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. ' INNER JOIN golffrance ON '. $table_resto.'.extensionId = golffrance.id');
+
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

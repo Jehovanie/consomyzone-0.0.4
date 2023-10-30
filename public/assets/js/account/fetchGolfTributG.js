@@ -1,5 +1,5 @@
-if( document.querySelector("#fetch_resto_tribug_jheo_js")){
-    const btn_member = document.querySelector("#fetch_resto_tribug_jheo_js");
+if( document.querySelector("#fetch_golf_tribug_jheo_js")){
+    const btn_member = document.querySelector("#fetch_golf_tribug_jheo_js");
     
     btn_member.addEventListener("click",(e) => {
         e.preventDefault();
@@ -39,10 +39,10 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
             document.querySelector("#fetch_photo_tribug_jheo_js").classList.add("text-primary")
         }
 
-        if(document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.add("text-primary")
+        if(document.querySelector("#fetch_resto_tribug_jheo_js").classList.contains("active")){
+            document.querySelector("#fetch_resto_tribug_jheo_js").classList.remove("active")
+            document.querySelector("#fetch_resto_tribug_jheo_js").classList.remove("text-white")
+            document.querySelector("#fetch_resto_tribug_jheo_js").classList.add("text-primary")
         }
 
         document.querySelector(".content_bloc_jheo_js").innerHTML = `
@@ -52,7 +52,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
         `;
 
 
-        fetch("/tributG/restaurant")
+        fetch("/tributG/mon-golf")
             .then(response => response.json())
             .then( response => {
                 
@@ -75,19 +75,18 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                         </div>
 
                                         <div class="card-header">
-                                            <h4>Restaurant pastillé dans la tribu G</h4>
+                                            <h4>Golf pastillé dans la tribu G</h4>
                                         </div>
                                         <div class="card-body" style="overflow-x:auto;">
                                             <table class="table table-responsive" id="table-resto-tribu-g-elie">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Nom de restaurant</th>
-                                                        <th scope="col">Note</th>
-                                                        <th scope="col">Avis</th>
-                                                        <th scope="col">Actions</th>
+                                                        <th scope="col">Nom du golf</th>
+                                                        <th scope="col">Adresse</th>
+                                                        <th scope="col">Détail</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="restaurant-tg-elie-js">
+                                                <tbody id="golf-tg-elie-js">
                                                     
                                                 </tbody>
                                             </table>

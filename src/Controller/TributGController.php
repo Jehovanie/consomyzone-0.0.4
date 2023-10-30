@@ -774,4 +774,23 @@ class TributGController extends AbstractController
         }
 
     }
+
+    /**
+     * @author Elie
+     * Fonction fetch resto pastille
+     */
+    #[Route("/tributG/mon-golf", name: "app_mon_golf_tributG")]
+
+    public function fetchAllGolfTributG(
+        TributGService $tributGService,
+    ){
+        // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
+        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
+        // getAllRestoTribuG($table_name)
+
+
+        return $this->json($tributGService->getAllGolfTribuG($table_tributG_name));
+    }
 }
