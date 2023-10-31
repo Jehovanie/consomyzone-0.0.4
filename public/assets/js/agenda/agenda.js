@@ -19,17 +19,19 @@ document.addEventListener('DOMContentLoaded', function () {
             // console.log(allAgenda);
 
             allAgenda.forEach(agenda => {
-                const { id, title, dateStart: start, dateEnd: end, timeStart: heureDebut, timeEnd: heureFin } = agenda;
+                let { id, title, dateStart: start, dateEnd: end, timeStart: heureDebut, timeEnd: heureFin } = agenda;
+                
                 // const className=  repasType.some(item => item.includes(type.toLowerCase())) ? "repas": 'other_event';
                 // var tomorrow = new Date(end);
                 // tomorrow.setDate(tomorrow.getDate()+1)
                 // console.log(tomorrow)
                 //agendaTab.push({id, title, start : new Date(start), end: new Date(end), textColor: 'black'})
+                
                 let dateStartAgd = new Date(start)
                 dateStartAgd = dateStartAgd.setHours(heureDebut.split(":")[0], heureDebut.split(":")[1], heureDebut.split(":")[2]);
                 let dateEndAgd = new Date(end)
                 dateEndAgd = dateEndAgd.setHours(heureFin.split(":")[0], heureFin.split(":")[1], heureFin.split(":")[2]);
-                agendaTab.push({ id, title, start: dateStartAgd, end: dateEndAgd, textColor: 'black' })
+                agendaTab.push({ id, title, start: dateStartAgd, end: dateEndAgd, textColor: 'black',classNames:["calendar_title_tom_js_"+id] })
             })
             // console.log(agendaTab)
             rendreCalendarWithEvents(agendaTab)
@@ -213,6 +215,7 @@ function rendreCalendarWithEvents(events) {
     var calendarEl = document.getElementById('calendar');
     if(typeof FullCalendar != "undefined"){
         var calendar = new FullCalendar.Calendar(calendarEl, {
+           
             plugins: ['interaction', 'dayGrid'],
             themeSystem: 'bootstrap5',
             defaultDate: new Date(),
@@ -230,6 +233,7 @@ function rendreCalendarWithEvents(events) {
                 "default": true
             },
             events: events,
+           
             dateClick: function (info) {
                 bindEventForAllDay(info)
             },
@@ -237,9 +241,25 @@ function rendreCalendarWithEvents(events) {
                 const id = info.event.id ? parseInt(info.event.id) : 0
                 bindEventForAnEvent(id)
             },
+            eventRender: function (element) {
+                if (screen.width < 991) {
+                    let icon = document.createElement("i");
+                    icon.classList.add('fa-regular', 'fa-bell','fa-lg');
+                    icon.style="color: #f5bfa8;"
+                    element.el.querySelector(".fc-time").style.display ="none"
+                    element.el.querySelector(".fc-title").textContent = ""
+                    element.el.querySelector(".fc-title").appendChild(icon);
+                }
+                
+            }
+            
         });
     
+        if (screen.width < 991) {
+            calendar.setOption('contentHeight', 385);
+        }
         calendar.render();
+       
     }
     
 }

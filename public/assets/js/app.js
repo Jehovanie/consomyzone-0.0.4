@@ -237,6 +237,15 @@ if(document.querySelector(".custom-flash")){
     }, 4000)
 
 }
+if ( document.querySelectorAll('.fa-solid.fa-xmark')) {
+    let closesIcon = document.querySelectorAll('.fa-solid.fa-xmark');
+
+    closesIcon.forEach(function(closeIcon) {
+        closeIcon.addEventListener('click', function() {
+            this.parentNode.parentNode.style.display="none";
+        });
+    }); 
+}
 
 
 if(document.querySelector(".custom-flash-inscription")){
@@ -249,7 +258,7 @@ if(document.querySelector(".custom-flash-inscription")){
 
     setTimeout(() => {
 
-        contentMessageFlash.classList.add("hide-flash-inscription") 
+       // contentMessageFlash.classList.add("hide-flash-inscription") 
 
     }, 4000)
 

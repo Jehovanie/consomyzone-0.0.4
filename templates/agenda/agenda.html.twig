@@ -22,8 +22,10 @@
         <script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
         <script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+        <script  src="{{ asset('assets/js/profiles/setIris.js') }}" defer></script>
         <script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
         <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+        
 {% endblock %}
 
 
@@ -35,7 +37,7 @@
         <main class="gv hm hv">
             <div class="sk bu 2xl:ud-p-11">
                 <!-- ====== Calendar Section Start -->
-                <div class="content">
+                <div class="content container-agenda">
                     <div id='calendar' class="fc fc-ltr fc-unthemed"></div>
                 </div>
                 <!-- ====== Calendar Section End -->

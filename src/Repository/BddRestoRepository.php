@@ -258,7 +258,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $dep = strlen($dep) === 1  ? "0" . $dep : $dep;
         $query = $this->createQueryBuilder("r")
             ->select(
-                        "r.id,
+            "r.id,
                         r.denominationF,
                         r.denominationF as nom,
                         r.numvoie,
@@ -288,6 +288,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.repas1,
                         r.typeCuisine1,
                         r.dep,
+                        r.codinsee,
                         r.depName,
                         r.tel,
                         r.poiX,
@@ -317,6 +318,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+    
 
     public function getCoordinateAndRestoIdForSpecificParis($dep)
     {

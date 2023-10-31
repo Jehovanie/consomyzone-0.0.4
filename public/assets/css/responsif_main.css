@@ -163,6 +163,13 @@
         margin-top: 160px;
     }
 
+    .navbar-brand-setting-inscript-mobile  svg {
+        position: absolute;
+        top: 19px;
+        left: 27px;
+        z-index: 401;
+    }
+
     .content_header_right_side{
         margin-top: 0 !important;
     }
@@ -944,9 +951,9 @@
         left: 15px !important;
     }
 
-    .fw-bolder {
+    /* .fw-bolder {
         width: 95vw !important;
-    }
+    } */
 
     .navbar-brand {
         font-size: large !important;
@@ -1518,6 +1525,116 @@
         right: 0 !important;
     }
 
+    .modal-pastille-golf{
+        width: 340px !important;
+    }
+
+    .toggel-recherche i{
+        position: absolute;
+        left: 15px;
+        top: 160px;
+        z-index: 401;
+        background-color: #2343ac;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        text-align: center;
+        color: #fff;
+        padding-top: 12px;
+        font-size: 18pt;
+        animation: 1s linear 1s infinite alternate slidein;
+    }
+
+    .fc-dayGridMonth-view table thead tr th {
+        width: 0 !important;
+        padding-left: 10px;
+        /* padding-right: 5px; */
+    }
+
+    .container-agenda{
+        margin-top: 50px !important;
+    }
+
+    #calendar {
+        max-width: 100vw !important;
+        margin: 0 !important;
+    }
+
+    #calendar .fc-view-container {
+        padding: 0 !important;
+        
+    }
+
+    #createAgenda .form-check-label{
+        font-size: 12pt;
+    }
+        
+    #createAgenda .form-check-inline{
+        margin-top: 5px;
+        margin-right: 5px !important;
+        width: 100%;
+    }
+
+    #createAgenda .form-check-input{
+        width: 12px;
+        height: 12px;
+        margin-right: 2px;
+    }
+
+    .card-couverture-pub-tribu-t .text-light{
+        font-size: 10pt;
+    }
+
+    .dataTables_wrapper{
+        overflow-x: scroll !important;
+    }
+
+    .list_resto_or_golf_partage .bg-white.w-75{
+        width: 100% !important;
+    }
+
+    .partage_agenda .btn-partage-agenda {
+        margin-left: 19vw !important;
+    }
+
+    #blockHistInvitation{
+        overflow-x: scroll;
+    }
+
+    .content_emojy_picker{
+        margin-left: -155px !important;
+        margin-top: 280px !important;
+    }
+
+    .right_content {
+        background: #fff !important;
+    }
+
+    .btn_submit {
+        background: rgb(0, 111, 255) !important;
+        width: 76vw !important; 
+        color: #fff;
+    }
+
+    .possition-password {
+        margin-top: 0 !important;
+    }
+
+    .title-link-inscription{
+        text-align: center;
+    }
+
+    .content_form {
+        background: #cdcdcd !important;
+    }
+
+    .custom-flash-inscription {
+        position: absolute !important;
+        top: 100% !important;
+        right: 3% !important;
+        width: 350px!important;
+    }
+                
 }
 
 @media screen and (max-width:400px) and (min-width:300px) {

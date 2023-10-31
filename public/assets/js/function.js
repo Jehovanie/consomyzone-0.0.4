@@ -2606,7 +2606,8 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
                 const id_dep = new URLSearchParams(window.location.href).get("id_dep")
                 const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
                 offsetTomm += limitSpecTomm
-                getDataSpecificMobile(nom_dep, id_dep)
+                let isArrondissement=parseInt(id_dep) ===75 ? true : false
+                getDataSpecificMobile(nom_dep, id_dep,isArrondissement)
             } else if (rubricName == 'ferme') {
                 const id_dep = new URL(window.location.href).pathname.split('/')[4]
                 const nom_dep = new URL(window.location.href).pathname.split('/')[3]
@@ -2641,20 +2642,34 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
     })
 }
 
-function getDataSpecificMobile(nom_dep, id_dep) {
+function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
     
+    let params = new URL(document.location).searchParams;
+    let codinsee = params.get("codinsee");
     let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     let id_resto = ''
-    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
-        method: "GET",
-        headers: {
-            'Accept': 'application/json',
-            "Content-Type": "application/json; charset=utf-8"
-        }
-    })
-    fetch(request).then(res => res.json())
-        
-        .then(responses => {
+     let request=null;
+    if (isArrondissement) {
+        // restaurant-mobile/specific / arrondissement / ${ nom_dep } /${id_dep}/${ codinsee } /5/5
+        request = new Request(`/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        })
+    } else {
+        request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        })
+    }
+   
+    fetch(request).then(res =>
+        res.json().then(responses => {
             if (document.querySelector(".loading-tomm-js")) {
                 document.querySelector(".loading-tomm-js").innerHTML = ''
             }
@@ -2970,23 +2985,31 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                     }
                 })
             }
-        })    
-}
+           
 
+
+        }))
+  
+}
+            
 /**
  * @author Tomm
  * @action incrimentation specific resto du recherche
  * @ou detail_searche.js 
  * @utiliser dans home/search_resilt.html.twig
  */
-function getRestoSpecSearchMobile(nom_dep, id_dep,idResto) {
+function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
+     
+   
     const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${idResto}`, {
-        method: "GET",
-        headers: {
-            'Accept': 'application/json',
-            "Content-Type": "application/json; charset=utf-8"
-        }
-    })
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        })  
+    
+    
     fetch(request).then(res => res.json())
         
         .then(response => {
@@ -5870,3 +5893,43 @@ function isPastilledList(id_golf, name_golf) {
                     })
 }
 
+/**
+ * @author tommy
+ * cette fonction re-organise l'apparition des champ de finalisation d'inscription pour les mobile
+ * on utilise dans settingAccount.html.twig 
+ * location utilisation: js/account/account.js
+ * store :function.js
+ */
+function arrangeSetingApparitionMobile() {
+    if(screen.width < 991) {
+        const allForms = Array.from(document.querySelectorAll(".form-inscription-tomm-js"));
+        
+        const allFormsSorted = allForms.sort(function (a, b) {
+          return parseInt(a.dataset.rank) - parseInt(b.dataset.rank)
+        })
+        console.log(allFormsSorted)
+        
+        let allFormsSortedCloned = [];
+        
+        for (let i = 0; i < allFormsSorted.length; i++){
+            allFormsSortedCloned[i] = allFormsSorted[i].cloneNode(true);
+        }
+        console.log(allFormsSortedCloned)
+
+        const container = document.querySelector(".content-inscription-setting-tomm-js");
+        for (let i = 0; i < allFormsSorted.length; i++){
+           container.removeChild(allForms[i]);
+        }
+
+        const referenceNode = document.querySelector(".btn_submit_for_rank_inscription_js")
+        for (let i = 0; i < allFormsSortedCloned.length; i++) { 
+            container.insertBefore(allFormsSortedCloned[i], referenceNode)
+            
+        }
+       
+           
+        return true;
+        
+       
+    }
+}
