@@ -693,6 +693,52 @@ class TributGController extends AbstractController
         
     }
 
+    #[Route("/user/tribu_g/pastille/golf", name:"tribu_g_pastille_golf", methods:["POST"])]
+    public function pastilleGolfForTribuT(Request $resquest, TributGService $tribuGService){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $golf_name =  $jsonParsed["name"];
+
+        $golf_id = $jsonParsed["id"];
+
+        $tribu_g = $jsonParsed["tbl"];
+
+        $isPastilled = $tribuGService->getIdRestoOnTableExtension($tribu_g."_golf", $golf_id);
+
+        if(count($isPastilled)<=0){
+
+            $tribuGService->pastilleRestaurant($tribu_g."_golf", $golf_name, $golf_id);
+
+        }else{
+
+            $tribuGService->depastilleOrPastilleRestaurant($tribu_g."_golf", $golf_id, 1);
+
+        }
+
+        return $this->json(["status"=>"ok","id_golf"=>$golf_id, "table"=>$tribu_g."_golf", "golf"=> $golf_name]);
+        
+        
+    }
+
+    #[Route("/user/tribu_g/depastille/golf", name:"tribu_g_depastille_golf", methods:["POST"])]
+    public function depastilleGolfForTribuT(Request $resquest, TributGService $tribuGService){
+
+        $jsonParsed=json_decode($resquest->getContent(),true);
+
+        $golf_name =  $jsonParsed["name"];
+
+        $golf_id = $jsonParsed["id"];
+
+        $tribu_g = $jsonParsed["tbl"];
+
+        $tribuGService->depastilleOrPastilleRestaurant($tribu_g."_golf", $golf_id, 0);
+
+        return $this->json(["status"=>"ok","id_golf"=>$golf_id, "table"=>$tribu_g."_golf", "golf"=> $golf_name]);
+
+        
+    }
+
     #[Route("/user/tribu_g/isPastilled/{table}/{id_resto}", name:"tribu_g_isPastilled", methods:["GET"])]
     public function isPastilled($table, $id_resto, Request $resquest, TributGService $tribuGService){
 
