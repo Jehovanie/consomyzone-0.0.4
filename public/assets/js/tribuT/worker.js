@@ -8,7 +8,7 @@ onmessage = (e) => {
     params.push(idmin)
     params.push(limits)
     params = params.join("&")
-    console.log("last id worker ="+idmin)
+    
     const request = new Request(`/user/get/${tableTribuT}/{tribuTId}/publications/?${params}`, {
         method: "GET",
         headers: {

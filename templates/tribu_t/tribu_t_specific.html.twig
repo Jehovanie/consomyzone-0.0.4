@@ -99,7 +99,7 @@
 
 									{% if tribu.ext_golf %}
 										<li class="listNavBarTribu golfNotHide">
-											<a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
+											<a style="cursor:pointer;" class="" onclick="showGolf('{{tribu.nom_table_trbT}}')" data-value="golf">Mon Golf</a>
 										</li>
 									{% endif %}
 
@@ -375,7 +375,8 @@
 					class="modal-header">
 					{# <h5 class="modal-title">Détail</h5> #}
 					<div class="content_etab_detail"></div>
-					<button type="button" class="btn-close" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+					{# <button type="button" class="btn-close" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button> #}
+					<button type="button" class="btn-close" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body"></div>
 				<div class="modal-footer">

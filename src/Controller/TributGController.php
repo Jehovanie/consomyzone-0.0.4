@@ -289,6 +289,7 @@ class TributGController extends AbstractController
         $memberTributG = [];
 
         foreach ($all_user_id_tribug as $user_id) {
+
             $user = $userRepository->find(intval($user_id["user_id"]));
 
             if($user && $user->getType()!= 'Type'){

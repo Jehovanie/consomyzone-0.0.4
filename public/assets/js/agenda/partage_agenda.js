@@ -429,3 +429,57 @@ function resetFilePartage(){
     sessionStorage.removeItem("csvContent");   
     sessionStorage.removeItem("headerIndex");
 }
+
+/**
+ * @Author Nantenaina
+ * où: on Utilise cette fonction dans la rubrique historiques des invitations agenda cmz, 
+ * localisation du fichier: dans partage_agenda.js,
+ * je veux: voir les historiques des invitations
+*/
+function invitationStoryAgenda(){
+
+    document.querySelector("#invitation-story").innerHTML = `<div class="d-flex justify-content-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>`
+    
+    fetch("/user/invitation/story/agenda")
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            let tr = ""
+            if(data.length > 0){
+                for (const story of data) {
+                    tr += `<tr class="">
+                            <td>${story.email}</td>
+                            <td>${story.partisan}</td>
+                            <td>${story.datetime}</td>
+                        </tr>`
+                }
+            }else{
+                tr += `<tr class="text-center">
+                            <td colspan="3">Aucune invitation par email envoyée</td>
+                        </tr>`
+            }
+            let table = `<table id="story-partage-agenda" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Email</th>
+                            <th scope="col">Partisan</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        ${tr}
+                    </tbody>   
+                </table>`
+
+            document.querySelector("#invitation-story").innerHTML = table
+            if(data.length > 0)
+                $('#story-partage-agenda').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
+                    },})
+        })
+}

@@ -95,8 +95,25 @@ class MarckerClusterSearch extends MapModule  {
                 let useLink = dataLink.find(item =>item.regex.test(this.data.origin_cles1))
                 
                 const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`;
-                const responsePos = await fetch(apiOpenStreetMap)
-                const address = await responsePos.json();
+                let responsePos = await fetch(apiOpenStreetMap)
+                let address = await responsePos.json();
+                
+                if( address.length === 0) {
+                    responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
+                    address = await responsePos.json();
+
+                    if( address.length === 0 ){
+                        const cleWord= this.data.origin_cles1.split(" ");
+
+                        for(let i=0; i<cleWord.length; i++){
+                            responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
+                            address = await responsePos.json();
+                            if(address.length !== 0 ){
+                                break;
+                            }
+                        }
+                    }
+                }
     
                 //// In cas API openStreetMap failed or return empty
                 const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;

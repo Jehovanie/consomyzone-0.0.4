@@ -9,7 +9,7 @@ var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worke
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
 
-var image_tribu_t = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
+var image_tribu_t = document.querySelector("#avatarTribuT") ? `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">` : ""
 var descriptionTribuT = ""
 /**
  * create tribu_t section
@@ -165,16 +165,17 @@ async function showBlockPub() {
     /**end */
 
     /**render photo gallery*/
-    document.querySelector("#see-gallery").onclick = (e => {
-        e.preventDefault();
-        if (document.querySelector("li.listNavBarTribu > a.active")) {
-            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-        }
-        document.querySelector("#see-gallery").classList.add("active")
-        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-        showPhotos()
+    if(document.querySelector("#see-gallery"))
+        document.querySelector("#see-gallery").onclick = (e => {
+            e.preventDefault();
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+            }
+            document.querySelector("#see-gallery").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showPhotos()
 
-    })
+        })
     /**end */
 
     /**change pdp tribu_t */
@@ -189,14 +190,15 @@ async function showBlockPub() {
 
 
     /**render partisant*/
-    document.querySelector(".partisantT").onclick = (e) => {
-        if (document.querySelector("li.listNavBarTribu > a.active")) {
-            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    if(document.querySelector(".partisantT"))
+        document.querySelector(".partisantT").onclick = (e) => {
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+            }
+            document.querySelector(".partisantT > a").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showPartisan()
         }
-        document.querySelector(".partisantT > a").classList.add("active")
-        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-        showPartisan()
-    }
 
 }
 
@@ -233,7 +235,7 @@ function showPartisan() {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-                console.log(jsons)
+                // console.log(jsons)
 
                 let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
                     <thead>
@@ -294,7 +296,7 @@ function showPartisan() {
 
                 $('#table_partisan_elie_js').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             })
@@ -362,7 +364,7 @@ function updatePdpTribu_T(files) {
                     photoSize: files.size,
                     tribu_t_name: tribu_t_name_0,
                 }
-                console.log(param)
+                // console.log(param)
                 const request = new Request("/user/tribu/set/pdp", {
                     method: "POST",
                     headers: {
@@ -374,7 +376,7 @@ function updatePdpTribu_T(files) {
                 fetch(request).then(responses => {
                     if (responses.ok && responses.status === 200) {
                         document.querySelector("#avatarTribuT").src = evt.target.result
-                        document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+                        // document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
                         swal({
                             title: "Succès!",
                             text: "L\'avatar de la tribu est à jour avec succès!",
@@ -416,7 +418,7 @@ function sendPublication(formData) {
                 confidentialite: formData.get("confidentialite")
             }
             // console.log(formData.get('photo'));
-            console.log(param)
+            // console.log(param)
             const request = new Request("/user/create-one/publication", {
                 method: "POST",
                 headers: {
@@ -606,6 +608,7 @@ function sendPublication(formData) {
 //                 </div>
 //                 <div class="publication-content">
 function showdDataContent(id_c_u, lastId = 0) {
+    if(document.querySelector("#tribu_t_conteuneur"))
     document.querySelector("#tribu_t_conteuneur").innerHTML += `
             <div class="publication-content">
                     <div class="list-pub-new">
@@ -624,7 +627,7 @@ function showdDataContent(id_c_u, lastId = 0) {
     worker.postMessage([nomTableTribuT, idTribuT, lastId, 20]);
 
     worker.onmessage = (event) => {
-        // console.log(event.data)
+        
         let data = event.data["publication"]
 
         //la variable qui contient les description de la tribuT
@@ -685,7 +688,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                     </div>` : ""
 
 
-                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -719,7 +722,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
+                                                            onclick="getAllComment('${data[i].id}', '${tribu_t_name_0}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -756,7 +759,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
                     contentPublication = `
-                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -821,7 +824,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${data[i].id}', '${tribu_t_name_0}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -870,7 +873,7 @@ function showdDataContent(id_c_u, lastId = 0) {
             const gen = genDataPubOfAllPartisans(data, 5)
             const gen_length = (data.length - 5)
             //const gen_length = (data.length)
-            console.log("gen_length : " + gen_length)
+            // console.log("gen_length : " + gen_length)
 
 
             let lastId = 0;
@@ -891,13 +894,13 @@ function showdDataContent(id_c_u, lastId = 0) {
                                 showdDataContent(id_c_u, lastId);
                             } else {
                                 lastId = data.id
-                                console.log(data)
-                                console.log("last id " + lastId)
+                                // console.log(data)
+                                // console.log("last id " + lastId)
                                 data = gen.next().value
 
                                 if (data) {
                                     const contentPublication = `
-                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data.id}_jheo_js">
+                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data.id}_jheo_js">
                                                 <!-- ====== Chart One Start -->
                                                 <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                     <div class="head-pub">
@@ -961,7 +964,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                         <div class="reaction-icon d-flex">
                                                             <i class="bi-heart like non_active"></i>
                                                             <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data.id}', '${data.nom_table_trbT}', '${data.user_id}')"></i>
+                                                            onclick="getAllComment('${data.id}', '${tribu_t_name_0}', '${data.user_id}')"></i>
                                                         </div>
                                                     </div>
                                                     
@@ -990,7 +993,7 @@ function showdDataContent(id_c_u, lastId = 0) {
 
 function showCommentaireTribu_T(event, idmin = 0, b) {
     event.preventDefault();
-    console.log(idmin)
+    // console.log(idmin)
     const table_cmmnt = tribu_t_name_0 + "_commentaire"
     const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
 
@@ -1011,13 +1014,13 @@ function showComment(id_resto) {
     // alert(id_resto)
 
     workerGetCommentaireTribuT.onmessage = (e) => {
-        console.log("afffichage comment");
-        console.log(e.data)
+        // console.log("afffichage comment");
+        // console.log(e.data)
         const datas = e.data[0]
         const index = e.data[0].length
 
         for (let i = 0; i < index; i++) {
-            console.log(i)
+            // console.log(i)
             let lapstime = calculateDurationOfComment(datas[i].datetime)
             let commentaire = `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
@@ -1114,7 +1117,7 @@ function putComment(event) {
         }
 
     })
-    console.log(pubId, commentaire)
+    // console.log(pubId, commentaire)
 }
 
 
@@ -1216,9 +1219,6 @@ function showResto(table_rst_pastilled, id_c_u) {
 
     workerRestoPastilled.onmessage = (e => {
         let restos = e.data
-        // console.log("workerresto :::::");
-        // console.log(restos);
-        console.log(restos)
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
@@ -1228,7 +1228,6 @@ function showResto(table_rst_pastilled, id_c_u) {
         }
 
         if (restos.length > 0) {
-
             for (let resto of restos) {
 
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
@@ -1236,7 +1235,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                 if (resto.isPastilled) {
 
                     let id = resto.id
-                    let id_resto = resto.extensionId
+                    let id_resto = resto.id_resto
                     let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
 
                     let id_user = resto.All_user != null ? resto.All_user.split(",") : []
@@ -1258,7 +1257,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                     }
 
                     body_table += `
-                        <tr id="restaurant_${resto.id_resto}">
+                        <tr id="restaurant_${id_resto}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
                                 <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
@@ -1279,7 +1278,7 @@ function showResto(table_rst_pastilled, id_c_u) {
 
             $('#table_resto_pastilled').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 
@@ -1729,7 +1728,8 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites() {
-    showBlockPub();
+    location.reload()
+    // showBlockPub();
 }
 
 
@@ -1890,8 +1890,6 @@ function showInvitations() {
 
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
-        form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
-        form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
 
         ////get cc
         let cc_destinataire = [];
@@ -1910,7 +1908,7 @@ function showInvitations() {
         let status = false;
 
         if (input_principal.value === "") {
-            console.log("Entre au moin une destination.")
+            // console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
         }
 
@@ -1923,7 +1921,7 @@ function showInvitations() {
 
         ///object
         if (object.value === "") {
-            console.log("Veillez entre un Object.")
+            // console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
         } else {
             data = { ...data, "object": object.value }
@@ -1941,6 +1939,8 @@ function showInvitations() {
         // console.log(data)
 
         if (status) {
+            form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
+            form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
             //////fetch data
             fetch("/user/tribu/email/invitation", {
                 method: "POST",
@@ -1967,8 +1967,11 @@ function showInvitations() {
                 let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
 
                 // sauvegarde de l'invitation
-                saveInvitationStory(table_trib, input_principal.value);
-                saveInvitationStory(table_trib, input_cc.value);
+                if(input_principal.value)
+                    saveInvitationStory(table_trib, input_principal.value);
+
+                if(input_cc.value)
+                    saveInvitationStory(table_trib, input_cc.value);
 
                 input_principal.value = null;
                 input_cc.value = null;
@@ -2079,7 +2082,7 @@ function fetchAllTribuGMember() {
                 }
                 $('#table-tribuG-member > table').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             } else {
@@ -2199,7 +2202,7 @@ function updatePublication() {
         }
     } else {
         if (document.querySelector("#" + dataId + " .publication-picture").style.display == "none") {
-            console.log("Ok");
+            // console.log("Ok");
         } else {
             if (document.querySelector("#" + dataId + " .publication-picture").src.includes("data:image/")) {
                 imgSrc = document.querySelector("#" + dataId + " .publication-picture").src
@@ -2423,11 +2426,7 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#tribu_t_name_main_head").getAttribute("data-tribu")
-    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-
+    btn.dataset.tbname = tribu_t_name_0
 }
 
 function settingTribuT(e, tribuTName) {
@@ -2520,105 +2519,107 @@ function updateTribuTInfos(e) {
 
 }
 
-function showGolf() {
+// function showGolf(tableGolfPastilled) {
 
-    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+//     let tableGolfPastilled = tribu_t_name_0
 
-    if (document.querySelector("li.listNavBarTribu > a.active")) {
-        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-    }
-    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+//     if (document.querySelector("li.listNavBarTribu > a.active")) {
+//         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+//     }
+//     document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
 
-    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+//     let golfContainer = document.querySelector("#tribu_t_conteuneur")
 
-    golfContainer.innerHTML = `
-                                <div class="row mt-3 p-3">
-                                    <div class="col-12">
-                                        <div id="form_past"></div>
-                                        <div class="g-3">
-                                            <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
-                                            </div>
-                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
-                                            </div>
-                                        </div>
-                                    </div>
-                                `
+//     golfContainer.innerHTML = `
+//                                 <div class="row mt-3 p-3">
+//                                     <div class="col-12">
+//                                         <div id="form_past"></div>
+//                                         <div class="g-3">
+//                                             <div class="input-group mb-3">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+//                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+//                                             </div>
+//                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+//                                             </div>
+//                                         </div>
+//                                     </div>
+//                                 `
 
-    fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length > 0) {
-                let tr = ""
-                let i = 0
-                for (const item of data) {
-                    if (item.isPastilled) {
-                        i++
-                        let nbrAvis = item.nbrAvis
-                        let note = item.globalNote ? item.globalNote : 0
-                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
-                        tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled">
-                                ${image_tribu_t}
-                                </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
-                            </td>
-                            <td class="data-note-${item.id}">${note}/4</td>
-                            <td>
-                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
-                            </td>
-                        </tr>`
+//     fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log(data)
+//             if (data.length > 0) {
+//                 let tr = ""
+//                 let i = 0
+//                 for (const item of data) {
+//                     console.log(item)
+//                     if (item.isPastilled) {
+//                         i++
+//                         let nbrAvis = item.nbrAvis
+//                         let note = item.globalNote ? item.globalNote : 0
+//                         let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+//                         tr += `<tr id="golf_${item.id_golf}">
+//                             <td class="d-flex bd-highlight align-items-center" data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+//                                 <div class="elie-img-pastilled"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">
+//                                 ${image_tribu_t}
+//                                 </div>
+//                                 <span class="ms-3" style="font-size:12pt;"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">${item.denomination_f}</span>
+//                             </td>
+//                             <td class="data-note-${item.id}">${note}/4</td>
+//                             <td>
+//                                 <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+//                             </td>
+//                             <td>
+//                                 <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+//                             </td>
+//                         </tr>`
 
-                    }
-                }
+//                     }
+//                 }
 
-                if (i > 0) {
+//                 if (i > 0) {
 
-                    golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
-                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom de golf</th>
-                                                <th>Note</th>
-                                                <th>Avis</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${tr}
-                                        </tbody>
-                                    </table>`
+//                     golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+//                                     <table id="table_golf_pastilled" class="ta" style="width:100%">
+//                                         <thead>
+//                                             <tr>
+//                                                 <th>Nom de golf</th>
+//                                                 <th>Note</th>
+//                                                 <th>Avis</th>
+//                                                 <th>Action</th>
+//                                             </tr>
+//                                         </thead>
+//                                         <tbody>
+//                                             ${tr}
+//                                         </tbody>
+//                                     </table>`
 
-                    $('#table_golf_pastilled').DataTable({
-                        "language": {
-                            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                        }
-                    });
-                } else {
-                    golfContainer.style.textAlign = "center"
-                    golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-                }
-
-
-            } else {
-                golfContainer.style.textAlign = "center"
-                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-            }
-
-            golfContainer.classList.add("bg-white");
-            golfContainer.classList.add("p-2");
-            golfContainer.style.display = "block"
+//                     $('#table_golf_pastilled').DataTable({
+//                         "language": {
+//                             url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+//                         }
+//                     });
+//                 } else {
+//                     golfContainer.style.textAlign = "center"
+//                     golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//                 }
 
 
-        })
+//             } else {
+//                 golfContainer.style.textAlign = "center"
+//                 golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//             }
 
-}
+//             golfContainer.classList.add("bg-white");
+//             golfContainer.classList.add("p-2");
+//             golfContainer.style.display = "block"
+
+
+//         })
+
+// }
 
 function findGolf(val, localisation = "") {
 
@@ -2668,7 +2669,7 @@ function findGolf(val, localisation = "") {
                 const idDep = json.id_dep;
                 const nomDep = json.departement;
                 const idEtab = json.id_etab;
-                const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
+                const table = tribu_t_name_0
 
                 body_table += `
                                 <tr>
@@ -2687,7 +2688,7 @@ function findGolf(val, localisation = "") {
 
             $('#resto-a-pastiller-list').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 
@@ -2722,10 +2723,10 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
                             </div>`
 
     modalBody.innerHTML = `<div class="d-flex justify-content-center">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-                                                </div>`
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            </div>`
 
     fetch(request)
         .then(res => res.text()).then(html => {
@@ -2734,45 +2735,9 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
 
 }
 
-function pastilleGolf(element) {
-    let id = element.dataset.id
-    let name = element.dataset.name
-    let tbl = element.dataset.tbname
-    let data = {
-        id: id,
-        name: name,
-        tbl: tbl
-    }
-
-    console.log(data);
-
-    let request = new Request("/user/tribu_t/pastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-
-    fetch(request)
-        .then(response => response.json())
-        .then(message => {
-            new swal("Succès !", "Golf pastillé avec succès", "success")
-                .then((value) => {
-                    element.classList = "btn btn-secondary ms-1"
-                    element.textContent = "Pastillé"
-                    element.setAttribute("disabled", true)
-                    showGolf()
-                    document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                });
-        })
-        .catch(error => console.log(error))
-}
-
 function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse = null) {
 
-    let tableTribu = document.querySelector("#activeTribu").dataset.tableName
+    let tableTribu = tribu_t_name_0
 
     $("#detailOptionGolf").modal("show")
 
@@ -2783,21 +2748,23 @@ function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse 
     let btn = document.querySelector("#data-depastilleGolf-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = tribu_t_name_0
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = tableTribu
 }
 
-function depastilleGolf(selector) {
+/*function depastilleGolf(selector) {
     let id = selector.dataset.id
     let name = selector.dataset.name
-    let tbl = selector.dataset.tbname
+    let tbl = tribu_t_name_0
     let data = {
         id: id,
         name: name,
         tbl: tbl
     }
+
+    console.log(data)
 
     let request = new Request("/user/tribu_t/depastille/golf", {
         method: "POST",
@@ -2814,11 +2781,11 @@ function depastilleGolf(selector) {
                 new swal("Succès !", "Golf dépastillé avec succès", "success")
                 .then((value) => {
                         $("#detailOptionGolf").modal("hide")
-                        document.querySelector("#golf_"+id).remove()
+                        document.querySelector("#golf_"+id).remove() 
                 });
         })
         .catch(error=>console.log(error))
-}
+}*/
 
 
 /**
@@ -2854,7 +2821,7 @@ function fetchAllInvitationStory() {
                 }
                 $('#table-tribuG-member > table').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             } else {
@@ -2864,3 +2831,40 @@ function fetchAllInvitationStory() {
         })
         .catch(error => console.log(error))
 }
+
+if(document.querySelector("#text-note"))
+    document.querySelector("#text-note").onkeyup = (e) => { 
+        if (document.querySelector(".flash-msg-ERREUR")) {
+            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        }
+        const value = e.target.value
+        mustBeInferior4(value, e.target)
+        console.log(value, e.target)
+        
+        
+        setTimeout(() => {
+            e.target.style="border:2px solid black;" 
+            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                
+            })
+        }, 5000)   
+    }
+
+if(document.querySelector("#text-note-modif"))
+    document.querySelector("#text-note-modif").onkeyup = (e) => { 
+        if (document.querySelector(".flash-msg-ERREUR")) {
+            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        }
+        const value = e.target.value
+        mustBeInferior4(value, e.target)
+        
+        
+        setTimeout(() => {
+            e.target.style="border:2px solid black;" 
+            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                
+            })
+        }, 5000)   
+    }

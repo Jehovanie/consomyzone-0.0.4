@@ -1,52 +1,53 @@
 <?php
 namespace  App\Controller;
 
-use App\Repository\HachageTribuTNameRepository;
-use App\Service\Status;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use DateTime;
-
 use Normalizer;
-
 use App\Entity\User;
-
-
+use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
+
 use App\Service\FilesUtils;
+
 use App\Entity\PublicationG;
 
+
 use App\Form\FileUplaodType;
-
 use App\Service\MailService;
-
 use App\Service\UserService;
-use App\Service\StringTraitementService;
 use App\Form\PublicationType;
+
+use App\Service\AgendaService;
+
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
-
 use App\Repository\UserRepository;
-
 use App\Service\RequestingService;
-use App\Service\NotificationService;
-use App\Repository\BddRestoRepository;
-use App\Repository\DepartementRepository;
-use App\Service\AgendaService;
+use App\Service\SortResultService;
+
 use App\Service\Tribu_T_ServiceNew;
-use Doctrine\ORM\EntityManagerInterface;
 
-use function PHPUnit\Framework\assertFalse;
+use App\Service\NotificationService;
+
+use App\Service\PDOConnexionService;
+use App\Repository\BddRestoRepository;
 use function PHPUnit\Framework\isNull;
-
+use App\Service\StringTraitementService;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
+use function PHPUnit\Framework\assertFalse;
 use Symfony\Component\Filesystem\Filesystem;
 
-
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\Routing\RouterInterface;
+
+
+use App\Repository\HachageTribuTNameRepository;
+use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\Constraints\Uuid;
@@ -63,6 +64,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TribuTControllerNew extends AbstractController{
     private $form;
@@ -121,7 +123,7 @@ class TribuTControllerNew extends AbstractController{
         Status $status,
         Request $request, 
         HachageTribuTNameRepository $hachageRepo,
-    
+        SortResultService $sortResultService,
     ){
         $user=$this->getUser();
 
@@ -134,7 +136,7 @@ class TribuTControllerNew extends AbstractController{
         $userConnected= $status->userProfilService($this->getUser());
        
         //render form create tribu-T
-        $form=$this->renderFormer(
+        $objet=$this->renderFormer(
            $request,
             $user,
             $userId,
@@ -143,6 +145,16 @@ class TribuTControllerNew extends AbstractController{
             "app_my_tribu_t_new"
         );
 
+        if($objet["afakaRedirect"]){
+            return $this->redirectToRoute("tribu_t_content",
+            [
+                "name_tribu_t" => $objet["name_tribu_t"],
+                "id" => $objet["id"],
+                "message" => $objet["message"]
+            ]
+
+            ); 
+        }
         
         //get Profil partisant or partenaire
         if ($userType == "consumer") {
@@ -170,6 +182,9 @@ class TribuTControllerNew extends AbstractController{
             $publications= array_merge($publications, $all_pub_tribuT);
         }
 
+        //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
+        $publications= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
+
         return $this->render('tribu_t/tribuT.html.twig',[
             "publications" => $publications,
             "userConnected" => $userConnected,
@@ -177,7 +192,7 @@ class TribuTControllerNew extends AbstractController{
             "tribu_T_owned" => $tribuTOwned,
             "tribu_T_joined" => $tribuTJoined,
             "kernels_dir" => $this->getParameter('kernel.project_dir'), 
-            "form" => $form->createView()
+            "form" => $objet["form"]->createView()
         ]);
     }
 
@@ -230,7 +245,7 @@ class TribuTControllerNew extends AbstractController{
         $tribuTJoined = $this->srvTribuT->getAllTribuTJoinedInfos($user);
        
         //render form create tribu-T
-        $form = $this->renderFormer(
+        $objet = $this->renderFormer(
             $request,
              $user,
              $userId,
@@ -238,6 +253,17 @@ class TribuTControllerNew extends AbstractController{
              $hachageRepo,
              "app_my_tribu_t_new"
          );
+
+        if($objet["afakaRedirect"]){
+            return $this->redirectToRoute("tribu_t_content" ,
+            [
+                "name_tribu_t" => $objet["name_tribu_t"],
+                "id" => $objet["id"],
+                "message" => $objet["message"],
+            ]
+        ); 
+        }
+
          if ($userType == "consumer") {
 
             $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
@@ -245,14 +271,15 @@ class TribuTControllerNew extends AbstractController{
 
             $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-
+        
        return $this->render('tribu_t/tribu_t_specific.html.twig',[
             "profil" => $profil,
             "tribu"=> $infos,
             "userConnected" => $userConnected,
-            "form" => $form->createView(),
+            "form" => $objet["form"]->createView(),
             "tribu_T_owned" => $tribuTOwned,
-            "tribu_T_joined" => $tribuTJoined
+            "tribu_T_joined" => $tribuTJoined,
+            "canActiveTribu" => true
        ]);
     }
 
@@ -295,7 +322,11 @@ class TribuTControllerNew extends AbstractController{
                 ])
                 ->getForm();
         
+        $isRedirect = false;
+        $message = "";
         $form->handleRequest($request);
+        $lastIdTribuTCreated = null;
+        $key="";
         //TODO handle submit
         if ($form->isSubmitted() && $form->isValid()){
             $now = time();
@@ -352,10 +383,17 @@ class TribuTControllerNew extends AbstractController{
             if($imgTribuTDir)
                 $dataImg->move($imgTribuTDir, $newImageName);
             
-            $message = "Tribu " . $nomTribuT . " créée avec succes.";   
-            return $this->redirectToRoute($routeName ,["message" => $message]);
+            $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";   
+            $isRedirect = true;
         }
-        return $form;
+
+        $objet = [];
+        $objet["form"] = $form;
+        $objet["afakaRedirect"] = $isRedirect;
+        $objet["message"] = $message;
+        $objet["id"] = $lastIdTribuTCreated;
+        $objet["name_tribu_t"] = $key;
+        return $objet;
     }
 
     //TO DO route for this   $temp_pub= $this->srvTribuT->getPubCommentAndReaction($tribuT['nom_table_trbT']);
@@ -403,7 +441,6 @@ class TribuTControllerNew extends AbstractController{
             $result =  $this->srvTribuT->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
         }
         
-
         $response = new Response();
         if($result){
             $response->setStatusCode(200);
@@ -621,6 +658,254 @@ class TribuTControllerNew extends AbstractController{
 
     }
 
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction pour l'affichage des infos d'une tribu T, 
+     * localisation du fichier: dans TribuTControllerNew.php,
+     * je veux: afficher les infos d'une tribu T
+    */
+    #[Route("/user/{tribu}/show/tribu_t-info", name: "show_my_tribu_t_info")]
+    public function showTribuTInfos
+    ( 
+        $tribu
+    ){
+        return $this->json($this->srvTribuT->getApropos($tribu));
+    }
+
+    #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
+
+    public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
+
+    {
+        $table_golf = $table_tribu."_golf";
+
+        $tableComment=$table_golf."_commentaire";
+
+        $has_golf = $this->srvTribuT->hasTableResto($table_golf);
+       
+        $golfs = array();
+       
+        if($has_golf == true){
+            $golfs = $this->srvTribuT->getGolfPastilles($table_golf, $tableComment);
+            
+            /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+        }
+		$r=$serialize->serialize($golfs,'json');
+		
+		return new JsonResponse($r, Response::HTTP_OK, [], true);
+
+    }
+
+    #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
+    public function sendInvitationPerEmail(
+        Request $request,
+        UserRepository $userRepository,
+        MailService $mailService,
+        UserService $userService,
+        RouterInterface $router,
+        NotificationService $notification
+    )
+    {
+        if(!$this->getUser()){
+            return $this->json(["result" => "error"] , 401);
+        }
+
+        $userId = $this->getUser()->getId();
+
+        //$userEmail = $this->getUser()->getEmail();
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data); ///$table, $principal, $cc ,$object, $description
+
+        $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
+
+        $nomTribuT =  $this->srvTribuT->getApropos($table);
+
+        $nomTribuT = $nomTribuT["name_tribu_t_muable"];
+
+        $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $nomTribuT;
+        
+        $type = "invitation";
+
+        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+    
+        
+         
+        if($userRepository->findOneBy(["email" => $principal])){
+
+            /** URL FOR MEMBER
+             * EDITED By Nantenaina
+            */
+
+            $url = $router->generate('app_confirm_invitation_tribu', ['email' => $principal,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+            // $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            // $mailService->sendEmail(
+            //     $principal,
+            //     "Amis",
+            //     $object,
+            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+            //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+            // );
+
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = $url ;
+            $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+
+            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
+
+            $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
+
+            $isMembre = $this->srvTribuT->testSiMembre($table, $id_receiver);
+
+            if ($isMembre == "not_invited") {
+                $contentForSender = "Vous avez envoyé une invitation à " .$this->srvTribuT->getFullName($id_receiver). " de rejoindre la tribu ". $nomTribuT;
+                $this->srvTribuT->addMember($table, $id_receiver);
+                $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+                $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+            }
+
+        }else{
+            //// prepare email which we wish send
+            $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+            $this->srvTribuT->addMemberTemp($table, $principal);
+            // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
+            // $mailService->sendEmail(
+            //     $principal,
+            //     "Amis",
+            //     $object,
+            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+            //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
+            // );
+
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = $url ;
+            $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+
+            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
+        }
+
+        if( count($cc) > 0 ){
+
+            foreach($cc as $c){
+
+                if($userRepository->findOneBy(["email" => $c])){
+
+                    /** URL FOR MEMBER
+                     * EDITED By Nantenaina
+                    */
+                    $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
+        
+                    // $mailService->sendEmail(
+                    //     $c,
+                    //     "Amis",
+                    //     $object,
+                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                    //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+                    // );
+
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = $url ;
+                    $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
+        
+                    $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
+        
+                    $isMembre = $this->srvTribuT->testSiMembre($table, $id_receiver);
+        
+                    if ($isMembre == "not_invited") {
+                        $contentForSender = "Vous avez envoyé une invitation à " .$this->srvTribuT->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+                        $this->srvTribuT->addMember($table, $id_receiver);
+                        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+                        $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                        $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+                    }
+        
+                }else{
+                    $this->srvTribuT->addMemberTemp($table, $c);
+
+                    //// prepare email which we wish send
+                    $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+                    
+                    // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
+                    // $mailService->sendEmail(
+                    //     $c,
+                    //     "Amis",
+                    //     $object,
+                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+                    //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+                    // );
+
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = $url ;
+                    $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
+                }
+
+            }
+        }
+
+        return $this->json([
+            "result" => "success"
+        ], 201 );
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     */
+    #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
+    public function confirmInvitation(Request $request){
+
+        $table =$request->query->get("tribu");
+
+        $email =$request->query->get("email");
+
+        if($this->getUser()){
+
+            if($table && $email){
+
+                $user = $this->getUser();
+                $userId = $user->getId();
+                
+                $userIdOwned = explode("u",$table)[1];
+                $userIdOwned = intval($userIdOwned);
+                
+                $this->srvTribuT->addTribuTJoined($user,$userIdOwned,  $table);
+
+                ///update status of the user in table tribu T
+                $this->srvTribuT->updateMember($table, $userId, 1);
+
+                $this->srvTribuT->updateInvitationStory($table . "_invitation", 1, $email);
+    
+            }
+
+            $infos = $this->srvTribuT->getApropos($table);
+
+            return $this->redirectToRoute("tribu_t_content",
+                [
+                    "name_tribu_t" => $infos["nom_table_trbT"],
+                    "id" => $infos["id"]
+                ]
+            );
+
+        }else{
+
+            return $this->redirectToRoute('app_login');
+            
+        }
+    }
+
     #[Route('/user/tribu/get_fondateur/{table_tribu}', name: 'app_get_fondateur_tribu')]
 
     public function getFondateur($table_tribu): Response {
@@ -638,6 +923,78 @@ class TribuTControllerNew extends AbstractController{
             return $this->json(["is_fondateur"=>true]);
 
         }
+    }
+
+    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    public function checkedIfRestaurantIsPastilled(
+        $id_golf,
+        UserRepository $userRepository,
+        Tribu_T_ServiceNew $tribu_T_Service,
+        SerializerInterface $serializerInterface
+    ) {
+        $arrayTribu = [];
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+            $pdoService = new PDOConnexionService();
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["nom_table_trbT"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => json_decode($pdoService->convertUnicodeToUtf8($name_tribu_t_muable),true), "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => json_decode($pdoService->convertUnicodeToUtf8($name_tribu_t_muable),true), "logo_path" => $logo_path, "isPastilled" => true]);
+                    }
+                }
+            }
+        }
+
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
+    }
+
+    #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
+    public function update_pdp_tribu(Request $request){
+        
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+        
+        $jsonParsed = json_decode($request->getContent(), true);
+
+        $tribu_t_name =  $jsonParsed["tribu_t_name"];
+
+        $image =  $jsonParsed["base64"] ;
+       
+        $imageName = time().$jsonParsed["photoName"];
+        
+        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
+        if (!($this->filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+            $this->filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        
+        $fileUtils = new FilesUtils();
+
+        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+        
+        $response = new Response();
+
+        try{
+
+            $this->srvTribuT->updatePDPTribuT($tribu_t_name,'/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/".$imageName);
+
+            $response->setStatusCode(200);
+
+            return $response;
+
+        }catch(\Exception $e){
+            $response->setStatusCode(500);
+            return $response;
+        }
+
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Supplier;
 use App\Entity\User;
 use App\Service\PDOConnexionService;
+use App\Service\Tribu_T_ServiceNew;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -93,6 +94,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getListTableTribuT_owned(){
         $results= [];
+
+        if(!$this->sec->getUser()){
+            return $results;
+        }
+
         $pdo = new PDOConnexionService();
         $tribuTOwned = $this->sec->getUser()? $this->sec->getUser()->getTribuT() : null;
 
@@ -112,39 +118,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
 
     public function getListTalbeTribuT_joined(){
-        $results= [ ];
-        $pdo = new PDOConnexionService();
-        $tribuTJoined = $this->sec->getUser()? $this->sec->getUser()->getTribuTJoined() : null;
-
-        if(!$tribuTJoined){
-            return $results;
-        }
-
-        $sql = "SELECT * FROM $tribuTJoined";
-        $db = $pdo->getPDO();
-        $stm = $db->prepare($sql);
-        $stm->execute();
-        $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
-
-        $bb = [];
-
-        if(count($results)>0){
-            foreach($results as $r){
-                $tab = "tribu_t_o_".$r['user_id_owened'];
-                // dd($tab);
-                $sql = "SELECT * FROM $tab WHERE nom_table_trbT =:nom_table_trbT";
-
-                // dd($sql);
-                $db = $pdo->getPDO();
-                $stm = $db->prepare($sql);
-                $stm->bindParam(':nom_table_trbT',$r['nom_table_trbT']);
-                $stm->execute();
-                //$results = $stm->fetchAll(\PDO::FETCH_ASSOC);
-                array_push($bb,$stm->fetch(\PDO::FETCH_ASSOC));
-            }
-        }
-
-        return $bb;
+        $tribuTService = new Tribu_T_ServiceNew();
+        return $tribuTService->getAllTribuTJoinedInfos($this->sec->getUser());
     }
 
     public function getListTableTribuT(){

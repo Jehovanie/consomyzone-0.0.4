@@ -384,7 +384,7 @@
                       <td class="col-logo">
                           <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" class="avatar-tribu" src="{{ item.logo_path is not same as("") ? '/public' ~ item.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
                       </td>
-                      <td class="col-tribuT"><a href="#" data-tribu="{{item.nom_table_trbT}}" onclick="setDirForImage(event)">Tribu T {{item.name_tribu_t_muable|capitalize}}</a></td>
+                      <td class="col-tribuT"><a href="#" data-tribu="{{item.nom_table_trbT}}" onclick="setDirForImage(event)">Tribu T {{change(item.name_tribu_t_muable)|capitalize}}</a></td>
                       <td class="col-action">
                           <button type="button" class="mx-2 btn btn-success" data-tribu="{{item.nom_table_trbT}}" onclick="setDirForImage(event)">Choisir</button>
                       </td>

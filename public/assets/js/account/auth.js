@@ -10,3 +10,8 @@ var [login, register, form] = ['login', 'register', 'form'].map(id => $id(id));
         this.getAttribute("id") === "register"?  form.classList.add("active") : form.classList.remove("active");
     }
 });
+
+const urlParams = new URLSearchParams(location.search);
+const registerAgenda = urlParams.get('registerAgenda')
+if(registerAgenda)
+    document.querySelector("#register").click()
