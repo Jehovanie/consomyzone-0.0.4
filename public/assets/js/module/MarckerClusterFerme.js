@@ -526,36 +526,7 @@ class MarckerClusterFerme extends MapModule {
 
         //// Update icon size while zoom in or zoom out
         // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
-        const depart= 15;
-        this.markers.eachLayer(marker => {
-            if (marker.options.icon.options.hasOwnProperty('iconUrl') || marker.options.icon.options.__proto__.hasOwnProperty('iconUrl')){
-                const prototype= marker.options.icon.options.hasOwnProperty('iconUrl') ? marker.options.icon.options : marker.options.icon.options.__proto__;
-                const icon= prototype;
-                marker.setIcon(
-                    L.icon({
-                        ...icon,
-                        iconSize : [depart+zoom, depart+zoom +9],
-                    })
-                )
-            }else{
-                const divIcon= marker.options.icon.options;
-                const lastDivIcon= divIcon.html;
-
-                const parser = new DOMParser();
-                const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
-                const span= htmlDocument.querySelector(".my-div-span");
-                const image= htmlDocument.querySelector(".my-div-image");
-                image.setAttribute("style", `width:${depart+zoom}px ; height:${depart+zoom +9}px`)
-
-                marker.setIcon(
-                    new L.DivIcon({
-                        ...divIcon,
-                        html : `${span.outerHTML} ${image.outerHTML}`,
-                        iconSize : [depart+ zoom, depart+ zoom +9],
-                    })
-                )
-            }
-        })
+        this.synchronizeIconSize()
 
         // this.markers.refreshClusters();
 
@@ -600,5 +571,4 @@ class MarckerClusterFerme extends MapModule {
             })
         }
     }
-
 }

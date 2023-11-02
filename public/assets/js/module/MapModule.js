@@ -60,7 +60,7 @@ class MapModule{
             { zoomMin:15, dataMax: 15, ratio:3 },
             { zoomMin:13, dataMax: 10, ratio:2 },
             { zoomMin:11, dataMax: 5, ratio:2 },
-            { zoomMin: 5, dataMax: 2, ratio:1 },
+            { zoomMin: 4, dataMax: 2, ratio:1 },
             { zoomMin: 0, dataMax: 1, ratio:0 },
         ]
     }
@@ -1580,9 +1580,40 @@ class MapModule{
         })
     }
 
+    synchronizeIconSize(){
+        const zoom = this.map._zoom;
+        //// Update icon size while zoom in or zoom out
+        // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+        const depart= 15;
+        this.markers.eachLayer(marker => {
+            if (marker.options.icon.options.hasOwnProperty('iconUrl') || marker.options.icon.options.__proto__.hasOwnProperty('iconUrl')){
+                const prototype= marker.options.icon.options.hasOwnProperty('iconUrl') ? marker.options.icon.options : marker.options.icon.options.__proto__;
+                const icon= prototype;
+                marker.setIcon(
+                    L.icon({
+                        ...icon,
+                        iconSize : [depart+zoom, depart+zoom +9],
+                    })
+                )
+            }else{
+                const divIcon= marker.options.icon.options;
+                const lastDivIcon= divIcon.html;
 
+                const parser = new DOMParser();
+                const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
+                const span= htmlDocument.querySelector(".my-div-span");
+                const image= htmlDocument.querySelector(".my-div-image");
+                image.setAttribute("style", `width:${depart+zoom}px ; height:${depart+zoom +9}px`)
 
-    filterSomeData(entierDecimal, ratio){
-
+                marker.setIcon(
+                    new L.DivIcon({
+                        ...divIcon,
+                        html : `${span.outerHTML} ${image.outerHTML}`,
+                        iconSize : [depart+ zoom, depart+ zoom +9],
+                    })
+                )
+            }
+        })
     }
+
 }
