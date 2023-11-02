@@ -380,7 +380,7 @@ class MarckerClusterResto extends MapModule  {
         //     let opacity = 1;
         //     let animationInterval = setInterval(function () {
         //         if (opacity > 0) {
-        //             opacity -= 0.1; // Adjust the decrement for speed
+        //             opacity -= 0.2; // Adjust the decrement for speed
         //             layer.setOpacity(opacity);
         //         } else {
         //             clearInterval(animationInterval);
@@ -649,7 +649,17 @@ class MarckerClusterResto extends MapModule  {
     }
 
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans la rubrique resto, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mise a jour les données sur la carte,
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     * - remove markers outside the box
+     * - Add some markers ( via latitude, ratio, dataMax )
+     * - 
+     */
     updateMarkersDisplay(newSize){
 
         const zoom = this.map._zoom;
@@ -697,8 +707,8 @@ class MarckerClusterResto extends MapModule  {
                     })
                 }
             });
-            console.log("Avant dataFilteredDerive")
-            console.log(dataFilteredDerive);
+            // console.log("Avant dataFilteredDerive")
+            // console.log(dataFilteredDerive);
 
 
             //// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
@@ -717,8 +727,8 @@ class MarckerClusterResto extends MapModule  {
                 init_iterate_ratio +=iterate_ratio;
             }
 
-            console.log("Apres dataFilteredDerive")
-            console.log(dataFilteredDerive)
+            // console.log("Apres dataFilteredDerive")
+            // console.log(dataFilteredDerive)
            
 
             this.default_data.forEach(item => {
@@ -750,8 +760,8 @@ class MarckerClusterResto extends MapModule  {
                 }
             })
 
-            console.log("dataFilteredDerive");
-            console.log(dataFilteredDerive);
+            // console.log("dataFilteredDerive");
+            // console.log(dataFilteredDerive);
 
         }else{
             const dataFiltered= [ ];
@@ -872,7 +882,16 @@ class MarckerClusterResto extends MapModule  {
 
         console.log("Total default data: " + this.default_data.length)
     }
-
+    
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans la rubrique resto, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mise a jour les données sur la carte,
+     * @param {} new_data : dataList to show
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     */
     addMarkerNewPeripherique(new_data, newSize){
         const { minx, maxx, miny, maxy } = newSize;
 
