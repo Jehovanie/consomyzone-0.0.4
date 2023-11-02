@@ -429,11 +429,19 @@ class MarckerClusterResto extends MapModule  {
     }
 
     clickOnMarker(id){
+        let isClicked= false;
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click'); 
+                marker.fireEvent('click');
+                isClicked= !isClicked;
             }
         });
+
+        if( !isClicked ){
+            const resto= this.default_data.find(({id: itemID}) => parseInt(id) === parseInt(itemID));
+            this.updateCenter( parseFloat(resto.lat ), parseFloat(resto.long ), this.zoomDetails);
+            this.settingSingleMarker(resto, true);
+        }
     }
 
   
