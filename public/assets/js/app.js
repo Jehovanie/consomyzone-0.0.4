@@ -237,6 +237,15 @@ if(document.querySelector(".custom-flash")){
     }, 4000)
 
 }
+if ( document.querySelectorAll('.fa-solid.fa-xmark')) {
+    let closesIcon = document.querySelectorAll('.fa-solid.fa-xmark');
+
+    closesIcon.forEach(function(closeIcon) {
+        closeIcon.addEventListener('click', function() {
+            this.parentNode.parentNode.style.display="none";
+        });
+    }); 
+}
 
 
 if(document.querySelector(".custom-flash-inscription")){
@@ -249,7 +258,7 @@ if(document.querySelector(".custom-flash-inscription")){
 
     setTimeout(() => {
 
-        contentMessageFlash.classList.add("hide-flash-inscription") 
+        // contentMessageFlash.classList.add("hide-flash-inscription") 
 
     }, 4000)
 
@@ -700,7 +709,7 @@ let editor_invitation;
 initCKEditor("editor",showModalEditor);
 initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
-initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+initCKEditor("editor-agenda-non-inscrit",showModalEditor);
 
 
 /**
@@ -751,7 +760,7 @@ function initCKEditor(idElement,callback){
                 ]
             },
             // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
-            placeholder: 'Welcome to CKEditor&nbsp;5!',
+            placeholder: 'Ecrivez içi votre message!',
             // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
             fontFamily: {
                 options: [
@@ -1131,8 +1140,15 @@ function showPartenairAsk(){
 
 function showReponsePartenaire(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
+const nameTribuT=document.querySelector("#tribu_t_name_main_head").textContent
     return html=`
-        <p>Ecrivez votre message ici.</p>
+        <span>Madame, Monsieur,</span></br>
+
+            <span>Nous avons le plaisir de vous inviter à rejoindre notre tribu thématique</span> <span class="nom_tribu_t_envoyeur_invit_elie_js">${nameTribuT}</span> <span>nouvellement fondée sur l'application ConsoMyZone</span>.
+            
+            <p>Pour cela, nous serions ravis de vous compter parmi nos membres et que votre présence sera une aide précieuse.
+            
+            En espérant vous revoir très bientôt, nous vous prions d'agréer, Madame, Monsieur, en l'expression de notre considération distinguée.</p>
         `
 }
 
@@ -1944,7 +1960,7 @@ function getToastMessage(){
                         0,
                         JSON.stringify("Veuillez vous connecter pour accéder à tous les informations importants sur notre application."),
                         3,  //// type de notification : 0 alert, 1 primary, 2 news
-                        10000
+                        200000
                     );
                 }
             }
@@ -1970,7 +1986,7 @@ function generateToastMessage(data){
                     item.id,
                     item.toast_message,
                     item.type, //// type de notification : 0 alert, 1 primary, 2 news
-                    10000
+                    200000
                 );
             }, 1000 * (index + 1))
         }

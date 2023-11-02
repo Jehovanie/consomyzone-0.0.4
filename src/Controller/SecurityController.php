@@ -115,7 +115,9 @@ class SecurityController extends AbstractController
 
             $flash = [
                 "titre" => "SUCCESS",
-                "content" => "Votre compte a été créé. Merci de vérifier votre boite email, pour confirmée votre inscription."
+                
+                "content" => "Votre compte a été créé. Merci de vérifier votre boite email,". 
+                            "pour finaliser votre inscription."
             ];
            
         }else{
@@ -130,7 +132,7 @@ class SecurityController extends AbstractController
                 case "email-ae": /// email already exist
                     $flash = [
                         "titre" => "ERROR",
-                        "content" => "Votre adresse e-mail est déjà existe dans notre base de données, veuillez connectez."
+                        "content" => "Votre adresse e-mail existe déjà dans notre base de données, veuillez-vous connecter."
                     ];
                     break;
                 case "password-ne":
@@ -368,7 +370,7 @@ class SecurityController extends AbstractController
         $type = "";
 
         $data = $request->request->all()["form"];
-
+        //dd($data);
         // dd($data);
         extract($data);
 
@@ -376,7 +378,7 @@ class SecurityController extends AbstractController
 
 
         ///data user.
-
+        //dd($data['email']);
         if( !$mailService->valid_email($data['email'])){
             $result = false;
             $type = "email-nv"; ///email not valid
@@ -387,14 +389,28 @@ class SecurityController extends AbstractController
 
 
         ///check the email if already exist
+// if ($userRepository->findOneBy(['email' => $data['email']])) {
+        //     $result = false;
+        //     $type = "email-ae"; /// email already exist
+
+        //     goto quit;
+        // }
+            $oldUser = null;
+            ///check the email if already exist
         if ($userRepository->findOneBy(['email' => $data['email']])) {
+$userExist = $userRepository->findOneBy(['email' => $data['email']]);
+                if($userExist->getType() == "Type"){
+                    $oldUser = $userExist;
+                }else{
             $result = false;
             $type = "email-ae"; /// email already exist
-
             goto quit;
+}
         }
 
 
+// Check if old user
+           
 
         ////valid password
         if (strcmp($data['password'], $data['confirmpassword']) != 0) {
@@ -413,7 +429,12 @@ class SecurityController extends AbstractController
 
 
         /// new instance for user.
+if($oldUser){
+            $user = $oldUser;
+        }else{
+            /// new instance for user.
         $user = new User();
+}
         $user->setPseudo(trim($data['pseudo']));
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
@@ -473,6 +494,7 @@ class SecurityController extends AbstractController
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+        $agendaService->createAgendaStoryTable($numero_table);
         
 
         ///keep the change in the user information
@@ -850,16 +872,29 @@ class SecurityController extends AbstractController
 
             $mailService->valid_email($data['email']);
 
+///check the email if already exist
+            // if ($userRepository->findOneBy(['email' => $data['email']])) {
+            //     // dd("Email already exist.");
+
+            //     $flash = [
+            //         "titre" => "ERREUR",
+            //         "content" => "Cette adresse e-mail est déjà associée à un compte."
+            //     ];
+            //     ///On quitte
+            //     goto quit;
+            // }
+            $oldUser = null;
             ///check the email if already exist
             if ($userRepository->findOneBy(['email' => $data['email']])) {
-                // dd("Email already exist.");
-
+                $userExist = $userRepository->findOneBy(['email' => $data['email']]);
+                if($userExist->getType() == "Type"){
+                    $oldUser = $userExist;
+                }else{
                 $flash = [
                     "titre" => "ERREUR",
                     "content" => "Cette adresse e-mail est déjà associée à un compte."
                 ];
-                ///On quitte
-                goto quit;
+                }
             }
 
             ////valid password
@@ -880,8 +915,13 @@ class SecurityController extends AbstractController
                 goto quit;
             }
 
+/// new instance for user.
+            if($oldUser){
+                $user = $oldUser;
+            }else{
             /// new instance for user.
             $user = new User();
+}
             $user->setPseudo(trim($data['pseudo']));
             $user->setEmail(trim($data['email']));
             $user->setPassword($data['password']);
@@ -923,7 +963,7 @@ class SecurityController extends AbstractController
             $this->requesting->createTable("tablerequesting_" . $numero_table);
             $agendaService->createTableAgenda("agenda_" . $numero_table);
             $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
-
+            $agendaService->createAgendaStoryTable($numero_table);
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -990,6 +1030,17 @@ class SecurityController extends AbstractController
                 ['id' => $user->getId()] /// param id
             );
 
+/**
+             * update invitation story in tribu T
+             * @author Elie <eliefenohasina@gmail.com>
+             */ 
+
+             $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"));
+
+            /**
+             * end Elie
+             */
+
             /// redirect user to the inscription type------------///
             return $this->redirect($signatureComponents->getSignedUrl());
             ///-------------------------------------------------------///
@@ -1003,7 +1054,6 @@ class SecurityController extends AbstractController
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
-
 
     #[Route(path:"/api/getAllCommune", name: "app_getAllCommune")]
     public function getAllCommuneAction(CommuneRepository $communeRepository){

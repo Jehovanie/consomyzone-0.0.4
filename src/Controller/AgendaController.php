@@ -33,6 +33,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\GolfFinished;
+use App\Entity\User;
 
 ini_set('max_execution_time', '600');
 
@@ -125,11 +126,19 @@ class AgendaController extends AbstractController
     }
 
     #[Route('/agenda/make/confirmation/{fromId}/{toId}/{agendaId}/{isYes}', name: 'agenda_make_confirmation', methods: ["GET","POST"])]
-    public function makeConfirmationAgenda($fromId,$toId,$agendaId, $isYes){
+    public function makeConfirmationAgenda($fromId,
+    $toId,
+    $agendaId,
+     $isYes,
+     UserRepository $userRepository){
 
-        $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
+        // $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
        
-        return $this->json($confirm);
+        // return $this->json($confirm);
+        $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
+       $userTo = $userRepository->findOneBy(["id" => $toId]);
+        $type = $userTo->getType();
+        return $this->json(["response"=>$confirm["response"], "type"=>$type]);
       
     }
 
@@ -1840,4 +1849,126 @@ class AgendaController extends AbstractController
         ]);
     }
 
+/**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique partage agenda cmz, 
+     * localisation du fichier: dans AgendaController.php,
+     * je veux: partager mon agenda pour l'utilisateur non inscrit
+     */
+    #[Route("/user/agenda/invitation/not/partisan" , name:"invitation_not_partisan", methods:"POST")]
+    public function sendInvitationNotPartisan(
+        Request $request,
+        UserRepository $userRepository,
+        MailService $mailService,
+        UserService $userService,
+        EntityManagerInterface $entityManager,
+        AgendaService $agendaService
+    )
+    {
+        if(!$this->getUser()){
+            return $this->json(["result" => "error"] , 401);
+        }
+
+        $userId = $this->getUser()->getId();
+
+        $data = json_decode($request->getContent(), true);
+
+        extract($data); ///$table, $principal, $cc ,$object, $description, $agendaId
+        $agendaID = $agendaId;
+        $table_agenda_partage_name="partage_agenda_".$userId;
+        if($userRepository->findOneBy(["email" => $principal])){
+
+            $userTo = $userRepository->findOneBy(["email" => $principal]);
+            $idUserTo = $userTo->getId();
+            $fullNameUserTo = "ConsoMyZone";
+            $status = "Pas encore confirmé";
+            if($userTo->getType() != "Type"){
+                $fullNameUserTo = $userService->getUserFirstName($idUserTo) . " " . $userService->getUserLastName($idUserTo);
+                $status = "Déjà confirmé";
+            }
+            $to_id=$idUserTo;
+            $email_to=$principal;
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = "";
+            $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
+            $context["content_mail"] = $description;
+            $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
+            $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
+
+        }else{
+            $email_to=$principal;
+            $context["object_mail"] = $object;
+            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"] = "";
+            // ADD USER TEMP
+            $userTemp = new User();
+            $to_id = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+            $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
+            $context["content_mail"] = $description;
+            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
+            $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
+        }
+
+        if( count($cc) > 0 ){
+
+            foreach($cc as $c){
+
+                if($userRepository->findOneBy(["email" => $c])){
+
+                    $userTo = $userRepository->findOneBy(["email" => $c]);
+                    $idUserTo = $userTo->getId();
+                    $fullNameUserTo = "ConsoMyZone";
+                    $status = "Pas encore confirmé";
+                    if($userTo->getType() != "Type"){
+                        $fullNameUserTo = $userService->getUserFirstName($idUserTo) . " " . $userService->getUserLastName($idUserTo);
+                        $status = "Déjà confirmé";
+                    }
+                    $to_id=$idUserTo;
+                    $email_to=$c;
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = "";
+                    $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$data["description"]);
+                    $context["content_mail"] = $description;
+                    $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
+        
+                }else{
+                    $email_to=$c;
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = "";
+                    // ADD USER TEMP
+                    $userTemp = new User();
+                    $to_id = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+                    $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$data["description"]);
+                    $context["content_mail"] = $description;
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
+                }
+
+            }
+        }
+        return $this->json("Invitation envoyée avec succès");
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique historique invitation agenda cmz, 
+     * localisation du fichier: dans AgendaController.php,
+     * je veux: voir l'historique d'invitation de mon agenda
+     */
+    #[Route("/user/invitation/story/agenda" , name:"invitation_story_agenda", methods:"GET")]
+    public function invitationStoryAgenda(AgendaService $agendaService){
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $stories = $agendaService->invitationStoryAgenda("agenda_".$userId."_story","partage_agenda_".$userId);
+       
+        return $this->json($stories);
+    }
 }

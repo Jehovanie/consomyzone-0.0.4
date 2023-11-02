@@ -66,8 +66,10 @@ class MarckerClusterSearch extends MapModule  {
         let latLong = memoryCenter ? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom : memoryCenter.zoom } : { lat: null, long: null, zoom: null };
 
         try{
-            if((this.data.origin_cles1.length < 3 && ( parseInt(this.data.origin_cles1) > 0 &&  parseInt(this.data.origin_cles1) < 95 ) || this.data.origin_cles1.toLowerCase() === "nord")){
-                const depCode= this.data.origin_cles1.toLowerCase() === "nord" ? 59 : parseInt(this.data.origin_cles1) ;
+            let data_origin_cle1=this.data.origin_cles1.trim();
+            console.log(data_origin_cle1)
+            if((data_origin_cle1.length < 3 && ( parseInt(data_origin_cle1) > 0 &&  parseInt(data_origin_cle1) < 95 ) || data_origin_cle1.toLowerCase() === "nord")){
+                const depCode= data_origin_cle1.toLowerCase() === "nord" ? 59 : parseInt(data_origin_cle1) ;
                 latLong=  { lat: centers[depCode].lat, long: centers[depCode].lng, zoom : centers[depCode].zoom };
             }else{
                 const dataLink= [
@@ -75,28 +77,56 @@ class MarckerClusterSearch extends MapModule  {
                         regex : /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
                         clesType:"completAdresss",
                         zoom: 17,
-                        link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`
+                        link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`
                     },
                     {
                         regex: /[\d]{5}/g,
                         clesType:"codepostal",
                         zoom: 13,
-                        link : `https://nominatim.openstreetmap.org/search?format=json&postalcode=${this.data.origin_cles1}&country=France&limit=1`
+                        link : `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`
                     },
                     {
                         regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
                         clesType : "city",
                         zoom: 13,
-                        link : `https://nominatim.openstreetmap.org/search?format=json&city=${this.data.origin_cles1}&country=France&limit=1`
+                        link : `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`
                     },
                     
                 ]
                 
-                let useLink = dataLink.find(item =>item.regex.test(this.data.origin_cles1))
+                let useLink = dataLink.find(item =>item.regex.test(data_origin_cle1))
                 
-                const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`;
-                const responsePos = await fetch(apiOpenStreetMap)
-                const address = await responsePos.json();
+                const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`;
+                let responsePos = await fetch(apiOpenStreetMap)
+                let address = await responsePos.json();
+
+                if( address.length === 0) {
+                    responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`)
+                    address = await responsePos.json();
+
+                    if( address.length === 0 ){
+                        const cleWord= data_origin_cle1.replaceAll("-", " ").replaceAll("_", " ").split(" ");
+                        const regexCodepostal=/[\d]{5}/g;
+
+                        for(let i=0; i < cleWord.length; i++){
+                            const cle= cleWord[i];
+
+                            if(regexCodepostal.test(cle)){
+                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cle}&country=France&limit=1`)
+                                address = await responsePos.json();
+
+                            }else{
+                                // responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
+                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`)
+                                address = await responsePos.json();
+}
+
+                            if(address.length !== 0 ){
+                                break;
+                            }
+                        }
+                    }
+                }
     
                 //// In cas API openStreetMap failed or return empty
                 const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;

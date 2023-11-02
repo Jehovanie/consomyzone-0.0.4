@@ -288,6 +288,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.repas1,
                         r.typeCuisine1,
                         r.dep,
+                        r.codinsee,
                         r.depName,
                         r.tel,
                         r.poiX,

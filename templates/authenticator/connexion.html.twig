@@ -38,22 +38,53 @@
 		<div class="content_global ">
 			<div class="right_content" id="right_content_conn">
 			
-				{% if flash %}
-					<div class="custom-flash-inscription bg-danger">
+				{% if  flash %}
+				{% if flash.titre is same as("ERROR")%}
+					<div class="xd-message msg-danger">
+					<div class="xd-message-icon">
+								<i class="fa-solid fa-xmark text-light"></i>
+							</div>
+							<div class="xd-message-content">
+								<p>{{ flash.content }}</p>
+							</div>
+							<a href="#" class="xd-message-close">
+								<i class="fa-solid fa-xmark"></i>
+							</a>
+						</div>
+					{% else %}
+						<div class="xd-message msg-success">
+							<div class="xd-message-icon">
+								<i class="fa-solid fa-check text-light"></i>
+							</div>
+							<div class="xd-message-content">
+								<p>{{ flash.content }}</p>
+							</div>
+							<a href="#" class="xd-message-close">
+								<i class="fa-solid fa-xmark"></i>
+							</a>
+						</div>
+					{% endif %}
+					
+
+					{# <div class=" custom-flash-inscription bg-success xd-message msg-danger">
 						<div class="row ">
-							<div class="col">
-								<h4 class="text-light">
+							<div class="col-md-3">
+<i class="fa-solid fa-check text-light "></i>
+								<h2 class="text-light fs-3 fw-bold text-center ">
 									{{flash.titre}}
-								</h4>
+									Vous y êtes presque, il ne reste plus qu'une étape.
+								</h2>
+</div>
+							<div class="col">
+								
 								<p class="text-light">
 									{{ flash.content }}
+									 Votre compte a été créé. Merci de vérifier votre boite email, pour finaliser votre inscription.
 								</p>
 							</div>
-							<div class="col-md-3">
-								<i class="fa-solid fa-triangle-exclamation text-light fa-danjer"></i>
-							</div>
+							
 						</div>
-					</div>
+					</div> #}
 				{% endif %}
 				<div class="row" style="height: 100%">
 					<section id="form" class="form" >
@@ -95,11 +126,12 @@
 											<i  class="fas fa-eye-slash" id="togglePassword"></i>
 										</div>
 									</div>
-									<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+									
 								</div>
 							</div>
+							<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 							<div class="row ms-1">
-								<button class="btn waves-effect waves-light cta_connexion">
+								<button type="submit" class="btn waves-effect waves-light cta_connexion">
 									Connexion
 								</button>
 							</div>

@@ -265,6 +265,7 @@ class MessageController extends AbstractController
                 if(!is_null($to_id)){
                     $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+$agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $email_to, "Déjà confirmé", $agendaID);
                 }
             }
         }else{

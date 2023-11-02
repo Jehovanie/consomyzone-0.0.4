@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // console.log(allAgenda);
 
             allAgenda.forEach(agenda => {
-                const { id, title, dateStart: start, dateEnd: end, timeStart: heureDebut, timeEnd: heureFin } = agenda;
+                let { id, title, dateStart: start, dateEnd: end, timeStart: heureDebut, timeEnd: heureFin } = agenda;
+
                 // const className=  repasType.some(item => item.includes(type.toLowerCase())) ? "repas": 'other_event';
                 // var tomorrow = new Date(end);
                 // tomorrow.setDate(tomorrow.getDate()+1)
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 dateStartAgd = dateStartAgd.setHours(heureDebut.split(":")[0], heureDebut.split(":")[1], heureDebut.split(":")[2]);
                 let dateEndAgd = new Date(end)
                 dateEndAgd = dateEndAgd.setHours(heureFin.split(":")[0], heureFin.split(":")[1], heureFin.split(":")[2]);
-                agendaTab.push({ id, title, start: dateStartAgd, end: dateEndAgd, textColor: 'black' })
+                agendaTab.push({ id, title, start: dateStartAgd, end: dateEndAgd, textColor: 'black',classNames:["calendar_title_tom_js_"+id] })
             })
             // console.log(agendaTab)
             rendreCalendarWithEvents(agendaTab)
@@ -213,6 +214,7 @@ function rendreCalendarWithEvents(events) {
     var calendarEl = document.getElementById('calendar');
     if(typeof FullCalendar != "undefined"){
         var calendar = new FullCalendar.Calendar(calendarEl, {
+
             plugins: ['interaction', 'dayGrid'],
             themeSystem: 'bootstrap5',
             defaultDate: new Date(),
@@ -230,6 +232,7 @@ function rendreCalendarWithEvents(events) {
                 "default": true
             },
             events: events,
+
             dateClick: function (info) {
                 bindEventForAllDay(info)
             },
@@ -237,9 +240,25 @@ function rendreCalendarWithEvents(events) {
                 const id = info.event.id ? parseInt(info.event.id) : 0
                 bindEventForAnEvent(id)
             },
+        eventRender: function (element) {
+                if (screen.width < 991) {
+                    let icon = document.createElement("i");
+                    icon.classList.add('fa-regular', 'fa-bell','fa-lg');
+                    icon.style="color: #f5bfa8;"
+                    element.el.querySelector(".fc-time").style.display ="none"
+                    element.el.querySelector(".fc-title").textContent = ""
+                    element.el.querySelector(".fc-title").appendChild(icon);
+                }
+                
+            }
+            
         });
     
+        if (screen.width < 991) {
+            calendar.setOption('contentHeight', 385);
+        }
         calendar.render();
+
     }
     
 }
@@ -1634,11 +1653,17 @@ if(document.querySelector("#shareAgendaBtn")){
 
 /** END BLOC */
 
+/**
+ * @Author Nantenaina
+ * où: on Utilise cette fonction dans la rubrique partage agenda cmz, 
+ * localisation du fichier: dans agenda.js,
+ * je veux: choisir un autre menu
+*/
+
 function tableActiveFilterPartisant(e) {
-    const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "list_partisant_emailing_jheo_js"];
+    const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "email_non_inscrit", "invitation_story", "list_partisant_emailing_jheo_js"];
     const current_class_active = allTypeActive.find(item => e.classList.contains(item))
     const other_not_active = allTypeActive.filter(item => item != current_class_active)
-
     if (!e.classList.contains("active")) {
         e.classList.add("active")
     }
@@ -1647,13 +1672,32 @@ function tableActiveFilterPartisant(e) {
         document.querySelector("#agenda-emailing").style.display = "block"
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
+document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "none"
     }else if(e.classList.contains("agenda-tribu-g")){
         document.querySelector("#agenda-tribu-g").style.display = "block"
         document.querySelector("#agenda-emailing").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
+document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "none"
+    }else if(e.classList.contains("email_non_inscrit")){
+        document.querySelector("#agenda-tribu-g").style.display = "none"
+        document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "block"
+        document.querySelector("#invitation-story").style.display = "none"
+    }else if(e.classList.contains("invitation_story")){
+        document.querySelector("#agenda-tribu-g").style.display = "none"
+        document.querySelector("#agenda-emailing").style.display = "none"
+        document.querySelector("#agenda-tribu-t").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "block"
+        invitationStoryAgenda()
     }else{
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-emailing").style.display = "none"
+document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#invitation-story").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "block"
 
     }

@@ -1,4 +1,10 @@
+set_iris_partenaire()
+if (screen.width >= 991) {
+    set_iris_partisan();
+}
 /**set iris for inscriptions*/
+
+function set_iris_partisan(){
 if( document.querySelector("#inscription_nom_commune")){
 
     //// user input
@@ -31,6 +37,8 @@ if( document.querySelector("#inscription_nom_commune")){
         /// object list of the commune
     })
     .then(response => { //// { commune: []}
+        document.getElementById("spinner-setting-tomm-js").style.display="none";
+        document.getElementById("conteneurs-setting-tom-js").classList.remove("pointeur-event-none-tomm-js")
 
         const commune = response.commune // [{ codeInsee : "" , codePostal : "" , commune : "" , dep :"" , id : "", typecom : "" }, ... ]
         
@@ -139,7 +147,57 @@ if( document.querySelector("#inscription_nom_commune")){
 
 }
 
+
+    if( document.querySelector("#inscription_code_postal")){
+        const codePostal= document.querySelector("#inscription_code_postal");
+        codePostal.addEventListener("input",(e) => {
+            console.log(e.target.value)
+            const fake_commune= document.querySelector("#inscription_faux_commune");
+            const fake_quartier= document.querySelector("#inscription_faux_quartier");
+
+            [codePostal, fake_commune, fake_quartier].forEach(item => {
+                if( item.classList.contains("border_red")){
+                    item.classList.remove("border_red");
+                }
+            })
+        })
+    }
+
+    if( document.querySelector(".btn_submit_inscription_js")){
+        const submit_inscription= document.querySelector(".btn_submit_inscription_js")
+        submit_inscription.addEventListener("click",(e) => {
+            const codePostal= document.querySelector("#inscription_code_postal");
+            const commune= document.querySelector("#inscription_nom_commune");
+            const quartier= document.querySelector("#inscription_quartier");
+
+            const fake_commune= document.querySelector("#inscription_faux_commune");
+            const fake_quartier= document.querySelector("#inscription_faux_quartier");
+
+            const tableTemp = [ codePostal, commune, quartier, fake_commune, fake_quartier ];
+
+            if(tableTemp.some(item => item.value === "")){
+                e.preventDefault();
+
+                if( codePostal.value === "" ){
+                    codePostal.classList.add("border_red")
+                }
+            
+                if(  fake_commune.value === "" || commune.value === "" ){
+                    fake_commune.classList.add("border_red")
+                }
+
+                if( fake_quartier.value === "" || quartier.value === ""){
+                    fake_quartier.classList.add("border_red");
+                }
+            }
+
+        })
+    }
+}
+
+
 /**set iris fro partenaire */
+function set_iris_partenaire(){
 if( document.querySelector("#inscription_partenaire_nom_commune")){
 
     //// user input
@@ -277,6 +335,8 @@ if( document.querySelector("#inscription_partenaire_nom_commune")){
         reader.readAsDataURL(e.target.files[0]);
         
     }) 
+
+}
 
 }
 

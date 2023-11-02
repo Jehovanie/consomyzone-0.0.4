@@ -2386,3 +2386,7 @@ textarea {
 .text_black{
     color:black;
 }
+
+.pointeur-event-none-tomm-js{
+    pointer-events: none;
+}

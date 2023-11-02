@@ -1079,3 +1079,7 @@ document.querySelectorAll(".elie_nav_link").forEach(i=>{
     })
     
 })
+if (arrangeSetingApparitionMobile()) {
+    set_iris_partisan(); 
+}
+

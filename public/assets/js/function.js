@@ -2467,7 +2467,8 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
                 const id_dep = new URLSearchParams(window.location.href).get("id_dep")
                 const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
                 offsetTomm += limitSpecTomm
-                getDataSpecificMobile(nom_dep, id_dep)
+                let isArrondissement=parseInt(id_dep) ===75 ? true : false
+                getDataSpecificMobile(nom_dep, id_dep,isArrondissement)
             } else if (rubricName == 'ferme') {
                 const id_dep = new URL(window.location.href).pathname.split('/')[4]
                 const nom_dep = new URL(window.location.href).pathname.split('/')[3]
@@ -2502,21 +2503,37 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
     })
 }
 
-function getDataSpecificMobile(nom_dep, id_dep) {
+function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
     
+let params = new URL(document.location).searchParams;
+    let codinsee = params.get("codinsee");
     let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     let id_resto = ''
-    const request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+    let request=null;
+    if (isArrondissement) {
+        // restaurant-mobile/specific / arrondissement / ${ nom_dep } /${id_dep}/${ codinsee } /5/5
+        request = new Request(`/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    fetch(request).then(res => res.json())
-        
-        .then(responses => {
+    } else {
+        request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        })
+    }
+   
+    fetch(request).then(res =>
+        res.json().then(responses => {
+if (document.querySelector(".loading-tomm-js")) {
             document.querySelector(".loading-tomm-js").innerHTML = ''
+}
             let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
             
             
@@ -2829,7 +2846,11 @@ function getDataSpecificMobile(nom_dep, id_dep) {
                     }
                 })
             }
-        })    
+        
+
+
+        }))
+      
 }
 
 /**
@@ -4052,10 +4073,15 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
+if (document.querySelector(".loading-tomm-js")) {
             document.querySelector(".loading-tomm-js").innerHTML = ''
+}
+                let listSpecMobile = ""
+            if (document.querySelector(".list-specific-golf-mobile-tomm-js")) {
+                listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+            }
 
-            let listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
-            responses.golf.forEach(response => { 
+                        responses.golf.forEach(response => { 
 
                 let btnAviMobile = ''
                 let containerActionGolf = ''
@@ -4225,7 +4251,9 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
+if (document.querySelector(".loading-tomm-js")) {
             document.querySelector(".loading-tomm-js").innerHTML = ''
+}
             console.log(responses)
             let listSpecMobile = document.querySelector(".list-specific-tabac-mobile-tomm-js")
             responses.tabac.forEach(response => { 
@@ -4791,6 +4819,102 @@ function setGallerieImageV2(){
         }
     }
     
+
+    
 }
 
 
+/**
+ * @constructor
+ * @author Elie <eliefenohasina@gmail.com>
+ * @Fonction sauvegarde de l'historique de l'invitation
+ * @param {string} table_trib 
+ * @param {string} email 
+ * @param {int} invite_to 
+ */
+function saveInvitationStory(table_trib, email) {
+    fetch("/tribu/invitation/save_story/"+table_trib, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "email" : email
+        })
+    }).then(r=>r.json())
+    .then(res=>{
+        if(res.status == "ok"){
+            swal({
+                text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
+                icon: "info",
+            });
+        }else if(res.status == "!ok" ){
+            swal({
+                text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+                icon: "warning",
+            });
+        }
+        // console.log(res);
+    })
+}
+
+/**
+ * @author Elie <eliefenohasina@gmail.com>
+ * @constructor mise à jour de l'historique d'invitation
+ * @param {string} table 
+ * @param {*} is_valid
+ * @param {in} id
+ */
+function updateInvitationStory(table, is_valid, email) {
+    fetch('/tribu/invitation/update_story/'+table+'/'+is_valid+'/'+email)
+    .then(resp=>resp.json())
+    .then(result=>{
+        // swal({
+        //     text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+        //     icon: "success",
+        // });
+        console.log(result);
+    })
+}
+
+/**
+ * @author tommy
+ * cette fonction re-organise l'apparition des champ de finalisation d'inscription pour les mobile
+ * on utilise dans settingAccount.html.twig 
+ * location utilisation: js/account/account.js
+ * store :function.js
+ */
+function arrangeSetingApparitionMobile() {
+    if(screen.width < 991) {
+        const allForms = Array.from(document.querySelectorAll(".form-inscription-tomm-js"));
+        
+        const allFormsSorted = allForms.sort(function (a, b) {
+          return parseInt(a.dataset.rank) - parseInt(b.dataset.rank)
+        })
+        console.log(allFormsSorted)
+        
+        let allFormsSortedCloned = [];
+        
+        for (let i = 0; i < allFormsSorted.length; i++){
+            allFormsSortedCloned[i] = allFormsSorted[i].cloneNode(true);
+        }
+        console.log(allFormsSortedCloned)
+
+        const container = document.querySelector(".content-inscription-setting-tomm-js");
+        for (let i = 0; i < allFormsSorted.length; i++){
+           container.removeChild(allForms[i]);
+        }
+
+        const referenceNode = document.querySelector(".btn_submit_for_rank_inscription_js")
+        for (let i = 0; i < allFormsSortedCloned.length; i++) { 
+            container.insertBefore(allFormsSortedCloned[i], referenceNode)
+            
+        }
+       
+           
+        return true;
+        
+       
+    }
+}

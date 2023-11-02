@@ -30,7 +30,7 @@ class NotificationService extends PDOConnexionService{
 
 
 
-        $sql = "CREATE TABLE " . $table_name . "(
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name . "(
 
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
 
@@ -83,13 +83,15 @@ class NotificationService extends PDOConnexionService{
     public function sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null ){
 
         ///get the name of the table notification for $user_id_post to send new notification
-        $statement = $this->getPDO()->prepare('SELECT tablenotification FROM user WHERE id= '. $user_id );
+        $statement = $this->getPDO()->prepare('SELECT tablenotification, `type` FROM user WHERE id= '. $user_id );
 
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         //// check if this table notification exists
+if($result && $result["type"] != "Type"){
+            //// check if this table notification exists
         $tableNotification = $result["tablenotification"];
         if(!$this->isTableExist($tableNotification)){
             return false;
@@ -108,6 +110,7 @@ class NotificationService extends PDOConnexionService{
         $statement->bindParam(':isRead', $default);
 
         $statement->execute();
+}
 
     }
 

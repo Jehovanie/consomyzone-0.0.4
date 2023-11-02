@@ -1865,30 +1865,36 @@ function showInvitations() {
                 <div class="bg-white rounded-3 px-3">
                     <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
                         <li class="nav-item">
-                            <a data-element="table-tribuG-member" class="nav-link active text-secondary" aria-current="page" href="#" onclick="setActiveTab(this)">Tribu G</a>
+                            <a data-element="table-tribuG-member" class="nav-link active text-secondary tab_invite_elie" aria-current="page" href="#" onclick="setActiveTab(this, 'tribu_g')">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary" href="#" onclick="openSwalNonActif()">Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Par Email</a>
+</li>
+                        <li class="nav-item">
+                            <a data-element="blockHistInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'historique')">Historiques</a>
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
                         <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
+<h6 class="modal-title text-primary" >Vous pouvez modifier le corps du email comme vous le voulez.</h6>
+                        <h6 class="modal-title text-primary" >Le lien d'invitation sera généré par l'application CMZ automatiquement.</h6>
+                        <h6 class="modal-title text-primary" >L'email envoyé sera automatiquement signé à votre nom.</h6>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
                                 Invitation envoyée avec succès !
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
                                 <label for="exampleFormControlInput1">Destinataires</label>
-                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="name@example.com">
-                                <a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email du destinataire">
+                                <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
-                                </a>
+                                </a>-->
                             </div>
 
-                            <div class="collapse mt-3" id="tribut-collapse">
+                            <div class="mt-3" id="tribut-collapse">
                                 <div class="form-group multiple_destination_css">
                                     <label for="exampleFormControlInput1">Ajouter de Cc</label>
-                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'email puis tapez la touche Entrée">
+                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
                                     <div class="content_chip content_chip_js_jheo">
                                         
                                     </div>
@@ -1903,7 +1909,9 @@ function showInvitations() {
                                 <label for="exampleFormControlTextarea1">Description</label>
                                 <div id="exampleFormControlTextarea32">
                                     <div class="wrapper pt-3 pb-3">
-                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1">
+                                            
+                                        </textarea>
                         
                                         <pre id="output"></pre>
                                     </div>
@@ -1928,13 +1936,29 @@ function showInvitations() {
                             </tbody>
                         </table>
                     </div>
+<div id="blockHistInvitation" class="mt-2 d-none">
+                        <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations par e-mail</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Partisan</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all_historique">
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
         `
-    initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
-    //editor_invitation = document.querySelector("#editorInvitationElie")
-    // console.log(editor);
+    initCKEditor("exampleFormControlTextarea1", showReponsePartenaire);
+    // editor_invitation = document.querySelector("#editorInvitationElie")
+    // // console.log(editor);
     // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
-    //document.querySelector("#editorInvitationElie").classList.remove("d-none")
+    // document.querySelector("#editorInvitationElie").classList.remove("d-none")
     
     fetchAllTribuGMember()
 
@@ -1959,26 +1983,26 @@ function showInvitations() {
         object.style.border = "1px solid black";
     })
 
-    input_cc.addEventListener("keyup", (e) => {
+    // input_cc.addEventListener("keyup", (e) => {
 
-        if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
-            if (verifieEmailValid(input_cc.value.replace(",", ""))) {
-                ////create single email
-                // <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
-                const div = document.createElement("div");
-                div.classList.add("chip");
-                const span = document.createElement("span");
-                span.innerText = input_cc.value.replace(",", "");
-                div.appendChild(span);
-                div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
-                document.querySelector(".content_chip_js_jheo").appendChild(div);
+        //     if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
+            //         if (verifieEmailValid(input_cc.value.replace(",", ""))) {
+                //             ////create single email
+                //             // <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
+                //             const div = document.createElement("div");
+                //             div.classList.add("chip");
+                //             const span = document.createElement("span");
+                //             span.innerText = input_cc.value.replace(",", "");
+                //             div.appendChild(span);
+                //             div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
+                //             document.querySelector(".content_chip_js_jheo").appendChild(div);
 
-                input_cc.value = null
-            } else {
-                input_cc.style.border = "1px solid red";
-            }
-        }
-    })
+                //             input_cc.value = null
+            //         } else {
+                //             input_cc.style.border = "1px solid red";
+            //         }
+    //     }
+    // })
 
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
@@ -1987,9 +2011,13 @@ function showInvitations() {
 
         ////get cc
         let cc_destinataire = [];
-        document.querySelectorAll(".chip span").forEach(item => {
-            cc_destinataire.push(item.innerText)
-        })
+        // document.querySelectorAll(".chip span").forEach(item => {
+            //     cc_destinataire.push(item.innerText)
+        // })
+
+        if (input_cc.value != "") {
+            cc_destinataire.push(input_cc.value)
+        }
 
         let data = { "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), "principal": "", "cc": cc_destinataire, "object": "", "description": "" }
 
@@ -2043,14 +2071,23 @@ function showInvitations() {
                 }
                 return response.json()
             }).then(result => {
-                input_principal.value = null;
-                input_cc.value = null;
-                // description.value = null;
+                // input_principal.value = null;
+                                // description.value = null;
                 object.value = null;
                 
                 //init Ckeditor for description by Elie
 
                 editor.setData("Ecrivez votre message ici.") 
+
+                //Send data invitation story into tribu
+                let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
+
+                // sauvegarde de l'invitation
+                saveInvitationStory(table_trib, input_principal.value);
+                saveInvitationStory(table_trib, input_cc.value);
+
+                input_principal.value = null;
+                input_cc.value = null;
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2060,10 +2097,10 @@ function showInvitations() {
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
                 document.querySelector("#successSendingMail").style.display = "block"
 
-                swal({
-                    text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
-                    icon: "info",
-                });
+                // swal({
+                    //     text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                    //     icon: "info",
+                // });
 
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
@@ -2077,16 +2114,46 @@ function showInvitations() {
     /** END JEHOVANNIE*/
 }
 
-function setActiveTab(elem) {
+function setActiveTab(elem, param) {
+
+    document.querySelectorAll(".tab_invite_elie").forEach(it=>{
+        it.classList.remove("active")
+    })
+
     if (!elem.classList.contains("active")) {
         elem.classList.add("active")
         document.querySelector("#" + elem.dataset.element).style = "";
-        if (elem.parentElement.nextElementSibling) {
-            elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
+        // if (elem.parentElement.nextElementSibling) {
+            //     elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
+//     document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
+        // } else {
+        //     elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
+        //     document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+        // }
+    }
+    switch(param){
+        case "tribu_g" :{
+            document.querySelector("#blockHistInvitation").classList.add("d-none")
+            document.querySelector("#blockSendEmailInvitation").classList.add("d-none")
+            document.querySelector("#table-tribuG-member").classList.remove("d-none")
             document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
-        } else {
-            elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
+        break;
+        }
+        case "email" :{
+            document.querySelector("#blockHistInvitation").classList.add("d-none")
+            document.querySelector("#blockSendEmailInvitation").classList.remove("d-none")
+            document.querySelector("#table-tribuG-member").classList.add("d-none")
             document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+        
+            break;
+        }
+        case "historique" :{
+            document.querySelector("#blockSendEmailInvitation").classList.add("d-none")
+            document.querySelector("#blockHistInvitation").classList.remove("d-none")
+            document.querySelector("#table-tribuG-member").classList.add("d-none")
+            document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
+            fetchAllInvitationStory()
+            break;
         }
     }
 }
@@ -2614,13 +2681,13 @@ function settingTribuT(e, tribuTName) {
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
         // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension=="on" || currentTribuT.extension?.restaurant  ) {
+        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension?.golf) {
+        if (currentTribuT.extension.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false
@@ -2985,4 +3052,48 @@ function depastilleGolf(selector){
                     });
             })
             .catch(error=>console.log(error))
+}
+
+/**
+ * @constructor
+ * @author Elie <eliefenhasina@gmail.com>
+ * @Fonction fetch toutes les historiques dans la tribu T et affichage dans un tableau
+ */
+function fetchAllInvitationStory() {
+    let table = document.querySelector("#tribu_t_name_main_head").dataset.tribu.trim()
+    let tbody_hist = document.querySelector("#all_historique")
+    tbody_hist.innerHTML = `<td colspan="4"><div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div></td>`
+    fetch("/tribu/invitation/get_all_story/" + table)
+        .then(response => response.json())
+        .then(response => {
+            // console.log(response)
+            if (response.length > 0) {
+                tbody_hist.innerHTML = ""
+                for (const item of response) {
+
+                    console.log(item);
+                    
+                    tbody_hist.innerHTML += `<tr>
+                            <td>${item.email}</td>
+                            <td class="">${item.date}</td>
+                            <td class="">${item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.user.firstname + " " +item.user.lastname}</a>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`}</td>
+                            <td>${item.is_valid == 1? `<span class="badge text-bg-success">Validé</span>` : `<span class="badge text-bg-warning">En attente</span>`}</td>
+                        </tr>
+                    `
+                }
+                $('#table-tribuG-member > table').DataTable({
+                    "language": {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    }
+                });
+            } else {
+                tbody_hist.innerHTML = "Aucun historique enregistré pour le moment!"
+            }
+
+        })
+        .catch(error => console.log(error))
 }
