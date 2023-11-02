@@ -99,7 +99,7 @@
 
                 <div class="mon-golf">
                     <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
-                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>Mon golf</button>
+                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp |replace({'"': '&quot;', "'": '&apos;'})  | raw}}  {{details.nomCommune |replace({'"': '&quot;', "'": '&apos;'})  | raw}}" )'>Mon golf</button>
                 </div>
             {% else %}
                 <div class="mon-golf">

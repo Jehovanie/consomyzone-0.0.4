@@ -1,7 +1,9 @@
 window.addEventListener('load', () => { 
-    const id_dep = new URL(window.location.href).pathname.split('/')[4]
-    const nom_dep = new URL(window.location.href).pathname.split('/')[3]
-    getDataSpecTabacMobile(nom_dep, id_dep)
+    if (screen.width < 991) {
+        const id_dep = new URL(window.location.href).pathname.split('/')[4]
+        const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+        getDataSpecTabacMobile(nom_dep, id_dep)
+    }
 })
 
 function hideRightSide(){

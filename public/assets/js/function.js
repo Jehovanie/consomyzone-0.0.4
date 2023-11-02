@@ -2480,8 +2480,10 @@ function showPastillTable(e,id){
  */
 function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
     fetch(`/golf/pastilled/checking/${id_golf}`)
+        
         .then(response => response.json())
         .then(datas => {
+            console.log(datas)
             let listTibuTPast = ""
             let monGolf = ""
             if (datas.length == 0) {

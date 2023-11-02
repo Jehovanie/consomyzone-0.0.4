@@ -2470,4 +2470,6 @@ textarea {
     height: 270px;
 }
 
-
+.pointeur-event-none-tomm-js{
+    pointer-events: none;
+}

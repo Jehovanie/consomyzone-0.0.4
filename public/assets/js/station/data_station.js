@@ -1,7 +1,9 @@
 window.addEventListener('load', () => { 
-    const id_dep = new URL(window.location.href).pathname.split('/')[3]
-    const nom_dep = new URL(window.location.href).pathname.split('/')[4]
-    getDataSpecStationMobile(nom_dep, id_dep)
+    if (screen.width < 991) {
+        const id_dep = new URL(window.location.href).pathname.split('/')[3]
+        const nom_dep = new URL(window.location.href).pathname.split('/')[4]
+        getDataSpecStationMobile(nom_dep, id_dep)
+    }
 })
 //// HIDE DETAILS STATION POP UP
 if(document.querySelector("#close-detail-station")){

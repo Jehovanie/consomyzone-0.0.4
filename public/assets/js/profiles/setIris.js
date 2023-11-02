@@ -37,7 +37,8 @@ function set_iris_partisan(){
             /// object list of the commune
         })
         .then(response => { //// { commune: []}
-
+            document.getElementById("spinner-setting-tomm-js").style.display="none";
+            document.getElementById("conteneurs-setting-tom-js").classList.remove("pointeur-event-none-tomm-js")
             const commune = response.commune // [{ codeInsee : "" , codePostal : "" , commune : "" , dep :"" , id : "", typecom : "" }, ... ]
             
             ///when input
