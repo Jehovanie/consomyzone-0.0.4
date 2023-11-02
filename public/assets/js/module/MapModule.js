@@ -46,6 +46,22 @@ class MapModule{
             { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
             { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: ["nom_qv", "code_qv", "nom_pole", "pole" ]},       /// YlOrRd
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
+        ];
+
+
+        
+        // this is the base of filter data in map based on the user zooming. 
+        /// ratio is the number precisious for the float on latitude ( ex lat= 47.5125400012145  if ratio= 3 => lat = 47.512
+        //// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
+        ///// this must objectRatioAndDataMax is must be order by zoomMin DESC
+        this.objectRatioAndDataMax= [
+            { zoomMin:19, dataMax: 25, ratio:3 },
+            { zoomMin:17, dataMax: 20, ratio:3 },
+            { zoomMin:15, dataMax: 15, ratio:3 },
+            { zoomMin:13, dataMax: 10, ratio:2 },
+            { zoomMin:11, dataMax: 5, ratio:2 },
+            { zoomMin: 5, dataMax: 2, ratio:1 },
+            { zoomMin: 0, dataMax: 1, ratio:0 },
         ]
     }
     initTales(){
@@ -182,6 +198,23 @@ class MapModule{
         //         layer.bindTooltip(feature.properties.nom);
         //     }
         // }).addTo(this.map);
+    }
+
+    generateTableDataFiltered(ratioMin, ratioMax, ratio){
+        const dataFiltered= [];
+
+        let iterate_ratio= 1/(10**ratio)
+
+        let init_iterate_ratio = ratioMin;
+        while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
+            if( !dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
+                dataFiltered.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
+            }
+
+            init_iterate_ratio +=iterate_ratio;
+        }
+
+        return dataFiltered;
     }
 
     eventSetPositionOnMap(){
@@ -856,6 +889,8 @@ class MapModule{
         //// bint event hover on btn control.
         this.bindTooltipsOnHover();
     }
+
+
 
     /**
      * @author Jehovanie RAMANDRIJOEL

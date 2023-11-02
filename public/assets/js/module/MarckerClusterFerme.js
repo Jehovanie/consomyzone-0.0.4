@@ -72,101 +72,142 @@ class MarckerClusterFerme extends MapModule {
     }
 
     createMarkersCluster(){
-        const that= this;
+        // const that= this;
+        // this.markers = L.markerClusterGroup({ 
+        //     chunkedLoading: true,
+        //     iconCreateFunction: function (cluster) {
+        //         if(that.marker_last_selected){
+        //             let sepcMarmerIsExist = false;
+        //             for (let g of  cluster.getAllChildMarkers()){
+        //                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+        //                     sepcMarmerIsExist = true;
+        //                     break;
+        //                 }
+        //             }
+
+        //             if(sepcMarmerIsExist){
+        //                 return L.divIcon({
+        //                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+        //                     className: "spec_cluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }else{
+        //                 return L.divIcon({
+        //                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                     className: "mycluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }
+        //         }else{
+        //             return L.divIcon({
+        //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                 className: "mycluster",
+        //                 iconSize:L.point(35,35)
+        //             });
+        //         }
+        //     },
+        // });
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            iconCreateFunction: function (cluster) {
-                if(that.marker_last_selected){
-                    let sepcMarmerIsExist = false;
-                    for (let g of  cluster.getAllChildMarkers()){
-                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-                            sepcMarmerIsExist = true;
-                            break;
-                        }
-                    }
-
-                    if(sepcMarmerIsExist){
-                        return L.divIcon({
-                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-                            className: "spec_cluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }else{
-                        return L.divIcon({
-                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                            className: "mycluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }
-                }else{
-                    return L.divIcon({
-                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                        className: "mycluster",
-                        iconSize:L.point(35,35)
-                    });
-                }
-            },
+            animate: true,
+            disableClusteringAtZoom: true,
+            animateAddingMarkers:true,
+            chunkedLoading: true,
+            chunkInterval: 500, 
+            chunkDelay: 100,
         });
     }
 
     addMarker(newData){
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
         newData.forEach(item => {
-            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-            let title = "<span class='fw-bolder'> Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'><br>Departement: </span>" + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
             
-            marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+        })
+        this.map.addLayer(this.markers);
+    }
 
-            marker.on('click', (e) => {
-                ////close right if this open
-                this.closeRightSide();
+    settingSingleMarker(item, isSelected=false){
+        const zoom = this.map._zoom;
 
-                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+        const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
+        let title = "<span class='fw-bolder'> Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'><br>Departement: </span>" + item.departement +"." + adress;
+        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png', "", 0, zoom), id: item.id });
+        
+        marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
-                const icon_R = L.Icon.extend({
+        marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+            
+            const icon_R = L.Icon.extend({
+                options: {
+                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                    iconSize: [32,50],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94]
+                }
+            })
+            marker.setIcon(new icon_R);
+
+            if (this.marker_last_selected && this.marker_last_selected != marker ) {
+                const icon_B = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
                         iconSize: [32,50],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
+                        //shadowUrl: 'my-icon-shadow.png',
                         shadowSize: [68, 95],
                         shadowAnchor: [22, 94]
                     }
                 })
-                marker.setIcon(new icon_R);
+                this.marker_last_selected.setIcon(new icon_B)
+            }
+            this.marker_last_selected = marker;
 
-                if (this.marker_last_selected && this.marker_last_selected != marker ) {
-                    const icon_B = L.Icon.extend({
-                        options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
-                            iconSize: [32,50],
-                            iconAnchor: [11, 30],
-                            popupAnchor: [0, -20],
-                            //shadowUrl: 'my-icon-shadow.png',
-                            shadowSize: [68, 95],
-                            shadowAnchor: [22, 94]
-                        }
-                    })
-                    this.marker_last_selected.setIcon(new icon_B)
-                }
-                this.marker_last_selected = marker;
+            this.markers.refreshClusters();
 
-                this.markers.refreshClusters();
-
-                
-                if (screen.width < 991) {
-                    getDetailFerme(item.departement, item.departementName, item.id)
-                } else {
-                    // getDetailsFerme(pathDetails, true)getDetailStation
-                    getDetailFerme(item.departement, item.departementName, item.id)
-                }
-
-            })
-
-            this.markers.addLayer(marker);
+            
+            if (screen.width < 991) {
+                getDetailFerme(item.departement, item.departementName, item.id)
+            } else {
+                // getDetailsFerme(pathDetails, true)getDetailStation
+                getDetailFerme(item.departement, item.departementName, item.id)
+            }
 
         })
-        this.map.addLayer(this.markers);
+
+        this.markers.addLayer(marker);
     }
 
     addEventOnMap(map) {
@@ -176,6 +217,7 @@ class MarckerClusterFerme extends MapModule {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
+            this.updateMarkersDisplay(new_size);
             this.addPeripheriqueMarker(new_size)
         })
     }
@@ -242,26 +284,42 @@ class MarckerClusterFerme extends MapModule {
         this.addMarker(this.default_data)
     }
 
+    checkIsExist(idToCheck){
+        return this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
+    }
+
     clickOnMarker(id){
+        let isClicked= false;
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');  
+                marker.fireEvent('click');
+                isClicked= !isClicked;
             }
         });
+
+        if( !isClicked ){
+            const ferme= this.default_data.find(({id: itemID}) => parseInt(id) === parseInt(itemID));
+            this.updateCenter( parseFloat(ferme.lat ), parseFloat(ferme.long ), this.zoomDetails);
+            this.settingSingleMarker(ferme, true);
+        }
     }
 
     async addPeripheriqueMarker(new_size) {
+        
         try {
             const { minx, miny, maxx, maxy }= new_size;
-            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+            let param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+            param += ( this.nom_dep && this.id_dep) ? "&dep="+ this.id_dep : "";
 
             const response = await fetch(`/getLatitudeLongitudeFerme${param}`);
             let new_data = await response.json();
             // console.log(new_data);
             new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
          
-            this.addMarker(this.checkeFilterType(new_data));
+            // this.addMarker(this.checkeFilterType(new_data));
             this.default_data= this.default_data.concat(new_data);
+
+            this.addMarkerNewPeripherique(new_data, new_size);
         } catch (e) {
             console.log(e)
         }
@@ -270,6 +328,277 @@ class MarckerClusterFerme extends MapModule {
     
     checkeFilterType(data) {
         return data;
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans la rubrique resto, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mise a jour les données sur la carte,
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     * - remove markers outside the box
+     * - Add some markers ( via latitude, ratio, dataMax )
+     * - 
+     */
+    updateMarkersDisplay(newSize){
+
+        const zoom = this.map._zoom;
+        const { minx, maxx, miny, maxy } = newSize;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        let countMarkers= 0;
+        //// REMOVE the outside the box
+        this.markers.eachLayer((marker) => {
+            const { lat, lng } = marker.getLatLng();
+            const isInDisplay = ( lat > parseFloat(miny) && lat < parseFloat(maxy)) && ( lng > parseFloat(minx) && lng < parseFloat(maxx) );
+            if( !isInDisplay || countMarkers > dataMax ){
+                this.markers.removeLayer(marker);
+            }else{
+                countMarkers++;
+            }
+        });
+
+        /// add same data must be show
+        if( zoom > 8 ){
+            const dataFilteredDerive= [ ]; //// pour stocker les données filtres
+
+            this.markers.eachLayer((marker) => {
+                const temp= marker.getLatLng();
+                if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
+
+                    dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                    ] })
+
+                }else{
+                    dataFilteredDerive.forEach(ktem => {
+                        if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
+                            if( ktem.data.length < dataMax ){
+                                ktem.data.push(
+                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                )
+                            }
+                            // else{
+                            //     this.markers.removeLayer(marker);
+                            // }
+                        }
+                    })
+                }
+            });
+            // console.log("Avant dataFilteredDerive")
+            // console.log(dataFilteredDerive);
+
+
+            //// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
+
+            const ratioMin= parseFloat(parseFloat(miny).toFixed(ratio))
+            const ratioMax= parseFloat(parseFloat(maxy).toFixed(ratio))
+            
+            let iterate_ratio= 1/(10**ratio)
+
+            let init_iterate_ratio = ratioMin;
+            while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
+                if( !dataFilteredDerive.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
+                    dataFilteredDerive.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
+                }
+
+                init_iterate_ratio +=iterate_ratio;
+            }
+
+            // console.log("Apres dataFilteredDerive")
+            // console.log(dataFilteredDerive)
+           
+
+            this.default_data.forEach(item => {
+                const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+                
+                if( isCanDisplay ){
+                    let isAlreadyDisplay= false;
+                    this.markers.eachLayer((marker) => {
+                        if( parseInt(marker.options.id) === parseInt(item.id)){
+                            isAlreadyDisplay = true;
+                        }
+                    })
+    
+                    if( !isAlreadyDisplay ){
+                        if(dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
+                            const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
+                            if( itemDataDerive && itemDataDerive.data.length < dataMax){
+
+                                this.settingSingleMarker(item, false)
+
+                                dataFilteredDerive.forEach(ktem => {
+                                    if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
+                                        ktem.data.push(item)
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
+            })
+
+            // console.log("dataFilteredDerive");
+            // console.log(dataFilteredDerive);
+
+        }else{
+            const dataFiltered= [ ];
+
+            this.default_data.forEach(item => {
+                if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
+                    dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
+                }else{
+                    dataFiltered.forEach(ktem => {
+                        if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
+                            ktem.data.push(item)
+                        }
+                    })
+                }
+            })
+
+            console.log("isany tokony haseho: ") ////tokony haseho....
+            console.log(dataFiltered)
+
+
+            const dateFilteredPrime= [];
+            this.markers.eachLayer((marker) => {
+                const temp= marker.getLatLng();
+                if( !dateFilteredPrime.find((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === jtem.lat )){
+                    dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                    ] })
+                }else{
+                    dateFilteredPrime.forEach(ktem => {
+                        if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
+                            if( ktem.data.length < dataMax ){
+                                ktem.data.push(
+                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                )
+                            }else{
+                                this.markers.removeLayer(marker);
+                            }
+                        }
+                    })
+                }
+            });
+
+            // console.log("isany efa miseho: ") //// efa miseho
+            // console.log(dateFilteredPrime)
+
+            dataFiltered.forEach(item => {
+                if(dateFilteredPrime.find(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
+                    const dataPrime= dateFilteredPrime.find(jtem => item.lat === jtem.lat)
+                    item.data.forEach(ktem => {
+                        if(!dataPrime.data.find(ptem => parseInt(ptem.id) === parseInt(ktem.id))){
+                            this.settingSingleMarker(ktem, false)
+                        }
+                    })
+                }else{
+                    item.data.forEach(ktem => {
+                        this.settingSingleMarker(ktem, false)
+                    })
+                }
+               
+            })
+            // console.log("dataFiltered");
+            // console.log(dataFiltered)
+            // this.default_data.forEach(item => {
+            //     const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+                
+            //     if( isCanDisplay ){
+            //         let isAlreadyDisplay= false;
+            //         this.markers.eachLayer((marker) => {
+            //             if( parseInt(marker.options.id) === parseInt(item.id)){
+            //                 isAlreadyDisplay = true;
+            //             }
+            //         })
+    
+            //         if( !isAlreadyDisplay ){
+            //             this.settingSingleMarker(item, false)
+            //         }
+            //     }
+            // })
+        }
+
+        //// Update icon size while zoom in or zoom out
+        // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+        const depart= 15;
+        this.markers.eachLayer(marker => {
+            if (marker.options.icon.options.hasOwnProperty('iconUrl') || marker.options.icon.options.__proto__.hasOwnProperty('iconUrl')){
+                const prototype= marker.options.icon.options.hasOwnProperty('iconUrl') ? marker.options.icon.options : marker.options.icon.options.__proto__;
+                const icon= prototype;
+                marker.setIcon(
+                    L.icon({
+                        ...icon,
+                        iconSize : [depart+zoom, depart+zoom +9],
+                    })
+                )
+            }else{
+                const divIcon= marker.options.icon.options;
+                const lastDivIcon= divIcon.html;
+
+                const parser = new DOMParser();
+                const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
+                const span= htmlDocument.querySelector(".my-div-span");
+                const image= htmlDocument.querySelector(".my-div-image");
+                image.setAttribute("style", `width:${depart+zoom}px ; height:${depart+zoom +9}px`)
+
+                marker.setIcon(
+                    new L.DivIcon({
+                        ...divIcon,
+                        html : `${span.outerHTML} ${image.outerHTML}`,
+                        iconSize : [depart+ zoom, depart+ zoom +9],
+                    })
+                )
+            }
+        })
+
+        // this.markers.refreshClusters();
+
+        let countMarkerst= 0;
+        this.markers.eachLayer((marker) => {  countMarkerst++; });
+        console.log("Total marker afficher: " + countMarkerst);
+
+        console.log("Total default data: " + this.default_data.length)
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans la rubrique resto, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mise a jour les données sur la carte,
+     * @param {} new_data : dataList to show
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     */
+    addMarkerNewPeripherique(new_data, newSize){
+        const { minx, maxx, miny, maxy } = newSize;
+
+        let countMarkers= 0;
+        this.markers.eachLayer((marker) => {  countMarkers++; });
+
+        if( countMarkers < 50 ){
+            new_data.forEach(item => {
+                const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+                
+                if( isCanDisplay ){
+                    let isAlreadyDisplay= false;
+                    this.markers.eachLayer((marker) => {
+                        if( parseInt(marker.options.id) === parseInt(item.id)){
+                            isAlreadyDisplay = true;
+                        }
+                    })
+    
+                    if( !isAlreadyDisplay ){
+                        this.settingSingleMarker(item, false)
+                    }
+                }
+            })
+        }
     }
 
 }

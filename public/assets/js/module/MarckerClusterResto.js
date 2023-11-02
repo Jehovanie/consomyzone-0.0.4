@@ -3,20 +3,6 @@ class MarckerClusterResto extends MapModule  {
     constructor(nom_dep=null,id_dep=null, codinsee=null){
         super(id_dep,nom_dep, "resto");
         this.codinsee = codinsee;
-
-        // this is the base of filter data in map based on the user zooming. 
-        /// ratio is the number precisious for the float on latitude ( ex lat= 47.5125400012145  if ratio= 3 => lat = 47.512
-        //// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
-        ///// this must objectRatioAndDataMax is must be order by zoomMin DESC
-        this.objectRatioAndDataMax= [
-            { zoomMin:19, dataMax: 25, ratio:3 },
-            { zoomMin:17, dataMax: 20, ratio:3 },
-            { zoomMin:15, dataMax: 15, ratio:3 },
-            { zoomMin:13, dataMax: 10, ratio:2 },
-            { zoomMin:11, dataMax: 5, ratio:2 },
-            { zoomMin: 5, dataMax: 2, ratio:1 },
-            { zoomMin: 0, dataMax: 1, ratio:0 },
-        ]
     }
 
     async onInit(isAddControl=false){
@@ -144,9 +130,9 @@ class MarckerClusterResto extends MapModule  {
 
     addMarker(newData){
         const zoom = this.map._zoom;
-        const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-        const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-        const  minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
 
         const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
         const { dataMax, ratio }= current_object_dataMax;
@@ -154,22 +140,7 @@ class MarckerClusterResto extends MapModule  {
         const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
         const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
 
-        const dataFiltered= [ ];
-
-        
-        let iterate_ratio= 1/(10**ratio)
-
-        let init_iterate_ratio = ratioMin;
-        while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
-            if( !dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
-                dataFiltered.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
-            }
-
-            init_iterate_ratio +=iterate_ratio;
-        }
-
-        // console.log("dataFiltered")
-        // console.log(dataFiltered);
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
         newData.forEach(item => {
             const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
