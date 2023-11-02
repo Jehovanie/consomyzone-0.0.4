@@ -1480,15 +1480,17 @@ class MapModule{
      * je veux: faire apparaitre la note en haut à gauche du poi resto
      * si une POI a une note, la note se montre en haut à gauche du POI 
      */
-    setSpecialMarkerToShowNote(latLng,item,isSelected=false, poi_icon, poi_icon_Selected, taille){
+    setSpecialMarkerToShowNote(latLng,item,isSelected=false, poi_icon, poi_icon_Selected, taille, zoom=null){
         // isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille)
         // const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
         // const taille=0
+        const depart= 15;
+        
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
-        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+        let [w,h]= zoom ? ([depart+zoom, depart+zoom +9] ) : ((taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60]);
 
         // src="/public/${isSelected ? poi_icon_Selected : poi_icon}"
-        let  pathIcon = IS_DEV_MODE ? ( isSelected ?  poi_icon_Selected : poi_icon  ) : "/public/" + (isSelected ?  poi_icon_Selected : poi_icon ); ///on dev
+        let  pathIcon = IS_DEV_MODE ? ( isSelected ? "/" +   poi_icon_Selected : "/" + poi_icon  ) : "/public/" + (isSelected ?  poi_icon_Selected : poi_icon ); ///on dev
         return new L.Marker(latLng, {
             icon: new L.DivIcon({
                 className: 'my-div-icon',
@@ -1498,7 +1500,7 @@ class MapModule{
                         border-radius: 50%;">${noteMoyenne}</span>
                         <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${pathIcon}"/>
                        `,
-                //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+                iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
                 iconAnchor: [11, 30],
                 popupAnchor: [0, -20],
                 shadowSize: [68, 95],
@@ -1508,6 +1510,8 @@ class MapModule{
             id:item.id,
             type:"resto"
         });
+
+        // <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${pathIcon}"/>
     }
 
     /**

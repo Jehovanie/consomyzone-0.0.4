@@ -14,8 +14,8 @@ class MarckerClusterResto extends MapModule  {
             { zoomMin:15, dataMax: 15, ratio:3 },
             { zoomMin:13, dataMax: 10, ratio:2 },
             { zoomMin:11, dataMax: 5, ratio:2 },
-            { zoomMin: 6, dataMax: 3, ratio:1 },
-            { zoomMin: 0, dataMax: 2, ratio:0 },
+            { zoomMin: 5, dataMax: 2, ratio:1 },
+            { zoomMin: 0, dataMax: 1, ratio:0 },
         ]
     }
 
@@ -167,6 +167,7 @@ class MarckerClusterResto extends MapModule  {
 
             init_iterate_ratio +=iterate_ratio;
         }
+
         // console.log("dataFiltered")
         // console.log(dataFiltered);
 
@@ -184,14 +185,14 @@ class MarckerClusterResto extends MapModule  {
                 })
             }
         })
-        console.log(dataFiltered);
+        // console.log(dataFiltered);
 
         this.map.addLayer(this.markers);
 
     }
 
     settingSingleMarker(item, isSelected= false){
-        
+        const zoom = this.map._zoom;
         const departementName = item.depName
         const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
 
@@ -219,14 +220,14 @@ class MarckerClusterResto extends MapModule  {
             marker = L.marker(
                 L.latLng(parseFloat(item.lat), parseFloat(item.long)),
                 {
-                    icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
+                    icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille, zoom) : setIconn(poi_icon, "", isPastille, zoom),
                     cleNom: item.denominationF,
                     id: item.id,
                     draggable:false
                 }
             );
         }else{
-            marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, isSelected, poi_icon, poi_icon_Selected, isPastille)
+            marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, isSelected, poi_icon, poi_icon_Selected, isPastille, zoom )
         }
 
         marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
@@ -504,7 +505,6 @@ class MarckerClusterResto extends MapModule  {
 
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)));
-            // this.dataInside= new_data;
             
             // this.addMarker(this.checkeFilterType(new_data));
             this.default_data= this.default_data.concat(new_data);
@@ -664,11 +664,6 @@ class MarckerClusterResto extends MapModule  {
 
         /// add same data must be show
         if( zoom > 8 ){
-
-            console.log("data Inside...")
-            console.log(this.dataInside)
-
-
             const dataFilteredDerive= [ ]; //// pour stocker les données filtres
 
             this.markers.eachLayer((marker) => {
@@ -695,7 +690,10 @@ class MarckerClusterResto extends MapModule  {
                 }
             });
             console.log("Avant dataFilteredDerive")
-            console.log(dataFilteredDerive)
+            console.log(dataFilteredDerive);
+
+
+            //// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
 
             const ratioMin= parseFloat(parseFloat(miny).toFixed(ratio))
             const ratioMax= parseFloat(parseFloat(maxy).toFixed(ratio))
@@ -730,22 +728,22 @@ class MarckerClusterResto extends MapModule  {
                         if(dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
                             const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
                             if( itemDataDerive && itemDataDerive.data.length < dataMax){
+
                                 this.settingSingleMarker(item, false)
+
                                 dataFilteredDerive.forEach(ktem => {
                                     if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
                                         ktem.data.push(item)
                                     }
                                 })
                             }
-                        }else if(this.dataInside.some(jtem => parseInt(jtem.id) === parseInt(item.id)) ){
-                            this.settingSingleMarker(item, false)
                         }
                     }
                 }
             })
 
-            // console.log("dataFilteredDerive");
-            // console.log(dataFilteredDerive);
+            console.log("dataFilteredDerive");
+            console.log(dataFilteredDerive);
 
         }else{
             const dataFiltered= [ ];
@@ -762,20 +760,24 @@ class MarckerClusterResto extends MapModule  {
                 }
             })
 
-            // console.log("isany tokony haseho: ") ////tokony haseho....
-            // console.log(dataFiltered)
+            console.log("isany tokony haseho: ") ////tokony haseho....
+            console.log(dataFiltered)
 
 
             const dateFilteredPrime= [];
             this.markers.eachLayer((marker) => {
-                const temp= marker.getLatLng()
+                const temp= marker.getLatLng();
                 if( !dateFilteredPrime.find((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === jtem.lat )){
-                    dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [marker] })
+                    dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                    ] })
                 }else{
                     dateFilteredPrime.forEach(ktem => {
                         if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
                             if( ktem.data.length < dataMax ){
-                                ktem.data.push(marker)
+                                ktem.data.push(
+                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                )
                             }else{
                                 this.markers.removeLayer(marker);
                             }
@@ -791,7 +793,7 @@ class MarckerClusterResto extends MapModule  {
                 if(dateFilteredPrime.find(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
                     const dataPrime= dateFilteredPrime.find(jtem => item.lat === jtem.lat)
                     item.data.forEach(ktem => {
-                        if(!dataPrime.data.find(ptem => parseInt(ptem.options.id) === parseInt(ktem.id))){
+                        if(!dataPrime.data.find(ptem => parseInt(ptem.id) === parseInt(ktem.id))){
                             this.settingSingleMarker(ktem, false)
                         }
                     })
@@ -822,6 +824,7 @@ class MarckerClusterResto extends MapModule  {
             // })
         }
 
+        //// Update icon size while zoom in or zoom out
         // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
         const depart= 15;
         this.markers.eachLayer(marker => {
@@ -835,9 +838,18 @@ class MarckerClusterResto extends MapModule  {
                 )
             }else{
                 const divIcon= marker.options.icon.options;
+                const lastDivIcon= divIcon.html;
+
+                const parser = new DOMParser();
+                const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
+                const span= htmlDocument.querySelector(".my-div-span");
+                const image= htmlDocument.querySelector(".my-div-image");
+                image.setAttribute("style", `width:${depart+zoom}px ; height:${depart+zoom +9}px`)
+
                 marker.setIcon(
                     new L.DivIcon({
                         ...divIcon,
+                        html : `${span.outerHTML} ${image.outerHTML}`,
                         iconSize : [depart+zoom, depart+zoom +9],
                     })
                 )
