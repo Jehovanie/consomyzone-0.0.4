@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
 {% endblock %}
 
 {% block javascripts %}
@@ -16,17 +17,20 @@
     {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
     <script  src="{{ asset('assets/js/account/profil_tribuG.js') }}" defer></script>
     {# <script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script> #}
+	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
     
     <script  src="{{ asset('assets/js/account/fetchMemberTributG.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/fetchActualiteTributG.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/fetchPhotosTributG.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/account/fetchRestoTributG.js') }}" defer></script>
 
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer ></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer=""></script>
 {% endblock %}
 
 {% block body %}
     
-<div class="nh main_user_id" data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}'>
+<div class="nh main_user_id" data-toggle-full-name= '{{profil[0].getFirstname ~ " " ~  profil[0].getLastname }}' data-my-id="{{profil[0].getId}}">
 	{% include 'shard/account_navleft_new.html.twig' %}
 	{% include 'shard/account_navbar_new.html.twig' %}
 	<!-- ===== Main Content Start ===== -->
@@ -81,6 +85,7 @@
 					<div class="-ud-ml-5 -ud-mb-9">
                         <div class="mb-5">
                             <h4 class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name={{tributG.profil.name}}>{{tributG.profil.name}}</h4>
+                            <label class="d-none" id="my_tribu_g">{{tributG.table}}</label>
                             <small>
                                 <i>{{tributG.profil.description }}</i>
                             </small>
@@ -92,6 +97,11 @@
                             <li class="listNavBarTribu tribu_active">
                                 <a href="#" id="fetch_actialite_tribug_jheo_js" class="active text-white" lng-tag="actualite">Actualité</a>
                             </li>
+
+                            <li class="listNavBarTribu">
+                                <a style="cursor:pointer;" href="#" id="fetch_resto_tribug_jheo_js">Restaurants</a>
+                            </li>
+
                             <li class="listNavBarTribu">
                                 <a style="cursor:pointer;" href="#" id="fetch_member_tribug_jheo_js">Partisans</a>
                             </li>
@@ -99,6 +109,7 @@
                             <li class="listNavBarTribu">
                                 <a style="cursor:pointer;" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
                             </li>
+
                         </ul>
                     </nav>
 				</div>
@@ -115,5 +126,66 @@
 
 </div>
 
+<div class="modal" tabindex="-1" id="detailOptionResto">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Plus d'options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container text-center">
+                    <i class="fas fa-question-circle fs-1 text-info"></i><br>
+                    {# <p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+                    <div class="container mb-4 mt-5 content_btns_nanta_js">
+                        <button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+                        <button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+                        <button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button> #}
+                    <p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+                    <div class="container mb-4 mt-5 content_btns_nanta_js">
+                        <button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+                        <button type="button" id="data-event-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+                        <button type="button" id="data-depastille-nanta-js" class="btn btn-warning mt-1" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetailResto" tabindex="-1" aria-hidden="true" style="z-index:80000 !important">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+            <div class="modal-header" id="restoModalLabel"></div>
+            <div class="modal-body">
+                <div id="elie-resto-detail"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalForExtension" tabindex="-1" aria-labelledby="extModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable modal-xl">
+		<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5 text-primary" id="extModalLabel">Resultat de recherche restaurant</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div id="elie-restou"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+{% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
 
 {% endblock %}

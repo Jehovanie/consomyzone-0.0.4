@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\PDOConnexionService;
 use App\Service\Status;
 use App\Entity\AvisRestaurant;
 use App\Entity\BddRestoUserModif;
@@ -435,6 +436,96 @@ class RestaurantController extends AbstractController
         ]);
     }
 
+    #[Route("/restaurant-mobile/specific/arrondissement/{nom_dep}/{id_dep}/{codinsee}/{limit}/{offset}", name: "app_specific_arrd_restaurant_mobile", methods:"GET")]
+    public function getSpecificArrdRestaurantMobile(
+        $id_dep,
+        $codinsee,
+        $limit,
+        $offset,
+        $nom_dep,
+        BddRestoRepository $bddResto,
+        Status $status,
+        Request $request,
+        CodeapeRepository $codeApeRep,
+        Tribu_T_ServiceNew $tribu_T_Service,
+        UserRepository $userRepository,
+        AvisRestaurantRepository $avisRestaurantRepository){
+        $datas = [];
+        $idData = [];
+
+        $restos = $bddResto->getCoordinateAndRestoIdForSpecificMobile($id_dep, $codinsee, $limit, $offset);
+        $resultCount = $bddResto->getAccountRestauranting($id_dep);
+        $userConnected = $status->userProfilService($this->getUser());
+        $statusProfile = $status->statusFondateur($this->getUser());
+        foreach ($restos as $data) {
+            $arrayTribu = [];
+            $arrayTribuRestoPast = [];
+            $arrayTribuRestoJoinedPast = [];
+            $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
+
+            $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $isAlreadyCommented = false;
+            $avis = ["note" => null, "text" => null];
+
+
+
+            $note_temp = 0;
+            foreach ($global_note as $note) {
+                if ($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]) {
+                    $isAlreadyCommented = true;
+                    $avis = ["note" => $note["note"], "text" =>  $note["avis"]];
+                }
+                $note_temp +=  $note["note"];
+            }
+
+
+
+
+            $data["avis"] = [
+                "nbr" => $nbr_avis_resto,
+                "note" => $global_note ?  $note_temp / count($global_note) : 0,
+                "isAlreadyCommented" => $isAlreadyCommented,
+                "avisPerso" => $avis
+            ];
+
+            if ($this->getUser()) {
+
+                $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+                $arrayTribuRestoPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_owned, $data["id"], $arrayTribuRestoPast);
+
+                $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+
+                $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $data["id"], $arrayTribuRestoJoinedPast);
+            }
+            $data["tribuTPastie"] =  [
+                "tribu_t_can_pastille" => $arrayTribu,
+                "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+                "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            ];
+
+
+            array_push($datas, $data);
+            array_push($idData, $data["id"]);
+        }
+
+
+        return $this->json([
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "restaurants" => $datas,
+            "nomber_resto" => $resultCount,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "userConnected" => $userConnected,
+            "codeApes" => $codeApeRep->getCode(),
+            "type" => "resto",
+            // "arrdssm" => $arrdssm,
+            // "codinsee" => $codinsee
+        ],);
+
+    }
     #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{limit}/{offset}", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
     public function getSpecificRestaurantMobile(
         BddRestoRepository $bddResto,
@@ -780,7 +871,7 @@ class RestaurantController extends AbstractController
 
         $datas = [];
 
-        $restos = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
+        $restos = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep,$codinsee);
         foreach ($restos as $data){
             $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
@@ -1002,6 +1093,7 @@ class RestaurantController extends AbstractController
             $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $id_restaurant, $arrayTribuRestoJoinedPast);
 
         }
+
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -1304,11 +1396,11 @@ class RestaurantController extends AbstractController
      * @param int $idRestaurant : identifiant d'un restaurant
     */
     public function getTribuTForRestoPastilled($tribu_T_Service, $arrayTribuTOwnedOrJoined, $idRestaurant, $results){
-        
+        $pdoService = new PDOConnexionService();
         foreach ($arrayTribuTOwnedOrJoined as $key) {
             $tableTribu = $key["nom_table_trbT"];
             $logo_path = $key["logo_path"];
-            $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"]:null;
+            $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? json_decode($pdoService->convertUnicodeToUtf8($key["name_tribu_t_muable"]), true):null;
             $tableExtension = $tableTribu . "_restaurant";
             if($key["ext_restaurant"]){
                 if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $idRestaurant, true)){

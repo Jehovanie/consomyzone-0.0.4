@@ -115,7 +115,6 @@ class UserController extends AbstractController
 
         //// ALL PUBLICATION FOR ALL TRIBU T /////
         $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
-      
        
         if(count($all_tribuT) > 0 ){
             $all_pub_tribuT= [];
@@ -129,7 +128,6 @@ class UserController extends AbstractController
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
         $publicationSorted= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
-        // dd($publicationSorted);
 
         ///all publication on tribu T use for new publications
         $choiceTribuT= [];
@@ -226,7 +224,7 @@ class UserController extends AbstractController
                     $tribuGService->createOnePub($tribuG. "_publication", $userId, $legend, intval($confid), $newFilename);
                 }else{
                     $tribu = $new_publication['tribu']->getData();
-                    $tribuTService->createOnePub($tribu . '_publication', $userId, $legend, intval($confid), $newFilename);
+                    $tribuTService->createOnePub($tribu . '_publication', $userId, json_encode($legend), intval($confid), $newFilename);
                 }
             }
 
@@ -839,7 +837,7 @@ class UserController extends AbstractController
             foreach ($all_user_id_tribug as $user_id_tribu_g) {
                 $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
                 
-                if( $friend->getType()!='Type' && $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
+                if( $friend && $friend->getType()!='Type' && $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
     
                     $single_user = [
                         "id" => intval($friend->getId()),
@@ -853,22 +851,31 @@ class UserController extends AbstractController
     
                 }
             }
+
+            $all_tribuT = $userRepository->getListTableTribuT();
+
+            // dd($all_tribuT);
     
-            $all_tribuT = $userService->getTribuByIdUser($user_id);
+            // $all_tribuT = $userService->getTribuByIdUser($user_id);
+
+            $new_tribu_srv = new Tribu_T_ServiceNew();
     
             for($i=0; $i < count($all_tribuT); $i++ ){
     
                 $tribut= $all_tribuT[$i];
-    
-                $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
-    
-                $membres = $userService->getMembreTribuT($tribut["table_name"]);
+
+                $tribuT_apropos = $new_tribu_srv->getApropos($tribut["nom_table_trbT"]);
+
+                // $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
+                
+                $membres = $userService->getMembreTribuT($tribut["nom_table_trbT"]);
+                
                 for($j=0; $j< count($membres); $j++ ){
     
                     $partisant= $membres[$j];
                     $friendT = $userRepository->find(intval($partisant["user_id"]));
-    
-                    if( $friendT->getType() != 'Type' ){
+
+                    if( $friendT && $friendT->getType() != 'Type' ){
                         $single_user = [
                             "id" => intval($friendT->getId()),
                             "email" => $friendT->getEmail(),
@@ -2003,13 +2010,8 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         TributGService $tr,
         $is_tribu,
-        Tribu_T_Service $tribut,
-        // Request $request
+        Tribu_T_ServiceNew $tribut
     ): Response {
-
-        // $requestContent = json_decode($request->getContent(), true);
-
-        // $nomTribuT =  $requestContent["nomTribu"];
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
 
@@ -2018,33 +2020,16 @@ class UserController extends AbstractController
         $userPoster = $this->getUser();
 
         $role = $tribut->getRole($balise, intval($idR));
-
-        $role == "Fondateur" ? $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR),"tribu_t_owned")) : 
-                                $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR),"tribu_t_joined"));
-
-        $listTribuT = $tribu_t_joined->tribu_t;
-
-        $tribu_t_joined_info = null;
-        
-        if(is_array($listTribuT)){
-            for ($i = 0; $i < count($listTribuT); $i++) {
-
-                if($listTribuT[$i]->name == $balise) $tribu_t_joined_info = $listTribuT[$i];
-                
-            }
-        }else{
-            $tribu_t_joined_info = $listTribuT;
-        }
         
 
         $userPosterId = $userPoster->getId();
         $pseudo = $userPoster->getPseudo();
 
         if ($is_tribu == 1) { /* Add By Nantenaina */
-            
-            $tributName  = $balise;
+            $nomTribuT =  $tribut->getApropos($balise);
+            $tributName  = $nomTribuT["name_tribu_t_muable"];
 
-            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $tributName);
+            $tribut->addTribuTJoined($userPoster, intval($idR), $balise);
 
             $tribut->updateMember($balise, $userPosterId, 1);
 
@@ -2088,6 +2073,7 @@ class UserController extends AbstractController
         NotificationService $notificationService,
         TributGService $tr,
         UserRepository $userRepository,
+        Tribu_T_ServiceNew $tribut,
         $is_tribu
     ): Response {
         $tableRequestingName = $this->getUser()->getTablerequesting();
@@ -2097,17 +2083,18 @@ class UserController extends AbstractController
         $tableRequestingNameOtherUser = $userRepository->find($idR)->getTablerequesting();
 
         if ($is_tribu == 1) {/* Add By Nantenaina */
+            $nomTribuT =  $tribut->getApropos($balise);
+            $tributName  = $nomTribuT["name_tribu_t_muable"];
 
-            $tribut = new Tribu_T_Service();
             $tribut->invitationCancelOrDelete($balise, $userPosterId);
             $requesting->setIsRejected($tableRequestingName, $balise, intval($idR), $userPosterId);
             $requesting->setIsRejected($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
 
-            $type = "Invitation pour rejoindre la tribu " . $balise;
+            $type = "Invitation pour rejoindre la tribu " . $tributName;
 
             $userFullname = $tribut->getFullName($userPosterId);
 
-            $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $balise;
+            $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $tributName;
 
             // $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
             $notificationService->sendNotificationForOne($userPosterId, intval($idR), $type, $content);
@@ -2135,6 +2122,7 @@ class UserController extends AbstractController
         NotificationService $notificationService,
         TributGService $tr,
         UserRepository $userRepository,
+        Tribu_T_ServiceNew $tribut,
         $is_tribu
     ): Response {
         $tableRequestingName = $this->getUser()->getTablerequesting();
@@ -2147,7 +2135,6 @@ class UserController extends AbstractController
         $pseudo = $userPoster->getPseudo();
 
         if ($is_tribu == 1) {/* Add By Nantenaina */
-            $tribut = new Tribu_T_Service();
             $tribut->invitationCancelOrDelete($balise, intval($idR));
             $requesting->setIsCancel($tableRequestingName, $balise, $userPosterId, intval($idR));
             $requesting->setIsCancel($tableRequestingNameOtherUser, $balise, $userPosterId, intval($idR));

@@ -97,3 +97,10 @@ function getDetailRestoSearch(depName, dep, id){
         
     })
 }
+
+
+if (document.querySelector(".toggel-recherche-tomm-js")) {
+    document.querySelector(".toggel-recherche-tomm-js").addEventListener("click", () => { 
+            document.querySelector(".content_navleft_jheo_js").classList.toggle('d-none')
+    })
+}

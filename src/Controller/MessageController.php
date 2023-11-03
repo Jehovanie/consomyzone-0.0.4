@@ -15,6 +15,7 @@ use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +32,7 @@ class MessageController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
-        Tribu_T_Service $tributTService,
+        Tribu_T_ServiceNew $tributTService,
         UserRepository $userRepository,
         MessageService $messageService,
         ConsumerRepository $consumerRepository,
@@ -91,10 +92,13 @@ class MessageController extends AbstractController
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
         
         $all_tribuT_user= [];
-        $all_tribuT= $userRepository->getListTableTribuT();
+        // $all_tribuT= $userRepository->getListTableTribuT();
+        $tribuTOwned = $tributTService->getAllTribuTOwnedInfos($user);
+        $tribuTJoined = $tributTService->getAllTribuTJoinedInfos($user);
+        $all_tribuT= array_merge($tribuTOwned, $tribuTJoined);
         foreach($all_tribuT as $tribuT){
             $tribuT['amis'] = [];
-            $results=$tributTService->getAllPartisanProfil($tribuT['table_name']);
+            $results=$tributTService->getAllPartisanProfil($tribuT['nom_table_trbT']);
             foreach($results as $result){
                 if( intval($result["user_id"]) !== intval($userId) ){
                     $user_amis = $userRepository->find(intval($result["user_id"]));
@@ -272,10 +276,12 @@ class MessageController extends AbstractController
                 $agendaID = $key["agendaId"];
                 $from_id=$key["from_id"];
                 $to_id=$key["to_id"];
-
                 if(!is_null($to_id)){
+                    $userTo = $userRepository->findOneBy(["id" => intval($to_id)]);
+                    $email_to = $userTo->getEmail();
                     $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $email_to, "Déjà confirmé");
                 }
             }
         }else{

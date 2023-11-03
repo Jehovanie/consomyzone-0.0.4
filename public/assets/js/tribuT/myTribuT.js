@@ -9,7 +9,7 @@ var worker = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker.js') : new Worke
 var workerRestoPastilled = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_pastilled.js') : new Worker('/public/assets/js/tribuT/worker_pastilled.js');
 var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/worker_cmnt.js') : new Worker('/public/assets/js/tribuT/worker_cmnt.js');
 
-var image_tribu_t = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
+var image_tribu_t = document.querySelector("#avatarTribuT") ? `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">` : ""
 var descriptionTribuT = ""
 /**
  * create tribu_t section
@@ -165,16 +165,17 @@ async function showBlockPub() {
     /**end */
 
     /**render photo gallery*/
-    document.querySelector("#see-gallery").onclick = (e => {
-        e.preventDefault();
-        if (document.querySelector("li.listNavBarTribu > a.active")) {
-            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-        }
-        document.querySelector("#see-gallery").classList.add("active")
-        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-        showPhotos()
+    if(document.querySelector("#see-gallery"))
+        document.querySelector("#see-gallery").onclick = (e => {
+            e.preventDefault();
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+            }
+            document.querySelector("#see-gallery").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showPhotos()
 
-    })
+        })
     /**end */
 
     /**change pdp tribu_t */
@@ -189,14 +190,15 @@ async function showBlockPub() {
 
 
     /**render partisant*/
-    document.querySelector(".partisantT").onclick = (e) => {
-        if (document.querySelector("li.listNavBarTribu > a.active")) {
-            document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    if(document.querySelector(".partisantT"))
+        document.querySelector(".partisantT").onclick = (e) => {
+            if (document.querySelector("li.listNavBarTribu > a.active")) {
+                document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+            }
+            document.querySelector(".partisantT > a").classList.add("active")
+            document.querySelector("#tribu_t_conteuneur").innerHTML = ""
+            showPartisan()
         }
-        document.querySelector(".partisantT > a").classList.add("active")
-        document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-        showPartisan()
-    }
 
 }
 
@@ -233,7 +235,7 @@ function showPartisan() {
     fetch(request).then((response) => {
         if (response.ok && response.status == 200) {
             response.json().then(jsons => {
-                console.log(jsons)
+                // console.log(jsons)
 
                 let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
                     <thead>
@@ -294,7 +296,7 @@ function showPartisan() {
 
                 $('#table_partisan_elie_js').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             })
@@ -362,7 +364,7 @@ function updatePdpTribu_T(files) {
                     photoSize: files.size,
                     tribu_t_name: tribu_t_name_0,
                 }
-                console.log(param)
+                // console.log(param)
                 const request = new Request("/user/tribu/set/pdp", {
                     method: "POST",
                     headers: {
@@ -374,7 +376,7 @@ function updatePdpTribu_T(files) {
                 fetch(request).then(responses => {
                     if (responses.ok && responses.status === 200) {
                         document.querySelector("#avatarTribuT").src = evt.target.result
-                        document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
+                        // document.querySelector("#activeTribu").parentElement.parentElement.previousElementSibling.children[0].src = evt.target.result
                         swal({
                             title: "Succès!",
                             text: "L\'avatar de la tribu est à jour avec succès!",
@@ -416,7 +418,7 @@ function sendPublication(formData) {
                 confidentialite: formData.get("confidentialite")
             }
             // console.log(formData.get('photo'));
-            console.log(param)
+            // console.log(param)
             const request = new Request("/user/create-one/publication", {
                 method: "POST",
                 headers: {
@@ -606,6 +608,7 @@ function sendPublication(formData) {
 //                 </div>
 //                 <div class="publication-content">
 function showdDataContent(id_c_u, lastId = 0) {
+    if(document.querySelector("#tribu_t_conteuneur"))
     document.querySelector("#tribu_t_conteuneur").innerHTML += `
             <div class="publication-content">
                     <div class="list-pub-new">
@@ -624,7 +627,7 @@ function showdDataContent(id_c_u, lastId = 0) {
     worker.postMessage([nomTableTribuT, idTribuT, lastId, 20]);
 
     worker.onmessage = (event) => {
-        // console.log(event.data)
+        
         let data = event.data["publication"]
 
         //la variable qui contient les description de la tribuT
@@ -685,7 +688,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                     </div>` : ""
 
 
-                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
+                contentPublication = `<div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -719,7 +722,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like" onclick="openSwalNonActif()"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
+                                                            onclick="getAllComment('${data[i].id}', '${tribu_t_name_0}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -756,7 +759,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
                     contentPublication = `
-                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data[i].id}_jheo_js">
+                                        <div id="${tribu_t_name_0 + "_" + data[i].id}" data-name = "${tribu_t_name_0}" data-id="${data[i].id}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data[i].id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -821,7 +824,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i class="bi-heart like non_active"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${data.nom_table_trbT}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${data[i].id}', '${tribu_t_name_0}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -870,7 +873,7 @@ function showdDataContent(id_c_u, lastId = 0) {
             const gen = genDataPubOfAllPartisans(data, 5)
             const gen_length = (data.length - 5)
             //const gen_length = (data.length)
-            console.log("gen_length : " + gen_length)
+            // console.log("gen_length : " + gen_length)
 
 
             let lastId = 0;
@@ -891,13 +894,13 @@ function showdDataContent(id_c_u, lastId = 0) {
                                 showdDataContent(id_c_u, lastId);
                             } else {
                                 lastId = data.id
-                                console.log(data)
-                                console.log("last id " + lastId)
+                                // console.log(data)
+                                // console.log("last id " + lastId)
                                 data = gen.next().value
 
                                 if (data) {
                                     const contentPublication = `
-                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${data.nom_table_trbT}_${data.id}_jheo_js">
+                                        <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${dataAbout["nom_table_trbT"]}_${data.id}_jheo_js">
                                                 <!-- ====== Chart One Start -->
                                                 <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                     <div class="head-pub">
@@ -961,7 +964,7 @@ function showdDataContent(id_c_u, lastId = 0) {
                                                         <div class="reaction-icon d-flex">
                                                             <i class="bi-heart like non_active"></i>
                                                             <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data.id}', '${data.nom_table_trbT}', '${data.user_id}')"></i>
+                                                            onclick="getAllComment('${data.id}', '${tribu_t_name_0}', '${data.user_id}')"></i>
                                                         </div>
                                                     </div>
                                                     
@@ -990,7 +993,7 @@ function showdDataContent(id_c_u, lastId = 0) {
 
 function showCommentaireTribu_T(event, idmin = 0, b) {
     event.preventDefault();
-    console.log(idmin)
+    // console.log(idmin)
     const table_cmmnt = tribu_t_name_0 + "_commentaire"
     const pub_id = event.target.dataset.foo.replace(/[^0-9]/g, "")
 
@@ -1011,13 +1014,13 @@ function showComment(id_resto) {
     // alert(id_resto)
 
     workerGetCommentaireTribuT.onmessage = (e) => {
-        console.log("afffichage comment");
-        console.log(e.data)
+        // console.log("afffichage comment");
+        // console.log(e.data)
         const datas = e.data[0]
         const index = e.data[0].length
 
         for (let i = 0; i < index; i++) {
-            console.log(i)
+            // console.log(i)
             let lapstime = calculateDurationOfComment(datas[i].datetime)
             let commentaire = `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
@@ -1114,7 +1117,7 @@ function putComment(event) {
         }
 
     })
-    console.log(pubId, commentaire)
+    // console.log(pubId, commentaire)
 }
 
 
@@ -1216,9 +1219,6 @@ function showResto(table_rst_pastilled, id_c_u) {
 
     workerRestoPastilled.onmessage = (e => {
         let restos = e.data
-        // console.log("workerresto :::::");
-        // console.log(restos);
-        console.log(restos)
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
@@ -1228,14 +1228,14 @@ function showResto(table_rst_pastilled, id_c_u) {
         }
 
         if (restos.length > 0) {
-
             for (let resto of restos) {
+
                 //<a target="_blank" href="/restaurant/departement/${resto.departement}/${resto.id_dep}/details/${resto.id_unique}">
 
                 if (resto.isPastilled) {
 
                     let id = resto.id
-                    let id_resto = resto.extensionId
+                    let id_resto = resto.id_resto
                     let id_resto_comment = resto.All_id_r_com != null ? resto.All_id_r_com.split(",") : []
 
                     let id_user = resto.All_user != null ? resto.All_user.split(",") : []
@@ -1247,54 +1247,27 @@ function showResto(table_rst_pastilled, id_c_u) {
 
                     let adresse = resto.numvoie + " " + resto.nomvoie + " " + resto.codpost + " " + resto.dep_name
 
-                    let text1 = ""
+                    let text1 = "Notez"
 
-                    let action = ""
+                    let action = "create"
 
                     for (let [k, v] of id_user.entries()) {
                         if (v === id_c_u)
                             key = k
                     }
-                    if (id_user.includes(id_c_u)) {
-                        // console.log("up " + denominationsF)
-                        // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
-                        action = "update"
-
-                        text1 = "Modifiez votre avis"
-                    } else {
-                        // console.log("crt " + denominationsF)
-                        // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
-                        action = "create"
-                        text1 = "Notez"
-                    }
 
                     body_table += `
-                        <tr id="restaurant_${resto.extensionId}">
+                        <tr id="restaurant_${id_resto}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
-                                <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
                                 <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
-                                
-                                <!-- <a target="_blank" href="/restaurant?id=${resto.extensionId}" class="text-decoration-none">
-                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span>
-                                </a> -->
                             </td>
                             <td class="data-note-${resto.id}">${note}/4</td>
                             <td>
-                                <!--<div id="etoile_${id_resto}" class="non_active">
-                                    <i class="fa-solid fa-star" data-rank="1"></i>
-                                    <i class="fa-solid fa-star" data-rank="2"></i>
-                                    <i class="fa-solid fa-star" data-rank="3"></i>
-                                    <i class="fa-solid fa-star" data-rank="4"> </i>-->
-                                    <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
-                                <!--</div>-->
+                                <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
                             </td>
                             <td>
                                 <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
-                                <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
-                                
-                                <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
                             </td>
                         </tr>
                     `
@@ -1305,7 +1278,7 @@ function showResto(table_rst_pastilled, id_c_u) {
 
             $('#table_resto_pastilled').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 
@@ -1320,15 +1293,6 @@ function showResto(table_rst_pastilled, id_c_u) {
         }
 
         restoContainer.style.display = "block"
-        // invitationsContainer.innerHTML = "";               
-        // invitationsContainer.style.display = "none"
-        // photosContainer.innerHTML = "";
-        // photosContainer.style.display = "none"
-        // showCreatePub.style.display = "none"
-        //  showCreatePub_mobile.style.display = "none"
-        // showPub.style.display = "none"
-
-
 
     });
 
@@ -1410,6 +1374,14 @@ function printNodeGlobale(element, globalNote) {
         }
     }
 }
+
+/**
+ * @author Elie
+ * @constructor Sauvegarde note et commentaire resto pastille pour tribu T
+ * @param {*} note 
+ * @param {*} commentaire 
+ * @param {*} _idResto 
+ */
 function sendNote(note, commentaire, _idResto) {
 
     const content = {
@@ -1441,9 +1413,6 @@ function sendNote(note, commentaire, _idResto) {
 
             document.querySelector(".data-avis-" + _idResto).setAttribute("onclick", "openAvis(" + parseInt(last_avis + 1) + "," + _idResto + ")")
 
-            const openPopup = document.querySelector(".elie-plus-" + _idResto).getAttribute("onclick")
-
-            document.querySelector(".elie-plus-" + _idResto).setAttribute("onclick", openPopup.replaceAll("create", "update").replaceAll("Notez", "Modifier votre avis"))
 
             swal({
                 title: "Noté!",
@@ -1463,159 +1432,57 @@ function sendNote(note, commentaire, _idResto) {
         }
     })
 }
-function updateNote(note, commentaire, id_resto) {
+
+/**
+ * @author Elie
+ * @constructor Mise à jour note et commentaire resto pastille tribu T
+ * @param {*} id_resto 
+ * @param {*} id_bdd_resto 
+ */
+function updateNote(id_resto, id_bdd_resto) {
 
     const table_resto_comment = tribu_t_name_0 + "_restaurant_commentaire"
+    let note = document.querySelector("#text-note").value
+    let commentaire = document.querySelector("#message-text").value
 
-    fetch('/user/comment/tribu/restos-pastilles/' + tribu_t_name_0 + '_restaurant/' + id_resto)
-        .then(response => response.json())
-        .then(avis => {
+    let data = {
+        tableName : table_resto_comment,
+        id : id_resto,
+        note : note,
+        commentaire : commentaire
+    }
 
-            if (avis.length > 0) {
+    console.log(data);
 
-                for (let av of avis) {
-                    const content = {
-                        tableName: table_resto_comment,
-                        note: note,
-                        commentaire: commentaire,
-                        idRestoComment: av.id_resto_comment
-                    }
-                    const jsonStr = JSON.stringify(content)
-                    const request = new Request("/up/comment/resto/pastilled", {
-                        method: "POST",
-                        body: jsonStr,
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                    })
-                    fetch(request)
-                }
-
-            }
-
-        })
-
-
-    document.querySelector(".data-note-" + id_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
-
-    swal({
-        title: "A jour!",
-        text: "Note modifié avec succès!",
-        icon: "success",
-        button: "Ok",
-    });
-
-
-}
-
-function findResto(val, localisation = "") {
-
-    const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
-        method: 'GET'
+    const jsonStr = JSON.stringify(data)
+    const request = new Request("/up/comment/resto/pastilled", {
+        method: "POST",
+        body: jsonStr,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
     })
+    fetch(request).then(res=>{
+        if(res.ok && res.status == 200){
 
-    document.querySelector("#result_resto_past").style.display = "block;"
+            console.log(res);
 
+            document.querySelector(".data-note-" + id_bdd_resto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
 
-    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
-    document.querySelector("#elie-restou").innerHTML =
-        `<div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        </div>`
-
-
-    fetch(request).then(response => response.json()).then(data => {
-
-        let jsons = data.results[0]
-
-        jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
-
-        let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th>Nom de restaurant</th>
-                <th>Type</th>
-                <th>Adresse</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>`
-
-        let foot_table = `</tbody>
-        </table>`
-
-        let body_table = "";
-
-        if (jsons.length > 0) {
-
-
-            for (let json of jsons) {
-
-                const name = json.denominationF;
-                const dep = json.dep;
-                const depName = json.depName;
-                const commune = json.commune;
-                const codePost = json.codpost;
-                const nomvoie = json.nomvoie;
-                const numvoie = json.numvoie;
-                const typevoie = json.typevoie;
-                // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-                const adresse = json.add;
-                const bar = json.bar != "0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : ''
-                const boulangerie = json.boulangerie != "0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
-                const brasserie = json.brasserie != "0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
-                const cafe = json.cafe != "0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : ''
-                const cuisineMonde = json.cuisineMonde != "0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : ''
-                const fastFood = json.fastFood != "0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : ''
-                const creperie = json.creperie != "0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : ''
-                const salonThe = json.salonThe != "0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : ''
-                const pizzeria = json.pizzeria != "0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : ''
-
-                body_table += `
-                                <tr>
-                                    <td>${name}</td>
-                                    <td>
-                                        <!--<div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>-->
-                                        <div class="d-flex bd-highlight">
-                                            <div class="">${boulangerie}</div>
-                                            <div class="">${bar}</div>
-                                            <div class="">${brasserie}</div>
-                                            <div class="">${cafe}</div>
-                                            <div class="">${cuisineMonde}</div>
-                                            <div class="">${fastFood}</div>
-                                            <div class="">${creperie}</div>
-                                            <div class="">${salonThe}</div>
-                                            <div class="">${pizzeria}</div>
-                                        </div>
-                                    </td>
-                                    <td>${adresse}</td>
-                                    <td class="d-flex bd-highlight">
-                                        <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
-                                        <button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
-                                    </td>
-                                </tr>
-                            `
-            }
-
-            document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
-
-            // new DataTable('#resto-a-pastiller-list');
-            $('#resto-a-pastiller-list').DataTable({
-                "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                }
+            swal({
+                title: "A jour!",
+                text: "Note modifié avec succès!",
+                icon: "success",
+                button: "Ok",
             });
-
-        } else {
-            document.querySelector("#elie-restou").style.display = "block"
-            document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
+        
         }
     })
 
 }
+
+
 
 function showTypeResto(event) {
     let b = event.target.parentNode.parentNode
@@ -1633,6 +1500,13 @@ function showTypeResto(event) {
 
 }
 
+/**
+ * @author Elie
+ * @constructor pastiller resto pour tribu T
+ * @param {*} element 
+ * @param {*} id 
+ * @param {*} nom 
+ */
 function pastillerPast(element, id, nom) {
     // let modal = element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
     let modal = element.parentElement.parentElement.parentElement
@@ -1659,6 +1533,12 @@ function pastillerPast(element, id, nom) {
 
 }
 
+/**
+ * @author Elie
+ * @constructor setting resto extension data
+ * @param {*} id 
+ * @param {*} nom 
+ */
 function setRestoForPast(id, nom) {
 
     if (nom != "" && id != null) {
@@ -1674,7 +1554,11 @@ function setRestoForPast(id, nom) {
 
 }
 
-/**save resto pastilled */
+/**
+ * @author Elie
+ * @constructor Sauvegarde de pastille resto tribu T
+ * save resto pastilled 
+ */
 function saveRestaurantPast(id, nom) {
     let data = {
         name: nom,
@@ -1844,7 +1728,8 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites() {
-    showBlockPub();
+    location.reload()
+    // showBlockPub();
 }
 
 
@@ -1886,16 +1771,16 @@ function showInvitations() {
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
                                 <label for="exampleFormControlInput1">Destinataires</label>
-                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="name@example.com">
-                                <a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de destinataire">
+                                <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
-                                </a>
+                                </a>-->
                             </div>
 
-                            <div class="collapse mt-3" id="tribut-collapse">
+                            <div class="mt-3" id="tribut-collapse">
                                 <div class="form-group multiple_destination_css">
                                     <label for="exampleFormControlInput1">Ajouter de Cc</label>
-                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'email puis tapez la touche Entrée">
+                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
                                     <div class="content_chip content_chip_js_jheo">
                                         
                                     </div>
@@ -1982,37 +1867,39 @@ function showInvitations() {
         object.style.border = "1px solid black";
     })
 
-    input_cc.addEventListener("keyup", (e) => {
+    // input_cc.addEventListener("keyup", (e) => {
 
-        if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
-            if (verifieEmailValid(input_cc.value.replace(",", ""))) {
-                ////create single email
-                // <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
-                const div = document.createElement("div");
-                div.classList.add("chip");
-                const span = document.createElement("span");
-                span.innerText = input_cc.value.replace(",", "");
-                div.appendChild(span);
-                div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
-                document.querySelector(".content_chip_js_jheo").appendChild(div);
+    //     if (e.code === "KeyM" || e.code === "Enter" || e.code === "NumpadEnter") {
+    //         if (verifieEmailValid(input_cc.value.replace(",", ""))) {
+    //             ////create single email
+    //             // <div  class="chip"><span>toto@gmail.com</span><i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i></div>
+    //             const div = document.createElement("div");
+    //             div.classList.add("chip");
+    //             const span = document.createElement("span");
+    //             span.innerText = input_cc.value.replace(",", "");
+    //             div.appendChild(span);
+    //             div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
+    //             document.querySelector(".content_chip_js_jheo").appendChild(div);
 
-                input_cc.value = null
-            } else {
-                input_cc.style.border = "1px solid red";
-            }
-        }
-    })
+    //             input_cc.value = null
+    //         } else {
+    //             input_cc.style.border = "1px solid red";
+    //         }
+    //     }
+    // })
 
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
-        form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
-        form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
 
         ////get cc
         let cc_destinataire = [];
-        document.querySelectorAll(".chip span").forEach(item => {
-            cc_destinataire.push(item.innerText)
-        })
+        // document.querySelectorAll(".chip span").forEach(item => {
+        //     cc_destinataire.push(item.innerText)
+        // })
+
+        if (input_cc.value != "") {
+            cc_destinataire.push(input_cc.value)
+        }
 
         let data = { "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), "principal": "", "cc": cc_destinataire, "object": "", "description": "" }
 
@@ -2021,7 +1908,7 @@ function showInvitations() {
         let status = false;
 
         if (input_principal.value === "") {
-            console.log("Entre au moin une destination.")
+            // console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
         }
 
@@ -2034,7 +1921,7 @@ function showInvitations() {
 
         ///object
         if (object.value === "") {
-            console.log("Veillez entre un Object.")
+            // console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
         } else {
             data = { ...data, "object": object.value }
@@ -2052,6 +1939,8 @@ function showInvitations() {
         // console.log(data)
 
         if (status) {
+            form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
+            form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
             //////fetch data
             fetch("/user/tribu/email/invitation", {
                 method: "POST",
@@ -2067,7 +1956,6 @@ function showInvitations() {
                 return response.json()
             }).then(result => {
                 // input_principal.value = null;
-                input_cc.value = null;
                 // description.value = null;
                 object.value = null;
 
@@ -2079,10 +1967,14 @@ function showInvitations() {
                 let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
 
                 // sauvegarde de l'invitation
-                saveInvitationStory(table_trib, input_principal.value);
+                if(input_principal.value)
+                    saveInvitationStory(table_trib, input_principal.value);
+
+                if(input_cc.value)
+                    saveInvitationStory(table_trib, input_cc.value);
 
                 input_principal.value = null;
-
+                input_cc.value = null;
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2190,7 +2082,7 @@ function fetchAllTribuGMember() {
                 }
                 $('#table-tribuG-member > table').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             } else {
@@ -2310,7 +2202,7 @@ function updatePublication() {
         }
     } else {
         if (document.querySelector("#" + dataId + " .publication-picture").style.display == "none") {
-            console.log("Ok");
+            // console.log("Ok");
         } else {
             if (document.querySelector("#" + dataId + " .publication-picture").src.includes("data:image/")) {
                 imgSrc = document.querySelector("#" + dataId + " .publication-picture").src
@@ -2371,29 +2263,7 @@ if (searchParams.has('message')) {
 }
 
 
-function listResto() {
 
-    document.querySelector("#elie-restou").innerHTML = ""
-    let inputName = document.querySelector("#resto-rech").value;
-    let adresse = document.querySelector("#resto-rech-ou").value;
-    if (adresse.trim() != "" || inputName.trim() != "") {
-        if (document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")) {
-            findGolf(inputName, adresse)
-        } else if (document.querySelector(".restoNotHide > a").classList.contains("active")) {
-            findResto(inputName, adresse)
-        }
-        $("#modalForExtension").modal("show")
-    } else {
-
-        swal({
-            // title: "Succès",
-            text: "Champ invalide!",
-            icon: "error",
-            button: "Ok",
-        });
-
-    }
-}
 
 // function closeModal(){
 //     document.querySelector(".main-search-resto").style.display = "none";
@@ -2441,6 +2311,8 @@ function openAvis(nb_avis, id_resto) {
                 // console.log(avis);
                 for (let avi of avis) {
 
+                    console.log(avi);
+
                     let noteEtoile = ""
 
                     switch (parseInt(avi.note)) {
@@ -2460,33 +2332,57 @@ function openAvis(nb_avis, id_resto) {
                             noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
                     }
 
+                    let edit_avis_e = ''
+
+                    if(avi.userId == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
+                        edit_avis_e = `<div class="content_action">
+                            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
+                                data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
+                                onclick="setUpdateNote(this, ${avi.id_comment}, ${avi.note}, '${avi.commentaire}', ${id_resto})">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                        `
+                    }
+
                     document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
                         `<div class="card mb-2 card_avis_resto_jheo_js">
                             <div class="card-body">
-                                <div class="avis_content">
-                                    <div class="d-flex justify-content-between align-items-end">
-                                        <h5>
-                                            <small class="fw-bolder text-black"><i class="fas fa-user"></i> ${avi.pseudo} </small> <br>
-                                            ${avi.commentaire}
-                                        </h5>	
-                                        <p>
-                                            ${noteEtoile}
-                                            <!--<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-                                            <i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>
-                                            <i class="fa-solid fa-star"></i>
-                                            <i class="fa-solid fa-star"></i>-->
-                                        </p>
+
+                            <div class="avis_content">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="content_profil_image me-2">
+                                            <img class="profil_image" src="${avi.photo_profil ? avi.photo_profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+                                            </div>
+                                            <div class="content_info">
+                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.fullname}</small></h3>
+                                                <cite class="font-point-6"> ${avi.datetime}</cite>
+                                            </div>
+                                        </div>
+                                        <div class="content_start">
+                                            <p class="mb-2"> ${noteEtoile}</p>
+
+                                            ${edit_avis_e}
+
+                                        </div>
                                     </div>
-                                    <p>${avi.datetime}</p>
+
+                                    <div class="mt-2">
+                                        <p class="text-point-9">${avi.commentaire}</p>
+                                    </div>
                                 </div>
+                            </div>
+
                             </div>
                         </div>
                         `
                 }
 
-                document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
+                // document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_resto + ")")
 
-                document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
+                // document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "create")
             })
 
 
@@ -2506,80 +2402,6 @@ function openAvis(nb_avis, id_resto) {
         // do something...
         document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
     })
-
-}
-
-/**
- * @author elie
- * @constructor : fonction de parametrage d'id resto dans un template
- * @localisation : myTribuT.js
- * @utilisation dans le template tribuT.html.twig
- * @param {element} params : element ou le fonction se place
- * @param {int} id_pastille : id resto
- */
-function setSendNote(params, id_pastille) {
-
-    const action = params.getAttribute("data-action")
-
-    const avis = params.parentElement.previousElementSibling.querySelector("#message-text")
-    const note = params.parentElement.previousElementSibling.querySelector("#text-note")
-
-    if (action == "create") {
-
-        if (parseFloat(note.value) > 4) {
-            swal({
-                title: "Erreur de saisie de note!",
-                text: "Une note doit être inférieur ou égale à 4",
-                icon: "error",
-                button: "Ok",
-            });
-
-        } else {
-
-            sendNote(parseFloat(note.value), avis.value, id_pastille)
-        }
-
-    } else {
-        updateNote(parseFloat(note.value), avis.value, id_pastille)
-    }
-}
-
-/**
- * @author elie
- * @constructor Fonction d'ouverture de note de resto pastillé
- * @localisation : myTribuT.js
- * @utilisation dans le template tribuT.html.twig
- * @param {int} id_pastille : id resto
- * @param {string} action : action à faire pour le bouton
- */
-function openOnNote(id_pastille, action) {
-
-    document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
-    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
-
-}
-
-/**
- * @constructor Fonction d'ouverture d'un evenement
- * @author elie
- * @param {int} id : id resto
- * @param {string} nom : nom de resto
- * @param {string} adresse : adresse de resto
- * @param {string} action : action à faire pour le resto
- */
-function openOnEvent(id, nom, adresse, action) {
-
-    document.querySelector("#nomEtabEvent").value = nom
-
-    document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
-
-    let date = new Date();
-    let currentDate = date.toISOString().substring(0, 10);
-
-    document.getElementById('eventStart').value = currentDate;
-    document.getElementById('eventEnd').value = currentDate;
-    document.getElementById('timeStart').value = '00:00';
-    document.getElementById('timeEnd').value = '23:00';
 
 }
 
@@ -2604,39 +2426,7 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-    // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-    // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-    // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-
-}
-
-/**
- * @constructor : Ouverture de modal detail resto
- * @param {*} nom_resto 
- * @param {*} adresse 
- * @param {*} nom_dep 
- * @param {*} id_dep 
- * @param {*} id_restaurant 
- */
-function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
-
-    fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
-        .then(response => response.text())
-        .then(result => {
-
-            $("#modalDetailResto").modal("show")
-
-            document.querySelector("#restoModalLabel").innerHTML = `
-        <div>
-        <h1 class="modal-title fs-5">${nom_resto}</h1>
-        <span>${adresse.toLowerCase()}</span>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        `
-
-            document.querySelector("#elie-resto-detail").innerHTML = result
-        })
+    btn.dataset.tbname = tribu_t_name_0
 }
 
 function settingTribuT(e, tribuTName) {
@@ -2729,105 +2519,107 @@ function updateTribuTInfos(e) {
 
 }
 
-function showGolf() {
+// function showGolf(tableGolfPastilled) {
 
-    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+//     let tableGolfPastilled = tribu_t_name_0
 
-    if (document.querySelector("li.listNavBarTribu > a.active")) {
-        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-    }
-    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+//     if (document.querySelector("li.listNavBarTribu > a.active")) {
+//         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+//     }
+//     document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
 
-    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+//     let golfContainer = document.querySelector("#tribu_t_conteuneur")
 
-    golfContainer.innerHTML = `
-                                <div class="row mt-3 p-3">
-                                    <div class="col-12">
-                                        <div id="form_past"></div>
-                                        <div class="g-3">
-                                            <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
-                                            </div>
-                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
-                                            </div>
-                                        </div>
-                                    </div>
-                                `
+//     golfContainer.innerHTML = `
+//                                 <div class="row mt-3 p-3">
+//                                     <div class="col-12">
+//                                         <div id="form_past"></div>
+//                                         <div class="g-3">
+//                                             <div class="input-group mb-3">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+//                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+//                                             </div>
+//                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+//                                             </div>
+//                                         </div>
+//                                     </div>
+//                                 `
 
-    fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length > 0) {
-                let tr = ""
-                let i = 0
-                for (const item of data) {
-                    if (item.isPastilled) {
-                        i++
-                        let nbrAvis = item.nbrAvis
-                        let note = item.globalNote ? item.globalNote : 0
-                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
-                        tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled">
-                                ${image_tribu_t}
-                                </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
-                            </td>
-                            <td class="data-note-${item.id}">${note}/4</td>
-                            <td>
-                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
-                            </td>
-                        </tr>`
+//     fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log(data)
+//             if (data.length > 0) {
+//                 let tr = ""
+//                 let i = 0
+//                 for (const item of data) {
+//                     console.log(item)
+//                     if (item.isPastilled) {
+//                         i++
+//                         let nbrAvis = item.nbrAvis
+//                         let note = item.globalNote ? item.globalNote : 0
+//                         let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+//                         tr += `<tr id="golf_${item.id_golf}">
+//                             <td class="d-flex bd-highlight align-items-center" data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+//                                 <div class="elie-img-pastilled"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">
+//                                 ${image_tribu_t}
+//                                 </div>
+//                                 <span class="ms-3" style="font-size:12pt;"  data-name="${item.denomination_f}" data-adresse="${item.adr1} ${item.cp} ${item.nom_dep}">${item.denomination_f}</span>
+//                             </td>
+//                             <td class="data-note-${item.id}">${note}/4</td>
+//                             <td>
+//                                 <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+//                             </td>
+//                             <td>
+//                                 <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+//                             </td>
+//                         </tr>`
 
-                    }
-                }
+//                     }
+//                 }
 
-                if (i > 0) {
+//                 if (i > 0) {
 
-                    golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
-                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom de golf</th>
-                                                <th>Note</th>
-                                                <th>Avis</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${tr}
-                                        </tbody>
-                                    </table>`
+//                     golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+//                                     <table id="table_golf_pastilled" class="ta" style="width:100%">
+//                                         <thead>
+//                                             <tr>
+//                                                 <th>Nom de golf</th>
+//                                                 <th>Note</th>
+//                                                 <th>Avis</th>
+//                                                 <th>Action</th>
+//                                             </tr>
+//                                         </thead>
+//                                         <tbody>
+//                                             ${tr}
+//                                         </tbody>
+//                                     </table>`
 
-                    $('#table_golf_pastilled').DataTable({
-                        "language": {
-                            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                        }
-                    });
-                } else {
-                    golfContainer.style.textAlign = "center"
-                    golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-                }
-
-
-            } else {
-                golfContainer.style.textAlign = "center"
-                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-            }
-
-            golfContainer.classList.add("bg-white");
-            golfContainer.classList.add("p-2");
-            golfContainer.style.display = "block"
+//                     $('#table_golf_pastilled').DataTable({
+//                         "language": {
+//                             url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+//                         }
+//                     });
+//                 } else {
+//                     golfContainer.style.textAlign = "center"
+//                     golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//                 }
 
 
-        })
+//             } else {
+//                 golfContainer.style.textAlign = "center"
+//                 golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//             }
 
-}
+//             golfContainer.classList.add("bg-white");
+//             golfContainer.classList.add("p-2");
+//             golfContainer.style.display = "block"
+
+
+//         })
+
+// }
 
 function findGolf(val, localisation = "") {
 
@@ -2877,7 +2669,7 @@ function findGolf(val, localisation = "") {
                 const idDep = json.id_dep;
                 const nomDep = json.departement;
                 const idEtab = json.id_etab;
-                const table = document.querySelector("#activeTribu").getAttribute("data-table-name")
+                const table = tribu_t_name_0
 
                 body_table += `
                                 <tr>
@@ -2896,7 +2688,7 @@ function findGolf(val, localisation = "") {
 
             $('#resto-a-pastiller-list').DataTable({
                 "language": {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                 }
             });
 
@@ -2931,10 +2723,10 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
                             </div>`
 
     modalBody.innerHTML = `<div class="d-flex justify-content-center">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-                                                </div>`
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            </div>`
 
     fetch(request)
         .then(res => res.text()).then(html => {
@@ -2943,45 +2735,9 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
 
 }
 
-function pastilleGolf(element) {
-    let id = element.dataset.id
-    let name = element.dataset.name
-    let tbl = element.dataset.tbname
-    let data = {
-        id: id,
-        name: name,
-        tbl: tbl
-    }
-
-    console.log(data);
-
-    let request = new Request("/user/tribu_t/pastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-
-    fetch(request)
-        .then(response => response.json())
-        .then(message => {
-            new swal("Succès !", "Golf pastillé avec succès", "success")
-                .then((value) => {
-                    element.classList = "btn btn-secondary ms-1"
-                    element.textContent = "Pastillé"
-                    element.setAttribute("disabled", true)
-                    showGolf()
-                    document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                });
-        })
-        .catch(error => console.log(error))
-}
-
 function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse = null) {
 
-    let tableTribu = document.querySelector("#activeTribu").dataset.tableName
+    let tableTribu = tribu_t_name_0
 
     $("#detailOptionGolf").modal("show")
 
@@ -2992,21 +2748,23 @@ function openPopupActionGolf(id_pastille = null, denomination_f = null, adresse 
     let btn = document.querySelector("#data-depastilleGolf-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+    btn.dataset.tbname = tribu_t_name_0
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = tableTribu
 }
 
-function depastilleGolf(selector) {
+/*function depastilleGolf(selector) {
     let id = selector.dataset.id
     let name = selector.dataset.name
-    let tbl = selector.dataset.tbname
+    let tbl = tribu_t_name_0
     let data = {
         id: id,
         name: name,
         tbl: tbl
     }
+
+    console.log(data)
 
     let request = new Request("/user/tribu_t/depastille/golf", {
         method: "POST",
@@ -3023,11 +2781,11 @@ function depastilleGolf(selector) {
                 new swal("Succès !", "Golf dépastillé avec succès", "success")
                 .then((value) => {
                         $("#detailOptionGolf").modal("hide")
-                        document.querySelector("#golf_"+id).remove()
+                        document.querySelector("#golf_"+id).remove() 
                 });
         })
         .catch(error=>console.log(error))
-}
+}*/
 
 
 /**
@@ -3063,7 +2821,7 @@ function fetchAllInvitationStory() {
                 }
                 $('#table-tribuG-member > table').DataTable({
                     "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     }
                 });
             } else {
@@ -3073,3 +2831,40 @@ function fetchAllInvitationStory() {
         })
         .catch(error => console.log(error))
 }
+
+if(document.querySelector("#text-note"))
+    document.querySelector("#text-note").onkeyup = (e) => { 
+        if (document.querySelector(".flash-msg-ERREUR")) {
+            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        }
+        const value = e.target.value
+        mustBeInferior4(value, e.target)
+        console.log(value, e.target)
+        
+        
+        setTimeout(() => {
+            e.target.style="border:2px solid black;" 
+            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                
+            })
+        }, 5000)   
+    }
+
+if(document.querySelector("#text-note-modif"))
+    document.querySelector("#text-note-modif").onkeyup = (e) => { 
+        if (document.querySelector(".flash-msg-ERREUR")) {
+            document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
+        }
+        const value = e.target.value
+        mustBeInferior4(value, e.target)
+        
+        
+        setTimeout(() => {
+            e.target.style="border:2px solid black;" 
+            document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+                i.style = " transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;" 
+                
+            })
+        }, 5000)   
+    }

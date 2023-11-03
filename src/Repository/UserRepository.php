@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Supplier;
 use App\Entity\User;
 use App\Service\PDOConnexionService;
+use App\Service\Tribu_T_ServiceNew;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -99,7 +100,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
 
         $pdo = new PDOConnexionService();
-        $tribuTOwned = $this->sec->getUser()->getTribuT();
+        $tribuTOwned = $this->sec->getUser()? $this->sec->getUser()->getTribuT() : null;
 
         if(!$tribuTOwned){
             return $results;
@@ -117,26 +118,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
 
     public function getListTalbeTribuT_joined(){
-        $results= [ ];
-
-        if(!$this->sec->getUser()){
-            return $results;
-        }
-        
-        $pdo = new PDOConnexionService();
-        $tribuTJoined = $this->sec->getUser()->getTribuTJoined();
-
-        if(!$tribuTJoined){
-            return $results;
-        }
-
-        $sql = "SELECT * FROM $tribuTJoined";
-        $db = $pdo->getPDO();
-        $stm = $db->prepare($sql);
-        $stm->execute();
-        $results = $stm->fetchAll(\PDO::FETCH_ASSOC);
-
-        return $results;
+        $tribuTService = new Tribu_T_ServiceNew();
+        return $tribuTService->getAllTribuTJoinedInfos($this->sec->getUser());
     }
 
     public function getListTableTribuT(){

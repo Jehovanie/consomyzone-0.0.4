@@ -16,16 +16,18 @@
 		<p class="fw-bold mb-2">Tribu-T que vous avez créé</p>
 		<ul>
 			{% if tribu_T_owned is defined %}
-			{% for  tribu in tribu_T_owned %}
+			{% for  tribuO in tribu_T_owned %}
 
 				<li class="mb-2">
 					<div class="row card-my-tribu-t">
 						<div class="col-2">
-							<img class="avatar-tribu" src={{ asset(tribu.logo_path) }} alt={{tribu.name_tribu_t_muable}}>
+							<img class="avatar-tribu" src={{ asset(tribuO.logo_path) }} alt={{tribuO.name_tribu_t_muable}}>
 						</div>
 						<div class="col-9">
 							<p>
-								<a href="/user/tribu-t/contenu/{{tribu.nom_table_trbT}}/{{tribu.id}}" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name={{tribu.nom_table_trbT}}>{{ change(tribu.name_tribu_t_muable) }}</a> 
+								<a href="/user/tribu-t/contenu/{{tribuO.nom_table_trbT}}/{{tribuO.id}}" 
+								class="tribu_t owned {% if canActiveTribu is defined  %} {% if tribuO.nom_table_trbT == tribu.nom_table_trbT  %} p-2 list-nav-left active {% endif %} {% endif %}" 
+								data-tribu-rank="{{app.user.id}}" data-table-name={{tribuO.nom_table_trbT}}>{{ change(tribuO.name_tribu_t_muable) }}</a> 
 							</p>
 						</div>
 					</div>
@@ -42,15 +44,17 @@
 		<p class="fw-bold mb-2">Tribu-T dont vous êtes membre</p>
 		<ul>
 			{% if tribu_T_joined is defined %}
-				{% for  tribu in tribu_T_joined %}
+				{% for  tribuJ in tribu_T_joined %}
 					<li class="mb-2">
 						<div class="row card-my-tribu-t">
 							<div class="col-2">
-								<img class="avatar-tribu" src={{ asset(tribu.logo_path) }} alt={{tribu.name_tribu_t_muable}}>
+								<img class="avatar-tribu" src={{ asset(tribuJ.logo_path) }} alt={{tribuJ.name_tribu_t_muable}}>
 							</div>
 							<div class="col-9">
 								<p>
-									<a href="" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}" data-table-name={{tribu.nom_table_trbT}}>{{ change(tribu.name_tribu_t_muable)}}</a>
+									<a href="/user/tribu-t/contenu/{{tribuJ.nom_table_trbT}}/{{tribuJ.id}}" 
+									class="tribu_t owned other {% if canActiveTribu is defined  %} {% if tribuJ.nom_table_trbT == tribu.nom_table_trbT  %} p-2 list-nav-left active {% endif %} {% endif %}" 
+									data-tribu-rank="{{app.user.id}}" data-table-name={{tribuJ.nom_table_trbT}}>{{ change(tribuJ.name_tribu_t_muable)}}</a>
 								</p>
 							</div>
 						</div>

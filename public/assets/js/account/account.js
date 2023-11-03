@@ -1079,3 +1079,9 @@ document.querySelectorAll(".elie_nav_link").forEach(i=>{
     })
     
 })
+
+//il faut appeler ces fonction ensemble ok 😊
+if (arrangeSetingApparitionMobile()) {
+    set_iris_partisan(); 
+}
+

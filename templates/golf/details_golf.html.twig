@@ -1,4 +1,5 @@
 <div class="description content_body_details_jheo_js" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomGolf}}">
+
     <div class="content_titre_details">
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
@@ -7,7 +8,8 @@
                         <p> 
                             {{details.nomGolf | upper}}  
                             {% if (app.user and app.user.type!='Type') %}
-                                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                                {# {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %} #}
+                                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null  %}
                                     <span class="badge bg-info golf_status golf_status_jheo_js"></span>
                                 {% else %}
                                     {% if details.user_status["a_faire"] == "1" %}
@@ -34,8 +36,31 @@
                         </p>
                     </div>
                     <div class="col-4">
-                        <div class="logo-pastille-golf-tomm-js">
-
+                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
+                            
+                            {% set count = 0 %}
+                            {% for tribu_t_pastilled in tribu_t_pastilleds %}
+                                {# {{ dump(tribu_t_pastilled) }} #}
+                                    {% if tribu_t_pastilled.isPastilled == true %}
+                                        {% set count = count + 1 %}
+                                    {% endif %}
+                                {% if tribu_t_pastilled['isPastilled'] == true %}
+                                    {% if tribu_t_pastilled['logo_path'] == "" %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                    {% else %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="{{tribu_t_pastilled['logo_path']}}" alt="">
+                                    {% endif %}
+                                    
+                                
+                                {% endif %}
+                                
+                            {% endfor %}
+                            
+                            {% if count > 4 %}
+                                <span class="length-pastille-plus">{{ count }}+</span>
+                            {% else %}
+                                <span class="length-pastille-plus"></span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -50,17 +75,12 @@
                 <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
                     {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
                         <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
-                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf("{{details.id}}","{{details.nomGolf}}","{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+                        {# ,"{{details.nomGolf|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}","{{details.adr1|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomcommune  | raw}}"  #}
+                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf(event,{{details.id}})'>
                             <option value="0">Aucun</option>
                             <option value="1">A faire</option>
                             <option value="2">Fait</option>
-                            {# <option value="3">Mon golf</option> #}
                         </select>
-                        
-                        {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
-                   
-                    
-
                     {% else %}
                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
                     {% endif %}
@@ -76,11 +96,19 @@
                         </select>
                     {% endif %} #}
                 </div>
-            {% endif %}
+
                 <div class="mon-golf">
                     <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
-                    <button class="btn btn-success" value="3" onclick="executeActionForPastMonGolf('{{details.id}}','{{details.nomGolf}}','{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}' )">Mon golf</button>
+                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp |replace({'"': '&quot;', "'": '&apos;'})  | raw}}  {{details.nomCommune |replace({'"': '&quot;', "'": '&apos;'})  | raw}}" )'>Mon golf</button>
                 </div>
+            {% else %}
+                <div class="mon-golf">
+                    <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
+                    <button class="btn btn-secondary" value="3" onclick="openSwalActif()">Mon golf</button>
+                </div>
+            {% endif %}
+                
+                
 
 
             {# {% set adresse = details.adr1|lower ~" "~ details.cp|lower ~" "~ details.nomCommune|lower %}

@@ -316,44 +316,44 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-    /**
-     * Update Status of pedding invitation to accepted on the tribut T
-     * @param string $tableName: Name of the table
-     * @param int $user_id: ID of the user
-     * @param int $status: Status of the invitation to accepted on the tribut
-     * 
-     */
-    public function updateMember($tableName, $user_id, $status)
+    // /**
+    //  * Update Status of pedding invitation to accepted on the tribut T
+    //  * @param string $tableName: Name of the table
+    //  * @param int $user_id: ID of the user
+    //  * @param int $status: Status of the invitation to accepted on the tribut
+    //  * 
+    //  */
+    // public function updateMember($tableName, $user_id, $status)
 
-    {
-
-
-
-        $query = "UPDATE $tableName set status = ? WHERE user_id = ?";
+    // {
 
 
 
-        $stmt = $this->getPDO()->prepare($query);
+    //     $query = "UPDATE $tableName set status = ? WHERE user_id = ?";
 
 
 
-        $stmt->execute([$status, $user_id]);
+    //     $stmt = $this->getPDO()->prepare($query);
 
 
 
-    }
+    //     $stmt->execute([$status, $user_id]);
+
+
+
+    // }
 
 	
-	public function invitationCancelOrDelete($tableName, $user_id)
-    {
+	// public function invitationCancelOrDelete($tableName, $user_id)
+    // {
 
-        $query = "DELETE FROM $tableName WHERE user_id = ?";
+    //     $query = "DELETE FROM $tableName WHERE user_id = ?";
 
-        $stmt = $this->getPDO()->prepare($query);
+    //     $stmt = $this->getPDO()->prepare($query);
 
-        $stmt->execute([$user_id]);
+    //     $stmt->execute([$user_id]);
 
-    }
+    // }
 
     public function showTribuT($user_id, $option= null)
 
@@ -474,27 +474,27 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    function getRole($table, $userId)
+    // function getRole($table, $userId)
 
-    {
-
-
-
-        $statement = $this->getPDO()->prepare("SELECT roles as result FROM $table WHERE user_id  = $userId LIMIT 1");
+    // {
 
 
 
-        $statement->execute();
+    //     $statement = $this->getPDO()->prepare("SELECT roles as result FROM $table WHERE user_id  = $userId LIMIT 1");
 
 
 
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
+    //     $statement->execute();
 
 
 
-        return $result["result"];
+    //     $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-    }
+
+
+    //     return $result["result"];
+
+    // }
 
     /**
      * @author tommyramihoatrarivo@gmail.com <email>
@@ -1426,7 +1426,7 @@ class Tribu_T_Service extends PDOConnexionService
             ":idRestoComment"=> $idRestoComment,
             ":my_id" => $my_id
         );
-        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id_resto_comment=:idRestoComment and id_user=:my_id";
+        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id=:idRestoComment and userId=:my_id";
         $stmt = $this->getPDO()->prepare($sql);
 
         return $stmt->execute($values);
@@ -1516,20 +1516,20 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    public function getGolfPastilles($tableGolf, $tableComment){
+    // public function getGolfPastilles($tableGolf, $tableComment){
     
-        $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
-								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
-				as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+    //     $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
+	// 							GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+	// 							GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+	// 			as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
 
-        $stmt = $this->getPDO()->prepare($sql);
+    //     $stmt = $this->getPDO()->prepare($sql);
          
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+    //     $stmt->execute();
+    //     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     return $result;
 
-    }
+    // }
 
     // public function getAllAvisByRestName($tableResto,$id){
     //     $data=[
@@ -1633,18 +1633,18 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
-    public function getAllPartisanProfil($tableTribuT){
+    // public function getAllPartisanProfil($tableTribuT){
         
-        if($this->isTableExist($tableTribuT)){
-            $sql= "SELECT id, user_id, roles  FROM $tableTribuT WHERE status LIKE '1'";
-            $stmt = $this->getPDO()->prepare($sql);
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     if($this->isTableExist($tableTribuT)){
+    //         $sql= "SELECT id, user_id, roles  FROM $tableTribuT WHERE status LIKE '1'";
+    //         $stmt = $this->getPDO()->prepare($sql);
+    //         $stmt->execute();
+    //         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $results;
-        }
-        return [];
-    }
+    //         return $results;
+    //     }
+    //     return [];
+    // }
 
 
     /**

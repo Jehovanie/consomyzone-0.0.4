@@ -285,9 +285,9 @@
 							<tbody id="tbody_tribu_t">
 								{% for user in tribu_t_friend %}
 									<tr>
-										<td><img src="{{user.tribuT.avatar ? user.tribuT.avatar : '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" alt="" style="width:40px; height:40px;border-radius:50%;"/>
+										<td><img src="{{user.tribuT.logo_path ? user.tribuT.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" alt="" style="width:40px; height:40px;border-radius:50%;"/>
 										</td>
-										<td>{{user.tribuT.name}}
+										<td>{{user.tribuT.name_tribu_t_muable}}
 										</td>
 										<td>
 											<a href="{{user.user.id}}" class="">{{user.user.firstname ~" "~ user.user.lastname}}</a>

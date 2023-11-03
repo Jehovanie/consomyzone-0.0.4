@@ -192,7 +192,7 @@ class TributGService extends PDOConnexionService{
 
                         id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
-                        id_resto int(11) NOT NULL,
+                        extensionId int(11) NOT NULL,
 
                         denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
@@ -203,6 +203,60 @@ class TributGService extends PDOConnexionService{
                     )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
                     $this->getPDO()->exec($sql_restaurant);
+
+                    $sql_restaurant_comment = "CREATE TABLE ".$name_table_tribuG."_restaurant_commentaire(
+
+                        id int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        extensionId varchar(250) NOT NULL,
+
+                        userId varchar(250) NOT NULL,
+
+                        note decimal(3,2) DEFAULT NULL,
+
+                        commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+                    $this->getPDO()->exec($sql_restaurant_comment);
+
+                    $sql_golf = "CREATE TABLE ".$name_table_tribuG."_golf(
+
+                        id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+                        extensionId int(11) NOT NULL,
+
+                        denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+                        isPastilled TINYINT(1) DEFAULT 1,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+                    $this->getPDO()->exec($sql_golf);
+
+                    $sql_golf_comment = "CREATE TABLE ".$name_table_tribuG."_golf_commentaire(
+
+                        id int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        extensionId int(11) NOT NULL,
+
+                        userId int(11) NOT NULL,
+
+                        note decimal(3,2) DEFAULT NULL,
+
+                        commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+                    $this->getPDO()->exec($sql_golf_comment);
 
                     /** End restaurant table */
 
@@ -1468,7 +1522,7 @@ class TributGService extends PDOConnexionService{
      */
     public function getIdRestoOnTableExtension($table, $idResto){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto");
 
         $statement->execute();
 
@@ -1483,7 +1537,7 @@ class TributGService extends PDOConnexionService{
      */
     public function isPastilled($table, $idResto){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto and isPastilled = 1");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto and isPastilled = 1");
 
         $statement->execute();
 
@@ -1498,7 +1552,7 @@ class TributGService extends PDOConnexionService{
      */
     public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
 
-        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE extensionId = :resto_id";
 
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -1516,7 +1570,7 @@ class TributGService extends PDOConnexionService{
      */
     public function pastilleRestaurant($table_resto_pastille, $name,$resto_id){
 
-        $sql = "INSERT INTO $table_resto_pastille (denomination_f, id_resto) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
+        $sql = "INSERT INTO $table_resto_pastille (denomination_f, extensionId) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
 
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -1540,4 +1594,52 @@ class TributGService extends PDOConnexionService{
 
         $statement->execute();
     }
+
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of tribu G exists
+     */
+    public function getAllRestoTribuG($table_name){
+
+        $table_resto = $table_name."_restaurant";
+
+        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. '');
+
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getRestoPastillesTribuG($table_name){
+
+        $tableResto = $table_name."_restaurant";
+        $tableComment = $table_name."_restaurant_commentaire";
+    
+        $sql="SELECT * FROM (SELECT t1.id , t2.id as id_resto_comment, t1.extensionId as id_resto,t1.denomination_f, 
+                          t1.isPastilled, t2.extensionId as id_restaurant, t2.userId as id_user,t2.note,t2.commentaire,
+                          GROUP_CONCAT(t2.userId) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.extensionId) as nbrAvis ,
+                          GROUP_CONCAT(t2.id) as All_id_r_com
+                          FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.extensionId where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+          INNER JOIN bdd_resto ON tableRestCom.id_resto=bdd_resto.id";
+        $stmt = $this->getPDO()->prepare($sql);
+        
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+
+    public function getAllAvisByRestName($tableResto,$id){
+        $data=[
+            ":id"=>$id
+        ];
+        $sql="SELECT * FROM (SELECT t1.id as id_comment, extensionId, userId, note, commentaire, datetime, t2.pseudo FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.userId = t2.id where t1.extensionId = :id ) as tab 
+            INNER JOIN (SELECT concat(firstname, ' ', lastname) as fullname, photo_profil, user_id FROM consumer UNION SELECT concat(firstname, ' ', lastname) as fullname, photo_profil, user_id FROM supplier) as profil 
+            ON tab.userId = profil.user_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute($data);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+      }
+
 }

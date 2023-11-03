@@ -237,6 +237,15 @@ if(document.querySelector(".custom-flash")){
     }, 4000)
 
 }
+if ( document.querySelectorAll('.fa-solid.fa-xmark')) {
+    let closesIcon = document.querySelectorAll('.fa-solid.fa-xmark');
+
+    closesIcon.forEach(function(closeIcon) {
+        closeIcon.addEventListener('click', function() {
+            this.parentNode.parentNode.style.display="none";
+        });
+    }); 
+}
 
 
 if(document.querySelector(".custom-flash-inscription")){
@@ -249,7 +258,7 @@ if(document.querySelector(".custom-flash-inscription")){
 
     setTimeout(() => {
 
-        contentMessageFlash.classList.add("hide-flash-inscription") 
+       // contentMessageFlash.classList.add("hide-flash-inscription") 
 
     }, 4000)
 
@@ -700,9 +709,8 @@ let editor_invitation;
 initCKEditor("editor",showModalEditor);
 initCKEditor("editor-partenaire",showPartenairAsk);
 initCKEditor("editor-reponseDemandePartenaire",showReponsePartenaire);
-
-
-
+initCKEditor("exampleFormControlTextarea1",showReponsePartenaire);
+initCKEditor("editor-agenda-non-inscrit",showModalEditor);
 /**
  * 
  * @param {*} idElement please give id 
@@ -751,7 +759,7 @@ function initCKEditor(idElement,callback){
                 ]
             },
             // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
-            placeholder: 'Welcome to CKEditor&nbsp;5!',
+            placeholder: 'Ecrivez votre message ici.',
             // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
             fontFamily: {
                 options: [
@@ -1131,9 +1139,7 @@ function showPartenairAsk(){
 
 function showReponsePartenaire(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
-    return html=`
-        <p>Ecrivez votre message ici.</p>
-        `
+    return html=``
 }
 
 function getListeDemandePartenariat(e){
@@ -1371,7 +1377,7 @@ function getListeDemandePartenariat(e){
             let limite = thead.querySelectorAll('tr:nth-child(2) > th').length
             $(table).DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                     "search": "Recherche global",
 
                 },
