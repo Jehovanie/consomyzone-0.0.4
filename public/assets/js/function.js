@@ -2518,7 +2518,26 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                 
 
             })
-            let modalPastillGolf = `
+
+            let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
+
+            fetch(`/user/tribu_g/isPastilled/${tribu_g_name+'_golf'}/${id_golf}`)
+            .then(s=>s.json())
+            .then(isOk=>{
+                let txt =""
+                let isPastilled = false;
+                let classe = ''
+                if(isOk){
+                    txt = 'Dépastiller'
+                    isPastilled = false;
+                    classe = 'info'
+                }else{
+                    txt = 'Pastiller'
+                    isPastilled = true;
+                    classe = 'success'
+                }
+
+                let modalPastillGolf = `
             <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
                 <div class="modal-pastille-golf">
                     <div class="modal-dialog">
@@ -2529,7 +2548,17 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                             </div>
                             <hr>
                             <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
-                                <table class="table table-striped">
+
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                                    </li>
+                                </ul>
+
+                                <table class="table table-striped content_list_resto_js">
                                     <thead>
                                         <tr>
                                             <th scope="col">Logo</th>
@@ -2541,6 +2570,16 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                                         ${listTibuTPast}
                                     </tbody>
                                 </table>
+
+                                <div class="m-2 content_list_resto_js_g d-none">
+                                    <div class="d-flex justify-content-between">
+                                            <span>${tribu_g_name}</span>
+                                            <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
+                                                ${txt}
+                                            </button>
+                                
+                                    </div>
+                                </div>
                             </div>
                             
                         </div>
@@ -2552,15 +2591,10 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
             if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
                 document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
             }
-
-
-            
+            })
             
             
         })
-    
-        
-    
     
 }
 
@@ -5660,13 +5694,15 @@ function listResto() {
     let inputName = document.querySelector("#resto-rech").value;
     let adresse = document.querySelector("#resto-rech-ou").value;
     if (adresse.trim() != "" || inputName.trim() != "") {
-        if (document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active")) {
+        if ((document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active"))
+        || (document.querySelector("#fetch_golf_tribug_jheo_js") && document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active"))) {
             findGolf(inputName, adresse)
         } else if (document.querySelector(".restoNotHide > a") && document.querySelector(".restoNotHide > a").classList.contains("active")) {
             findResto(inputName, adresse)
         }else{
             findResto(inputName, adresse)
         }
+
         $("#modalForExtension").modal("show")
     } else {
 
@@ -5833,6 +5869,71 @@ function pastilleForTribuG(e, type, id, name){
         })
     }
 }
+
+/**
+ * @author Elie
+ * @constructor pastille resto into tribu G
+ * @param {node} e element of node
+ * @param {boolean} type oui si pastille, non si depastille
+ * @param {integer} id id_restaurant
+ * @param {string} name nom resto
+ */
+function pastilleGolfForTribuG(e, type, id, name){
+    
+    const data = {
+        name : name,
+        id : id,
+        tbl : document.querySelector("#my_tribu_g").textContent.trim()
+    }
+    // For pastille
+    if(type == true){
+
+        fetch("/user/tribu_g/pastille/golf",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Golf pastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+
+                e.classList = "btn btn-success ms-1"
+                e.innerText = "Pastillé"
+            }
+        })
+    }
+    // For depastille
+    else{
+        fetch("/user/tribu_g/depastille/golf",{
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r=>r.json())
+        .then(res=>{
+            if(res.status == "ok"){
+                swal({
+                    title : "Bravo!",
+                    text: "Golf dépastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+
+                e.classList = "btn btn-success ms-1"
+                e.innerText = "Dépastillé"
+            }
+        })
+    }
+}
+
 /**
  * @author tomm
  * @action get list des pastill
