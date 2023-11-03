@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/partage_agenda.css')}}">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 {% endblock %}
 
 
@@ -21,7 +22,7 @@
 	<script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
 	<script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
-	
+	<script src="{{asset('assets/js/agenda/invitation_not_member.js')}}" defer></script>
 	<script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
     <script src="{{asset('assets/js/agenda/partage_agenda.js')}}" defer></script>
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -197,7 +198,7 @@
                                         
                                     </table>
                                 </div>
-
+{# add new contznt  #}
                                 <div class="list_resto_or_golf_partage" id="agenda-non-inscrit" style="display:none;">
                                     <div class="bg-white rounded-3 px-3 w-75">
                                         <div id="blockSendEmailInvitation" class="mt-4 px-3">
@@ -247,7 +248,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="list_resto_or_golf mt-3" id="agenda-emailing" style="display:none;">
                                     <div class="accordion" id="accordion1" style="width: 448px; margin:auto;">
                                         <div class="accordion-item">

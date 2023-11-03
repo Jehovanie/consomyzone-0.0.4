@@ -126,9 +126,10 @@ class Tribu_T_Service extends PDOConnexionService
                         email varchar(255) NOT NULL,
                         is_valid tinyint(1) NOT NULL DEFAULT 0,
                         datetime DATETIME NOT NULL DEFAULT current_timestamp()
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
                     $this->getPDO()->exec($query_table_invitation);
+
 
                     $sql = "CREATE TABLE " . $output . "_commentaire(
 
@@ -2034,7 +2035,11 @@ class Tribu_T_Service extends PDOConnexionService
         return $arrayIdResto;
     }
 
+<<<<<<< HEAD
     /**
+=======
+/**
+>>>>>>> main
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction de sauvegarde de l'historique de l'invitation dans la tribu T
      */
@@ -2073,7 +2078,11 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+<<<<<<< HEAD
     /**
+=======
+     /**
+>>>>>>> main
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction fetching de l'historique de l'invitation dans la tribu T
      */
@@ -2109,6 +2118,9 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 }
 

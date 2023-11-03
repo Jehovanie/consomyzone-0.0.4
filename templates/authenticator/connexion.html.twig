@@ -126,11 +126,12 @@
 											<i  class="fas fa-eye-slash" id="togglePassword"></i>
 										</div>
 									</div>
-									<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+									
 								</div>
 							</div>
+							<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 							<div class="row ms-1">
-								<button class="btn waves-effect waves-light cta_connexion">
+								<button type="submit" class="btn waves-effect waves-light cta_connexion">
 									Connexion
 								</button>
 							</div>

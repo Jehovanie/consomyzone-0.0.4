@@ -36,6 +36,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\GolfFinished;
+use App\Entity\User;
+
 
 ini_set('max_execution_time', '600');
 
@@ -128,10 +131,15 @@ class AgendaController extends AbstractController
     }
 
     #[Route('/agenda/make/confirmation/{fromId}/{toId}/{agendaId}/{isYes}', name: 'agenda_make_confirmation', methods: ["GET","POST"])]
-    public function makeConfirmationAgenda($fromId,$toId,$agendaId, $isYes, UserRepository $userRepository){
+    public function makeConfirmationAgenda($fromId, $toId, $agendaId, $isYes, UserRepository $userRepository)
+    {
+        // $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
+        // return $this->json($confirm);
+        
         $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
         $userTo = $userRepository->findOneBy(["id" => $toId]);
         $type = $userTo->getType();
+
         return $this->json(["response"=>$confirm["response"], "type"=>$type]);
     }
 
@@ -1901,8 +1909,7 @@ class AgendaController extends AbstractController
             $context["content_mail"] = $description;
             $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
             $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status);
-
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
         }else{
             $email_to=$principal;
             $context["object_mail"] = $object;
@@ -1915,7 +1922,7 @@ class AgendaController extends AbstractController
             $context["content_mail"] = $description;
             $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
             $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé");
+            $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
         }
 
         if( count($cc) > 0 ){
@@ -1941,8 +1948,7 @@ class AgendaController extends AbstractController
                     $context["content_mail"] = $description;
                     $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status);
-        
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
                 }else{
                     $email_to=$c;
                     $context["object_mail"] = $object;
@@ -1955,7 +1961,7 @@ class AgendaController extends AbstractController
                     $context["content_mail"] = $description;
                     $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé");
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
                 }
 
             }
@@ -1973,8 +1979,8 @@ class AgendaController extends AbstractController
     public function invitationStoryAgenda(AgendaService $agendaService){
         $user = $this->getUser();
         $userId = $user->getId();
-        $stories = $agendaService->invitationStoryAgenda("agenda_".$userId."_story");
+        $stories = $agendaService->invitationStoryAgenda("agenda_".$userId."_story","partage_agenda_".$userId);
+       
         return $this->json($stories);
     }
-
 }

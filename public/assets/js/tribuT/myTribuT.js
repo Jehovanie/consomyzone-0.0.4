@@ -1765,13 +1765,16 @@ function showInvitations() {
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
                         <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
+<h6 class="modal-title text-primary" >Vous pouvez modifier le corps du email comme vous le voulez.</h6>
+                        <h6 class="modal-title text-primary" >Le lien d'invitation sera généré par l'application CMZ automatiquement.</h6>
+                        <h6 class="modal-title text-primary" >L'email envoyé sera automatiquement signé à votre nom.</h6>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
                                 Invitation envoyée avec succès !
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
                                 <label for="exampleFormControlInput1">Destinataires</label>
-                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de destinataire">
+                                <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email du destinataire">
                                 <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
                                 </a>-->
@@ -1795,7 +1798,9 @@ function showInvitations() {
                                 <label for="exampleFormControlTextarea1">Description</label>
                                 <div id="exampleFormControlTextarea32">
                                     <div class="wrapper pt-3 pb-3">
-                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1"></textarea>
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1">
+                                            
+                                        </textarea>
                         
                                         <pre id="output"></pre>
                                     </div>
@@ -1843,7 +1848,6 @@ function showInvitations() {
     // // console.log(editor);
     // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
     // document.querySelector("#editorInvitationElie").classList.remove("d-none")
-
     fetchAllTribuGMember()
 
     /** JEHOVANNIE SEND INVITATION BY EMAIL */
@@ -1972,6 +1976,16 @@ function showInvitations() {
 
                 if(input_cc.value)
                     saveInvitationStory(table_trib, input_cc.value);
+
+                input_principal.value = null;
+                input_cc.value = null;
+
+                //Send data invitation story into tribu
+                let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
+
+                // sauvegarde de l'invitation
+                saveInvitationStory(table_trib, input_principal.value);
+                saveInvitationStory(table_trib, input_cc.value);
 
                 input_principal.value = null;
                 input_cc.value = null;
@@ -2450,13 +2464,16 @@ function settingTribuT(e, tribuTName) {
         document.querySelector("#update_description").value = currentTribuT.description
         document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path
 
-        if (currentTribuT.ext_restaurant) {
+        // extension 'on' correspond à extension 
+        //restaurant dans les anciens version
+        // ce bout de code est là pour assurer une prise en charge recurssive
+        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.ext_golf) {
+        if (currentTribuT.extension.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false
@@ -2832,7 +2849,7 @@ function fetchAllInvitationStory() {
         .catch(error => console.log(error))
 }
 
-if(document.querySelector("#text-note"))
+if(document.querySelector("#text-note")){
     document.querySelector("#text-note").onkeyup = (e) => { 
         if (document.querySelector(".flash-msg-ERREUR")) {
             document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
@@ -2850,16 +2867,15 @@ if(document.querySelector("#text-note"))
             })
         }, 5000)   
     }
+}
 
-if(document.querySelector("#text-note-modif"))
+if(document.querySelector("#text-note-modif")){
     document.querySelector("#text-note-modif").onkeyup = (e) => { 
         if (document.querySelector(".flash-msg-ERREUR")) {
             document.querySelector(".flash-msg-ERREUR").parentNode.removeChild(document.querySelector(".flash-msg-ERREUR"))
         }
         const value = e.target.value
         mustBeInferior4(value, e.target)
-        
-        
         setTimeout(() => {
             e.target.style="border:2px solid black;" 
             document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
@@ -2868,3 +2884,5 @@ if(document.querySelector("#text-note-modif"))
             })
         }, 5000)   
     }
+}
+            // .catch(error=>console.log(error))

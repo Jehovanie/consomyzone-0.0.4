@@ -46,17 +46,16 @@
 				<div class="content_container_list" id="list_departements">
 					<ul>
 						{% for departement in departements %}
-
 							<li class="list_item_dep_station_js_jheo">
-								<div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
-									<div class="col-2">
-										<h5 class="id_departement">{{departement.id }}</h5>
-									</div>
-									<div class="col-6">
-										<h5>{{departement.departement}}</h5>
-									</div>
-									<div class="col-2">
-										<a class="plus" href="{{path('specific_station_departement', {'depart_name': departement.departement, 'depart_code': departement.id }) }}">
+								<a href="{{path('specific_station_departement', {'depart_name': departement.departement, 'depart_code': departement.id }) }}">
+									<div class="row container-depart pt-4 element" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
+										<div class="col-2">
+											<h5 class="id_departement">{{departement.id }}</h5>
+										</div>
+										<div class="col-6">
+											<h5>{{departement.departement}}</h5>
+										</div>
+										<div class="col-2">
 											<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
 
 												<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none">
@@ -73,11 +72,10 @@
 													14 29 0 47 174 151 280 169 77 12 115 12 190 0z"/>
 												</g>
 											</svg>
-										</a>
+										</div>
 									</div>
-								</div>
+								</a>
 							</li>
-
 						{% endfor %}
 					</ul>
 				</div>

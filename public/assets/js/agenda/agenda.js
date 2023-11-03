@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             allAgenda.forEach(agenda => {
                 let { id, title, dateStart: start, dateEnd: end, timeStart: heureDebut, timeEnd: heureFin } = agenda;
-                
+
                 // const className=  repasType.some(item => item.includes(type.toLowerCase())) ? "repas": 'other_event';
                 // var tomorrow = new Date(end);
                 // tomorrow.setDate(tomorrow.getDate()+1)
@@ -1664,7 +1664,6 @@ function tableActiveFilterPartisant(e) {
     const allTypeActive = ["list_partisant_tribuG_jheo_js", "list_partisant_tribuT_jheo_js", "email_non_inscrit", "invitation_story", "list_partisant_emailing_jheo_js"];
     const current_class_active = allTypeActive.find(item => e.classList.contains(item))
     const other_not_active = allTypeActive.filter(item => item != current_class_active)
-
     if (!e.classList.contains("active")) {
         e.classList.add("active")
     }

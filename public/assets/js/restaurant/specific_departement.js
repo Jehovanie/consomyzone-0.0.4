@@ -5,11 +5,6 @@ window.addEventListener('load', () => {
         let isArrondissement=parseInt(id_dep) ===75 ? true : false
         getDataSpecificMobile(nom_dep, id_dep,isArrondissement)
     }
-   
-    
-    
-    
-
 });
 
 

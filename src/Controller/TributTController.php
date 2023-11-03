@@ -1836,18 +1836,9 @@ class TributTController extends AbstractController
     //         // $mailService->sendEmail(
     //         //     $principal,
     //         //     "Amis",
-    //         //     $object,
     //         //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
     //         //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
     //         // );
-
-    //         $context["object_mail"] = $object;
-    //         $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-    //         $context["link_confirm"] = $url ;
-    //         $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
-
-    //         $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
-    //     }
 
     //     if( count($cc) > 0 ){
 
@@ -1872,15 +1863,6 @@ class TributTController extends AbstractController
     //                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
     //                 $context["link_confirm"] = $url ;
     //                 $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
-
-    //                 $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
-        
-    //                 $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
-        
-    //                 $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
-        
-    //                 if ($isMembre == "not_invited") {
-    //                     $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
     //                     $tribuTService->addMember($table, $id_receiver);
     //                     $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
     //                     $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
@@ -1941,6 +1923,8 @@ class TributTController extends AbstractController
     //         return $response;
     //     }
     // }
+
+
     #[Route("/up/comment/resto/pastilled", name: "up_comment_pastilled_resto", methods: ["POST"])]
     public function up_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService) : Response
     {
@@ -2602,6 +2586,7 @@ class TributTController extends AbstractController
     /**
      * @author Elie <eliefenohasina@gmail.com>
      * Controlleur de sauvegarde de l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/save_story/{table}",name:"app_save_story_invitation",methods:["POST"])]
     public function saveStoryInvitation($table , Request $request, Tribu_T_Service $tribuTService ){
@@ -2624,9 +2609,12 @@ class TributTController extends AbstractController
        
     }
 
+
+    
     /**
      * @author Elie <eliefenohasina@gmail.com>
      * Controlleur de fetching l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/get_all_story/{table}",name:"app_get_all_story_invitation",methods:["GET"])]
     public function getAllStoryInvitation($table , Tribu_T_Service $tribuTService, UserService $user_serv){
@@ -2660,6 +2648,7 @@ class TributTController extends AbstractController
      /**
      * @author Elie <eliefenohasina@gmail.com>
      * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/update_story/{table}/{is_valid}/{email}",name:"app_up_valid_story_invitation",methods:["POST"])]
     public function updateStoryInvitation($table ,  $is_valid, $email, Tribu_T_Service $tribuTService){
@@ -2672,67 +2661,69 @@ class TributTController extends AbstractController
        
     }
 
-    // /**
-    //  * @author Elie <eliefenohasina@gmail.com>
-    //  * Controlleur de MAJ l'historique de l'invitation dans la tribu T
-    //  */
-    // #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
-    // public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request){
+     /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
+     */
+    #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
+    public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request){
 
-    //     $table =$request->query->get("tribu");
+        $table =$request->query->get("tribu");
 
-    //     $email =$request->query->get("email");
+        $email =$request->query->get("email");
 
-    //     if($this->getUser()){
 
-    //         if($table && $email){
+        if($this->getUser()){
 
-    //             ////name tribu to join
-    //             $tribuTtoJoined = $table;
+            if($table && $email){
+
+                ////name tribu to join
+                $tribuTtoJoined = $table;
                     
-    //             //// apropos user fondateur tribuT with user fondateur
-    //             $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
+                //// apropos user fondateur tribuT with user fondateur
+                $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
     
-    //             $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+                $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
     
-    //             $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+                $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
 
-    //             $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+                $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
 
-    //             if(array_key_exists("name", $arrayTribuT)){
-    //                 if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-    //                     $apropos_tribuTtoJoined= $arrayTribuT;
-    //                 }
-    //             }else{
-    //                 foreach($arrayTribuT as $tribuT){
+                if(array_key_exists("name", $arrayTribuT)){
+                    if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                        $apropos_tribuTtoJoined= $arrayTribuT;
+                    }
+                }else{
+                    foreach($arrayTribuT as $tribuT){
                     
-    //                     if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-    //                         $apropos_tribuTtoJoined= $tribuT;
-    //                         break;
-    //                     }
-    //                 }
-    //             }
+                        if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                            $apropos_tribuTtoJoined= $tribuT;
+                            break;
+                        }
+                    }
+                }
 
-    //             //// set tribu T for this new user.
-    //             $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
+                //// set tribu T for this new user.
+                $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
                 
-    //             ///update status of the user in table tribu T
-    //             $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
+                ///update status of the user in table tribu T
+                $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
 
-    //             $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+                $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
     
-    //         }
+            }
 
-    //         return $this->redirectToRoute('app_my_tribu_t');
+            return $this->redirectToRoute('app_my_tribu_t');
 
-    //     }else{
+        }else{
 
-    //         return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login');
             
-    //     }
+        }
 
        
-    // }
+    }
 
 }
 

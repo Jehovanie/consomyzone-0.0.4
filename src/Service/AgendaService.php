@@ -601,7 +601,7 @@ class AgendaService extends PDOConnexionService
      * @author Tommy
      */
     public function createTableAgenda($table_agenda_name){
-        $sql= "CREATE TABLE IF NOT EXISTS $table_agenda_name (".
+        $sql= "CREATE TABLE IF NOT EXISTS ".$table_agenda_name ."(".
             "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
             "`title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
             "`description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
@@ -634,8 +634,8 @@ class AgendaService extends PDOConnexionService
      * 
      */
     public function createTablePartageAgenda($table_partage_agenda_name){
-        $sql= "CREATE TABLE IF NOT EXISTS $table_partage_agenda_name (".
-            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+        $sql= "CREATE TABLE IF NOT EXISTS ". $table_partage_agenda_name .
+            "( `id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
             "`agenda_id` int(11) NOT NULL,".
             "`user_id` int(11) NOT NULL,".
             "`origin` varchar(200) DEFAULT NULL,".
@@ -1129,20 +1129,17 @@ class AgendaService extends PDOConnexionService
      * @param string $email : l'email du partisan
      * @param string $partisan : le nom du partisan
      */
-    public function addAgendaStory($tableStoryAgenda, $email, $partisan){
+    public function addAgendaStory($tableStoryAgenda, $email, $partisan,$agendaId){
 
         $db = $this->getPDO();
-
-        $sql = "INSERT INTO $tableStoryAgenda (email, partisan) values (:email, :partisan)";
+        $sql = "INSERT INTO $tableStoryAgenda (email, partisan,agenda_id) values (:email, :partisan,:agenda_id)";
 
         $stmt = $db->prepare($sql);
-  
         $stmt->bindParam(':email', $email);
-
         $stmt->bindParam(':partisan', $partisan);
+        $stmt->bindParam(":agenda_id",$agendaId);
 
         $stmt->execute();
-    
     }
 
     /**
@@ -1152,11 +1149,18 @@ class AgendaService extends PDOConnexionService
      * je veux: voir l'historique d'invitation de mon agenda
      * @param string $$tableStoryAgenda : tableStoryAgenda
      */
-    public function invitationStoryAgenda($tableStoryAgenda){
+    public function invitationStoryAgenda($tableStoryAgenda,$tablePartageAngenda){
         $db = $this->getPDO();
-
-        $sql = "SELECT * FROM $tableStoryAgenda";
-
+        
+        // $sql = "SELECT * FROM $tableStoryAgenda";
+        // $sql="SELECT * FROM ".$tableStoryAgenda ." as story left join `user` as u on story.email=u.email;";
+        $sql="Select * FROM `".$tablePartageAngenda."`as tbl1 left join".
+             "(SELECT story.id as storyId, story.email as storyEmail,".
+                "story.agenda_id as storyAgendaId,".
+                "story.datetime as storyDateTime, ".
+                "u.id as userID, ".
+                "u.type as userType FROM `".$tableStoryAgenda."` as story left join `user` as u on story.email=u.email) as tbl2 ".
+                "on tbl1.user_id=tbl2.userID and tbl1.agenda_id=tbl2.storyAgendaId;";
         $stmt = $db->prepare($sql);
 
         $stmt->execute();

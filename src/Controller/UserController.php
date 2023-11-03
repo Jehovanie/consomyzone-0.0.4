@@ -82,6 +82,13 @@ class UserController extends AbstractController
         $this->appKernel = $appKernel;
         $this->filesyst = $filesyst;
 
+}
+    #[Route("/info/verif/{id}",name:"userInfo")]
+    public function getUserInfo($id){
+
+        $data=$this->entityManager->getRepository(User::class)->findBy(["id"=>$id]);
+        return $this->json(["email"=>$data[0]->getEmail()]);
+
     }
     #[Route("/user", name: "home")]
     public function home(){

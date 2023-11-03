@@ -2684,7 +2684,8 @@ function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
     let codinsee = params.get("codinsee");
     let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     let id_resto = ''
-     let request=null;
+    let request=null;
+
     if (isArrondissement) {
         // restaurant-mobile/specific / arrondissement / ${ nom_dep } /${id_dep}/${ codinsee } /5/5
         request = new Request(`/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`, {
@@ -2710,7 +2711,6 @@ function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
                 document.querySelector(".loading-tomm-js").innerHTML = ''
             }
             let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
-            
             
             responses.restaurants.forEach(response => {
                 
@@ -3001,6 +3001,8 @@ function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
                 `
                 
             })
+
+
             if (screen.width < 991) {
                 const contentModalAvieResto = document.querySelectorAll(".modal-avie-resto-mobile-tomm-js")
                 contentModalAvieResto.forEach(items => {
@@ -3021,12 +3023,9 @@ function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
                     }
                 })
             }
-           
-
-
         }))
-  
 }
+
             
 /**
  * @author Tomm
@@ -4997,6 +4996,8 @@ function setGallerieImageV2(){
             document.querySelector("body").style = ""
         }
     }
+    
+
     
 }
 

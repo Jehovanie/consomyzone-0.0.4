@@ -454,7 +454,7 @@ class RestaurantController extends AbstractController
         $idData = [];
 
         $restos = $bddResto->getCoordinateAndRestoIdForSpecificMobile($id_dep, $codinsee, $limit, $offset);
-        $resultCount = $bddResto->getAccountRestauranting($id_dep);
+        $resultCount= $bddResto->getAccountRestauranting($id_dep);
         $userConnected = $status->userProfilService($this->getUser());
         $statusProfile = $status->statusFondateur($this->getUser());
         foreach ($restos as $data) {
@@ -481,7 +481,6 @@ class RestaurantController extends AbstractController
 
 
 
-
             $data["avis"] = [
                 "nbr" => $nbr_avis_resto,
                 "note" => $global_note ?  $note_temp / count($global_note) : 0,
@@ -499,12 +498,12 @@ class RestaurantController extends AbstractController
 
                 $arrayTribuRestoJoinedPast = $this->getTribuTForRestoPastilled($tribu_T_Service, $tribu_t_joined, $data["id"], $arrayTribuRestoJoinedPast);
             }
+            
             $data["tribuTPastie"] =  [
                 "tribu_t_can_pastille" => $arrayTribu,
                 "tribu_t_resto_pastille" => $arrayTribuRestoPast,
                 "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
             ];
-
 
             array_push($datas, $data);
             array_push($idData, $data["id"]);
@@ -524,7 +523,6 @@ class RestaurantController extends AbstractController
             // "arrdssm" => $arrdssm,
             // "codinsee" => $codinsee
         ],);
-
     }
     #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{limit}/{offset}", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
     public function getSpecificRestaurantMobile(

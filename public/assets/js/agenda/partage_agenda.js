@@ -446,28 +446,62 @@ function invitationStoryAgenda(){
     
     fetch("/user/invitation/story/agenda")
         .then(response => response.json())
-        .then(data => {
-            console.log(data)
+        .then(datas => {
+            console.log(datas)
             let tr = ""
+            let jj=0
+            const data = datas.filter((word) => word.userType!=null);
+
             if(data.length > 0){
                 for (const story of data) {
-                    tr += `<tr class="">
-                            <td>${story.email}</td>
-                            <td>${story.partisan}</td>
-                            <td>${story.datetime}</td>
+                    const statusPartisan=story?.userType?.toLowerCase()  !="type" ?  `<td><span style="background-color:green; border-radius:5px; color:white; padding:5px">Inscrit</span></td>` : `<td><span style="background-color:orange; border-radius:5px; color:white; padding:5px">Non Inscrit</span></td>`;
+                    const statusInvitationEventValuer=parseInt(story?.accepted) 
+                    let statusInvitationEvent= ""
+                    switch(statusInvitationEventValuer){
+
+                        case 0:{
+                            statusInvitationEvent="<td><span style=\"background-color:orange; border-radius:5px; color:white; padding:5px\">Refusé.</span></td>";
+                            break; 
+                        }
+                        case 1:{
+                            statusInvitationEvent="<td><span style=\"background-color:green; border-radius:5px; color:white; padding:5px\">Accepté.</span></td>";
+                            break;
+                        }
+                        default:{
+                            statusInvitationEvent="<td><span style=\"background-color:gray; border-radius:5px; color:white; padding:5px\">En attente.</span></td>";
+                           
+                        }
+                    }
+                    if(story?.storyEmail){
+                        tr += `<tr class="">
+                            <td>${story?.storyEmail}</td>
+                            ${statusPartisan}
+                            ${statusInvitationEvent}
+                            <td>${story?.storyDateTime}</td>
                         </tr>`
+                        jj++
+                    }else{
+                        tr += `
+                            <td>aucun info</td>
+                            <td>aucun info</td>
+                            <td>aucun info</td>
+                            <td>aucun info</td>
+                        `
+                    }
+                    
                 }
             }else{
                 tr += `<tr class="text-center">
-                            <td colspan="3">Aucune invitation par email envoyée</td>
+                            <td colspan="4">Aucune invitation par email envoyée</td>
                         </tr>`
             }
             let table = `<table id="story-partage-agenda" class="table table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Email</th>
-                            <th scope="col">Partisan</th>
-                            <th scope="col">Date</th>
+                            <th scope="col">Statut du Partisan</th>
+                            <th scope="col">Statut de l'invitation</th>
+                            <th scope="col">Date d'invitation.</th>
                         </tr>
                     </thead>
                     <tbody >
@@ -476,7 +510,7 @@ function invitationStoryAgenda(){
                 </table>`
 
             document.querySelector("#invitation-story").innerHTML = table
-            if(data.length > 0)
+            if(data.length > 0 && jj > 0)
                 $('#story-partage-agenda').DataTable({
                     language: {
                         url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
