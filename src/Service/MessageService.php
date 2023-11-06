@@ -17,7 +17,7 @@ class MessageService extends PDOConnexionService{
      */
     public function createTable($table_name){
 
-        $sql = "CREATE TABLE " . $table_name . "(
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name . "(
                 id int(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
                 user_id int(11) NOT NULL,
                 user_post int(11) NOT NULL,

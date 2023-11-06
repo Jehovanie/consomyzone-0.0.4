@@ -314,7 +314,7 @@ class AgendaService extends PDOConnexionService
     public function getRestoAgenda($table_resto_pastille, $value){
 
         $membre = "SELECT id, 1 as isPelleted, denomination_f, '' as adresse from $table_resto_pastille where denomination_f like '%$value%' UNION 
-        SELECT id as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND id NOT IN (Select id_resto from $table_resto_pastille)";
+        SELECT id as id, 0 as isPelleted, denomination_f, concat(numvoie, ' ', typevoie, ' ', nomvoie, ' ', compvoie, ', ', codpost, ' ', commune) as adresse FROM bdd_resto where denomination_f like '%$value%' AND id NOT IN (Select extensionId from $table_resto_pastille)";
 
         $stm = $this->getPDO()->prepare($membre);
 
@@ -334,7 +334,7 @@ class AgendaService extends PDOConnexionService
 
     public function saveRestaurant($table_resto_pastille, $name,$resto_id){
 
-        $sql = "INSERT INTO $table_resto_pastille (denomination_f, id_resto) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
+        $sql = "INSERT INTO $table_resto_pastille (denomination_f, extensionId) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
 
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->bindParam(1, $name);
@@ -601,7 +601,7 @@ class AgendaService extends PDOConnexionService
      * @author Tommy
      */
     public function createTableAgenda($table_agenda_name){
-        $sql= "CREATE TABLE $table_agenda_name (".
+        $sql= "CREATE TABLE IF NOT EXISTS ".$table_agenda_name ."(".
             "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
             "`title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
             "`description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
@@ -634,8 +634,8 @@ class AgendaService extends PDOConnexionService
      * 
      */
     public function createTablePartageAgenda($table_partage_agenda_name){
-        $sql= "CREATE TABLE $table_partage_agenda_name (".
-            "`id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+        $sql= "CREATE TABLE IF NOT EXISTS ". $table_partage_agenda_name .
+            "( `id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
             "`agenda_id` int(11) NOT NULL,".
             "`user_id` int(11) NOT NULL,".
             "`origin` varchar(200) DEFAULT NULL,".
@@ -1052,6 +1052,123 @@ class AgendaService extends PDOConnexionService
         "(SELECT file_path  from $tableAgendaUser  where id=$agendaId),'$userName')";
         $stmt = $this->getPDO()->prepare($sql);
         return $stmt->execute();
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique inscription cmz, 
+     * localisation du fichier: dans AgendaService.php,
+     * je veux: créer une table historique de des invitations pour agenda pour chaque partisan
+     * si une personne s'inscrit, on créera une table historique de des invitations pour agenda
+     * @param int $userId : identifiant de l'utilisateur
+     */
+    public function createAgendaStoryTable($userId){
+
+        $sql = "CREATE TABLE IF NOT EXISTS agenda_" . $userId . "_story" . " (
+  
+          id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+          email VARCHAR(250) NOT NULL,
+          partisan VARCHAR(250) NOT NULL,
+          datetime timestamp NOT NULL DEFAULT current_timestamp(),
+          agenda_id int(11) NOT NULL,
+          )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+      
+      $stmt = $this->getPDO()->prepare($sql);
+  
+      $stmt->execute();
+    
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique partage agenda pour l'utilisateur non inscrit de cmz, 
+     * localisation du fichier: dans AgendaService.php,
+     * je veux: insérer un partisan temporaire
+     */
+    public function insertUserTemp($user,$email,$password,$userRepository,$entityManager){
+        
+        $user->setPseudo("partisanAnonyme");
+        $user->setEmail($email);
+        $user->setPassword($password);
+        $user->setVerifiedMail(false);
+        $user->setIsConnected(false);
+        
+        ////setting roles for user admin.
+        if (count($userRepository->findAll()) === 0) {
+            $user->setRoles(["ROLE_GODMODE"]);
+        }else {
+            $user->setRoles(["ROLE_USER"]);
+        }
+
+        ///property temp with default value, wait this user have an ID
+        $user->setType("Type");
+        $user->setTablemessage("tablemessage");
+        $user->setTablenotification("tablenotification");
+        $user->setTablerequesting("tablerequesting");
+        $user->setNomTableAgenda("agenda");
+        $user->setNomTablePartageAgenda("partage_agenda");
+
+        ///save the user
+        $entityManager->persist($user);
+
+        $entityManager->flush();
+
+        $userId = $user->getId();
+
+        $this->createTableAgenda("agenda_" . $userId);
+
+        return $userId;
+
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique partage agenda cmz, 
+     * localisation du fichier: dans AgendaService.php,
+     * je veux: ajouter l'historique de l'email invité
+     * @param string $tableStoryAgenda : tableStoryAgenda
+     * @param string $email : l'email du partisan
+     * @param string $partisan : le nom du partisan
+     */
+    public function addAgendaStory($tableStoryAgenda, $email, $partisan,$agendaId){
+
+        $db = $this->getPDO();
+        $sql = "INSERT INTO $tableStoryAgenda (email, partisan,agenda_id) values (:email, :partisan,:agenda_id)";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':partisan', $partisan);
+        $stmt->bindParam(":agenda_id",$agendaId);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Nantenaina
+     * où: on Utilise cette fonction dans la rubrique historique invitation agenda agenda cmz, 
+     * localisation du fichier: dans AgendaService.php,
+     * je veux: voir l'historique d'invitation de mon agenda
+     * @param string $$tableStoryAgenda : tableStoryAgenda
+     */
+    public function invitationStoryAgenda($tableStoryAgenda,$tablePartageAngenda){
+        $db = $this->getPDO();
+        
+        // $sql = "SELECT * FROM $tableStoryAgenda";
+        // $sql="SELECT * FROM ".$tableStoryAgenda ." as story left join `user` as u on story.email=u.email;";
+        $sql="Select * FROM `".$tablePartageAngenda."`as tbl1 left join".
+             "(SELECT story.id as storyId, story.email as storyEmail,".
+                "story.agenda_id as storyAgendaId,".
+                "story.datetime as storyDateTime, ".
+                "u.id as userID, ".
+                "u.type as userType FROM `".$tableStoryAgenda."` as story left join `user` as u on story.email=u.email) as tbl2 ".
+                "on tbl1.user_id=tbl2.userID and tbl1.agenda_id=tbl2.storyAgendaId;";
+        $stmt = $db->prepare($sql);
+
+        $stmt->execute();
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
     }
 
 }

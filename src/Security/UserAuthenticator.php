@@ -174,7 +174,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
                 new RememberMeBadge(),
 
-                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token'))
+                //new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token'))
 
             ]
 

@@ -775,8 +775,7 @@ class MapModule{
     
     //// get Max
     getMax(max,min){
-        // if(Math.abs(max)<Math.abs(min))
-        if(parseFloat(max)<parseFloat(min))
+        if( max< min )
             return {max:min,min:max} 
         else
            return {max:max,min:min}

@@ -18,13 +18,44 @@
 
 
 {% block body %}
-	<div class="content_nav_top">
+	<div class="content_nav_top responsif-none">
 		{% include "shard/navbar.twig" %}
 	</div>
+	
+	<a class="navbar-brand navbar-brand-setting-inscript-mobile responsif-none-pc" href="/">
+		<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewbox="0 0 400.000000 400.000000" preserveaspectratio="xMidYMid meet">
 
+			<g transform="translate(0.000000,400.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+				<path fill="#1111FE" d="M585 2515 c-157 -35 -275 -126 -345 -265 -76 -153 -74 -365 7 -524
+									35 -68 135 -166 203 -198 115 -54 296 -72 433 -43 136 29 260 124 318 245 41
+									85 43 95 17 107 -13 6 -57 27 -99 46 l-77 36 -22 -62 c-59 -162 -242 -242
+									-387 -169 -184 94 -220 416 -63 573 131 131 364 93 437 -72 l17 -39 88 0 88 0
+									0 180 0 180 -85 0 -85 0 0 -35 c0 -19 -2 -35 -5 -35 -3 0 -29 13 -58 30 -100
+									56 -251 74 -382 45z"></path>
+				<path fill="#000000" d="M1320 2425 l0 -85 65 0 65 0 0 -340 0 -340 -65 0 -65 0 0 -85 0 -85
+									215 0 215 0 0 85 0 85 -65 0 -65 0 0 341 c0 267 3 340 12 337 7 -3 77 -175
+									155 -384 78 -208 150 -398 159 -422 l16 -43 56 3 56 3 156 419 c85 231 161
+									421 168 424 9 3 12 -69 12 -337 l0 -341 -60 0 -60 0 0 -85 0 -85 255 0 255 0
+									0 85 0 85 -65 0 -65 0 0 340 0 340 65 0 65 0 0 85 0 85 -261 -2 -262 -3 -109
+									-289 c-59 -159 -110 -291 -112 -293 -1 -2 -52 129 -112 292 l-109 295 -257 0
+									-258 0 0 -85z"></path>
+				<path fill="#51C94B" d="M2940 2330 l0 -180 90 0 90 0 0 95 0 95 135 0 c74 0 135 -3 135 -6 0
+								-3 -108 -157 -240 -342 l-240 -337 0 -82 0 -83 415 0 415 0 0 185 0 185 -85 0
+								-85 0 0 -100 0 -100 -170 0 -169 0 249 350 250 351 0 74 0 75 -395 0 -395 0 0
+								-180z"></path>
+			</g>
+		</svg>
+	</a>
 
+	<div class="content_spinner" id="spinner-setting-tomm-js" style="position: absolute;top: 50%;left: 50%;">
+		<div class="spinner-border text-primary" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</div>
 	<div class="container-fluid content_setprofil custome_content_setprofil">
-		<div class="container setprofil text-black">
+		{# <div class="container setprofil text-black"> #}
+		<div id="conteneurs-setting-tom-js" class="container setprofil text-black pointeur-event-none-tomm-js">
+
 			{{form_start(form_inscription ,  {'attr': {'class': 'formContent_js'}})}}
 			<div class="row">
 				<div class="col-lg-4 col-md-10 col-sm-10 col-xs-12 mx-auto pb-5">
@@ -52,8 +83,8 @@
 							</div>
 						</div>
 					</div>
-					
 				</div>
+				
 					<!-- Profile Settings-->
 					<div class="col-lg-8 col-md-10 col-sm-10 col-xs-12 mx-auto pb-5">
 						<div class="row">
@@ -73,8 +104,8 @@
 							</div>
 						</div>
 
-						<div class="row">
-							<div class="col-md-6">
+						<div class="row content-inscription-setting-tomm-js">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="1">
 								<div
 									class="form-group">
 									{# {{ form_label(form_inscription.pseudo , "Pseudo", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
@@ -86,7 +117,7 @@
 							</div>
 
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="6">
 								<div class="form-group">
 								    {#<label for="account-fn">Adresse Postal<span class="text-danger">*</span></label> #}
 									{{ form_label(form_inscription.code_postal , "Code Postal", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
@@ -98,7 +129,7 @@
 							</div>
 
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="2">
 								<div class="form-group">
 									<label class="fw-bolder" for="account-email">Adresse e-mail</label>
 									<input class="form-control" type="email" id="account-email" value="{{last_email}}" disabled>
@@ -106,7 +137,7 @@
 							</div>
 
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="5">
 								<div class="form-group">
 									{# <label for="account-fn">Adresse Postal<span class="text-danger">*</span></label> #}
 									{{ form_label(form_inscription.num_rue , "Rue", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
@@ -116,7 +147,7 @@
 								</div>
 							</div>
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="3">
 								<div class="form-group">
 									{# <label for="account-fn">Nom de famille <span class="text-danger">*</span></label> #}
 									{{ form_label(form_inscription.nom , "Nom", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
@@ -133,7 +164,7 @@
 									</div>
 								</div> #}
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="7">
 								<div class="row">
 									<div class="col-md-6 mx-auto">
 										<div class="form-group content_autocompletion_js_jheo">
@@ -175,7 +206,7 @@
 								</div> #}
 							</div>
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js " data-rank="4">
 								<div class="row">
 									<div class="col-md-6 mx-auto">
 										<div class="form-group">
@@ -187,7 +218,7 @@
 										</div>
 									</div>
 
-									<div class="col-md-6 mx-auto">
+									<div class="col-md-6 mx-auto" data-rank="10">
 										<div class="form-group">
 											{{ form_label(form_inscription.telephone , "Tel", {'label_attr': {'class': 'form_label fw-bolder mobile_code'}}) }}
 											{{ form_widget(form_inscription.telephone, {'attr': {'class': 'form-control'}}) }}
@@ -199,7 +230,7 @@
 								</div>
 							</div>
 
-							<div class="col-md-6">
+							<div class="col-md-6 form-inscription-tomm-js" data-rank="9">
 								<div class="form-group">
 									{{ form_label(form_inscription.faux_quartier , "Quartier", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
 									{{ form_widget(form_inscription.faux_quartier, {'attr': {'class': 'form-control' , 'list': 'datalistOptionsQuartier','placeholder' : 'Sélectionnez votre quartier'}}) }}
@@ -300,8 +331,7 @@
 									</div>
 								</div>
 							</div>
-							<div
-								class="d-flex flex-wrap justify-content-between align-items-center">
+							<div class="d-flex flex-wrap justify-content-between align-items-center btn_submit_for_rank_inscription_js ">
 								{# <div class="custom-control custom-checkbox d-block">
 									<input class="custom-control-input" type="checkbox" id="subscribe_me" checked="">
 									<label class="custom-control-label" for="subscribe_me">Abonnez-moi à la newsletter</label>
@@ -314,6 +344,8 @@
 				</div>
 				{{ form_end(form_inscription) }}
 			</div>
+
+		
 
 			{% if flash %}
 				<div class="content_message_flash">

@@ -42,6 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\AdressIpAndPositionRepository;
 use App\Repository\StationServiceFrGeomRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -101,8 +102,9 @@ class ToutsController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                
-                if( $user_amis ){
+
+                if($user_amis && $user_amis->getType() != 'Type' ){
+                    
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -346,7 +348,7 @@ class ToutsController extends AbstractController
         TabacRepository $tabacRepository,
         AvisRestaurantRepository $avisRestaurantRepository,
         RestaurantController $restaurantController,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_ServiceNew $tribu_T_Service
     ){
 
         $arrayIdResto = [];

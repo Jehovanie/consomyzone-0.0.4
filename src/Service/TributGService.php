@@ -184,6 +184,82 @@ class TributGService extends PDOConnexionService{
 
                     $this->getPDO()->exec($sql);
 
+                    /** 
+                     * @author Elie
+                     * Create a table for pastille restaurant */
+
+                    $sql_restaurant = "CREATE TABLE ".$name_table_tribuG."_restaurant(
+
+                        id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+                        extensionId int(11) NOT NULL,
+
+                        denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+                        isPastilled TINYINT(1) DEFAULT 1,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+                    $this->getPDO()->exec($sql_restaurant);
+
+                    $sql_restaurant_comment = "CREATE TABLE ".$name_table_tribuG."_restaurant_commentaire(
+
+                        id int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        extensionId varchar(250) NOT NULL,
+
+                        userId varchar(250) NOT NULL,
+
+                        note decimal(3,2) DEFAULT NULL,
+
+                        commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+                    $this->getPDO()->exec($sql_restaurant_comment);
+
+                    $sql_golf = "CREATE TABLE ".$name_table_tribuG."_golf(
+
+                        id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+                        extensionId int(11) NOT NULL,
+
+                        denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+                        isPastilled TINYINT(1) DEFAULT 1,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+                    $this->getPDO()->exec($sql_golf);
+
+                    $sql_golf_comment = "CREATE TABLE ".$name_table_tribuG."_golf_commentaire(
+
+                        id int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        extensionId int(11) NOT NULL,
+
+                        userId int(11) NOT NULL,
+
+                        note decimal(3,2) DEFAULT NULL,
+
+                        commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                        datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+                    $this->getPDO()->exec($sql_golf_comment);
+
+                    /** End restaurant table */
+
 
                     // Create table agenda for  tribu G
 
@@ -358,13 +434,18 @@ class TributGService extends PDOConnexionService{
         $userId = $user->getId();
 
         ////profil user connected
-        if($userType == "consumer") {
-            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        if($userType != 'Type'){
+            if($userType == "consumer") {
+                $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+            }else{
+                $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            }
+    
+            return $profil;
         }else{
-            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+            return null;
         }
-
-        return $profil;
+        
     }
 
 
@@ -1260,7 +1341,7 @@ class TributGService extends PDOConnexionService{
         foreach($all_tables as $table ){
             try{
                 $tab= $table["table_name"];
-                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab");
+                $statement = $this->getPDO()->prepare("SELECT count(*) as nbr FROM $tab INNER JOIN user ON $tab.user_id = user.id WHERE user.type != 'Type'");
                 $statement->execute();
                 $temp = $statement->fetch(PDO::FETCH_ASSOC);
                 array_push($results, ["table_name" => $tab, "count" => $temp['nbr']]);
@@ -1290,7 +1371,7 @@ class TributGService extends PDOConnexionService{
                     $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
                 }
             }
-            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id";
+            $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id WHERE user.type != 'Type'";
             
             //dd($sql);
             $query = $this->getPDO()->prepare($sql);
@@ -1433,5 +1514,146 @@ class TributGService extends PDOConnexionService{
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $results;
+    }
+
+    /**
+     * @author Elie
+     * Fonction checking si le resto est déjà pastillé
+     */
+    public function getIdRestoOnTableExtension($table, $idResto){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fonction checking si le resto est déjà pastillé
+     */
+    public function isPastilled($table, $idResto){
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto and isPastilled = 1");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fonction depastille restaurant
+     */
+    public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
+
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE extensionId = :resto_id";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(":isPastilled", $isPastilled);
+
+        $stmt->bindParam(":resto_id", $resto_id);
+
+        $stmt->execute();
+
+    }
+
+    /**
+     * @author Elie
+     * Fonction Pastille resto
+     */
+    public function pastilleRestaurant($table_resto_pastille, $name,$resto_id){
+
+        $sql = "INSERT INTO $table_resto_pastille (denomination_f, extensionId) VALUES (?, ?) ON DUPLICATE KEY UPDATE denomination_f= ?";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $name);
+
+        $stmt->bindParam(2, $resto_id);
+
+        $stmt->bindParam(3, $name);
+
+        $stmt->execute();
+
+    }
+
+    public function depastilleRestaurant($table, $id){
+
+        $sql= "DELETE FROM $table WHERE id = :id";
+
+        $statement = $this->getPDO()->prepare($sql);
+
+        $statement->bindParam(':id', $id);
+
+        $statement->execute();
+    }
+
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of tribu G exists
+     */
+    public function getAllRestoTribuG($table_name){
+
+        $table_resto = $table_name."_restaurant";
+
+        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. '');
+
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getRestoPastillesTribuG($table_name){
+
+        $tableResto = $table_name."_restaurant";
+        $tableComment = $table_name."_restaurant_commentaire";
+    
+        $sql="SELECT * FROM (SELECT t1.id , t2.id as id_resto_comment, t1.extensionId as id_resto,t1.denomination_f, 
+                          t1.isPastilled, t2.extensionId as id_restaurant, t2.userId as id_user,t2.note,t2.commentaire,
+                          GROUP_CONCAT(t2.userId) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.extensionId) as nbrAvis ,
+                          GROUP_CONCAT(t2.id) as All_id_r_com
+                          FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.extensionId where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+          INNER JOIN bdd_resto ON tableRestCom.id_resto=bdd_resto.id";
+        $stmt = $this->getPDO()->prepare($sql);
+        
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+
+    public function getAllAvisByRestName($tableResto,$id){
+        $data=[
+            ":id"=>$id
+        ];
+        $sql="SELECT * FROM (SELECT t1.id as id_comment, extensionId, userId, note, commentaire, datetime, t2.pseudo FROM $tableResto as t1 LEFT JOIN user as t2 ON t1.userId = t2.id where t1.extensionId = :id ) as tab 
+            INNER JOIN (SELECT concat(firstname, ' ', lastname) as fullname, photo_profil, user_id FROM consumer UNION SELECT concat(firstname, ' ', lastname) as fullname, photo_profil, user_id FROM supplier) as profil 
+            ON tab.userId = profil.user_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute($data);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+      }
+
+    /**
+     * @author Elie Fenohasina <eliefenohasina@gmail.com>
+     * @return array : list of golf tribu G exists
+     */
+    public function getAllGolfTribuG($table_name){
+
+        $table_resto = $table_name."_golf";
+
+        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. ' INNER JOIN golffrance ON '. $table_resto.'.extensionId = golffrance.id');
+
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }

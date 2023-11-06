@@ -7,11 +7,13 @@
 {% block stylesheets %}
 
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/core/main.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/fullCalandar/daygrid/main.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/partage_agenda.css')}}">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
 {% endblock %}
 
 
@@ -20,15 +22,17 @@
 	<script src="{{asset('assets/js/agenda/fullCalandar/interaction/main.js')}}" defer></script>
 	<script src="{{asset('assets/js/agenda/fullCalandar/daygrid/main.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
-	
+	<script src="{{asset('assets/js/agenda/invitation_not_member.js')}}" defer></script>
 	<script src="{{asset('assets/js/agenda/agenda.js')}}" defer></script>
     <script src="{{asset('assets/js/agenda/partage_agenda.js')}}" defer></script>
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="{{asset('assets/js/agenda/invitation_not_member.js')}}" defer></script>
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
     
     
 {% endblock %}
 {% import 'shard/input/macroInputImageDragDrop.html.twig' as inputPartage %}
+{% import 'shard/input/textEditor.twig' as textForEditor %}
 {% block body %}
 	<div class="nh">
 		{% include 'shard/account_navleft_new.html.twig' %}
@@ -93,6 +97,12 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-secondary list_partisant_tribuT_jheo_js agenda-tribu-t" data-target="agenda-tribu-t" onclick="tableActiveFilterPartisant(this)">Tribu T</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary email_non_inscrit" data-target="agenda-non-inscrit" onclick="tableActiveFilterPartisant(this)">Utilisateurs non inscrits</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary invitation_story" data-target="invitation-story" onclick="tableActiveFilterPartisant(this)">Historiques</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-secondary list_partisant_emailing_jheo_js agenda-emailing" data-target="agenda-emailing" onclick="tableActiveFilterPartisant(this)">Donnez votre propre liste d'invités</a>
@@ -171,15 +181,15 @@
                                             {% set id = 1 %}
                                            
                                             {% for allTribuT in allTribuTs %}
-                                                <tr  data-value="{{ allTribuT.table_name }}" class="tribu_t_partisans_{{ allTribuT.table_name }}">
+                                                <tr  data-value="{{ allTribuT.nom_table_trbT }}" class="tribu_t_partisans_{{ allTribuT.nom_table_trbT }}">
                                                     <td>{{ id }}</td>
-                                                    <td>{{allTribuT.table_name|split('_', 4)|last|replace({'_':' '})|capitalize}}</td>
+                                                    <td>{{change(allTribuT.name_tribu_t_muable)|capitalize}}</td>
                                                    
                                                     <td>
                                                         {# <input type="checkbox" name="selectOui" class="select-oui">
                                                         <label for="oui">Oui</label> #}
-                                                        <a class="btn btn-success listPartisantInTribuT" id="tribu_t_partisans_{{ allTribuT.table_name }}" 
-                                                         onclick="showPartisanAgenda('{{ allTribuT.table_name }}')">Liste des partisans</a>
+                                                        <a class="btn btn-success listPartisantInTribuT" id="tribu_t_partisans_{{ allTribuT.nom_table_trbT }}" 
+                                                         onclick="showPartisanAgenda('{{ allTribuT.nom_table_trbT }}')">Liste des partisans</a>
                                                     </td>
                                                 </tr>
                                                 {% set id = id + 1 %}
@@ -188,7 +198,56 @@
                                         
                                     </table>
                                 </div>
+{# add new contznt  #}
+                                <div class="list_resto_or_golf_partage" id="agenda-non-inscrit" style="display:none;">
+                                    <div class="bg-white rounded-3 px-3 w-75">
+                                        <div id="blockSendEmailInvitation" class="mt-4 px-3">
+                                            <form class="content_form_send_invitation_email_js_jheo">
+                                                <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
+                                                    Invitation envoyée avec succès !
+                                                </div>
+                                                <div class="form-group content_cc_css_jheo mt-3">
+                                                    <label for="exampleFormControlInput1">Destinataire</label>
+                                                    <input type="email" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="nom@exemple.com">
+                                                    {# <a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+                                                        <span class="me-2 mt-2">Cc/Cci</span>
+                                                    </a> #}
+                                                </div>
+                                                {# collapse #}
+                                                <div class="mt-3" id="tribut-collapse">
+                                                    <div class="form-group multiple_destination_css">
+                                                        <label for="exampleFormControlInput1">Ajouter de Cc</label>
+                                                        <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'email puis tapez la touche Entrée">
+                                                        <div class="content_chip content_chip_js_jheo">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group content_objet_css_jheo mt-3">
+                                                    <label for="exampleFormControlInput2">Objet</label>
+                                                    <input type="text" class="form-control object_js_jheo" id="exampleFormControlInput2" placeholder="Objet">
+                                                </div>
 
+                                                <div class="form-group mt-3">
+                                                    <label for="exampleFormControlTextarea1">Description</label>
+                                                    <div id="exampleFormControlTextarea32">
+                                                        {{ textForEditor.textEditor(4) }}
+                                                    </div>
+                                                    <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
+                                                </div>
+                                                <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+                                            </form>
+                                        </div>
+                                    </div>  
+                                </div>
+
+                                <div class="list_resto_or_golf_partage mt-3" id="invitation-story" style="display:none;">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="list_resto_or_golf mt-3" id="agenda-emailing" style="display:none;">
                                     <div class="accordion" id="accordion1" style="width: 448px; margin:auto;">
                                         <div class="accordion-item">
@@ -244,7 +303,8 @@
                                     </div>
                                     <div class="row btn-partage-agenda mt-5">
                                         <div>
-                                            <button class="btn btn-primary  btn-second-primary btn_share_csv_file_nanta_js" type="button" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" onclick="showModalEditor(1, true)">Partager</button>
+                                            {# <button class="btn btn-primary  btn-second-primary btn_share_csv_file_nanta_js" type="button" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" onclick="showModalEditor(1, true)">Partager</button> #}
+                                            <button class="btn btn-secondary btn_share_csv_file_nanta_js" type="button" onclick="openSwalNonActif()">Partager</button>
                                             <button class="btn btn-danger" onclick="resetFilePartage()">Annuler</button>
                                         </div>
                                     </div>

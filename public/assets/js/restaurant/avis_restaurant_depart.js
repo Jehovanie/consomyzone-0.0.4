@@ -526,26 +526,26 @@ function showNemberOfAvis(idRestaurant,parent) {
 }
 
 
-/**
- * Get global note avis resto  and setting
- * @param {*} idRestaurant 
- */
-function showNoteGlobale(idRestaurant) { 
-    fetch(`/avis/restaurant/global/${idRestaurant}`, {
-        methode:"GET"
-    }).then(r => r.json())
-    .then(response => {
-        let globalNote=0.00;
-        let totalNote=0.00;
-        if( response.length > 0 ){
-            for (let avis of response) {
-                totalNote+=parseFloat(avis["note"])
-            }
-            globalNote= totalNote /(response.length);
-            createGlobalNote(globalNote,idRestaurant)
-        }
-    })
-}
+// /**
+//  * Get global note avis resto  and setting
+//  * @param {*} idRestaurant 
+//  */
+// function showNoteGlobale(idRestaurant) { 
+//     fetch(`/avis/restaurant/global/${idRestaurant}`, {
+//         methode:"GET"
+//     }).then(r => r.json())
+//     .then(response => {
+//         let globalNote=0.00;
+//         let totalNote=0.00;
+//         if( response.length > 0 ){
+//             for (let avis of response) {
+//                 totalNote+=parseFloat(avis["note"])
+//             }
+//             globalNote= totalNote /(response.length);
+//             createGlobalNote(globalNote,idRestaurant)
+//         }
+//     })
+// }
 
 
 /**
@@ -666,38 +666,6 @@ function deleteOldValueInputAvisMobile(newIdResto){
  */
 function createNombreAvisContainer(parent,nombre) {
     parent.textContent= nombre+" avis"
-}
-
-
-function mustBeInferior4(value,target, isThrowException) {
-
-    console.log(value === "" )
-
-    regex=/[^0-9,\.]+/
-    if (parseFloat(value) > 4.00) {
-        target.style = "border:2px solid red;"
-        msgFlash("doit être inférieur ou égale à 4", target)
-        if(isThrowException)
-           throw new Error("note sup à 4")
-    } else if (regex.test(value)) {
-        target.style = "border:2px solid red;"
-        msgFlash("veulliez saisir un type numerique", target)
-        if(isThrowException)
-           throw new Error("non numerique")
-    } else if( value === "" ){
-        target.style = "border:2px solid red;"
-        msgFlash("veulliez saisir un note de 0 à 4", target)
-        if(isThrowException)
-           throw new Error("note not found")
-    }
-}
-
-function msgFlash(msg,target) {
-    const div = document.createElement("div")
-    div.classList.add("flash-msg-ERREUR")
-    div.innerHTML= msg
-    target.parentNode.insertBefore(div,target.nextSibling)
-    
 }
 
 function showAvis(currentUserId, idRestaurant) {

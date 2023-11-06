@@ -24,8 +24,8 @@ use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
-use App\Service\StringTraitementService;
 use App\Form\PublicationType;
+use App\Service\AgendaService;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -35,16 +35,18 @@ use App\Repository\UserRepository;
 use App\Service\RequestingService;
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
-use App\Repository\DepartementRepository;
-use App\Service\AgendaService;
+use App\Repository\ConsumerRepository;
+use App\Repository\SupplierRepository;
+use App\Service\StringTraitementService;
+
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\DepartementRepository;
 
 use function PHPUnit\Framework\assertFalse;
 
 use Symfony\Component\Filesystem\Filesystem;
-
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -57,9 +59,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -180,7 +182,16 @@ class TributTController extends AbstractController
     SerializerInterface $serializer){
         $tableTribuTName=$request->query->get("tbl_tribu_T_name");
         $v=$serv->getPartisanOfTribuT($tableTribuTName);
-        $results = array_merge(["curent_user" => $this->getUser()->getId()], array($v));
+
+        $v_2 = [];
+
+        foreach ($v as $k) {
+            if($k['type'] != 'Type'){
+
+                array_push($v_2,$k);
+            }
+        }
+        $results = array_merge(["curent_user" => $this->getUser()->getId()], array($v_2));
         $json = $serializer->serialize($results, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -224,81 +235,83 @@ class TributTController extends AbstractController
         }
     }
 
-    #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
-    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
+    // #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
+    // public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
         
-        $user = $this->getUser();
-        $userId = $user->getId();
-        $userTribu_T=json_decode($user->getTribuT(),true);
+    //     $user = $this->getUser();
+    //     $userId = $user->getId();
+    //     $userTribu_T=json_decode($user->getTribuT(),true);
         
-        $jsonParsed = json_decode($request->getContent(), true);
-        $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $image =  $jsonParsed["base64"] ;
+    //     $jsonParsed = json_decode($request->getContent(), true);
+    //     $tribu_t_name =  $jsonParsed["tribu_t_name"];
+    //     $image =  $jsonParsed["base64"] ;
        
-        $imageName = $jsonParsed["photoName"];
+    //     $imageName = $jsonParsed["photoName"];
         
-        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
-        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
-            $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    //     $path = '/public/uploads/tribu_t/photo/' .  strtolower($tribu_t_name) . "/";
+    //     if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+    //         $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
         
-        $fileUtils = new FilesUtils();
-        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+    //     $fileUtils = new FilesUtils();
+    //     $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
 
-        foreach ($userTribu_T["tribu_t"] as $k =>$v) {
-            if(is_array($v)){
-                if (in_array($tribu_t_name, $v)) {
-                    $v["logo_path"]=str_replace("/public","",$path.$imageName);
-                    $userTribu_T["tribu_t"][$k]= $v;
-                }
-            }else{
-                if($k== "logo_path"){
-                    $v=str_replace("/public","",$path.$imageName);
-                    $userTribu_T["tribu_t"][$k]= $v;
-                }
-            }
+    //     foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+    //         if(is_array($v)){
+    //             if (in_array($tribu_t_name, $v)) {
+    //                 $v["logo_path"]=str_replace("/public","",$path.$imageName);
+    //                 $userTribu_T["tribu_t"][$k]= $v;
+    //             }
+    //         }else{
+    //             if($k== "logo_path"){
+    //                 $v=str_replace("/public","",$path.$imageName);
+    //                 $userTribu_T["tribu_t"][$k]= $v;
+    //             }
+    //         }
             
-        }
+    //     }
 
-        $membre = $tribu_T_Service->showMember($tribu_t_name);
+    //     $membre = $tribu_T_Service->showMember($tribu_t_name);
         
-        $response = new Response();
+    //     $response = new Response();
 
-        try{
-            foreach ($membre as $key) {
-                if($key["roles"] == "Fondateur"){
-                    $userRep->updatePdpTribu_T(json_encode($userTribu_T));
-                }else{
-                    $user = $userRep->findOneBy(["id"=>$key["user_id"]]);
-                    $userTribu_T = json_decode($user->getTribuTJoined(),true);
-                    foreach ($userTribu_T["tribu_t"] as $k =>$v) {
-                        if(is_array($v)){
-                            if (in_array($tribu_t_name, $v)) {
-                                $v["logo_path"]=str_replace("/public","",$path.$imageName);
-                                $userTribu_T["tribu_t"][$k]= $v;
-                            }
-                        }else{
-                            if($k== "logo_path"){
-                                $v=str_replace("/public","",$path.$imageName);
-                                $userTribu_T["tribu_t"][$k]= $v;
-                            }
-                        }
+    //     try{
+    //         foreach ($membre as $key) {
+    //             if($key["roles"] == "Fondateur"){
+    //                 $userRep->updatePdpTribu_T(json_encode($userTribu_T));
+    //             }else{
+    //                 $user = $userRep->findOneBy(["id"=>$key["user_id"]]);
+    //                 $userTribu_T = json_decode($user->getTribuTJoined(),true);
+    //                 foreach ($userTribu_T["tribu_t"] as $k =>$v) {
+    //                     if(is_array($v)){
+    //                         if (in_array($tribu_t_name, $v)) {
+    //                             $v["logo_path"]=str_replace("/public","",$path.$imageName);
+    //                             $userTribu_T["tribu_t"][$k]= $v;
+    //                         }
+    //                     }else{
+    //                         if($k== "logo_path"){
+    //                             $v=str_replace("/public","",$path.$imageName);
+    //                             $userTribu_T["tribu_t"][$k]= $v;
+    //                         }
+    //                     }
                         
-                    }
-                    $userRep->updatePdpTribu_T_Joined(json_encode($userTribu_T), $user);
-                }
-            }
+    //                 }
+    //                 $userRep->updatePdpTribu_T_Joined(json_encode($userTribu_T), $user);
+    //             }
+    //         }
 
-            $response->setStatusCode(200);
+    //         $tibut->updatePDPTribuT($tableTribuT,$logo_path);
 
-            return $response;
-        }catch(\Exception $e){
-            $response->setStatusCode(500);
-            return $response;
-        }
+    //         $response->setStatusCode(200);
+
+    //         return $response;
+    //     }catch(\Exception $e){
+    //         $response->setStatusCode(500);
+    //         return $response;
+    //     }
      
       
        
-    }
+    // }
 
 
     #[Route('/user/tribu/add_to/{tableName}/{user_id}/{notif_id}', name: 'add_personne')]
@@ -1469,75 +1482,78 @@ class TributTController extends AbstractController
         return $this->json($tabPhoto);
     }
 
-    #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
+    // #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
 
-    public function getRestoPastilles($table_resto,SerializerInterface $serialize): Response
+    // public function getRestoPastilles($table_resto,SerializerInterface $serialize): Response
 
-    {
+    // {
 
-        $tableComment=$table_resto."_commentaire";
-        $tribu_t = new Tribu_T_Service();
+    //     $tableComment=$table_resto."_commentaire";
+    //     $tribu_t = new Tribu_T_Service();
 
-        $has_restaurant = $tribu_t->hasTableResto($table_resto);
+    //     $has_restaurant = $tribu_t->hasTableResto($table_resto);
         
-        $restos = array();
+    //     $restos = array();
 
-        if($has_restaurant == true){
-            $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
-			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
-        }
+        // if($has_restaurant == true){
+        //     $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment); 
+
+        //     /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+		// 	 $restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+        // }
 		
-		$r=$serialize->serialize($restos,'json');
+	// 	$r=$serialize->serialize($restos,'json');
 		
-		return new JsonResponse($r, Response::HTTP_OK, [], true);
+	// 	return new JsonResponse($r, Response::HTTP_OK, [], true);
 
-    }
+    // }
 
-    #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
+    // #[Route('/user/tribu/golfs-pastilles/{table_tribu}', name: 'show_golfs_pastilles')]
 
-    public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
+    // public function getGolfPastilles($table_tribu,SerializerInterface $serialize): Response
 
-    {
-        $table_golf = $table_tribu."_golf";
+    // {
+    //     $table_golf = $table_tribu."_golf";
 
-        $tableComment=$table_golf."_commentaire";
-        $tribu_t = new Tribu_T_Service();
+    //     $tableComment=$table_golf."_commentaire";
+    //     $tribu_t = new Tribu_T_Service();
 
-        $has_golf = $tribu_t->hasTableResto($table_golf);
-        
-        $golfs = array();
-
-        if($has_golf == true){
-            $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
-        }
-		
-		$r=$serialize->serialize($golfs,'json');
-		
-		return new JsonResponse($r, Response::HTTP_OK, [], true);
-
-    }
-
-
-    #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
-
-    public function getRestoPastillesCommentaire($table_resto,$id): Response
-
-    {
-
-        $tableComment = $table_resto . "_commentaire";
-        $tribu_t = new Tribu_T_Service();
-
-        $has_restaurant = $tribu_t->hasTableResto($table_resto);
-
-        $restos = array();
-
-        if ($has_restaurant == true) {
+    //     $has_golf = $tribu_t->hasTableResto($table_golf);
+       
+    //     $golfs = array();
+       
+    //     if($has_golf == true){
+    //         $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
             
-            $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
-        }
-        return $this->json($restos);
-    }
+    //         /* The mb_convert_encoding() function is an inbuilt function in PHP that transforms the string into another character encoding. */
+	// 		// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+    //     }
+	// 	$r=$serialize->serialize($golfs,'json');
+		
+	// 	return new JsonResponse($r, Response::HTTP_OK, [], true);
+
+    // }
+
+
+    // #[Route('/user/comment/tribu/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_commentaire')]
+
+    // public function getRestoPastillesCommentaire($table_resto,$id): Response
+
+    // {
+
+    //     $tableComment = $table_resto . "_commentaire";
+    //     $tribu_t = new Tribu_T_Service();
+
+    //     $has_restaurant = $tribu_t->hasTableResto($table_resto);
+
+    //     $restos = array();
+
+    //     if ($has_restaurant == true) {
+            
+    //         $restos = $tribu_t->getAllAvisByRestName($tableComment,$id);
+    //     }
+    //     return $this->json($restos);
+    // }
 
 
     #[Route('/user/tribu/show/invitations/{table}', name: 'show_all_invitations')]
@@ -1741,190 +1757,174 @@ class TributTController extends AbstractController
     }
 
 
-    #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
-    public function sendInvitationPerEmail(
-        Request $request,
-        UserRepository $userRepository,
-        MailService $mailService,
-        UserService $userService,
-        RouterInterface $router,
-        Tribu_T_Service $tribuTService,
-        NotificationService $notification
-    )
-    {
-        if(!$this->getUser()){
-            return $this->json(["result" => "error"] , 401);
-        }
+    // #[Route("/user/tribu/email/invitation" , name:"app_send_invitation_email" )]
+    // public function sendInvitationPerEmail(
+    //     Request $request,
+    //     UserRepository $userRepository,
+    //     MailService $mailService,
+    //     UserService $userService,
+    //     RouterInterface $router,
+    //     Tribu_T_Service $tribuTService,
+    //     NotificationService $notification
+    // )
+    // {
+    //     if(!$this->getUser()){
+    //         return $this->json(["result" => "error"] , 401);
+    //     }
 
-        $userId = $this->getUser()->getId();
+    //     $userId = $this->getUser()->getId();
 
-        //$userEmail = $this->getUser()->getEmail();
+    //     //$userEmail = $this->getUser()->getEmail();
 
-        $data = json_decode($request->getContent(), true);
+    //     $data = json_decode($request->getContent(), true);
 
-        extract($data); ///$table, $principal, $cc ,$object, $description
+    //     extract($data); ///$table, $principal, $cc ,$object, $description
 
-        $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
+    //     $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
 
-        $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
+    //     $nomTribuT =  $tribut->getApropos($balise);
+
+    //     $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
         
-        $type = "invitation";
+    //     $type = "invitation";
 
-        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+    //     $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
     
         
          
-        if($userRepository->findOneBy(["email" => $principal])){
+    //     if($userRepository->findOneBy(["email" => $principal])){
 
-            /** URL FOR MEMBER
-             * EDITED By Nantenaina
-            */
-            $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
+    //         /** URL FOR MEMBER
+    //          * EDITED By Nantenaina
+    //         */
 
-            // $mailService->sendEmail(
-            //     $principal,
-            //     "Amis",
-            //     $object,
-            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
-            // );
+    //         $url = $router->generate('app_confirm_invitation_tribu', ['email' => $principal,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+    //         // $url = $router->generate('app_login', ['email' => $principal], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            $context["object_mail"] = $object;
-            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-            $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+    //         // $mailService->sendEmail(
+    //         //     $principal,
+    //         //     "Amis",
+    //         //     $object,
+    //         //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //         //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+    //         // );
 
-            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
+    //         $context["object_mail"] = $object;
+    //         $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //         $context["link_confirm"] = $url ;
+    //         $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
-            $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
+    //         $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
 
-            $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+    //         $id_receiver = $userRepository->findOneBy(["email" => $principal])->getId();
 
-            if ($isMembre == "not_invited") {
-                $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
-                $tribuTService->addMember($table, $id_receiver);
-                $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
-                $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
-                $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
-            }
+    //         $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
 
-        }else{
-            //// prepare email which we wish send
-            $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
-            $tribuTService->addMemberTemp($table, $principal);
-            // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
-            // $mailService->sendEmail(
-            //     $principal,
-            //     "Amis",
-            //     $object,
-            //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-            //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
-            // );
+    //         if ($isMembre == "not_invited") {
+    //             $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+    //             $tribuTService->addMember($table, $id_receiver);
+    //             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+    //             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+    //             $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+    //         }
 
-            $context["object_mail"] = $object;
-            $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-            $context["link_confirm"] = $url ;
-            $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+    //     }else{
+    //         //// prepare email which we wish send
+    //         $url = $router->generate('app_email_link_inscription', ['email' => $principal , 'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+    //         $tribuTService->addMemberTemp($table, $principal);
+    //         // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)app_login
+    //         // $mailService->sendEmail(
+    //         //     $principal,
+    //         //     "Amis",
+    //         //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //         //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.\n" . $url
+    //         // );
 
-            $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
-        }
+    //     if( count($cc) > 0 ){
 
-        if( count($cc) > 0 ){
+    //         foreach($cc as $c){
 
-            foreach($cc as $c){
+    //             if($userRepository->findOneBy(["email" => $c])){
 
-                if($userRepository->findOneBy(["email" => $c])){
-
-                    /** URL FOR MEMBER
-                     * EDITED By Nantenaina
-                    */
-                    $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
+    //                 /** URL FOR MEMBER
+    //                  * EDITED By Nantenaina
+    //                 */
+    //                 $url = $router->generate('app_login', ['email' => $c], UrlGeneratorInterface::ABSOLUTE_URL);
         
-                    // $mailService->sendEmail(
-                    //     $c,
-                    //     "Amis",
-                    //     $object,
-                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                    //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
-                    // );
+    //                 // $mailService->sendEmail(
+    //                 //     $c,
+    //                 //     "Amis",
+    //                 //     $object,
+    //                 //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //                 //     $description . "\nVeuillez visiter le site en cliquant sur le lien ci-dessous.\n" . $url
+    //                 // );
 
-                    $context["object_mail"] = $object;
-                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-                    $context["link_confirm"] = $url ;
-                    $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+    //                 $context["object_mail"] = $object;
+    //                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //                 $context["link_confirm"] = $url ;
+    //                 $context["content_mail"] = $description . "<br>Veuillez visiter le site en cliquant sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour accepter l'invitation.</a><br><br>Cordialement.<br><br>ConsoMyZone";
+    //                     $tribuTService->addMember($table, $id_receiver);
+    //                     $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+    //                     $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+    //                     $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+    //                 }
+        
+    //             }else{
+    //                 $tribuTService->addMemberTemp($table, $c);
 
-                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
-        
-                    $id_receiver = $userRepository->findOneBy(["email" => $c])->getId();
-        
-                    $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
-        
-                    if ($isMembre == "not_invited") {
-                        $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
-                        $tribuTService->addMember($table, $id_receiver);
-                        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
-                        $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
-                        $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
-                    }
-        
-                }else{
-                    $tribuTService->addMemberTemp($table, $c);
-
-                    //// prepare email which we wish send
-                    $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
+    //                 //// prepare email which we wish send
+    //                 $url = $router->generate('app_email_link_inscription', ['email' => $c,'tribu' => $table, 'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"], UrlGeneratorInterface::ABSOLUTE_URL);
                     
-                    // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
-                    // $mailService->sendEmail(
-                    //     $c,
-                    //     "Amis",
-                    //     $object,
-                    //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
-                    //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
-                    // );
+    //                 // sendEmail($from,$fullName_from,$to,$fullName_to,$objet,$message)
+    //                 // $mailService->sendEmail(
+    //                 //     $c,
+    //                 //     "Amis",
+    //                 //     $object,
+    //                 //     // "Je vous invite de rejoindre ma tribu T. J'espère que vous ne regrettez rien. La seule chose que vous devez faire est de s'inscrire, cliquez sur le lien ci-dessous." . $url
+    //                 //     $description . "\nSi vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous." . $url
+    //                 // );
 
-                    $context["object_mail"] = $object;
-                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-                    $context["link_confirm"] = $url ;
-                    $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br>" . $url ."<br><br>Cordialement.<br>ConsoMyZone";
+    //                 $context["object_mail"] = $object;
+    //                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+    //                 $context["link_confirm"] = $url ;
+    //                 $context["content_mail"] = $description . "<br>Si vous souhaitez de nous rejoindre, cliquez sur le lien ci-dessous.<br> <a href='" . $url ."'>Cliquez ici pour nous joindre.</a><br><br>Cordialement.<br><br>ConsoMyZone";
 
-                    $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
-                }
+    //                 $mailService->sendLinkOnEmailAboutAgendaSharing($c, $from_fullname, $context);
+    //             }
 
-            }
-        }
+    //         }
+    //     }
 
-        return $this->json([
-            "result" => "success"
-        ], 201 );
-    }
+    //     return $this->json([
+    //         "result" => "success"
+    //     ], 201 );
+    // }
 
-    #[Route("/push/comment/resto/pastilled",name:"push_comment_pastilled_resto",methods:["POST"])]
-    public function push_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService ){
+    // #[Route("/push/comment/resto/pastilled",name:"push_comment_pastilled_resto",methods:["POST"])]
+    // public function push_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService ){
 
-        $user = $this->getUser();
-        $json=json_decode($request->getContent(),true);
-        $tableName=$json["tableName"];
-        $idResto=$json["idResto"];
-        $idUser=$user->getId();
-        // $idUser=$json["idUser"];
-        $note = $json["note"];
-        $commentaire = $json["commentaire"];
+    //     $user = $this->getUser();
+    //     $json=json_decode($request->getContent(),true);
+    //     $tableName=$json["tableName"];
+    //     $idResto=$json["idResto"];
+    //     $idUser=$user->getId();
+    //     // $idUser=$json["idUser"];
+    //     $note = $json["note"];
+    //     $commentaire = $json["commentaire"];
 
-        $result= $tribuTService->sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire);
-        if($result){
-            $response = new Response();
-            $response->setStatusCode(200);
-            return $response;
-        }else{
-            $response = new Response();
-            $response->setStatusCode(500);
-            return $response;
-        }
-       
-        
+    //     $result= $tribuTService->sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire);
+    //     if($result){
+    //         $response = new Response();
+    //         $response->setStatusCode(200);
+    //         return $response;
+    //     }else{
+    //         $response = new Response();
+    //         $response->setStatusCode(500);
+    //         return $response;
+    //     }
+    // }
 
 
-    }
     #[Route("/up/comment/resto/pastilled", name: "up_comment_pastilled_resto", methods: ["POST"])]
     public function up_comment_pastilled_resto(Request $request, Tribu_T_Service $tribuTService) : Response
     {
@@ -1932,7 +1932,7 @@ class TributTController extends AbstractController
         $json = json_decode($request->getContent(), true);
         $tableName = $json["tableName"];
 
-        $idRestoComment = strval($json["idRestoComment"]);
+        $idRestoComment = strval($json["id"]);
 
         // $idUser = $json["idUser"];
         $note = $json["note"];
@@ -2102,43 +2102,43 @@ class TributTController extends AbstractController
  
         //end publication seding 
     }
-    #[Route("/user/create-one/publication", name:"user_create_publication")]
-    public function createOnePublication(
-        Request $request, 
-        Tribu_T_Service $tribuTService,
-        Filesystem $filesyst
-    ){
-        $user=$this->getUser();
-        $userId= $user->getId();
-        $jsonParsed=json_decode($request->getContent(),true);
-        $tribu_t_name =  $jsonParsed["tribu_t_name"];
-        $publication= json_encode($jsonParsed["contenu"]);
-        $confid=$jsonParsed["confidentialite"];
-        $image= $jsonParsed["base64"];
-        $imageName= time()."_".$jsonParsed["photoName"];
-        $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
-        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
-                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
-        $fileUtils=new FilesUtils();
-        if (intval($jsonParsed["photoSize"], 10) > 0) {
-            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
-            $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid, $path . $imageName);
-        }else{
-            $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
-        }
+    // #[Route("/user/create-one/publication", name:"user_create_publication")]
+    // public function createOnePublication(
+    //     Request $request, 
+    //     Tribu_T_Service $tribuTService,
+    //     Filesystem $filesyst
+    // ){
+    //     $user=$this->getUser();
+    //     $userId= $user->getId();
+    //     $jsonParsed=json_decode($request->getContent(),true);
+    //     $tribu_t_name =  $jsonParsed["tribu_t_name"];
+    //     $publication= json_encode($jsonParsed["contenu"]);
+    //     $confid=$jsonParsed["confidentialite"];
+    //     $image= $jsonParsed["base64"];
+    //     $imageName= time()."_".$jsonParsed["photoName"];
+    //     $path = '/public/uploads/tribu_t/photo/' .  $tribu_t_name . "_publication" . "/";
+    //     if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+    //             $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    //     $fileUtils=new FilesUtils();
+    //     if (intval($jsonParsed["photoSize"], 10) > 0) {
+    //         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir').$path, $image, $imageName);
+    //         $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid, $path . $imageName);
+    //     }else{
+    //         $result = $tribuTService->createOnePub($tribu_t_name . "_publication", $userId, $publication, $confid,"");
+    //     }
         
 
-        $response = new Response();
-        if($result){
-            $response->setStatusCode(200);
-            return $response;
-        }else{
-            $response->setStatusCode(500);
-            return $response;
-        }
+    //     $response = new Response();
+    //     if($result){
+    //         $response->setStatusCode(200);
+    //         return $response;
+    //     }else{
+    //         $response->setStatusCode(500);
+    //         return $response;
+    //     }
         
 
-    }
+    // }
 
     #[Route("/user/publicalition/vals", name:"get_publicalition_tribu_t",methods:["GET"])]
     public function getPublicationList(Request $request,
@@ -2257,153 +2257,153 @@ class TributTController extends AbstractController
 
     }
 
-    #[Route("/user/tribu/update-tribu_t-info", name: "update_my_tribu_t")]
-    public function updateTribuTInfos
-    (Tribu_T_Service $tribu_T_Service, 
-    Request $request,
-    Filesystem $filesyst,
-    UserRepository $userRepository
-    ){
-        $user = $this->getUser();
+    // #[Route("/user/tribu/update-tribu_t-info", name: "update_my_tribu_t")]
+    // public function updateTribuTInfos
+    // (Tribu_T_Service $tribu_T_Service, 
+    // Request $request,
+    // Filesystem $filesyst,
+    // UserRepository $userRepository
+    // ){
+    //     $user = $this->getUser();
 
-        $userId = $user->getId();
+    //     $userId = $user->getId();
 
-        $jsonParsed=json_decode($request->getContent(),true);
+    //     $jsonParsed=json_decode($request->getContent(),true);
 
-        extract($jsonParsed);
+    //     extract($jsonParsed);
 
-        $path = '/public/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
-        $pathToBase='/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
-        $imgURL = null;
-        if($photoName != ""){
-            if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
-                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    //     $path = '/public/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
+    //     $pathToBase='/uploads/tribu_t/photo/' .  strtolower($tableTribuT) . "/";
+    //     $imgURL = null;
+    //     if($photoName != ""){
+    //         if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+    //             $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
     
-            $fileUtils = new FilesUtils();
+    //         $fileUtils = new FilesUtils();
     
-            $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $base64, time().$photoName);
+    //         $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $base64, time().$photoName);
 
-            $imgURL = $pathToBase.time().$photoName;
-        }
+    //         $imgURL = $pathToBase.time().$photoName;
+    //     }
 
-        $member = $tribu_T_Service->showMember($tableTribuT);
+    //     $member = $tribu_T_Service->showMember($tableTribuT);
 
-        $extension = [];
-        $extension["restaurant"] = ($restaurant == "on") ? 1 : 0;
-        $extension["golf"] = ($golf == "on") ? 1 : 0;
+    //     $extension = [];
+    //     $extension["restaurant"] = ($restaurant == "on") ? 1 : 0;
+    //     $extension["golf"] = ($golf == "on") ? 1 : 0;
         
-        foreach ($member as $user) {
-            if($user["user_id"] == $userId){
-                $tribu_T_Service->updateTribuTInfos($tableTribuT, $description, $imgURL, $extension, $userId, "tribu_t_owned", $nomTribuT);
-            }else{
-                $tribu_T_Service->updateTribuTInfos($tableTribuT, $description, $imgURL, $extension, $user["user_id"], "tribu_t_joined", $nomTribuT);
-            }
-        }
+    //     foreach ($member as $user) {
+    //         if($user["user_id"] == $userId){
+    //             $tribu_T_Service->updateTribuTInfos($tableTribuT, $description, $imgURL, $extension, $userId, "tribu_t_owned", $nomTribuT);
+    //         }else{
+    //             $tribu_T_Service->updateTribuTInfos($tableTribuT, $description, $imgURL, $extension, $user["user_id"], "tribu_t_joined", $nomTribuT);
+    //         }
+    //     }
 
-        if ($restaurant == "on") {
+    //     if ($restaurant == "on") {
 
-            $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "restaurant");
+    //         $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "restaurant");
 
-            $tribu_T_Service->createTableComment($tableTribuT, "restaurant_commentaire");
-        }
+    //         $tribu_T_Service->createTableComment($tableTribuT, "restaurant_commentaire");
+    //     }
 
-        if ($golf == "on") {
+    //     if ($golf == "on") {
 
-            $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "golf");
+    //         $tribu_T_Service->createExtensionDynamicTable($tableTribuT, "golf");
 
-            $tribu_T_Service->createTableComment($tableTribuT, "golf_commentaire");
+    //         $tribu_T_Service->createTableComment($tableTribuT, "golf_commentaire");
 
-        }
+    //     }
 
-        return $this->json("Information modifié avec succès");
+    //     return $this->json("Information modifié avec succès");
 
-    }
+    // }
 
-    #[Route("/user/tribu_t/pastille/resto", name:"tribu_t_pastille_resto", methods:["POST"])]
-    public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+    // #[Route("/user/tribu_t/pastille/resto", name:"tribu_t_pastille_resto", methods:["POST"])]
+    // public function pastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
 
-        $jsonParsed=json_decode($resquest->getContent(),true);
+    //     $jsonParsed=json_decode($resquest->getContent(),true);
 
-        $resto_name =  $jsonParsed["name"];
+    //     $resto_name =  $jsonParsed["name"];
 
-        $resto_id = $jsonParsed["id"];
+    //     $resto_id = $jsonParsed["id"];
 
-        $tribu_t = $jsonParsed["tbl"];
+    //     $tribu_t = $jsonParsed["tbl"];
 
-        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
+    //     $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
 
-        if(count($checkIdResto) > 0){
-            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, true);
-        }else{
-            $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
-        }
+    //     if(count($checkIdResto) > 0){
+    //         $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, true);
+    //     }else{
+    //         $agendaService->saveRestaurant($tribu_t."_restaurant", $resto_name, $resto_id);
+    //     }
         
-        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
-    }
+    //     return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    // }
 
-    #[Route("/user/tribu_t/pastille/golf", name:"tribu_t_pastille_golf", methods:["POST"])]
-    public function pastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+    // #[Route("/user/tribu_t/pastille/golf", name:"tribu_t_pastille_golf", methods:["POST"])]
+    // public function pastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
 
-        $jsonParsed=json_decode($resquest->getContent(),true);
+    //     $jsonParsed=json_decode($resquest->getContent(),true);
 
-        $golf_name =  $jsonParsed["name"];
+    //     $golf_name =  $jsonParsed["name"];
 
-        $golf_id = $jsonParsed["id"];
+    //     $golf_id = $jsonParsed["id"];
 
-        $tribu_t = $jsonParsed["tbl"];
+    //     $tribu_t = $jsonParsed["tbl"];
 
-        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
+    //     $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
 
-        if(count($checkIdResto) > 0){
-            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, true);
-        }else{
-            $agendaService->saveRestaurant($tribu_t."_golf", $golf_name, $golf_id);
-        }
+    //     if(count($checkIdResto) > 0){
+    //         $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, true);
+    //     }else{
+    //         $agendaService->saveRestaurant($tribu_t."_golf", $golf_name, $golf_id);
+    //     }
         
-        return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
-    }
+    //     return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
+    // }
 
-    #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
-    public function dePastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+    // #[Route("/user/tribu_t/depastille/resto", name:"tribu_t_depastille_resto", methods:["POST"])]
+    // public function dePastilleRestoForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
 
-        $jsonParsed=json_decode($resquest->getContent(),true);
+    //     $jsonParsed=json_decode($resquest->getContent(),true);
 
-        $resto_name =  $jsonParsed["name"];
+    //     $resto_name =  $jsonParsed["name"];
 
-        $resto_id = $jsonParsed["id"];
+    //     $resto_id = $jsonParsed["id"];
 
-        $tribu_t = $jsonParsed["tbl"];
+    //     $tribu_t = $jsonParsed["tbl"];
 
-        $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
+    //     $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
 
-        if($checkIdResto > 0){
-            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
-        }
+    //     if($checkIdResto > 0){
+    //         $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
+    //     }
 
-        // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
+    //     // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
         
-        return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
-    }
+    //     return $this->json(["id_resto"=>$resto_id, "table"=>$tribu_t."_restaurant"]);
+    // }
 
-    #[Route("/user/tribu_t/depastille/golf", name:"tribu_t_depastille_golf", methods:["POST"])]
-    public function dePastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
+    // #[Route("/user/tribu_t/depastille/golf", name:"tribu_t_depastille_golf", methods:["POST"])]
+    // public function dePastilleGolfForTribuT(AgendaService $agendaService, Request $resquest, Tribu_T_Service $tribu_T_Service){
 
-        $jsonParsed=json_decode($resquest->getContent(),true);
+    //     $jsonParsed=json_decode($resquest->getContent(),true);
 
-        $resto_name =  $jsonParsed["name"];
+    //     $resto_name =  $jsonParsed["name"];
 
-        $golf_id = $jsonParsed["id"];
+    //     $golf_id = $jsonParsed["id"];
 
-        $tribu_t = $jsonParsed["tbl"];
+    //     $tribu_t = $jsonParsed["tbl"];
 
-        $checkIdGolf = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
+    //     $checkIdGolf = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_golf", $golf_id);
 
-        if($checkIdGolf > 0){
-            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, false);
-        }
+    //     if($checkIdGolf > 0){
+    //         $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_golf", $golf_id, false);
+    //     }
         
-        return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
-    }
+    //     return $this->json(["id_golf"=>$golf_id, "table"=>$tribu_t."_golf"]);
+    // }
 
     #[Route('/user/tribu/add_photo/{table}', name: 'add_photo_tribu')]
 
@@ -2550,7 +2550,180 @@ class TributTController extends AbstractController
         dd($tabPhoto);
     }
 
+
+    // #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    // public function checkedIfRestaurantIsPastilled(
+    //     $id_golf,
+    //     UserRepository $userRepository,
+    //     Tribu_T_Service $tribu_T_Service,
+    //     SerializerInterface $serializerInterface
+    // ) {
+    //     $arrayTribu = [];
+    //     if ($this->getUser()) {
+
+    //         $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+    //         foreach ($tribu_t_owned as $key) {
+    //             $tableTribu = $key["table_name"];
+    //             $logo_path = $key["logo_path"];
+    //             $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+    //             $tableExtension = $tableTribu . "_golf";
+
+    //             if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+    //                 if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+    //                     array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+    //                 } else {
+    //                     array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     $datas = $serializerInterface->serialize($arrayTribu, 'json');
+    //     return new JsonResponse($datas, 200, [], true);
+    // }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de sauvegarde de l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
+     */
+    #[Route("/tribu/invitation/save_story/{table}",name:"app_save_story_invitation",methods:["POST"])]
+    public function saveStoryInvitation($table , Request $request, Tribu_T_Service $tribuTService ){
+
+        $user = $this->getUser();
+        $user_id = $user->getId();
+
+        $table_invitation = $table . "_invitation";
+
+        $json=json_decode($request->getContent(),true);
+        $email=$json["email"];
+
+        $result= $tribuTService->saveInvitationStory($table_invitation, $user_id, $email);
+
+        if($result == true){
+            return $this->json(["status"=>"ok"]);
+        }else{
+            return $this->json(["status"=>"!ok"]);
+        }
+       
+    }
+
+
     
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de fetching l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
+     */
+    #[Route("/tribu/invitation/get_all_story/{table}",name:"app_get_all_story_invitation",methods:["GET"])]
+    public function getAllStoryInvitation($table , Tribu_T_Service $tribuTService, UserService $user_serv){
+
+        $table_invitation = $table . "_invitation";
+
+        $result= $tribuTService->getAllInvitationStory($table_invitation);
+        
+        $hist = [];
+
+        if(count($result)>0){
+            foreach ($result as $user) {
+                $pp = null;
+
+                if($user['id']){
+                    $pp = $user_serv->getUserProfileFromId( $user['id'] );
+                }
+                
+                array_push($hist, ['user'=>$pp, 
+                'is_valid'=>$user['is_valid'], 
+                'date'=>$user['datetime'],
+                'email'=>$user['email']
+            ]);
+            }
+        }
+
+        return $this->json($hist);
+       
+    }
+
+     /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
+     */
+    #[Route("/tribu/invitation/update_story/{table}/{is_valid}/{email}",name:"app_up_valid_story_invitation",methods:["POST"])]
+    public function updateStoryInvitation($table ,  $is_valid, $email, Tribu_T_Service $tribuTService){
+
+        $table_invitation = $table . "_invitation";
+
+        $tribuTService->updateInvitationStory($table_invitation, $is_valid, $email);
+
+        return $this->json(["message"=>"Mise à jour sauvegardé!"]);
+       
+    }
+
+     /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
+     */
+    #[Route("/tribu/invitation/confirm",name:"app_confirm_invitation_tribu",methods:["GET"])]
+    public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request){
+
+        $table =$request->query->get("tribu");
+
+        $email =$request->query->get("email");
+
+
+        if($this->getUser()){
+
+            if($table && $email){
+
+                ////name tribu to join
+                $tribuTtoJoined = $table;
+                    
+                //// apropos user fondateur tribuT with user fondateur
+                $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
+    
+                $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+    
+                $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+
+                $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+
+                if(array_key_exists("name", $arrayTribuT)){
+                    if( $arrayTribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                        $apropos_tribuTtoJoined= $arrayTribuT;
+                    }
+                }else{
+                    foreach($arrayTribuT as $tribuT){
+                    
+                        if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                            $apropos_tribuTtoJoined= $tribuT;
+                            break;
+                        }
+                    }
+                }
+
+                //// set tribu T for this new user.
+                $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(),"tribu_t_joined", $tribuTtoJoined);
+                
+                ///update status of the user in table tribu T
+                $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
+
+                $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+    
+            }
+
+            return $this->redirectToRoute('app_my_tribu_t');
+
+        }else{
+
+            return $this->redirectToRoute('app_login');
+            
+        }
+
+       
+    }
 
 }
 

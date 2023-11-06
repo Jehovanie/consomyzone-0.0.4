@@ -5,10 +5,10 @@
 }
 
 .content_setprofil{
-    background: rgba(0,54,246,0);
+    /* background: rgba(0,54,246,0);
     background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
     background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
-    background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+    background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%); */
     z-index: 1;
 
     height: auto;
@@ -19,17 +19,18 @@
     display: block;
     min-height: 100vh;
     padding-top: 120px;
+background-color: #fff;
 }
 
 .setprofil{
     display: block;
     border-radius: 15px;
     padding : 25px;
-
-    background: rgba(0,54,246,0);
+background-color: #ccc;
+    /* background: rgba(0,54,246,0);
     background: linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
     background: -webkit-linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
-    background: -moz-linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+    background: -moz-linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%); */
 }
 
 .widget-author {

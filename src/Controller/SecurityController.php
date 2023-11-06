@@ -41,6 +41,7 @@ use App\Repository\CommuneRepository;
 use App\Form\InscriptionPartenaireType;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
+use App\Service\Tribu_T_ServiceNew;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -105,7 +106,6 @@ class SecurityController extends AbstractController
     ): Response {
 
         if ($this->getUser()) {
-
             return $this->redirectToRoute('app_account');
         }
 
@@ -115,7 +115,9 @@ class SecurityController extends AbstractController
 
             $flash = [
                 "titre" => "SUCCESS",
-                "content" => "Votre compte a été créé. Merci de vérifier votre boite email, pour confirmée votre inscription."
+                
+                "content" => "Votre compte a été créé. Merci de vérifier votre boite email,". 
+                            "pour finaliser votre inscription."
             ];
            
         }else{
@@ -130,7 +132,7 @@ class SecurityController extends AbstractController
                 case "email-ae": /// email already exist
                     $flash = [
                         "titre" => "ERROR",
-                        "content" => "Votre adresse e-mail est déjà existe dans notre base de données, veuillez connectez."
+                        "content" => "Votre adresse e-mail existe déjà dans notre base de données, veuillez-vous connecter."
                     ];
                     break;
                 case "password-ne":
@@ -361,40 +363,46 @@ class SecurityController extends AbstractController
         MessageService $messageService,
         VerifyEmailHelperInterface $verifyEmailHelper,
         AgendaService $agendaService,
-        CodeapeRepository $codeApeRep
+        CodeapeRepository $codeApeRep,
+        Tribu_T_ServiceNew $tribu_T_ServiceNew
     ) {
 
         $result = true;
         $type = "";
 
         $data = $request->request->all()["form"];
-
+        //dd($data);
         // dd($data);
         extract($data);
 
-
-
-
         ///data user.
-
+        //dd($data['email']);
         if( !$mailService->valid_email($data['email'])){
             $result = false;
             $type = "email-nv"; ///email not valid
-
             goto quit;
         }
 
-
-
+        $oldUser = null;
         ///check the email if already exist
+// if ($userRepository->findOneBy(['email' => $data['email']])) {
+        //     $result = false;
+        //     $type = "email-ae"; /// email already exist
+
+        //     goto quit;
+        // }
+            $oldUser = null;
+            ///check the email if already exist
         if ($userRepository->findOneBy(['email' => $data['email']])) {
-            $result = false;
-            $type = "email-ae"; /// email already exist
-
-            goto quit;
+            $userExist = $userRepository->findOneBy(['email' => $data['email']]);
+            if($userExist->getType() == "Type"){
+                $oldUser = $userExist;
+            }else{
+                $result = false;
+                $type = "email-ae"; /// email already exist
+                goto quit;
+            }
         }
-
-
 
         ////valid password
         if (strcmp($data['password'], $data['confirmpassword']) != 0) {
@@ -410,17 +418,19 @@ class SecurityController extends AbstractController
             goto quit;
         }
 
-
-
         /// new instance for user.
-        $user = new User();
+        if($oldUser){
+            $user = $oldUser;
+        }else{
+            /// new instance for user.
+            $user = new User();
+        }
+        
         $user->setPseudo(trim($data['pseudo']));
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
         $user->setVerifiedMail(true);
         $user->setIsConnected(true);
-
-
 
         ////setting roles for user admin.
         if (count($userRepository->findAll()) === 0) {
@@ -446,13 +456,9 @@ class SecurityController extends AbstractController
         );
         $user->setPassword($hashedPassword);
 
-
-
         ///save the user
         $entityManager->persist($user);
         $entityManager->flush();
-
-
 
         ///change the value temp: now this user have an ID, so change temp value
         $numero_table = $user->getId();
@@ -463,25 +469,23 @@ class SecurityController extends AbstractController
         $user->setTablerequesting("tablerequesting_" . $numero_table);
         $user->setNomTableAgenda("agenda_" . $numero_table);
         $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
-
-
-
+        $user->setTribuT("tribu_t_o_".$numero_table );
+        $user->setTribuTJoined("tribu_t_j_".$numero_table );
 
         ///create table dynamique
         $notificationService->createTable("tablenotification_" . $numero_table);
         $messageService->createTable("tablemessage_" . $numero_table);
         $this->requesting->createTable("tablerequesting_" . $numero_table);
         $agendaService->createTableAgenda("agenda_" . $numero_table);
+        $agendaService->createAgendaStoryTable($numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+        $tribu_T_ServiceNew->createTableTribuTForUser($user);
+        // $agendaService->createAgendaStoryTable($numero_table);
         
 
         ///keep the change in the user information
         $entityManager->persist($user);
         $entityManager->flush();
-
-
-
-
 
         /**
          * Persist user on confidentiality table
@@ -585,8 +589,6 @@ class SecurityController extends AbstractController
             "EMAIL CONFIRMATION", //// title of email
             "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
         );
-
-
 
         return $this->json("success");
     }
@@ -850,16 +852,29 @@ class SecurityController extends AbstractController
 
             $mailService->valid_email($data['email']);
 
+///check the email if already exist
+            // if ($userRepository->findOneBy(['email' => $data['email']])) {
+            //     // dd("Email already exist.");
+
+            //     $flash = [
+            //         "titre" => "ERREUR",
+            //         "content" => "Cette adresse e-mail est déjà associée à un compte."
+            //     ];
+            //     ///On quitte
+            //     goto quit;
+            // }
+            $oldUser = null;
             ///check the email if already exist
             if ($userRepository->findOneBy(['email' => $data['email']])) {
-                // dd("Email already exist.");
-
+                $userExist = $userRepository->findOneBy(['email' => $data['email']]);
+                if($userExist->getType() == "Type"){
+                    $oldUser = $userExist;
+                }else{
                 $flash = [
                     "titre" => "ERREUR",
                     "content" => "Cette adresse e-mail est déjà associée à un compte."
                 ];
-                ///On quitte
-                goto quit;
+                }
             }
 
             ////valid password
@@ -880,8 +895,16 @@ class SecurityController extends AbstractController
                 goto quit;
             }
 
+            $t_sr = new Tribu_T_ServiceNew();
+            
             /// new instance for user.
-            $user = new User();
+            if($oldUser){
+                $user = $oldUser;
+            }else{
+                /// new instance for user.
+                $user = new User();
+            }
+
             $user->setPseudo(trim($data['pseudo']));
             $user->setEmail(trim($data['email']));
             $user->setPassword($data['password']);
@@ -902,6 +925,7 @@ class SecurityController extends AbstractController
                 $user->getPassword()
             );
             $user->setPassword($hashedPassword);
+            $user->setIsConnected(false);
 
             ///stock the user
             $entityManager->persist($user);
@@ -915,20 +939,28 @@ class SecurityController extends AbstractController
             $user->setNomTableAgenda("agenda_" . $numero_table);
             $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
 
+            /**
+             * @author Elie
+             *  Creation table tribu User
+             * */
+            $user->setTribuT("tribu_t_o_".$numero_table );
+            $user->setTribuTJoined("tribu_t_j_".$numero_table );
+            $t_sr->createTableTribuTForUser($user);
 
 
-            ///create table dynamique
+
+            //create table dynamique
             $notificationService->createTable("tablenotification_" . $numero_table);
             $messageService->createTable("tablemessage_" . $numero_table);
             $this->requesting->createTable("tablerequesting_" . $numero_table);
             $agendaService->createTableAgenda("agenda_" . $numero_table);
             $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
+            $agendaService->createAgendaStoryTable($numero_table);
 
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            
 
             ////name tribu to join
             $tribuTtoJoined= $request->query->get("tribu");
@@ -936,19 +968,34 @@ class SecurityController extends AbstractController
             //// apropos user fondateur tribuT with user fondateur
             $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
 
+            // // $userFondateurTribuT = $t_sr->getApropos($tribuTtoJoined);
+            
+            // dd($userFondateurTribuT);
+            
             $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
 
-            $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
-            $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
-            foreach($arrayTribuT as $tribuT){
-                if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                    $apropos_tribuTtoJoined= $tribuT;
-                    break;
-                }
-            }
+            $t_sr->addTribuTJoined($user, $userPostID, $tribuTtoJoined);
+
+            // // $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+            // $data = $userFondateurTribuT["tribu_t_owned"];
+            
+
+            $apropos_tribuTtoJoined = $t_sr->getApropos($tribuTtoJoined);
+
+            // dd($apropos_tribuTtoJoined);
+
+            // $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+
+            // foreach($arrayTribuT as $tribuT){
+                
+            //     if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+            //         $apropos_tribuTtoJoined= $tribuT;
+            //         break;
+            //     }
+            // }
 
             //// set tribu T for this new user.
-            $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $numero_table,"tribu_t_joined", $tribuTtoJoined);
+            // $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $numero_table,"tribu_t_joined", $tribuTtoJoined);
             
             // update requesting table 
             $tableRequestingNameOtherUser = $userRepository->find($userPostID)->getTablerequesting();
@@ -990,6 +1037,17 @@ class SecurityController extends AbstractController
                 ['id' => $user->getId()] /// param id
             );
 
+            /**
+             * update invitation story in tribu T
+             * @author Elie <eliefenohasina@gmail.com>
+             */ 
+
+             $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"));
+
+            /**
+             * end Elie
+             */
+
             /// redirect user to the inscription type------------///
             return $this->redirect($signatureComponents->getSignedUrl());
             ///-------------------------------------------------------///
@@ -1003,7 +1061,6 @@ class SecurityController extends AbstractController
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
-
 
     #[Route(path:"/api/getAllCommune", name: "app_getAllCommune")]
     public function getAllCommuneAction(CommuneRepository $communeRepository){
@@ -1020,9 +1077,15 @@ class SecurityController extends AbstractController
         MailService $mailService,
         AgendaService $agendaService
         ){
+
+        if(!$this->getUser()){
+            return $this->json(["result" => "error"] , 401);
+        }
+
+        $userId = $this->getUser()->getId();
+
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
-        dump($requestContent);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         foreach($receivers as $receiver){
@@ -1037,11 +1100,13 @@ class SecurityController extends AbstractController
                 $context["link_confirm"]="";
                 $context["content_mail"]=$content;
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+                $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Déjà confirmé");
 
                 if(!is_null($to_id)){
-                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 }
+                
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');
         return new JsonResponse($r, 200, [], true);

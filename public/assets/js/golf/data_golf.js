@@ -1,7 +1,10 @@
 window.addEventListener('load', () => { 
-    const id_dep = new URL(window.location.href).pathname.split('/')[4]
-    const nom_dep = new URL(window.location.href).pathname.split('/')[3]
-    getDataSpecGolfMobile(nom_dep, id_dep)
+	if (screen.width < 991) {
+		const id_dep = new URL(window.location.href).pathname.split('/')[4]
+		const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+		getDataSpecGolfMobile(nom_dep, id_dep)
+	}
+    
 })
 
 

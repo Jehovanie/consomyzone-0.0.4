@@ -1,25 +1,70 @@
 <div class="description content_body_details_jheo_js" data-toggle-latitude="{{((details.latitude) ? details.latitude : '0' )|format_number({fraction_digit: 6})}}" data-toggle-longitude="{{((details.longitude) ? details.longitude : '0')|format_number({fraction_digit: 6})}}" data-toggle-nameferme="{{details.nomGolf}}">
+
     <div class="content_titre_details">
         <figure class="text-center mt-4">
             <blockquote class="blockquote">
-                <p> 
-                    {{details.nomGolf | upper}}  
-                    {% if (app.user and app.user.type!='Type') %}
-                        {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
-                            <span class="badge bg-info golf_status golf_status_jheo_js"></span>
-                        {% else %}
-                            {% if details.user_status["a_faire"] == "1" %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
-                            {% elseif details.user_status["fait"] == "1" %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
-                            {% elseif details.user_status["mon_golf"] == "1" %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
-                            {% else %}
-                                <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
+                <div class="row">
+                    <div class="col-8">
+                        <p> 
+                            {{details.nomGolf | upper}}  
+                            {% if (app.user and app.user.type!='Type') %}
+                                {# {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %} #}
+                                {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null  %}
+                                    <span class="badge bg-info golf_status golf_status_jheo_js"></span>
+                                {% else %}
+                                    {% if details.user_status["a_faire"] == "1" %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
+                                       
+                                    {% elseif details.user_status["fait"] == "1" %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
+                                        
+                                     
+                                    {# {% elseif details.user_status["mon_golf"] == "1" %} #}
+                                        {# <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span>  #}
+                                    {% else %}
+                                        <span class="badge bg-info  golf_status golf_status_jheo_js"></span>
+                                    {% endif %}
+                                {% endif %}
+                               
+                                {# {% if isPastilleds == true %}
+                                    <span class="badge bg-info  golf_status golf_status_jheo_js golf_status_tomm_js">MON GOLF</span> 
+                                {% else %}
+                                    <span class="badge bg-info  golf_status golf_status_jheo_js golf_status_tomm_js"></span> 
+                                {% endif %} #}
+                                    
                             {% endif %}
-                        {% endif %}
-                    {% endif %}
-                </p>
+                        </p>
+                    </div>
+                    <div class="col-4">
+                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
+                            
+                            {% set count = 0 %}
+                            {% for tribu_t_pastilled in tribu_t_pastilleds %}
+                                {# {{ dump(tribu_t_pastilled) }} #}
+                                    {% if tribu_t_pastilled.isPastilled == true %}
+                                        {% set count = count + 1 %}
+                                    {% endif %}
+                                {% if tribu_t_pastilled['isPastilled'] == true %}
+                                    {% if tribu_t_pastilled['logo_path'] == "" %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                    {% else %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="{{tribu_t_pastilled['logo_path']}}" alt="">
+                                    {% endif %}
+                                    
+                                
+                                {% endif %}
+                                
+                            {% endfor %}
+                            
+                            {% if count > 4 %}
+                                <span class="length-pastille-plus">{{ count }}+</span>
+                            {% else %}
+                                <span class="length-pastille-plus"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
                
             </blockquote>
             <figcaption class="blockquote-footer">
@@ -28,20 +73,43 @@
 
             {% if (app.user and app.user.type!='Type') %}
                 <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
-                    {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null and  details.user_status["mon_golf"] == null %}
+                    {% if details.user_status["a_faire"] == null and  details.user_status["fait"] == null %}
                         <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
-                        <select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange="executeActionForPastGolf({{details.id}})">
+                        {# ,"{{details.nomGolf|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}","{{details.adr1|replace({' "': '&quot;', " '": ' &apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomcommune  | raw}}"  #}
+                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf(event,{{details.id}})'>
+                            <option value="0">Aucun</option>
+                            <option value="1">A faire</option>
+                            <option value="2">Fait</option>
+                        </select>
+                    {% else %}
+                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
+                    {% endif %}
+
+                    {# {% if details.user_status["mon_golf"] == 1 and details.user_status["mon_golf"] == null %}
+                        <label for="selectActionGolf" class="form-label">Comment voulez-vous marquer ce golf ?  </label>
+                        <select class="form-select select_action_golf_nanta_js select_action_golf_tomm_js" id="selectActionGolf" name="sellist_action" data-id="{{details.id}}" onchange='executeActionForPastGolf("{{details.id}}","{{details.nomGolf}}","{{details.adr1 | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+
                             <option value="0">Aucun</option>
                             <option value="1">A faire</option>
                             <option value="2">Fait</option>
                             <option value="3">Mon golf</option>
                         </select>
-                        {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
-                    {% else %}
-                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
-                    {% endif %}
+                    {% endif %} #}
+                </div>
+
+                <div class="mon-golf">
+                    <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
+                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp |replace({'"': '&quot;', "'": '&apos;'})  | raw}}  {{details.nomCommune |replace({'"': '&quot;', "'": '&apos;'})  | raw}}" )'>Mon golf</button>
+                </div>
+            {% else %}
+                <div class="mon-golf">
+                    <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
+                    <button class="btn btn-secondary" value="3" onclick="openSwalActif()">Mon golf</button>
                 </div>
             {% endif %}
+                
+                
+
 
             {# {% set adresse = details.adr1|lower ~" "~ details.cp|lower ~" "~ details.nomCommune|lower %}
             <button class="btn btn-outline-primary mx-auto w-50 mb-2 mt-2" onclick="openVoirPlusChearch('{{details.nomGolf | raw}}','{{adresse | trim}}', 'golf')">Voir plus</button>  #}
@@ -129,3 +197,7 @@
 
     </div>
 </div>
+
+
+
+

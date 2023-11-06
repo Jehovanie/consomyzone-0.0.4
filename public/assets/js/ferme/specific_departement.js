@@ -1,13 +1,13 @@
 
 
 window.addEventListener('load', () => {
-
-    // const id_dep = new URLSearchParams(window.location.href).get("id_dep")
-    // const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
-    const id_dep = new URL(window.location.href).pathname.split('/')[4]
-    const nom_dep = new URL(window.location.href).pathname.split('/')[3]
-    getDataSpecFermeMobile(nom_dep, id_dep)
-
+    if (screen.width < 991) {
+        // const id_dep = new URLSearchParams(window.location.href).get("id_dep")
+        // const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
+        const id_dep = new URL(window.location.href).pathname.split('/')[4]
+        const nom_dep = new URL(window.location.href).pathname.split('/')[3]
+        getDataSpecFermeMobile(nom_dep, id_dep)
+    }
 });
 
 
