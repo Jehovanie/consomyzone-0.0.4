@@ -255,7 +255,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
     }
 
     ///jheo : getLatitudeLongitude
-    public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null)
+    public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null, $limit=2000)
     {
         $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
 
@@ -274,12 +274,15 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.departementName',
                                 'p.latitude',
                                 'p.longitude',
+                                'p.latitude as lat',
+                                'p.longitude as long',
                                 'p.prixE85',
                                 'p.prixGplc',
                                 'p.prixSp95',
                                 'p.prixSp95E10',
                                 'p.prixSp98',
                                 'p.prixGasoil',
+                                'p.nom as nameFilter',
                                 'p.nom');
 
                     if( $id_dep === "20"){
@@ -319,6 +322,9 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.prixSp98',
                                 'p.prixGasoil',
                                 'p.nom',
+                                'p.nom as nameFilter',
+                                'p.latitude as lat',
+                                'p.longitude as long',
                                 'p.latitude',
                                 'p.longitude');
 
@@ -367,6 +373,9 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.prixGasoil',
                                 'p.latitude',
                                 'p.longitude',
+                                'p.latitude as lat',
+                                'p.longitude as long',
+                                'p.nom as nameFilter',
                                 'p.nom')  
                         ->where('p.prixE85 BETWEEN :min AND :max' )
                         ->orWhere('p.prixGplc BETWEEN :min AND :max' )
@@ -394,6 +403,9 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                                 'p.prixSp98',
                                 'p.prixGasoil',
                                 'p.nom',
+                                'p.nom as nameFilter',
+                                'p.latitude as lat',
+                                'p.longitude as long',
                                 'p.latitude',
                                 'p.longitude');
                                 
@@ -419,12 +431,216 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'p.prixSp98',
                         'p.prixGasoil',
                         'p.nom',
+                        'p.nom as nameFilter',
+                        'p.latitude as lat',
+                        'p.longitude as long',
                         'p.latitude',
                         'p.longitude');
         }
-        $query = $qb->orderBy("p.nom", 'ASC')->getQuery();
+        $query = $qb->orderBy('RAND()')
+                    ->setMaxResults($limit)
+                    ->orderBy("p.nom", 'ASC')->getQuery();
         return $query->execute();
     }
+
+
+    public function getDataBetweenPeripherique($bound_price, $minx,$miny,$maxx,$maxy, $dep=null, $limit=200){
+
+        extract($bound_price); ///$min => null, $max => null, $type=> null $nom_dep => null, $id_dep =>null;
+
+        ////filter with min and max
+        if( $min || $max){
+            ////for one departement
+            if( $nom_dep && $id_dep ){
+
+                ////filter for all type
+                if( $type === "tous" ){
+                    // dd("ss ato");
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.latitude',
+                                'p.longitude',
+                                'p.latitude as lat',
+                                'p.longitude as long',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.nom as nameFilter',
+                                'p.nom');
+
+                    if( $id_dep === "20"){
+                        $qb= $qb->where('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixE85 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixGplc BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixSp95 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixSp95E10 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixSp98 BETWEEN :min AND :max)' )
+                            ->orWhere('(p.departementCode = :a OR p.departementCode = :b ) AND (p.prixGasoil BETWEEN :min AND :max)' )
+                            ->setParameter('a',  "2A" )
+                            ->setParameter('b',  "2B");
+
+                    }else{
+                        $qb= $qb->where('(p.departementCode = :code ) AND (p.prixE85 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixGplc BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixSp95 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixSp95E10 BETWEEN :min AND :max)')
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixSp98 BETWEEN :min AND :max)' )
+                            ->orWhere('(p.departementCode = :code ) AND (p.prixGasoil BETWEEN :min AND :max)' )
+                            ->setParameter('code', $id_dep);
+                    }
+                        
+                //// filter some type not all
+                }else{
+                    
+                    $var_type = explode("@", $type);
+                    
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.nom',
+                                'p.nom as nameFilter',
+                                'p.latitude as lat',
+                                'p.longitude as long',
+                                'p.latitude',
+                                'p.longitude');
+
+                    
+                    //// iterate for different type
+                    if( $id_dep === "20"){
+                        $qb= $qb->where("(p.departementCode = :a OR p.departementCode = :b ) AND (p." . $var_type[0] . " BETWEEN :min AND :max)")
+                            ->setParameter('a',  "2A")
+                            ->setParameter('b',  "2B");
+                    }else{
+                        $qb= $qb->where("(p.departementCode = :code) AND (p." . $var_type[0] . " BETWEEN :min AND :max)");
+                    }
+
+                    for ( $i = 1; $i< count($var_type); $i++){
+                        if( $id_dep === "20"){
+                            $qb= $qb->orWhere("(p.departementCode = :a OR p.departementCode = :b ) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)")
+                                    ->setParameter('a',  "2A" )
+                                    ->setParameter('b',  "2B");
+                        }else{
+                            $qb= $qb->orWhere("(p.departementCode = :code) AND (p." . $var_type[$i] . " BETWEEN :min AND :max)");
+                        }
+                    }
+                }
+
+                if( $id_dep !== "20"){
+                    $qb->setParameter('code', $id_dep );
+                }
+
+                $qb->setParameter('min', $min )
+                    ->setParameter('max', $max );
+
+            /// for all departement
+            }else{
+                ////filter for all type
+                if( $type === "tous" ){
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.latitude',
+                                'p.longitude',
+                                'p.latitude as lat',
+                                'p.longitude as long',
+                                'p.nom as nameFilter',
+                                'p.nom')  
+                        ->where('p.prixE85 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixGplc BETWEEN :min AND :max' )
+                        ->orWhere('p.prixSp95 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixSp95E10 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixSp98 BETWEEN :min AND :max' )
+                        ->orWhere('p.prixGasoil BETWEEN :min AND :max' )
+                        ->setParameter('min', $min )
+                        ->setParameter('max', $max );
+
+                //// filter for some type
+                }else{
+
+                    $var_type = explode("@", $type);
+
+                    $qb = $this->createQueryBuilder('p')
+                        ->select('p.id',
+                                'p.adresse',
+                                'p.departementCode',
+                                'p.departementName',
+                                'p.prixE85',
+                                'p.prixGplc',
+                                'p.prixSp95',
+                                'p.prixSp95E10',
+                                'p.prixSp98',
+                                'p.prixGasoil',
+                                'p.nom',
+                                'p.nom as nameFilter',
+                                'p.latitude as lat',
+                                'p.longitude as long',
+                                'p.latitude',
+                                'p.longitude');
+                                
+                    $qb->where("p." . $var_type[0] . " BETWEEN :min AND :max");
+                    for ( $i = 1; $i< count($var_type); $i++){
+                        $qb->orWhere("p." . $var_type[$i] . " BETWEEN :min AND :max");
+                    }
+                    $qb->setParameter('min', $min )
+                    ->setParameter('max', $max );
+                }
+            }
+        //// filter first without min and max
+        }else{
+            $qb = $this->createQueryBuilder('p')
+                ->select('p.id',
+                        'p.adresse',
+                        'p.departementCode',
+                        'p.departementName',
+                        'p.prixE85',
+                        'p.prixGplc',
+                        'p.prixSp95',
+                        'p.prixSp95E10',
+                        'p.prixSp98',
+                        'p.prixGasoil',
+                        'p.nom',
+                        'p.nom as nameFilter',
+                        'p.latitude as lat',
+                        'p.longitude as long',
+                        'p.latitude',
+                        'p.longitude');
+        }
+        $query = $qb->orderBy('RAND()')
+                    ->where("p.latitude >= :minx ")
+                    ->andWhere("p.latitude <= :maxx")
+                    ->andWhere("p.longitude >= :miny")
+                    ->andWhere("p.longitude <= :maxy")
+                    ->setParameter("minx", floatval($miny))
+                    ->setParameter("maxx", floatval($maxy))
+                    ->setParameter("miny", floatval($minx))
+                    ->setParameter("maxy", floatval($maxx))
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->execute();
+        return $query;
+    }
+
 
     public function getAllFilterByLatLong($data){
 
@@ -442,6 +658,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                 'p.prixSp98',
                 'p.prixGasoil',
                 'p.nom',
+                'p.nom as nameFilter',
                 'p.latitude',
                 'p.longitude')
             ->orderBy("p.nom", 'ASC')

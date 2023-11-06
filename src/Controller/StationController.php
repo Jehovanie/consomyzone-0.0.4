@@ -531,10 +531,7 @@ class StationController extends AbstractController
      */
 
     public function getLatitudeLongitudeStation(StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request)
-
     {
-
-
 
         $max = $request->query->get("max");
 
@@ -585,6 +582,30 @@ class StationController extends AbstractController
             $stationServiceFrGeomRepository->getLatitudeLongitudeStation()
 
         );
+    }
+
+    /**
+     * @Route("/getLatLongStation-peripherique", name="getLatLongStation-peripherique", methods={"GET"})
+     */
+    public function getLatitudeLongitudeStationPeripherique(Request $request, StationServiceFrGeomRepository $stationServiceFrGeomRepository )
+    {
+        $bound_price= [  "min" => null, "max" => null, "type" => null, "nom_dep" => null, "id_dep" => null ];
+
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $dep = $request->query->get("dep");
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $data= $stationServiceFrGeomRepository->getDataBetweenPeripherique($bound_price, $minx, $miny, $maxx, $maxy, $dep, 200);
+
+            return $this->json(["data" => $data]);
+        }
+
+        return $this->json([]);
     }
 
     /**

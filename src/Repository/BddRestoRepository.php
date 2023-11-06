@@ -198,6 +198,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $query= $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
+                        r.denominationF as nameFilter,
                         r.denominationF as nom,
                         r.numvoie,
                         r.typevoie,
@@ -1035,6 +1036,7 @@ class BddRestoRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
+                        r.denominationF as nameFilter,
                         r.numvoie,
                         r.typevoie,
                         r.nomvoie,
@@ -1161,6 +1163,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
+                        r.denominationF as nameFilter,
                         r.numvoie,
                         r.typevoie,
                         r.nomvoie,
