@@ -160,7 +160,7 @@ class UserController extends AbstractController
             $newFilename = "";
 
             $legend = $new_publication['legend']->getData();
-            $confid = $new_publication['confidentiality']->getData();
+            $confid = intval($new_publication['confidentiality']->getData()) === 0 ? 2 : intval($new_publication['confidentiality']->getData());
             $photo = $new_publication['photo']->getData();
             $capture = $new_publication['capture']->getData();
             // dd($photo);

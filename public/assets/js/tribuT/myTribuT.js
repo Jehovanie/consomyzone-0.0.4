@@ -1980,15 +1980,10 @@ function showInvitations() {
                 input_principal.value = null;
                 input_cc.value = null;
 
-                //Send data invitation story into tribu
-                let table_trib = document.querySelector("#blockSendEmailInvitation").getAttribute("data-table")
-
-                // sauvegarde de l'invitation
-                saveInvitationStory(table_trib, input_principal.value);
-                saveInvitationStory(table_trib, input_cc.value);
-
-                input_principal.value = null;
-                input_cc.value = null;
+                // // sauvegarde de l'invitation
+                // saveInvitationStory(table_trib, input_principal.value);
+                // saveInvitationStory(table_trib, input_cc.value);
+             
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2467,13 +2462,13 @@ function settingTribuT(e, tribuTName) {
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
         // ce bout de code est là pour assurer une prise en charge recurssive
-        if (currentTribuT.extension.restaurant || currentTribuT.extension=="on") {
+        if (currentTribuT?.extension?.restaurant || currentTribuT?.extension=="on") {
             document.querySelector("#update_form_restaurant").checked = true
         } else {
             document.querySelector("#update_form_restaurant").checked = false
         }
 
-        if (currentTribuT.extension.golf) {
+        if (currentTribuT?.extension?.golf) {
             document.querySelector("#update_form_golf").checked = true
         } else {
             document.querySelector("#update_form_golf").checked = false

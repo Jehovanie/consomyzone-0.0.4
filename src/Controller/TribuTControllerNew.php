@@ -557,7 +557,7 @@ class TribuTControllerNew extends AbstractController{
 
         if($has_restaurant == true){
             $restos =$tribu_t_serv->getRestoPastilles($table_resto, $tableComment);
-			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+			// $restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
 		
 		$r=$serialize->serialize($restos,'json');

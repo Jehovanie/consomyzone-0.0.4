@@ -1069,7 +1069,8 @@ class AgendaService extends PDOConnexionService
           id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
           email VARCHAR(250) NOT NULL,
           partisan VARCHAR(250) NOT NULL,
-          datetime timestamp NOT NULL DEFAULT current_timestamp()
+          datetime timestamp NOT NULL DEFAULT current_timestamp(),
+          agenda_id int(11) NOT NULL,
           )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
       
       $stmt = $this->getPDO()->prepare($sql);
