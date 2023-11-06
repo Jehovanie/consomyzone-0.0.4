@@ -25,6 +25,9 @@ class MapModule{
         this.nom_dep= nomDep ? nomDep : null;
         this.map= null;
 
+        /* i use this to store the current caracter to filter. */
+        this.filterLetter= "";
+
 
         this.isRightSideAlreadyOpen = false;
 

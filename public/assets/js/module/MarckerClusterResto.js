@@ -449,6 +449,7 @@ class MarckerClusterResto extends MapModule  {
     }
 
     filterByFirstLetterOnName(letter){
+        this.filterLetter= letter;
         const new_data= [];
         this.removeMarker();
         
@@ -468,7 +469,9 @@ class MarckerClusterResto extends MapModule  {
 
     resetToDefaultMarkers(){
         this.removeMarker();
-        this.addMarker(this.default_data)
+        this.addMarker(this.default_data);
+
+        this.filterLetter="";
     }
 
   
@@ -651,6 +654,8 @@ class MarckerClusterResto extends MapModule  {
             }
         });
 
+        console.log(this.filterLetter);
+
         /// add same data must be show
         if( zoom > 8 ){
             const dataFilteredDerive= [ ]; //// pour stocker les données filtres
@@ -659,17 +664,32 @@ class MarckerClusterResto extends MapModule  {
                 const temp= marker.getLatLng();
                 if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
 
-                    dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                    ] })
+                    ////check if there is filter by carractère appear
+                    if( this.filterLetter !== "" ){
+                        dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                            this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+                        ] })
+                    }else{
+                        dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                            this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                        ] })
+                    }
 
                 }else{
                     dataFilteredDerive.forEach(ktem => {
                         if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
                             if( ktem.data.length < dataMax ){
-                                ktem.data.push(
-                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                                )
+
+                                if( this.filterLetter !== "" ){
+                                    ktem.data.push(
+                                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase()  )
+                                    )
+                                }else{
+                                    ktem.data.push(
+                                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                    )
+                                }
+                                
                             }
                             // else{
                             //     this.markers.removeLayer(marker);
@@ -718,7 +738,10 @@ class MarckerClusterResto extends MapModule  {
                             const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
                             if( itemDataDerive && itemDataDerive.data.length < dataMax){
 
-                                this.settingSingleMarker(item, false)
+                                ////check if there is filter by carractère appear
+                                if( this.filterLetter === "" || (this.filterLetter !== "" && item.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())){
+                                    this.settingSingleMarker(item, false)
+                                }
 
                                 dataFilteredDerive.forEach(ktem => {
                                     if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
@@ -738,35 +761,43 @@ class MarckerClusterResto extends MapModule  {
             const dataFiltered= [ ];
 
             this.default_data.forEach(item => {
-                if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
-                    dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
-                }else{
-                    dataFiltered.forEach(ktem => {
-                        if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
-                            ktem.data.push(item)
-                        }
-                    })
+                ////check if there is filter by carractère appear
+                if( this.filterLetter === "" || (  this.filterLetter !== ""  && item.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                    if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
+                        dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
+                    }else{
+                        dataFiltered.forEach(ktem => {
+                            if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
+                                ktem.data.push(item)
+                            }
+                        })
+                    }
                 }
+
             })
-
-            console.log("isany tokony haseho: ") ////tokony haseho....
-            console.log(dataFiltered)
-
 
             const dateFilteredPrime= [];
             this.markers.eachLayer((marker) => {
                 const temp= marker.getLatLng();
+
                 if( !dateFilteredPrime.find((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === jtem.lat )){
-                    dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                    ] })
+
+                    const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+                    
+                    ////check if there is filter by carractère appear
+                    if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                        dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [ data_temp ]})
+                    }
                 }else{
                     dateFilteredPrime.forEach(ktem => {
                         if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
                             if( ktem.data.length < dataMax ){
-                                ktem.data.push(
-                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                                )
+                                const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+                                
+                                ////check if there is filter by carractère appear
+                                if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                                    ktem.data.push( this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)))
+                                }
                             }else{
                                 this.markers.removeLayer(marker);
                             }
@@ -788,7 +819,10 @@ class MarckerClusterResto extends MapModule  {
                     })
                 }else{
                     item.data.forEach(ktem => {
-                        this.settingSingleMarker(ktem, false)
+                        ////check if there is filter by carractère appear
+                        if(  this.filterLetter === "" || (  this.filterLetter !== ""  && ktem.denominationF.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                            this.settingSingleMarker(ktem, false)
+                        }
                     })
                 }
                

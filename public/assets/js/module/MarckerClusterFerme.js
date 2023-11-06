@@ -5,7 +5,10 @@ class MarckerClusterFerme extends MapModule {
     }
 
     async onInit(isAddControl=false){
+        /** i use this variable for the filter a-z on specifique departement. by default none carractere specifique. */
+        /** function createPagination() local [rubrique]/filter_a-z_asc_desc.js  */
         this.ALREADY_INIT = false;
+
         try{
             this.createMarkersCluster();
             this.initMap(null, null, null, isAddControl);
@@ -267,6 +270,7 @@ class MarckerClusterFerme extends MapModule {
 
 
     filterByFirstLetterOnName(letter){
+        this.filterLetter= letter;
         const new_data= [];
         this.removeMarker();
         
@@ -282,6 +286,8 @@ class MarckerClusterFerme extends MapModule {
     resetToDefaultMarkers(){
         this.removeMarker();
         this.addMarker(this.default_data)
+
+        this.filterLetter="";
     }
 
     checkIsExist(idToCheck){
@@ -370,17 +376,32 @@ class MarckerClusterFerme extends MapModule {
                 const temp= marker.getLatLng();
                 if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
 
-                    dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                    ] })
+                    ////check if there is filter by carractère appear
+                    if( this.filterLetter !== ""){
+                        dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                            this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )
+                        ] })
+                    }else{
+                        dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                            this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                        ] })
+                    }
+
 
                 }else{
                     dataFilteredDerive.forEach(ktem => {
                         if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
                             if( ktem.data.length < dataMax ){
-                                ktem.data.push(
-                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                                )
+                                
+                                if( this.filterLetter !== "" ){
+                                    ktem.data.push(
+                                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)  && item.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )
+                                    )
+                                }else{
+                                    ktem.data.push(
+                                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                    )
+                                }
                             }
                             // else{
                             //     this.markers.removeLayer(marker);
@@ -427,9 +448,13 @@ class MarckerClusterFerme extends MapModule {
                     if( !isAlreadyDisplay ){
                         if(dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
                             const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
+
                             if( itemDataDerive && itemDataDerive.data.length < dataMax){
 
-                                this.settingSingleMarker(item, false)
+                                ////check if there is filter by carractère appear
+                                if( this.filterLetter === "" || (this.filterLetter !== "" && item.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())){
+                                    this.settingSingleMarker(item, false)
+                                }
 
                                 dataFilteredDerive.forEach(ktem => {
                                     if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
@@ -449,35 +474,42 @@ class MarckerClusterFerme extends MapModule {
             const dataFiltered= [ ];
 
             this.default_data.forEach(item => {
-                if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
-                    dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
-                }else{
-                    dataFiltered.forEach(ktem => {
-                        if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
-                            ktem.data.push(item)
-                        }
-                    })
+                ////check if there is filter by carractère appear
+                if( this.filterLetter === "" || (  this.filterLetter !== ""  && item.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                    if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
+                            dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
+                    }else{
+                        dataFiltered.forEach(ktem => {
+                            if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
+                                ktem.data.push(item)
+                            }
+                        })
+                    }
                 }
             })
-
-            console.log("isany tokony haseho: ") ////tokony haseho....
-            console.log(dataFiltered)
-
 
             const dateFilteredPrime= [];
             this.markers.eachLayer((marker) => {
                 const temp= marker.getLatLng();
+
                 if( !dateFilteredPrime.find((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === jtem.lat )){
-                    dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                    ] })
+
+                    const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+
+                    ////check if there is filter by carractère appear
+                    if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                        dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [ data_temp ]})
+                    }
+
                 }else{
                     dateFilteredPrime.forEach(ktem => {
                         if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
                             if( ktem.data.length < dataMax ){
-                                ktem.data.push(
-                                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                                )
+                                const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+                                ////check if there is filter by carractère appear
+                                if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                                    ktem.data.push( this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)))
+                                }
                             }else{
                                 this.markers.removeLayer(marker);
                             }
@@ -490,7 +522,7 @@ class MarckerClusterFerme extends MapModule {
             // console.log(dateFilteredPrime)
 
             dataFiltered.forEach(item => {
-                if(dateFilteredPrime.find(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
+                if(dateFilteredPrime.some(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
                     const dataPrime= dateFilteredPrime.find(jtem => item.lat === jtem.lat)
                     item.data.forEach(ktem => {
                         if(!dataPrime.data.find(ptem => parseInt(ptem.id) === parseInt(ktem.id))){
@@ -499,29 +531,14 @@ class MarckerClusterFerme extends MapModule {
                     })
                 }else{
                     item.data.forEach(ktem => {
-                        this.settingSingleMarker(ktem, false)
+                        ////check if there is filter by carractère appear
+                        if(  this.filterLetter === "" || (  this.filterLetter !== ""  && ktem.nomFerme.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                            this.settingSingleMarker(ktem, false)
+                        }
                     })
                 }
                
             })
-            // console.log("dataFiltered");
-            // console.log(dataFiltered)
-            // this.default_data.forEach(item => {
-            //     const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
-                
-            //     if( isCanDisplay ){
-            //         let isAlreadyDisplay= false;
-            //         this.markers.eachLayer((marker) => {
-            //             if( parseInt(marker.options.id) === parseInt(item.id)){
-            //                 isAlreadyDisplay = true;
-            //             }
-            //         })
-    
-            //         if( !isAlreadyDisplay ){
-            //             this.settingSingleMarker(item, false)
-            //         }
-            //     }
-            // })
         }
 
         //// Update icon size while zoom in or zoom out
