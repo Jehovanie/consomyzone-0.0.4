@@ -2035,11 +2035,7 @@ class Tribu_T_Service extends PDOConnexionService
         return $arrayIdResto;
     }
 
-<<<<<<< HEAD
     /**
-=======
-/**
->>>>>>> main
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction de sauvegarde de l'historique de l'invitation dans la tribu T
      */
@@ -2078,11 +2074,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-<<<<<<< HEAD
-    /**
-=======
      /**
->>>>>>> main
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction fetching de l'historique de l'invitation dans la tribu T
      */
@@ -2117,10 +2109,5 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
 
     }
-
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 }
 
