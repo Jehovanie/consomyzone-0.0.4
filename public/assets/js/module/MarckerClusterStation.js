@@ -246,21 +246,25 @@ class MarckerClusterStation extends MapModule  {
     async addPeripheriqueMarker(new_size) {
         try {
             const { minx, miny, maxx, maxy }= new_size;
-            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+
+            let param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+            param += ( this.nom_dep && this.id_dep) ? `&dep=${this.id_dep}&nom_dep=${this.nom_dep}` : "";
 
             const api_data= "/getLatLongStation-peripherique/";
             const response = await fetch(`${api_data}${param}`);
             const responseJson = await response.json();
             
             let new_data = responseJson.data;
+            this.addMarkerNewPeripherique(new_data, new_size);
+
 
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)));
-            
+
             // this.addMarker(this.checkeFilterType(new_data));
             this.default_data= this.default_data.concat(new_data);
 
-            this.addMarkerNewPeripherique(new_data, new_size);
+            // this.addMarkerNewPeripherique(new_data, new_size);
         } catch (e) {
             console.log(e)
         }

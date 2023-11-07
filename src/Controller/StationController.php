@@ -589,11 +589,13 @@ class StationController extends AbstractController
      */
     public function getLatitudeLongitudeStationPeripherique(Request $request, StationServiceFrGeomRepository $stationServiceFrGeomRepository )
     {
-        $bound_price= [  "min" => null, "max" => null, "type" => null, "nom_dep" => null, "id_dep" => null ];
-
+        
         if($request->query->has("minx") && $request->query->has("miny") ){
+            
+            $dep = ( $request->query->get("dep")) ?  $request->query->get("dep") : null;
+            $nom_dep = ( $request->query->get("nom_dep")) ?  $request->query->get("nom_dep") : null;
 
-            $dep = $request->query->get("dep");
+            $bound_price= [  "min" => 0, "max" => 2.5, "type" => "tous", "nom_dep" => $nom_dep, "id_dep" => $dep ];
 
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");

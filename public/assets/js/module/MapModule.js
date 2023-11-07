@@ -1875,11 +1875,11 @@ class MapModule{
      */
     addMarkerNewPeripherique(new_data, newSize){
         const { minx, maxx, miny, maxy } = newSize;
-
+        
         let countMarkers= 0;
         this.markers.eachLayer((marker) => {  countMarkers++; });
 
-        if( countMarkers < 50 ){
+        if( countMarkers < 20 ){
             new_data.forEach(item => {
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
@@ -1892,6 +1892,7 @@ class MapModule{
                     })
     
                     if( !isAlreadyDisplay ){
+                        console.log("new add : "+ item.id)
                         this.settingSingleMarker(item, false)
                     }
                 }
