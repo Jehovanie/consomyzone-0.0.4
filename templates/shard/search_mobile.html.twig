@@ -11,7 +11,7 @@
 		</form>
 		{% if app.user %}
 			<a class="cta_connexion_navbar" href="{{path('app_actualite')}}">
-				<img src="{{ userConnected.photo_profil }}" alt="pdp">
+				 <img src="{{(userConnected.photo_profil) ? "/public" ~ userConnected.photo_profil : asset('/public/uploads/users/photos/default_pdp.png') }}" alt="pdp">
 			</a>
 		{% else %}
 			<a class="cta_connexion_navbar_no_connected" href="{{path('app_login')}}">

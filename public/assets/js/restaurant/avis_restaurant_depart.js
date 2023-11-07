@@ -355,12 +355,16 @@ function settingAvisRestoMobile(id_resto, id_user, avisID, avisNote, avisText) {
 
     // document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis."
     
-    document.querySelector(`.note_number_${id_resto}_jheo_js`).value = parseFloat(avisNote);
-    document.querySelector(`.note_avis_${id_resto}_jheo_js`).value = avisText;
+    // document.querySelector(`.note_number_${id_resto}_jheo_js`).value = parseFloat(avisNote);
+    // document.querySelector(`.note_avis_${id_resto}_jheo_js`).value = avisText;
 
-    const btn_update = document.querySelector(`.send_avis_${id_resto}_jheo_js`);
+    // const btn_update = document.querySelector(`.send_avis_${id_resto}_jheo_js`);
+    // btn_update.setAttribute("onclick",`updateAvisRestoMobile(${id_resto}, ${id_user}, ${avisID})`)
+    document.querySelector(`.note_number_jheo_js`).value = parseFloat(avisNote);
+    document.querySelector(`.note_avis_jheo_js`).value = avisText;
+
+    const btn_update = document.querySelector(`.send_avis_jheo_js`);
     btn_update.setAttribute("onclick",`updateAvisRestoMobile(${id_resto}, ${id_user}, ${avisID})`)
-    
 }
 
 /**
@@ -526,26 +530,26 @@ function showNemberOfAvis(idRestaurant,parent) {
 }
 
 
-/**
- * Get global note avis resto  and setting
- * @param {*} idRestaurant 
- */
-function showNoteGlobale(idRestaurant) { 
-    fetch(`/avis/restaurant/global/${idRestaurant}`, {
-        methode:"GET"
-    }).then(r => r.json())
-    .then(response => {
-        let globalNote=0.00;
-        let totalNote=0.00;
-        if( response.length > 0 ){
-            for (let avis of response) {
-                totalNote+=parseFloat(avis["note"])
-            }
-            globalNote= totalNote /(response.length);
-            createGlobalNote(globalNote,idRestaurant)
-        }
-    })
-}
+// /**
+//  * Get global note avis resto  and setting
+//  * @param {*} idRestaurant 
+//  */
+// function showNoteGlobale(idRestaurant) { 
+//     fetch(`/avis/restaurant/global/${idRestaurant}`, {
+//         methode:"GET"
+//     }).then(r => r.json())
+//     .then(response => {
+//         let globalNote=0.00;
+//         let totalNote=0.00;
+//         if( response.length > 0 ){
+//             for (let avis of response) {
+//                 totalNote+=parseFloat(avis["note"])
+//             }
+//             globalNote= totalNote /(response.length);
+//             createGlobalNote(globalNote,idRestaurant)
+//         }
+//     })
+// }
 
 
 /**
@@ -907,24 +911,24 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
             }
         }
     }
-    let modalebtnModife
-    if (screen.width <= 991) {
-        modalebtnModife = `
-        <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant${idRestaurant}" onclick="settingAvisRestoMobile(${idRestaurant},${currentUserId},'${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
-                <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-        </div>
-    `
-    } else {
+    let modalebtnModife=""
+    // if (screen.width <= 991) {
+    //     modalebtnModife = `
+    //     <div class="content_action">
+    //         <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant${idRestaurant}" onclick="settingAvisRestoMobile(${idRestaurant},${currentUserId},'${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
+    //             <i class="fa-solid fa-pen-to-square"></i>
+    //         </button>
+    //     </div>
+    // `
+    // } else {
          modalebtnModife = `
         <div class="content_action">
             <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant" onclick="settingAvisResto('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
-    `
-    }
+     `
+    // }
     const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
     const editHTMl = modalebtnModife
     const  isOwnComment= (currentUserId == json.user.id ) ? editHTMl : "";
@@ -937,7 +941,7 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="content_profil_image me-2">
-                                    <img class="profil_image" src="${ json.user.photo ? json.user.photo : '/public/uploads/users/photos/default_pdp.png' }" alt="User">
+                                    <img class="profil_image" src="${ json.user.photo ? "/public"+json.user.photo : '/public/uploads/users/photos/default_pdp.png' }" alt="User">
                                 </div>
                                 <div class="content_info">
                                     <h3 class="text-point-9"> <small class="fw-bolder text-black"> ${ json.user.fullname }</small></h3>
@@ -959,9 +963,10 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
         </div>
     `
     document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
-    if (idRestaurant != 0 && screen.width <= 991) {
-        document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML += singleAvisHtml;
-    }
+    // if (idRestaurant != 0 && screen.width <= 991) {
+    //     // all_avis_${idRestaurant}_jheo_js
+    //     document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
+    // }
     // else {
     //     document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
     // }

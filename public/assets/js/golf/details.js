@@ -10,49 +10,52 @@ function getDetailFromListLeft(depart_name, depart_code, id) {
    
 }
 
-function setGolfTodo(goldID){
-    fecthGolfAction(goldID, "todo")
+function setGolfTodo(goldID,selectElement){
+    fecthGolfAction(goldID, "todo",selectElement)
 }
 
-function setMonGolf(goldID){
-    fecthGolfAction(goldID, "for_me")
+function setMonGolf(goldID,selectElement){
+    fecthGolfAction(goldID, "for_me",selectElement)
 }
 
-function setGolfFinished(goldID){
-    fecthGolfAction(goldID, "finished")
+function setGolfFinished(goldID,selectElement){
+    fecthGolfAction(goldID, "finished",selectElement)
 }
 
-function setGolfNone(goldID){
-    fecthGolfAction(goldID, "none")
+function setGolfNone(goldID,selectElement){
+    fecthGolfAction(goldID, "none",selectElement)
 }
 
-function cancelGolfFinished(goldID){
-    fecthGolfAction(goldID, "cancel")
+function cancelGolfFinished(goldID,selectElement){
+    fecthGolfAction(goldID, "cancel",selectElement)
 }
 
-function executeActionForPastGolf(goldID){
-    let action = document.querySelector("#selectActionGolf").value
+function executeActionForPastGolf(event,goldID){
+    let selectElement=event.target
+    let action = selectElement.options[selectElement.selectedIndex].value;
     if(action == "1"){
-        setGolfTodo(goldID)
+        setGolfTodo(goldID,selectElement)
         OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
     }else if(action == "2"){
-        setGolfFinished(goldID)
+        setGolfFinished(goldID,selectElement)
         OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
     }else if(action == "3"){
-        setMonGolf(goldID)
+        setMonGolf(goldID,selectElement)
         //Mon golf
         OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
     }else if(action == "0"){
-        setGolfNone(goldID)
+        setGolfNone(goldID,selectElement)
         OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
     }else{
-        cancelGolfFinished(goldID)
+        cancelGolfFinished(goldID,selectElement)
         // OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
     }
 }
 
-function fecthGolfAction(goldID, action){
+function fecthGolfAction(goldID, action,selectElement){
 
+    selectElement=selectElement.parentElement
+    console.log(selectElement)
     // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
     let url = ""
     
@@ -87,7 +90,7 @@ function fecthGolfAction(goldID, action){
                     new swal("Bravo !","Vous avez marqué ce golf comme fait !", "success")
                     .then((value) => {
                         if( document.querySelector(".content_btn_golf_did_jheo_js")){
-                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                            selectElement.innerHTML= `
                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
                             `
                         }
@@ -101,7 +104,7 @@ function fecthGolfAction(goldID, action){
                     new swal("Bravo !","Vous avez marqué ce golf comme Mon Golf !", "success")
                     .then((value) => {
                         if( document.querySelector(".content_btn_golf_did_jheo_js")){
-                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                            selectElement.innerHTML= `
                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
                             `
                         }
@@ -116,7 +119,7 @@ function fecthGolfAction(goldID, action){
                     new swal("Bravo !","Vous avez marqué ce golf comme à faire !", "success")
                     .then((value) => {
                         if( document.querySelector(".content_btn_golf_did_jheo_js")){
-                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                            selectElement.innerHTML= `
                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
                             `
                         }
@@ -131,7 +134,7 @@ function fecthGolfAction(goldID, action){
                     new swal("Bravo !","Vous avez choisi de ne rien faire avec ce golf.", "success")
                     .then((value) => {
                         if(document.querySelector(".content_btn_golf_did_jheo_js")){
-                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                            selectElement.innerHTML= `
                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(${goldID})">Oui</span>
                             `
                         }
@@ -146,7 +149,7 @@ function fecthGolfAction(goldID, action){
                     new swal("Bravo !","Vous venez d'annuler votre choix !", "success")
                     .then((value) => {
                         if( document.querySelector(".content_btn_golf_did_jheo_js")){
-                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
+                            selectElement.innerHTML= `
                             <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
                             <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${goldID}" onchange="executeActionForPastGolf('${goldID}')">
                                 <option value="0">Aucun</option>

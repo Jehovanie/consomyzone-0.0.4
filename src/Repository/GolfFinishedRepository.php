@@ -28,6 +28,8 @@ class GolfFinishedRepository extends ServiceEntityRepository
 
     }
 
+    
+
 //    /**
 //     * @return GolfFinished[] Returns an array of GolfFinished objects
 //     */

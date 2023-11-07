@@ -1547,6 +1547,7 @@ class Tribu_T_Service extends PDOConnexionService
         $resultF=[];
         if($idMin == 0){
             //id,user_id,confidentiality,photo,userfullname,datetime, publication 
+
             $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
             . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
            
@@ -1568,7 +1569,12 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
         foreach($results as $result){
+            $userSentPub=$result['user_id'];
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
+            $statement_photos->execute();
+            $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
             $result["publication"]=$this->convertUnicodeToUtf8($result["publication"]);
+            $result["user_profil"]=$user_profil;
             array_push($resultF,$result);
         }
         return $resultF;

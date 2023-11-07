@@ -180,9 +180,9 @@
         z-index: 10401;
     }
 
-    .form-check{
+    /* .form-check{
         font-size: 6pt !important;
-    }
+    } */
     .leaflet-control-layers-selector {
         top: 3px !important;
     }

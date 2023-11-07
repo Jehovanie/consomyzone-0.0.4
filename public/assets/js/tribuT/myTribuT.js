@@ -546,6 +546,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                 <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
                             </li>` : "";
 
+    console.log(data)
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture mt-3">
@@ -634,6 +635,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
         let data = event.data
         // console.log(data);
 
+       
         /*---------show 5 pub par defaut-----------------*/
         if (data.length > 0)
             var limits = data.length > 5 ? 5 : data.length;
@@ -651,8 +653,10 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
             let confidentiality = parseInt(data[i].confidentiality, 10);
             let contentPublication = ""
+            let _fullName = data[i].user_profil.firstname+" "+data[i].user_profil.lastname
+            let _profilImg=data[i].user_profil.photo_profil ? "/public"+data[i].user_profil.photo_profil : "/public/assets/image/img_avatar3.png"
 
-            if (confidentiality === 1) {
+            if (confidentiality === 1) { //public
 
                 let changeVisibility = parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10) ? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                         <div class="btn-group" role="group">
@@ -692,11 +696,11 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
+                                                        <img src="${_profilImg}" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
-                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
+                                                            <h5> &ensp;${_fullName} &ensp;</h5>
                                                             <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
@@ -715,7 +719,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment content_nbr_comment_jheo_js">
+                                                    <p class="text-comment content_nbr_comment_jheo_js" onclick="">
                                                         <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
@@ -753,7 +757,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                         </div>
                     </div>
                     `
-            } else if (confidentiality === 2) {
+            } else if (confidentiality === 2) { //privée
                 //moi uniquement 
                 // console.log(id_c_u,data[i].user_id)
                 if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
@@ -763,11 +767,11 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
+                                                        <img src="${_profilImg}" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
-                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
+                                                            <h5> &ensp;${_fullName} &ensp;</h5>
                                                             <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
@@ -817,7 +821,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment content_nbr_comment_jheo_js">
+                                                    <p class="text-comment content_nbr_comment_jheo_js" onclick="">
                                                         <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
@@ -890,7 +894,14 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                             console.log(genCursorPos)
                             if (genCursorPos === gen_length) {
 
-                                worker.postMessage([tribu_t_name_0, lastId, 20]);
+//worker.postMessage([tribu_t_name_0, lastId, 20]);
+                                //TODO appel recurcive
+                                showdDataContent(id_c_u, lastId);
+                            } else {
+                                lastId = data.id
+                                // console.log(data)
+                                // console.log("last id " + lastId)
+                                data = gen.next().value
 
                             }
 
@@ -905,11 +916,11 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="/public/assets/image/img_avatar3.png" alt="">
+                                                        <img src="${_profilImg}" alt="">
                                                     </div>
                                                     <div class="name-content-h">
                                                         <div class="name-content">
-                                                            <h5> &ensp;${data[i].userfullname} &ensp;</h5>
+                                                            <h5> &ensp;${_fullName} &ensp;</h5>
                                                             <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")}</span></p></div>
                                                         </div>
                                                         <div class="status-content d-flex">
@@ -957,7 +968,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
 
                                                 <div class="card-reaction">
-                                                    <p class="text-comment content_nbr_comment_jheo_js">
+                                                    <p class="text-comment content_nbr_comment_jheo_js" onclick="">
                                                         <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
                                                     </p>
 

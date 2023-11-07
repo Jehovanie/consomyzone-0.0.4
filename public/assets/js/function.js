@@ -1756,7 +1756,7 @@ function getAllComment(pubId, tablePub, userOwnID){
             const comments = response.comments.reverse();
 
             comments.forEach(comment => {
-                const pdp = (comment.user.photo !== null) ? comment.user.photo: '/public/uploads/users/photos/default_pdp.png';
+                const pdp = (comment.user.photo !== null) ? "/public"+comment.user.photo: '/public/uploads/users/photos/default_pdp.png';
                 listLIcomment += `
                     <li id='pub_${comment.pub_id}_comment_${comment.comment_id}' class="nr h lc rg mg qh sq js yk mb-2 show_single_msg_popup_jheo_js" data-toggle-other-id='10000'>
                         <div class="h sa wf uk th ni ej">
@@ -1896,7 +1896,7 @@ function handleNewComment(userInformations, comment){
 
     content_comment.innerHTML= `
         <div class="h sa wf uk th ni ej">
-            <a href="#"> <img class="profil_publication" src="${userInformations.profil !== "" ? userInformations.profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User"/> </a>
+            <a href="#"> <img class="profil_publication" src="${userInformations.profil !== "" ? "/public"+userInformations.profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User"/> </a>
         </div>
 
         <div>
@@ -2207,6 +2207,7 @@ function addSpecificgolfMobile(nom_dep, id_dep) {
 }
 
 function addListDepartStation() {
+    //alert("e")
     if (document.querySelector("#open-navleft-station-mobile-tomm-js")) {
         document.querySelector("#open-navleft-station-mobile-tomm-js").addEventListener("click", () => {
             document.querySelector("#open-navleft-station-mobile-tomm-js").style.opacity = 0
@@ -2236,6 +2237,7 @@ function addListDepartStation() {
 
 function addSpecificStationMobile(nom_dep, id_dep) {
     if(document.querySelector("#open-navleft-station-mobile-specific-tomm-js")){
+        alert("e")
         document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.opacity = 0
         document.querySelector("#open-navleft-station-mobile-specific-tomm-js").style.transition = "opacity 0.5s ease-in-out";
     
@@ -2463,6 +2465,7 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
     //     if (contentSpecMobile.scrollLeft + contentSpecMobile.clientWidth >= contentSpecMobile.scrollWidth) {
             
             const rubricName = new URL(window.location.href).pathname.split("/")[1]
+            console.log(rubricName)
             if (rubricName == 'restaurant') {
                 const id_dep = new URLSearchParams(window.location.href).get("id_dep")
                 const nom_dep = new URLSearchParams(window.location.href).get("nom_dep")
@@ -3406,6 +3409,7 @@ function getStationSpecSearchMobile(nom_dep, id_dep,idStation) {
             `
             
         })  
+    
 }
 
 /**
@@ -3655,6 +3659,19 @@ function addListDepartMobile(nom_dep, id_dep) {
     location.assign(`/ferme/departement/${nom_dep}/${id_dep}`)
     
 }
+
+/**
+ * @author Tomm
+ * @action href list specic ferme mobile
+ * @ou  specific_mobile_depar...js.twig
+ * @utiliser dans specific_mobile_depar.twig
+ */
+function addListDepartMobileStation(nom_dep, id_dep) {
+    location.assign(`/station/departement/${nom_dep}/${id_dep}`)
+    
+}
+
+
 
 
 /**
@@ -3932,7 +3949,8 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => { 
-        document.querySelector(".loading-tomm-js").innerHTML = ''
+        if( document.querySelector(".loading-tomm-js"))
+            document.querySelector(".loading-tomm-js").innerHTML = ''
         let listSpecMobile = document.querySelector(".list-specific-station-mobile-tomm-js")
         responses.stations.forEach(response => {
          

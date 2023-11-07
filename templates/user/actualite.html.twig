@@ -28,7 +28,7 @@
                 <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                     <div class="head-pub">
                         <div class="pdp-content">
-                            <img class="profil_publication" src="{{(userConnected.photo_profil) ? userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userConnected.firstname }}">
+                            <img class="profil_publication" src="{{(userConnected.photo_profil) ? '/public'~ userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userConnected.firstname }}">
                         </div>
                         <div class="name-content-h">
                             <div class="name-content" data-bs-toggle="modal" data-bs-target="#newPublication">

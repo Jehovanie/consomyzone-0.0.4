@@ -420,7 +420,7 @@ class GolfFranceController extends AbstractController
 
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
-        $golfFinished->setUserId($golfID);
+        $golfFinished->setUserId($userID);
         $golfFinished->setFait(1);
         $golfFinished->setAfaire(0);
         $golfFinished->setMonGolf(0);

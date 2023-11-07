@@ -161,7 +161,7 @@ class UserController extends AbstractController
             $newFilename = "";
 
             $legend = $new_publication['legend']->getData();
-            $confid = $new_publication['confidentiality']->getData();
+            $confid = $new_publication['confidentiality']->getData() == 0 ? 2 : $new_publication['confidentiality']->getData();
             $photo = $new_publication['photo']->getData();
             $capture = $new_publication['capture']->getData();
             // dd($photo);
@@ -232,6 +232,7 @@ class UserController extends AbstractController
                     $tribuGService->createOnePub($tribuG. "_publication", $userId, $legend, intval($confid), $newFilename);
                 }else{
                     $tribu = $new_publication['tribu']->getData();
+                    $legend=json_encode($legend);
                     $tribuTService->createOnePub($tribu . '_publication', $userId, $legend, intval($confid), $newFilename);
                 }
             }

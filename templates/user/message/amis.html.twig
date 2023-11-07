@@ -127,7 +127,7 @@
                     <div class="lc mg qg vi bj wr ql vl">
                         <div class="lc mg content_entete_msg_jheo_js" data-userToFirstname={{userToProfil.firstname}} data-userToLastname={{userToProfil.lastname}}  data-toggle-id-user-to={{userToProfil.id}}>
                             <div class="ob xc yd pf nh th">
-                                <img src="{{(userToProfil.photo_profile) ? userToProfil.photo_profile  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
+                                <img src="{{(userToProfil.photo_profile) ? "/public" ~ userToProfil.photo_profile  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
                             </div>
                             <div>
                                 <p class="mn">
@@ -301,7 +301,7 @@
                     <!-- ====== Profile Section Start -->
                     <div class="zl">
                         <div class="va rf db th">
-                            <img src="{{(userToProfil.photo_profile) ? userToProfil.photo_profile : '/public/uploads/users/photos/default_pdp.png'}}" alt="{{userToProfil.firstname}}"  width="100" alt="profile"/>
+                            <img src="{{(userToProfil.photo_profile) ? "/public" ~ userToProfil.photo_profile : '/public/uploads/users/photos/default_pdp.png'}}" alt="{{userToProfil.firstname}}"  width="100" alt="profile"/>
                         </div>
 
                         <div class="hn">
