@@ -404,20 +404,33 @@ class GolfFranceController extends AbstractController
     public function setGolfFinished(
         Request $request,
         EntityManagerInterface $entityManager,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        GolfFinishedRepository $golfRepo,
+        GolfFranceRepository $golfFranceRepository
     ){
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
         
         ///current user connected
+
+        
         $user = $this->getUser();
         if( !$user ){
             return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
         }
+$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
 
         $userID= $user->getId();
 
+if($isnumeric && intval($golfID) > 0){
+            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
+
+            if(!is_null($golf)){ 
+               
+                // if($golfRepo->checkIfExists($userID,$golfID)){
+                //     $golfRepo->updateGolfFinishedValue($userID,$golfID,0,1,0);
+                // }else{
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
         $golfFinished->setUserId($userID);
@@ -430,21 +443,47 @@ class GolfFranceController extends AbstractController
         $entityManager->persist($golfFinished);
 
         $entityManager->flush();
+// }
+                
+                $notificationService->sendNotificationForOne($userID, $userID, 
+                "Marquez un golf fini..", 
+                "Vous avez marqué le golf ".$golf->getNomGolf()." comme terminé.");
+                return $this->json([
+                    "success" => true,
+                    "message" => "Golf finished successfully"
+                ], 201);
+            }else{
+                return $this->json([
+                    "response" => "bad",
+                   
+                ], 403);
+        
+            }
+        }else{
+            return $this->json([
+                "response" => "bad",
+               
+            ], 403);
+        }
+        
+      
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf fini.", "Vous avez marqué un golf terminé.");
+                return $this->json([
+            "response" => "bad",
+           
+        ], 403);
 
-        return $this->json([
-            "success" => true,
-            "message" => "Golf finished successfully"
-        ], 201);
+       
     }
 
     #[Route('user/setGolf/todo', name: 'set_golf_todo', methods: ["POST"])]
     public function setGolfToDo(
         Request $request,
         EntityManagerInterface $entityManager,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        GolfFinishedRepository $golfRepo,
+        GolfFranceRepository $golfFranceRepository
     ){
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
@@ -455,8 +494,11 @@ class GolfFranceController extends AbstractController
         if( !$user ){
             return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
         }
-
+$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
         $userID= $user->getId();
+if($isnumeric && intval($golfID) > 0){
+            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
+            if(!is_null($golf)){
 
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
@@ -469,19 +511,41 @@ class GolfFranceController extends AbstractController
 
         $entityManager->flush();
 
-        // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf à faire.");
-
+        $notificationService->sendNotificationForOne($userID, $userID, 
+                "Marquez un golf à faire.",
+                "Vous avez marqué le golf ".$golf->getNomGolf()." à faire.");
         return $this->json([
             "success" => true,
             "message" => "Golf finished successfully"
         ], 201);
+}else{
+                return $this->json([
+                    "response" => "bad",
+                   
+                ], 403);
+            }
+        }else{
+            return $this->json([
+                "response" => "bad",
+               
+            ], 403); 
+        }
+
+        return $this->json([
+            "response" => "bad",
+           
+        ], 403);
+
+        
+
+       
     }
 
     #[Route('user/setGolf/none', name: 'set_golf_none', methods: ["POST"])]
     public function setGolfNone(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        GolfFinishedRepository $golfRepo
     ){
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
@@ -492,9 +556,11 @@ class GolfFranceController extends AbstractController
         if( !$user ){
             return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
         }
-
+$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
         $userID= $user->getId();
-
+if($isnumeric && intval($golfID) > 0){
+            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
+            if(!is_null($golf)){
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
         $golfFinished->setUserId($userID);
@@ -510,6 +576,24 @@ class GolfFranceController extends AbstractController
             "success" => true,
             "message" => "Golf finished successfully"
         ], 201);
+}else{
+                return $this->json([
+                    "response" => "bad",
+                   
+                ], 403);
+            }
+        }else{
+            return $this->json([
+                "response" => "bad",
+               
+            ], 403);
+        }
+        
+        return $this->json([
+            "response" => "bad",
+           
+        ], 403);
+        
     }
 
     #[Route('user/setGolf/unfinished', name: 'set_golf_unfinished', methods: ["POST"])]
@@ -549,7 +633,8 @@ class GolfFranceController extends AbstractController
     public function setGolfForMe(
         Request $request,
         EntityManagerInterface $entityManager,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        GolfFinishedRepository $golfRepo
     ){
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
@@ -562,7 +647,10 @@ class GolfFranceController extends AbstractController
         }
 
         $userID= $user->getId();
-
+$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
+        if($isnumeric && intval($golfID) > 0){
+            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
+            if(!is_null($golf)){
         $golfFinished= new GolfFinished();
         $golfFinished->setGolfId($golfID);
         $golfFinished->setUserId($userID);
@@ -573,13 +661,28 @@ class GolfFranceController extends AbstractController
         $entityManager->persist($golfFinished);
 
         $entityManager->flush();
-
-        // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $notificationService->sendNotificationForOne($userID, $userID, "Marquez un golf à faire.", "Vous avez marqué un golf est à vous.");
-
+$notificationService->sendNotificationForOne($userID, $userID, 
+                "Marquez un golf à faire.", 
+                "Vous venez d'indiquer que vous êtes membre au golf le ".$golf->getNomGolf());
         return $this->json([
             "success" => true,
             "message" => "Golf finished successfully"
         ], 201);
+}else{
+                return $this->json([
+                    "response" => "bad",
+                ], 403);  
+            }
+        }else{
+            return $this->json([
+                "response" => "bad",
+            ], 403);
+        }
+        
+        return $this->json([
+            "response" => "bad",
+        ], 403);
+
+        
     }
 }

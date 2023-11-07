@@ -3,6 +3,7 @@ const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
 const url_test = new URL(current_url);
+let Cookies2 = Cookies.noConflict();
 // cloneResultDepResto()
 if( document.querySelector(".form_content_search_navbar_js")){
     const search_form = document.querySelector(".form_content_search_navbar_js");
@@ -415,11 +416,12 @@ window.addEventListener('load', () => {
     const link_now= new URL(window.location.href)
     const linkPathname= link_now.pathname;
     if(!linkPathname.includes("/actualite-non-active")){
+    console.log(isValueInCookie("isCanUseCookie"))
         
-        if(!!isValueInCookie("isCanUseCookie") === false){
+        if(!isValueInCookie("isCanUseCookie")){
             askClientToUseCookie();
         }else{
-            if(parseInt(isValueInCookie("isCanUseCookie")) === 1 ){
+            if(isValueInCookie("isCanUseCookie") ){
                 getToastMessage()
             }
         }
@@ -1958,9 +1960,10 @@ function getToastMessage(){
                 if(!linkPathname.includes("/connexion")){
                     generateOneToastMessage(
                         0,
-                        JSON.stringify("Veuillez vous connecter pour accéder à tous les informations importants sur notre application."),
+                        JSON.stringify(""),
                         3,  //// type de notification : 0 alert, 1 primary, 2 news
-                        200000
+                        200000,
+                        true
                     );
                 }
             }
@@ -1980,7 +1983,7 @@ function getToastMessage(){
 function generateToastMessage(data){
     data.forEach((item, index) => {
 
-        if(parseInt(isValueInCookie(`toast_message_${item.id}`)) !== 1 ){
+        if(!isValueInCookie(`toast_message_${item.id}`)){
             setTimeout(() => {
                 generateOneToastMessage(
                     item.id,
@@ -2004,7 +2007,7 @@ function generateToastMessage(data){
  * 
  * @return call function to generate each toast message
  */
-function generateOneToastMessage(toastId, message,type, duration){
+function generateOneToastMessage(toastId, message,type, duration,isForConnexion=false){
     const toastPosition = { gravity: 'bottom', position: 'right'}
 
     const contentDivElement= document.createElement('div');
@@ -2021,12 +2024,18 @@ function generateOneToastMessage(toastId, message,type, duration){
             Ok, j'ai compris...
         </button>
     `
-    contentDivElement.innerHTML = `
+    if (!isForConnexion) {
+        contentDivElement.innerHTML = `
         <div>
             <p>${JSON.parse(message)} </p>
         </div>
         ${btn}
     `
+    } else {
+        contentDivElement.innerHTML = ` 
+        <div>Pour plus d'informations <span style="text-decoration:underline; color:blue "onclick="showMoreInformation()">cliquez ici</span>.</div>${btn}`
+    }
+    
 
     const alert= "#842029", info= "#084298" , news= "#055160";
     const bg_alert= "#f8d7da", bg_info= "#cfe2ff" , bg_news= "#cff4fc";
@@ -2056,12 +2065,38 @@ function generateOneToastMessage(toastId, message,type, duration){
 
 
 function saveToastMessage(toastID, isSave=false){
+
     if( isSave === true){
-        document.cookie = `toast_message_${toastID}=1`;
+        
+        Cookies2.set(`toast_message_${toastID}`,true,{ expires: 30,secure: true})
+        //document.cookie = `toast_message_${toastID}=1`;
     }
     clickedOnToastMessage(toastID);
 }
+function isValueInCookie(cName) {
+    
+    return Cookies2.get(cName);
+}
 
+function showToastMessage(){
+    Cookies2.set(`isCanUseCookie`,true,{ expires: 30, secure: true})
+    // document.cookie = "isCanUseCookie=1";
+    closeAskClientToUseCookie()
+    getToastMessage()
+}
+
+function notCanUseCookie(){
+    //document.cookie = "isCanUseCookie=0";
+    Cookies2.set(`isCanUseCookie`,false,{ expires: 30, secure: true })
+    closeAskClientToUseCookie()
+}
+
+function closeAskClientToUseCookie(){
+    if( document.querySelector(`.ask_client_to_use_cookie_jheo_js`)){
+        const btnClose= document.querySelector(`.ask_client_to_use_cookie_jheo_js`);
+        btnClose.parentElement.querySelector('.toast-close').click();
+    }
+}
 /**
  * @Author Jehovanie RAMANDRIJOEL 
  * où: on utilise dans le fonction generateOneToastMessage(), 
@@ -2127,33 +2162,10 @@ function askClientToUseCookie(){
     }).showToast();
 }
 
-function showToastMessage(){
-    document.cookie = "isCanUseCookie=1";
-    closeAskClientToUseCookie()
-    getToastMessage()
-}
-
-function notCanUseCookie(){
-    document.cookie = "isCanUseCookie=0";
-    closeAskClientToUseCookie()
-}
-
-function closeAskClientToUseCookie(){
-    if( document.querySelector(`.ask_client_to_use_cookie_jheo_js`)){
-        const btnClose= document.querySelector(`.ask_client_to_use_cookie_jheo_js`);
-        btnClose.parentElement.querySelector('.toast-close').click();
-    }
-}
 
 
-function isValueInCookie(cName) {
-    const name = cName + "=";
-    const cDecoded = decodeURIComponent(document.cookie); //to be careful
-    const cArr = cDecoded.split('; ');
-    const res= cArr.find( item => item.indexOf(name) === 0)
 
-    return res ? res.substring(name.length) : 0;
-}
+
 if (document.querySelector(".btn-navright-tribut-tomm-js")) {
     document.querySelector(".btn-navright-tribut-tomm-js").addEventListener('click', () => {
         document.querySelector(".apropos-tribu-t-tomm-js").classList.toggle('responsif-none')

@@ -159,6 +159,11 @@
 										{{ form_widget(form_inscription.pseudo, {'attr': {'class': 'validate text-color-blanc '}}) }}
 										{# {{ form_widget(form_inscription.pseudo, {'attr': {'class': 'validate text-color-blanc'}}) }} #}
 									</div>
+									<div class="response-pseudo-js-tom">
+									   <span id="pseudo-verif-response-js-tom"></span>
+									   <div class="list-choise-pseudo-js-tom">
+									   </div>
+									</div>
 								</div>
 								<div class="row">
 									<div class="input-field">
@@ -193,7 +198,7 @@
 									</div>
 								</div>
 								<div class="row center-align">
-									<button class="btn waves-effect waves-light inscription cta_inscription" type="submit">
+									<button class="btn waves-effect waves-light inscription cta_inscription" id="inscriptionCTA_tom_js" type="submit" disabled>
 										Inscription
 									</button>
 								</div>

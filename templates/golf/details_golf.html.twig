@@ -38,7 +38,7 @@
                         </select>
                         {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
                     {% else %}
-                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('{{details.id}}')">Oui</span>
+                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,'{{details.id}}')">Oui</span>
                     {% endif %}
                 </div>
             {% endif %}

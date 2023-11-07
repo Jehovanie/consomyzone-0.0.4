@@ -2390,3 +2390,11 @@ textarea {
 .pointeur-event-none-tomm-js{
     pointer-events: none;
 }
+
+.hover-deconnexion{
+    color: #6C757D;
+}
+
+.hover-deconnexion:hover{
+    color: #0d6efd;
+}

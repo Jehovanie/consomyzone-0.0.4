@@ -43,7 +43,7 @@ if(document.querySelector(".resend_email_js")){
  */
 
 if (document.querySelector("#form_password")) {
-
+    document.querySelector("#inscriptionCTA_tom_js").disabled = true;
     document.querySelector("#form_password").onkeyup = e => {
 
         console.log(e.target.value)
@@ -203,7 +203,8 @@ if (document.querySelector("#form_password")) {
                 `
 
                 document.querySelector("#text-pasword-niveau").innerText="Mot de passe fort"
-
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=false
+                
                 break;
 
             }
@@ -220,7 +221,10 @@ if (document.querySelector("#form_password")) {
 
                 `
 
-                document.querySelector("#text-pasword-niveau").innerText="Mot de passe faible"
+                document.querySelector("#text-pasword-niveau").innerText = "Mot de passe faible." +
+                    "Donner un mot de passe plus fort pour pouvoir vous inscrire."
+                
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=true
 
                 break;
 
@@ -239,6 +243,7 @@ if (document.querySelector("#form_password")) {
                 `
 
                 document.querySelector("#text-pasword-niveau").innerText="Mot de passe moyen"
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=false
 
                 break;
 
@@ -257,7 +262,7 @@ if (document.querySelector("#form_password")) {
                 `
 
                 document.querySelector("#text-pasword-niveau").innerText=""
-
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=true
                  break;
 
             }
@@ -268,4 +273,30 @@ if (document.querySelector("#form_password")) {
 
     }
 
+}
+
+if (document.querySelector("#form_pseudo")) {
+    let timeout = setTimeout(function () { }, 0);
+    let timeout2=setTimeout(function(){}, 0);
+    document.querySelector("#form_pseudo").addEventListener("keypress", (e) => { 
+        clearTimeout(timeout);
+        
+        timeout = setTimeout(function () {
+            const curentPseudo = e.target.value;
+            fetch(`/is/pseudo/${curentPseudo}`, { method: "GET" })
+                .then(response => {
+                    if (response.status === 200 && response.ok) {
+                        response.json().then(json => { 
+                            const isPseudoExist=!!json.result
+                            if (isPseudoExist) {
+                               document.querySelector("#pseudo-verif-response-js-tom").innerText = "ce pseudo existe déjà." 
+                                
+                            } else {
+                                document.querySelector("#pseudo-verif-response-js-tom").innerText = "pseudo verifié." 
+                            }
+                        })
+                    }
+                })
+        }, 3000)
+    })
 }

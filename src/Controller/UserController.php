@@ -2608,4 +2608,15 @@ class UserController extends AbstractController
         $json = $serializerInterface->serialize($fields, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
+
+    #[Route("/is/pseudo/{pseudo}",name:"app_check_pseudo", methods:["GET"])]
+    public function isPesudo(
+        $pseudo,
+        UserService $userService,
+        SerializerInterface $serializer
+    ){
+        $response=$serializer->serialize($userService->isPseudoExist($pseudo),'json');
+        return new JsonResponse($response, Response::HTTP_OK, [], true);
+
+    }
 }

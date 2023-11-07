@@ -4936,3 +4936,13 @@ function arrangeSetingApparitionMobile() {
        
     }
 }
+
+/**
+ * @author Tommy
+ * cette fonction est là pour montrer que le contenu est en redaction.
+ * utiliser dans app.js sur les taost message de cta de connexion
+ * cette fonction se trouve dans function.js
+ */
+function showMoreInformation() {
+   swal("Cher et Chère partisan.", "Cette page est en cours de rédaction, merci de votre compréhension.", "info")
+}
