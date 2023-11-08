@@ -21,14 +21,13 @@ class GolfFranceController extends AbstractController
 {
     #[Route('/golf', name: 'app_golf_france')]
     public function index(
-        Status $status, 
+        Status $status,
         DepartementRepository $departementRepository,
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         GolfFranceRepository $golfFranceRepository
-    ): Response
-    {
+    ): Response {
         ///current user connected
         $user = $this->getUser();
         $userConnected = $status->userProfilService($this->getUser());
@@ -38,7 +37,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user && $user->getType()!="Type"){
+        if ($user && $user->getType() != "Type") {
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
 
@@ -49,8 +48,8 @@ class GolfFranceController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                
-                if( $user_amis ){
+
+                if ($user_amis) {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -83,10 +82,10 @@ class GolfFranceController extends AbstractController
         DepartementRepository $departementRepository,
         GolfFranceRepository $golfFranceRepository
     ): Response {
-        
+
         $statusProfile = $status->statusFondateur($this->getUser());
         $userConnected = $status->userProfilService($this->getUser());
-        
+
 
         return $this->render('shard/golf/golf_navleft_mobile.twig', [
             'number_of_departement' => $golfFranceRepository->getCount(),
@@ -99,12 +98,12 @@ class GolfFranceController extends AbstractController
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         GolfFranceRepository $golfFranceRepository,
-    ){
+    ) {
 
-        $golfs= [];
+        $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        $golfs= $golfFranceRepository->getSomeDataShuffle($userID);
+        $golfs = $golfFranceRepository->getSomeDataShuffle($userID);
 
         return $this->json([
             "success" => true,
@@ -118,11 +117,11 @@ class GolfFranceController extends AbstractController
         $nom_dep,
         $id_dep,
         GolfFranceRepository $golfFranceRepository,
-        Status $status, 
+        Status $status,
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-    ){
+    ) {
 
         ///current user connected
         $user = $this->getUser();
@@ -133,7 +132,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if($user && $user->getType()!="Type"){
+        if ($user && $user->getType() != "Type") {
 
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -145,8 +144,8 @@ class GolfFranceController extends AbstractController
 
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                
-                if( $user_amis ){
+
+                if ($user_amis) {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -166,7 +165,7 @@ class GolfFranceController extends AbstractController
         }
 
         $golfs = $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
-   
+
 
         return $this->render("golf/specific_departement.html.twig", [
 
@@ -212,7 +211,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if ($user && $user->getType()!="Type") {
+        if ($user && $user->getType() != "Type") {
 
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -286,7 +285,7 @@ class GolfFranceController extends AbstractController
 
         $amis_in_tributG = [];
 
-        if ($user && $user->getType()!="Type") {
+        if ($user && $user->getType() != "Type") {
 
             // ////profil user connected
             $profil = $tributGService->getProfil($user, $entityManager);
@@ -339,22 +338,22 @@ class GolfFranceController extends AbstractController
             "userConnected" => $userConnected,
         ]);
     }
-    
+
 
     #[Route('/api/golf/departement/{nom_dep}/{id_dep}', name: 'api_golf_dep_france', methods: ["GET", "POST"])]
     public function api_specifiqueDepartement(
         $nom_dep,
         $id_dep,
         GolfFranceRepository $golfFranceRepository,
-        Status $status, 
+        Status $status,
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-    ){
-        $golfs= [];
+    ) {
+        $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        $golfs= $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
+        $golfs = $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
 
         return $this->json([
             "success" => true,
@@ -365,10 +364,12 @@ class GolfFranceController extends AbstractController
 
     #[Route('/golf/departement/{nom_dep}/{id_dep}/{golfID}', name: 'single_golf_france', methods: ["GET"])]
     public function oneGolf(
-        $nom_dep, $id_dep, $golfID,
+        $nom_dep,
+        $id_dep,
+        $golfID,
         GolfFranceRepository $golfFranceRepository,
-        Status $status, 
-    ){
+        Status $status,
+    ) {
         ///current user connected
         $user = $this->getUser();
         $userID = ($user) ? intval($user->getId()) : null;
@@ -376,7 +377,7 @@ class GolfFranceController extends AbstractController
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
-            "details" => $golfFranceRepository->getOneGolf(intval($golfID),$userID),
+            "details" => $golfFranceRepository->getOneGolf(intval($golfID), $userID),
         ]);
     }
 
@@ -407,76 +408,154 @@ class GolfFranceController extends AbstractController
         NotificationService $notificationService,
         GolfFinishedRepository $golfRepo,
         GolfFranceRepository $golfFranceRepository
-    ){
+    ) {
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
-        
+
         ///current user connected
 
-        
+
         $user = $this->getUser();
-        if( !$user ){
-            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        if (!$user) {
+            return $this->json(["success" => false, "message" => "user is not connected"], 403);
         }
-$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
+        $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
 
-        $userID= $user->getId();
+        $userID = $user->getId();
 
-if($isnumeric && intval($golfID) > 0){
-            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
+        if ($isnumeric && intval($golfID) > 0) {
+            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
 
-            if(!is_null($golf)){ 
-               
+            if (!is_null($golf)) {
+
                 // if($golfRepo->checkIfExists($userID,$golfID)){
                 //     $golfRepo->updateGolfFinishedValue($userID,$golfID,0,1,0);
                 // }else{
-        $golfFinished= new GolfFinished();
-        $golfFinished->setGolfId($golfID);
-        $golfFinished->setUserId($userID);
-        $golfFinished->setFait(1);
-        $golfFinished->setAfaire(0);
-        $golfFinished->setMonGolf(0);
+                $golfFinished = new GolfFinished();
+                $golfFinished->setGolfId($golfID);
+                $golfFinished->setUserId($userID);
+                $golfFinished->setFait(1);
+                $golfFinished->setAfaire(0);
+                $golfFinished->setMonGolf(0);
+                $golfFinished->setARefaire(0);
 
-        // dd($golfFinished);
+                // dd($golfFinished);
 
-        $entityManager->persist($golfFinished);
+                $entityManager->persist($golfFinished);
 
-        $entityManager->flush();
-// }
-                
-                $notificationService->sendNotificationForOne($userID, $userID, 
-                "Marquez un golf fini..", 
-                "Vous avez marqué le golf ".$golf->getNomGolf()." comme terminé.");
+                $entityManager->flush();
+
+
+                $notificationService->sendNotificationForOne(
+                    $userID,
+                    $userID,
+                    "Marquez un golf fini..",
+                    "Vous avez marqué le golf " . $golf->getNomGolf() . " comme terminé."
+                );
                 return $this->json([
                     "success" => true,
                     "message" => "Golf finished successfully"
                 ], 201);
-            }else{
+            } else {
                 return $this->json([
                     "response" => "bad",
-                   
+
                 ], 403);
-        
             }
-        }else{
+        } else {
             return $this->json([
                 "response" => "bad",
-               
+
             ], 403);
         }
-        
-      
+
+
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-                return $this->json([
+        return $this->json([
             "response" => "bad",
-           
-        ], 403);
 
-       
+        ], 403);
     }
 
+    #[Route('/user/setGolf/remake', name: 'set_golf_remake', methods: ["POST"])]
+    public function setGolfRemake(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        NotificationService $notificationService,
+        GolfFinishedRepository $golfRepo,
+        GolfFranceRepository $golfFranceRepository
+    ) {
+        $requestContent = json_decode($request->getContent(), true);
+        extract($requestContent); ///$golfID
+
+
+        ///current user connected
+
+
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(["success" => false, "message" => "user is not connected"], 403);
+        }
+        $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
+
+        $userID = $user->getId();
+
+        if ($isnumeric && intval($golfID) > 0) {
+            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
+
+            if (!is_null($golf)) {
+
+                // if($golfRepo->checkIfExists($userID,$golfID)){
+                //     $golfRepo->updateGolfFinishedValue($userID,$golfID,0,1,0);
+                // }else{
+                $golfFinished = new GolfFinished();
+                $golfFinished->setGolfId($golfID);
+                $golfFinished->setUserId($userID);
+                $golfFinished->setFait(0);
+                $golfFinished->setAfaire(0);
+                $golfFinished->setARefaire(1);
+                $golfFinished->setMonGolf(0);
+
+                // dd($golfFinished);
+
+                $entityManager->persist($golfFinished);
+
+                $entityManager->flush();
+
+
+                $notificationService->sendNotificationForOne(
+                    $userID,
+                    $userID,
+                    "Marquez un golf refaire.",
+                    "Vous avez marqué le golf " . $golf->getNomGolf() . " à refaire."
+                );
+                return $this->json([
+                    "success" => true,
+                    "message" => "Golf finished successfully"
+                ], 201);
+            } else {
+                return $this->json([
+                    "response" => "bad",
+
+                ], 403);
+            }
+        } else {
+            return $this->json([
+                "response" => "bad",
+
+            ], 403);
+        }
+
+
+
+        // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
+        return $this->json([
+            "response" => "bad",
+
+        ], 403);
+    }
     #[Route('user/setGolf/todo', name: 'set_golf_todo', methods: ["POST"])]
     public function setGolfToDo(
         Request $request,
@@ -484,61 +563,61 @@ if($isnumeric && intval($golfID) > 0){
         NotificationService $notificationService,
         GolfFinishedRepository $golfRepo,
         GolfFranceRepository $golfFranceRepository
-    ){
+    ) {
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
-        
+
         ///current user connected
         $user = $this->getUser();
-        if( !$user ){
-            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        if (!$user) {
+            return $this->json(["success" => false, "message" => "user is not connected"], 403);
         }
-$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
-        $userID= $user->getId();
-if($isnumeric && intval($golfID) > 0){
-            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
-            if(!is_null($golf)){
+        $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
+        $userID = $user->getId();
+        if ($isnumeric && intval($golfID) > 0) {
+            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
+            if (!is_null($golf)) {
 
-        $golfFinished= new GolfFinished();
-        $golfFinished->setGolfId($golfID);
-        $golfFinished->setUserId($userID);
-        $golfFinished->setFait(0);
-        $golfFinished->setAfaire(1);
-        $golfFinished->setMonGolf(0);
+                $golfFinished = new GolfFinished();
+                $golfFinished->setGolfId($golfID);
+                $golfFinished->setUserId($userID);
+                $golfFinished->setFait(0);
+                $golfFinished->setAfaire(1);
+                $golfFinished->setMonGolf(0);
+                $golfFinished->setARefaire(0);
 
-        $entityManager->persist($golfFinished);
+                $entityManager->persist($golfFinished);
 
-        $entityManager->flush();
+                $entityManager->flush();
 
-        $notificationService->sendNotificationForOne($userID, $userID, 
-                "Marquez un golf à faire.",
-                "Vous avez marqué le golf ".$golf->getNomGolf()." à faire.");
-        return $this->json([
-            "success" => true,
-            "message" => "Golf finished successfully"
-        ], 201);
-}else{
+                $notificationService->sendNotificationForOne(
+                    $userID,
+                    $userID,
+                    "Marquez un golf à faire.",
+                    "Vous avez marqué le golf " . $golf->getNomGolf() . " à faire."
+                );
+                return $this->json([
+                    "success" => true,
+                    "message" => "Golf finished successfully"
+                ], 201);
+            } else {
                 return $this->json([
                     "response" => "bad",
-                   
+
                 ], 403);
             }
-        }else{
+        } else {
             return $this->json([
                 "response" => "bad",
-               
-            ], 403); 
+
+            ], 403);
         }
 
         return $this->json([
             "response" => "bad",
-           
+
         ], 403);
-
-        
-
-       
     }
 
     #[Route('user/setGolf/none', name: 'set_golf_none', methods: ["POST"])]
@@ -546,54 +625,54 @@ if($isnumeric && intval($golfID) > 0){
         Request $request,
         EntityManagerInterface $entityManager,
         GolfFinishedRepository $golfRepo
-    ){
+    ) {
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
-        
+
         ///current user connected
         $user = $this->getUser();
-        if( !$user ){
-            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        if (!$user) {
+            return $this->json(["success" => false, "message" => "user is not connected"], 403);
         }
-$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
-        $userID= $user->getId();
-if($isnumeric && intval($golfID) > 0){
-            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
-            if(!is_null($golf)){
-        $golfFinished= new GolfFinished();
-        $golfFinished->setGolfId($golfID);
-        $golfFinished->setUserId($userID);
-        $golfFinished->setFait(0);
-        $golfFinished->setAfaire(0);
-        $golfFinished->setMonGolf(0);
+        $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
+        $userID = $user->getId();
+        if ($isnumeric && intval($golfID) > 0) {
+            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
+            if (!is_null($golf)) {
+                $golfFinished = new GolfFinished();
+                $golfFinished->setGolfId($golfID);
+                $golfFinished->setUserId($userID);
+                $golfFinished->setFait(0);
+                $golfFinished->setAfaire(0);
+                $golfFinished->setMonGolf(0);
+                $golfFinished->setARefaire(0);
 
-        $entityManager->persist($golfFinished);
+                $entityManager->persist($golfFinished);
 
-        $entityManager->flush();
+                $entityManager->flush();
 
-        return $this->json([
-            "success" => true,
-            "message" => "Golf finished successfully"
-        ], 201);
-}else{
+                return $this->json([
+                    "success" => true,
+                    "message" => "Golf finished successfully"
+                ], 201);
+            } else {
                 return $this->json([
                     "response" => "bad",
-                   
+
                 ], 403);
             }
-        }else{
+        } else {
             return $this->json([
                 "response" => "bad",
-               
+
             ], 403);
         }
-        
+
         return $this->json([
             "response" => "bad",
-           
+
         ], 403);
-        
     }
 
     #[Route('user/setGolf/unfinished', name: 'set_golf_unfinished', methods: ["POST"])]
@@ -602,16 +681,16 @@ if($isnumeric && intval($golfID) > 0){
         GolfFinishedRepository $golfFinishedRepository,
         EntityManagerInterface $entityManager,
         NotificationService $notificationService
-    ){
-        if(!$this->getUser()){
-            return $this->json([ "success" => false, "message" => "Unauthorized" ], 403);
+    ) {
+        if (!$this->getUser()) {
+            return $this->json(["success" => false, "message" => "Unauthorized"], 403);
         }
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
-        $isFinished= $golfFinishedRepository->findOneBy(['golf_id' => intval($golfID)]); 
-        if( !$isFinished){
-            return $this->json([ "success" => false, "message" => "This golf is not yet finished"], 200);
+        $isFinished = $golfFinishedRepository->findOneBy(['golf_id' => intval($golfID)]);
+        if (!$isFinished) {
+            return $this->json(["success" => false, "message" => "This golf is not yet finished"], 200);
         }
 
         $entityManager->remove($isFinished);
@@ -635,54 +714,56 @@ if($isnumeric && intval($golfID) > 0){
         EntityManagerInterface $entityManager,
         NotificationService $notificationService,
         GolfFinishedRepository $golfRepo
-    ){
+    ) {
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
-        
+
         ///current user connected
         $user = $this->getUser();
-        if( !$user ){
-            return $this->json([ "success" => false, "message" => "user is not connected" ], 403);
+        if (!$user) {
+            return $this->json(["success" => false, "message" => "user is not connected"], 403);
         }
 
-        $userID= $user->getId();
-$isnumeric=(bool)preg_match('/[0-9]/', $golfID,$numerics);
-        if($isnumeric && intval($golfID) > 0){
-            $golf=$golfFranceRepository->findOneBy(["id" => $golfID]);
-            if(!is_null($golf)){
-        $golfFinished= new GolfFinished();
-        $golfFinished->setGolfId($golfID);
-        $golfFinished->setUserId($userID);
-        $golfFinished->setFait(0);
-        $golfFinished->setAfaire(0);
-        $golfFinished->setMonGolf(1);
+        $userID = $user->getId();
+        $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
+        if ($isnumeric && intval($golfID) > 0) {
+            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
+            if (!is_null($golf)) {
+                $golfFinished = new GolfFinished();
+                $golfFinished->setGolfId($golfID);
+                $golfFinished->setUserId($userID);
+                $golfFinished->setFait(0);
+                $golfFinished->setAfaire(0);
+                $golfFinished->setMonGolf(1);
+                $golfFinished->setARefaire(0);
+                
+                $entityManager->persist($golfFinished);
 
-        $entityManager->persist($golfFinished);
-
-        $entityManager->flush();
-$notificationService->sendNotificationForOne($userID, $userID, 
-                "Marquez un golf à faire.", 
-                "Vous venez d'indiquer que vous êtes membre au golf le ".$golf->getNomGolf());
-        return $this->json([
-            "success" => true,
-            "message" => "Golf finished successfully"
-        ], 201);
-}else{
+                $entityManager->flush();
+                $notificationService->sendNotificationForOne(
+                    $userID,
+                    $userID,
+                    "Marquez un golf à faire.",
+                    "Vous venez d'indiquer que vous êtes membre au golf le " . $golf->getNomGolf()
+                );
+                return $this->json([
+                    "success" => true,
+                    "message" => "Golf finished successfully"
+                ], 201);
+            } else {
                 return $this->json([
                     "response" => "bad",
-                ], 403);  
+                ], 403);
             }
-        }else{
+        } else {
             return $this->json([
                 "response" => "bad",
             ], 403);
         }
-        
+
         return $this->json([
             "response" => "bad",
         ], 403);
-
-        
     }
 }

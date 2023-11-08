@@ -2186,3 +2186,5 @@ if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
     })
 }
 
+if(document.querySelector(".ref_tom_js"))
+    detectInactivity();

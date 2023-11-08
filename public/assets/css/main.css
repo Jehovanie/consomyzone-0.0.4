@@ -2398,3 +2398,13 @@ textarea {
 .hover-deconnexion:hover{
     color: #0d6efd;
 }
+.iti__flag {
+    background-image: url("/assets/image/flags.png");
+}
+
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    .iti__flag {
+        background-image: url("/assets/image/flags@2x.png");
+    }
+}

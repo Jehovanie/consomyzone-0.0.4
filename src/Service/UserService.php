@@ -109,4 +109,12 @@ class UserService  extends PDOConnexionService{
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    public function generatePseudo($pseudo){
+        $statement =$this->getPDO()->prepare("CALL generate_randompseudo_from_user_pseudo_v2(?)");
+        $statement->bindParam(1, $pseudo, PDO::PARAM_STR);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
 }

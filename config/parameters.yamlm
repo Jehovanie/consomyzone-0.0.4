@@ -1,0 +1,2 @@
+parameters:
+    session_max_idle_time: 60

@@ -333,11 +333,14 @@ class SecurityController extends AbstractController
     {
         $user = $this->getUser();
 
-        $user->setIsConnected(0);
+        if(!is_null($user)){
+            $user->setIsConnected(0);
 
-        ///stock the user
-        $entityManager->persist($user);
-        $entityManager->flush();
+            ///stock the user
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
+          
 
         return new RedirectResponse($urlGenerator->generate('app_logout'));
         

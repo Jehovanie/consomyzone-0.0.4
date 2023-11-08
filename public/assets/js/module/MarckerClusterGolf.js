@@ -286,7 +286,7 @@ class MarckerClusterGolf extends MapModule {
     }
 
     updateStateGolf(status, id){
-        let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false }
+        let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false,"refaire":false }
         
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
@@ -298,8 +298,11 @@ class MarckerClusterGolf extends MapModule {
                 }else if( status === "afaire"){
                     pathIcon='/assets/icon/NewIcons/icon-vert-golf-orange.png';
                     user_status= { ...user_status , "a_faire" : true }
-                }else if( status === "mon_golf"){
-                    pathIcon='/assets/icon/NewIcons/mon_golf_select.png';
+                }else if( status === "refaire"){
+                    pathIcon='/assets/icon/NewIcons/icon-vert-golf-orange.png';
+                    user_status= { ...user_status , "refaire" : true }
+                }else if (status === "mon_golf") {
+                    pathIcon='/assets/icon/NewIcons/icon-blanc-golf-refaire.png';
                     user_status= { ...user_status , "mon_golf" : true }
                 }else{ /// aucun 
                     pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';

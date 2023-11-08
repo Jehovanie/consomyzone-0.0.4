@@ -1,7 +1,9 @@
 let firstX = 0
 let firstY = 0
 let marker_last_selected = null
-
+//60*5*1000
+let idleTimer = setTimeout(function () { console.log("debut") }, 30000);
+let idleTimer2=setTimeout(function(){console.log("debut")}, 30000);
 /*
 
 */
@@ -4945,4 +4947,62 @@ function arrangeSetingApparitionMobile() {
  */
 function showMoreInformation() {
    swal("Cher et Chère partisan.", "Cette page est en cours de rédaction, merci de votre compréhension.", "info")
+}
+
+/**
+ * @author Tommy
+ * cette fonction detecte le idle de l'user cad son temps d'inactivity
+ * utiliser dans app.js 
+ * 
+ */
+function detectInactivity() { 
+    window.onload = resetTimer();
+    document.onmousemove = resetTimer();
+    document.onkeyup = resetTimer();
+    document.onpointerup=resetTimer();
+}
+
+function resetTimer() {
+    clearTimeout(idleTimer);
+    clearTimeout(idleTimer2)
+    //TODO set isconnect to true
+    
+    idleTimer2=setTimeout(function () {
+       prelogout()
+     }, 60*2*1000);
+    
+    idleTimer = setTimeout(function () {
+        location.href = "/deconnexion";
+    }, 60*3*1000);
+}
+
+function prelogout() {
+    
+    swal("Du à une inactivité de votre part et pour des raisons de sécurité nous allons vous déconnecter.", {
+        buttons: {
+            continuer: {
+                text: "continuer",
+                value: "continue"
+            },
+            deconnecter: {
+                text: "deconnecter",
+                value: "exit"
+            }
+        }
+    }).then(function (value) { 
+        switch (value) {
+            case 'continue': {
+                resetTimer();
+                break;
+            }
+            case 'exit': {
+                location.href = "/deconnexion";
+                break;
+            }
+            default :{
+                  resetTimer();
+                break;
+            }
+        }
+    })
 }

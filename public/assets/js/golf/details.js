@@ -30,7 +30,10 @@ function cancelGolfFinished(event,goldID){
     let selectElement=event.target;
     fecthGolfAction(goldID, "cancel",selectElement)
 }
-
+function setGolfRemake(goldID,event) {
+    let selectElement=event.target;
+    fecthGolfAction(goldID, "remake",selectElement)
+}
 function executeActionForPastGolf(event,goldID){
     let selectElement=event.target
     console.log(selectElement)
@@ -38,21 +41,38 @@ function executeActionForPastGolf(event,goldID){
         let actionstr = selectElement.options[selectElement.selectedIndex].value;
         action = parseInt(actionstr)
         if(/[0-9]/.test(actionstr)){
-            if(action >=0 && action <=3){
-    if(action === 1){
-        setGolfTodo(goldID,selectElement)
-        OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
-    }else if(action === 2){
-        setGolfFinished(goldID,selectElement)
-        OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
-    }else if(action === 3){
-        setMonGolf(goldID,selectElement)
-        //Mon golf
-        OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
-    }else if(action === 0){
-        setGolfNone(goldID,selectElement)
-        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
-}
+            if (action >= 0 && action <= 3) {
+                switch (action) {
+                    case 1: {
+                        setGolfTodo(goldID, selectElement)
+                        OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
+                        break;
+                    }
+                    case 2: {
+                        setGolfFinished(goldID, selectElement)
+                        OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
+                        break;
+                    }
+                    case 3: {
+                        setGolfRemake(goldID, event)
+                        OBJECT_MARKERS_GOLF.updateStateGolf("refaire", goldID)
+                        break;
+                    }
+                    case 4: {
+                    
+                        setMonGolf(goldID, selectElement)
+                        OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
+                        break;
+                    }
+
+                    default:
+                        {
+                            setGolfNone(goldID, selectElement)
+                            OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+                    
+                        }
+                }
+                
             }else{
                 new swal("Bonjour!","Bienvenu sur consomyzone.", "info")
             }
@@ -73,19 +93,34 @@ function fecthGolfAction(goldID, action,selectElement){
     if(selectElement !=null && selectElement instanceof HTMLElement){
         selectElement=selectElement.parentElement;
     let url = ""
-    
-    if(action === "finished"){
-        url = '/user/setGolf/finished'
-    }else if(action === "todo"){
-        url = '/user/setGolf/todo'
-    }else if(action === "for_me"){
-        url = '/user/setGolf/for_me'
-    }else if(action === "none"){
-        url = '/user/setGolf/none'
-    }else{
-        url = '/user/setGolf/unfinished'
+    switch (action){
+        case  "finished":{
+            url = '/user/setGolf/finished'
+            brerak;
+        }
+        case "todo":{
+            url = '/user/setGolf/todo'
+            break;
+        }
+        case "for_me":{
+            url = '/user/setGolf/for_me'
+            break;
+        }
+        case  "none": {
+            url = '/user/setGolf/none'
+            break;
+        }
+        case "remake": { 
+            url = "/user/setGolf/remake"
+            break;
+        }
+        default:{
+            url = '/user/setGolf/unfinished'
+            break;
+        }
+        
     }
-    
+   
     const request = new Request(url, {
         method: "POST",
         headers: {
@@ -159,7 +194,20 @@ function fecthGolfAction(goldID, action,selectElement){
                         }
                     });  
 
-                }else{
+                } else if (action === "remake") {
+                    new swal("Bravo !","Vous avez marqué ce golf comme à refaire.", "success")
+                    .then((value) => {
+                        if(document.querySelector(".content_btn_golf_did_jheo_js")){
+                            selectElement.innerHTML= `
+                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+                            `
+                        }
+        
+                        if( document.querySelector(".golf_status_jheo_js")){
+                            document.querySelector(".golf_status_jheo_js").innerText= "A REFAIRE"
+                        }
+                    });  
+                }else {
 
                     new swal("Info !","Vous venez d'annuler votre choix !", "success")
                     .then((value) => {
@@ -170,7 +218,8 @@ function fecthGolfAction(goldID, action,selectElement){
                                 <option value="0">Aucun</option>
                                 <option value="1">A faire</option>
                                 <option value="2">Fait</option>
-                                <option value="3">Mon golf</option>
+                                <option value="3">A refaire</option>
+                                <option value="4">Mon golf</option>
                             </select>
                             `
                         }

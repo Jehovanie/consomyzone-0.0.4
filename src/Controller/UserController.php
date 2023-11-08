@@ -2619,4 +2619,14 @@ class UserController extends AbstractController
         return new JsonResponse($response, Response::HTTP_OK, [], true);
 
     }
+
+    #[Route("/give/pseudo/{pseudo}", name: "give_pseudo", methods: ["GET"])]
+    public function generatePesudo(
+        $pseudo,
+        UserService $userService,
+        SerializerInterface $serializer
+    ) {
+        $response = $serializer->serialize($userService->generatePseudo($pseudo), 'json');
+        return new JsonResponse($response, Response::HTTP_OK, [], true);
+    }
 }
