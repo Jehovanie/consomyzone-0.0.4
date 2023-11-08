@@ -25,6 +25,9 @@
     <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
 	{# <script type="text/javascript" src="{{ asset('assets/js/golf/filter_a-z_asc_desc.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/golf/details.js')}}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
+    {# // <script type="text/javascript" src="{{ asset('assets/js/golf/chercher.js') }}" defer></script> #}
 {% endblock %}
 
 {% block body %}
@@ -77,6 +80,10 @@
 			</div>
 		</div>
 	</div>
+
     {% include 'shard/chatBot.html.twig' %}
+
+    {% include 'shard/modal/list_avis.html.twig' %}
+    {% include 'shard/modal/modal_avis.html.twig' %}
 {% endblock %}
 

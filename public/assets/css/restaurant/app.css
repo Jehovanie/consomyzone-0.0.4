@@ -39,6 +39,10 @@
     /* text-align: center; */
 }
 
+.ya {
+    z-index: 1000 !important;
+}
+
 /* .leaflet-control-zoom.leaflet-bar.leaflet-control {
     margin-right: 4vw;
 } */

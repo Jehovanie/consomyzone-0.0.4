@@ -31,6 +31,9 @@
     transform: scale(1.3);
 }
 
+.ya {
+    z-index: 1000 !important;
+}
 
 @media screen and (min-width: 1440px) and (max-width: 1550px){
     .navbar-light-left .fa-x {

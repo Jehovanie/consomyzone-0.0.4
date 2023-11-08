@@ -94,6 +94,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $results= [ ];
         $json_tribuT_owned= $this->sec->getUser() ? $this->sec->getUser()->getTribuT() : false;
+
         if( $json_tribuT_owned ){
             $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
             $arrayTribu_T_Owned = $decode_tribuT_owned['tribu_t'];

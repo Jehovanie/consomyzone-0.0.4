@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Service\Status;
+use App\Entity\AvisGolf;
 use App\Entity\GolfFinished;
 use App\Service\TributGService;
 use App\Repository\UserRepository;
 use App\Service\GolfFranceService;
 use App\Service\NotificationService;
+use App\Repository\AvisGolfRepository;
 use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
@@ -15,6 +17,8 @@ use App\Repository\GolfFinishedRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GolfFranceController extends AbstractController
@@ -367,16 +371,43 @@ class GolfFranceController extends AbstractController
     public function oneGolf(
         $nom_dep, $id_dep, $golfID,
         GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        UserRepository $userRepository,
         Status $status, 
     ){
         ///current user connected
         $user = $this->getUser();
         $userID = ($user) ? intval($user->getId()) : null;
-        // dd($golfFranceRepository->getOneGolf(intval($golfID)));
+
+        $details = $golfFranceRepository->getOneGolf(intval($golfID),$userID);
+
+        $nbr_avis_resto = $avisGolfRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisGolfRepository->getNoteGlobale($details["id"]);
+        
+        $isAlreadyCommented= false;
+        $avis= ["note" => null, "text" => null  ];
+        
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
-            "details" => $golfFranceRepository->getOneGolf(intval($golfID),$userID),
+            "details" => $details,
         ]);
     }
 
@@ -399,6 +430,78 @@ class GolfFranceController extends AbstractController
             "details" => $golfFranceRepository->getOneGolf(intval($golfID), $userID),
         ]);
     }
+
+    
+    #[Route("/avis/golf/global/{idGolf}", name: "get_avis_global_golf", methods: ["GET"])]
+    public function getAvisGlobalGolf(
+        AvisGolfRepository $avisGolfRepository,
+        $idGolf,
+        SerializerInterface $serializer
+    ) {
+        $response = $avisGolfRepository->getNoteGlobale($idGolf);
+        $response = $serializer->serialize($response, 'json');
+        return new JsonResponse($response, 200, [], true);
+    }
+
+    #[Route("/avis/golf/{idGolf}", name: "avis_golf", methods: ["POST"])]
+    public function giveAvisGolf(
+        AvisGolfRepository $avisGolfRepository,
+        GolfFranceRepository $golfFranceRepository,
+        Request $request,
+        $idGolf
+    ){
+
+        $user = $this->getUser();
+        $golf = $golfFranceRepository->find($idGolf);
+        $avisGolf = new AvisGolf();
+
+        $requestJson = json_decode($request->getContent(), true);
+        $avis = $requestJson["avis"];
+        $note = $requestJson["note"];
+        
+        //dd($user,$resto);
+        $avisGolf->setAvis($avis)
+            ->setnote($note)
+            ->setUser($user)
+            ->setDatetime(new \DateTimeImmutable())
+            ->setGolf($golf);
+
+        return $this->json($avisGolfRepository->add($avisGolf, true));
+    }
+
+    #[Route("/nombre/avis/golf/{idGolf}", name: "get_nombre_avis_golf", methods: ["GET"])]
+    public function getNombreAvisGolf(
+        $idGolf,
+        AvisGolfRepository $avisGolfRepository,
+        SerializerInterface $serializer,
+    ) {
+        $response = $avisGolfRepository->getNombreAvis($idGolf);
+
+        $response = $serializer->serialize(["nombre_avis" => $response], 'json');
+        return new JsonResponse($response, 200, [], true);
+    }
+
+    #[Route("/change/golf/{idGolf}", name: "change_avis_golf", methods: ["POST"])]
+    public function changeAvisGolf(
+        $idGolf,
+        AvisGolfRepository $avisGolfRepository,
+        SerializerInterface $serializer,
+        Request $request
+    ) {
+
+        $rJson = json_decode($request->getContent(), true);
+        $userId = $this->getUser()->getId();
+        $response = $avisGolfRepository->updateAvis(
+            $idGolf,
+            $userId,
+            $rJson["avisID"],
+            $rJson["note"],
+            $rJson["avis"],
+        );
+        $response = $serializer->serialize($response, 'json');
+        return new JsonResponse($response, 200, [], true);
+    }
+
 
     #[Route('user/setGolf/finished', name: 'set_golf_finished', methods: ["POST"])]
     public function setGolfFinished(

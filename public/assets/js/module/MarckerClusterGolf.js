@@ -353,4 +353,9 @@ class MarckerClusterGolf extends MapModule {
         return data;
     }
 
+
+    showNoteGlobaleOnMarker(idItem, globalNote){
+        console.log(idItem, globalNote);
+    }
+
 }

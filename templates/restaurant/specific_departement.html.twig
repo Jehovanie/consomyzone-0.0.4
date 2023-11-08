@@ -29,7 +29,9 @@
 	<script type="text/javascript" src="{{ asset('assets/js/restaurant/filter_a-z_asc_desc.js') }}" defer></script>
 
 	<script type="text/javascript" src="{{asset('assets/js/restaurant/details.js')}}" defer></script>
-    <script type="text/javascript" src="{{ asset('assets/js/restaurant/avis_restaurant_depart.js') }}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
+
     <script type="text/javascript" src="{{ asset('assets/js/restaurant/specific_departement.js') }}" defer></script>
 
 {% endblock %}
@@ -162,11 +164,15 @@
 
 
 
+
     {{ include('shard/restaurant/detail_resto_navleft.html.twig') }}
     {{ include('shard/chatBot.html.twig') }}
-    {{ include('shard/restaurant/list_avis.html.twig') }}
-    {{ include('shard/restaurant/modal_avis_resto.html.twig') }}
-    {{ include('shard/restaurant/modal_modif_avis.html.twig') }}
+    {# {{ include('shard/restaurant/list_avis.html.twig') }} #}
+    {# {{ include('shard/restaurant/modal_avis_resto.html.twig') }} #}
+    {# {{ include('shard/restaurant/modal_modif_avis.html.twig') }} #}
     {{ include('shard/restaurant/modal_user_modif_resto.twig') }}
+
+    {% include 'shard/modal/list_avis.html.twig' %}
+    {% include 'shard/modal/modal_avis.html.twig' %}
 
 {% endblock %}

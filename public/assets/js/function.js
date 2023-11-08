@@ -4936,3 +4936,22 @@ function arrangeSetingApparitionMobile() {
        
     }
 }
+
+function msgErrorAlertAvis(e){
+    if (e.message == "note sup à 4") {
+        
+        new swal("Attention !","la note que vous aviez donnés est supérieur à 4 !", "warning") .then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    } else if(e.message == "non numerique") {
+        new swal("Attention !","la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    }else if(e.message == "note not found" ){ /// veulliez saisir un note de 0 à 4
+        new swal("Attention !","Veulliez saisir un note de 0 à 4", "warning").then((value) => {
+            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+        })
+    }else {
+        console.log(e)
+    }
+}

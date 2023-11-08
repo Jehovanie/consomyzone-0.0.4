@@ -155,6 +155,10 @@ body{
     width:100%;
 }
 
+.ya {
+    z-index: 1000 !important;
+}
+
 @keyframes translateFull {
     0% {
         transform: translateX(-100%);

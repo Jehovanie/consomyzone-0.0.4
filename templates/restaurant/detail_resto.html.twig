@@ -1,6 +1,14 @@
 <div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
 	<div class="left_content_home">
-        <div class="description" id="details-coord" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+        <div class="description" id="details-coord"
+             data-toggle-type="resto"
+             data-toggle-id-resto="{{details.id}}" 
+             data-toggle-id-dep="{{id_dep}}" 
+             data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" 
+             data-longitude="{{((details.poiX)  ? details.poiX : '0') |format_number({fraction_digit: 15})}}" 
+             data-nom="{{details.denominationF}}" 
+             data-codeinsee="{{details.codinsee}}"
+            >
             <div class="content_titre_details">
                 <div class="titre text-center">
                     <div class="mb-2 restoNameWithLogoTribu">
@@ -10,23 +18,27 @@
                                 <div class="mainContainerLogoTribu">
                                     {% if tribu_t_resto_pastille|length > 0 %}
                                         {% for item in tribu_t_resto_pastille %}
-                                            {% if item["logo_path"] != "" %}
-                                                {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
-                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
-                                            {% else %}
-                                                {# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                            {% if item["isPastilled"] %}
+                                                {% if item["logo_path"] != "" %}
+                                                    {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
+                                                    <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                                {% else %}
+                                                    {# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
+                                                    <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                                {% endif %}
                                             {% endif %}
                                         {% endfor %}
                                     {% endif %}
                                     {% if tribu_t_resto_joined_pastille|length > 0 %}
                                         {% for item in tribu_t_resto_joined_pastille %}
-                                            {% if item["logo_path"] != "" %}
-                                                {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
-                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
-                                            {% else %}
-                                                {# <img class="ms-1" width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-                                                <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                            {% if item["isPastilled"] %}
+                                                {% if item["logo_path"] != "" %}
+                                                    {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
+                                                    <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                                {% else %}
+                                                    {# <img class="ms-1" width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
+                                                    <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
+                                                {% endif %}
                                             {% endif %}
                                         {% endfor %}
                                     {% endif %}
@@ -70,7 +82,7 @@
                         {% else %} #}
 
                         {% if (app.user and app.user.type!='Type') %}
-                            <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-primary  btn_modal_avis_resto_jheo_js modal-note-tomm-js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donner votre avis</button>
+                            <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-primary  btn_modal_avis_resto_jheo_js modal-note-tomm-js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Donner votre avis</button>
                             <button style="font-size:smaller" type="button" data-name="{{details.denominationF | raw}}" class="mx-2  btn  btn-sm btn-success btn_modal_pastille_resto_nanta_js" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'{{id_restaurant}}')">Pastiller</button>
                             <button type="button" class="btn btn-primary btn-sm" 
                             onclick="makeMarkerDraggable({{details.id}})" 

@@ -24,6 +24,8 @@
     <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('assets/js/golf/golf.js') }}" defer></script>
     <script src="{{asset('assets/js/golf/details.js')}}" defer></script>
+    
+    <script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
     {# // <script type="text/javascript" src="{{ asset('assets/js/golf/chercher.js') }}" defer></script> #}
 {% endblock %}
 
@@ -107,4 +109,7 @@
     {% include 'shard/chatBot.html.twig' %}
     {% include 'shard/golf/detail_golf_navleft.twig' %}
     {% include 'shard/golf/modalDetailMobil.html.twig' %}
+
+    {% include 'shard/modal/list_avis.html.twig' %}
+    {% include 'shard/modal/modal_avis.html.twig' %}
 {% endblock %}

@@ -2390,3 +2390,8 @@ textarea {
 .pointeur-event-none-tomm-js{
     pointer-events: none;
 }
+
+.flash-msg-ERREUR{
+    color: red;
+    font-size: 8pt;
+}

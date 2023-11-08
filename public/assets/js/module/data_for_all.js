@@ -466,36 +466,48 @@ function getDetailFromListRight(nom_dep, id_dep, id_resto) {
     CURRENT_MAP_INSTANCE.clickOnMarker(id_resto)
 }
 
+// /**
+//  * Get global note avis resto  and setting
+//  * @param {*} idRestaurant
+//  * @override Jehovanie
+//  * I deplace this into the module/avis_depart.js
+//  */
+// function showNoteGlobale(idRestaurant) { 
+//     fetch(`/avis/restaurant/global/${idRestaurant}`, {
+//         methode:"GET"
+//     }).then(r => r.json())
+//     .then(response => {
+//         let globalNote=0.00;
+//         let totalNote=0.00;
+//         if( response.length > 0 ){
+//             for (let avis of response) {
+//                 totalNote+=parseFloat(avis["note"])
+//             }
+//             globalNote= totalNote /(response.length);
+//             createGlobalNote(globalNote)
+//             CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(idRestaurant, globalNote)
+//         }
+        
+//     })
+// }
+
 /**
  * Get global note avis resto  and setting
- * @param {*} idRestaurant 
+ * @param {*} id 
  */
-function showNoteGlobale(idRestaurant) { 
-    fetch(`/avis/restaurant/global/${idRestaurant}`, {
-        methode:"GET"
-    }).then(r => r.json())
-    .then(response => {
-        let globalNote=0.00;
-        let totalNote=0.00;
-        if( response.length > 0 ){
-            for (let avis of response) {
-                totalNote+=parseFloat(avis["note"])
-            }
-            globalNote= totalNote /(response.length);
-            createGlobalNote(globalNote)
-            CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(idRestaurant, globalNote)
-        }
-        
-    })
+function showNoteGlobaleOnMarker(id, globalNote) { 
+    CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(id, globalNote)
 }
+
+
 /**
- *@author Nantenaina a ne pas contacté pendant les congés 
-où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
-* localisation du fichier: dans data_for_all.js,
-* je veux: rendre le marker draggable
-* si un utilisateur veut modifier une ou des informations
-* @param {} id 
-*/
+ * @author Nantenaina a ne pas contacté pendant les congés 
+ * où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+ * localisation du fichier: dans data_for_all.js,
+ * je veux: rendre le marker draggable
+ * si un utilisateur veut modifier une ou des informations
+ * @param {} id 
+ */
 function makeMarkerDraggable(id){
     swal("Vous allez entrer en mode interactif, pour pouvoir modifier les informations sur cet établissement.",
     {
@@ -521,13 +533,12 @@ function makeMarkerDraggable(id){
 }
 
 /**
- *@author Nantenaina a ne pas contacté pendant les congés 
-*où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
-* localisation du fichier: dans data_for_all.js,
-* je veux: modifier les informations relatives à un établissement
-* si un utilisateur veut modifier une ou des informations
-*
-*/
+ * @author Nantenaina a ne pas contacté pendant les congés 
+ * où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+ * localisation du fichier: dans data_for_all.js,
+ * je veux: modifier les informations relatives à un établissement
+ * si un utilisateur veut modifier une ou des informations
+ */
 function makeUserModifResto(){
     let denomination_f = document.querySelector("#restoNewDenominationF").value
     let numvoie = document.querySelector("#newNumVoie").value
