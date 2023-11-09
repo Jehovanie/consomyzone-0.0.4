@@ -796,3 +796,67 @@ div.img_slide_left {
   top: 15%;
   left: 45%;
 }
+
+.list-amie-message{
+  width: 100%;
+}
+
+.list-amie-message-perso{
+  width: 40%;
+}
+
+input:focus {
+  outline-offset: -2px;
+}
+
+.search_input_message {
+  width: 75%;
+  margin-top: 25px;
+  margin-left: 15px;
+  border: 1px solid #000;
+  border-radius: 30px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url('https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/search-24.png');
+
+  background-position: 10px 7px;
+  background-repeat: no-repeat;
+  padding: 8px 20px 8px 40px;
+  -webkit-transition: width 0.8s ease-in-out;
+  transition: width 0.8s ease-in-out;
+  outline: none;
+  opacity: 0.9;
+
+}
+
+.search_input_message_perso {
+  width: 100%;
+  margin-top: 25px;
+  border: 1px solid #000;
+  border-radius: 30px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url('https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/search-24.png');
+
+  background-position: 10px 7px;
+  background-repeat: no-repeat;
+  padding: 8px 20px 8px 40px;
+  -webkit-transition: width 0.8s ease-in-out;
+  transition: width 0.8s ease-in-out;
+  outline: none;
+  opacity: 0.9;
+
+}
+
+.creer-reunion{
+  position: absolute;
+  right: 40px;
+}
+
+.account-message-conected{
+  background-color: #fff;
+}
+
+.heure_message{
+  color: rgb(134, 139, 143);
+}

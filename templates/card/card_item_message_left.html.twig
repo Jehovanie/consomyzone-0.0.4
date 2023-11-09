@@ -11,19 +11,29 @@
     </div>
 
     {% set linkParam = tribuT is defined ?  { 'user_id' : id, 'tribuT' : tribuT } : { 'user_id' : id } %}
-    <a href="{{path('app_message', linkParam )}}" class="yd">
-        <h5 class="mn un zn gs">
-            {{firstname ~ " " ~ lastname }}
-        </h5>
-      
-        {% if last_message.message_type is defined %}
-            {% if last_message.message_type is same as("text") %}
-                <p class="mn text_message_jheo_js {{last_message.isRead == 0  ? 'wn'  : '' }}">{{ last_message.text|length > 50 ? "(Message long) ..." : last_message.text|raw  }}</p>
-            {% else %}
-                <p class="mn text_message_jheo_js">(object)</p>
-            {% endif %}
-        {% else %}
-            <p class="text_message_jheo_js">Nouvelle discussion</p>
-        {% endif %}
+    <a href="{{path('app_message_perso', linkParam )}}" class="yd">
+        <div class="row">
+            <div class="col-10">
+                <h5 class="mn un zn gs">
+                    {{firstname ~ " " ~ lastname }}
+                </h5>
+            
+                {% if last_message.message_type is defined %}
+                    {% if last_message.message_type is same as("text") %}
+                        <p class="mn text_message_jheo_js {{last_message.isRead == 0  ? 'wn'  : '' }}">{{ last_message.text|length > 50 ? "(Message long) ..." : last_message.text|raw  }}</p>
+                    {% else %}
+                        <p class="mn text_message_jheo_js">(object)</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text_message_jheo_js">Nouvelle discussion</p>
+                {% endif %}
+            </div>
+            <div class="col-2">
+                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+            </div>
+        </div>
+        
+
+        
     </a>
 </div>

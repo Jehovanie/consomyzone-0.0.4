@@ -81,13 +81,23 @@ class GolfFranceRepository extends ServiceEntityRepository
        
         for($i=0; $i< count($data); $i++){
             if(!$userID){
-                $data[$i]["user_status"]=["a_faire" => null, "fait" => null, "mon_golf"=>null];
+                $data[$i]["user_status"]=["a_faire" => null, 
+                "fait" => null, 
+                "mon_golf"=>null,
+                "refaire"=>null];
                 $data[$i]["user_id"]=null;
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
               
-                $data[$i]["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf()]  : ["a_faire" => null, "fait" => null, "mon_golf"=> null];
+                $data[$i]["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), 
+                "fait" => $user->getFait(), 
+                "mon_golf" => $user->getMonGolf(),
+                "refaire" => $user->getARefaire()]  : 
+                ["a_faire" => null, 
+                "fait" => null, 
+                "mon_golf"=> null,
+                "refaire" =>null];
                 $data[$i]["user_id"]=$userID;
 
             }
@@ -170,12 +180,20 @@ class GolfFranceRepository extends ServiceEntityRepository
 
         for($i=0; $i< count($data); $i++){
             if(!$userID){
-                $data[$i]["user_status"]= ["a_faire" => null, "fait" => null, "mon_golf" => null];
+                $data[$i]["user_status"]= ["a_faire" => null, "fait" => null, "mon_golf" => null, "refaire"=>null];
                 $data[$i]["user_id"]=null;
             }else{
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
-                $data[$i]["user_status"]=($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf()]  : ["a_faire" => null, "fait" => null, "mon_golf"=> null];
+                $data[$i]["user_status"]=($user) ? 
+                ["a_faire" => $user->getAfaire(), 
+                "fait" => $user->getFait(), 
+                "mon_golf" => $user->getMonGolf(), 
+                "refaire"=> $user->getARefaire()]  : 
+                ["a_faire" => null, 
+                "fait" => null, 
+                "mon_golf"=> null,
+                "refaire"=> null];
                 $data[$i]["user_id"]=$userID;
             }
         }

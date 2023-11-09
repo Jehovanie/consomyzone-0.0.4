@@ -39,9 +39,13 @@
                     <input class="form-check-input" type="radio" name="etabRadioOptions" id="autreRadio" value="autre" onclick="seletOtherEtab(false)">
                     <label class="form-check-label text_black" for="autreRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Si votre établissement n'est pas présent dans les rubriques de CMZ">Saisissez votre établissement</label>
                   </div>
-
+                  <div class="form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="visioRadio" value="visio" onclick="seletRdvVisio()">
+                    <label class="form-check-label text_black" for="visioRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Envoyer une Rendez-vous visio">Rendez-vous visio</label>
+                  </div>
                 </div>
             </div>
+            
 
             <div class="mb-3 d-none" id="containerNomEtab">
               <label for="nomEtabEvent" class="form-label text_black">Nom</label>
@@ -73,7 +77,7 @@
             <div class="d-flex mb-3">
                 <div class="flex-fill me-2">
                     <label for="timeStart" class="form-label text_black">Heure de début</label>
-                    <input type="time" class="form-control input_black timeStart_jheo_js" id="timeStart" required>
+                    <input type="time" class="form-control input_black timeStart_jheo_js timeStart_tomm_js" id="timeStart" value="12:13" required>
                 </div>
                 <div class="flex-fill ms-2">
                     <label for="timeEnd" class="form-label text_black">Heure de fin</label>

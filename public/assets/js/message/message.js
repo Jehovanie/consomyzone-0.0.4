@@ -423,6 +423,37 @@ function toggleAmisTribu(domHtml) {
 
 }
 
+function toggleAmisMessage(domHtml) {
+    if (!domHtml.querySelector(".linkToActive_tomm_js")) {
+        console.log("Selector not found: 'linkToActive_tomm_js'")
+        return false;
+    }
+
+    const activeSwitch = domHtml.querySelector(".linkToActive_tomm_js");
+    if (!activeSwitch.classList.contains('active')) {
+        activeSwitch.classList.add('active')
+    }
+
+    const selector_list = activeSwitch.getAttribute("data-selector-list")
+    if (document.querySelector(`.${selector_list}`).classList.contains('d-none')) {
+        document.querySelector(`.${selector_list}`).classList.remove('d-none')
+    }
+
+    const allSwitches = document.querySelectorAll(".linkToActive_tomm_js")
+    allSwitches.forEach(item => {
+        if (item != activeSwitch) {
+            const selector_list_other = item.getAttribute("data-selector-list")
+            if (item.classList.contains('active')) {
+                item.classList.remove('active')
+            }
+            if (!document.querySelector(`.${selector_list_other}`).classList.contains('d-none')) {
+                document.querySelector(`.${selector_list_other}`).classList.add('d-none')
+            }
+        }
+    })
+
+}
+
 window.addEventListener("load", (event) => {
 
     const currentUrl = window.location.href;

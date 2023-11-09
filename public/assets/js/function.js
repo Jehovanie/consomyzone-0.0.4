@@ -4972,7 +4972,7 @@ function resetTimer() {
      }, 60*2*1000);
     
     idleTimer = setTimeout(function () {
-        location.href = "/deconnexion";
+        // location.href = "/deconnexion";
     }, 60*3*1000);
 }
 
