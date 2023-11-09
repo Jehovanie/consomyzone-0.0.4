@@ -4,8 +4,11 @@ namespace App\Service;
 
 use PDO;
 use PDOException;
+use App\Entity\User;
 use DateTimeImmutable;
+use App\Repository\UserRepository;
 use App\Service\PDOConnexionService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
 
 
@@ -169,14 +172,11 @@ class MessageService extends PDOConnexionService{
 
 
     public function getLastMessage($myTableMessage,$otherID){
-
         $sql = "SELECT id,user_id,user_post,content, message_type, isForMe, isRead FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
         $result = $this->getPDO()->query($sql);
         $msg=  $result->fetch(PDO::FETCH_ASSOC);
 
-        // dd($msg);
-
-        if($msg === true){
+        if(!!$msg === true){
             $text = json_decode($this->convertUnicodeToUtf8($msg["content"]), true);
             $result = [
                 "id" => $msg["id"],
@@ -191,7 +191,6 @@ class MessageService extends PDOConnexionService{
         }else{
             return false;
         }
-
         
     }
 
@@ -307,6 +306,149 @@ class MessageService extends PDOConnexionService{
         $msg=  $result->fetch(PDO::FETCH_ASSOC);
 
         return $msg;
+    }
+
+    /**
+     * Get list of the user to chat in the tribu G by the user connected
+     * 
+     * @param User $user: user currenct connecter
+     * @param TributGService $tributGService: TribuGService locate in src/service/TribuGService.php
+     * @param EntityManagerInterface $entityManager, : EntityManagerInterface  build-in
+     * @param UserRepository $userRepository: user repository locate in src/repository/UserRepository.php
+     * 
+     * @return array empty or array list of user in tribu G [ 
+     *      [ 
+     *        id => ...,
+     *        photo => ..., 
+     *        email => ..., 
+     *        firstname => ...,
+     *        lastname => ..., 
+     *        image_profil => ..., 
+     *        email_profil => ...,
+     *        last_message => ...,
+     *        is_online => ...
+     *      ],
+     *      ...
+     * ]
+     */
+    public function getListAmisToChat( 
+        User $user, 
+        TributGService $tributGService, 
+        EntityManagerInterface $entityManager, 
+        UserRepository $userRepository  
+    ){
+
+        $amis_in_tributG = [];
+        $userId = $user->getId();
+
+        if($user && $user->getType()!="Type"){
+            // ////profil user connected
+            $profil = $tributGService->getProfil($user, $entityManager);
+
+            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
+            ///to contains profil user information
+            
+            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+                if( intval($id_amis["user_id"]) !== intval($userId) ){
+                    ///check their type consumer of supplier
+                    $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                    
+                    if( $user_amis ){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        ///single profil
+                        $amis = [
+                            "id" => $id_amis["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $this->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
+                            "is_online" => $user_amis->getIsConnected(),
+                        ];
+        
+                        ///get it
+                        array_push($amis_in_tributG, $amis);
+                    }
+                }
+            }
+        }
+
+
+        return $amis_in_tributG;
+    }
+
+    /**
+     * Get list of the user to chat in the tribu  T by the user connected
+     * 
+     * @param User $user: user currenct connecter
+     * @param TributGService $tributGService: TribuGService locate in src/service/TribuGService.php
+     * @param Tribu_T_Service $tributTService: tributTService locate in src/service/Tribu_T_Service.php
+     * @param EntityManagerInterface $entityManager, : EntityManagerInterface  build-in
+     * @param UserRepository $userRepository: user repository locate in src/repository/UserRepository.php
+     * 
+     * @return array empty or array list of user in tribu T [ 
+     *          [ 
+     *             table_name => ..., 
+     *             name_tribu_t_muable => ..., 
+     *             logo_path => ..., 
+     *             amis => [
+     *               [
+     *                  id =>  ...,
+     *                  photo => ...,
+     *                  email => ...,
+     *                  firstname => ...,
+     *                  lastname => ...,
+     *                  image_profil => ...,
+     *                  last_message => ...,
+     *                  is_online => ... 
+     *               ],
+     *               ...
+     *             ]
+     *          ],
+     *          ... 
+     *   ]
+     */
+    public function getListAmisInTribuTtoChat(
+        User $user,
+        TributGService $tributGService, 
+        Tribu_T_Service $tributTService,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository  
+    ){
+        $userId = $user->getId();
+        
+        $all_tribuT_user= [];
+        $all_tribuT= $userRepository->getListTableTribuT();
+
+        foreach($all_tribuT as $tribuT){
+            $tribuT['amis'] = [];
+            $results=$tributTService->getAllPartisanProfil($tribuT['table_name']);
+            foreach($results as $result){
+                if( intval($result["user_id"]) !== intval($userId) ){
+                    $user_amis = $userRepository->find(intval($result["user_id"]));
+                    
+                    if( $user_amis && $user_amis->getIsConnected()){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $this->getLastMessage($user->getTablemessage(),$result["user_id"]),
+                            "is_online" => $user_amis->getIsConnected(),
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'] , $amis);
+                    }
+                }
+            }
+            array_push($all_tribuT_user, $tribuT);
+        }
+
+        return $all_tribuT_user;
     }
 
 }

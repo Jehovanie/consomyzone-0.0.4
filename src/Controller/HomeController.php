@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
+use App\Service\MessageService;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
@@ -189,12 +190,12 @@ class HomeController extends AbstractController
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
         Tribu_T_Service $tribu_T_Service,
+        MessageService $messageService,
         CommuneGeoCoderRepository $communeGeoCoderRepository,
         GolfFranceRepository $golfFranceRepository,
         TabacRepository $tabacRepository,
         RestaurantController $restaurantController,
         AvisRestaurantRepository $avisRestaurantRepository
-        
     ){
 
         ///current user connected
@@ -213,36 +214,9 @@ class HomeController extends AbstractController
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
-        $amis_in_tributG = [];
-
-        if($user && $user->getType()!="Type"){
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
-
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
-            ///to contains profil user information
-            
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
-
-                ///get it
-                array_push($amis_in_tributG, $amis);
-            }
-        }
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
 
         $origin_cles1= $request->query->get("cles1"); //// use for searching geojson API OpenStreetMap
 

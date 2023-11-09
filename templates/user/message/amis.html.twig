@@ -82,38 +82,48 @@
 
                             <div class="content_list_tribuT_jheo_js  {{ isInTribut is same as(true) ? '' : 'd-none' }}">
                                 <ul class="list-group list-group-flush">
-                                    {% for jtem in allTribuT %}
-                                        <li class="list-group-item">
-                                            <div class="text-primary d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    {{jtem.name_tribu_t_muable}}
+                                    {% if allTribuT|length > 0 %}
+                                        {% for jtem in allTribuT %}
+                                            <li class="list-group-item">
+                                                <div class="text-primary d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        {{jtem.name_tribu_t_muable}}
+                                                    </div>
+                                                    <div>
+                                                        {% if jtem.amis|length > 0 %}
+                                                            <span class="badge bg-info text-dark">{{jtem.amis|length}} en ligne.</span>
+                                                        {% endif %}
+                                                        <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    {% if jtem.amis|length > 0 %}
-                                                        <span class="badge bg-info text-dark">{{jtem.amis|length}} en ligne.</span>
-                                                    {% endif %}
-                                                    <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
-                                                </div>
-                                            </div>
-                                            <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
-                                                <ul class="list-group">
-                                                    {% if jtem.amis|length > 0 %}
-                                                        <!-- Chat List Item -->
-                                                        {% for ktem in jtem.amis %}
-                                                            {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
-                                                        {% endfor %}
-                                                        <!-- end List Chat -->
-                                                    {% else %}
-                                                        <div class="cg lc mg sh ol rl tq is">
-                                                            <div class="bg-light bg-gradient p-3">
-                                                                <p class="text-center text-danger">Actuellement, vous êtes le seul partisan en ligne dans votre tribu T.</p>
+                                                <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
+                                                    <ul class="list-group">
+                                                        {% if jtem.amis|length > 0 %}
+                                                            <!-- Chat List Item -->
+                                                            {% for ktem in jtem.amis %}
+                                                                {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
+                                                            {% endfor %}
+                                                            <!-- end List Chat -->
+                                                        {% else %}
+                                                            <div class="cg lc mg sh ol rl tq is">
+                                                                <div class="bg-light bg-gradient p-3">
+                                                                    <p class="text-center text-danger">Actuellement, vous êtes le seul partisan en ligne dans votre tribu T.</p>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    {% endif %}
-                                                </ul>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li>
+                                            <div class="cg lc mg sh ol rl tq is">
+                                                <div class="bg-light bg-gradient p-3">
+                                                    <p class="text-center text-danger">Actuellement, vous n'avez pas encore créé ou rejoindre une tribu T.</p>
+                                                </div>
                                             </div>
                                         </li>
-                                    {% endfor %}
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>

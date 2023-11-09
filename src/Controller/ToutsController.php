@@ -11,8 +11,10 @@ use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 
-use App\Service\Tribu_T_Service;
+use App\Service\MessageService;
 use App\Service\TributGService;
+
+use App\Service\Tribu_T_Service;
 
 use App\Repository\UserRepository;
 
@@ -37,7 +39,6 @@ use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
 
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\AdressIpAndPositionRepository;
@@ -80,48 +81,17 @@ class ToutsController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
+        MessageService $messageService
     ): Response
     {
+        
         ///current user connected
         $user = $this->getUser();
         $userConnected = $status->userProfilService($this->getUser());
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
-
-        $amis_in_tributG = [];
-
-        if($user && $user->getType()!="Type"){
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
-
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-            ///to contains profil user information
-            
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                
-                if( $user_amis ){
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                    ///single profil
-                    $amis = [
-                        "id" => $id_amis["user_id"],
-                        "photo" => $profil_amis->getPhotoProfil(),
-                        "email" => $user_amis->getEmail(),
-                        "firstname" => $profil_amis->getFirstname(),
-                        "lastname" => $profil_amis->getLastname(),
-                        "image_profil" => $profil_amis->getPhotoProfil(),
-                        "is_online" => $user_amis->getIsConnected(),
-                    ];
-    
-                    ///get it
-                    array_push($amis_in_tributG, $amis);
-                }
-            }
-        }
-
-        // dd($statusProfile["profil"]);
+        
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
 
         return $this->render("home/index.html.twig", [
 
@@ -134,6 +104,7 @@ class ToutsController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode(),
             "userConnected" => $userConnected,
+
             "amisTributG" => $amis_in_tributG
         ]);
 

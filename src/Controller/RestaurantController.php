@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Service\Status;
-use App\Entity\AvisRestaurant;
-use App\Entity\BddRestoUserModif;
 use App\Entity\Codinsee;
+use App\Entity\AvisRestaurant;
+use App\Service\MessageService;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
+use App\Entity\BddRestoUserModif;
 use App\Repository\UserRepository;
 use App\Repository\CodeapeRepository;
 use App\Repository\BddRestoRepository;
@@ -15,15 +17,14 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
-use App\Repository\BddRestoUserModifRepository;
-use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Repository\BddRestoUserModifRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Serializer\Encoder\JsonDecode;
 
 class RestaurantController extends AbstractController
 {
@@ -37,7 +38,8 @@ class RestaurantController extends AbstractController
         CodeinseeRepository $code,
         TributGService $tributGService,
         EntityManagerInterface $entityManager,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        MessageService $messageService
     ) {
         $statusProfile = $status->statusFondateur($this->getUser());
         $dataRequest = $departementRepository->getDep();
@@ -46,41 +48,11 @@ class RestaurantController extends AbstractController
         $user = $this->getUser();
 
         //dd($user);
-
-        $amis_in_tributG = [];
-
         $userConnected = $status->userProfilService($this->getUser());
-        if($user && $user->getType()!="Type"){
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
 
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
-            ///to contains profil user information
-            
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-               
-                if( $user_amis ){
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                    ///single profil
-                    $amis = [
-                        "id" => $id_amis["user_id"],
-                        "photo" => $profil_amis->getPhotoProfil(),
-                        "email" => $user_amis->getEmail(),
-                        "firstname" => $profil_amis->getFirstname(),
-                        "lastname" => $profil_amis->getLastname(),
-                        "image_profil" => $profil_amis->getPhotoProfil(),
-                        "is_online" => $user_amis->getIsConnected(),
-                    ];
-    
-                    ///get it
-                    array_push($amis_in_tributG, $amis);
-                }
-            }
-        }
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
 
         
         return $this->render("restaurant/index.html.twig", [
@@ -335,6 +307,7 @@ class RestaurantController extends AbstractController
         EntityManagerInterface $entityManager,
         AvisRestaurantRepository $avisRestaurantRepository,
         Tribu_T_Service $tribu_T_Service,
+        MessageService $messageService,
     ) {
 
         $dataRequest = $request->query->all();
@@ -385,38 +358,9 @@ class RestaurantController extends AbstractController
 
         $statusProfile = $status->statusFondateur($user);
 
-        $amis_in_tributG = [];
-
-        if($user && $user->getType()!="Type"){
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
-
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
-            ///to contains profil user information
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-               
-                if( $user_amis ){
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                    ///single profil
-                    $amis = [
-                        "id" => $id_amis["user_id"],
-                        "photo" => $profil_amis->getPhotoProfil(),
-                        "email" => $user_amis->getEmail(),
-                        "firstname" => $profil_amis->getFirstname(),
-                        "lastname" => $profil_amis->getLastname(),
-                        "image_profil" => $profil_amis->getPhotoProfil(),
-                        "is_online" => $user_amis->getIsConnected(),
-                    ];
-    
-                    ///get it
-                    array_push($amis_in_tributG, $amis);
-                }
-            }
-        }
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
 
         // dd($datas);
 
@@ -675,6 +619,7 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         AvisRestaurantRepository $avisRestaurantRepository,
+        MessageService $messageService
     ) {
 
         $userConnected = $status->userProfilService($this->getUser());
@@ -720,38 +665,10 @@ class RestaurantController extends AbstractController
 
         $statusProfile = $status->statusFondateur($user);
 
-        $amis_in_tributG = [];
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
 
-        if ($user) {
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
-
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
-            ///to contains profil user information
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-
-                if ($user_amis) {
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                    ///single profil
-                    $amis = [
-                        "id" => $id_amis["user_id"],
-                        "photo" => $profil_amis->getPhotoProfil(),
-                        "email" => $user_amis->getEmail(),
-                        "firstname" => $profil_amis->getFirstname(),
-                        "lastname" => $profil_amis->getLastname(),
-                        "image_profil" => $profil_amis->getPhotoProfil(),
-                        "is_online" => $user_amis->getIsConnected(),
-                    ];
-
-                    ///get it
-                    array_push($amis_in_tributG, $amis);
-                }
-            }
-        }
 
         $arrayTribu = [];
         $arrayTribuRestoPast = [];
@@ -821,7 +738,7 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
-
+        MessageService $messageService
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -840,36 +757,9 @@ class RestaurantController extends AbstractController
         // return $this->redirectToRoute("restaurant_all_dep");
         $statusProfile = $status->statusFondateur($user);
 
-        $amis_in_tributG = [];
-
-        if($user && $user->getType()!="Type"){
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
-
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
-            ///to contains profil user information
-            
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
-
-                ///get it
-                array_push($amis_in_tributG, $amis);
-            }
-        }
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
  
 
         return $this->render("restaurant/restaurant_arrondisment.html.twig", [
@@ -924,6 +814,7 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         AvisRestaurantRepository $avisRestaurantRepository,
+        MessageService $messageService
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -972,37 +863,9 @@ class RestaurantController extends AbstractController
         ///current user connected
         $user = $this->getUser();
 
-        $amis_in_tributG = [];
-
-        if($user && $user->getType()!="Type"){
-            // ////profil user connected
-            $profil = $tributGService->getProfil($user, $entityManager);
-
-            $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
-
-            ///to contains profil user information
-            
-            foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
-
-                ///check their type consumer of supplier
-                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                ///single profil
-                $amis = [
-                    "id" => $id_amis["user_id"],
-                    "photo" => $profil_amis->getPhotoProfil(),
-                    "email" => $user_amis->getEmail(),
-                    "firstname" => $profil_amis->getFirstname(),
-                    "lastname" => $profil_amis->getLastname(),
-                    "image_profil" => $profil_amis->getPhotoProfil(),
-                    "is_online" => $user_amis->getIsConnected(),
-                ];
-
-                ///get it
-                array_push($amis_in_tributG, $amis);
-            }
-        }
- 
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
 
 
         return $this->render("restaurant/specific_departement.html.twig", [
