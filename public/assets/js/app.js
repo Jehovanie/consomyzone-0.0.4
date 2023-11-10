@@ -2187,5 +2187,23 @@ if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
     })
 }
 
-if(document.querySelector(".ref_tom_js"))
-    detectInactivity();
+
+if (document.querySelector(".ref_tom_js")) {
+    sendHeartBeat();
+    let idle = relaeseIdle();
+    // console.log(JSON.parse(relaeseIdle()))
+    // let values=0
+    // Promise.all([idle]).then(value => {
+    //     values = value[0].idle
+    //     console.log(values)
+    //     detectInactivity(values);
+    // })
+    
+    
+}
+    
+
+if (document.querySelector("#change_idle_param_tom_js"))
+    document.querySelector("#change_idle_param_tom_js").addEventListener("change", (event) => {
+        updateLocation(event);
+})

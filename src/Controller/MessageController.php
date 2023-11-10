@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
+use App\Entity\User;
 use App\Service\JWTService;
 use App\Service\JWTService1;
 use App\Service\AgendaService;
@@ -15,6 +16,7 @@ use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +28,343 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class MessageController extends AbstractController
 {
 
+    #[Route('/user/get/fan/online', name:"app_user_get_online")]
+    public function getFanOnline(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+    ){
+
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        ////status user connected --- status on navBar -------------
+        $userConnected = $status->userProfilService($this->getUser());
+        // dd($userConnected);
+
+        ///current user connected
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        // ////profil user connected
+        $profil = $tributGService->getProfil($user, $entityManager);
+
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+
+        ///get all id the user in the same tribut G for me
+        $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
+
+
+        ///to contains profil user information
+        $amis_in_tributG = [];
+        foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+            if (intval($id_amis["user_id"]) !== intval($userId)) {
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                if( $user_amis && boolval($isActive)){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
+                        //"is_online" => $isActive
+                    ];
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+        ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
+
+        $all_tribuT_user = [];
+        $all_tribuT = $userRepository->getListTableTribuT();
+        foreach ($all_tribuT as $tribuT) {
+            $tribuT['amis'] = [];
+            $results = $tributTService->getAllPartisanProfil($tribuT['table_name']);
+            foreach ($results as $result) {
+                if (intval($result["user_id"]) !== intval($userId)) {
+                    $user_amis = $userRepository->find(intval($result["user_id"]));
+                    $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                    if( $user_amis && boolval($isActive)){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
+                            //"is_online" => $isActive,
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'], $amis);
+                    }
+                }
+            }
+            array_push($all_tribuT_user, $tribuT);
+        }
+        //// CHECKS USER TO CHAT //////////////////////////////////
+
+        ///if the is id user from the url 
+        if ($request->query->get("user_id")) { /// "1" ...
+            $id_user_to_chat = intval($request->query->get("user_id")); /// 1 ...
+
+        } else { /// the user not specified id user  in the url, just to chat box
+
+            if (count($id_amis_tributG) !== 1) {
+                ////get random user in the tributG
+                $id_user_to_chat = 0; /// random id user
+                while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i = 0;
+                    foreach ($id_amis_tributG as $id_amis) {
+                        if ($i === $temp) {
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
+                    }
+                }
+            } else {
+                $id_user_to_chat = $user->getId();
+            }
+        }
+        // $id_user_to_chat= 20;
+
+
+        ///user to chat
+        $user_to = $userRepository->find($id_user_to_chat);
+        $user_to = $user_to === null ? $user : $user_to;
+        //// set show and read all last messages.
+
+        ///befor set show and read all last messages
+        $result = $messageService->setShowAndReadMessages($user_to->getId(), $user->getTablemessage());
+
+        ///get the all last messages
+        $old_message = $messageService->getAllOldMessage(
+            $user_to->getId(),
+            $user->getTableMessage()
+        );
+
+        foreach ($old_message as &$message) {
+            $message["content"] = json_decode($message["content"], true);
+        }
+
+        ///profile the user to chat
+        $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+
+        $user_to_profil = [
+            "id" => $user_to->getId(),
+            "email" => $user_to->getEmail(),
+            "photo_profile" => $profil_user_to->getPhotoProfil(),
+            "firstname" => $profil_user_to->getFirstname(),
+            "lastname" => $profil_user_to->getLastname(),
+            "image_profil" => $profil_user_to->getPhotoProfil(),
+            "messages" => $old_message,
+            "status" => strtoupper($user_to->getType())
+        ];
+
+        // return $this->render('user/message/liste_amis_connected.html.twig', [
+        //     "userConnected" => $userConnected,
+        //     "profil" => $profil,
+        //     "statusTribut" => $tributGService->getStatusAndIfValid(
+        //         $profil[0]->getTributg(),
+        //         $profil[0]->getIsVerifiedTributGAdmin(),
+        //         $userId
+        //     ),
+        //     "userToProfil" => $user_to_profil,
+        //     "amisTributG" => $amis_in_tributG,
+        //     "allTribuT" => $all_tribuT_user,
+        //     //"isInTribut" => $request->query->get("tribuT") ? true : false
+        // ]);
+        $response=array(0=>$all_tribuT_user,1=> $amis_in_tributG) ;
+        return $this->json($response);
+    }
+    #[Route('/user/all/message', name: 'app_all_message')]
+    public function allAmis(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+    ): Response {
+        
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        ////status user connected --- status on navBar -------------
+        $userConnected= $status->userProfilService($this->getUser());
+        // dd($userConnected);
+
+        ///current user connected
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        // ////profil user connected
+        $profil = $tributGService->getProfil($user, $entityManager);
+
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+
+        ///get all id the user in the same tribut G for me
+        $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
+
+
+        ///to contains profil user information
+        $amis_in_tributG = [];
+        foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+            if( intval($id_amis["user_id"]) !== intval($userId) ){
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $isActive=intval(($userService->getLastActivity( $id_amis["user_id"]))["@status"]);
+                //if( $user_amis && $user_amis->getIsConnected()){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
+                        "is_online" => $isActive
+                    ];
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                //}
+            }
+
+        }
+        ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
+        
+        $all_tribuT_user= [];
+        $all_tribuT= $userRepository->getListTableTribuT();
+        foreach($all_tribuT as $tribuT){
+            $tribuT['amis'] = [];
+            $results=$tributTService->getAllPartisanProfil($tribuT['table_name']);
+            foreach($results as $result){
+                if( intval($result["user_id"]) !== intval($userId) ){
+                    $user_amis = $userRepository->find(intval($result["user_id"]));
+                    $isActive=intval(($userService->getLastActivity( $id_amis["user_id"]))["@status"]);
+                    //if( $user_amis && $user_amis->getIsConnected()){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(),$result["user_id"]),
+                            "is_online" => $isActive,
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'] , $amis);
+                    //}
+                }
+            }
+            array_push($all_tribuT_user, $tribuT);
+        }
+        //// CHECKS USER TO CHAT //////////////////////////////////
+
+        ///if the is id user from the url 
+        if ($request->query->get("user_id")) { /// "1" ...
+            $id_user_to_chat = intval($request->query->get("user_id")); /// 1 ...
+
+        } else { /// the user not specified id user  in the url, just to chat box
+
+            if( count($id_amis_tributG) !== 1 ){
+                ////get random user in the tributG
+                $id_user_to_chat = 0; /// random id user
+                while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i = 0;
+                    foreach ($id_amis_tributG as $id_amis) {
+                        if ($i === $temp) {
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
+                    }
+                }
+            }else{
+                $id_user_to_chat = $user->getId();
+            }
+        }
+        // $id_user_to_chat= 20;
+
+
+        ///user to chat
+        $user_to = $userRepository->find($id_user_to_chat);
+        $user_to= $user_to === null ? $user : $user_to;
+        //// set show and read all last messages.
+
+        ///befor set show and read all last messages
+        $result = $messageService->setShowAndReadMessages($user_to->getId(), $user->getTablemessage());
+
+        ///get the all last messages
+        $old_message = $messageService->getAllOldMessage(
+            $user_to->getId(),
+            $user->getTableMessage()
+        );
+
+        foreach ($old_message as &$message) {
+            $message["content"] = json_decode($message["content"], true);
+        }
+
+        ///profile the user to chat
+        $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+
+        $user_to_profil = [
+            "id" => $user_to->getId(),
+            "email" => $user_to->getEmail(),
+            "photo_profile" => $profil_user_to->getPhotoProfil(),
+            "firstname" => $profil_user_to->getFirstname(),
+            "lastname" => $profil_user_to->getLastname(),
+            "image_profil" => $profil_user_to->getPhotoProfil(),
+            "messages" => $old_message,
+            "status" => strtoupper($user_to->getType())
+        ];
+
+        return $this->render('user/message/liste_amis.html.twig', [
+            "userConnected" => $userConnected,
+            "profil" => $profil,
+            "statusTribut" => $tributGService->getStatusAndIfValid(
+                $profil[0]->getTributg(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
+                $userId
+            ),
+            "userToProfil" => $user_to_profil,
+            "amisTributG" => $amis_in_tributG,
+            "allTribuT" => $all_tribuT_user,
+            "isInTribut" => $request->query->get("tribuT") ? true : false
+        ]);
+    }
     #[Route('/user/message', name: 'app_message')]
     public function amis(
         Request $request,
@@ -206,6 +545,7 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
+        UserService $userService
     ): Response {
 
         ///check the user connected
@@ -237,8 +577,8 @@ class MessageController extends AbstractController
             if (intval($id_amis["user_id"]) !== intval($userId)) {
                 ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
-
-                if ($user_amis && $user_amis->getIsConnected()) {
+                $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                // if ($user_amis && $user_amis->getIsConnected()) {
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -249,11 +589,11 @@ class MessageController extends AbstractController
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
-                        "is_online" => $user_amis->getIsConnected(),
+                        "is_online" => $isActive
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
-                }
+                // }
             }
         }
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
@@ -266,8 +606,8 @@ class MessageController extends AbstractController
             foreach ($results as $result) {
                 if (intval($result["user_id"]) !== intval($userId)) {
                     $user_amis = $userRepository->find(intval($result["user_id"]));
-
-                    if ($user_amis && $user_amis->getIsConnected()) {
+                    $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                    // if ($user_amis && $user_amis->getIsConnected()) {
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "id" => $result["user_id"],
@@ -277,11 +617,11 @@ class MessageController extends AbstractController
                             "lastname" => $profil_amis->getLastname(),
                             "image_profil" => $profil_amis->getPhotoProfil(),
                             "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
-                            "is_online" => $user_amis->getIsConnected(),
+                            "is_online" => $isActive
                         ];
                         ///get it
                         array_push($tribuT['amis'], $amis);
-                    }
+                    // }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -783,5 +1123,7 @@ $agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $em
         ]);
        
     }
+
+   
 
 }

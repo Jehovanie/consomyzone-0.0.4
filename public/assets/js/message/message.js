@@ -1,5 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const myParam = urlParams.get('tribuT');
+let lookupFanDebounce = setTimeout(() => { },1000)
 if (myParam) {
     console.log(myParam);
     if (document.querySelector(`.${myParam}_jheo_js`)) {
@@ -466,7 +467,7 @@ window.addEventListener("load", (event) => {
     if (params.has("user_id")) {
         user_id = params.get("user_id");
     } else {
-        user_id = document.querySelector(".content_entete_msg_jheo_js").getAttribute("data-toggle-id-user-to")
+        user_id = document.querySelector(".content_entete_msg_jheo_js")?.getAttribute("data-toggle-id-user-to")
     }
 
     if( document.querySelectorAll("div.content-message-nanta-css") ){
@@ -534,4 +535,123 @@ function hideEmojyPicker(){
     if( !contentEmojyPicker.classList.contains('d-none') ){
         contentEmojyPicker.classList.add('d-none')
     }
+}
+
+/**
+ *@author tommy
+ *cette fonction affiche la liste des users actifs
+ *localisation message.js
+ */
+function fan(){
+    fetch("/user/get/fan/online").then(r => {
+        if (r.status === 200 && r.ok) {
+            r.json().then(datas => {
+                if (document.querySelector(".only"))
+                    document.querySelector(".only").textContent = ""
+                const ul = document.querySelector(".fan_actif_tom_js")
+                ul.innerHTML=``
+                let i = 0;
+                let length = {
+                    tribuT: 1,
+                    tribug:1
+                }
+                for (let data of datas) {
+                    if (i === 0) {
+                        length.tribuT = data.length 
+                    } else {
+                        length.tribug = data.length
+                    }
+                    for (let value of data) {
+                         
+                        let li = document.createElement("li")
+                        const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                        const link = "/user/message/perso?user_id="+ value.id;
+                        const fullName = value.firstname + " " + value.lastname
+                        li.innerHTML = `
+                            <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                <div class="h mb sc yd of th">
+                                    <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                                    <span class="g l m jc wc ce th pi ij xj"></span>
+                                </div>
+
+                               
+                                <a href="${link}" class="yd">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <h5 class="mn un zn gs">
+                                                ${fullName}
+                                            </h5>
+
+                                        </div>
+                                        <div class="col-4">
+                                            <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                        </div>
+                                    </div>
+
+
+
+                                </a>
+                            </div>
+                        `
+                        ul.appendChild(li)
+                    }
+                    i++;
+                }
+                if (length.tribuT === 0 && length.tribug === 0) {
+                    if (document.querySelector(".only"))
+                        document.querySelector(".only").textContent = ""
+                    ul.parentElement.innerHTML += "<span class=\"only\">Aucun fan n'est actif.</span>"
+                }
+                    
+            })
+        } 
+        
+    })
+}
+
+/** 
+*
+*
+*/
+function lookupFan(event) {
+    const target = event.target
+    if (target != null && target instanceof HTMLElement) {
+        let word = target.value
+        if (word.length > 2)  {
+            lookupFanDebounce = setTimeout(() => {
+                fetch(`/user/look/${word}`, { method: 'GET' })
+                    .then(r => {
+                        if (r.status === 200 && r.ok) {
+                            const lookContainer = document.querySelector(".lookup_fan_result_tom_js")
+                            lookContainer.innerHTML = ""
+                            r.json().then(jsons => {
+                                if (jsons.length > 0) {
+                                    for (let json of jsons) {
+                                        const link = "/user/message/perso?user_id=" + json.user_id;
+                                        const fullname = json.firstname + " " + json.lastname
+                                        const anchorElement = document.createElement('a')
+                                        anchorElement.href = link;
+                                        anchorElement.innerHTML = `<span class="fan_name fan_name_tom_js">${fullname}</span>`
+                                        lookContainer.appendChild(anchorElement);
+
+                                    }
+                                    lookContainer.classList.remove('d-none')
+                                } else {
+
+                                }
+
+                            })
+                        } else {
+
+                        }
+                    })
+
+            }, 3000)
+        } else if(word.length === 0) {
+            const lookContainer = document.querySelector(".lookup_fan_result_tom_js")
+            lookContainer.classList.add('d-none')
+        }
+        
+    }
+    
 }

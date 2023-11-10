@@ -2629,4 +2629,66 @@ class UserController extends AbstractController
         $response = $serializer->serialize($userService->generatePseudo($pseudo), 'json');
         return new JsonResponse($response, Response::HTTP_OK, [], true);
     }
+
+    #[Route("/user/heartBeat", name:"app_heartbeat", methods: ["GET"])]
+    public function heartBeat(
+        UserService $userService,
+        SerializerInterface $serializerInterface
+    ){
+        $user=$this->getUser();
+        $response=$userService->setActivity($user->getId());
+        
+        $json = $serializerInterface->serialize($response, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route("/user/inactive", name:"app_inactive", methods: ["GET"])]
+    public function getUserInactive(){
+
+    }
+
+    #[Route("/user/active", name:"app_active", methods: ["GET"])]
+    public function getUserActivr(){
+
+    }
+
+    #[Route('/user/up/idle/{idle}', name: "user_idle", methods: ["GET"])]
+    public function userUpIdle(
+        $idle,
+        UserService $userService
+    ) {
+        $user = $this->getUser();
+        $userID = $user->getId();
+
+        $userService->updateUserIDLE($userID, $idle);
+
+        return $this->json([
+            "success" => true
+        ]);
+    }
+
+    #[Route('/user/idle', name: "user_get_idle", methods: ["GET"])]
+    public function getIdle(){
+       
+        $user = $this->getUser();
+        $userIdle = $user->getIdle();
+
+      
+        return $this->json([
+            "idle" =>$userIdle
+        ]);
+    }
+
+    #[Route('/user/look/{word}', name:"user_look", methods:["GET"])]
+    public function user_look(
+        $word,
+        UserService $userService
+    ){
+
+        $user = $this->getUser();
+        $userIdle = $user->getId();
+        $response = $userService->lookForOtherFan($word, $userIdle);
+
+        return $this->json($response);
+    }
 }

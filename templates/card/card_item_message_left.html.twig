@@ -6,6 +6,8 @@
         {# //// state blue if in contact  #}
         {% if is_online == 1 %}
             <span class="g l m jc wc ce th pi ij xj"></span>
+         {% else %}
+            <span class="g l m jc wc ce th pi ij" style="background-color:gray"></span>
         {% endif %}
 
     </div>
@@ -13,7 +15,7 @@
     {% set linkParam = tribuT is defined ?  { 'user_id' : id, 'tribuT' : tribuT } : { 'user_id' : id } %}
     <a href="{{path('app_message_perso', linkParam )}}" class="yd">
         <div class="row">
-            <div class="col-10">
+            <div class="col-8">
                 <h5 class="mn un zn gs">
                     {{firstname ~ " " ~ lastname }}
                 </h5>
@@ -25,10 +27,10 @@
                         <p class="mn text_message_jheo_js">(object)</p>
                     {% endif %}
                 {% else %}
-                    <p class="text_message_jheo_js">Nouvelle discussion</p>
+                    <p class="text_message_jheo_js">Vous n'avez pas encore de discussion</p>
                 {% endif %}
             </div>
-            <div class="col-2">
+            <div class="col-4">
                 <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
             </div>
         </div>

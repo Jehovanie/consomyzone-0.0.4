@@ -40,9 +40,11 @@
 		<!-- ===== Main Content Start ===== -->
 		<main class="gv om hv wd account-message-conected">
             <div class="container-bar-recherche-message">
-                <input type="text" class="search_input_message" placeholder="Recherche...">
+                <input type="text" class="search_input_message" id="fan_look_tom_js" placeholder="Recherche des fan dans consomyzone" oninput="lookupFan(event)">
             </div>
-
+            <div class="lookup_fan_result lookup_fan_result_tom_js d-none">
+               
+            </div>
             <div class="responsif-none sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message">
                     <!-- ====== Chat List Start -->
                     <div class="vc xk">
@@ -51,63 +53,59 @@
                         <div class="vd mh ip ch ib user_profile_list_elie">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item" data-type="liste-message" onclick="toggleAmisMessage(this)">
-                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? '' : 'active' }}" data-selector-list="content_list_message_tomm_js">Message</a>
+                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? '' : 'active' }}" data-selector-list="content_list_message_tomm_js">Vos Messages.</a>
                                 </li>
-                                <li class="nav-item" data-type="fanne-connecte"  onclick="toggleAmisMessage(this)">
-                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_enligne_tomm_js" href="#">Fanne en ligne</a>
+                                <li class="nav-item" data-type="fanne-connecte"  onclick="toggleAmisMessage(this); fan()">
+                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_enligne_tomm_js" href="#">Fan en ligne</a>
                                 </li>
                             </ul>
 
                             <div class="content_list_message_tomm_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
                                 {% if amisTributG|length > 0 %}
                                     <!-- Chat List Item -->
+                                    {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
                                     {% for item in amisTributG %}
-                                        {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                        {% if item.last_message == false %}
+                                            
+                                        {% else %}
+                                            {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                            {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                        {% endif %}
                                     {% endfor %}
+                                    
+                                    {% for jtem in allTribuT %}
+                                        {% if jtem.amis|length > 0 %}
+                                                        <!-- Chat List Item -->
+                                            {% for ktem in jtem.amis %}
+                                                {% if item.last_message == false %}
+                                                
+                                                {% else %}
+                                                    {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                                    {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <!-- end List Chat -->
+                                        {% endif %}    
+                                          
+                                    {% endfor %}
+                                    {% if isZeroMessage.noMessage is same as('oui') and isZeroMessage.haveMessage is same as('non') %}
+                                         <div>Vous n'avez aucun message. Rechercher d'autres fan en ligne est envoyés leur des messages. </div>
+                                    {% endif %}
+
                                     <!-- end List Chat -->
                                 {% else %}
                                     <div class="cg lc mg sh ol rl tq is">
                                         <div class="bg-light bg-gradient p-3">
-                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
+                                            <p class="text-center text-danger">Actuellement, vous êtes le seul fan dans votre tribu G, invité vos amis à rejoindre Consomyzone.</p>
                                         </div>
                                     </div>
                                 {% endif %}
+                                
                             </div>
 
-                            <div class="content_list_enligne_tomm_js  {{ isInTribut is same as(true) ? '' : 'd-none' }}">
-                                <ul class="list-group list-group-flush">
-                                    {% for jtem in allTribuT %}
-                                        <li class="list-group-item">
-                                            <div class="text-primary d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    {{jtem.name_tribu_t_muable}}
-                                                </div>
-                                                <div>
-                                                    {% if jtem.amis|length > 0 %}
-                                                        <span class="badge bg-info text-dark">{{jtem.amis|length}} en ligne.</span>
-                                                    {% endif %}
-                                                    <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
-                                                </div>
-                                            </div>
-                                            <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
-                                                <ul class="list-group">
-                                                    {% if jtem.amis|length > 0 %}
-                                                        <!-- Chat List Item -->
-                                                        {% for ktem in jtem.amis %}
-                                                            {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
-                                                        {% endfor %}
-                                                        <!-- end List Chat -->
-                                                    {% else %}
-                                                        <div class="cg lc mg sh ol rl tq is">
-                                                            <div class="bg-light bg-gradient p-3">
-                                                                <p class="text-center text-danger">Actuellement, vous êtes le seul partisan en ligne dans votre tribu T.</p>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    {% endfor %}
+                            <div class="content_list_enligne_tomm_js">
+                                <ul class="list-group list-group-flush fan_actif_tom_js">
+                                    
                                 </ul>
                             </div>
                         </div>

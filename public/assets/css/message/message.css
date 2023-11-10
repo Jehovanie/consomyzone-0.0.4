@@ -802,7 +802,7 @@ div.img_slide_left {
 }
 
 .list-amie-message-perso{
-  width: 40%;
+  width: 45%;
 }
 
 input:focus {
@@ -857,6 +857,33 @@ input:focus {
   background-color: #fff;
 }
 
+.text_message_jheo_js{
+  font-size: 10pt;
+}
+
 .heure_message{
   color: rgb(134, 139, 143);
+  font-size: 10pt;
+}
+
+.fan_name {
+  display: block;
+  width: 100%;
+  height: 30px;
+}
+
+.fan_name:hover{
+  background-color: #d8d8d8;
+}
+
+.lookup_fan_result{
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 5px 3px 15px rgba(156, 156, 156, 0.5);
+  width: 57%;
+  position: absolute;
+  margin-top: 5px;
+  right: 20%;
+  padding: 17px;
+  z-index: 1;
 }
