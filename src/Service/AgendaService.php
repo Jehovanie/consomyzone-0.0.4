@@ -358,7 +358,8 @@ class AgendaService extends PDOConnexionService
             description, 
             isEtabCMZ, 
             isGolfCMZ, 
-            isRestoCMZ, 
+            isRestoCMZ,
+            isVisioCMZ, 
             type, 
             status, 
             adresse, 
@@ -377,7 +378,8 @@ class AgendaService extends PDOConnexionService
                 :description, 
                 :isEtabCMZ, 
                 :isGolfCMZ, 
-                :isRestoCMZ, 
+                :isRestoCMZ,
+                :isVisioCMZ,
                 :type, 
                 :status, 
                 :adresse, 
@@ -403,6 +405,7 @@ class AgendaService extends PDOConnexionService
         $statement->bindParam(':isEtabCMZ', $isEtabCMZ);
         $statement->bindParam(':isGolfCMZ', $isGolfCMZ);
         $statement->bindParam(':isRestoCMZ', $isRestoCMZ);
+        $statement->bindParam(':isVisioCMZ', $isVisioCMZ);
         $statement->bindParam(':type', $type);
         $statement->bindParam(':status', $status);
         $statement->bindParam(':adresse', $adresse);
@@ -621,11 +624,13 @@ class AgendaService extends PDOConnexionService
             "`place_libre` int NOT NULL DEFAULT 0,".
             "`isEtabCMZ` tinyint(1) DEFAULT 0,".
             "`isGolfCMZ` tinyint(1) DEFAULT 0,".
-            "`isRestoCMZ` tinyint(1) DEFAULT 0,".
+            "`isRestoCMZ` tinyint(1) DEFAULT 0," .
+            "`isVisioCMZ` tinyint(1) DEFAULT 0," .
             "`user_id` int(11) DEFAULT NULL".
             " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
+        
     }
 
 

@@ -155,10 +155,17 @@
 								</div>
 								<div class="row">
 									<div class="input-field">
+										<div class="response-pseudo-js-tom" style="display: none">
+									   		<span id="pseudo-verif-response-js-tom"></span>
+										</div>
 										{{ form_label(form_inscription.pseudo , "Pseudo", {'label_attr': {'class': 'form_label fw-bolder text-white'}}) }}
 										{{ form_widget(form_inscription.pseudo, {'attr': {'class': 'validate text-color-blanc '}}) }}
 										{# {{ form_widget(form_inscription.pseudo, {'attr': {'class': 'validate text-color-blanc'}}) }} #}
 									</div>
+									<label for="pseudo" class="form_label fw-bolder text-white" id="pseudo_choise_label_js_tom" style="display:none">Voici  un pseudo encore libre</label>
+									<select name="pseudo" id="pseudo_choise_js_tom" class="form-control w-50 ms-2" style="display:none">
+									  <option value=""></option>
+									</select>
 								</div>
 								<div class="row">
 									<div class="input-field">
@@ -193,7 +200,7 @@
 									</div>
 								</div>
 								<div class="row center-align">
-									<button class="btn waves-effect waves-light inscription cta_inscription" type="submit">
+									<button class="btn waves-effect waves-light inscription cta_inscription" id="inscriptionCTA_tom_js" type="submit" disabled>
 										Inscription
 									</button>
 								</div>

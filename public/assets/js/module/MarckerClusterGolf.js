@@ -96,7 +96,7 @@ class MarckerClusterGolf extends MapModule {
             let pathIcon="";
             let taille= 0 /// 0: min, 1: moyenne, 2 : grand
 
-            if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null ){
+            if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null && item.user_status.refaire === null ){
                 pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
             }else{
                 if( !!item.user_status.a_faire === true ){
@@ -105,6 +105,8 @@ class MarckerClusterGolf extends MapModule {
                     pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png"
                 }else if( !!item.user_status.mon_golf === true ){
                     pathIcon= "/assets/icon/NewIcons/mon_golf.png"
+                } else if( !!item.user_status.refaire === true ){
+                    pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-refaire.png"
                 }else{
                     pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
                 }
@@ -125,15 +127,17 @@ class MarckerClusterGolf extends MapModule {
 
 
                 let pathIcon="";
-                if( golfUpdate.user_status.a_faire === null &&  golfUpdate.user_status.fait === null && golfUpdate.user_status.mon_golf === null ){
+                if( golfUpdate.user_status.a_faire === null &&  golfUpdate.user_status.fait === null && golfUpdate.user_status.mon_golf === null &&  golfUpdate.user_status.refaire === null){
                     pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
                 }else{
                     if( !!golfUpdate.user_status.a_faire === true){
                         pathIcon= "/assets/icon/NewIcons/icon-vert-golf-orange.png";
                     }else if( !!golfUpdate.user_status.fait === true ){
                         pathIcon= "/assets/icon/NewIcons/icon-vert-golf-bleu.png"
-                    }else if( !!golfUpdate.user_status.mon_golf === true ){
-                        pathIcon= "/assets/icon/NewIcons/mon_golf_select.png"
+                    } else if (!!golfUpdate.user_status.mon_golf === true) {
+                        pathIcon = "/assets/icon/NewIcons/mon_golf_select.png"
+                    } else if( !!item.user_status.refaire === true ){
+                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-refaire.png"
                     }else{
                         pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
                     }
@@ -286,7 +290,7 @@ class MarckerClusterGolf extends MapModule {
     }
 
     updateStateGolf(status, id){
-        let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false }
+        let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false,"refaire":false }
         
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) ) {
@@ -298,8 +302,11 @@ class MarckerClusterGolf extends MapModule {
                 }else if( status === "afaire"){
                     pathIcon='/assets/icon/NewIcons/icon-vert-golf-orange.png';
                     user_status= { ...user_status , "a_faire" : true }
-                }else if( status === "mon_golf"){
-                    pathIcon='/assets/icon/NewIcons/mon_golf_select.png';
+                }else if( status === "refaire"){
+                    pathIcon='/assets/icon/NewIcons/icon-vert-golf-orange.png';
+                    user_status= { ...user_status , "refaire" : true }
+                }else if (status === "mon_golf") {
+                    pathIcon='/assets/icon/NewIcons/icon-blanc-golf-refaire.png';
                     user_status= { ...user_status , "mon_golf" : true }
                 }else{ /// aucun 
                     pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';

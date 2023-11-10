@@ -272,9 +272,14 @@ function bindEventForAllDay(info) {
 
     document.querySelector(".eventStart_jheo_js").value = info.dateStr;
     document.querySelector(".eventEnd_jheo_js").value = info.dateStr;
-
-    document.querySelector(".timeStart_jheo_js").value = '00:00';
-    document.querySelector(".timeEnd_jheo_js").value = '23:00';
+    let heure = today.getHours();
+    let minutes = today.getMinutes();
+    heure = (heure < 10) ? "0" + heure : heure;
+    minutes = (minutes < 10) ? "0" + minutes : minutes;
+    let heureEnTempsReel = heure + ":" + minutes;
+    document.querySelector(".timeStart_tomm_js").value = heureEnTempsReel;
+    // document.querySelector(".timeStart_jheo_js").value = '00:00';
+    document.querySelector(".timeEnd_jheo_js").value = heureEnTempsReel;
 
     ///show modal
     //document.querySelector('.show_modal_createAgenda_jheo_js').click()
@@ -288,6 +293,9 @@ function bindEventForAllDay(info) {
     document.querySelector(".preview_image_nanta_js").classList.add("d-none")
     document.querySelector("#image-preview").src = ""
     document.querySelector(".btnAddPhoto_nanta_js").classList.remove("d-none")
+
+    document.querySelector("#containerNomEtab").style.display = "block"
+    document.querySelector("#containerAdresseEtab").style.display = "block"
 
 }
 
@@ -315,7 +323,7 @@ function bindEventForAnEvent(id) {
 }
 
 function setAndShowModal(agenda) {
-    console.log(agenda);
+   
     $("#createAgenda").modal("show")
     $("#createOrEditBtn").text("Modifier")
     $("#modalCreateAgendaTitles").text("Modifier l'événement")
@@ -325,6 +333,9 @@ function setAndShowModal(agenda) {
     document.querySelector("#eventTitle").value = agenda.title
     document.querySelector("#typeEvent").value = agenda.type
     document.querySelector("#eventDesc").value = agenda.description
+    document.querySelector("#containerNomEtab").style.display = "block"
+    document.querySelector("#containerAdresseEtab").style.display = "block"
+
 
     if (document.querySelector("#deleteAgendaBtn").classList.contains("d-none")) {
         document.querySelector("#deleteAgendaBtn").classList.remove("d-none")
@@ -378,6 +389,11 @@ function setAndShowModal(agenda) {
         } else {
             document.querySelector("#restoRadio").checked = true
         }
+
+    } else if (agenda.isVisioCMZ) {
+        document.querySelector("#visioRadio").checked = true
+        document.querySelector("#containerNomEtab").style.display = "none"
+        document.querySelector("#containerAdresseEtab").style.display = "none"
 
     } else {
 
@@ -1412,6 +1428,7 @@ function saveNewAgenda(agenda) {
         "isEtabCMZ": agenda.isEtabCMZ,
         "isGolfCMZ": agenda.isGolfCMZ,
         "isRestoCMZ": agenda.isRestoCMZ,
+        "isVisioCMZ": agenda.isVisioCMZ,
         "name": agenda.name,
         "adresse": agenda.adresse,
         "description": agenda.description,
@@ -1475,8 +1492,10 @@ function getObjectForNewAgenda(e) {
     let isGolfCMZ = document.querySelector("#golfRadio").checked ? true : false
 
     let isRestoCMZ = document.querySelector("#restoRadio").checked ? true : false
+    
+    let isVisioCMZ = document.querySelector("#visioRadio").checked ? true : false
 
-    if (isGolfCMZ || isRestoCMZ) {
+    if (isGolfCMZ || isRestoCMZ ) {
         isEtabCMZ = true
     }
 
@@ -1499,6 +1518,7 @@ function getObjectForNewAgenda(e) {
         "isEtabCMZ": isEtabCMZ,
         "isGolfCMZ": isGolfCMZ,
         "isRestoCMZ": isRestoCMZ,
+        "isVisioCMZ": isVisioCMZ,
         "name": document.querySelector("#nomEtabEvent").value,
         "adresse": document.querySelector("#lieuEvent").value,
         "description": document.querySelector("#eventDesc").value,
@@ -2135,4 +2155,12 @@ function findEtabByKey(e,isHasDep){
             })
     }
 
+}
+
+
+function seletRdvVisio() {
+    seletOtherEtab(true)
+    document.querySelector("#nomEtabEvent").value = 'Rendez-vous visio';
+
+    document.querySelector("#lieuEvent").value = 'Visio en ligne';
 }

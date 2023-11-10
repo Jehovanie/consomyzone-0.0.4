@@ -142,6 +142,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $statusDemandePartenariat = 0;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="idle", type="integer", nullable=false)
+     */
+    private $idle;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -493,6 +501,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatusDemandePartenariat($statusDemandePartenariat)
     {
         $this->statusDemandePartenariat = $statusDemandePartenariat;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of idle
+     *
+     * @return  bool
+     */ 
+    public function getIdle()
+    {
+        return $this->idle;
+    }
+
+    /**
+     * Set the value of idle
+     *
+     * @param  bool  $idle
+     *
+     * @return  self
+     */ 
+    public function setIdle(bool $idle)
+    {
+        $this->idle = $idle;
 
         return $this;
     }

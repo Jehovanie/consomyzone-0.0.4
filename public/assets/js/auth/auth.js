@@ -43,7 +43,7 @@ if(document.querySelector(".resend_email_js")){
  */
 
 if (document.querySelector("#form_password")) {
-
+    document.querySelector("#inscriptionCTA_tom_js").disabled = true;
     document.querySelector("#form_password").onkeyup = e => {
 
         console.log(e.target.value)
@@ -203,7 +203,8 @@ if (document.querySelector("#form_password")) {
                 `
 
                 document.querySelector("#text-pasword-niveau").innerText="Mot de passe fort"
-
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=false
+                
                 break;
 
             }
@@ -220,7 +221,10 @@ if (document.querySelector("#form_password")) {
 
                 `
 
-                document.querySelector("#text-pasword-niveau").innerText="Mot de passe faible"
+                document.querySelector("#text-pasword-niveau").innerText = "Mot de passe faible." +
+                    "Donner un mot de passe plus fort pour pouvoir vous inscrire."
+                
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=true
 
                 break;
 
@@ -239,6 +243,7 @@ if (document.querySelector("#form_password")) {
                 `
 
                 document.querySelector("#text-pasword-niveau").innerText="Mot de passe moyen"
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=false
 
                 break;
 
@@ -257,7 +262,7 @@ if (document.querySelector("#form_password")) {
                 `
 
                 document.querySelector("#text-pasword-niveau").innerText=""
-
+                 document.querySelector("#inscriptionCTA_tom_js").disabled=true
                  break;
 
             }
@@ -269,3 +274,54 @@ if (document.querySelector("#form_password")) {
     }
 
 }
+
+if (document.querySelector("#form_pseudo")) {
+    let timeout = setTimeout(function () { }, 0);
+    let timeout2=setTimeout(function(){}, 0);
+    document.querySelector("#form_pseudo").addEventListener("input", (e) => { 
+        clearTimeout(timeout);
+         clearTimeout(timeout2);
+        timeout = setTimeout(function () {
+            const curentPseudo = e.target.value;
+            fetch(`/is/pseudo/${curentPseudo}`, { method: "GET" })
+                .then(response => {
+                    if (response.status === 200 && response.ok) {
+                        response.json().then(json => { 
+                            const isPseudoExist=!!json.result
+                            if (isPseudoExist) {
+                                document.querySelector("#pseudo-verif-response-js-tom").innerText = "ce pseudo existe déjà." 
+                                timeout2 = setTimeout(function () {
+                                    document.querySelector("#pseudo-verif-response-js-tom").innerText=""
+                                }, 5000);
+                                document.querySelector("#form_pseudo").style = "border:1px solid red;"
+                                document.querySelector("#pseudo-verif-response-js-tom").parentElement.style="display:block; color:red"
+                                fetch(`/give/pseudo/${curentPseudo}`, { method: "GET" }).then(response2 => { 
+                                    if (response2.status === 200 && response2.ok) { 
+                                        response2.json().then(json2 => { 
+                                            document.querySelector("#pseudo_choise_js_tom>option").value = json2["@pseudos"];
+                                            document.querySelector("#pseudo_choise_js_tom>option").innerText = json2["@pseudos"];
+                                            document.querySelector("#pseudo_choise_js_tom").style = "display:block"
+                                            document.querySelector("#pseudo_choise_label_js_tom").style = "display:block"
+                                            document.querySelector("#pseudo_choise_js_tom").setAttribute("onclick", "setPseudo(event)");
+                                        })        
+                                    }
+
+                                })
+                            } else {
+                                document.querySelector("#pseudo-verif-response-js-tom").innerText = "pseudo verifié." 
+                            }
+                        })
+                    }
+                })
+        }, 3000)
+    })
+}
+
+function setPseudo(event) {
+    let selectElement = event.target;
+    if (selectElement != null && selectElement instanceof HTMLElement) { 
+        let pseudo = selectElement.options[selectElement.selectedIndex].value;
+        document.querySelector("#form_pseudo").value=pseudo;
+    }
+}
+   

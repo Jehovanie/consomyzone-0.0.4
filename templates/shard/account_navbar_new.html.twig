@@ -185,8 +185,10 @@
 			</ul>
 
 			<!-- User Area -->
-			<div class="h" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
-				<a class="nav-bar-conected lc mg vg avatar-account-connected" href="#" @click.prevent="dropdownOpen = ! dropdownOpen">
+			{# <div class="h" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false"> #}
+			<div class="h">
+				{# <a href={{path('user_profil', { user_id: app.user.id })}} class="nav-bar-conected lc mg vg avatar-account-connected" href="#" @click.prevent="dropdownOpen = ! dropdownOpen"> #}
+				<a href={{path('user_profil', { user_id: app.user.id })}} class="nav-bar-conected lc mg vg avatar-account-connected" >
 					<span class="pc tu in">
 						<span class="jc un mn zn gs use-in-agd-nanta_js_css"> {{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }} </span>
 						<span class="jc nn toltip-hover-text" >
@@ -200,17 +202,17 @@
 					</span>
 
 					<span class="th ni vj bj wr uk userProfil">
-						<img src="{{(userConnected.photo_profil) ? '/public'~ userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="Photo profil">
+							<img src="{{(userConnected.photo_profil) ? '/public'~ userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="Photo profil">
 						{# <img src="{{(userConnected.photo_profil) ? userConnected.photo_profil|replace({'/public':''}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="Photo profil"> #}
 					</span>
 
-					<svg :class="dropdownOpen && 'ag'" class="mk fs pc rs hp ep" width="12" height="8" viewbox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+					{# <svg :class="dropdownOpen && 'ag'" class="mk fs pc rs hp ep" width="12" height="8" viewbox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path fill-rule="evenodd" clip-rule="evenodd" d="M0.410765 0.910734C0.736202 0.585297 1.26384 0.585297 1.58928 0.910734L6.00002 5.32148L10.4108 0.910734C10.7362 0.585297 11.2638 0.585297 11.5893 0.910734C11.9147 1.23617 11.9147 1.76381 11.5893 2.08924L6.58928 7.08924C6.26384 7.41468 5.7362 7.41468 5.41077 7.08924L0.410765 2.08924C0.0853277 1.76381 0.0853277 1.23617 0.410765 0.910734Z" fill=""/>
-					</svg>
+					</svg> #}
 				</a>
 
 				<!-- Dropdown Start -->
-				<div x-show="dropdownOpen" class="a ye m yb" style="display: none">
+				{# <div x-show="dropdownOpen" class="a ye m yb" style="display: none">
 					<ul class="lc hg ug vi bj wr ql wl">
 						<li>
 							<a href={{path('user_profil', { user_id: app.user.id })}} class="un mn qv lc mg ah gp dp zq">
@@ -229,10 +231,15 @@
 						</svg>
 						Déconnexion
 					</a>
-				</div>
+				</div> #}
 				<!-- Dropdown End -->
 			</div>
 			<!-- User Area -->
+			<div class="">
+				<a class="un mn qv lc mg ah gp dp zq ml"  data-toggle="tooltip" data-placement="bottom" title="Déconnexion" href="{{path('app_disconnect')}}">
+					<i class="fa-solid fa-right-from-bracket fa-xl hover-deconnexion"></i>
+				</a>
+			</div>
 		</div>
 	</div>
 </header>

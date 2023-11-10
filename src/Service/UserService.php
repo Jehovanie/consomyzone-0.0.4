@@ -101,4 +101,100 @@ class UserService  extends PDOConnexionService{
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    public function isPseudoExist($pseudo){
+        $statement = $this->getPDO()->prepare("SELECT IF(EXISTS (SELECt * FROM `user` WHERE pseudo=:pseudo),true,false) as result");
+        $statement->bindParam(":pseudo",$pseudo,PDO::PARAM_STR);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function generatePseudo($pseudo){
+        $statement =$this->getPDO()->prepare("CALL generate_randompseudo_from_user_pseudo_v2(?)");
+        $statement->bindParam(1, $pseudo, PDO::PARAM_STR);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+    public function setActivity($userID)
+    {
+
+        //$currentTimeActivity=\date("Y-m-d H:i:s"); 
+        $statement = $this->getPDO()->prepare("UPDATE user SET current_time_activity=NOW() WHERE id=?");
+        $statement->bindParam(1, $userID, PDO::PARAM_INT);
+        $succes = $statement->execute();
+        // $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $succes;
+    }
+
+    /**
+     * cette fonction verifie si un individu est toujours actif ou non
+     * @return int si la reponse est égale à zero alors la personne n'est plus active 
+     * si la reponse est > 0 alors la personne est toujours connecter sauf  si le idle est supérieur à 5mn
+     * 
+     */
+    public function getLastActivity($userID)
+    {
+        ///SELECT TIMESTAMPDIFF(SECOND, last_time_activity, current_time_activity) FROM `user` WHERE id=2;
+        $statement = $this->getPDO()->PREPARE("call isActive(?)");
+        $statement->bindParam(1, $userID, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * cette fonction recupère tous les indivu actif
+     */
+    public function getUserActive()
+    {
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM user  WHERE TIMESTAMPDIFF(SECOND, current_time_activity,NOW()) < 300");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+    /**
+     * cette fonction recupère tous les indivu inactif
+     */
+    public function getInactiveActive()
+    {
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM user  WHERE TIMESTAMPDIFF(SECOND, current_time_activity,NOW()) > 300");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * cette fonction met à jour le idle de l'user courant
+     */
+    public function updateUserIDLE($userID,$idle)
+    {
+        $statement = $this->getPDO()->PREPARE("UPDATE user SET idle = ? WHERE id = ?");
+        $statement->bindParam(1, $idle, PDO::PARAM_INT);
+        $statement->bindParam(2, $userID, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * cette fonction recherche des fan
+     */
+    public function lookForOtherFan($word,$myid){
+        $sql= "SELECT * FROM `consumer` WHERE (firstname like '%$word%' or lastname like '%$word%' or match(firstname) AGAINST(?) or match (lastname) AGAINST(?)) and user_id !=? ;";
+        $statement = $this->getPDO()->PREPARE($sql);
+        $statement->bindParam(1, $word, PDO::PARAM_STR);
+        $statement->bindParam(2, $word, PDO::PARAM_STR);
+        $statement->bindParam(3, $myid, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
 }

@@ -29,7 +29,8 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin=""/>
         <link rel="stylesheet" href="{{asset('assets/css/owlcarousel/owl.carousel.min.css')}}">
         <link rel="stylesheet" href="{{asset('assets/css/owlcarousel/owl.theme.default.min.css')}}">
-       
+        <link href="{{asset('assets/css/intlTelInput/intlTelInput.css')}}" rel="stylesheet">
+
 
         {# --------------------- marker MarkerCluster --------------------------- #}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css" integrity="sha512-ENrTWqddXrLJsQS2A86QmvA17PkJ0GVm1bqj5aTgpeMAfDKN2+SIOLpKG8R/6KkimnhTb+VW5qqUHB/r1zaRgg==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
@@ -37,6 +38,7 @@
        
         {#<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>#}
         {#<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>#}
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
         <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/super-build/ckeditor.js"></script>
         {# <script src="https://cdn.ckeditor.com/ckeditor5/10.0.0/classic/ckeditor.js"></script>#}
      
@@ -46,9 +48,12 @@
         <script src="{{ asset('assets/js/franceGeoJson.js') }}" defer></script>
         <script src='https://8x8.vc/external_api.js'></script>
         <script  src="{{ asset('assets/js/chatHome.js') }}" defer></script>
+        <script src="{{asset("assets/js/function.js")}}" defer></script>
         <script src="{{asset("assets/js/app.js")}}" defer></script>
         <script src="{{asset("assets/js/account/app.js")}}" defer ></script>
-        <script src="{{asset("assets/js/function.js")}}" defer></script>
+        <script src="{{asset("assets/js/intelTelInput/intlTelInput.min.js")}}" defer></script>
+
+
         {# <script src="{{asset("assets/js/chatbot.js")}}" defer></script> #}
         
         {# ///we use this to keep track for user search don't add a "defer" //////////////////////// #}
@@ -80,7 +85,11 @@
     darkMode = JSON.parse(localStorage.getItem('darkMode'));
     $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))" :class="{'b yn mj': darkMode === true}" class="" >
 
-	
+        {# on a besoin de cette balise pour verifier si l"utilisateur est connecté#}
+        {% if (app.user)%}
+            <div class="ref_tom_js"></div>
+
+        {% endif %}
 
         {% block body %}{% endblock %}
         

@@ -54,12 +54,19 @@ class GolfFinished
      */
     private $fait;
 
-        /**
+    /**
      * @var int
      *
      * @ORM\Column(name="mon_golf", type="integer", nullable=true)
      */
     private $mon_golf;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="a_refaire", type="integer", nullable=true)
+     */
+    private $aRefaire;
 
     public function getId(): ?int
     {
@@ -159,6 +166,30 @@ class GolfFinished
     public function setMonGolf(int $mon_golf)
     {
         $this->mon_golf = $mon_golf;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of aRefaire
+     *
+     * @return  int
+     */ 
+    public function getARefaire()
+    {
+        return $this->aRefaire;
+    }
+
+    /**
+     * Set the value of aRefaire
+     *
+     * @param  int  $aRefaire
+     *
+     * @return  self
+     */ 
+    public function setARefaire(int $aRefaire)
+    {
+        $this->aRefaire = $aRefaire;
 
         return $this;
     }

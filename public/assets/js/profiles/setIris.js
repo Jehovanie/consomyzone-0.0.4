@@ -35,8 +35,8 @@ if( document.querySelector("#inscription_nom_commune")){
         }
         return response.json();
         /// object list of the commune
-    })
-    .then(response => { //// { commune: []}
+    }).then(response => { //// { commune: []}
+        addNumeroOptionGeo();
         document.getElementById("spinner-setting-tomm-js").style.display="none";
         document.getElementById("conteneurs-setting-tom-js").classList.remove("pointeur-event-none-tomm-js")
 
@@ -360,4 +360,18 @@ function deleteOption(content_options){
         parent.querySelectorAll("option").forEach( i => i.remove());
     }
 
+}
+
+function addNumeroOptionGeo() {
+    const target = document.querySelector("#inscription_telephone");
+    intlTelInput(target, {
+        initialCountry: "auto",
+        geoIpLookup: callback => {
+            fetch("https://ipapi.co/json")
+            .then(res => res.json())
+            .then(data => callback(data.country_code))
+            .catch(() => callback("us"));
+        },
+        utilsScript: "/assets/js/intelTelInput/utils.js"
+    })
 }

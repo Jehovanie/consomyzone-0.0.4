@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/message/message.css')}}">
+
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	{# <script src='https://8x8.vc/external_api.js'></script> #}
+	{# <script  src="{{ asset('assets/js/chatHome.js') }}" defer></script> #}
+	{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}<script src="{{ asset('assets/js/message/message.js') }}" defer> </script>
+	<script src="{{ asset('assets/js/message/eventStrem_message.js') }}" defer></script>
+
+	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
+	<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
+{% endblock %}
+
+{% block body %}
+	<div class="nh">
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		<div class="fixed-top">
+			<button class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-en-lign-tomm-js">
+				<span class="jc h cg bf sd span-btn-menu-en-lign menu-en-lign-tomm-js">
+					<span class="du-block g m yd vc span-menu-en-lign-tomm-js">
+						<span class="">
+							<i class="fa-solid fa-circle text-success text-point-7"></i>
+							Les partisans connectés</span>
+					</span>
+					<i class="fa-solid fa-xmark btn-ferme-tribut fermet-en-lign-tomm-js responsif-none"></i>
+				</span>
+			</button>
+		</div>
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv om hv wd account-message-conected">
+            <div class="container-bar-recherche-message">
+                <input type="text" class="search_input_message" id="fan_look_tom_js" placeholder="Recherche des fan dans consomyzone" oninput="lookupFan(event)">
+            </div>
+            <div class="lookup_fan_result lookup_fan_result_tom_js d-none">
+               
+            </div>
+            <div class="responsif-none sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message">
+                    <!-- ====== Chat List Start -->
+                    <div class="vc xk">
+                        <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 creer-reunion" onclick="createVisioGroupFromMessage()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>
+                        
+                        <div class="vd mh ip ch ib user_profile_list_elie">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item" data-type="liste-message" onclick="toggleAmisMessage(this)">
+                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? '' : 'active' }}" data-selector-list="content_list_message_tomm_js">Vos Messages.</a>
+                                </li>
+                                <li class="nav-item" data-type="fanne-connecte"  onclick="toggleAmisMessage(this); fan()">
+                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_enligne_tomm_js" href="#">Fan en ligne</a>
+                                </li>
+                            </ul>
+
+                            <div class="content_list_message_tomm_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
+                                {% if amisTributG|length > 0 %}
+                                    <!-- Chat List Item -->
+                                    {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
+                                    {% for item in amisTributG %}
+                                        {% if item.last_message == false %}
+                                            
+                                        {% else %}
+                                            {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                            {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% for jtem in allTribuT %}
+                                        {% if jtem.amis|length > 0 %}
+                                                        <!-- Chat List Item -->
+                                            {% for ktem in jtem.amis %}
+                                                {% if item.last_message == false %}
+                                                
+                                                {% else %}
+                                                    {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                                    {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <!-- end List Chat -->
+                                        {% endif %}    
+                                          
+                                    {% endfor %}
+                                    {% if isZeroMessage.noMessage is same as('oui') and isZeroMessage.haveMessage is same as('non') %}
+                                         <div>Vous n'avez aucun message. Rechercher d'autres fan en ligne est envoyés leur des messages. </div>
+                                    {% endif %}
+
+                                    <!-- end List Chat -->
+                                {% else %}
+                                    <div class="cg lc mg sh ol rl tq is">
+                                        <div class="bg-light bg-gradient p-3">
+                                            <p class="text-center text-danger">Actuellement, vous êtes le seul fan dans votre tribu G, invité vos amis à rejoindre Consomyzone.</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                            </div>
+
+                            <div class="content_list_enligne_tomm_js">
+                                <ul class="list-group list-group-flush fan_actif_tom_js">
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ====== Chat List End -->
+                </div>
+
+		</main>
+	</div>
+
+	
+{% endblock %}
+
