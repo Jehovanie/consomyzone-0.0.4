@@ -311,7 +311,7 @@ class MessageService extends PDOConnexionService{
     /**
      * Get list of the user to chat in the tribu G by the user connected
      * 
-     * @param User $user: user currenct connecter
+     * @param $user: user currenct connecter
      * @param TributGService $tributGService: TribuGService locate in src/service/TribuGService.php
      * @param EntityManagerInterface $entityManager, : EntityManagerInterface  build-in
      * @param UserRepository $userRepository: user repository locate in src/repository/UserRepository.php
@@ -332,17 +332,17 @@ class MessageService extends PDOConnexionService{
      * ]
      */
     public function getListAmisToChat( 
-        User $user, 
+        $user, 
         TributGService $tributGService, 
         EntityManagerInterface $entityManager, 
         UserRepository $userRepository  
     ){
 
         $amis_in_tributG = [];
-        $userId = $user->getId();
-
+        
         if($user && $user->getType()!="Type"){
             // ////profil user connected
+            $userId = $user->getId();
             $profil = $tributGService->getProfil($user, $entityManager);
 
             $id_amis_tributG = $tributGService->getAllTributG($profil[0]->getTributG());  /// [ ["user_id" => ...], ... ]
@@ -381,7 +381,7 @@ class MessageService extends PDOConnexionService{
     /**
      * Get list of the user to chat in the tribu  T by the user connected
      * 
-     * @param User $user: user currenct connecter
+     * @param $user: user currenct connecter
      * @param TributGService $tributGService: TribuGService locate in src/service/TribuGService.php
      * @param Tribu_T_Service $tributTService: tributTService locate in src/service/Tribu_T_Service.php
      * @param EntityManagerInterface $entityManager, : EntityManagerInterface  build-in
@@ -410,7 +410,7 @@ class MessageService extends PDOConnexionService{
      *   ]
      */
     public function getListAmisInTribuTtoChat(
-        User $user,
+        $user,
         TributGService $tributGService, 
         Tribu_T_Service $tributTService,
         EntityManagerInterface $entityManager,
@@ -420,7 +420,6 @@ class MessageService extends PDOConnexionService{
         
         $all_tribuT_user= [];
         $all_tribuT= $userRepository->getListTableTribuT();
-
         foreach($all_tribuT as $tribuT){
             $tribuT['amis'] = [];
             $results=$tributTService->getAllPartisanProfil($tribuT['table_name']);
