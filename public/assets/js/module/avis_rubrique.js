@@ -30,20 +30,24 @@ window.addEventListener('load', () => {
 
 
 function showAvis(currentUserId, idItem) {
-    const details= document.querySelector("#details-coord");
-    const type= details.getAttribute("data-toggle-type");
+    // const details= document.querySelector("#details-coord");
+    // const type= details.getAttribute("data-toggle-type");
+    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItem}_jheo_js`)
+    let type= details.getAttribute("data-toggle-type");
 
     const btn_update = document.querySelector(".send_avis_jheo_js");
-    
     if( !btn_update.classList.contains("btn-warning")){
         btn_update.classList.add("btn-warning")
     }
 
     let path_link = "";
+    let rubrique_name= "";
     if( type === "golf"){
         path_link= `/avis/golf/global/${idItem}`;
+        rubrique_name= "Golf";
     }else if( type === "resto"){
         path_link= `/avis/restaurant/global/${idItem}`;
+        rubrique_name= "Restaurant";
     }
 
     fetch(path_link, {
@@ -67,7 +71,7 @@ function showAvis(currentUserId, idItem) {
                     <div class="card-body">
                         <div class="avis_content">
                             <div class="text-danger text-center">
-                                Actuellement, il n'y a pas encore d'avis sur cette restaurant
+                                Actuellement, il n'y a pas encore d'avis sur cette ${rubrique_name}
                             </div>
                         </div>
                     </div>
@@ -80,7 +84,14 @@ function showAvis(currentUserId, idItem) {
 /**
  * Create new avis resto in first time
  */
-function addAvis(){
+function addAvis(idItemRubrique=null){
+
+    if(document.querySelector("#text-note").value === ""  || document.querySelector("#message-text").value === "" ){
+        msgErrorAlertAvis({ message : "no content"})
+        return 0;
+    }else{
+        document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+    }
 
     ///// remove alert card empty avis and add chargement spinner
     if( document.querySelector(".card_avis_empty_jheo_js")){
@@ -98,10 +109,11 @@ function addAvis(){
         `
     }
 
-    const details= document.querySelector("#details-coord");
-    const type= details.getAttribute("data-toggle-type");
+    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItemRubrique}_jheo_js`)
+    let type= details.getAttribute("data-toggle-type");
 
     let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"));
+
     let avis = document.querySelector("#message-text").value;
     let note = document.querySelector("#text-note").value;
     note=note.replace(/,/g,".");
@@ -118,13 +130,12 @@ function addAvis(){
     let idItem = 0;
     let path_link= "";
     if( type === "golf"){
-        idItem = document.querySelector("#details-coord").getAttribute("data-toggle-id-golf")
+        idItem = idItemRubrique != null ? idItemRubrique :  details.getAttribute("data-toggle-id-golf")
         path_link= `/avis/golf/${idItem}`;
 
     }else if ( type === "resto" ){
-        idItem = document.querySelector("#details-coord").getAttribute("data-toggle-id-resto")
+        idItem = idItemRubrique != null ? idItemRubrique : details.getAttribute("data-toggle-id-resto")
         path_link= `/avis/restaurant/${idItem}`;
-
     }
 
     ////send data to the backend server
@@ -144,10 +155,10 @@ function addAvis(){
             showModifArea(idItem, newUserId)
 
             //// update number avis in details resto
-            if (document.querySelector("#see-tom-js")) {
-
+            if (document.querySelector("#see-tom-js") || document.querySelector(`#see-tom-js${idItem}`)) {
+                const parent=  document.querySelector("#see-tom-js") ?  document.querySelector("#see-tom-js") :  document.querySelector(`#see-tom-js${idItem}`)
                 ////get total number avis and update
-                showNemberOfAvis(idItem, document.querySelector("#see-tom-js"))
+                showNemberOfAvis(idItem, parent)
 
                 /// get global note and update global notes in details resto
                 showNoteGlobale(idItem)
@@ -168,8 +179,9 @@ function addAvis(){
  * @param {*} parent 
  */
 function showNemberOfAvis(idItem, parent) {
-    const details= document.querySelector("#details-coord");
-    const type= details.getAttribute("data-toggle-type");
+
+    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItem}_jheo_js`)
+    let type= details.getAttribute("data-toggle-type");
 
     let path_link= "";
     if( type === "golf" ){
@@ -191,7 +203,7 @@ function showNemberOfAvis(idItem, parent) {
 /**
  * display all avis resto and reset input note and avis resto
  */
-function showListAvie() {
+function showListAvie(idItem= null) {
     ////delete all avis inside and add chargement
     if( document.querySelectorAll(".all_avis_jheo_js")){
         document.querySelector(".all_avis_jheo_js").innerHTML = `
@@ -216,14 +228,17 @@ function showListAvie() {
     }
 
 
-    let details= document.querySelector("#details-coord");
+    
     let newIdItem= 0;
-
-    if( details.getAttribute("data-toggle-id-golf") ){
-        newIdItem = details.getAttribute("data-toggle-id-golf");
-    }else if( details.getAttribute("data-toggle-id-resto") ){
-        newIdItem = details.getAttribute("data-toggle-id-resto");
+    if(document.querySelector("#details-coord")){
+        let details= document.querySelector("#details-coord");
+        if(details.getAttribute("data-toggle-id-golf") ){
+            newIdItem = details.getAttribute("data-toggle-id-golf");
+        }else if( details.getAttribute("data-toggle-id-resto") ){
+            newIdItem = details.getAttribute("data-toggle-id-resto");
+        }
     }
+    newIdItem= idItem != null ? idItem : newIdItem;
 
     const userId = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
     showAvis(userId, newIdItem) 
@@ -246,8 +261,8 @@ function deleteOldValueInputAvis(){
  * @return Generate html avis in modal
  */
 function showModifArea(idItem, currentUserId) {
-    const details= document.querySelector("#details-coord");
-    const type= details.getAttribute("data-toggle-type");
+    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItem}_jheo_js`)
+    let type= details.getAttribute("data-toggle-type");
     
     let path_link= "";
     if( type === "golf" ){
@@ -261,12 +276,12 @@ function showModifArea(idItem, currentUserId) {
     .then(jsons => {
         if (jsons) {
             //// before show all comments, delete the content.
-            if (screen.width <= 991) {
-                document.querySelector(`.all_avis_${idItem}_jheo_js`).innerHTML = "";
-            } else {
-                document.querySelector(".all_avis_jheo_js").innerHTML = "";
-            }
-
+            document.querySelector(".all_avis_jheo_js").innerHTML = "";
+            // if (screen.width <= 991) {
+            //     document.querySelector(`.all_avis_${idItem}_jheo_js`).innerHTML = "";
+            // } else {
+            // }
+            
             for (let json of jsons) { 
                 //// create single avis, and pass state of currect id
                 createShowAvisAreas(json,currentUserId,idItem)
@@ -279,7 +294,7 @@ function showModifArea(idItem, currentUserId) {
 /*
 *show comment without btn modification
 */
-function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
+function createShowAvisAreas(json,currentUserId,idItem = 0) {
     let startIcon = "";
     let rate= parseFloat(json.note) - Math.trunc(parseFloat(json.note));
     let rateYellow = rate * 100;
@@ -299,24 +314,32 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
     }
 
     let modalebtnModife = "";
-
-    if (screen.width <= 991) {
-        modalebtnModife = `
+    modalebtnModife = `
         <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant${idRestaurant}" onclick="settingAvisRestoMobile(${idRestaurant},${currentUserId},'${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}', '${idItem}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
     `
-    } else {
-        modalebtnModife = `
-            <div class="content_action">
-                <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-            </div>
-        `
-    }
+
+    // if (screen.width <= 991) {
+    //     modalebtnModife = `
+    //     <div class="content_action">
+    //         <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant${idRestaurant}" onclick="settingAvisRestoMobile(${idRestaurant},${currentUserId},'${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
+    //             <i class="fa-solid fa-pen-to-square"></i>
+    //         </button>
+    //     </div>
+    // `
+    // } else {
+    //     modalebtnModife = `
+    //         <div class="content_action">
+    //             <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
+    //                 <i class="fa-solid fa-pen-to-square"></i>
+    //             </button>
+    //         </div>
+    //     `
+    // }
+
     const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
     const editHTMl = modalebtnModife
     const  isOwnComment= (currentUserId == json.user.id ) ? editHTMl : "";
@@ -350,10 +373,11 @@ function createShowAvisAreas(json,currentUserId,idRestaurant = 0) {
             </div>
         </div>
     `
+
     document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
-    if (idRestaurant != 0 && screen.width <= 991) {
-        document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML += singleAvisHtml;
-    }
+    // if (idRestaurant != 0 && screen.width <= 991) {
+    //     document.querySelector(`.all_avis_${idRestaurant}_jheo_js`).innerHTML += singleAvisHtml;
+    // }
     // else {
     //     document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
     // }
@@ -386,9 +410,10 @@ function _kidMo(event) {
  * Get global note avis resto  and setting
  * @param {*} idItem 
  */
-function showNoteGlobale(idItem, globalNote) {
-    const details= document.querySelector("#details-coord");
-    const type= details.getAttribute("data-toggle-type");
+function showNoteGlobale(idItem, globalNote=0) {
+
+    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItem}_jheo_js`)
+    let type= details.getAttribute("data-toggle-type");
 
     let path_link= "";
     if( type === "golf" ){
@@ -408,7 +433,7 @@ function showNoteGlobale(idItem, globalNote) {
                 totalNote+=parseFloat(avis["note"])
             }
             globalNote= totalNote /(response.length);
-            createGlobalNote(globalNote)
+            createGlobalNote(globalNote, idItem)
 
             // CURRENT_MAP_INSTANCE.showNoteGlobaleOnMarker(idItem, globalNote)
         }
@@ -420,7 +445,7 @@ function showNoteGlobale(idItem, globalNote) {
 /**
  * Prepare update avis resto
  */
-function settingAvis(avisID, avisNote, avisText){
+function settingAvis(avisID, avisNote, avisText, idItem){
 
     document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis."
     
@@ -428,13 +453,21 @@ function settingAvis(avisID, avisNote, avisText){
     document.querySelector(".note_avis_jheo_js").value = avisText;
 
     const btn_update = document.querySelector(".send_avis_jheo_js");
-    btn_update.setAttribute("onclick",`updateAvis('${avisID}')`)
+    btn_update.setAttribute("onclick",`updateAvis('${avisID}', '${idItem}')`)
 }
 
 
-function updateAvis(avisID){
-    const details= document.querySelector("#details-coord");
-    const type= details.getAttribute("data-toggle-type");
+function updateAvis(avisID, idItemRubrique){
+    if(document.querySelector("#text-note").value === ""  || document.querySelector("#message-text").value === "" ){
+        msgErrorAlertAvis({ message : "no content"})
+        return 0;
+    }else{
+        document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+    }
+
+
+    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItemRubrique}_jheo_js`)
+    let type= details.getAttribute("data-toggle-type");
 
     ///// remove alert card and add chargement spinner
     if( document.querySelector(".all_avis_jheo_js")){
@@ -461,11 +494,11 @@ function updateAvis(avisID){
     let path_link= "";
 
     if( type === "golf" ){
-        idItem = details.getAttribute("data-toggle-id-golf")
+        idItem = idItemRubrique ? idItemRubrique : details.getAttribute("data-toggle-id-golf")
         path_link = `/change/golf/${idItem}`;
         
     }else if( type === "resto" ){
-        idItem = details.getAttribute("data-toggle-id-resto")
+        idItem = idItemRubrique ? idItemRubrique : details.getAttribute("data-toggle-id-resto")
         path_link = `/change/restaurant/${idItem}`;
     }
 
@@ -492,9 +525,13 @@ function updateAvis(avisID){
             // document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis'
             
             showModifArea(idItem, newUserId)
-            // if (document.querySelector("#details-coord > div.content_note > div.nombre_avis")) {
-            if (document.querySelector("#see-tom-js")) {
-                showNemberOfAvis(idItem, document.querySelector("#see-tom-js"))
+
+            if (document.querySelector("#see-tom-js") || document.querySelector(`#see-tom-js${idItem}`)) {
+                const parent=  document.querySelector("#see-tom-js") ?  document.querySelector("#see-tom-js") :  document.querySelector(`#see-tom-js${idItem}`)
+                ////get total number avis and update
+                showNemberOfAvis(idItem, parent)
+
+                /// get global note and update global notes in details resto
                 showNoteGlobale(idItem)
             }
 
@@ -526,10 +563,18 @@ function createGlobalNote(globalNote,idItem= null) {
             }
         }
     }
-    if (screen.width <= 991 && idItem != null) {
+    if (document.querySelector(`.start_jheo_js${idItem}`) ) {
         document.querySelector(`.start_jheo_js${idItem}`).innerHTML = startHTML;
-    } else {
+    }else if(document.querySelector(".start_jheo_js")) {
         document.querySelector(".start_jheo_js").innerHTML = startHTML;
-    }    
+    }
     
+}
+
+
+function settingAvisCarrousel(idItem){
+    if( document.querySelector(".send_avis_jheo_js")){
+        const btn= document.querySelector(".send_avis_jheo_js");
+        btn.setAttribute("onclick", `addAvis('${idItem}')`);
+    }
 }

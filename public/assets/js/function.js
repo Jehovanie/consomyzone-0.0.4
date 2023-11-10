@@ -2534,9 +2534,9 @@ let params = new URL(document.location).searchParams;
    
     fetch(request).then(res =>
         res.json().then(responses => {
-if (document.querySelector(".loading-tomm-js")) {
-            document.querySelector(".loading-tomm-js").innerHTML = ''
-}
+            if (document.querySelector(".loading-tomm-js")) {
+                document.querySelector(".loading-tomm-js").innerHTML = ''
+            }
             let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
             
             
@@ -2654,7 +2654,7 @@ if (document.querySelector(".loading-tomm-js")) {
                 let btnDonneAvie = ``
                 let btnPastille = ''
                 if (document.querySelector("#is-connected-tomm-js")) {
-                    btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-toggle-id-resto="${response.id}" data-bs-target="#modalAvisRestaurant${response.id}">Donner votre avis</button>`
+                    btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-toggle-id-resto="${response.id}" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
                     btnPastille = `<button type="button" data-name="${response.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${response.id}')">Pastiller</button>`
                 } else {
                     btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
@@ -2739,7 +2739,7 @@ if (document.querySelector(".loading-tomm-js")) {
 
                 
                 listSpecMobile.innerHTML += `
-                    <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${response.id}">
+                    <li class="nav-item icon-tabac me-3 item_carrousel_${response.id}_jheo_js content_avie_details_tomm_js " data-toggle-id-resto="${response.id}" data-toggle-type="resto">
                             <div class="containt-specific">
                                 <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
                                     <div class="row">
@@ -2778,7 +2778,7 @@ if (document.querySelector(".loading-tomm-js")) {
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                                     <span>
-                                        <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})">
+                                        <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie('${response.id}')">
                                             <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
                                         </a>
                                     </span>
@@ -2787,45 +2787,6 @@ if (document.querySelector(".loading-tomm-js")) {
                                 </div>
                             </div>
                     </li>
-                    
-                    
-
-                    <div class="modal fade list-avis-ferme-global-mobile" id="staticBackdrop${response.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog  modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header bg-light">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Avis</h5>
-                                    <button type="button" class="btn-close" onclick="closeModalAvieDetail(${response.id})"></button>
-                                </div>
-                                <div class="list-avis-ferme">
-                                    <div class="modal-body container-avis all_avis_${response.id}_jheo_js">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal fade modal-avie-resto-mobile-tomm-js" id="modalAvisRestaurant${response.id}" tabindex="-1" aria-labelledby="modalAvisRestaurantLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalAvisRestaurantLabel">Votre Avis</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop${response.id}" onclick="showListAvieMobile(${response.id}, ${id_user})"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form>
-                                        <label for="text-note" class="col-form-label">Donner une note sur 4:</label>
-                                        <textarea class="form-control note_number_${response.id}_jheo_js text-note-mobile-tomm-js" id="text-note-mobile-${response.id}"></textarea>
-                                        <label for="message-text" class="col-form-label">Commentaire:</label>
-                                        <textarea class="form-control note_avis_${response.id}_jheo_js" id="message-text-mobile-${response.id}"></textarea>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-warning send_avis_${response.id}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 `
                 
             })
@@ -4082,7 +4043,7 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
  * @utiliser dans le golf/data_golf.js
  */
 function getDataSpecGolfMobile(nom_dep, id_dep) { 
-     const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+    const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
         method: "GET",
         headers: {
             'Accept': 'application/json',
@@ -4091,15 +4052,15 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
-if (document.querySelector(".loading-tomm-js")) {
-            document.querySelector(".loading-tomm-js").innerHTML = ''
-}
-                let listSpecMobile = ""
+            if (document.querySelector(".loading-tomm-js")) {
+                        document.querySelector(".loading-tomm-js").innerHTML = ''
+            }
+            let listSpecMobile = ""
             if (document.querySelector(".list-specific-golf-mobile-tomm-js")) {
                 listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
             }
-
-                        responses.golf.forEach(response => { 
+            console.log(responses)
+            responses.golf.forEach(response => { 
 
                 let btnAviMobile = ''
                 let containerActionGolf = ''
@@ -4107,7 +4068,7 @@ if (document.querySelector(".loading-tomm-js")) {
                 let statusGolf = ''
                 let siteWeb = ''
                 if (document.querySelector("#is-connected-tomm-js")) {
-                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`
+                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
                     let valueContaintGolf = ''
                     let valueContaintGolfDetail = ''
                     if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
@@ -4207,7 +4168,7 @@ if (document.querySelector(".loading-tomm-js")) {
                 }
 
                 listSpecMobile.innerHTML += `
-                    <li class="nav-item icon-tabac me-3">
+                    <li class="nav-item icon-tabac me-3 item_carrousel_${response.id}_jheo_js" data-toggle-type="golf">
 						<a class="nav-link d-block">
 							<div class="containt-specific">
 								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobilGolf${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
@@ -4234,7 +4195,7 @@ if (document.querySelector(".loading-tomm-js")) {
 								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
 									
 									<span>
-										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie('${response.id}')">
 											<span class="nbr_avis_resto_jheo_js">
 											</span>
 											avis
@@ -4247,8 +4208,6 @@ if (document.querySelector(".loading-tomm-js")) {
 					</li>
                     
                 `
-
-                
             })
         })
 }
@@ -4269,9 +4228,9 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
     })
     fetch(request).then(res => res.json())
         .then(responses => {
-if (document.querySelector(".loading-tomm-js")) {
-            document.querySelector(".loading-tomm-js").innerHTML = ''
-}
+            if (document.querySelector(".loading-tomm-js")) {
+                document.querySelector(".loading-tomm-js").innerHTML = ''
+            }
             console.log(responses)
             let listSpecMobile = document.querySelector(".list-specific-tabac-mobile-tomm-js")
             responses.tabac.forEach(response => { 
@@ -4951,7 +4910,32 @@ function msgErrorAlertAvis(e){
         new swal("Attention !","Veulliez saisir un note de 0 à 4", "warning").then((value) => {
             document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
         })
+    }else if(e.message == "no content"){
+        new swal("Attention !","Veulliez saisir un note et un petit message ou annuler cette action.", "warning")
     }else {
         console.log(e)
     }
+}
+
+function mustBeInferior4(value,target, isThrowException) {
+    regex=/[^0-9,\.]+/
+    if (parseFloat(value) > 4.00) {
+        target.style = "border:2px solid red;"
+        msgFlash("doit être inférieur ou égale à 4", target)
+        if(isThrowException)
+           throw new Error("note sup à 4")
+    } else if (regex.test(value)) {
+        target.style = "border:2px solid red;"
+        msgFlash("veulliez saisir un type numerique", target)
+        if(isThrowException)
+           throw new Error("non numerique")
+    }
+}
+
+function msgFlash(msg,target) {
+    const div = document.createElement("div")
+    div.classList.add("flash-msg-ERREUR")
+    div.innerHTML= msg
+    target.parentNode.insertBefore(div,target.nextSibling)
+    
 }
