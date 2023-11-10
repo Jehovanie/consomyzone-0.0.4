@@ -125,7 +125,19 @@ class MapModule{
         //     console.log(err.message)
         // }finally{
         // }
+        ////object of the current position
+        // this.currentPositionOnMap={ /// { zoom : 0, lat: 0, lng: 0 }
+        //     ...this.currentPositionOnMap,
+        //     zoom : this.map.getZoom(), 
+        //     ...this.map.getCenter()
+        // }
 
+        // ////array contains history current position...
+        // this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
+
+        // this.indexCurrentOnLisPositionBeforeAndAfter= this.listPositionBeforAndAfter.length;
+
+        // console.log(this.listPositionBeforAndAfter)
     }
 
     handleEventOnMap(){
@@ -225,7 +237,7 @@ class MapModule{
             const center= e.target.getCenter()
             const coordAndZoom = {
                 zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
-                coord: center ? center : { lat: this.latitude, lng: this.longitude }
+                coord: center
             }
             setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
 
@@ -248,22 +260,28 @@ class MapModule{
             }
 
             ////object of the current position
-            this.currentPositionOnMap={ // { zoom : 0, lat: 0, lng: 0 }
-                ...this.currentPositionOnMap,
+            this.currentPositionOnMap={ /// { zoom : 0, lat: 0, lng: 0 }
                 zoom : coordAndZoom.zoom, 
                 ...center,
-                // before : this.beforeAndAfterPosition.now.zoom === 0 ? { zoom : coordAndZoom.zoom, ...e.target._lastCenter  } : { ...this.beforeAndAfterPosition.now }, 
             }
 
             ////array contains history current position...
-            this.listPositionBeforAndAfter.push(this.currentPositionOnMap);
+            this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
 
-
-            if( this.indexCurrentOnLisPositionBeforeAndAfter === 0 || this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length - 1 ){
-                this.indexCurrentOnLisPositionBeforeAndAfter= this.listPositionBeforAndAfter.length;
+            if( this.listPositionBeforAndAfter.length > 10 ){
+                this.listPositionBeforAndAfter.shift()
             }
 
-            if( this.listPositionBeforAndAfter.length !== 0 ){
+
+            this.indexCurrentOnLisPositionBeforeAndAfter= this.listPositionBeforAndAfter.length;
+            const parentIconControlAfter= document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+            if( !parentIconControlAfter.classList.contains("d-none")){
+                parentIconControlAfter.classList.add("d-none")
+            }
+            // if( this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length - 1 ){
+            // }
+
+            if( this.listPositionBeforAndAfter.length > 1 ){
                 const parentIconControl= document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
                 if( parentIconControl.classList.contains("d-none")){
                     parentIconControl.classList.remove("d-none")
@@ -306,7 +324,6 @@ class MapModule{
 
         const before= this.listPositionBeforAndAfter[this.indexCurrentOnLisPositionBeforeAndAfter-1];
 
-        // this.map.panTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
         this.map.flyTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
         
         // console.log(`I ${backOrAfter} here ${this.indexCurrentOnLisPositionBeforeAndAfter}`);
@@ -349,26 +366,6 @@ class MapModule{
                 parentIconControlAfter.classList.remove("d-none")
             }
         }
-
-        // const parentIconControl= document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-        // const textHover= parentIconControl.querySelector(".message_tooltip_jheo_js");
-
-        // const fa_solid=  document.querySelector(".cart_before_jheo_js");
-        // if( fa_solid.classList.contains("fa-backward") ){
-        //     fa_solid.classList.remove("fa-backward");
-        //     fa_solid.classList.add("fa-forward");
-
-        //     textHover.innerText= "Révenir à la position"
-        //     this.beforeAndAfterPosition.state= -1
-
-        // }else if( fa_solid.classList.contains("fa-forward")){
-        //     fa_solid.classList.remove("fa-forward");
-        //     fa_solid.classList.add("fa-backward");
-
-        //     textHover.innerText= "Voir la carte avec la position précedente.";
-        //     this.beforeAndAfterPosition.state= 0
-        // }
-
     }
 
     addControlPlaceholders(map) {
