@@ -322,27 +322,12 @@ function createShowAvisAreas(json,currentUserId,idItem = 0) {
         </div>
     `
 
-    // if (screen.width <= 991) {
-    //     modalebtnModife = `
-    //     <div class="content_action">
-    //         <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant${idRestaurant}" onclick="settingAvisRestoMobile(${idRestaurant},${currentUserId},'${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
-    //             <i class="fa-solid fa-pen-to-square"></i>
-    //         </button>
-    //     </div>
-    // `
-    // } else {
-    //     modalebtnModife = `
-    //         <div class="content_action">
-    //             <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}')">
-    //                 <i class="fa-solid fa-pen-to-square"></i>
-    //             </button>
-    //         </div>
-    //     `
-    // }
-
     const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
     const editHTMl = modalebtnModife
     const  isOwnComment= (currentUserId == json.user.id ) ? editHTMl : "";
+
+    let user_profil= json.user.photo ? json.user.photo : '/uploads/users/photos/default_pdp.png'
+    user_profil= IS_DEV_MODE ? user_profil :  "/public" + user_profil;
 
     const singleAvisHtml= `
         <div class="card mb-2 card_avis_resto_jheo_js ${spec_selector} " data-avis-note="${json.note}" data-avis-text="${json.avis}">
@@ -352,7 +337,7 @@ function createShowAvisAreas(json,currentUserId,idItem = 0) {
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="content_profil_image me-2">
-                                    <img class="profil_image" src="${ json.user.photo ? json.user.photo : '/public/uploads/users/photos/default_pdp.png' }" alt="User">
+                                    <img class="profil_image" src="${user_profil}" alt="User">
                                 </div>
                                 <div class="content_info">
                                     <h3 class="text-point-9"> <small class="fw-bolder text-black"> ${ json.user.fullname }</small></h3>
