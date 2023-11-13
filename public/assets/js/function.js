@@ -5400,7 +5400,9 @@ function getUserIdle() {
 }
 
 function resetTimer(idle=300) {
+  console.log(idle)
     idle = idle / 60
+    console.log(idle)
     let timer = idle -2
     clearTimeout(idleTimer);
     clearTimeout(idleTimer2);

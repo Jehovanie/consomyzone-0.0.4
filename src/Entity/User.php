@@ -508,7 +508,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Get the value of idle
      *
-     * @return  bool
+     * 
      */ 
     public function getIdle()
     {
@@ -518,11 +518,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Set the value of idle
      *
-     * @param  bool  $idle
+     * 
      *
      * @return  self
      */ 
-    public function setIdle(bool $idle)
+    public function setIdle($idle)
     {
         $this->idle = $idle;
 

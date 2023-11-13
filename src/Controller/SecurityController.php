@@ -443,6 +443,7 @@ if($oldUser){
         $user->setPassword($data['password']);
         $user->setVerifiedMail(true);
         $user->setIsConnected(true);
+        $user->setIdle(300);
 
 
 

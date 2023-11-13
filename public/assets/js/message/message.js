@@ -555,48 +555,85 @@ function fan(){
                     tribuT: 1,
                     tribug:1
                 }
-                for (let data of datas) {
-                    if (i === 0) {
-                        length.tribuT = data.length 
-                    } else {
-                        length.tribug = data.length
-                    }
-                    for (let value of data) {
+                for (let j=0; j <datas.length  ;j++ ) {
+                    if (j === 0) {
+                        console.log(datas[j][0].amis)
+                        let data=datas[j][0].amis
+                        length.tribuT = data === undefined ? 0 : data.length
+                        for (let value of data) {
                          
-                        let li = document.createElement("li")
-                        const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
-                        const link = "/user/message/perso?user_id="+ value.id;
-                        const fullName = value.firstname + " " + value.lastname
-                        li.innerHTML = `
-                            <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
-                                <div class="h mb sc yd of th">
-                                    <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
-                                    <span class="g l m jc wc ce th pi ij xj"></span>
-                                </div>
-
-                               
-                                <a href="${link}" class="yd">
-                                    <div class="row">
-                                        <div class="col-8">
-                                            <h5 class="mn un zn gs">
-                                                ${fullName}
-                                            </h5>
-
-                                        </div>
-                                        <div class="col-4">
-                                            <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
-                                        </div>
+                            let li = document.createElement("li")
+                            const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                            const link = "/user/message/perso?user_id="+ value.id;
+                            const fullName = value.firstname + " " + value.lastname
+                            li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
-
-
-
-                                </a>
-                            </div>
-                        `
-                        ul.appendChild(li)
+    
+                                   
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${fullName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+    
+    
+    
+                                    </a>
+                                </div>
+                            `
+                            ul.appendChild(li)
+                        }
+                    } else {
+                        let data=datas[j]
+                        length.tribug = data.length
+                        for (let value of data) {
+                         
+                            let li = document.createElement("li")
+                            const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                            const link = "/user/message/perso?user_id="+ value.id;
+                            const fullName = value.firstname + " " + value.lastname
+                            li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+    
+                                   
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${fullName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+    
+    
+    
+                                    </a>
+                                </div>
+                            `
+                            ul.appendChild(li)
+                        }
                     }
-                    i++;
                 }
+                console.log(length)
                 if (length.tribuT === 0 && length.tribug === 0) {
                     if (document.querySelector(".only"))
                         document.querySelector(".only").textContent = ""

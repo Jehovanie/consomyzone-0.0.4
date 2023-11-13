@@ -287,7 +287,8 @@ if (document.querySelector("#form_pseudo")) {
                 .then(response => {
                     if (response.status === 200 && response.ok) {
                         response.json().then(json => { 
-                            const isPseudoExist=!!json.result
+                            const isPseudoExist=!!parseInt(json.result)
+                            console.log(isPseudoExist)
                             if (isPseudoExist) {
                                 document.querySelector("#pseudo-verif-response-js-tom").innerText = "ce pseudo existe déjà." 
                                 timeout2 = setTimeout(function () {
@@ -309,6 +310,7 @@ if (document.querySelector("#form_pseudo")) {
                                 })
                             } else {
                                 document.querySelector("#pseudo-verif-response-js-tom").innerText = "pseudo verifié." 
+                                document.querySelector("#pseudo-verif-response-js-tom").parentElement.style="display:block; color:green"
                             }
                         })
                     }
