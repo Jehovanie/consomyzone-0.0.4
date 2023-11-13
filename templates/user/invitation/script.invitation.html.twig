@@ -16,7 +16,7 @@ eventSource.addEventListener("refreshInvitation", e => {
 				subRequestContent = `
 				<div class="profile-sidebar">
 						<div class="profile-userpic">
-							<img src="${invitationsData['pdp_uPoster'] ? invitationsData['pdp_uPoster'] : '/public/uploads/users/photos/default_pdp.png' }" class="img-responsive" alt="">
+							<img src="${invitationsData['pdp_uPoster'] ? '/public'+ invitationsData['pdp_uPoster'] : '/public/uploads/users/photos/default_pdp.png' }" class="img-responsive" alt="">
 						</div>
 						<div class="profile-usertitle">
 							<div class="profile-usertitle-name">
@@ -79,7 +79,7 @@ eventSource.addEventListener("refreshInvitation", e => {
 				subRequestContent = `
 				    <div class="profile-sidebar">
 						<div class="profile-userpic">
-							<img src="${invitationsData['pdp_userReceiving'] ? invitationsData['pdp_userReceiving'] : '/public/uploads/users/photos/default_pdp.png'}" class="img-responsive" alt="">
+							<img src="${invitationsData['pdp_userReceiving'] ? "/public" + invitationsData['pdp_userReceiving'] : '/public/uploads/users/photos/default_pdp.png'}" class="img-responsive" alt="">
 						</div>
 						<div class="profile-usertitle">
 							<div class="profile-usertitle-name">

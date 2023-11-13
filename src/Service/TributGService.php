@@ -1284,11 +1284,14 @@ class TributGService extends PDOConnexionService{
         if(count($result)>0){
             $sql = "SELECT user_id, ";
             for($i=0 ; $i < count($result); $i++){
-                if($i != count($result) -1){
-                    $sql .= "'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"] ." UNION SELECT user_id, ";
-                }else{
-                    $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
+                if($this->isTableExist($result[$i]["table_name"])){
+                    if($i != count($result) -1){
+                        $sql .= "'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"] ." UNION SELECT user_id, ";
+                    }else{
+                        $sql .="'".$result[$i]["table_name"] ."' as tribug from " .$result[$i]["table_name"];
+                    }
                 }
+                
             }
             $sql ="SELECT * FROM (".$sql. ") as tribu_list left join user on tribu_list.user_id=user.id inner join (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as profil ON user.id=profil.user_id";
             

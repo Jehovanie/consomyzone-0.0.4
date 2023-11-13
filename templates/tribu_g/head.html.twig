@@ -1,6 +1,6 @@
 <div class="row card-tribu-g">
     <div class="col-8 p-2 contentImage-mobile">
-        <img id="profilTribu" src="{{tributG.profil.avatar ? asset('uploads/tribus/photos/' ~ tributG.profil.avatar) : asset('uploads/tribus/photos/avatar_tribu.jpg')}}">
+        <img id="profilTribu" src="{{tributG.profil.avatar ? '/public/uploads/tribus/photos/' ~ tributG.profil.avatar: '/public/uploads/tribus/photos/avatar_tribu.jpg'}}">
         
         <div class="responsif-none">
             {% if tributG.profil.roles is same as("fondateur") %}
@@ -61,7 +61,7 @@
         <div class="row p-3">
             <div class="rangee row">
                 <div class="col-1 rounded-circle">
-                    <img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? profil[0].getPhotoProfil : asset('uploads/users/photos/img_avatar.png') }}>
+                    <img id ="roundedImg" style="min-height: 50px; min-width:50px; max-width:50px; max-height: 50px;" class="rounded-circle border border-1" src={{ (profil[0].getPhotoProfil != null) ? '/public' ~ profil[0].getPhotoProfil : '/public/uploads/users/photos/img_avatar.png' }}>
                 </div>
                 <div class="col-11 user_button">
                     <input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">

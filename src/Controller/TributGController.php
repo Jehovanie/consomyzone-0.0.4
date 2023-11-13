@@ -375,7 +375,8 @@ class TributGController extends AbstractController
 
         Request $request,
 
-        TributGService $tributGService
+        TributGService $tributGService,
+        Filesystem $filesyst
 
     ) {
 
@@ -412,7 +413,12 @@ class TributGController extends AbstractController
 
             $path = $this->getParameter('kernel.project_dir') . '/public/uploads/tribus/photos/';
 
+            $dir_exist = $filesyst->exists($path);
 
+            if ($dir_exist == false) {
+    
+                $filesyst->mkdir($path, 0777);
+            }
 
             $temp = explode(";", $image);
 
@@ -424,7 +430,7 @@ class TributGController extends AbstractController
 
             ///save image in public/uploader folder
 
-            file_put_contents($path . "/" . $image_name, file_get_contents($image));
+            file_put_contents($path . $image_name, file_get_contents($image));
 
 
 
