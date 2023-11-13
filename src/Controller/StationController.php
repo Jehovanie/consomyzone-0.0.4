@@ -415,15 +415,10 @@ class StationController extends AbstractController
 
 
     /**
-
      * DON'T CHANGE THIS ROUTE: This use in js file.
-
      * @Route("/getLatitudeLongitudeStation" , name="getLatitudeLongitudeStation" , methods={"GET"})
-
      */
-
     public function getLatitudeLongitudeStation(StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request)
-
     {
 
 
@@ -480,11 +475,33 @@ class StationController extends AbstractController
     }
 
     /**
-
-     * @Route("/stcmntvas", name="submit_comment", methods={"POST"})
-
+     * @Route("/station_in_peripherique", name="station_in_peripherique", methods={"GET"})
      */
+    public function getPeripheriqueData(Request $request, StationServiceFrGeomRepository $stationServiceFrGeomRepository )
+    {
+        if($request->query->has("minx") && $request->query->has("miny") ){
+            
+            $dep = ( $request->query->get("dep")) ?  $request->query->get("dep") : null;
+            $nom_dep = ( $request->query->get("nom_dep")) ?  $request->query->get("nom_dep") : null;
 
+            $bound_price= [  "min" => 0, "max" => 2.5, "type" => "tous", "nom_dep" => $nom_dep, "id_dep" => $dep ];
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $data= $stationServiceFrGeomRepository->getDataBetweenPeripherique($bound_price, $minx, $miny, $maxx, $maxy, $dep, 200);
+
+            return $this->json(["data" => $data]);
+        }
+
+        return $this->json([]);
+    }
+
+    /**
+     * @Route("/stcmntvas", name="submit_comment", methods={"POST"})
+     */
     public function submitComment(StationServiceFrGeomRepository $stationServiceFrGeomRepository, AvisstationRepository $repSataion, Request $request)
     {
 

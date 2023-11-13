@@ -48,10 +48,33 @@ class MapModule{
             { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
         ];
 
+        /* i use this to store the current caracter to filter. */
+        this.filterLetter= "";
+
+        //// this variable use for the historique navigation in the carte
         this.listPositionBeforAndAfter= [];
+
+        /// this use for to know the current index in the history navigation in the carte
+        /// by default it is the length of the this.listPositionBeforAndAfter.
         this.indexCurrentOnLisPositionBeforeAndAfter=0
 
+        //// this is the shape of the item in the variable this.listPositionBeforAndAfter
         this.currentPositionOnMap= { zoom : 0, lat: 0, lng: 0 }
+
+        // this is the base of filter data in map based on the user zooming. 
+        /// ratio is the number precisious for the float on latitude ( ex lat= 47.5125400012145  if ratio= 3 => lat = 47.512
+        //// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
+        ///// this must objectRatioAndDataMax is must be order by zoomMin DESC
+        this.objectRatioAndDataMax= [
+            { zoomMin: 18, dataMax: 20, ratio: 3 },
+            { zoomMin: 16, dataMax: 15, ratio: 3 },
+            { zoomMin: 14, dataMax: 10, ratio: 3 },
+            { zoomMin:  13, dataMax:  5, ratio: 2 },
+            { zoomMin:  9, dataMax:  3, ratio: 2 },
+            { zoomMin:  6, dataMax:  2, ratio: 1 },
+            { zoomMin:  4, dataMax:  1, ratio: 0 },
+        ];
+
     }
     initTales(){
         this.tiles = L.tileLayer(this.listTales[0].link, {
@@ -844,11 +867,11 @@ class MapModule{
     }
     
     //// get Max
-    getMax(max,min){
-        if(Math.abs(max)<Math.abs(min))
-            return {max:min,min:max} 
+    getMax( max, min ){
+        if( max < min )
+            return { max:min, min:max } 
         else
-           return {max:max,min:min}
+           return { max:max, min:min }
     }
 
     ///bind and add control on the right side of the map
@@ -1644,5 +1667,339 @@ class MapModule{
             shadowSize: [68, 95],
             shadowAnchor: [22, 94],
         })
+    }
+
+
+    generateTableDataFiltered(ratioMin, ratioMax, ratio){
+        const dataFiltered= [];
+
+        let iterate_ratio= 1/(10**ratio)
+
+        let init_iterate_ratio = ratioMin;
+        while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
+            if( !dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
+                dataFiltered.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
+            }
+
+            init_iterate_ratio +=iterate_ratio;
+        }
+
+        return dataFiltered;
+    }
+
+    synchronizeIconSize(){
+        const zoom = this.map._zoom;
+        //// Update icon size while zoom in or zoom out
+        // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+        const depart= 15;
+        this.markers.eachLayer(marker => {
+            if (marker.options.icon.options.hasOwnProperty('iconUrl') || marker.options.icon.options.__proto__.hasOwnProperty('iconUrl')){
+                const prototype= marker.options.icon.options.hasOwnProperty('iconUrl') ? marker.options.icon.options : marker.options.icon.options.__proto__;
+                const icon= prototype;
+                marker.setIcon(
+                    L.icon({
+                        ...icon,
+                        iconSize : [depart+zoom, depart+zoom +9],
+                    })
+                )
+            }else{
+                const divIcon= marker.options.icon.options;
+                const lastDivIcon= divIcon.html;
+
+                const parser = new DOMParser();
+                const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
+                const span= htmlDocument.querySelector(".my-div-span");
+                const image= htmlDocument.querySelector(".my-div-image");
+                image.setAttribute("style", `width:${depart+zoom}px ; height:${depart+zoom +9}px`)
+
+                marker.setIcon(
+                    new L.DivIcon({
+                        ...divIcon,
+                        html : `${span.outerHTML} ${image.outerHTML}`,
+                        iconSize : [depart+ zoom, depart+ zoom +9],
+                    })
+                )
+            }
+        })
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans le mapModule, 
+     * localisation du fichier: dans MapModule.js,
+     * je veux: supprimer les markers qui sont en dehors de notre vue sur la carte
+     * 
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     * - remove markers outside the box
+     */
+    removeMarkerOutSideTheBox(newSize){
+
+        const zoom = this.map._zoom;
+        const { minx, maxx, miny, maxy } = newSize;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax } = current_object_dataMax;
+
+        let countMarkers= 0;
+        //// REMOVE the outside the box
+        this.markers.eachLayer((marker) => {
+            const { lat, lng } = marker.getLatLng();
+            const isInDisplay = ( lat > parseFloat(miny) && lat < parseFloat(maxy)) && ( lng > parseFloat(minx) && lng < parseFloat(maxx) );
+            if( !isInDisplay || countMarkers > dataMax ){
+                this.markers.removeLayer(marker);
+            }else{
+                countMarkers++;
+            }
+        });
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans la rubrique resto, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mise a jour les données sur la carte,
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     * - remove markers outside the box
+     * - Add some markers ( via latitude, ratio, dataMax )
+     * - 
+     */
+    updateMarkersDisplay(newSize){
+
+        ///REMOVE THE OUTSIDE THE BOX
+        this.removeMarkerOutSideTheBox(newSize);
+
+
+        const zoom = this.map._zoom;
+        const { minx, maxx, miny, maxy } = newSize;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        /// add same data must be show
+        if( zoom > 6 ){
+
+            /** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
+            /** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
+            /** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
+
+            const dataFilteredDerive= [ ]; //// pour stocker les données filtres [ { lat: ... , data: [ { ... }, ... ] } ]
+
+            //// first data filter from this.markers ( lat min to lat max ( with current ration ))
+            this.markers.eachLayer((marker) => {
+                const temp= marker.getLatLng();
+                if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
+                    ////check if there is filter by carractère appear
+                    if( this.filterLetter !== ""){
+                        dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                            this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+                        ] })
+                    }else{
+                        dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
+                            this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                        ] })
+                    }
+
+                }else{
+                    dataFilteredDerive.forEach(ktem => {
+                        if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
+                            if( ktem.data.length < dataMax ){
+                                
+                                if( this.filterLetter !== "" ){
+                                    ktem.data.push(
+                                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )
+                                    )
+                                }else{
+                                    ktem.data.push(
+                                        this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                    )
+                                }
+                            }
+                        }
+                    })
+                }
+            });
+
+            //// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
+            const ratioMin= parseFloat(parseFloat(miny).toFixed(ratio))
+            const ratioMax= parseFloat(parseFloat(maxy).toFixed(ratio))
+            
+            let iterate_ratio= 1/(10**ratio) /// calcule iteration
+            let init_iterate_ratio = ratioMin; /// lat min corresponding with the ratio
+            while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
+                if( !dataFilteredDerive.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
+                    dataFilteredDerive.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
+                }
+                init_iterate_ratio +=iterate_ratio;
+            }
+            
+            
+            ///inject data in dataFilteredDerive related on the lat with the ratio and add it to the cart map
+            this.default_data.forEach(item => {
+
+                ////check if this item is in the current bounding box map.
+                const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+                if( isCanDisplay ){
+                    let isAlreadyDisplay= false; ///check if this already displayed on the map (already in the markers)
+
+                    this.markers.eachLayer((marker) => {
+                        if( parseInt(marker.options.id) === parseInt(item.id)){
+                            isAlreadyDisplay = true;
+                        }
+                    })
+    
+                    if( !isAlreadyDisplay ){ /// is not already displayed
+
+                        ///is in the dataFilteredDerive
+                        if(dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
+                            const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
+
+                            if( itemDataDerive && itemDataDerive.data.length < dataMax){
+
+                                ////check if there is filter by carractère appear or not...
+                                if( this.filterLetter === "" || (this.filterLetter !== "" && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())){
+                                    this.settingSingleMarker(item, false)
+                                    dataFilteredDerive.forEach(ktem => {
+                                        if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
+                                            ktem.data.push(item)
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+
+            // console.log("dataFilteredDerive");
+            // console.log(dataFilteredDerive);
+
+        }else{
+            
+            /** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
+            /** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
+            /** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
+            const dataFiltered= [ ];
+
+            this.default_data.forEach(item => {
+                ////check if there is filter by carractère appear
+                if( this.filterLetter === "" || (  this.filterLetter !== ""  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                    if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
+                            dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
+                    }else{
+                        dataFiltered.forEach(ktem => {
+                            if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
+                                ktem.data.push(item)
+                            }
+                        })
+                    }
+                }
+            })
+
+            const dateFilteredPrime= [];
+
+            this.markers.eachLayer((marker) => {
+                const temp= marker.getLatLng();
+
+                if( !dateFilteredPrime.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === jtem.lat )){
+
+                    const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+
+                    ////check if there is filter by carractère appear
+                    if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                        dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [ data_temp ]})
+                    }
+
+                }else{
+                    dateFilteredPrime.forEach(ktem => {
+                        if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
+                            if( ktem.data.length < dataMax ){
+                                const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+
+                                ////check if there is filter by carractère appear
+                                if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                                    ktem.data.push( this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)))
+                                }
+                            }else{
+                                this.markers.removeLayer(marker);
+                            }
+                        }else{
+                            this.markers.removeLayer(marker);
+                        }
+                    })
+                }
+            });
+
+
+            dataFiltered.forEach(item => {
+                if(dateFilteredPrime.some(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
+                    const dataPrime= dateFilteredPrime.find(jtem => item.lat === jtem.lat)
+                    item.data.forEach(ktem => {
+                        if(!dataPrime.data.some(ptem => parseInt(ptem.id) === parseInt(ktem.id))){
+                            this.settingSingleMarker(ktem, false)
+                        }
+                    })
+                }else{
+                    item.data.forEach(ktem => {
+                        ////check if there is filter by carractère appear
+                        if(  this.filterLetter === "" || (  this.filterLetter !== ""  && ktem.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
+                            this.settingSingleMarker(ktem, false)
+                        }
+                    })
+                }
+                
+            })
+        }
+
+        //// Update icon size while zoom in or zoom out
+        // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+        this.synchronizeIconSize()
+
+        // this.markers.refreshClusters();
+
+        let countMarkerst= 0;
+        this.markers.eachLayer((marker) => {  countMarkerst++; });
+        console.log("Total marker afficher: " + countMarkerst);
+
+        console.log("Total default data: " + this.default_data.length)
+    }
+    
+    
+    /**
+     * @author Jehovanie RAMANDRIJOEL
+     * où: on Utilise cette fonction dans la rubrique resto, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mise a jour les données sur la carte,
+     * @param {} new_data : dataList to show
+     * @param {} newSize  { minx, maxx, miny, maxy }
+     * 
+     */
+    addMarkerNewPeripherique(new_data, newSize){
+        const { minx, maxx, miny, maxy } = newSize;
+        
+        let countMarkers= 0;
+        this.markers.eachLayer((marker) => {  countMarkers++; });
+
+        if( countMarkers < 20 ){
+            new_data.forEach(item => {
+                const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+                
+                if( isCanDisplay ){
+                    let isAlreadyDisplay= false;
+                    this.markers.eachLayer((marker) => {
+                        if( parseInt(marker.options.id) === parseInt(item.id)){
+                            isAlreadyDisplay = true;
+                        }
+                    })
+    
+                    if( !isAlreadyDisplay ){
+                        console.log("new add : "+ item.id)
+                        this.settingSingleMarker(item, false)
+                    }
+                }
+            })
+        }
     }
 }

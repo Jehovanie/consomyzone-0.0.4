@@ -203,6 +203,32 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
+
+    /**
+     * @Route("/golf_in_peripherique", name="golf_in_peripherique", methods={"GET"})
+     */
+    public function getPeripheriqueData(
+        Request $request, 
+        GolfFranceRepository $golfFranceRepository)
+    {
+        if($request->query->has("minx") && $request->query->has("miny") ){
+            
+            $dep = ( $request->query->get("dep")) ?  $request->query->get("dep") : null;
+            $nom_dep = ( $request->query->get("nom_dep")) ?  $request->query->get("nom_dep") : null;
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $data= $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $nom_dep, $dep, 200);
+
+            return $this->json(["data" => $data]);
+        }
+
+        return $this->json([]);
+    }
+
     #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{limit}/{offset}', name: 'golf_dep_france_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementMobile(
         $nom_dep,
@@ -282,6 +308,8 @@ class GolfFranceController extends AbstractController
             "userConnected" => $userConnected,
         ]);
     }
+
+
     #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{id_golf}', name: 'golf_dep_france_search_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementSearchMobile(
         $nom_dep,
