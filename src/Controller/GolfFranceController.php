@@ -15,6 +15,7 @@ use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\GolfFinishedRepository;
+use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -392,7 +393,8 @@ class GolfFranceController extends AbstractController
         GolfFranceRepository $golfFranceRepository,
         AvisGolfRepository $avisGolfRepository,
         UserRepository $userRepository,
-        Status $status, 
+        Status $status,
+        Tribu_T_Service $tribu_T_Service,
     ){
         ///current user connected
         $user = $this->getUser();
@@ -406,6 +408,9 @@ class GolfFranceController extends AbstractController
         
         $isAlreadyCommented= false;
         $avis= ["note" => null, "text" => null  ];
+
+        $arrayTribu = [];
+        $isPastilled = false;
         
         $note_temp=0;
         foreach ($global_note as $note ) {
@@ -423,11 +428,33 @@ class GolfFranceController extends AbstractController
             "avisPerso" => $avis
         ];
 
+        if ($this->getUser()) {
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                // dd($key);
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $golfID, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        $isPastilled = true;
+                    }
+                }
+            }
+        }
+
 
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "details" => $details,
+            "tribu_t_pastilleds" => $arrayTribu
         ]);
     }
 

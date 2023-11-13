@@ -14,8 +14,9 @@ function setGolfTodo(goldID,selectElement){
     fecthGolfAction(goldID, "todo",selectElement)
 }
 
-function setMonGolf(goldID,selectElement){
-    fecthGolfAction(goldID, "for_me",selectElement)
+function setMonGolf(goldID, golfName, golfAdress){
+    // fecthGolfAction(goldID, "for_me",selectElement)
+    showPastillGolfTribuT(goldID, golfName, golfAdress)
 }
 
 function setGolfFinished(goldID,selectElement){
@@ -58,12 +59,12 @@ function executeActionForPastGolf(event,goldID){
                         OBJECT_MARKERS_GOLF.updateStateGolf("refaire", goldID)
                         break;
                     }
-                    case 4: {
+                    // case 4: {
                     
-                        setMonGolf(goldID, selectElement)
-                        OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
-                        break;
-                    }
+                    //     setMonGolf(goldID, selectElement)
+                    //     OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
+                    //     break;
+                    // }
 
                     default:
                         {
@@ -102,10 +103,10 @@ function fecthGolfAction(goldID, action,selectElement){
             url = '/user/setGolf/todo'
             break;
         }
-        case "for_me":{
-            url = '/user/setGolf/for_me'
-            break;
-        }
+        // case "for_me":{
+        //     url = '/user/setGolf/for_me'
+        //     break;
+        // }
         case  "none": {
             url = '/user/setGolf/none'
             break;
@@ -240,4 +241,8 @@ function fecthGolfAction(goldID, action,selectElement){
     // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
    
 
+}
+
+function executeActionForPastMonGolf(goldID, golfName, golfAdress) {
+    setMonGolf(goldID, golfName, golfAdress)
 }

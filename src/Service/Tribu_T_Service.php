@@ -2095,5 +2095,32 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+    /**
+     * @author Tomm
+     * 
+     * @param string $tableNameExtension: le nom de la table extension
+     * 
+     * @param int $idResto: l'extension
+     * @return number $result: 0 or if(not exists) else positive number
+     */
+    public function checkIfCurrentGolfPastilled($tableNameExtension, int $idGolf, $isPastilled)
+    {
+
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idGolf AND isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if (is_array($result)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    
+
 }
 

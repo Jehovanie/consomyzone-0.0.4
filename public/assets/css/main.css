@@ -2412,3 +2412,62 @@ textarea {
         background-image: url("/assets/image/flags@2x.png");
     }
 }
+
+
+.content-modal-pastille-golf {
+    position: absolute;
+    top: 0;
+    z-index: 1031;
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 100%;
+    height: 100%;
+}
+
+.modal-pastille-golf {
+    width: 40%;
+    height: auto;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.3);
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 175px;
+    padding: 20px;
+}
+
+.pwd-eye {
+    margin-right: 80px;
+    margin-top: -35px !important;
+}
+
+.logo_path_pastille {
+    width: 35px;
+}
+
+.logo_path_pastille_details {
+    float: left;
+    height: 25px;
+    margin-left: -10px;
+    cursor: pointer;
+    clip-path: circle();
+}
+
+.length-pastille-plus {
+    background-color: #ccc;
+    position: absolute;
+    color: #000;
+    right: 0;
+    font-size: 11pt;
+    width: 25px;
+    clip-path: circle();
+    z-index: 1;
+}
+
+.modal-body-pastille-golf {
+    overflow-y: scroll;
+    height: 270px;
+}
+
+.swal-modal{
+    z-index: 1;
+}

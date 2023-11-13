@@ -24,8 +24,8 @@
                                         <span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span> 
                                     {% elseif (details.user_status["fait"] == "1") %}
                                         <span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span> 
-                                    {% elseif (details.user_status["mon_golf"] == "1") %}
-                                        <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span> 
+                                    {# {% elseif (details.user_status["mon_golf"] == "1") %} #}
+                                        {# <span class="badge bg-info  golf_status golf_status_jheo_js">MON GOLF</span>  #}
                                     {% elseif (details.user_status["refaire"] == "1") %}
                                         <span class="badge bg-info  golf_status golf_status_jheo_js">A REFAIRE</span> 
                                     {% else %}
@@ -38,6 +38,35 @@
 
                         </p>
                     </div>
+                    <div class="col-4">
+                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
+                            
+                            {% set count = 0 %}
+                            {% for tribu_t_pastilled in tribu_t_pastilleds %}
+                                {# {{ dump(tribu_t_pastilled) }} #}
+                                    {% if tribu_t_pastilled.isPastilled == true %}
+                                        {% set count = count + 1 %}
+                                    {% endif %}
+                                {% if tribu_t_pastilled['isPastilled'] == true %}
+                                    {% if tribu_t_pastilled['logo_path'] == "" %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                    {% else %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="{{tribu_t_pastilled['logo_path']}}" alt="">
+                                    {% endif %}
+                                    
+                                
+                                {% endif %}
+                                
+                            {% endfor %}
+                            
+                            {% if count > 4 %}
+                                <span class="length-pastille-plus">{{ count }}+</span>
+                            {% else %}
+                                <span class="length-pastille-plus"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
                 </div>
             </blockquote>
             <figcaption class="blockquote-footer">
@@ -54,12 +83,16 @@
                             <option value="1">A faire</option>
                             <option value="2">Fait</option>
                             <option value="3">A refaire</option>
-                            <option value="4">Mon golf</option>
+                            {# <option value="4">Mon golf</option> #}
                         </select>
                         {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
                     {% else %}
                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,'{{details.id}}')">Oui</span>
                     {% endif %}
+                </div>
+                <div class="mon-golf">
+                    <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
+                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>Mon golf</button>
                 </div>
             {% endif %}
                 
