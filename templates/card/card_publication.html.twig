@@ -73,7 +73,7 @@
     <div class="card-pub-actu">
         <p class="text-pub mb-3 pub_description_jheo_js">{{publication.description}}</p>
         {% if publication.image is defined and publication.image is not same as("") %}
-            <img class="image_publication pub_image_jheo_js"  src="{{publication.image}}" alt="image publication">
+            <img class="image_publication pub_image_jheo_js"  src="{{publication.image}}" alt="image publication" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
         {% endif %}
     </div>
      {# content_nbr_comment_jheo_js #}
