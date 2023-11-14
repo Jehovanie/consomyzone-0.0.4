@@ -724,19 +724,16 @@ function initCKEditor(idElement,callback){
             // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
             toolbar: {
                 items: [
-                    
                     'selectAll', '|',
-                   
                     'bold', 'italic', 'strikethrough', 'underline', 'code', 'subscript', 'superscript', 'removeFormat', '|',
                     'bulletedList', 'numberedList', 'todoList', '|',
                     'outdent', 'indent', '|','undo', 'redo',
                     '-',
                     'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
                     'alignment', '|',
-                    'link',  'blockQuote','|',
+                    'link', 'blockQuote','|',
                      'horizontalLine', 'pageBreak', '|',
-                    'textPartLanguage'
-                    
+                    'textPartLanguage',
                 ],
                 shouldNotGroupWhenFull: true
             },
@@ -837,7 +834,7 @@ function initCKEditor(idElement,callback){
                 // 'ExportWord',
                 'CKBox',
                 'CKFinder',
-                'EasyImage',
+                // 'EasyImage',
                 // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
                 // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
                 // Storing images as Base64 is usually a very bad idea.

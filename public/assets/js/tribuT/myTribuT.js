@@ -11,6 +11,9 @@ var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/wor
 
 var image_tribu_t
 var descriptionTribuT = ""
+
+
+let email_piece_joint_list= []
 /**
  * create tribu_t section
  */
@@ -1929,7 +1932,19 @@ function showInvitations() {
                                 </div>
                                 <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
-                            <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+
+                            <ul class="list-group content_list_piece_joint_jheo_js d-none"></ul>
+
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div class="p-2 bd-highlight">
+                                    <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+                                </div>
+                                <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+                                    <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+                                    <label class="label_piece_joint_jheo_js" for="piece_joint"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+                                    <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJoint(this);" />
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div id="table-tribuG-member" class="mt-2">
@@ -2015,6 +2030,19 @@ function showInvitations() {
     //     }
     // })
 
+    if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){
+
+        const content_input_piece= document.querySelector(`.content_input_piece_joint_jheo_js`);
+        
+        content_input_piece.addEventListener('mouseover',() => {
+            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.remove('d-none')
+        })
+    
+        content_input_piece.addEventListener('mouseout',() => {
+            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.add('d-none')
+        })
+    }
+
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
         form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
@@ -2064,8 +2092,14 @@ function showInvitations() {
         //Changing description check editor by Elie
         data = { ...data, "description": editor.getData() }
 
-        // console.log("data sending...")
-        // console.log(data)
+
+        if( email_piece_joint_list.length > 0 ){
+            data = { ...data, "piece_joint": email_piece_joint_list }
+        }else{
+            data = { ...data, "piece_joint": [] }
+        }
+
+        email_piece_joint_list= [];
 
         if (status) {
             //////fetch data
@@ -2106,6 +2140,17 @@ function showInvitations() {
 
                 form_parent.querySelector(".btn_send_invitation_js_jheo").removeAttribute("disabled")
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
+
+
+                if( document.querySelector(".content_list_piece_joint_jheo_js")){
+                    document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
+
+                    if( !content_list_piece_joint.classList.contains("d-none")){
+                        content_list_piece_joint.classList.add("d-none")
+                    }
+                }
+
+
                 document.querySelector("#successSendingMail").style.display = "block"
 
                 // swal({
@@ -2118,7 +2163,6 @@ function showInvitations() {
                 }, 5000)
 
             }).catch((e) => { console.log(e); });
-
         }
     })
 
@@ -3107,4 +3151,116 @@ function fetchAllInvitationStory() {
 
         })
         .catch(error => console.log(error))
+}
+
+
+if( document.querySelector(".content_input_piece_joint_jheo_js")){
+    const btn_piece_joint= document.querySelector(".content_input_piece_joint_jheo_js");
+    const input_piece_joint= document.querySelector(".input_piece_joint_jheo_js")
+
+    input_piece_joint.addEventListener("change", (e) => {
+
+    })
+}
+
+/**
+ * All add input image
+ * @parm inputImage.html.twig
+ */
+function addPieceJoint(input) {
+
+    if (input.files && input.files[0]){
+
+        const listNotAccepted = ["exe", "js" ,"zip", "css", "html" ];
+
+        console.log(input.value)
+        const value= input.value;
+        const  temp= value.split(".");
+        const extensions = temp[temp.length-1];
+        console.log("extensions : " + extensions)
+
+        if( !listNotAccepted.some( item => item.toLowerCase() === extensions ) && extensions.length < 5 ){
+            var reader = new FileReader();
+  
+            reader.onload = function (e) {
+                // base64File : e.target.result
+                console.log(e)
+                console.log(input.value)
+                const input_value= input.value.split("\\")
+                const name= input_value[input_value.length-1];
+    
+                const id_unique= new Date().getTime();
+
+                createListItemPiece(name, id_unique);
+    
+                email_piece_joint_list.push({id: id_unique,  name, base64File: e.target.result })
+            };
+    
+            reader.readAsDataURL(input.files[0]);
+        }else{
+            swal({
+                title: "Le format de fichier n'est pas pris en charge!",
+                icon: "error",
+                button: "OK",
+            });
+        }
+
+
+    }
+
+    // const listExt = ["jpg", "jpeg", "png"];
+    // // const octetMax= 4096e+3; // 4Mo
+    // const octetMax = 2097152; //2Mo
+
+    // var reader = new FileReader();
+
+    // reader.onload = function (e) {
+    //   if (!checkFileExtension(listExt, e.target.result)) {
+    //     swal({
+    //       title: "Le format de fichier n'est pas pris en charge!",
+    //       text: "Le fichier autorisé doit être une image.",
+    //       icon: "error",
+    //       button: "OK",
+    //     });
+    //   } else {
+    //     if (!checkTailleImage(octetMax, e.target.result)) {
+    //       swal({
+    //         title: "Le fichier est trop volumineux!",
+    //         text: "La taille de l'image doit être inférieure à 2Mo.",
+    //         icon: "error",
+    //         button: "OK",
+    //       });
+    //     } else {
+    //       $(".image-upload-wrap").hide();
+    //       $(".image-upload-image").attr("src", e.target.result);
+    //       $(".image_upload_image_jheo_js").show();
+    //       $(".image-upload-content").show();
+    //     }
+    //   }
+}
+
+function createListItemPiece(name, id){
+
+    console.log(email_piece_joint_list);
+
+    const content_list_piece_joint= document.querySelector(".content_list_piece_joint_jheo_js")
+    if( content_list_piece_joint.classList.contains("d-none")){
+        content_list_piece_joint.classList.remove("d-none")
+    }
+
+    const list_item= `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <p>${name}</p>
+            <button type="button" class="btn btn-outline-danger" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
+        </li>
+    `
+
+    content_list_piece_joint.innerHTML += list_item;
+}
+
+function removeListeItem(e, id){
+    e.parentElement.remove()
+
+    email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
+    console.log(email_piece_joint_list);
 }

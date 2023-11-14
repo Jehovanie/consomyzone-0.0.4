@@ -1749,7 +1749,8 @@ class TributTController extends AbstractController
         UserService $userService,
         RouterInterface $router,
         Tribu_T_Service $tribuTService,
-        NotificationService $notification
+        NotificationService $notification,
+        Filesystem $filesyst
     )
     {
         if(!$this->getUser()){
@@ -1762,7 +1763,7 @@ class TributTController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        extract($data); ///$table, $principal, $cc ,$object, $description
+        extract($data); ///$table, $principal, $cc, $object, $description, $piece_joint        
 
         $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
 
@@ -1771,9 +1772,32 @@ class TributTController extends AbstractController
         $type = "invitation";
 
         $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
-    
         
-         
+        $piece_with_path= [];
+        if( count($piece_joint) > 0 ){
+            // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $userId . "/";
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist === false) {
+                $filesyst->mkdir($path, 0777);
+            }
+            
+            foreach ($piece_joint as $item ){
+                $name= $item["name"];
+
+                $char_spec= ["-", " "];
+                $name= str_replace($char_spec, "_", $name);
+                $path_name= $path . $name;
+                ///name file, file base64
+                file_put_contents($path_name, file_get_contents($item["base64File"]));
+
+
+                $item["path"]= $path . $name;
+
+                array_push($piece_with_path, $item);
+            }
+        }
+        
         if($userRepository->findOneBy(["email" => $principal])){
 
             /** URL FOR MEMBER
@@ -1797,6 +1821,9 @@ class TributTController extends AbstractController
             $context["content_mail"] = $description . 
             " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>". 
             " <p> de ". $from_fullname."</p>";
+
+            $context["piece_joint"] = $piece_with_path;
+
 
             $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
 
@@ -1831,6 +1858,8 @@ class TributTController extends AbstractController
             $context["content_mail"] = $description .
             " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"
             ." <p> de ". $from_fullname."</p>";
+
+            $context["piece_joint"] = $piece_with_path;
 
             $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
         }

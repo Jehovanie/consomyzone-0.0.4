@@ -2412,3 +2412,30 @@ textarea {
         background-image: url("/assets/image/flags@2x.png");
     }
 }
+
+.content_input_piece_joint{
+    position: relative;
+    width: 350px;
+}
+
+.message_tooltip_piece_joint{
+    display: block;
+    position: absolute;
+    background-color: lightgreen;
+    color: black;
+    padding: 6px;
+    border-radius: 5px;
+    top: 5px;
+    left: 40px;
+}
+
+.message_tooltip_piece_joint:after {
+    position: absolute;
+    content: "";
+    top: 25%;
+    left: -15px;
+    border-top: 5px solid transparent;
+    border-right: 10px solid lightgreen;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
