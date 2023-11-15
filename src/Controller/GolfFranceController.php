@@ -486,9 +486,19 @@ class GolfFranceController extends AbstractController
         $idGolf,
         SerializerInterface $serializer
     ) {
+        $user= $this->getUser();
+        if( !$user ){
+            return $this->json([ "message" => "User no connected."]);
+        }
+        $currentUser= [
+            "id" => $user->getId(),
+            "email" => $user->getEmail(),
+            "pseudo" => $user->getPseudo()
+        ];
+
         $response = $avisGolfRepository->getNoteGlobale($idGolf);
-        $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+
+        return $this->json([ "data" => $response, "currentUser" => $currentUser ]);
     }
 
     #[Route("/avis/golf/{idGolf}", name: "avis_golf", methods: ["POST"])]

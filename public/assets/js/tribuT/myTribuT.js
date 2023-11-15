@@ -1233,8 +1233,8 @@ function showResto(table_rst_pastilled, id_c_u) {
 
     workerRestoPastilled.onmessage = (e => {
         let restos = e.data
-        // console.log("workerresto :::::");
-        // console.log(restos);
+        console.log("workerresto :::::");
+        console.log(restos);
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
@@ -1300,7 +1300,8 @@ function showResto(table_rst_pastilled, id_c_u) {
                                     <i class="fa-solid fa-star" data-rank="3"></i>
                                     <i class="fa-solid fa-star" data-rank="4"> </i>-->
                                     <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                    <!--<a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a> -->
+                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${resto.id}', 'resto')"> ${nbrAvis} Avis</a>
                                 <!--</div>-->
                             </td>
                             <td>
@@ -1313,7 +1314,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                     `
                 }
             }
-
+            // staticBackdrop
             restoContainer.innerHTML += head_table + body_table + foot_table
 
             $('#table_resto_pastilled').DataTable({
@@ -2684,16 +2685,22 @@ function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitu
 
     document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 
-    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+    // document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
+    
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+
     // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
     // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
     // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-
+    
+    if( document.querySelector(".send_avis_jheo_js")){ //// reset function add avis resto
+        document.querySelector(".send_avis_jheo_js").setAttribute("onclick", `addAvisInTribuT("${id_pastille}", "resto")`);
+    }
 }
 
 /**

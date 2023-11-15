@@ -1226,10 +1226,23 @@ class RestaurantController extends AbstractController
         $idRestaurant,
         SerializerInterface $serializer
     ) {
+        $user= $this->getUser();
+        if( !$user ){
+            return $this->json([ "message" => "User no connected."]);
+        }
+        $currentUser= [
+            "id" => $user->getId(),
+            "email" => $user->getEmail(),
+            "pseudo" => $user->getPseudo()
+        ];
+
         $response = $avisRestaurantRepository->getNoteGlobale($idRestaurant);
-        $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+
+
+        return $this->json([ "data" => $response, "currentUser" => $currentUser ]);
     }
+
+
     #[Route("/change/restaurant/{idRestaurant}", name: "change_avis_restaurant", methods: ["POST"])]
     public function changeAvisRestaurant(
         AvisRestaurantRepository $avisRestaurantRepository,

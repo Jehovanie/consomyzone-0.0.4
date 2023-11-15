@@ -28,6 +28,8 @@
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
 
+	<script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
+
 {% endblock %}
 
 {% block body %}
@@ -214,7 +216,7 @@
 	</div>
 
 	{% include 'shard/modal/alert_flash.html.twig' %}
-	{% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+	{# {% include 'shard/restaurant/modal_avis_resto.html.twig' %} #}
 	{% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
 	<!-- End Modal -->
 
@@ -267,7 +269,8 @@
 							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button> #}
 						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
 						<div class="container mb-4 mt-5 content_btns_nanta_js">
-							<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+							<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" ><i class="fas fa-edit"></i> Notez</button>
+							{# <button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button> #}
 							<button type="button" id="data-event-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
 							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning mt-1" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
 						</div>
@@ -338,5 +341,9 @@
 		{% import 'shard/input/textEditor.twig' as editor %}
 		{{ editor.textEditor(3)}}
 	</div>
+
+
+	{% include 'shard/modal/list_avis.html.twig' %}
+    {% include 'shard/modal/modal_avis.html.twig' %}
 
 {% endblock %}
