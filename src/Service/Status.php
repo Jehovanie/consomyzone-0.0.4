@@ -71,6 +71,8 @@ class Status {
             "tableNotification" => $user->getTablenotification(),
             "tableMessage" => $user->getTablemessage(),
             "isSuperAdmin" => in_array("ROLE_GODMODE",$user->getRoles()),
+            "quartier"=> $profil->getCommune(),
+            "code_postal" => $profil->getCodePostal()
         ];
     }
 

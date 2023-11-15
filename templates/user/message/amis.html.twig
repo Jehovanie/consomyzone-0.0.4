@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block body %}
+
 <div class="nh">
 	{% include 'shard/account_navleft_new.html.twig' %}
 	{% include 'shard/account_navbar_new.html.twig' %}
@@ -46,8 +47,9 @@
                         <a href="{{ path('app_all_message') }}" class="me-5">
                             <i class="fa-solid fa-arrow-left"></i>
                         </a>
-                        <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 d-inline" onclick="createVisioGroupFromMessage()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>
+                        <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 d-inline" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>
                         <div class="vd mh ip ch ib user_profile_list_elie">
+                            <h3>Vos Messages.</h3>
                             {# <div class="container-bar-recherche-message">
                                 <input type="text" class="search_input_message_perso" placeholder="Recherche...">                
                             </div> #}
@@ -60,28 +62,22 @@
                                 </li>
                             </ul> #}
 
-                            <div class="content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
+                            <div class="all_mpcmz_faniry_js content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
                                 {% if amisTributG|length > 0 %}
                                     <!-- Chat List Item -->
+                                    {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
                                     {% for item in amisTributG %}
-                                        {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                         {% if item.last_message == false %}
+                                            
+                                         {% else %}
+                                             {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                            {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                         {% endif %}
                                     {% endfor %}
                                     <!-- end List Chat -->
-                                {% else %}
-                                    <div class="cg lc mg sh ol rl tq is">
-                                        <div class="bg-light bg-gradient p-3">
-                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="content_list_tribuT_jheo_js  {{ isInTribut is same as(true) ? '' : 'd-none' }}">
-                                <ul class="list-group list-group-flush">
-                                    {% if allTribuT|length > 0 %}
-                                        {% for jtem in allTribuT %}
-                                            <li class="list-group-item">
-                                                <div class="text-primary d-flex justify-content-between align-items-center">
+                                    {% for jtem in allTribuT %}
+                                            {# <li class="list-group-item"> #}
+                                                {# <div class="text-primary d-flex justify-content-between align-items-center">
                                                     <div>
                                                         {{jtem.name_tribu_t_muable}}
                                                     </div>
@@ -91,26 +87,41 @@
                                                         {% endif %}
                                                         <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
                                                     </div>
-                                                </div>
-                                                <div class="collapse" id="{{'ID_' ~ jtem.table_name}}">
-                                                    <ul class="list-group">
+                                                </div> #}
+                                                {# <div class="collapse" id="{{'ID_' ~ jtem.table_name}}"> #}
+                                                    {# <ul class="list-group"> #}
                                                         {% if jtem.amis|length > 0 %}
                                                             <!-- Chat List Item -->
                                                             {% for ktem in jtem.amis %}
-                                                                {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
+                                                                {% if ktem.last_message == false %}
+
+                                                                {% else %}
+                                                                    {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                                                    {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
+                                                                 {% endif %}
                                                             {% endfor %}
                                                             <!-- end List Chat -->
-                                                        {% else %}
-                                                            <div class="cg lc mg sh ol rl tq is">
-                                                                <div class="bg-light bg-gradient p-3">
-                                                                    <p class="text-center text-danger">Actuellement, vous êtes le seul partisan en ligne dans votre tribu T.</p>
-                                                                </div>
-                                                            </div>
                                                         {% endif %}
-                                                    </ul>
-                                                </div>
-                                            </li>
+                                                    {# </ul> #}
+                                                {# </div> #}
+                                            {# </li> #}
                                         {% endfor %}
+                                    {% if isZeroMessage.noMessage is same as('oui') and isZeroMessage.haveMessage is same as('non') %}
+                                         <div>Vous n'avez aucun message. Rechercher d'autres fan en ligne est envoyés leur des messages. </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="cg lc mg sh ol rl tq is">
+                                        <div class="bg-light bg-gradient p-3">
+                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {# <div class="content_list_tribuT_jheo_js ">
+                                <ul class="list-group list-group-flush">
+                                    {% if allTribuT|length > 0 %}
+                                        
                                     {% else %}
                                         <li>
                                             <div class="cg lc mg sh ol rl tq is">
@@ -121,7 +132,7 @@
                                         </li>
                                     {% endif %}
                                 </ul>
-                            </div>
+                            </div> #}
                         </div>
                     </div>
                     <!-- ====== Chat List End -->
@@ -146,7 +157,7 @@
                         </div>
                         <div>
                             <div class="h d-flex">
-                                <button class="lc yc zd mg pg sh bj wr wj yr me-1" id="elie-btn-visio">
+                                <button class="lc yc zd mg pg sh bj wr wj yr me-1" id="elie-btn-visio" data.roof="{{app.user.id}}">
                                     <i class="fas fa-video-camera" style="font-size:28px;color:#0d6efd;"></i>
                                 </button>
                                 <div x-show="openDropDown" @click.outside="openDropDown = false" class="g m n na de eh sh so nj xr ni bj wr vk">

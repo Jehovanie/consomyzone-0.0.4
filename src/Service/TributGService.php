@@ -1437,4 +1437,24 @@ class TributGService extends PDOConnexionService{
 
         return $results;
     }
+     /**
+     * @author Faniry
+     * @use cette fonction créee la table message pour le message groupé des fan dans les tribu G
+     */
+    public function creaTableTeamMessage($tribu_g){
+
+        $tableMessageName=$tribu_g."_msg_grp";
+        $sql="CREATE TABLE".$tableMessageName. "(".
+        "id int NOT NULL PRIMARY KEY AUTO_INCREMENT,".
+        "id_expediteur int NOT NULL,".
+        "msg longtext  CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,".
+        "isPrivate tinyint NOT NULL DEFAULT 0,".
+        "isPublic tinyint NOT NULL DFAULT 1,".
+        "isRead tinyint NOT NULL DEFAULT 0,".
+        "date_message_created datetime NOT NULL DEFAULT current_timestamp()".
+        ")ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $stmt = $this->getPDO()->prepare($sql);
+        
+        $stmt->execute();
+    }
 }

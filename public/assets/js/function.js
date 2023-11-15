@@ -5400,9 +5400,9 @@ function getUserIdle() {
 }
 
 function resetTimer(idle=300) {
-  console.log(idle)
+ // console.log(idle)
     idle = idle / 60
-    console.log(idle)
+   // console.log(idle)
     let timer = idle -2
     clearTimeout(idleTimer);
     clearTimeout(idleTimer2);
@@ -5459,11 +5459,12 @@ function prelogout() {
 function heartBeat() {
   
     heartBeatTimer = setTimeout(() => {
-        fetch("/user/heartBeat").then((response, error) => {
-        if (response.status === 200 && response.ok) {
-        } else {
-            console.log(error);
-        }
+        fetch("/user/heartBeat").then((response) => {
+          if (response.status === 200 && response.ok) {
+             
+          } else {
+              console.log(error);
+          }
         });
     }, 60000);
 }

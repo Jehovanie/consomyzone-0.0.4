@@ -340,7 +340,7 @@ imgs.forEach(img => {
 
 if (document.querySelector("#elie-btn-visio")) {
 
-    document.querySelector("#elie-btn-visio").addEventListener("click", function () {
+    document.querySelector("#elie-btn-visio").addEventListener("click",  (event)=> {
 
         // $("#visioMessageElie").modal("show")
         document.querySelector("#visioMessageElie").classList.remove("d-none")
@@ -355,7 +355,7 @@ if (document.querySelector("#elie-btn-visio")) {
         </div>
         `
 
-        let roomRandom_msg = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
+        let roomRandom_msg = "Meet" + generateUID() +event.target.dataset.roof
 
         document.querySelector(".btn-minimize-elie").setAttribute('data-onclick', `joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this,'old')`)
 
@@ -563,6 +563,8 @@ function fan(){
                         for (let value of data) {
                          
                             let li = document.createElement("li")
+                            li.setAttribute("class","fan_activ_faniry_js");
+                            li.dataset.toggleUserId=value.id
                             const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
                             const link = "/user/message/perso?user_id="+ value.id;
                             const fullName = value.firstname + " " + value.lastname
@@ -600,6 +602,8 @@ function fan(){
                         for (let value of data) {
                          
                             let li = document.createElement("li")
+                            li.setAttribute("class","fan_activ_faniry_js");
+                            li.dataset.toggleUserId=value.id
                             const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
                             const link = "/user/message/perso?user_id="+ value.id;
                             const fullName = value.firstname + " " + value.lastname
@@ -635,9 +639,27 @@ function fan(){
                 }
                 console.log(length)
                 if (length.tribuT === 0 && length.tribug === 0) {
-                    if (document.querySelector(".only"))
+                    if (document.querySelector(".only")){
                         document.querySelector(".only").textContent = ""
-                    ul.parentElement.innerHTML += "<span class=\"only\">Aucun fan n'est actif.</span>"
+                        document.querySelector(".only").textContent = "Aucun fan n'est actif."
+                    }else{
+                        ul.parentElement.innerHTML += "<span class=\"only\">Aucun fan n'est actif.</span>"
+                    }
+                        
+                   
+                }
+
+                const fans=document.querySelectorAll(`.fan_activ_faniry_js`)
+                let results=removeReplicatedFan(fans)
+                if(results.length >0 ){
+                    const  fanOnlineContainer=document.querySelector("ul.fan_actif_tom_js")
+                    fans.forEach(item=>{
+                        fanOnlineContainer.removeChild(item)
+                    })
+                    results.forEach(item=>{
+                       fanOnlineContainer.appendChild(item)
+                    }) 
+
                 }
                     
             })
@@ -646,12 +668,30 @@ function fan(){
     })
 }
 
+if(location.href.includes("/user/all/message") ||location.href.includes("/user/message/perso")){
+    const fanss=document.querySelectorAll(`.mpcm_faniry_js`)
+    let results =removeReplicatedFan(fanss)
+    if(results.length >0 ){
+        const fanOnlineContainer=document.querySelector("div.all_mpcmz_faniry_js ")
+        fanss.forEach(item=>{
+            fanOnlineContainer?.removeChild(item)
+        })
+        results.forEach(item=>{
+            fanOnlineContainer?.appendChild(item)
+        }) 
+
+    }
+}
+
+
+
 /** 
 *
 *
 */
 function lookupFan(event) {
     const target = event.target
+    clearTimeout(lookupFanDebounce)
     if (target != null && target instanceof HTMLElement) {
         let word = target.value
         if (word.length > 2)  {
@@ -690,5 +730,36 @@ function lookupFan(event) {
         }
         
     }
+    
+}
+
+/**
+ * @author Faniry 
+ * cette fonction enleve les donnée repété dans la liste  fan connecté
+ */
+function removeReplicatedFan(element){
+    
+    let userIds=[]
+    let result=[]
+    if(element.length > 0 ){
+        element.forEach(value=>{
+           let userId=parseInt(value.dataset.toggleUserId)
+            if(!userIds.includes(userId)){
+                result.push(value.cloneNode(true))
+                userIds.push(userId)
+            }
+
+        })
+    }
+
+    return result;
+}
+
+/**
+ * @author Faniry 
+ * cette fonction liste les messages groupé de tous les tribus
+ * localisation: message.js
+ */
+function showListTribusMsg(){
     
 }

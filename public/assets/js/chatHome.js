@@ -1108,6 +1108,7 @@ function createVisioGroup() {
 /**
  * Function creating a group visio
  * @constructor
+ * @deprecated
  */
 function createVisioGroupFromMessage() {
 
@@ -1274,6 +1275,170 @@ function createVisioGroupFromMessage() {
 
 }
 
+/**
+ * @author faniry
+ * lance le visio de groupe
+ */
+async function createVisoGroup(){
+    const fans=await generateListFanConnected()
+    console.log(fans)
+    const ul=document.createElement("ul")
+    const modalContainer= document.querySelector("#visioGroupContentForMessage")
+    modalContainer.innerHTML=""
+    let myid=0
+    for(let fan of fans){
+        myid=parseInt(fan.myid)
+        const li = document.createElement("li")
+        const fullName = fan.fullName
+        const photoProfil = fan.photo_fan != null ? "/public" + fan.photo_fan : '/public/uploads/users/photos/default_pdp.png'
+        const user_id=fan.id_fan
+        const status=!!parseInt(fan.isActive)
+        const statusHtml= status  ? "<span class=\"g l m jc wc ce th pi ij xj\"></span>" :
+        "<span class=\"g l m jc wc ce th pi ij\" style=\"background-color:gray\"></span>"
+        li.innerHTML= `
+                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${user_id}_jheo_js" data-toggle-user-id="${user_id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                    <div class="h mb sc yd of th">
+                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                        ${statusHtml}
+                    </div>
+                    <a href="javascript:void(0)" class="yd">
+                        <div class="row">
+                            <div class="col-8">
+                                <h5 class="mn un zn gs">
+                                    ${fullName}
+                                </h5>
+
+                            </div>
+                            <div class="col-4">
+                            <input class="fan_who_selected_faniry_js" type="checkbox" data-roof=${user_id} id="user_${user_id}" name="user_${user_id}"/>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+        `
+        ul.appendChild(li)
+    }
+    modalContainer.appendChild(ul)
+    $("#visioGroupModalForMessage").modal("show")
+    document.querySelector("#confirmVisioGroupForMessage").addEventListener("click",(event)=>{
+        const fansId=[]
+        document.querySelectorAll(".fan_who_selected_faniry_js").forEach(item=>{
+            if(item.checked){
+                fansId.push(item.dataset.roof)
+            }
+        })
+        if(fans.length>0 && myid!=0){
+            let roomGroup = "Meet" + generateUID() + myid
+            let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                    <p class="text-info mb-2">
+                        <i class="fas fa-video-camera me-2 ms-1"></i>
+                        Appel en attente...
+                        <span onclick="joinMeet('${roomGroup}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+                    </p> 
+                    </div>`
+            for (let user_id of fansId) {
+                fetch("/user/push/message", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+
+                        /// current connecter
+                        from: myid,
+
+                        /// user to talk
+                        to: user_id,
+
+                        ///message content
+                        message: msg_txt.replace("\n", ""),
+                        files: []
+                    })
+                }).then(response => response.json())
+                    .then(res => console.log(res))
+
+                document.querySelector("#bodyVisioMessageElie").innerHTML = ""
+
+                runVisio(roomGroup, user_id, 'bodyVisioMessageElie')
+            }   
+        }else{
+            swal({
+                title: "Oops...",
+                text: "Aucun utilisateur n'a été sélectionné!",
+                icon: "info",
+                button: "OK",
+              });
+        }
+    })
+}
+/**
+ * @author faniry
+ * cette fonction liste les fans en ligne 
+ * le fichier se trouve dans chatHome.js
+ */
+function generateListFanConnected() {
+    return new Promise((resolve, reject) => {
+        fetch("/user/get/allfans").then(r=>{
+            if(r.status === 200 && r.ok){
+                r.json().then(datas=>{
+                    let length = {
+                        tribuT: 1,
+                        tribug:1
+                    }
+                    let fans=[]
+                    let result=[]
+                    for(let j=0, l=datas.length ; j< l ;j++){
+                        if(j ===0){ //index 0 correpond au tribu t
+                            let data=datas[j][0].amis
+                            length.tribuT = data === undefined ? 0 : data.length
+                            for(let value of data){
+                                const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                                fans.push({
+                                    id_fan: parseInt(value.id),
+                                    photo_fan:photoProfil,
+                                    fullName: value.firstname + " " + value.lastname,
+                                    isactive: value.is_online,
+                                    myid: value.my_id
+                                });
+                            }
+                        }else{
+                            let data=datas[j]
+                            length.tribug = data.length  
+                            for (let value of data) {
+                                const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                                fans.push({
+                                    id_fan: parseInt(value.id),
+                                    photo_fan:photoProfil,
+                                    fullName: value.firstname + " " + value.lastname,
+                                    isactive: value.is_online,
+                                    myid: value.my_id
+                                });
+                            }
+                        }
+                    }
+                    const ids=[]
+                    
+                    if (length.tribuT === 0 && length.tribug === 0) {
+                        result=[]
+                    }else{
+                        for(let fan of fans){
+    
+                            if(!ids.includes(fan.id_fan)){
+                                result.push(fan)
+                                ids.push(fan.id_fan)
+                            }
+                        }
+                    }
+                    resolve(result)
+                });
+            }else{
+                reject("error")
+            }
+        })
+    }) 
+    
+}
 /**
  * Function selecting one or more user to meeting
  * @constructor
