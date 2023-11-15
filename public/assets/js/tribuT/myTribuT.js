@@ -12,8 +12,11 @@ var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/wor
 var image_tribu_t
 var descriptionTribuT = ""
 
+///Jehovanie: this variable is use for the list of the piece joint
+/// in the send email on the invitation tribu T
+let email_piece_joint_list= [];
 
-let email_piece_joint_list= []
+
 /**
  * create tribu_t section
  */
@@ -3153,17 +3156,12 @@ function fetchAllInvitationStory() {
         .catch(error => console.log(error))
 }
 
-
-if( document.querySelector(".content_input_piece_joint_jheo_js")){
-    const btn_piece_joint= document.querySelector(".content_input_piece_joint_jheo_js");
-    const input_piece_joint= document.querySelector(".input_piece_joint_jheo_js")
-
-    input_piece_joint.addEventListener("change", (e) => {
-
-    })
-}
-
 /**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation 
+ * 
  * All add input image
  * @parm inputImage.html.twig
  */
@@ -3171,96 +3169,97 @@ function addPieceJoint(input) {
 
     if (input.files && input.files[0]){
 
-        const listNotAccepted = ["exe", "js" ,"zip", "css", "html" ];
-
-        console.log(input.value)
+        /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants : 
+        /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+        const listNotAccepted = ["zip", "css", "html", "sql", "xml", "gz", "bz2", "tgz",'ade', 'adp', 'apk', 'appx', 'appxbundle', 'bat', 'cab', 'chm', 'cmd', 'com', 'cpl', 'diagcab', 'diagcfg', 'diagpack', 'dll', 'dmg', 'ex', 'ex_', 'exe', 'hta', 'img', 'ins', 'iso', 'isp', 'jar', 'jnlp', 'js', 'jse', 'lib', 'lnk', 'mde', 'msc', 'msi', 'msix', 'msixbundle', 'msp', 'mst', 'nsh', 'pif', 'ps1', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vhd', 'vxd', 'wsc', 'wsf', 'wsh', 'xll'];
+        
+        /// input value to get the original name of the file ( with the fake path )
         const value= input.value;
-        const  temp= value.split(".");
-        const extensions = temp[temp.length-1];
-        console.log("extensions : " + extensions)
 
-        if( !listNotAccepted.some( item => item.toLowerCase() === extensions ) && extensions.length < 5 ){
+        //// to get the extension file
+        const  temp= value.split(".");
+        const extensions = temp[temp.length-1]; /// extension
+
+        ///if the current extension is in the list not accepted.
+        if( !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) && extensions !== value ){
+
             var reader = new FileReader();
-  
             reader.onload = function (e) {
-                // base64File : e.target.result
-                console.log(e)
-                console.log(input.value)
-                const input_value= input.value.split("\\")
-                const name= input_value[input_value.length-1];
+
+                /// get name the originila name of the file
+                const input_value= value.split("\\")
+                const name= input_value[input_value.length-1]; /// original name
     
+                ///unique  to identify the file item
+                /// this not save in the database.
                 const id_unique= new Date().getTime();
 
+                ////create item piece joint.
                 createListItemPiece(name, id_unique);
-    
+                
+                //// save the item in variable global list piece jointe.
                 email_piece_joint_list.push({id: id_unique,  name, base64File: e.target.result })
             };
     
             reader.readAsDataURL(input.files[0]);
-        }else{
+        }else{ /// if the extension is not supported.
             swal({
                 title: "Le format de fichier n'est pas pris en charge!",
                 icon: "error",
                 button: "OK",
             });
         }
-
-
     }
-
-    // const listExt = ["jpg", "jpeg", "png"];
-    // // const octetMax= 4096e+3; // 4Mo
-    // const octetMax = 2097152; //2Mo
-
-    // var reader = new FileReader();
-
-    // reader.onload = function (e) {
-    //   if (!checkFileExtension(listExt, e.target.result)) {
-    //     swal({
-    //       title: "Le format de fichier n'est pas pris en charge!",
-    //       text: "Le fichier autorisé doit être une image.",
-    //       icon: "error",
-    //       button: "OK",
-    //     });
-    //   } else {
-    //     if (!checkTailleImage(octetMax, e.target.result)) {
-    //       swal({
-    //         title: "Le fichier est trop volumineux!",
-    //         text: "La taille de l'image doit être inférieure à 2Mo.",
-    //         icon: "error",
-    //         button: "OK",
-    //       });
-    //     } else {
-    //       $(".image-upload-wrap").hide();
-    //       $(".image-upload-image").attr("src", e.target.result);
-    //       $(".image_upload_image_jheo_js").show();
-    //       $(".image-upload-content").show();
-    //     }
-    //   }
 }
 
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function create single elemment html like to piece joint
+ * on the send email invitation on the tribu T
+ * 
+ * @param {*} name : file name
+ * @param {*} id : unique id to identifie the element in the object.
+ * 
+ * @return void
+ */
 function createListItemPiece(name, id){
+    
+    ////content block the list item piece joint.
+    const content_list_piece_joint= document.querySelector(".content_list_piece_joint_jheo_js");
 
-    console.log(email_piece_joint_list);
-
-    const content_list_piece_joint= document.querySelector(".content_list_piece_joint_jheo_js")
+    //// display the block when it's hidden.
     if( content_list_piece_joint.classList.contains("d-none")){
         content_list_piece_joint.classList.remove("d-none")
     }
 
+    /// structure html the single element
     const list_item= `
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <p>${name}</p>
             <button type="button" class="btn btn-outline-danger" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
         </li>
     `
-
+    /// insert the single element.
     content_list_piece_joint.innerHTML += list_item;
 }
 
-function removeListeItem(e, id){
-    e.parentElement.remove()
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *  
+ * This function remove the item on the list piece jointe 
+ * and update variable global `email_piece_joint_list` list of the piece joint 
+ * 
+ * @param {*} e : event html object: item list piece jointe
+ * @param {*} id : unique id in to identify the item piece joint in the list `email_piece_joint_list`
+ * 
+ * @return void
+ */
+function removeListeItem(e, id){
+    ///remove html element
+    e.parentElement.remove()
+    ///remove one element in the piece global
     email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
-    console.log(email_piece_joint_list);
 }
