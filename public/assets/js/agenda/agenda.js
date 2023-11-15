@@ -277,9 +277,11 @@ function bindEventForAllDay(info) {
     heure = (heure < 10) ? "0" + heure : heure;
     minutes = (minutes < 10) ? "0" + minutes : minutes;
     let heureEnTempsReel = heure + ":" + minutes;
-    document.querySelector(".timeStart_tomm_js").value = heureEnTempsReel;
-    // document.querySelector(".timeStart_jheo_js").value = '00:00';
-    document.querySelector(".timeEnd_jheo_js").value = heureEnTempsReel;
+    //document.querySelector(".timeStart_tomm_js").value = heureEnTempsReel;
+    //document.querySelector(".timeEnd_jheo_js").value = heureEnTempsReel;
+
+    document.querySelector(".timeStart_tomm_js").value = "00:00";
+    document.querySelector(".timeEnd_jheo_js").value = "23:59";
 
     ///show modal
     //document.querySelector('.show_modal_createAgenda_jheo_js').click()
@@ -741,53 +743,70 @@ function activeOnglet(elem) {
         let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
 
         if (elem.parentElement.nextElementSibling) {
+            document.querySelector("#hideOrShow").style.display = "block"
+            document.querySelector("#quoi").value = ""
+            document.querySelector("#where").value = ""
+            document.querySelector("#contentForSearchEtab").style.display = "block"
+            
             elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
             makeLoading()
-            getAllEtab(cmzEtab, false, elem)
+            getAllEtab(cmzEtab, false)
         } else {
+            document.querySelector("#hideOrShow").style.display = "none"
+            document.querySelector("#contentForSearchEtab").style.display = "none"
+            document.querySelector("#quoi").value = ""
+            document.querySelector("#where").value = ""
             elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
             makeLoading()
-            getAllEtab(cmzEtab, true, elem)
+            getAllEtab(cmzEtab, true)
         }
     }
 }
 
 function getListEtabCMZ(element) {
+    document.querySelector("#hideOrShow").style.display = "block"
+    document.querySelector("#quoi").value = ""
+    document.querySelector("#where").value = ""
+    document.querySelector("#contentForSearchEtab").style.display = "block"
+    seletOtherEtab(true)
+    $("#createAgenda").modal("hide")
+    let cmzEtab = element.value
     let tab = document.querySelectorAll("#smallNavInvitationDep > li > a")
-    let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
+    document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
+    let idDep = parseInt(document.querySelector("#hiddenIdDep").value)
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
     if (tab[0].classList.contains("active")) {
 
         if (cmzEtab == "golf") {
             tabEtab[0].textContent = "Tous les golfs"
             tabEtab[1].textContent = "Golfs à faire"
+            document.querySelector("#hideOrShow > span").textContent = "Golfs"
         } else if (cmzEtab == "restaurant") {
             tabEtab[0].textContent = "Tous les restaurants"
             tabEtab[1].textContent = "Restaurants pastillés"
+            document.querySelector("#hideOrShow > span").textContent = "Restaurants"
         }
 
-        $("#listDepModal").modal("hide")
-
-        tabEtab[0].dataset.id = element.dataset.id
+        tabEtab[0].dataset.id = idDep
 
         tabEtab[0].dataset.name = cmzEtab
 
-        tabEtab[1].dataset.id = element.dataset.id
+        tabEtab[1].dataset.id = idDep
 
         tabEtab[1].dataset.name = cmzEtab
 
-        if (element.dataset.id != "75" || cmzEtab == "golf") {
+        //if (element.dataset.id != "75" || cmzEtab == "golf") {
 
             $("#listRestoOrGolfModal").modal("show")
             makeLoading()
-            getAllEtab(cmzEtab, false, element)
+            getAllEtab(cmzEtab, false)
 
-        } else {
+        /*} else {
             $("#listArrondissement").modal("show")
             makeLoading()
             let container = document.querySelector(".container_list_arron")
             getListArrondissement(container, "75")
-        }
+        }*/
 
     } else {
 
@@ -799,19 +818,17 @@ function getListEtabCMZ(element) {
             tabEtab[1].textContent = "Restaurants pastillés"
         }
 
-        $("#listDepModal").modal("hide")
-
-        tabEtab[0].dataset.id = element.dataset.id
+        tabEtab[0].dataset.id = idDep
 
         tabEtab[0].dataset.name = cmzEtab
 
-        tabEtab[1].dataset.id = element.dataset.id
+        tabEtab[1].dataset.id = idDep
 
         tabEtab[1].dataset.name = cmzEtab
 
         $("#listRestoOrGolfModal").modal("show")
 
-        getAllEtab(cmzEtab, true, element)
+        getAllEtab(cmzEtab, true)
 
     }
 }
@@ -1078,14 +1095,13 @@ function getEtabByCodeinse(element) {
  * @param {*} isPast 
  * @param {*} element 
  */
-function getAllEtab(etab, isPast, element) {
+function getAllEtab(etab, isPast, element=null) {
 
     let request = "";
-    let id = element.dataset.id
-
+    let id = document.querySelector("#hiddenIdDep").value
     let tabEtab = document.querySelectorAll("#smallNavInvitation > li > a")
     if (isPast) {
-        if(id !=""){
+        /*if(id !=""){
             request = new Request(`/api/user/agenda/get/${etab}/pastille/dep/${id}`, {
                 method: "GET",
                 headers: {
@@ -1095,7 +1111,7 @@ function getAllEtab(etab, isPast, element) {
             })
             console.log("id: "+id)
         }else{
-            console.log("id: Tsisy")
+            console.log("id: Tsisy")*/
             request = new Request(`/api/user/agenda/get/${etab}/pastille`, {
                 method: "GET",
                 headers: {
@@ -1103,7 +1119,7 @@ function getAllEtab(etab, isPast, element) {
                     'Content-Type': 'application/json'
                 },
             })
-        }
+        //}
         if (!tabEtab[1].classList.contains("active")) {
             tabEtab[1].classList.add("active")
             tabEtab[0].classList.remove("active")
@@ -2060,10 +2076,12 @@ function putInputOnDataTableHeader(selector,colIdx,api){
 function findEtabByKey(e,isHasDep){
     let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab
     // element.dataset.id
-    if(!isHasDep){
+    /*if(!isHasDep){
         document.querySelectorAll("#smallNavInvitation > li > a")[0].dataset.id = ""
         document.querySelectorAll("#smallNavInvitation > li > a")[1].dataset.id = ""
-    }
+    }*/
+    document.querySelector("#hideOrShow").style.display = "none"
+    document.querySelector("#contentForSearchEtab").style.display = "block"
     let cles0 = ""
     let cles1 = ""
     if(e.target.nextElementSibling){

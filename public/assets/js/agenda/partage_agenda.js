@@ -186,6 +186,7 @@ function sendInvitation(event){
                 if(validateEmail(email)){
                     dataInfos.push({
                         agendaId:agenda.id,
+                        objet:agenda.title,
                         from_id:null,
                         to_id:null,
                         lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
@@ -351,6 +352,7 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
+                    objet:agenda.title,
                     from_id:from_id,
                     to_id:to_id,
                     lastname : lastname,
@@ -384,6 +386,7 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
+                    objet:agenda.title,
                     from_id:from_id,
                     to_id:to_id,
                     lastname : lastname,

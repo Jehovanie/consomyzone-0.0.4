@@ -304,6 +304,22 @@ class TributGService extends PDOConnexionService{
         return $result["fullname"];
     }
 
+    /**
+     * @author Nantenaina
+     * 
+     * @param int $userId: userID of the user
+     * 
+     * @return string tributg of the user
+     */
+    public function getTribuG($userId)
+    {
+        $statement = $this->getPDO()->prepare("select * from (select tributg, user_id from consumer union select tributg, user_id from supplier) as tab where tab.user_id = $userId");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result["tributg"];
+    }
+
 
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
@@ -1437,4 +1453,5 @@ class TributGService extends PDOConnexionService{
 
         return $results;
     }
+
 }

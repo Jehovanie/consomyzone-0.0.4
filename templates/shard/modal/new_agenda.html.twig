@@ -10,12 +10,12 @@
         <div class="container content_input_create_agenda_jheo_js">
             <div class="mb-3">
               <label for="eventTitle" class="form-label text_black">Titre de l'événement</label>
-              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Saisir le titre">
+              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Texte">
             </div>
             <div class="mb-3">
                 <div>
                   <label for="typeEvent" class="form-label text_black">Type de l'événement</label>
-                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent"  placeholder="Saisir le type">
+                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent"  placeholder="Texte">
                 </div>
             </div>
 
@@ -27,12 +27,12 @@
                   </div>
                   
                   <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onclick="showDepModalGol()">
+                      <input class="form-check-input" type="radio" name="etabRadioOptions" id="golfRadio" value="golf" onclick="getListEtabCMZ(this)">
                       <label class="form-check-label text_black" for="golfRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Golf présent dans CMZ">Golf</label>
                   </div>
 
                   <div class="form-check form-check-inline mt-2">
-                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onclick="showDepModal()">
+                    <input class="form-check-input" type="radio" name="etabRadioOptions" id="restoRadio" value="restaurant" onclick="getListEtabCMZ(this)">
                     <label class="form-check-label text_black" for="restoRadio" data-bs-toggle="tooltip" data-bs-placement="top" title="Restaurant présent dans CMZ">Restaurant</label>
                   </div>
                   <div class="form-check form-check-inline mt-2">
@@ -49,16 +49,16 @@
 
             <div class="mb-3 d-none" id="containerNomEtab">
               <label for="nomEtabEvent" class="form-label text_black">Nom</label>
-              <input type="text" name="nomEtabEvent" class="form-control input_black" id="nomEtabEvent" placeholder="Saisir le nom de votre établissement" disabled>
+              <input type="text" name="nomEtabEvent" class="form-control input_black" id="nomEtabEvent" placeholder="Texte" disabled>
             </div>
 
             <div class="mb-3 lieuEventContainer d-none" id="containerAdresseEtab">
                 <label for="lieuEvent" class="form-label text_black">Adresse</label>
-                <input type="text" class="form-control input_black lieuEvent_jheo_js" id="lieuEvent" placeholder = "Saisir l'adresse" disabled>
+                <input type="text" class="form-control input_black lieuEvent_jheo_js" id="lieuEvent" placeholder = "Texte" disabled>
             </div>
             <div class="mb-3">
                 <label for="eventDesc" class="form-label text_black">Description</label>
-                <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2" placeholder="Décrire votre événement"></textarea>
+                <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2" placeholder="Texte"></textarea>
             </div>
             <div class="mb-3">
                 <label for="nbrParticipant" class="form-label text_black">Nombre de participants</label>
@@ -159,7 +159,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <a href="#" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+        <a href="#" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">
           <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
 
             <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
@@ -183,15 +183,14 @@
       <div class="modal-body custom_modal">
         <div class="container_list">
         
-          <div class="mb-3">
-            <form action="/search/restaurant" method="get" class="bar-de-recherche form_content_search_navbar_js d-none">
-              <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" id="cleQuoiAgenda" disabled>
-              <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?" id="cleOuAgenda" disabled>
-              <datalist id="datalistOptions"></datalist>
-              <button type="submit" class="hidden"></button>
-            </form>
+          <div class="contentForSearch mb-3" style="margin-left: 20%;" id="contentForSearchEtab">
+            <div style="font-weight:bold;">Faire une recherche dans les autre départements</div>
+            <input type="text" name="qoui" id="quoi" placeholder="Quoi ?" class="input_black ps-3" onkeyup="findEtabByKey(event,false)">
+            <input type="text" name="where" id="where" placeholder="Où ?" class="input_black ps-3" onkeyup="findEtabByKey(event,false)">
           </div>
+          <div id="hideOrShow" style="font-weight:bold;color:black;" class="mb-3"><span>Restaturants</span> dans votre département</div>
           <div class="list_resto_or_golf">
+
               <table class="table table-striped" id="tableEtabCMZ">
                 <thead>
                   <tr>
@@ -209,6 +208,8 @@
         </div>
       </div>
       <div class="modal-footer">
+        <input type="hidden" name="hidden" id="hiddenListDep">
+        <input type="hidden" name="hidden" id="hiddenIdDep" value="{{departement}}">
         <button class="btn btn-info cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Terminer</button>
       </div>
     </div>
@@ -264,16 +265,16 @@
         <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body custom_modal">
-        <div class="contentForSearch mb-3" style="margin-left: 20%;">
+        {# <div class="contentForSearch mb-3" style="margin-left: 20%;">
           <input type="text" name="qoui" id="quoi" placeholder="Quoi ?" class="input_black ps-3" onkeyup="findEtabByKey(event,false)">
           <input type="text" name="where" id="where" placeholder="Où ?" class="input_black ps-3" onkeyup="findEtabByKey(event,false)">
-        </div>
+        </div> #}
         <div class="container_list_dep">
         
         </div>
       </div>
       <div class="modal-footer">
-        <input type="hidden" name="hidden" id="hiddenListDep">
+        {# <input type="hidden" name="hidden" id="hiddenListDep"> #}
         <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
@@ -305,7 +306,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <a href="#" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+        <a href="#" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">
           <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
 
             <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
@@ -324,7 +325,7 @@
             <a class="nav-link text-secondary" href="#" onclick="activeOngletForDep(this)">Pastillé</a>
           </li>
         </ul>
-        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body custom_modal">
         <div class="contentForSearch mb-3" style="margin-left: 20%;">
@@ -336,7 +337,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#listDepModal" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+        <button class="btn btn-danger cta_close_list_resto_jheo_js" data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>

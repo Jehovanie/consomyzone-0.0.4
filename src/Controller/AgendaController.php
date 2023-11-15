@@ -695,22 +695,25 @@ class AgendaController extends AbstractController
 
         $user = $this->getUser();
         $userType = $user->getType();
-        $user = $user->getId();
+        $userId = $user->getId();
         $tribuG = "";
         if($userType == "consumer"){
-            $tribuG = $consumer->findBy(["userId"=>$user])[0];
+            $tribuG = $consumer->findBy(["userId"=>$userId])[0];
         }elseif($userType == "supplier"){
-            $tribuG = $supplier->findBy(["userId"=>$user])[0];
+            $tribuG = $supplier->findBy(["userId"=>$userId])[0];
         }
 
         $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+        $departement = explode("_", $tribuG->getTributG())[1];
 
         return $this->render("agenda/agenda.html.twig",[
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "userConnected" => $userConnected,
             "tribuG" => $tribuG,
-            "tribuT" => $tribu_t_owned
+            "tribuT" => $tribu_t_owned,
+            "departement" => $departement
         ]);
     }
 
@@ -788,7 +791,7 @@ class AgendaController extends AbstractController
 
         return $this->json([
             "success" => true,
-            "message" => "Agenda créé avec succès !"
+            "message" => "Événement créé avec succès !"
         ], 201);
     }
 
@@ -867,7 +870,7 @@ class AgendaController extends AbstractController
 
         return $this->json([
             "success" => true,
-            "message" => "Agenda modifié avec succès !"
+            "message" => "Événement modifié avec succès !"
         ], 201);
     }
 
@@ -1614,7 +1617,7 @@ class AgendaController extends AbstractController
                         $logo_path = $key["logo_path"];
                         $tableExtension = $tableTribu . "_restaurant";
                         if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
-                            if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
+                            if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId(), true)){
                                 $result["tribu"] = $tableTribu;
                                 $result["logoTribu"] = $logo_path;
                             }
@@ -1674,7 +1677,7 @@ class AgendaController extends AbstractController
                             $logo_path = $key["logo_path"];
                             $tableExtension = $tableTribu . "_restaurant";
                             if($tribuTService->checkExtension($tableTribu, "_restaurant") > 0){
-                                if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId())){
+                                if($tribuTService->checkIfCurrentRestaurantPastilled($tableExtension, $resto->getId(), true)){
                                     $result["tribu"] = $tableTribu;
                                     $result["logoTribu"] = $logo_path;
                                 }
