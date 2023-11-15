@@ -2863,6 +2863,30 @@ function showPastillTable(e, id) {
       });
     }
   });
+
+   /**
+     * @author Elie
+     * Setting variable into html tribu G
+     */
+   const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim()+"_restaurant"
+   document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id)
+   document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name)
+   fetch("/user/tribu_g/isPastilled/"+tribu_g_r+"/"+id)
+   .then(res=>res.json())
+   .then(isOk=>{
+       if(isOk){
+           document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, false,"+id+",'"+e.target.dataset.name+"')")
+           document.querySelector("#btn-pastille-elie-tbg").innerText ="Dépastiller"
+           document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-success")
+           document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-info")
+       }else{
+           document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, true, "+id+",'"+e.target.dataset.name+"')")
+           document.querySelector("#btn-pastille-elie-tbg").innerText ="Pastiller"
+           document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-success")
+           document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-info")
+       }
+   })
+   
 }
 
 function getSpectRestoMobile(nom_dep, id_dep) {
