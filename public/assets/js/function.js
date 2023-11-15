@@ -2889,6 +2889,140 @@ function showPastillTable(e, id) {
    
 }
 
+/**
+ * @author Tomm
+ * @action get list tribu T pastiller avec golf
+ * @ou dans detail.js
+ */
+function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
+  fetch(`/golf/pastilled/checking/${id_golf}`)
+      .then(response => response.json())
+      .then(datas => {
+          let listTibuTPast = ""
+          let monGolf = ""
+          if (datas.length == 0) {
+              listTibuTPast = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
+          }
+          datas.forEach(data => {
+          
+
+              if (data.isPastilled == true) {
+                  listTibuTPast += `
+                      <tr>
+                          <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                          <td>${data.name_tribu_t_muable}</td>
+                          <td>
+                              <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                          </td>
+                      </tr>
+                  `
+                  
+              } else {
+                  listTibuTPast += `
+                      <tr>
+                          <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                          <td>${data.name_tribu_t_muable}</td>
+                          <td>
+                              <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
+                          </td>
+                      </tr>
+                  `
+                 
+              }
+              
+
+          })
+
+          let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
+
+          fetch(`/user/tribu_g/isPastilled/${tribu_g_name+'_golf'}/${id_golf}`)
+          .then(s=>s.json())
+          .then(isOk=>{
+              let txt =""
+              let isPastilled = false;
+              let classe = ''
+              if(isOk){
+                  txt = 'Dépastiller'
+                  isPastilled = false;
+                  classe = 'info'
+              }else{
+                  txt = 'Pastiller'
+                  isPastilled = true;
+                  classe = 'success'
+              }
+
+              let modalPastillGolf = `
+          <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
+              <div class="modal-pastille-golf">
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header mb-4">
+                              <h5 class="modal-title">Tribu T pastiller</h5>
+                              <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
+                          </div>
+                          <hr>
+                          <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
+
+                              <ul class="nav nav-tabs">
+                                  <li class="nav-item">
+                                      <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                                  </li>
+                                  <li class="nav-item">
+                                      <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                                  </li>
+                              </ul>
+
+                              <table class="table table-striped content_list_resto_js">
+                                  <thead>
+                                      <tr>
+                                          <th scope="col">Logo</th>
+                                          <th scope="col">Tribu T</th>
+                                          <th scope="col">Action</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      ${listTibuTPast}
+                                  </tbody>
+                              </table>
+
+                              <div class="m-2 content_list_resto_js_g d-none">
+                                  <div class="d-flex justify-content-between">
+                                          <span>${tribu_g_name}</span>
+                                          <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
+                                              ${txt}
+                                          </button>
+                              
+                                  </div>
+                              </div>
+                          </div>
+                          
+                      </div>
+                  </div>
+              </div>
+          </div>
+          `
+         
+          if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
+              document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
+          }
+          })
+          
+          
+      })
+  
+}
+
+/**
+* @author Tomm
+* @action close modal pastill golf
+* @ou dans le fuction.js
+*/
+function closePastillGolf(id_golf) {
+  document.querySelector(".modal-pastille-golf-tomm-js").remove()
+  //.select_action_golf_tomm_js
+  document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0
+}
+
 function getSpectRestoMobile(nom_dep, id_dep) {
   location.assign(`/restaurant/specific?nom_dep=${nom_dep}&id_dep=${id_dep}`);
 }
@@ -5705,3 +5839,4 @@ function pastilleGolfForTribuG(e, type, id, name){
       })
   }
 }
+

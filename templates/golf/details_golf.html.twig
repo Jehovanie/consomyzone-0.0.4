@@ -99,10 +99,6 @@
                         <a id="see-tom-js" style="font-size:smaller" class="btn btn-sm {{details.avis.nbr > 0 ? 'bg_vert': 'bg_orange' }}" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie()">
                             <span class="nbr_avis_golf_jheo_js">{{details.avis.nbr}}</span> avis
                         </a>
-                        <div class="mon-golf">
-                            {# <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p> #}
-                            <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>Mon golf</button>
-                        </div>
                     {% elseif ( app.user and app.user.type is same as('Type') )%}
                         <a id="see-tom-js" style="font-size:smaller" class="btn btn-sm btn-secondary" onclick="openSwalProfilUnCompleted()">
                             <span class="nbr_avis_golf_jheo_js">{{details.avis.nbr}}</span> avis
@@ -122,6 +118,11 @@
                 {% else %}
                     <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                 {% endif %}
+
+                <button style="font-size:smaller" class="btn btn-sm btn-success" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+                    Pastiller
+                </button>
+
             </div>
         </div>
 
