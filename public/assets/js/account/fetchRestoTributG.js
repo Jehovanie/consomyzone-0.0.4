@@ -110,7 +110,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
 
                         if (resto.isPastilled) {
 
-                            console.log(resto);
+                            // console.log(resto);
 
                             let id = resto.id
                             let id_resto = resto.id_resto
@@ -299,10 +299,15 @@ function openAvisRestoG(nb_avis, id_resto) {
     }
 
     const myModalEl = document.getElementById('avisRestoPastille')
-    myModalEl.addEventListener('hidden.bs.modal', event => {
-        // do something...
-        document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
-    })
+    if(myModalEl){
+        myModalEl.addEventListener('hidden.bs.modal', event => {
+            // do something...
+            if(document.querySelector("#bodyAvisRestoPastilleElie")){
+                document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
+            }
+        })
+    }
+    
 
 }
 

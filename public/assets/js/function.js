@@ -5874,3 +5874,302 @@ function pastilleGolfForTribuG(e, type, id, name){
   }
 }
 
+/**
+ * Update 25-10-2023 : deplacement de myTribuT.js vers function.js
+ * Utilisé dans tribu G et T
+ * @constructor : Ouverture de modal detail resto
+ * @param {*} nom_resto 
+ * @param {*} adresse 
+ * @param {*} nom_dep 
+ * @param {*} id_dep 
+ * @param {*} id_restaurant 
+ */
+function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
+
+  fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
+      .then(response => response.text())
+      .then(result => {
+
+          $("#modalDetailResto").modal("show")
+
+          document.querySelector("#restoModalLabel").innerHTML = `
+      <div>
+      <h1 class="modal-title fs-5">${nom_resto}</h1>
+      <span>${adresse.toLowerCase()}</span>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      `
+
+          document.querySelector("#elie-resto-detail").innerHTML = result
+      })
+}
+
+/**
+* Update 25-10-2023 : deplacement de myTribuT.js vers function.js
+* Utilisé dans tribu G et T
+* @constructor Fonction d'ouverture d'un evenement
+* @author elie
+* @param {int} id : id resto
+* @param {string} nom : nom de resto
+* @param {string} adresse : adresse de resto
+* @param {string} action : action à faire pour le resto
+*/
+function openOnEvent(id, nom, adresse, action) {
+
+  document.querySelector("#nomEtabEvent").value = nom
+
+  document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
+
+  let date = new Date();
+  let currentDate = date.toISOString().substring(0, 10);
+
+  document.getElementById('eventStart').value = currentDate;
+  document.getElementById('eventEnd').value = currentDate;
+  document.getElementById('timeStart').value = '00:00';
+  document.getElementById('timeEnd').value = '23:00';
+
+}
+
+/**
+* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+* Utilisé dans tribu G et T
+* @constructor
+* @param {*} val 
+* @param {*} localisation 
+*/
+function findResto(val, localisation = "") {
+
+  const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
+      method: 'GET'
+  })
+
+  document.querySelector("#result_resto_past").style.display = "block;"
+
+
+  document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+  document.querySelector("#elie-restou").innerHTML =
+      `<div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+      </div>
+      </div>`
+
+
+  fetch(request).then(response => response.json()).then(data => {
+
+      let jsons = data.results[0]
+
+      jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
+
+      let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+      <thead>
+          <tr>
+              <th>Nom de restaurant</th>
+              <th>Type</th>
+              <th>Adresse</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody>`
+
+      let foot_table = `</tbody>
+      </table>`
+
+      let body_table = "";
+
+      if (jsons.length > 0) {
+
+
+          for (let json of jsons) {
+
+              const name = json.denominationF;
+              const dep = json.dep;
+              const depName = json.depName;
+              const commune = json.commune;
+              const codePost = json.codpost;
+              const nomvoie = json.nomvoie;
+              const numvoie = json.numvoie;
+              const typevoie = json.typevoie;
+              // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+              const adresse = json.add;
+              const bar = json.bar != "0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : ''
+              const boulangerie = json.boulangerie != "0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
+              const brasserie = json.brasserie != "0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
+              const cafe = json.cafe != "0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : ''
+              const cuisineMonde = json.cuisineMonde != "0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : ''
+              const fastFood = json.fastFood != "0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : ''
+              const creperie = json.creperie != "0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : ''
+              const salonThe = json.salonThe != "0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : ''
+              const pizzeria = json.pizzeria != "0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : ''
+
+              let oncl = `pastillerPast(this, ${json.id},'${name}')`
+              if(window.location.href.includes("/user/account")){
+                  const tbly = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
+                  oncl = `pastilleForTribuG(this, true,${json.id},'${name}')`
+              }
+
+              body_table += `
+                              <tr>
+                                  <td>${name}</td>
+                                  <td>
+                                      <!--<div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>-->
+                                      <div class="d-flex bd-highlight">
+                                          <div class="">${boulangerie}</div>
+                                          <div class="">${bar}</div>
+                                          <div class="">${brasserie}</div>
+                                          <div class="">${cafe}</div>
+                                          <div class="">${cuisineMonde}</div>
+                                          <div class="">${fastFood}</div>
+                                          <div class="">${creperie}</div>
+                                          <div class="">${salonThe}</div>
+                                          <div class="">${pizzeria}</div>
+                                      </div>
+                                  </td>
+                                  <td>${adresse}</td>
+                                  <td class="d-flex bd-highlight">
+                                      <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
+                                      <button class="btn btn-primary ms-1" onclick="${oncl}">Pastillez</button>
+                                  </td>
+                              </tr>
+                          `
+          }
+
+          document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
+
+          // new DataTable('#resto-a-pastiller-list');
+          $('#resto-a-pastiller-list').DataTable({
+              "language": {
+                  url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+              }
+          });
+
+      } else {
+          document.querySelector("#elie-restou").style.display = "block"
+          document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
+      }
+  })
+
+}
+
+/**
+* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+* Utilisé dans tribu G et T
+* @constructor
+*/
+function listResto() {
+
+  document.querySelector("#elie-restou").innerHTML = ""
+  let inputName = document.querySelector("#resto-rech").value;
+  let adresse = document.querySelector("#resto-rech-ou").value;
+  if (adresse.trim() != "" || inputName.trim() != "") {
+      if ((document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active"))
+      || (document.querySelector("#fetch_golf_tribug_jheo_js") && document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active"))) {
+          findGolf(inputName, adresse)
+      } else if (document.querySelector(".restoNotHide > a") && document.querySelector(".restoNotHide > a").classList.contains("active")) {
+          findResto(inputName, adresse)
+      }else{
+          findResto(inputName, adresse)
+      }
+
+      $("#modalForExtension").modal("show")
+  } else {
+
+      swal({
+          // title: "Succès",
+          text: "Champ invalide!",
+          icon: "error",
+          button: "Ok",
+      });
+
+  }
+}
+
+/**
+* Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
+* @author elie
+* @constructor Fonction d'ouverture de note de resto pastillé
+* @localisation : myTribuT.js
+* @utilisation dans le template tribuT.html.twig
+* @param {int} id_pastille : id resto
+* @param {string} action : action à faire pour le bouton
+*/
+function openOnNote(id_pastille, action) {
+  
+  document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
+
+  document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+
+}
+
+
+/**
+* Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
+* @author elie
+* @constructor : fonction de parametrage d'id resto dans un template
+* @localisation : myTribuT.js
+* @utilisation dans le template tribuT.html.twig
+* @param {element} params : element ou le fonction se place
+* @param {int} id_pastille : id resto
+*/
+function setSendNote(params, id_pastille) {
+
+  const action = params.getAttribute("data-action")
+
+  const avis = params.parentElement.previousElementSibling.querySelector("#message-text")
+  const note = params.parentElement.previousElementSibling.querySelector("#text-note")
+
+  if (action == "create") {
+
+      if (parseFloat(note.value) > 4) {
+          swal({
+              title: "Erreur de saisie de note!",
+              text: "Une note doit être inférieur ou égale à 4",
+              icon: "error",
+              button: "Ok",
+          });
+
+      } else {
+
+          if(window.location.href.includes("/user/account")){
+
+              sendNoteTribuG(parseFloat(note.value), avis.value, id_pastille)
+
+          }else{
+
+              sendNote(parseFloat(note.value), avis.value, id_pastille)
+              
+          }
+      }
+
+  } 
+
+}
+
+/**
+* @author Elie
+* @constructor Envoie de paramettre de la mise à jour de note dans le template
+* @param {*} params 
+* @param {*} id 
+* @param {*} note 
+* @param {*} commentaire 
+* @param {*} id_resto 
+*/
+function setUpdateNote(params, id , note, commentaire, id_resto) {
+  $('#modalAvisRestaurant').modal('show')
+
+  document.querySelector("#text-note").value = note
+  document.querySelector("#message-text").value = commentaire
+  document.querySelector(".send_avis_jheo_js").setAttribute("data-action","update")
+
+  if(window.location.href.includes("/user/account")){
+
+      document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "updateNoteTribuG("+id+", "+id_resto+")")
+
+  }else{
+
+      document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "updateNote("+id+", "+id_resto+")")
+      
+  }
+  
+}
+

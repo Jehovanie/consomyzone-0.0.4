@@ -45,3 +45,26 @@
 		</div>
 	</div>
 </div>
+
+{# @author elie
+@utilisation : tribuT.html.twig
+@je veux : afficher ici la liste des avis resto déjà pastillé dans le tribu T #}
+<div class="modal fade list-avis-ferme-global" id="avisRestoPastille" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="avisRestoPastilleLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header bg-light">
+				<h5 class="modal-title" id="avisRestoPastilleLabel">Avis</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body container-avis all_avis_jheo_js" id="bodyAvisRestoPastilleElie">
+				
+			</div>
+
+			{# {% if app.user %}
+				<div class="modal-footer">
+					<button type="button" class="btn btn-warning btn_modal_avis_resto_jheo_js" id="btn_open_modal_avis_elie" >Donner votre avis</button>
+				</div>
+			{% endif %} #}
+		</div>
+	</div>
+</div>

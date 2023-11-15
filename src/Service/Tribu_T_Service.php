@@ -1405,19 +1405,35 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
-    public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
-        $values=array(":id_restaurant"=>$idResto,
-            ":id_user"=>$idUser,
-            ":note"=>$note,
-            ":commentaire"=>$commentaire
-        );
-        $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
-                  "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
-        $stmt = $this->getPDO()->prepare($sql);
+    // public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
+    //     $values=array(":id_restaurant"=>$idResto,
+    //         ":id_user"=>$idUser,
+    //         ":note"=>$note,
+    //         ":commentaire"=>$commentaire
+    //     );
+    //     $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
+    //               "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    //     $stmt = $this->getPDO()->prepare($sql);
 
-        return $stmt->execute($values);
+    //     return $stmt->execute($values);
             
-    }
+    // }
+
+    public function sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire)
+  {
+    $values = array(
+      ":id_restaurant" => $idResto,
+      ":id_user" => $idUser,
+      ":note" => $note,
+      ":commentaire" => $commentaire
+    );
+    $sql = "INSERT INTO " . $tableName . "(extensionId,userId,note,commentaire)" .
+      "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    $stmt = $this->getPDO()->prepare($sql);
+
+    return $stmt->execute($values);
+  }
+    
 
     public function upCommentRestoPastilled($tableName,  $note, $commentaire,$idRestoComment, $my_id)
     {
