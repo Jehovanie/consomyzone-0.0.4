@@ -241,7 +241,3 @@ function fecthGolfAction(goldID, action,selectElement){
    
 
 }
-
-function executeActionForPastMonGolf(goldID, golfName, golfAdress){
-    showPastillGolfTribuT(goldID, golfName, golfAdress)
-}

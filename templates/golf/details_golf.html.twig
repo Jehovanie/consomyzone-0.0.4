@@ -120,7 +120,7 @@
                 {% endif %}
 
                 {% if (app.user and app.user.type!='Type') %}
-                    <button style="font-size:smaller" type="button" class="btn btn-sm btn-success" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+                    <button style="font-size:smaller" type="button" class="btn btn-sm btn-success" onclick='showPastillGolfTribuT("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
                         Pastiller
                     </button>
                 {% elseif ( app.user and app.user.type is same as('Type') )%}

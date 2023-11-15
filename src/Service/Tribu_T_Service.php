@@ -1973,6 +1973,28 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+    /**
+     * @author Tomm 
+     * @action get list tribu t pastille
+     * @ou golfControlleur
+     */
+    public function checkIfCurrentGolfPastilled($tableNameExtension, int $golf, $isPastilled)
+    {
+
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $golf AND isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if (is_array($result)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
      public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
         $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
         $stmt = $this->getPDO()->prepare($sql);

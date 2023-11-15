@@ -2935,6 +2935,8 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
 
           let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
 
+          console.log(tribu_g_name);
+
           fetch(`/user/tribu_g/isPastilled/${tribu_g_name+'_golf'}/${id_golf}`)
           .then(s=>s.json())
           .then(isOk=>{
