@@ -59,7 +59,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                 let  text = `<div class="content_list_p_tG">
                                     <div class="card mb-2">
 
-                                        <!--<div class="row mt-3 p-3">
+                                        <div class="row mt-3 p-3">
                                             <div class="col-12">
                                                 <div id="form_past"></div>
                                                 <div class="g-3">
@@ -72,7 +72,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>-->
+                                        </div>
 
                                         <div class="card-header">
                                             <h4>Restaurant pastillé dans la tribu G</h4>

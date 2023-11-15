@@ -5782,6 +5782,7 @@ function pastilleForTribuG(e, type, id, name){
 
               e.classList = "btn btn-success ms-1"
               e.innerText = "Pastillé"
+              document.querySelector("#fetch_resto_tribug_jheo_js").click()
           }
       })
   }
@@ -6173,3 +6174,27 @@ function setUpdateNote(params, id , note, commentaire, id_resto) {
   
 }
 
+function detectNumber(target){
+
+  
+
+
+  note=target.value.replace(/,/g,".");
+
+    try {
+        mustBeInferior4(note, document.querySelector("#text-note"), true)
+    } catch (e) {
+        msgErrorAlertAvis(e)
+    }
+
+  setTimeout(() => {
+    target.style = "border:2px solid black;";
+    document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+      i.remove()
+      target.value = ""
+      //i.style =
+        //" transition:2s ease-in-out; transform: translateX(-25px); opacity: 0;";
+    });
+  }, 3000);
+  
+}

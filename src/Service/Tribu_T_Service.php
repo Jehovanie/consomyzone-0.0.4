@@ -428,7 +428,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getIdRestoOnTableExtension($table, $idResto){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto");
 
         $statement->execute();
 
@@ -1443,7 +1443,7 @@ class Tribu_T_Service extends PDOConnexionService
             ":idRestoComment"=> $idRestoComment,
             ":my_id" => $my_id
         );
-        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id_resto_comment=:idRestoComment and id_user=:my_id";
+        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id=:idRestoComment and userId=:my_id";
         $stmt = $this->getPDO()->prepare($sql);
 
         return $stmt->execute($values);
@@ -2012,7 +2012,7 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
      public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
-        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE extensionId = :resto_id";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->bindParam(":isPastilled", $isPastilled);
         $stmt->bindParam(":resto_id", $resto_id);
