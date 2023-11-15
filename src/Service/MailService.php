@@ -122,9 +122,14 @@ class MailService extends AbstractController {
 
         if(isset($context["piece_joint"])){
             $all_pieces_joint= $context["piece_joint"];
+
             if( count($all_pieces_joint) > 0 ){
                 foreach ($all_pieces_joint as $item) {
-                    $email= $email->attach(fopen($item["path"], 'r'), $item["name"] );
+                    $file= $item["path"];
+                    
+                    if(file_exists($file)){
+                        $email= $email->attach(fopen($file, 'r'), $item["name"] );
+                    }
                 }
             }
         }

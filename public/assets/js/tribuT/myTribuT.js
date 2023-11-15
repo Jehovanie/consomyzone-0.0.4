@@ -2061,36 +2061,36 @@ function showInvitations() {
             cc_destinataire.push(input_cc.value)
         }
 
-        let data = { "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), "principal": "", "cc": cc_destinataire, "object": "", "description": "" }
-
-        // console.log(data);
-
-        let status = false;
+        let data = { 
+            "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), 
+            "principal": "", 
+            "cc": cc_destinataire, 
+            "object": "", 
+            "description": "" 
+        }
+        let status = true;
 
         if (input_principal.value === "") {
             console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
+            status = false;
         }
 
         if (verifieEmailValid(input_principal.value)) {
             data = { ...data, "principal": input_principal.value }
-            status = true;
         } else {
             input_principal.style.border = "1px solid red";
+            status = false;
         }
 
         ///object
         if (object.value === "") {
             console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
+            status= false;
         } else {
             data = { ...data, "object": object.value }
-            status = true;
         }
-
-        // if (description.value != "") {
-        //     data = { ...data, "description": description.value }
-        // }
 
         //Changing description check editor by Elie
         data = { ...data, "description": editor.getData() }
@@ -2102,9 +2102,29 @@ function showInvitations() {
             data = { ...data, "piece_joint": [] }
         }
 
-        email_piece_joint_list= [];
 
         if (status) {
+
+            if( email_piece_joint_list.length > 0 ){
+                email_piece_joint_list.forEach(item => {
+                    const id= item.id;
+                    const btn_item = document.querySelector(`.fa_solid_${id}_jheo_js`);
+                    if( btn_item.classList.contains("btn-outline-danger")){
+                        btn_item.classList.remove("btn-outline-danger")
+                    }
+
+                    if( !btn_item.classList.contains("btn-outline-primary")){
+                        btn_item.classList.add("btn-outline-primary")
+                    }
+
+                    btn_item.innerHTML= `<i class="fas fa-spinner fa-spin"></i>`
+
+                    btn_item.setAttribute("onclick", "");
+                });
+            }
+
+
+
             //////fetch data
             fetch("/user/tribu/email/invitation", {
                 method: "POST",
@@ -2120,7 +2140,7 @@ function showInvitations() {
                 return response.json()
             }).then(result => {
                 // input_principal.value = null;
-                                // description.value = null;
+                // description.value = null;
                 object.value = null;
                 
                 //init Ckeditor for description by Elie
@@ -2136,6 +2156,8 @@ function showInvitations() {
 
                 input_principal.value = null;
                 input_cc.value = null;
+                email_piece_joint_list= [];
+
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2157,13 +2179,13 @@ function showInvitations() {
                 document.querySelector("#successSendingMail").style.display = "block"
 
                 // swal({
-                    //     text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
-                    //     icon: "info",
+                //         text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                //         icon: "info",
                 // });
 
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
-                }, 5000)
+                }, 5000 )
 
             }).catch((e) => { console.log(e); });
         }
@@ -3238,7 +3260,7 @@ function createListItemPiece(name, id){
     const list_item= `
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <p>${name}</p>
-            <button type="button" class="btn btn-outline-danger" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
+            <button type="button" class="btn btn-outline-danger fa_solid_${id}_jheo_js" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
         </li>
     `
     /// insert the single element.

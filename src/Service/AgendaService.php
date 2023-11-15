@@ -1112,6 +1112,7 @@ class AgendaService extends PDOConnexionService
         $user->setTablerequesting("tablerequesting");
         $user->setNomTableAgenda("agenda");
         $user->setNomTablePartageAgenda("partage_agenda");
+        $user->setIdle(300);
 
         ///save the user
         $entityManager->persist($user);
