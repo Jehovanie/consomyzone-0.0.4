@@ -760,6 +760,21 @@ function removeReplicatedFan(element){
  * cette fonction liste les messages groupé de tous les tribus
  * localisation: message.js
  */
-function showListTribusMsg(){
-    
+function showListTribus(){
+    fetch().then(response=>{
+        if(response.status === 200 && response.ok){
+            response.json().then(jsons=>{
+                for(let i=0; i<jsons.length; i++){
+                    if(i ===0){ //pour tribu G
+                        const json=jsons[i]
+                        const tribuGName=`tribu G ${json.commune} ${json.quartier}`
+                        const logoPath=""
+                        const link='/user/tribu/msg'
+                    }else{
+                        let tribuTs=jsons[i]
+                    }
+                }
+            })
+        }
+    })
 }

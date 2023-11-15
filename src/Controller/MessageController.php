@@ -59,7 +59,7 @@ class MessageController extends AbstractController
          $all_tribuT = $userRepository->getListTableTribuT();
 
          $response=array(0=>$myTribuG,1=> $all_tribuT) ;
-        return $this->json($response);
+         return $this->json($response);
  
     }
     #[Route('/user/get/allfans', name:"app_user_get_all_friend_fan")]
