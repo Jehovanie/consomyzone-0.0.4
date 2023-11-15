@@ -1265,10 +1265,22 @@ function setGallerie(imgs) {
 
 function setPhotoTribu(btn_photo) {
   if (btn_photo.tagName != "IMG") {
-    document.querySelector("#img_modal").src =
+    if (document.querySelector("#img_modal")) {
+      document.querySelector("#img_modal").src =
       btn_photo.querySelector("img").src;
+    } else {
+      document.querySelector("#img_modal_actu").src =
+      btn_photo.querySelector("img").src;
+    }
+    
+    
   } else {
-    document.querySelector("#img_modal").src = btn_photo.src;
+    if (document.querySelector("#img_modal")) {
+      document.querySelector("#img_modal").src = btn_photo.src;
+    } else {
+      document.querySelector("#img_modal_actu").src = btn_photo.src;
+    }
+    
   }
 }
 
@@ -5400,9 +5412,9 @@ function getUserIdle() {
 }
 
 function resetTimer(idle=300) {
-  console.log(idle)
+  // console.log(idle)
     idle = idle / 60
-    console.log(idle)
+    // console.log(idle)
     let timer = idle -2
     clearTimeout(idleTimer);
     clearTimeout(idleTimer2);
@@ -5599,17 +5611,18 @@ function showGolf(tableGolfPastilled) {
         let tr = ""
         let i = 0
         for (const item of data) {
+          console.log(item)
           if (item.isPastilled) {
             i++
             let nbrAvis = item.nbrAvis
             let note = item.globalNote ? item.globalNote : 0
             let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
             tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled">
+                            <td class="d-flex bd-highlight align-items-center" >
+                                <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
                                 ${imgTbt}
                                 </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
+                                <span class="ms-3" style="font-size:12pt;"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
                             </td>
                             <td class="data-note-${item.id}">${note}/4</td>
                             <td>
@@ -5733,15 +5746,19 @@ function pastilleGolf(element, table_tribu_t) {
             }
 
             if (countIsPastilled > 4) {
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove()
+              }
               document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`
-            } else {
-              document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
 
+            } else {
+              // document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove()
+              }
             }
             document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath
-            if (document.querySelector("length-pastille-plus")) {
-              document.querySelector("length-pastille-plus").remove()
-            }
+            
           })
       }
 
@@ -5804,14 +5821,19 @@ function depastilleGolf(selector) {
               }
             }
 
-            if (countIsPastilled <= 5) {
-              // document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`
-              document.querySelector(".length-pastille-plus").remove()
+            if (countIsPastilled <= 4) {
+              
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove()
+              }
 
+            }else {
+              document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove()
+              }
             }
-            if (document.querySelector(".length-pastille-plus")) {
-              document.querySelector(".length-pastille-plus").remove()
-            }
+            
           })
       }
 
@@ -5842,11 +5864,15 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
       }
       datas.forEach(data => {
 
-
+        if (data['logo_path'] != "") { 
+          logoPath = `<img class="logo_path_pastille" src="${data.logo_path}"></img>`
+        } else {
+          logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
+        }
         if (data.isPastilled == true) {
           listTibuTPast += `
                         <tr>
-                            <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                            <td>${logoPath}</td>
                             <td>${data.name_tribu_t_muable}</td>
                             <td>
                                 <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
@@ -5857,7 +5883,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
         } else {
           listTibuTPast += `
                         <tr>
-                            <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                            <td>${logoPath}</td>
                             <td>${data.name_tribu_t_muable}</td>
                             <td>
                                 <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
@@ -5928,11 +5954,16 @@ function isPastilledList(id_golf, name_golf) {
     .then(datas => {
       let listTibuTPast = ""
       for (let data of datas) {
+        if (data['logo_path'] != "") {
+          logoPath = `<img class="logo_path_pastille" src="${data.logo_path}"></img>`
+        } else {
+          logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
+        }
         if (data['isPastilled'] == true) {
 
           listTibuTPast += `
                                     <tr>
-                                        <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                                        <td>${logoPath}</td>
                                         <td>${data.name_tribu_t_muable}</td>
                                         <td>
                                             <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
@@ -6139,3 +6170,5 @@ function fecthGolfAction(goldID, action, selectElement) {
 
 
 }
+
+

@@ -39,8 +39,7 @@
                         </p>
                     </div>
                     <div class="col-4">
-                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick="isPastilledList({{details.id}},'{{details.nomGolf}}')">
-                            
+                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick='isPastilledList({{details.id}},"{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}")'>
                             {% set count = 0 %}
                             {% for tribu_t_pastilled in tribu_t_pastilleds %}
                                 {# {{ dump(tribu_t_pastilled) }} #}
@@ -49,7 +48,7 @@
                                     {% endif %}
                                 {% if tribu_t_pastilled['isPastilled'] == true %}
                                     {% if tribu_t_pastilled['logo_path'] == "" %}
-                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="te">
                                     {% else %}
                                         <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="{{tribu_t_pastilled['logo_path']}}" alt="">
                                     {% endif %}
@@ -87,7 +86,7 @@
                         </select>
                         {# <button class="btn btn-primary btn-sm mt-3" type="button" onclick="executeActionForPastGolf({{details.id}})">Terminer</button> #}
                     {% else %}
-                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,'{{details.id}}')">Oui</span>
+                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,{{details.id}})">Oui</span>
                     {% endif %}
                 </div>
                 <div class="mon-golf">
