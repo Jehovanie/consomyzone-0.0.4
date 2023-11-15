@@ -38,7 +38,7 @@
 
 						<div class="h qa ld yd tf th gb zb mdf-pdp">
 							{# <img src="/assets/image/img_avatar3.png" alt="profile" style="height:90px;"/> #}
-							<img src= {{ userConnected.photo_profil}} alt="profile" style="height:90px;"/>
+							<img src="{{(userConnected.photo_profil) ? '/public'~ userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="profile" style="height:90px;"/>
 							
 							<label class="g -ud-bottom-3 aa/2 -ud-translate-x-1/2 lc nd ue cg mg pg th ni bj wr nj co wq" data-bs-toggle="modal" data-bs-target="#addPictureModal">
 								<svg class="hk" width="10" height="9" viewbox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">

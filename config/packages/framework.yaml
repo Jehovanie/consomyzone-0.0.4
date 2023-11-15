@@ -22,7 +22,7 @@ framework:
         log: true
 
     assets:
-        base_path: '/'
+        base_path: './../'
 
 when@test:
     framework:

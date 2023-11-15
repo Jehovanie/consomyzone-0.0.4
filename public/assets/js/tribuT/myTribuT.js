@@ -2756,7 +2756,7 @@ function settingTribuT(e, tribuTName) {
 
         document.querySelector("#updateTribuTName").value = currentTribuT.name_tribu_t_muable ? currentTribuT.name_tribu_t_muable : currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ") //currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
         document.querySelector("#update_description").value = currentTribuT.description
-        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
+        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ?  "/public" + currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
 
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version

@@ -1487,7 +1487,7 @@ class TributTController extends AbstractController
 
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
-			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+			// $restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
 		
 		$r=$serialize->serialize($restos,'json');
@@ -1512,7 +1512,7 @@ class TributTController extends AbstractController
 
         if($has_golf == true){
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
 		
 		$r=$serialize->serialize($golfs,'json');
