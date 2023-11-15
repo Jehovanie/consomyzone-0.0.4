@@ -225,7 +225,10 @@ class TributTController extends AbstractController
     }
 
     #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
-    public function update_pdp_tribu(Request $request,Filesystem $filesyst, UserRepository $userRep, Tribu_T_Service $tribu_T_Service){
+    public function update_pdp_tribu(Request $request,
+    Filesystem $filesyst,
+    UserRepository $userRep, 
+    Tribu_T_Service $tribu_T_Service){
         
         $user = $this->getUser();
         $userId = $user->getId();

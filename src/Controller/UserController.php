@@ -2402,7 +2402,7 @@ class UserController extends AbstractController
 
 
 
-            $profil[0]->setPhotoProfil('/public/uploads/users/photos/photo_user_' . $userId . "/" . $imagename);
+            $profil[0]->setPhotoProfil('/uploads/users/photos/photo_user_' . $userId . "/" . $imagename);
 
 
 

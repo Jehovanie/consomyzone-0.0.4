@@ -992,8 +992,9 @@ function setAsPdp(span){
 
     let img_path = new URL(img).pathname
 
+
     let data ={
-        image_path : img_path.includes("/public")?img_path : "/public"+img_path
+        image_path : img_path.includes("/public") ? img_path.replace("/public","") :  img_path
     }
 
     fetch(new Request("/user/setpdp", {

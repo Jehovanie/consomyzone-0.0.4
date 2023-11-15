@@ -77,7 +77,7 @@
                                         {% if jtem.amis|length > 0 %}
                                                         <!-- Chat List Item -->
                                             {% for ktem in jtem.amis %}
-                                                {% if item.last_message == false %}
+                                                {% if ktem.last_message == false %}
                                                 
                                                 {% else %}
                                                     {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}

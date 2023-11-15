@@ -1,4 +1,4 @@
-/**
+/**updatePdpTribu_T
  * global variable 
  */
 var tribu_t_name_0 = "";
@@ -280,7 +280,7 @@ function showPartisan() {
 
                     if( json.infos_profil !== null ){
                         profilInfo = JSON.parse(json.infos_profil)
-                        let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
+                        let profil = profilInfo.photo_profil != null ? "/public"+profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
                         let lastName = profilInfo.lastName
                         let firstName = profilInfo.firstName
                         let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
@@ -541,10 +541,10 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
     let canChangeTribuPicture = "";
     if (document.querySelector("#activeTribu")) {// data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
         canChangeTribuPicture = !document.querySelector("#activeTribu").classList.contains("other") ? `<div class="col-lg-6 col-6" style="height:100px;">
-                                    <label style="margin-left:50%;margin-top:50%" data-bs-placement="top" title="Modifier le logo de la tribu" onclick="openSwalNonActif()">
+                                    <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT" data-bs-placement="top" title="Modifier le logo de la tribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
-                                    <!--<input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">-->
+                                    <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
                                 </div>` : ""
     }
 
