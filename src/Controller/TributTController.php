@@ -243,10 +243,12 @@ class TributTController extends AbstractController
                 $tableExtension = $tableTribu . "_golf";
                 if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
                     if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => json_decode($pdoService->convertUnicodeToUtf8($name_tribu_t_muable),true), "logo_path" => $logo_path, "isPastilled" => false]);
+                        
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => json_decode($pdoService->convertUnicodeToUtf8($name_tribu_t_muable),true), "logo_path" => $logo_path, "isPastilled" => true]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
                     }
+                    
                 }
             }
         }

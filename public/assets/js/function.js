@@ -2905,7 +2905,6 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
           }
           datas.forEach(data => {
           
-
               if (data.isPastilled == true) {
                   listTibuTPast += `
                       <tr>
@@ -2935,8 +2934,6 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
 
           let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
 
-          console.log(tribu_g_name);
-
           fetch(`/user/tribu_g/isPastilled/${tribu_g_name+'_golf'}/${id_golf}`)
           .then(s=>s.json())
           .then(isOk=>{
@@ -2954,6 +2951,40 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
               }
 
               let modalPastillGolf = `
+              <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                      <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                  </li>
+              </ul>
+
+              <table class="table table-striped content_list_resto_js">
+                  <thead>
+                      <tr>
+                          <th scope="col">Logo</th>
+                          <th scope="col">Tribu T</th>
+                          <th scope="col">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      ${listTibuTPast}
+                  </tbody>
+              </table>
+
+              <div class="m-2 content_list_resto_js_g d-none">
+                  <div class="d-flex justify-content-between">
+                          <span>${tribu_g_name}</span>
+                          <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
+                              ${txt}
+                          </button>
+              
+                  </div>
+              </div>
+          `
+
+              /*let modalPastillGolf = `
           <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
               <div class="modal-pastille-golf">
                   <div class="modal-dialog">
@@ -3002,10 +3033,11 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                   </div>
               </div>
           </div>
-          `
-         
-          if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
-              document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
+          `*/
+          
+          if (document.querySelector("#pastilleForGolfBody")) {
+              $("#pastilleForGolf").modal("show")
+              document.querySelector("#pastilleForGolfBody").innerHTML = modalPastillGolf
           }
           })
           
