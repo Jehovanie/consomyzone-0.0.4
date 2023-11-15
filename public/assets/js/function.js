@@ -5400,9 +5400,9 @@ function getUserIdle() {
 }
 
 function resetTimer(idle=300) {
-  console.log(idle)
+  //console.log(idle)
     idle = idle / 60
-    console.log(idle)
+    //console.log(idle)
     let timer = idle -2
     clearTimeout(idleTimer);
     clearTimeout(idleTimer2);
@@ -5552,4 +5552,132 @@ function msgFlash(msg,target) {
     div.innerHTML= msg
     target.parentNode.insertBefore(div,target.nextSibling)
     
+}
+
+/**
+ * @author Elie
+ * @constructor pastille resto into tribu G
+ * @param {node} e element of node
+ * @param {boolean} type oui si pastille, non si depastille
+ * @param {integer} id id_restaurant
+ * @param {string} name nom resto
+ */
+function pastilleForTribuG(e, type, id, name){
+    
+  const data = {
+      name : name,
+      id : id,
+      tbl : document.querySelector("#my_tribu_g").textContent.trim()
+  }
+  // For pastille
+  if(type == true){
+
+      fetch("/user/tribu_g/pastille/resto",{
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      }).then(r=>r.json())
+      .then(res=>{
+          if(res.status == "ok"){
+              swal({
+                  title : "Bravo!",
+                  text: "Restaurant pastillé avec succès dans votre tribu G.",
+                  icon: "success",
+              });
+
+              e.classList = "btn btn-success ms-1"
+              e.innerText = "Pastillé"
+          }
+      })
+  }
+  // For depastille
+  else{
+      fetch("/user/tribu_g/depastille/resto",{
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      }).then(r=>r.json())
+      .then(res=>{
+          if(res.status == "ok"){
+              swal({
+                  title : "Bravo!",
+                  text: "Restaurant dépastillé avec succès dans votre tribu G.",
+                  icon: "success",
+              });
+
+              e.classList = "btn btn-success ms-1"
+              e.innerText = "Dépastillé"
+          }
+      })
+  }
+}
+
+/**
+* @author Elie
+* @constructor pastille resto into tribu G
+* @param {node} e element of node
+* @param {boolean} type oui si pastille, non si depastille
+* @param {integer} id id_restaurant
+* @param {string} name nom resto
+*/
+function pastilleGolfForTribuG(e, type, id, name){
+  
+  const data = {
+      name : name,
+      id : id,
+      tbl : document.querySelector("#my_tribu_g").textContent.trim()
+  }
+  // For pastille
+  if(type == true){
+
+      fetch("/user/tribu_g/pastille/golf",{
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      }).then(r=>r.json())
+      .then(res=>{
+          if(res.status == "ok"){
+              swal({
+                  title : "Bravo!",
+                  text: "Golf pastillé avec succès dans votre tribu G.",
+                  icon: "success",
+              });
+
+              e.classList = "btn btn-success ms-1"
+              e.innerText = "Pastillé"
+          }
+      })
+  }
+  // For depastille
+  else{
+      fetch("/user/tribu_g/depastille/golf",{
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      }).then(r=>r.json())
+      .then(res=>{
+          if(res.status == "ok"){
+              swal({
+                  title : "Bravo!",
+                  text: "Golf dépastillé avec succès dans votre tribu G.",
+                  icon: "success",
+              });
+
+              e.classList = "btn btn-success ms-1"
+              e.innerText = "Dépastillé"
+          }
+      })
+  }
 }

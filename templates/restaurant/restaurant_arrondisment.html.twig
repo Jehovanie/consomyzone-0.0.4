@@ -93,6 +93,16 @@
                         <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body custom_modal">
+
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                            </li>
+                        </ul>
+
                         <div class="content_list_resto content_list_resto_js">
                             <div class="list_resto_detail_for_pastille">
                                 <table class="table table-striped">
@@ -108,6 +118,21 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div class="m-2 content_list_resto_js_g d-none">
+
+                            <div class="d-flex justify-content-between">
+                                {% if app.user %}
+                                    <span>{{userConnected ? userConnected.tableTribuG : ""}}</span>
+                                    <button class="btn btn-success btn-sm" id="btn-pastille-elie-tbg" data-tbname ="{{userConnected.tableTribuG}}">
+                                        Pastiller
+                                    </button>
+                                {% endif %}
+                        
+                            </div>
+                            
+                        </div>
+
                     </div>
                 </div>
             </div>
