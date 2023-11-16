@@ -28,6 +28,71 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class MessageController extends AbstractController
 {
 
+    private function decryptData($encryptedData){
+        $decryptionMethod = $_ENV["DECRYPTIONMETHOD"];
+        $encryptionMethod=$_ENV["ENCRYPTIONMETHOD"];
+        $secretKey=$_ENV["SECRET"];
+        $iv = \openssl_random_pseudo_bytes(openssl_cipher_iv_length($encryptionMethod));
+        $decryptedData = openssl_decrypt($encryptedData, $decryptionMethod, $secretKey, 0, $iv);
+        return $decryptedData;
+    }
+
+    #[Route("/user/tribu/msg", name:"app_tribu_g_message",methods:['GET'])]
+    public function renderMessageTribu(
+        Request $request,
+        TribuTGservice $tributGService
+    ){
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        $type=$request->query->get('type');
+        switch($type){
+            case ('t'):{
+                //TODO get All message of tribu T concerned
+                
+                break;
+            }
+            case ('g'):{
+                //TODO get All message of tribu g concerned
+
+                break;
+            }
+            default:{
+
+            }
+        } 
+
+
+    }
+
+    #[Route("/user/pushMessage/G", name:"app_user_push_message_grp", methods:["POST","GET"])]
+    public function pushMessageGrp(
+        Request $request,
+        TributGService $tributGService
+    ){
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        $content=json_decode($request->getContent(),true);
+        $message='io fa mandeha le 👌👌👌 dia aona ééé';
+        $files='';
+        $images='';
+
+        $tributGService->sendMessageGroupe($message,  
+        $files , 
+        $images, 
+        $userId, 0, 1, 0,"tribug_01_apremont_apremont");
+
+        return $this->json(array("ok"=>"ok"));
+    }
+
     #[Route("/user/get/allTribu", name:"app_user_get_all_tribu")]
     public function getMyAllTribu(
         Request $request,

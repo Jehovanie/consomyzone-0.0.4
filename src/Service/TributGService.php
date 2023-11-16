@@ -1444,17 +1444,61 @@ class TributGService extends PDOConnexionService{
     public function creaTableTeamMessage($tribu_g){
 
         $tableMessageName=$tribu_g."_msg_grp";
-        $sql="CREATE TABLE".$tableMessageName. "(".
+        $sql="CREATE TABLE IF NOT EXISTS ".$tableMessageName. "(".
         "id int NOT NULL PRIMARY KEY AUTO_INCREMENT,".
         "id_expediteur int NOT NULL,".
         "msg longtext  CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,".
+        "files longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,".
+        "images longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,".
         "isPrivate tinyint NOT NULL DEFAULT 0,".
-        "isPublic tinyint NOT NULL DFAULT 1,".
+        "isPublic tinyint NOT NULL DEFAULT 1,".
         "isRead tinyint NOT NULL DEFAULT 0,".
         "date_message_created datetime NOT NULL DEFAULT current_timestamp()".
         ")ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         
         $stmt->execute();
+    }
+
+    public function sendMessageGroupe($message,  
+        $files , 
+        $images, 
+        $id, 
+        $isPrivate, 
+        $isPublic,
+        $isRead,
+        $tribu_g){
+            $tableMessageName=$tribu_g."_msg_grp";
+            $encryptionMethod=$_ENV["ENCRYPTIONMETHOD"];
+            $secretKey=$_ENV["SECRET"];
+            $iv = \openssl_random_pseudo_bytes(openssl_cipher_iv_length($encryptionMethod));
+            $encryptedMesage = \openssl_encrypt($message, $encryptionMethod, $secretKey, 0, $iv,);
+            $encryptedImages=\openssl_encrypt($images, $encryptionMethod, $secretKey, 0, $iv,);
+            $encryptedFiles=\openssl_encrypt($files, $encryptionMethod, $secretKey, 0, $iv,);
+
+            $sql='INSERT INTO '. $tableMessageName.
+            '(id_expediteur, msg , files, images, isPrivate, isPublic, isRead)'. 
+            'VALUES(:id_expediteur, :msg, :files, :images, :isPrivate, :isPublic, :isRead )';
+            $statement = $this->getPDO()->prepare($sql);
+            $statement->bindParam(':id_expediteur',$id,PDO::PARAM_STR);
+            $statement->bindParam(':msg',$encryptedMesage,PDO::PARAM_STR);
+            $statement->bindParam(':files',$encryptedImages,PDO::PARAM_STR);
+            $statement->bindParam(':images',$encryptedFiles,PDO::PARAM_STR);
+            $statement->bindParam(':isPrivate',$isPrivate,PDO::PARAM_INT);
+            $statement->bindParam(':isPublic',$isPublic,PDO::PARAM_INT);
+            $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
+
+            $statement->execute();
+    }
+
+    public function getMessageGRP($tribu_g,$encryptedData){
+        $tableMessageName=$tribu_g."_msg_grp";
+        $sql="SELECT * FROM ".$tableMessageName." ORDER BY date_message_created DESC";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $results;
+        
     }
 }

@@ -761,17 +761,75 @@ function removeReplicatedFan(element){
  * localisation: message.js
  */
 function showListTribus(){
-    fetch().then(response=>{
+    fetch('/user/get/allTribu').then(response=>{
         if(response.status === 200 && response.ok){
             response.json().then(jsons=>{
+                const ul=document.querySelector(".msg_grp_faniry_js")
+                ul.innerHTML=""
                 for(let i=0; i<jsons.length; i++){
                     if(i ===0){ //pour tribu G
                         const json=jsons[i]
                         const tribuGName=`tribu G ${json.commune} ${json.quartier}`
                         const logoPath=""
-                        const link='/user/tribu/msg'
+                        const link=`/user/tribu/msg?name=${json.tableTribuG}&type=g`
+                        const li = document.createElement("li")
+                        li.setAttribute("class","fan_activ_faniry_js");
+                        li.dataset.toggleTribuGId=json.tableTribuG
+                        li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${tribuGName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `
+                            ul.appendChild(li)
                     }else{
                         let tribuTs=jsons[i]
+                        for(let tribut of tribuTs){
+                        const tribuTimmuable=tribut.table_name
+                        const tribuTname=tribut.name_tribu_t_muable
+                        const logoPath =tribut.logo_path
+                        const link=`/user/tribu/msg?name=${tribut.table_name}&type=t`
+                        const li = document.createElement("li")
+                        li.setAttribute("class","fan_activ_faniry_js");
+                        li.dataset.toggleTribuGId=tribuTname
+                        li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${tribuTname}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `
+                            ul.appendChild(li)
+                        }
                     }
                 }
             })
