@@ -45,12 +45,12 @@ class TributGService extends PDOConnexionService{
         }else {
             ///Formatage name
             $depart_tributG = explode("_",$name_table_tribuG); /// ["tribug", (departement code) , (...departement name ) ]
-            $depart_tributG_name = mb_convert_case( $depart_tributG[count($depart_tributG) - 1 ] , MB_CASE_TITLE, "UTF-8");
-
-            for($i = 2; $i < count($depart_tributG) - 1 ; $i++) {
+            $depart_tributG_name = mb_convert_case( $depart_tributG[2] , MB_CASE_TITLE, "UTF-8");
+            
+            for($i = 3; $i < count($depart_tributG); $i++) {
                 $depart_tributG_name .= " "  .  mb_convert_case( $depart_tributG[$i] , MB_CASE_TITLE, "UTF-8");
             }
-
+            
             // $depart_tributG_name = $this->convertUtf8ToUnicode($depart_tributG_name);
 
             $description = "Département " . $depart_tributG[1] . ", " . $depart_tributG_name;
