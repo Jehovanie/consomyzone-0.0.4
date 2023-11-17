@@ -157,12 +157,52 @@
 			</div>
 		</div>
 
+		<div class="modal" tabindex="-1" id="detailOptionGolf">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Plus d'options</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="container text-center">
+							<i class="fas fa-question-circle fs-1 text-info"></i><br>
+							
+							<p class="questionAction">Quelle action voulez-vous pour ce golf?</p>
+							<div class="container mb-4 mt-5 content_btns_nanta_js">
+								<button type="button" id="data-note-elie-js-2" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisGolf">
+									<i class="fas fa-edit"></i>
+									Notez</button>
+								<button type="button" id="data-depastille-nanta-js-2" class="btn btn-warning mt-1">Dépastiller</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="modal fade" id="modalDetailResto" tabindex="-1" aria-hidden="true" style="z-index:80000 !important">
 			<div class="modal-dialog modal-dialog-scrollable">
 				<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
 					<div class="modal-header" id="restoModalLabel"></div>
 					<div class="modal-body">
 						<div id="elie-resto-detail"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="modalDetailGolf" tabindex="-1" aria-hidden="true" style="z-index:80000 !important">
+			<div class="modal-dialog modal-dialog-scrollable">
+				<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+					<div class="modal-header" id="golfModalLabel">Detail de golf
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+					<div class="modal-body">
+						<div id="elie-golf-detail"></div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
@@ -193,6 +233,7 @@
 		{% include 'tribu_t/modal_add_picture.twig' %}
 		{% include 'shard/modal/media_modal_tribu.html.twig' %}
         {% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+        {% include 'shard/golf/modal_avis_golf.twig' %}
         {% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
 		<!-- ===== Main Content End ===== -->
 

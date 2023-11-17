@@ -52,7 +52,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
         `;
 
 
-        fetch("/tributG/restaurant")
+        fetch("/tributG/restaurant/v2")
             .then(response => response.json())
             .then( response => {
                 
@@ -63,6 +63,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                             <div class="col-12">
                                                 <div id="form_past"></div>
                                                 <div class="g-3">
+                                                    <h5 class="text-primary mb-3">Rechercher des restaurants à pastiller</h5>
                                                     <div class="input-group mb-3">
                                                         <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
                                                         <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
@@ -210,10 +211,14 @@ function openAvisRestoG(nb_avis, id_resto) {
 
         const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")+"_restaurant"
 
-        fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
+        ///avis/restaurant/{idRestaurant}
+        fetch('/avis/restaurant/global/'+ id_resto)
+        // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
             .then(response => response.json())
             .then(avis => {
                 for (let avi of avis) {
+
+                    console.log(avi);
 
                     let noteEtoile = ""
 
@@ -238,11 +243,11 @@ function openAvisRestoG(nb_avis, id_resto) {
 
                     let edit_avis_e = ''
 
-                    if(avi.userId == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
+                    if(avi.user.id == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
                         edit_avis_e = `<div class="content_action">
                             <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
                                 data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
-                                onclick="setUpdateNote(this, ${avi.id_comment}, ${avi.note}, '${avi.commentaire}', ${id_resto})">
+                                onclick="setUpdateNote(this, ${avi.id}, ${avi.note}, '${avi.avis}', ${id_resto})">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
                         </div>
@@ -258,10 +263,10 @@ function openAvisRestoG(nb_avis, id_resto) {
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="content_profil_image me-2">
-                                                <img class="profil_image" src="${avi.photo_profil ? avi.photo_profil : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+                                                <img class="profil_image" src="${avi.user.photo ? avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
                                             </div>
                                             <div class="content_info">
-                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.fullname}</small></h3>
+                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
                                                 <cite class="font-point-6"> ${avi.datetime}</cite>
                                             </div>
                                         </div>
@@ -274,7 +279,7 @@ function openAvisRestoG(nb_avis, id_resto) {
                                     </div>
 
                                     <div class="mt-2">
-                                        <p class="text-point-9">${avi.commentaire}</p>
+                                        <p class="text-point-9">${avi.avis}</p>
                                     </div>
                                 </div>
                             </div>
@@ -320,41 +325,35 @@ function openAvisRestoG(nb_avis, id_resto) {
  */
 function sendNoteTribuG(note, commentaire, _idResto) {
 
-    const content = {
-        // idUser: _idUser,
-        idResto: _idResto,
-        tableName: document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant_commentaire",
-        note: note,
-        commentaire: commentaire
+    const requestParam = {
+        note: parseFloat(note),
+        avis:commentaire
     }
 
-    const jsonStr = JSON.stringify(content)
-    //  console.log(jsonStr)
-    const request = new Request("/push/comment/resto/pastilled", {
+    ////send data to the backend server
+    const request = new Request(`/avis/restaurant/${_idResto}`, {
         method: "POST",
-        body: jsonStr,
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
+        body:JSON.stringify(requestParam)
     })
+
     fetch(request).then(response => {
+
         if (response.status == 200 && response.ok) {
-
-            document.querySelector(".data-note-" + _idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
-
-            let last_avis = parseInt(document.querySelector(".data-avis-" + _idResto).textContent.replaceAll(/[^0-9]/g, ""))
-
-            document.querySelector(".data-avis-" + _idResto).innerHTML = parseInt(last_avis + 1) + " Avis";
-
-            document.querySelector(".data-avis-" + _idResto).setAttribute("onclick", "openAvisRestoG(" + parseInt(last_avis + 1) + "," + _idResto + ")")
 
             swal({
                 title: "Noté!",
                 text: "Note ajouté avec succès",
                 icon: "success",
                 button: "Ok",
+            }).then(r=>{
+                document.querySelector("#fetch_resto_tribug_jheo_js").click()
+
             });
+
 
         } else {
             swal({
@@ -366,6 +365,56 @@ function sendNoteTribuG(note, commentaire, _idResto) {
 
         }
     })
+
+    /**
+     * DEPRECATED
+     */
+    // const content = {
+    //     // idUser: _idUser,
+    //     idResto: _idResto,
+    //     tableName: document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant_commentaire",
+    //     note: note,
+    //     commentaire: commentaire
+    // }
+
+    // const jsonStr = JSON.stringify(content)
+    // //  console.log(jsonStr)
+    // const request = new Request("/push/comment/resto/pastilled", {
+    //     method: "POST",
+    //     body: jsonStr,
+    //     headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json'
+    //     },
+    // })
+    // fetch(request).then(response => {
+    //     if (response.status == 200 && response.ok) {
+
+    //         document.querySelector(".data-note-" + _idResto).innerHTML = parseFloat(note, 2).toFixed(2).toString() + "/4";
+
+    //         let last_avis = parseInt(document.querySelector(".data-avis-" + _idResto).textContent.replaceAll(/[^0-9]/g, ""))
+
+    //         document.querySelector(".data-avis-" + _idResto).innerHTML = parseInt(last_avis + 1) + " Avis";
+
+    //         document.querySelector(".data-avis-" + _idResto).setAttribute("onclick", "openAvisRestoG(" + parseInt(last_avis + 1) + "," + _idResto + ")")
+
+    //         swal({
+    //             title: "Noté!",
+    //             text: "Note ajouté avec succès",
+    //             icon: "success",
+    //             button: "Ok",
+    //         });
+
+    //     } else {
+    //         swal({
+    //             title: "Erreur!",
+    //             text: "Note non envoyé, veuillez réessayer!",
+    //             icon: "error",
+    //             button: "Ok",
+    //         });
+
+    //     }
+    // })
 }
 
 /**
@@ -375,6 +424,42 @@ function sendNoteTribuG(note, commentaire, _idResto) {
  */
 function updateNoteTribuG(id_resto, id_bdd_resto) {
 
+    let note = document.querySelector("#text-note").value.replace(/,/g, ".")
+    let avis = document.querySelector("#message-text").value
+
+    const requestParam = {
+        avisID: id_resto,
+        note: parseFloat(note),
+        avis:avis
+    }
+
+    const request = new Request(`/change/restaurant/${id_bdd_resto}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(requestParam)
+    })
+    fetch(request).then(r => {
+        if (r.ok && r.status === 200) {
+                swal({
+                    title: "A jour!",
+                    text: "Note modifié avec succès!",
+                    icon: "success",
+                    button: "Ok",
+                }).then(r=>{
+                    document.querySelector("#fetch_resto_tribug_jheo_js").click()
+
+                });
+
+        }
+    })
+
+    /**
+     * DEPRECATED
+     */
+    /*
     let note = document.querySelector("#text-note").value
     let commentaire = document.querySelector("#message-text").value
 
@@ -407,6 +492,6 @@ function updateNoteTribuG(id_resto, id_bdd_resto) {
             
         }
     })
-
+    */
 
 }

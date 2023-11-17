@@ -1216,6 +1216,7 @@ class RestaurantController extends AbstractController
     ) {
         $userId = $this->getUser()->getId();
         $response = $avisRestaurantRepository->getNote($idRestaurant, $userId);
+        //dd($response);
         $response = $serializer->serialize($response, 'json');
         return new JsonResponse($response, 200, [], true);
     }

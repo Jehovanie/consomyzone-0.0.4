@@ -774,6 +774,25 @@ class TributGController extends AbstractController
 
     /**
      * @author Elie
+     * Fonction fetch resto pastille
+     */
+    #[Route("/tributG/restaurant/v2", name: "app_restaurant_tributG")]
+
+    public function fetchAllRestoTributGV2(
+        TributGService $tributGService,
+    ){
+        // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
+        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
+        // getAllRestoTribuG($table_name)
+
+
+        return $this->json($tributGService->getRestoPastillesTribuGV2($table_tributG_name));
+    }
+
+    /**
+     * @author Elie
      * Route fetching resto commentaire / avis pastille
      */
     #[Route('/user/comment/tribu-g/restos-pastilles/{table_resto}/{id}', name: 'show_restos_pastilles_t_g_commentaire')]
@@ -840,5 +859,24 @@ class TributGController extends AbstractController
 
 
         return $this->json($tributGService->getAllGolfTribuG($table_tributG_name));
+    }
+
+    /**
+     * @author Elie
+     * Fonction fetch resto pastille
+     */
+    #[Route("/tributG/mon-golf/v2", name: "app_mon_golf_tributG")]
+
+    public function fetchAllGolfTributGV2(
+        TributGService $tributGService,
+    ){
+        // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
+        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
+        // getAllRestoTribuG($table_name)
+
+
+        return $this->json($tributGService->getGolfPastillesTribuGV2($table_tributG_name));
     }
 }

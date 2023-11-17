@@ -1628,6 +1628,29 @@ class TributGService extends PDOConnexionService{
 
     }
 
+    /**
+     * @author Elie
+     * fetch resto pastiller dans tribu G
+     */
+    public function getRestoPastillesTribuGV2($table_name){
+
+        $tableResto = $table_name."_restaurant";
+        $tableComment = "avisrestaurant";
+    
+        $sql="SELECT * FROM (SELECT t1.id , t2.id as id_resto_comment, t1.extensionId as id_resto,t1.denomination_f, 
+                          t1.isPastilled, t2.id_resto as id_restaurant, t2.id_user as id_user,t2.note,t2.avis,
+                          GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.avis) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_resto) as nbrAvis ,
+                          GROUP_CONCAT(t2.id) as All_id_r_com
+                          FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_resto where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+          INNER JOIN bdd_resto ON tableRestCom.id_resto=bdd_resto.id";
+        $stmt = $this->getPDO()->prepare($sql);
+        
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+
     public function getAllAvisByRestName($tableResto,$id){
         $data=[
             ":id"=>$id
@@ -1642,17 +1665,27 @@ class TributGService extends PDOConnexionService{
       }
 
     /**
-     * @author Elie Fenohasina <eliefenohasina@gmail.com>
-     * @return array : list of golf tribu G exists
+     * @author Elie
+     * fetch golf pastiller dans tribu G
      */
-    public function getAllGolfTribuG($table_name){
+    public function getGolfPastillesTribuGV2($table_name){
 
-        $table_resto = $table_name."_golf";
+        $tableResto = $table_name."_golf";
+        $tableComment = "avisgolf";
+    
+        $sql="SELECT * FROM (SELECT t1.id , t2.id as id_golf_comment, t1.extensionId as id_golf_extension,t1.denomination_f, 
+                          t1.isPastilled, t2.id_golf as id_golf, t2.id_user as id_user,t2.note,t2.avis,
+                          GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.avis) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_golf) as nbrAvis ,
+                          GROUP_CONCAT(t2.id) as All_id_r_com
+                          FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_golf where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+          INNER JOIN golffrance ON tableRestCom.id_golf_extension=golffrance.id";
 
-        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. ' INNER JOIN golffrance ON '. $table_resto.'.extensionId = golffrance.id');
+          $sql2 = "SELECT * FROM $tableResto";
+        $stmt = $this->getPDO()->prepare($sql);
+        
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
 
-        $statement->execute();
-
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }
