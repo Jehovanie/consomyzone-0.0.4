@@ -1866,7 +1866,8 @@ class AgendaController extends AbstractController
         MailService $mailService,
         UserService $userService,
         EntityManagerInterface $entityManager,
-        AgendaService $agendaService
+        AgendaService $agendaService,
+        TributGService $tributGService
     )
     {
         if(!$this->getUser()){
@@ -1879,7 +1880,11 @@ class AgendaController extends AbstractController
 
         extract($data); ///$table, $principal, $cc ,$object, $description, $agendaId
         $agendaID = $agendaId;
+        
         $table_agenda_partage_name="partage_agenda_".$userId;
+
+        $fullNameSender = $tributGService->getFullName($userId);
+
         if($userRepository->findOneBy(["email" => $principal])){
 
             $userTo = $userRepository->findOneBy(["email" => $principal]);
@@ -1897,7 +1902,7 @@ class AgendaController extends AbstractController
             $context["link_confirm"] = "";
             $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
             $context["content_mail"] = $description;
-            $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
+            $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender);
             $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
             $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
 
@@ -1911,7 +1916,7 @@ class AgendaController extends AbstractController
             $to_id = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
             $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
             $context["content_mail"] = $description;
-            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
+            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender);
             $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
             $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
         }
@@ -1937,7 +1942,7 @@ class AgendaController extends AbstractController
                     $context["link_confirm"] = "";
                     $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$data["description"]);
                     $context["content_mail"] = $description;
-                    $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
+                    $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender);
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                     $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
         
@@ -1951,7 +1956,7 @@ class AgendaController extends AbstractController
                     $to_id = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
                     $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$data["description"]);
                     $context["content_mail"] = $description;
-                    $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender);
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                     $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
                 }

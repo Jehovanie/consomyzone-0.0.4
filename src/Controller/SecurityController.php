@@ -1089,11 +1089,11 @@ if($oldUser){
                 $context["object_mail"]=$receiver["objet"];
                 $context["template_path"]="emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"]="";
-                $context["content_mail"]=$content;
+                $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$content);
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
 
                 if(!is_null($to_id)){
-                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                     $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
                 }

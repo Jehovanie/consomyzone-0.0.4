@@ -666,7 +666,7 @@ class MessageController extends AbstractController
         
         $file_list = [];
         $image_list = [];
-        
+        $userId = $this->getUser()->getId();
         ///save all image
         if(count($files) > 0 ){
             
@@ -712,17 +712,26 @@ class MessageController extends AbstractController
 
         if(isset($dataInfos)){
             foreach ($dataInfos as $key) {
-                $result = $messageService->sendMessageForOne($key["from_id"], $key["to_id"], json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type);
                 $agendaID = $key["agendaId"];
                 $from_id=$key["from_id"];
                 $to_id=$key["to_id"];
 
                 if(!is_null($to_id)){
+
+                    $result = $messageService->sendMessageForOne(
+                        $userId, 
+                        $to_id, 
+                        json_encode([ "text" => str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$message), 
+                            "images" => $image_list, 
+                            "files" => $file_list 
+                        ]),
+                        $type);
+
                     $userTo = $userRepository->findOneBy(["id" => intval($to_id)]);
                     $email_to = $userTo->getEmail();
-                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-                    $agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $email_to, "Déjà confirmé", $agendaID);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Déjà confirmé", $agendaID);
                 }
             }
         }else{

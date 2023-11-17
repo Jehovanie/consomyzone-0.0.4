@@ -16,8 +16,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
         })
     })*/
 
-
-
+    let agenda = JSON.parse(sessionStorage.getItem("agenda"))
+    object.value = agenda.title
 
     input_principal.addEventListener("input", () => {
         input_principal.style.border = "1px solid black";
@@ -65,14 +65,13 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
             cc_destinataire.push(item.innerText)
         })*/
 
-
-        let agenda = JSON.parse(sessionStorage.getItem("agenda"))
-
         let agendaId = agenda.id
+
+        let objectTitle = agenda.title
 
         let status = true;
         
-        let data = {"principal": "", "cc": [], "object": "", "description": "", agendaId:agendaId}
+        let data = {"principal": "", "cc": [], "object": objectTitle, "description": "", agendaId:agendaId}
 
         if (input_principal.value === "") {
             input_principal.style.border = "1px solid red";
@@ -94,7 +93,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                             status = false;
                             swal("Attention!", "Veuillez saisir l'objet.", "error")
                         } else {
-                            data = { ...data, "object": object.value }
+                            data = { ...data, "object": objectTitle }
                         }
 
                     }else {
@@ -109,7 +108,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                         status = false;
                         swal("Attention!", "Veuillez saisir l'objet.", "error")
                     } else {
-                        data = { ...data, "object": object.value }
+                        data = { ...data, "object": objectTitle }
                     }
                 }
 
@@ -162,7 +161,6 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                         input_principal.value = null;
                         input_cc.value = null;
                         // editor.setData("");
-                        object.value = null;
                         document.querySelectorAll(".chip").forEach(item => {
                             item.parentElement.removeChild(item);
                         })
