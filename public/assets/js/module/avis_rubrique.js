@@ -298,7 +298,7 @@ function showModifArea(idItem, currentUserId) {
 /*
 *show comment without btn modification
 */
-function createShowAvisAreas(json,currentUserId,idItem = 0) {
+function createShowAvisAreas(json,currentUserId,idItem = 0, rubrique_type= null ) {
     let startIcon = "";
     let rate= parseFloat(json.note) - Math.trunc(parseFloat(json.note));
     let rateYellow = rate * 100;
@@ -320,7 +320,7 @@ function createShowAvisAreas(json,currentUserId,idItem = 0) {
     let modalebtnModife = "";
     modalebtnModife = `
         <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}', '${idItem}')">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}', '${idItem}', '${rubrique_type}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
@@ -431,7 +431,7 @@ function showNoteGlobale(idItem, globalNote=0) {
 /**
  * Prepare update avis resto
  */
-function settingAvis(avisID, avisNote, avisText, idItem){
+function settingAvis(avisID, avisNote, avisText, idItem, rubriquType= null){
 
     document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis."
     
@@ -443,7 +443,7 @@ function settingAvis(avisID, avisNote, avisText, idItem){
     if( document.querySelector(".cart_map_jheo_js")){
         btn_update.setAttribute("onclick",`updateAvis('${avisID}', '${idItem}')`)
     }else{
-        btn_update.setAttribute("onclick",`updateAvisInTribuT('${avisID}', '${idItem}')`)
+        btn_update.setAttribute("onclick",`updateAvisInTribuT('${avisID}', '${idItem}', '${rubriquType}')`)
     }
 }
 
@@ -620,7 +620,7 @@ function fetchListAvisInTribuT(idItem, rubrique_type) {
             }
 
             for (let json of jsons) {
-                createShowAvisAreas(json, user.id , idItem)
+                createShowAvisAreas(json, user.id , idItem, type)
             }
         }else{
             document.querySelector(".all_avis_jheo_js").innerHTML= `
@@ -705,7 +705,7 @@ function addAvisInTribuT(idItem, rubrique_type){
 }
 
 
-function updateAvisInTribuT(avisID, idItemRubrique){
+function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType){
 
     if(document.querySelector("#text-note").value === ""  || document.querySelector("#message-text").value === "" ){
         msgErrorAlertAvis({ message : "no content"})
@@ -715,8 +715,10 @@ function updateAvisInTribuT(avisID, idItemRubrique){
     }
 
 
-    let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItemRubrique}_jheo_js`)
-    let type= details.getAttribute("data-toggle-type");
+    // let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItemRubrique}_jheo_js`)
+    // let type= details.getAttribute("data-toggle-type");
+
+    let type= rubriqueType;
 
     ///// remove alert card and add chargement spinner
     if( document.querySelector(".all_avis_jheo_js")){
@@ -728,8 +730,6 @@ function updateAvisInTribuT(avisID, idItemRubrique){
             </div>
         `
     }
-
-    let newUserId = parseInt(document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id"))
     
     let note = document.querySelector("#text-note").value.replace(/,/g, ".")
     let avis = document.querySelector("#message-text").value;
@@ -759,7 +759,7 @@ function updateAvisInTribuT(avisID, idItemRubrique){
 
     deleteOldValueInputAvis(); //// delet input and text
     document.querySelector(".title_modal_jheo_js").innerHTML = "Donnée votre avis.";
-    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvis()");
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", `addAvisInTribuT('${idItem}', '${type}')`);
             
     const request = new Request(path_link, {
         method: "POST",
@@ -771,21 +771,7 @@ function updateAvisInTribuT(avisID, idItemRubrique){
     })
     fetch(request).then(r => {
         if (r.ok && r.status === 200) {
-            // document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis'
-            
-            showModifArea(idItem, newUserId)
-
-            if (document.querySelector("#see-tom-js") || document.querySelector(`#see-tom-js${idItem}`)) {
-                const parent=  document.querySelector("#see-tom-js") ?  document.querySelector("#see-tom-js") :  document.querySelector(`#see-tom-js${idItem}`)
-                ////get total number avis and update
-                showNemberOfAvis(idItem, parent)
-
-                /// get global note and update global notes in details resto
-                showNoteGlobale(idItem)
-            }
-
-            // document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvisResto()");
-            document.querySelector(".title_modal_jheo_js").innerHTML = "Donnée votre avis."
+            fetchListAvisInTribuT( idItem, type )
         }
     })
 }
