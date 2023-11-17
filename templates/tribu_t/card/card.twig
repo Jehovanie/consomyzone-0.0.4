@@ -4,7 +4,7 @@
             <div class="content_pub_info">
                 <div class="pdp-content">
                     {# <img class="profil_publication" src="{{(userOwnPub.profil) ? userOwnPub.profil|replace({"/public": ""}) : asset('/uploads/users/photos/default_pdp.png') }}" alt="{{userOwnPub.fullName}}"> DEV #}
-                    <img class="profil_publication" src="{{(userOwnPub.profil) ? '/public'~ userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}">
+                    <img class="profil_publication" src="{{(userOwnPub.profil) ? '/public'~ userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}"  >
                 </div>
                 <div class="name-content-h">
                     <div class="name-content">
@@ -66,7 +66,7 @@
             <p class="text-pub mb-3">{{ publication.description }}</p>
             {% if publication.image is defined and publication.image is not same as("") %}
                 {# <img class="image_publication"  src="{{publication.image|replace({"/public": ""})}}" alt="image publication"> ON DEV #}
-                <img class="publication-picture"  src="{{publication.image}}" alt="image publication">
+                <img class="publication-picture"  src="{{publication.image}}" alt="image publication"  data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
             {% endif %}
         </div>
 

@@ -147,4 +147,19 @@ class AvisGolfRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+    
+    public function getState($idGolf){
+        $results = $this->createQueryBuilder("r")
+            ->select("
+                r.id,
+                r.avis,
+                r.note")
+            ->where("r.golf = :idGolf ")
+            ->setParameter("idGolf",$idGolf)
+            ->getQuery()
+            ->getResult();
+            
+        return $results; 
+    }
+
 }

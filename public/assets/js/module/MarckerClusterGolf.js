@@ -391,9 +391,11 @@ class MarckerClusterGolf extends MapModule {
 
             this.addMarkerNewPeripherique(new_data, new_size);
 
-            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
+            if( new_data.length > 0 ){
+                new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
+                this.default_data= this.default_data.concat(new_data);
+            }
          
-            this.default_data= this.default_data.concat(new_data);
         } catch (e) {
             console.log(e)
         }

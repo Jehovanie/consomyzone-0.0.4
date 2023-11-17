@@ -25,6 +25,7 @@
 	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+	{# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
 
@@ -48,10 +49,8 @@
 			</button>
 		</div>
 
-		
-
 		<!-- ===== Main Content Start ===== -->
-		<main class="gv hm hv content-actualite-connected">
+		<main class="gv hm hv content-actualite-connected content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
 			<div
 				class="sk bu 2xl:ud-p-11 width-content-t">
 
@@ -312,13 +311,13 @@
 				{# <h5 class="modal-title">Détail</h5> #}
 				<div class="content_etab_detail">
 				</div>
-				<button type="button" class="btn-close" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+				<button type="button" class="btn-close" data-bs-target="#modalForExtension0" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-danger" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+				<button class="btn btn-danger" data-bs-target="#modalForExtension0" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
 			</div>
 			</div>
 		</div>

@@ -794,7 +794,7 @@ function updateViewState(new_state, idItem) {
             note_total += item_note;
         })
 
-        note_moyenne= note_total/( new_state.length * 4 );
+        note_moyenne= note_total/new_state.length;
         document.querySelector(`.data-note-${idItem}`).innerText= `${note_moyenne}/4`;
     }
 

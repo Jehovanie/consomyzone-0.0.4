@@ -1514,7 +1514,6 @@ class TributTController extends AbstractController
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
 			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
-		
 		$r=$serialize->serialize($golfs,'json');
 		
 		return new JsonResponse($r, Response::HTTP_OK, [], true);
@@ -2733,5 +2732,37 @@ class TributTController extends AbstractController
        
     }
 
-}
 
+    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    public function checkedIfRestaurantIsPastilled(
+        $id_golf,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        SerializerInterface $serializerInterface
+    ) {
+        $arrayTribu = [];
+        if ($this->getUser()) {
+
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                    }
+                }
+            }
+        }
+
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
+    }
+
+}

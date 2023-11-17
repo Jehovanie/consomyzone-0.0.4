@@ -1982,7 +1982,7 @@ class MapModule{
         let countMarkers= 0;
         this.markers.eachLayer((marker) => {  countMarkers++; });
 
-        if( countMarkers < 20 ){
+        if( countMarkers < 20 && new_data.length > 0 ){
             new_data.forEach(item => {
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
