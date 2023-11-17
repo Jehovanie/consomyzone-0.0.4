@@ -1,0 +1,41 @@
+<div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_{{id}}_jheo_js mpcm_faniry_js" data-toggle-user-id="{{id}}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+    <div class="h mb sc yd of th">
+        {# /// photo de profil #}
+        <img src="{{(photo) ? "/public" ~ photo  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{firstname}}" class="vc yd qk rk elie-pdp-modif"/>
+        
+        {# //// state blue if in contact  #}
+        {% if is_online == 1 %}
+            <span class="g l m jc wc ce th pi ij xj"></span>
+         {% else %}
+            <span class="g l m jc wc ce th pi ij" style="background-color:gray"></span>
+        {% endif %}
+
+    </div>
+
+    {% set linkParam = { 'name' : table, 'type' : type }%}
+    <a href="{{path('app_tribu_g_message', linkParam )}}" class="yd">
+        <div class="row">
+            <div class="col-8">
+                <h5 class="mn un zn gs">
+                    {{firstname ~ " " ~ lastname }}
+                </h5>
+            
+                {% if last_message.message_type is defined %}
+                    {% if last_message.message_type is same as("text") %}
+                        <p class="mn text_message_jheo_js {{last_message.isRead == 0  ? 'wn'  : '' }}">{{ last_message.text|length > 50 ? "(Message long) ..." : last_message.text|raw  }}</p>
+                    {% else %}
+                        <p class="mn text_message_jheo_js">(object)</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text_message_jheo_js">Discussion générale</p>
+                {% endif %}
+            </div>
+            <div class="col-4">
+                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+            </div>
+        </div>
+        
+
+        
+    </a>
+</div>

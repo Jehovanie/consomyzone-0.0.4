@@ -29,9 +29,9 @@ class MessageController extends AbstractController
 {
 
     private function decryptData($encryptedData){
-        $decryptionMethod = $_ENV["DECRYPTIONMETHOD"];
-        $encryptionMethod=$_ENV["ENCRYPTIONMETHOD"];
-        $secretKey=$_ENV["SECRET"];
+        $decryptionMethod ="AES-256-CBC";
+        $encryptionMethod="AES-256-CBC";
+        $secretKey="ThisIsASecretKey123";
         $iv = \openssl_random_pseudo_bytes(openssl_cipher_iv_length($encryptionMethod));
         $decryptedData = openssl_decrypt($encryptedData, $decryptionMethod, $secretKey, 0, $iv);
         return $decryptedData;
@@ -40,23 +40,69 @@ class MessageController extends AbstractController
     #[Route("/user/tribu/msg", name:"app_tribu_g_message",methods:['GET'])]
     public function renderMessageTribu(
         Request $request,
-        TribuTGservice $tributGService
+        TributGservice $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+
     ){
         ///check the user connected
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
+        $userConnected = $status->userProfilService($this->getUser());
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+         
+       
+        $all_tribuT = $userRepository->getListTableTribuT();
 
+        $tribuG=$userConnected;
+        $tribuG["name"]= "tribu G ".$tribuG["commune"]." ". $tribuG["quartier"];
+        
+        $tribuTSelected=[];
+       
         $type=$request->query->get('type');
+        $isT=1;
+        $groupSendTo="";
         switch($type){
             case ('t'):{
                 //TODO get All message of tribu T concerned
-                
+                $tableName=$request->query->get('name');
+                $groupSendTo=$tableName;
+                $allMessage=$tributTService->getMessageGRP($tableName);
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                }
+                foreach($all_tribuT as $tribut){
+                     if($tribut["table_name"] ==$tableName)
+                        $tribuTSelected=$tribut;
+                }
+                $isT=1;
                 break;
             }
             case ('g'):{
                 //TODO get All message of tribu g concerned
-
+                $groupSendTo=$tribuG["tableTribuG"];
+                $isT=0;
+                $tableName=$request->query->get('name');
+                $allMessage=$tributGService->getMessageGRP($tableName);
+                if(count($allMessage)>0)
+                    $tribuG["last_message"]=$allMessage[0];
+                else
+                $tribuG["last_message"]=[];
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                }
                 break;
             }
             default:{
@@ -64,31 +110,145 @@ class MessageController extends AbstractController
             }
         } 
 
+        //dd($tribuG);
+        // $tribuG["last_message"]=$allMessage[0];
+        return $this->render("user/message/mgs_grp_tribu.html.twig",[
+            "group_send_to"=>$groupSendTo,
+            "isT"=> $isT,
+            "userConnected" => $userConnected,
+            "tribusG" => $tribuG,
+            "tribuT" => $all_tribuT,
+            "tribuTSelected"=>$tribuTSelected,
+            "allMessage"=>$allMessage,
+            "type"=>$type
+        ]);
+        
 
     }
 
-    #[Route("/user/pushMessage/G", name:"app_user_push_message_grp", methods:["POST","GET"])]
-    public function pushMessageGrp(
+    #[Route("/user/pushMessage/T", name:"app_user_push_message_grp_T", methods:["POST","GET"])]
+    public function pushMessageGrpT(
         Request $request,
-        TributGService $tributGService
+        Tribu_T_Service $tributTService,
+        Filesystem $filesyst
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
         }
-
+        
         $user = $this->getUser();
         $userType = $user->getType();
         $userId = $user->getId();
 
         $content=json_decode($request->getContent(),true);
-        $message='io fa mandeha le 👌👌👌 dia aona ééé';
-        $files='';
-        $images='';
+        extract($content);
 
+        $file_list = [];
+        $image_list = [];
+
+        if(count($files) > 0 ){
+            $path_image = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/";
+            $path_files = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/files/";
+            
+            $dir_image_exist = $filesyst->exists($path_image);
+            $dir_files_exist = $filesyst->exists($path_files);
+
+            if ($dir_image_exist == false) {
+                $filesyst->mkdir($path_image, 0777);
+            }
+
+            if ($dir_files_exist == false) {
+                $filesyst->mkdir($path_files, 0777);
+            }
+
+            foreach( $files as $file ){
+                extract($file); /// $type, $name
+
+                // Function to write image into file
+                $temp = explode(";", $name );
+                $extension = explode("/", $temp[0])[1];
+                $file_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $userId . "_to_" . $receiver . "." . $extension;
+
+                if( $file['type'] === 'image'){
+                    file_put_contents($path_image . $file_name, file_get_contents($name));
+                    array_push($image_list,"/public/uploads/messages_grp_".$receiver."/". $file_name);
+
+                }else if( $file['type'] === 'file'){
+                    file_put_contents($path_files . $file_name, file_get_contents($name));
+                    array_push($file_list, "/public/uploads/messages_grp_".$receiver."/files/". $file_name);
+                }
+                ///save image in public/uploader folder
+            }
+
+        }
+        
+        $tributTService->sendMessageGroupe($message,  
+        $file_list , 
+        $image_list, 
+        $userId, 0, 1, 0,$receiver);
+
+        return $this->json(array("ok"=>"ok"));
+    }
+    #[Route("/user/pushMessage/G", name:"app_user_push_message_grp", methods:["POST","GET"])]
+    public function pushMessageGrp(
+        Request $request,
+        TributGService $tributGService,
+        Filesystem $filesyst
+    ){
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+        
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        $content=json_decode($request->getContent(),true);
+        extract($content);
+
+        $file_list = [];
+        $image_list = [];
+
+        if(count($files) > 0 ){
+            $path_image = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/";
+            $path_files = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/files/";
+            
+            $dir_image_exist = $filesyst->exists($path_image);
+            $dir_files_exist = $filesyst->exists($path_files);
+
+            if ($dir_image_exist == false) {
+                $filesyst->mkdir($path_image, 0777);
+            }
+
+            if ($dir_files_exist == false) {
+                $filesyst->mkdir($path_files, 0777);
+            }
+
+            foreach( $files as $file ){
+                extract($file); /// $type, $name
+
+                // Function to write image into file
+                $temp = explode(";", $name );
+                $extension = explode("/", $temp[0])[1];
+                $file_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $userId . "_to_" . $receiver . "." . $extension;
+
+                if( $file['type'] === 'image'){
+                    file_put_contents($path_image . $file_name, file_get_contents($name));
+                    array_push($image_list,"/public/uploads/messages_grp_".$receiver."/". $file_name);
+
+                }else if( $file['type'] === 'file'){
+                    file_put_contents($path_files . $file_name, file_get_contents($name));
+                    array_push($file_list, "/public/uploads/messages_grp_".$receiver."/files/". $file_name);
+                }
+                ///save image in public/uploader folder
+            }
+
+        }
+        
         $tributGService->sendMessageGroupe($message,  
-        $files , 
-        $images, 
-        $userId, 0, 1, 0,"tribug_01_apremont_apremont");
+        $file_list , 
+        $image_list, 
+        $userId, 0, 1, 0,$receiver);
 
         return $this->json(array("ok"=>"ok"));
     }
@@ -854,6 +1014,7 @@ class MessageController extends AbstractController
         } else { /// the user not specified id user  in the url, just to chat box
 
             if (count($id_amis_tributG) !== 1) {
+
                 ////get random user in the tributG
                 $id_user_to_chat = 0; /// random id user
                 while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
@@ -992,7 +1153,7 @@ class MessageController extends AbstractController
                 if(!is_null($to_id)){
                     $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-$agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $email_to, "Déjà confirmé", $agendaID);
+                    $agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $email_to, "Déjà confirmé", $agendaID);
                 }
             }
         }else{
@@ -1157,6 +1318,59 @@ $agendaService->addAgendaStory("agenda_".$this->getUser()->getId()."_story", $em
 
     }
 
+    #[Route("/user/realTimeMessage/grp", name:"app_real_time_message_grp")]
+    public function showMessageInRealTime(
+        Request $request,
+        Tribu_T_Service $tributTService,
+        TributGService $tributGService
+    ){
+        $type=$request->query->get('type');
+        $tableName="";
+        $allMessage=[];
+        switch($type){
+            case 't':{
+
+                $tableName=$request->query->get('name');
+                $allMessage=$tributTService->getMessageGRP($tableName);
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                }
+                break;
+            }
+
+            case 'g':{
+                $tableName=$request->query->get('name');
+                $allMessage=$tributGService->getMessageGRP($tableName);
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                }
+                break;
+            }
+
+            default:{
+
+            }
+        }
+        $response = new StreamedResponse();
+        $response->setCallback(function () use (&$allMessage) {
+
+            echo "data:" . json_encode($allMessage) .  "\n\n";
+            ob_end_flush();
+            flush();
+        });
+        
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Headers', 'origin, content-type, accept');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Content-Type', 'text/event-stream');
+
+        return $response;
+    }
 
     #[Route("/user/show-read/message", name: 'app_message_show_read_ajax', methods: ["POST"])]
     public function setShowAndReadMessages(
