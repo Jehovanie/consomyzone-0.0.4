@@ -25,9 +25,9 @@
 	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+	<script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
-
 {% endblock %}
 
 {% block body %}
@@ -47,7 +47,7 @@
 		</div>
 
 		<!-- ===== Main Content Start ===== -->
-		<main class="gv hm hv content-actualite-connected">
+		<main class="gv hm hv content-actualite-connected content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
 			<div
 				class="sk bu 2xl:ud-p-11 width-content-t">
 
@@ -336,5 +336,9 @@
 		{% import 'shard/input/textEditor.twig' as editor %}
 		{{ editor.textEditor(3)}}
 	</div>
+
+{% include 'shard/modal/list_avis.html.twig' %}
+{% include 'shard/modal/modal_avis.html.twig' %}
+
 
 {% endblock %}

@@ -1511,7 +1511,6 @@ class TributTController extends AbstractController
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
 			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
-		
 		$r=$serialize->serialize($golfs,'json');
 		
 		return new JsonResponse($r, Response::HTTP_OK, [], true);

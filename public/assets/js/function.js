@@ -5626,7 +5626,9 @@ function showGolf(tableGolfPastilled) {
                             </td>
                             <td class="data-note-${item.id}">${note}/4</td>
                             <td>
-                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+                            <span>
+                                <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}">${nbrAvis} avis</a>
+                            </span>
                             </td>
                             <td>
                                 <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}")'><i class="fas fa-plus"></i> Plus</button>

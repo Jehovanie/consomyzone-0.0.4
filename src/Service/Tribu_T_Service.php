@@ -1519,10 +1519,31 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getGolfPastilles($tableGolf, $tableComment){
     
-        $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
-								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
-				as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+        // $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
+		// 						GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+		// 						GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+		// 		as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+        $sql = "SELECT * FROM (
+                    SELECT  t1.id, 
+                            t1.id_resto,
+                            t1.denomination_f, 
+                            t1.isPastilled, 
+                            t2.id as id_golf_comment, 
+                            t2.id_golf, 
+                            t2.id_user, 
+                            t2.note, 
+                            t2.avis as commentaire ,
+                            GROUP_CONCAT(t2.id_user) as All_user ,
+                            GROUP_CONCAT(t2.avis) as All_com, 
+                            FORMAT(AVG(t2.note),2) as globalNote, 
+                            COUNT(t2.id) as nbrAvis,
+                            GROUP_CONCAT(t2.id) as All_id_r_com 
+                            FROM tribu_t_21_banane_golf as t1 
+                                LEFT JOIN avisgolf  as t2
+                                ON t2.id_golf =t1.id_resto 
+                    GROUP BY t1.id ) as tb1 
+                INNER JOIN golffrance
+                ON tb1.id_resto =golffrance.id;";
 
         $stmt = $this->getPDO()->prepare($sql);
          
