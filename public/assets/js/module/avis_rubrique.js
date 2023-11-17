@@ -696,12 +696,17 @@ function addAvisInTribuT(idItem, rubrique_type){
         body:JSON.stringify(requestParam)
     })
 
-    fetch(request).then(r => {
-        if (r.ok && r.status === 200) {
+    fetch(request)
+        .then(r => r.json())
+        .then(response => {
+            const new_state= response.state;
+
             ///// generate list avis in modal
-            showListInTribuT(idItem, type )
-        }
-    })
+            showListInTribuT(idItem, type );
+
+            //// update note and avis in the list
+            updateViewState(new_state, idItem, type)
+        })
 }
 
 
@@ -713,10 +718,6 @@ function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType){
     }else{
         document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
     }
-
-
-    // let details= document.querySelector("#details-coord") ? document.querySelector("#details-coord") : document.querySelector(`.item_carrousel_${idItemRubrique}_jheo_js`)
-    // let type= details.getAttribute("data-toggle-type");
 
     let type= rubriqueType;
 
@@ -769,9 +770,35 @@ function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType){
         },
         body:JSON.stringify(requestParam)
     })
-    fetch(request).then(r => {
-        if (r.ok && r.status === 200) {
+    fetch(request)
+        .then(r => r.json())
+        .then(response => {
+            const new_state= response.state;
+            
+            ///show list
             fetchListAvisInTribuT( idItem, type )
-        }
-    })
+
+            ///update current state
+            updateViewState(new_state, idItem)
+        })
+}
+
+
+
+function updateViewState(new_state, idItem) {
+    if( document.querySelector(`.data-note-${idItem}`)){
+        let note_moyenne= 0
+        let note_total= 0;
+        new_state.forEach(item => {
+            const item_note= parseFloat(item.note);
+            note_total += item_note;
+        })
+
+        note_moyenne= note_total/( new_state.length * 4 );
+        document.querySelector(`.data-note-${idItem}`).innerText= `${note_moyenne}/4`;
+    }
+
+    if( document.querySelector(`.data-avis-${idItem}`)){
+        document.querySelector(`.data-avis-${idItem}`).innerText= `${new_state.length} Avis`;
+    }
 }

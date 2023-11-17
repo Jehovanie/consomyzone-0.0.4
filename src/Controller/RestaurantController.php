@@ -1205,7 +1205,13 @@ class RestaurantController extends AbstractController
             ->setDatetime(new \DateTimeImmutable())
             ->setRestaurant($resto);
 
-        return $this->json($avisRestoRep->add($avisResto, true));
+        $avisRestoRep->add($avisResto, true);
+        
+        $state= $avisRestoRep->getState($idRestaurant);
+
+        return $this->json([
+            "state" => $state
+        ]);
     }
 
     #[Route("/avis/restaurant/{idRestaurant}", name: "get_avis_restaurant", methods: ["GET"])]
@@ -1261,7 +1267,15 @@ class RestaurantController extends AbstractController
             $rJson["avis"],
         );
         $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+        
+        $state= $avisRestaurantRepository->getState($idRestaurant);
+
+        return $this->json([
+            "state" => $state,
+            "data" => $response
+        ]);
+
+        // return new JsonResponse($response, 200, [], true);
     }
 
     #[Route("/nombre/avis/restaurant/{idRestaurant}", name: "get_nombre_avis_restaurant", methods: ["GET"])]

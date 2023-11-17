@@ -145,4 +145,19 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+
+    public function getState($idrestaurant){
+        $results = $this->createQueryBuilder("r")
+            ->select("
+                r.id,
+                r.avis,
+                r.note")
+            ->where("r.restaurant = :idResto ")
+            ->setParameter("idResto",$idrestaurant)
+            ->getQuery()
+            ->getResult();
+            
+        return $results; 
+    }
+
 }
