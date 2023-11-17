@@ -1097,6 +1097,7 @@ class AgendaService extends PDOConnexionService
         $user->setPassword($password);
         $user->setVerifiedMail(false);
         $user->setIsConnected(false);
+        $user->setIdle(300);
         
         ////setting roles for user admin.
         if (count($userRepository->findAll()) === 0) {

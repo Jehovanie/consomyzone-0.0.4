@@ -11,6 +11,21 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
     const object = form_parent.querySelector(".object_js_jheo");
     const description = editor.getData()
 
+<<<<<<< HEAD
+=======
+    /*console.log(input_cc);
+
+    document.querySelectorAll(".invitation_email_js_jheo").forEach((item) => {
+        item.addEventListener("click", () => {
+            const parentElement = item.parentElement.parentElement;
+            document.querySelector("#modal_sendEmail").setAttribute("data-table", parentElement.getAttribute("data-table"))
+        })
+    })*/
+
+    let agenda = JSON.parse(sessionStorage.getItem("agenda"))
+    object.value = agenda.title
+
+>>>>>>> nantenaina_old
     input_principal.addEventListener("input", () => {
         input_principal.style.border = "1px solid black";
     })
@@ -57,14 +72,13 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
             cc_destinataire.push(item.innerText)
         })*/
 
-
-        let agenda = JSON.parse(sessionStorage.getItem("agenda"))
-
         let agendaId = agenda.id
+
+        let objectTitle = agenda.title
 
         let status = true;
         
-        let data = {"principal": "", "cc": [], "object": "", "description": "", agendaId:agendaId}
+        let data = {"principal": "", "cc": [], "object": objectTitle, "description": "", agendaId:agendaId}
 
         if (input_principal.value === "") {
             input_principal.style.border = "1px solid red";
@@ -86,7 +100,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                             status = false;
                             swal("Attention!", "Veuillez saisir l'objet.", "error")
                         } else {
-                            data = { ...data, "object": object.value }
+                            data = { ...data, "object": objectTitle }
                         }
 
                     }else {
@@ -101,7 +115,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                         status = false;
                         swal("Attention!", "Veuillez saisir l'objet.", "error")
                     } else {
-                        data = { ...data, "object": object.value }
+                        data = { ...data, "object": objectTitle }
                     }
                 }
 

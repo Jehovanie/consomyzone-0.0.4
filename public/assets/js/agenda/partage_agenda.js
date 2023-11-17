@@ -186,6 +186,7 @@ function sendInvitation(event){
                 if(validateEmail(email)){
                     dataInfos.push({
                         agendaId:agenda.id,
+                        objet:agenda.title,
                         from_id:null,
                         to_id:null,
                         lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
@@ -346,11 +347,12 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
                 console.log(data)
-                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
+                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
                 tempDiv.querySelector("a").disabled=false
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
+                    objet:agenda.title,
                     from_id:from_id,
                     to_id:to_id,
                     lastname : lastname,
@@ -379,11 +381,12 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 let email = allTr[i].querySelector(".email").textContent
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
-                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${from_id}/${to_id}/${agenda.id}`
+                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
                 tempDiv.querySelector("a").removeAttribute("disabled")
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
+                    objet:agenda.title,
                     from_id:from_id,
                     to_id:to_id,
                     lastname : lastname,

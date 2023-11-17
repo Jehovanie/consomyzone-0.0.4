@@ -507,9 +507,6 @@ class SecurityController extends AbstractController
         $entityManager->flush();
 
 
-
-
-
         /**
          * Persist user on confidentiality table
          * @author Nantenaina        
@@ -1095,13 +1092,16 @@ class SecurityController extends AbstractController
         Request $request,
         SerializerInterface $serialize,
         MailService $mailService,
-        AgendaService $agendaService
+        AgendaService $agendaService,
+        TributGService $tributGService
         ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
-        dump($requestContent);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $fullNameSender = $tributGService->getFullName($userId);
         foreach($receivers as $receiver){
                 $agendaID = $receiver["agendaId"];
                 $from_id=$receiver["from_id"];
@@ -1109,15 +1109,16 @@ class SecurityController extends AbstractController
                 $email_to=$receiver["email"];
                 $nom=$receiver["lastname"];
                 $prenom=$receiver["firstname"];
-                $context["object_mail"]="Invitation à participer à un événement";
+                $context["object_mail"]=$receiver["objet"];
                 $context["template_path"]="emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"]="";
-                $context["content_mail"]=$content;
-                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context);
+                $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$content);
+                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
 
                 if(!is_null($to_id)){
-                    $table_agenda_partage_name="partage_agenda_".$this->getUser()->getId();
+                    $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
                 }
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');

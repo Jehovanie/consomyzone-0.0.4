@@ -110,13 +110,13 @@ class MailService extends AbstractController {
 
         $customMailer->send($email);
     }
-    public function sendLinkOnEmailAboutAgendaSharing($email_to,$fullName_to,$context):void
+    public function sendLinkOnEmailAboutAgendaSharing($email_to,$fullName_to,$context,$sender="ConsoMyZone"):void
     {
         $customMailer =  $this->configSendEmail();
 
         // Generates the email
         $email = (new TemplatedEmail())
-                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->from(new Address($this->defaultEmailSender ,$sender)) 
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($context["object_mail"]);
 
