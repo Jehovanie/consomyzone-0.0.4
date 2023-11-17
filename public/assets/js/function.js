@@ -8,7 +8,7 @@ let idleTimer = setTimeout(function () {
 let idleTimer2 = setTimeout(function () {
   console.log("debut");
 }, 30000);
-let heartBeatTimer = setTimeout(() => {}, 100);
+let heartBeatTimer = setTimeout(() => { }, 100);
 /*
 
 */
@@ -929,7 +929,7 @@ function calculateDurationOfComment(dateOfComment) {
   } else {
     let lapsTime = Math.abs(
       parseInt(dateOfComment.split(" ")[1].split(":")[0], 10) -
-        parseInt(hour.split(":")[0], 10)
+      parseInt(hour.split(":")[0], 10)
     );
     if (lapsTime == 0) {
       const minuteDetailsOfComment = parseInt(
@@ -966,9 +966,8 @@ function settingDateToStringMonthDayAndYear(dateToTransform) {
   ];
   const current_date = new Date(dateToTransform);
 
-  return `${
-    all_months[current_date.getMonth()]
-  } ${current_date.getDate()}, ${current_date.getUTCFullYear()}`;
+  return `${all_months[current_date.getMonth()]
+    } ${current_date.getDate()}, ${current_date.getUTCFullYear()}`;
 }
 
 /**
@@ -1103,9 +1102,8 @@ function pagginationModule(parentSelector, childSelector, numberPerPage) {
           .textContent.split("/")[1]
       );
 
-      document.querySelector(".current_page_js_jheo").innerText = `${
-        current_page - 1
-      }/${maxPage}`;
+      document.querySelector(".current_page_js_jheo").innerText = `${current_page - 1
+        }/${maxPage}`;
 
       if (
         document
@@ -1142,9 +1140,8 @@ function pagginationModule(parentSelector, childSelector, numberPerPage) {
           .textContent.split("/")[1]
       );
 
-      document.querySelector(".current_page_js_jheo").innerText = `${
-        current_page + 1
-      }/${maxPage}`;
+      document.querySelector(".current_page_js_jheo").innerText = `${current_page + 1
+        }/${maxPage}`;
 
       if (
         document
@@ -1795,11 +1792,10 @@ function handleNewComment(userInformations, comment) {
 
   content_comment.innerHTML = `
         <div class="h sa wf uk th ni ej">
-            <a href="#"> <img class="profil_publication" src="${
-              userInformations.profil !== ""
-                ? "/public" + userInformations.profil
-                : "/public/uploads/users/photos/default_pdp.png"
-            }" alt="User"/> </a>
+            <a href="#"> <img class="profil_publication" src="${userInformations.profil !== ""
+      ? "/public" + userInformations.profil
+      : "/public/uploads/users/photos/default_pdp.png"
+    }" alt="User"/> </a>
         </div>
 
         <div>
@@ -2486,6 +2482,198 @@ function showPastillTable(e, id) {
       });
     }
   });
+
+  /**
+    * @author Elie
+    * Setting variable into html tribu G
+    */
+  const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant"
+  document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id)
+  document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name)
+  fetch("/user/tribu_g/isPastilled/" + tribu_g_r + "/" + id)
+    .then(res => res.json())
+    .then(isOk => {
+      if (isOk) {
+        document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, false," + id + ",'" + e.target.dataset.name + "')")
+        document.querySelector("#btn-pastille-elie-tbg").innerText = "Dépastiller"
+        document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-success")
+        document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-info")
+      } else {
+        document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, true, " + id + ",'" + e.target.dataset.name + "')")
+        document.querySelector("#btn-pastille-elie-tbg").innerText = "Pastiller"
+        document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-success")
+        document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-info")
+      }
+    })
+
+}
+
+/**
+ * @author Tomm
+ * @action get list tribu T pastiller avec golf
+ * @ou dans detail.js
+ */
+function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
+  fetch(`/golf/pastilled/checking/${id_golf}`)
+    .then(response => response.json())
+    .then(datas => {
+      let listTibuTPast = ""
+      let monGolf = ""
+      if (datas.length == 0) {
+        listTibuTPast = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
+      }
+      datas.forEach(data => {
+
+        if (data.isPastilled == true) {
+          listTibuTPast += `
+                      <tr>
+                          <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                          <td>${data.name_tribu_t_muable}</td>
+                          <td>
+                              <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                          </td>
+                      </tr>
+                  `
+
+        } else {
+          listTibuTPast += `
+                      <tr>
+                          <td><img class="logo_path_pastille" src="${data.logo_path}"></td>
+                          <td>${data.name_tribu_t_muable}</td>
+                          <td>
+                              <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
+                          </td>
+                      </tr>
+                  `
+
+        }
+
+
+      })
+
+      let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
+
+      fetch(`/user/tribu_g/isPastilled/${tribu_g_name + '_golf'}/${id_golf}`)
+        .then(s => s.json())
+        .then(isOk => {
+          let txt = ""
+          let isPastilled = false;
+          let classe = ''
+          if (isOk) {
+            txt = 'Dépastiller'
+            isPastilled = false;
+            classe = 'info'
+          } else {
+            txt = 'Pastiller'
+            isPastilled = true;
+            classe = 'success'
+          }
+
+          let modalPastillGolf = `
+              <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                      <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                  </li>
+              </ul>
+
+              <table class="table table-striped content_list_resto_js">
+                  <thead>
+                      <tr>
+                          <th scope="col">Logo</th>
+                          <th scope="col">Tribu T</th>
+                          <th scope="col">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      ${listTibuTPast}
+                  </tbody>
+              </table>
+
+              <div class="m-2 content_list_resto_js_g d-none">
+                  <div class="d-flex justify-content-between">
+                          <span>${tribu_g_name}</span>
+                          <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
+                              ${txt}
+                          </button>
+              
+                  </div>
+              </div>
+          `
+
+          /*let modalPastillGolf = `
+      <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
+          <div class="modal-pastille-golf">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header mb-4">
+                          <h5 class="modal-title">Tribu T pastiller</h5>
+                          <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
+                      </div>
+                      <hr>
+                      <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
+
+                          <ul class="nav nav-tabs">
+                              <li class="nav-item">
+                                  <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                              </li>
+                              <li class="nav-item">
+                                  <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                              </li>
+                          </ul>
+
+                          <table class="table table-striped content_list_resto_js">
+                              <thead>
+                                  <tr>
+                                      <th scope="col">Logo</th>
+                                      <th scope="col">Tribu T</th>
+                                      <th scope="col">Action</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  ${listTibuTPast}
+                              </tbody>
+                          </table>
+
+                          <div class="m-2 content_list_resto_js_g d-none">
+                              <div class="d-flex justify-content-between">
+                                      <span>${tribu_g_name}</span>
+                                      <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
+                                          ${txt}
+                                      </button>
+                          
+                              </div>
+                          </div>
+                      </div>
+                      
+                  </div>
+              </div>
+          </div>
+      </div>
+      `*/
+
+          if (document.querySelector("#pastilleForGolfBody")) {
+            $("#pastilleForGolf").modal("show")
+            document.querySelector("#pastilleForGolfBody").innerHTML = modalPastillGolf
+          }
+        })
+
+
+    })
+
+}
+
+/**
+* @author Tomm
+* @action close modal pastill golf
+* @ou dans le fuction.js
+*/
+function closePastillGolf(id_golf) {
+  document.querySelector(".modal-pastille-golf-tomm-js").remove()
+  //.select_action_golf_tomm_js
+  document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0
 }
 
 function getSpectRestoMobile(nom_dep, id_dep) {
@@ -2562,224 +2750,224 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
 }
 
 
-function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
-    
-    let params = new URL(document.location).searchParams;
-    let codinsee = params.get("codinsee");
-    let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
-    let id_resto = ''
-    let request=null;
-    if (isArrondissement) {
-        // restaurant-mobile/specific / arrondissement / ${ nom_dep } /${id_dep}/${ codinsee } /5/5
-        request = new Request(`/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                "Content-Type": "application/json; charset=utf-8"
-            }
-        })
-    } else {
-        request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
-            method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                "Content-Type": "application/json; charset=utf-8"
-            }
-        })
-    }
-     
-    fetch(request).then(res =>
-        res.json().then(responses => {
-            if (document.querySelector(".loading-tomm-js")) {
-                document.querySelector(".loading-tomm-js").innerHTML = ''
-            }
-            let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
-            
-            
-            responses.restaurants.forEach(response => {
-                
-                id_resto = response.id
-                
+function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
 
-                let restaurantAvisNote = response.avis.note !== 0 ? response.avis.note - (response.avis.note - 1) : 0; 
-                // Calculez le taux et les pourcentages jaunes et noirs
-                let rate = restaurantAvisNote;
-                let rateYellow = rate * 100;
-                let rateBlack = 100 - rateYellow;
-                let star = ''
-                for (let item = 0; item <= 3; item++) {
-                    if (item < response.avis.note - 1) {
-                        star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
-                    } else {
-                        if (rate !== 0) {
-                            star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`
-                            rate = 0;
-                        } else {
-                            star += `<i class="fa-solid fa-star" data-rank="1"></i>
+  let params = new URL(document.location).searchParams;
+  let codinsee = params.get("codinsee");
+  let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
+  let id_resto = ''
+  let request = null;
+  if (isArrondissement) {
+    // restaurant-mobile/specific / arrondissement / ${ nom_dep } /${id_dep}/${ codinsee } /5/5
+    request = new Request(`/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`, {
+      method: "GET",
+      headers: {
+        'Accept': 'application/json',
+        "Content-Type": "application/json; charset=utf-8"
+      }
+    })
+  } else {
+    request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+      method: "GET",
+      headers: {
+        'Accept': 'application/json',
+        "Content-Type": "application/json; charset=utf-8"
+      }
+    })
+  }
+
+  fetch(request).then(res =>
+    res.json().then(responses => {
+      if (document.querySelector(".loading-tomm-js")) {
+        document.querySelector(".loading-tomm-js").innerHTML = ''
+      }
+      let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
+
+
+      responses.restaurants.forEach(response => {
+
+        id_resto = response.id
+
+
+        let restaurantAvisNote = response.avis.note !== 0 ? response.avis.note - (response.avis.note - 1) : 0;
+        // Calculez le taux et les pourcentages jaunes et noirs
+        let rate = restaurantAvisNote;
+        let rateYellow = rate * 100;
+        let rateBlack = 100 - rateYellow;
+        let star = ''
+        for (let item = 0; item <= 3; item++) {
+          if (item < response.avis.note - 1) {
+            star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+          } else {
+            if (rate !== 0) {
+              star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`
+              rate = 0;
+            } else {
+              star += `<i class="fa-solid fa-star" data-rank="1"></i>
                             `
-                        }
-                    }
+            }
+          }
 
-                    
-                }
-                let restaurant = ''
-                let brasserie = ''
-                let creperie = ''
-                let fastFood = ''
-                let pizzeria = ''
-                let boulangerie = ''
-                let bar = ''
-                let cuisineMonde = ''
-                let cafe = ''
-                let salonThe = ''
-                if (response.restaurant != 0) {
-                    restaurant = `
+
+        }
+        let restaurant = ''
+        let brasserie = ''
+        let creperie = ''
+        let fastFood = ''
+        let pizzeria = ''
+        let boulangerie = ''
+        let bar = ''
+        let cuisineMonde = ''
+        let cafe = ''
+        let salonThe = ''
+        if (response.restaurant != 0) {
+          restaurant = `
                         <i class="fa-solid fa-utensils"></i>
                         restaurant
                     `
-                }
-                if (response.brasserie != 0) {
-                    brasserie = `
+        }
+        if (response.brasserie != 0) {
+          brasserie = `
                         <i class="fa-solid fa-beer-mug-empty"></i>
                         Brasserie
                     `
-                }
-                if (response.creperie != 0) {
-                    creperie = `
+        }
+        if (response.creperie != 0) {
+          creperie = `
                         <i class="fa-solid fa-pancakes"></i>
                         creperie
                     `
-                }
-                if (response.fastFood != 0) {
-                    fastFood = `
+        }
+        if (response.fastFood != 0) {
+          fastFood = `
                         <i class="fa-solid fa-burger"></i>
                         fastFood
                     `
-                }
-                if (response.boulangerie != 0) {
-                    boulangerie = `
+        }
+        if (response.boulangerie != 0) {
+          boulangerie = `
                         <i class="fa-solid fa-pizza-slice"></i>
                         pizzeria
                     `
-                }
-                if (response.pizzeria != 0) {
-                    pizzeria = `
+        }
+        if (response.pizzeria != 0) {
+          pizzeria = `
                         <i class="fa-solid fa-pie"></i>
                         boulangerie
                     `
-                }
-                if (response.bar != 0) {
-                    bar = `
+        }
+        if (response.bar != 0) {
+          bar = `
                         <i class="fa-solid fa-martini-glass-empty"></i>
                         bar
                     `
-                }
-                if (response.cuisineMonde != 0) {
-                    cuisineMonde = `
+        }
+        if (response.cuisineMonde != 0) {
+          cuisineMonde = `
                         <i class="fa-solid fa-hat-chef"></i>
                         cuisine du monde
                     `
-                }
-                if (response.cafe != 0) {
-                    cafe = `
+        }
+        if (response.cafe != 0) {
+          cafe = `
                         <i class="fa-solid fa-coffee-pot"></i>
                         café
                     `
-                }
-                if (response.salonThe != 0) {
-                    salonThe = `
+        }
+        if (response.salonThe != 0) {
+          salonThe = `
                         <i class="fa-solid fa-mug-tea"></i>
                         salon de thé
                     `
-                }
-                let fourchettePrix1 = ''
-                if (response.fourchettePrix1) {
-                    fourchettePrix1 = `
+        }
+        let fourchettePrix1 = ''
+        if (response.fourchettePrix1) {
+          fourchettePrix1 = `
                         <span class="fw-bold">
                         Fourchette de prix:</span><span>${response.fourchettePrix1}</span>
                     `
-                }
-                let tel = ''
-                if (response.tel) {
-                    tel = `
+        }
+        let tel = ''
+        if (response.tel) {
+          tel = `
                         <span class="fw-bold">Téléphone :</span>
                         <span>${response.tel}</span>
                     `
-                }
+        }
 
-                let btnDonneAvie = ``
-                let btnPastille = ''
-                if (document.querySelector("#is-connected-tomm-js")) {
-                    btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-toggle-id-resto="${response.id}" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
-                    btnPastille = `<button type="button" data-name="${response.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${response.id}')">Pastiller</button>`
-                } else {
-                    btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
-                    btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`
+        let btnDonneAvie = ``
+        let btnPastille = ''
+        if (document.querySelector("#is-connected-tomm-js")) {
+          btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-toggle-id-resto="${response.id}" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
+          btnPastille = `<button type="button" data-name="${response.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${response.id}')">Pastiller</button>`
+        } else {
+          btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+          btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`
 
-                }
+        }
 
-                let repas1 = ''
-                if (response.repas1) {
-                    repas1 = `<li>${response.repas1}</li>`
-                }
-            
-                let regimeSpeciaux1 = ''
-                if (response.regimeSpeciaux1) {
-                    regimeSpeciaux1 = `<li>${response.regimeSpeciaux1}</li>`
-                }
-            
-                let prestation1 = ''
-                if (response.prestation1) {
-                    prestation1 = `<li>${response.prestation1}</li>`
-                }
+        let repas1 = ''
+        if (response.repas1) {
+          repas1 = `<li>${response.repas1}</li>`
+        }
 
-                let horaires1 = ''
-                if (response.horaires1) {
-                    horaires1 = `<li>${response.horaires1}</li>`
-                }
-                
-                let site1 = ''
-                if (response.site1) {
-                    site1 = `<div class="site_web non_active">
+        let regimeSpeciaux1 = ''
+        if (response.regimeSpeciaux1) {
+          regimeSpeciaux1 = `<li>${response.regimeSpeciaux1}</li>`
+        }
+
+        let prestation1 = ''
+        if (response.prestation1) {
+          prestation1 = `<li>${response.prestation1}</li>`
+        }
+
+        let horaires1 = ''
+        if (response.horaires1) {
+          horaires1 = `<li>${response.horaires1}</li>`
+        }
+
+        let site1 = ''
+        if (response.site1) {
+          site1 = `<div class="site_web non_active">
                                 <a class="btn btn-success" href="${response.site1}" target="_blank">Lien :  site Web</a>
                             </div>`
-                }
-            
-                let fonctionalite1 = ''
-                if (response.fonctionalite1) {
-                    fonctionalite1 = `<li>${response.fonctionalite1}</li>`
-                }
+        }
 
-                let isPastie = ""
+        let fonctionalite1 = ''
+        if (response.fonctionalite1) {
+          fonctionalite1 = `<li>${response.fonctionalite1}</li>`
+        }
 
-                if (document.querySelector("#is-connected-tomm-js")) {
-                    let logoPathResto = ""
-                    let logoPathJoined = ""
+        let isPastie = ""
+
+        if (document.querySelector("#is-connected-tomm-js")) {
+          let logoPathResto = ""
+          let logoPathJoined = ""
 
 
-                    let tribu_t_resto_pastille = response.tribuTPastie.tribu_t_resto_pastille
-                    if (tribu_t_resto_pastille.length > 0) {
-                        for (item of tribu_t_resto_pastille ){
-                            if (item.logo_path !== "") {
-                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
-                            } else {
-                                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
-                            }
-                        }
-                    } 
+          let tribu_t_resto_pastille = response.tribuTPastie.tribu_t_resto_pastille
+          if (tribu_t_resto_pastille.length > 0) {
+            for (item of tribu_t_resto_pastille) {
+              if (item.logo_path !== "") {
+                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+              } else {
+                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+              }
+            }
+          }
 
-                    let tribu_t_resto_joined_pastille = response.tribuTPastie.tribu_t_resto_joined_pastille
-                    if (tribu_t_resto_joined_pastille.length > 0) {
-                        for (item of tribu_t_resto_joined_pastille ){
-                            if (item.logo_path !== "") {
-                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
-                            } else {
-                                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
-                            }
-                        }
-                    }
+          let tribu_t_resto_joined_pastille = response.tribuTPastie.tribu_t_resto_joined_pastille
+          if (tribu_t_resto_joined_pastille.length > 0) {
+            for (item of tribu_t_resto_joined_pastille) {
+              if (item.logo_path !== "") {
+                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+              } else {
+                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+              }
+            }
+          }
 
-                    isPastie = `
+          isPastie = `
                         <div class="super_container_js_nantenaina">
                             <div class="mainContainerLogoTribu">
                                 ${logoPathResto}
@@ -2788,13 +2976,13 @@ function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
                         </div>
                         <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`
 
-                }
-
-                
+        }
 
 
-                
-                listSpecMobile.innerHTML += `
+
+
+
+        listSpecMobile.innerHTML += `
                     <li class="nav-item icon-tabac me-3 item_carrousel_${response.id}_jheo_js content_avie_details_tomm_js " data-toggle-id-resto="${response.id}" data-toggle-type="resto">
                             <div class="containt-specific">
                                 <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
@@ -2844,11 +3032,11 @@ function getDataSpecificMobile(nom_dep, id_dep,isArrondissement) {
                             </div>
                     </li>
                 `
-                
-            })
 
-        }))
-        
+      })
+
+    }))
+
 }
 
 /**
@@ -3039,14 +3227,12 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
       listSpecMobile.innerHTML = `
                     <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${idRestaurant}">
                             <div class="containt-specific">
-                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${
-        restaurants.depName
-      }', '${restaurants.dep}', '${idRestaurant}')">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${restaurants.depName
+        }', '${restaurants.dep}', '${idRestaurant}')">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="text-point-12 fw-bold">${
-                                              restaurants.nom
-                                            }</p>
+                                            <p class="text-point-12 fw-bold">${restaurants.nom
+        }</p>
                                         </div>
                                         <div class="col-6">
                                             ${isPastie}
@@ -3081,9 +3267,8 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
                                 <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                                     <span>
                                         <a id="see-tom-js${idRestaurant}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${idRestaurant}" onclick="showListAvieMobile(${idRestaurant}, ${id_user})">
-                                            <span class="nbr_avis_resto_jheo_js">${
-                                              restaurants.avis.nbr
-                                            }    </span> avis
+                                            <span class="nbr_avis_resto_jheo_js">${restaurants.avis.nbr
+        }    </span> avis
                                         </a>
                                     </span>
                                     ${btnDonneAvie}
@@ -3125,11 +3310,9 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${
-        response.id
-      }" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${
-        response.id
-      }, ${id_user})">Envoyer</button>
+                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id
+        }" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id
+        }, ${id_user})">Envoyer</button>
                                 </div>
                             </div>
                         </div>
@@ -4107,44 +4290,44 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
  * @ou dans le specific_golf_navleft.twig
  * @utiliser dans le golf/data_golf.js
  */
-function getDataSpecGolfMobile(nom_dep, id_dep) { 
-    const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
-        method: "GET",
-        headers: {
-            'Accept': 'application/json',
-            "Content-Type": "application/json; charset=utf-8"
-        }
-    })
-    fetch(request).then(res => res.json())
-        .then(responses => {
-            if (document.querySelector(".loading-tomm-js")) {
-                        document.querySelector(".loading-tomm-js").innerHTML = ''
-            }
-            let listSpecMobile = ""
-            if (document.querySelector(".list-specific-golf-mobile-tomm-js")) {
-                listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
-            }
-            console.log(responses)
-            responses.golf.forEach(response => { 
+function getDataSpecGolfMobile(nom_dep, id_dep) {
+  const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
+    method: "GET",
+    headers: {
+      'Accept': 'application/json',
+      "Content-Type": "application/json; charset=utf-8"
+    }
+  })
+  fetch(request).then(res => res.json())
+    .then(responses => {
+      if (document.querySelector(".loading-tomm-js")) {
+        document.querySelector(".loading-tomm-js").innerHTML = ''
+      }
+      let listSpecMobile = ""
+      if (document.querySelector(".list-specific-golf-mobile-tomm-js")) {
+        listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+      }
+      console.log(responses)
+      responses.golf.forEach(response => {
 
-                let btnAviMobile = ''
-                let containerActionGolf = ''
-                let containerActionGolfDetail = ''
-                let statusGolf = ''
-                let siteWeb = ''
-                if (document.querySelector("#is-connected-tomm-js")) {
-                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
-                    let valueContaintGolf = ''
-                    let valueContaintGolfDetail = ''
-                    if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
-                        valueContaintGolf = ` 
+        let btnAviMobile = ''
+        let containerActionGolf = ''
+        let containerActionGolfDetail = ''
+        let statusGolf = ''
+        let siteWeb = ''
+        if (document.querySelector("#is-connected-tomm-js")) {
+          btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
+          let valueContaintGolf = ''
+          let valueContaintGolfDetail = ''
+          if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
+            valueContaintGolf = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
                                 <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
                                     <option value="0">Aucun</option>
                                     <option value="1">A faire</option>
                                     <option value="2">Fait</option>
                                 </select>`
-                        valueContaintGolfDetail = ` 
+            valueContaintGolfDetail = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
                                     </label>
                                     <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
@@ -4152,87 +4335,87 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                         <option value="1">A faire</option>
                                         <option value="2">Fait</option>
                                     </select>`
-                        statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
-                    } else {
-                        valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
-                        valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
-                        if (response.user_status["a_faire"] == 1) {
-                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
-                        }else if (response.user_status["fait"] == 1) {
-                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
-                        } else {
-                            statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
-                        }
-                    }
-                    containerActionGolf = `
+            statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
+          } else {
+            valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+            valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+            if (response.user_status["a_faire"] == 1) {
+              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
+            } else if (response.user_status["fait"] == 1) {
+              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
+            } else {
+              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
+            }
+          }
+          containerActionGolf = `
                         <div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
                             ${valueContaintGolf}
                         </div>
                     `
-                    containerActionGolfDetail = `
+          containerActionGolfDetail = `
                         <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
                             ${valueContaintGolfDetail}
                     `
 
-                    siteWeb = `<div class="site_web">
+          siteWeb = `<div class="site_web">
                                     <a class="btn btn-outline-success" href="${response.web}" target="_blank">
                                         Lien :  Site Web
                                     </a>
                                 </div>`
-                } else {
-                    btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
-                    siteWeb = `<div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
+        } else {
+          btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+          siteWeb = `<div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
                                     <a class="btn btn-outline-success disabled">
                                         Lien :  Site Web
                                     </a>
-                                </div>` 
-                }
+                                </div>`
+        }
 
-                let codePostal = ''
-                if (response.cp) {
-                    codePostal = `<div class="content_activite">
+        let codePostal = ''
+        if (response.cp) {
+          codePostal = `<div class="content_activite">
                                         <p class="activite">
                                             <span class="fw-bold">Code Postal:</span>
                                             ${response.cp}
                                         </p>
                                     </div>
                                     <hr>`
-                }
+        }
 
-                let commune = ''
-                if (response.commune) {
-                    commune = `<div class="content_activite">
+        let commune = ''
+        if (response.commune) {
+          commune = `<div class="content_activite">
                                     <p class="activite">
                                         <span class="fw-bold">Commune:</span>
                                         ${response.commune}
                                     </p>
                                 </div>
                                 <hr>`
-                }
+        }
 
-                let tel = ''
-                if (response.tel) {
-                    tel = `<div class="content_activite">
+        let tel = ''
+        if (response.tel) {
+          tel = `<div class="content_activite">
                                     <p class="activite">
                                         <span class="fw-bold">Telephone:</span>
                                         ${response.tel}
                                     </p>
                                 </div>
                                 <hr>`
-                }
-                
-                let adr1 = ''
-                if (response.adr1) {
-                    adr1 = `<div class="content_activite">
+        }
+
+        let adr1 = ''
+        if (response.adr1) {
+          adr1 = `<div class="content_activite">
                                     <p class="activite">
                                         <span class="fw-bold">Adress:</span>
                                         ${response.adr1}
                                     </p>
                                 </div>
                                 <hr>`
-                }
+        }
 
-                listSpecMobile.innerHTML += `
+        listSpecMobile.innerHTML += `
                     <li class="nav-item icon-tabac me-3 item_carrousel_${response.id}_jheo_js" data-toggle-type="golf">
 						<a class="nav-link d-block">
 							<div class="containt-specific">
@@ -4273,8 +4456,8 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
 					</li>
                     
                 `
-            })
-        })
+      })
+    })
 }
 
 /**
@@ -4284,99 +4467,99 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
  * @utiliser dans le tabac/data_tabac.js
  */
 function getDataSpecTabacMobile(nom_dep, id_dep) {
-    const request = new Request(
-        `/tabac-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`,
-        {
-        method: "GET",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json; charset=utf-8",
-        },
+  const request = new Request(
+    `/tabac-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    }
+  );
+  fetch(request)
+    .then((res) => res.json())
+    .then((responses) => {
+      if (document.querySelector(".loading-tomm-js")) {
+        document.querySelector(".loading-tomm-js").innerHTML = "";
+      }
+      console.log(responses);
+      let listSpecMobile = document.querySelector(
+        ".list-specific-tabac-mobile-tomm-js"
+      );
+      responses.tabac.forEach((response) => {
+        let bar_tabac = "";
+        if (response.bar_tabac != 0) {
+          bar_tabac = `<span class="btn btn-outline-success text-point-9">Bar Tabac</span>`;
         }
-    );
-    fetch(request)
-        .then((res) => res.json())
-        .then((responses) => {
-        if (document.querySelector(".loading-tomm-js")) {
-            document.querySelector(".loading-tomm-js").innerHTML = "";
+
+        let bureau_tabac = "";
+        if (response.bureau_tabac != 0) {
+          bureau_tabac = `<span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>`;
         }
-        console.log(responses);
-        let listSpecMobile = document.querySelector(
-            ".list-specific-tabac-mobile-tomm-js"
-        );
-        responses.tabac.forEach((response) => {
-            let bar_tabac = "";
-            if (response.bar_tabac != 0) {
-            bar_tabac = `<span class="btn btn-outline-success text-point-9">Bar Tabac</span>`;
-            }
 
-            let bureau_tabac = "";
-            if (response.bureau_tabac != 0) {
-            bureau_tabac = `<span class="btn btn-outline-success text-point-9">Bureaux Tabac</span>`;
-            }
+        let cafe_tabac = "";
+        if (response.cafe_tabac != 0) {
+          cafe_tabac = `<span class="btn btn-outline-success text-point-9">Cafe Tabac</span>`;
+        }
 
-            let cafe_tabac = "";
-            if (response.cafe_tabac != 0) {
-            cafe_tabac = `<span class="btn btn-outline-success text-point-9">Cafe Tabac</span>`;
-            }
+        let tabac_presse = "";
+        if (response.tabac_presse != 0) {
+          tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`;
+        }
 
-            let tabac_presse = "";
-            if (response.tabac_presse != 0) {
-            tabac_presse = `<span class="btn btn-outline-success text-point-9">Tabac presse</span>`;
-            }
-
-            let horaires_1 = "";
-            if (response.horaires_1 != 0) {
-            horaires_1 = `<div class="content_activite">
+        let horaires_1 = "";
+        if (response.horaires_1 != 0) {
+          horaires_1 = `<div class="content_activite">
                                             <p class="activite">
                                                 <span class="fw-bold">Horaires:</span>
                                                 ${response.horaires_1}
                                             </p>
                                         </div>
                                         <hr>`;
-            }
+        }
 
-            let tel = "";
-            if (response.tel != 0) {
-            tel = `<div class="content_activite">
+        let tel = "";
+        if (response.tel != 0) {
+          tel = `<div class="content_activite">
                                     <p class="activite">
                                         <span class="fw-bold">Telephone:</span>
                                         ${response.tel}
                                     </p>
                                 </div>
                                 <hr>`;
-            }
+        }
 
-            let codpost = "";
-            if (response.codpost != 0) {
-            codpost = `<div class="content_activite">
+        let codpost = "";
+        if (response.codpost != 0) {
+          codpost = `<div class="content_activite">
                                     <p class="activite">
                                         <span class="fw-bold">Code Postal:</span>
                                         ${response.codpost}
                                     </p>
                                 </div>
                                 <hr>`;
-            }
+        }
 
-            let commune = "";
-            if (response.commune != 0) {
-            commune = `<div class="content_activite">
+        let commune = "";
+        if (response.commune != 0) {
+          commune = `<div class="content_activite">
                                     <p class="activite">
                                         <span class="fw-bold">Commune:</span>
                                         ${response.commune}
                                     </p>
                                 </div>
                                 <hr>`;
-            }
+        }
 
-            let btnAvieMobile = "";
-            if (document.querySelector("#is-connected-tomm-js")) {
-            btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`;
-            } else {
-            btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`;
-            }
+        let btnAvieMobile = "";
+        if (document.querySelector("#is-connected-tomm-js")) {
+          btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`;
+        } else {
+          btnAvieMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`;
+        }
 
-            listSpecMobile.innerHTML += `
+        listSpecMobile.innerHTML += `
                         <li class="nav-item icon-tabac me-3">
                             <a class="nav-link d-block">
                                 <div class="containt-specific">
@@ -4425,8 +4608,8 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
 
                         
                     `;
-        });
-        });
+      });
+    });
 }
 
 /**
@@ -4741,10 +4924,10 @@ function dataURLtoFile(dataurl, filename) {
 }
 
 function showRepertoryDirTribuT() {
-    document.querySelector(".list-repertoryDirTribuT").classList.add("text-primary");
-    document.querySelector(".list-repertoryDirTribuG").classList.remove("text-primary");
-    document.querySelector("#repertoryDirTribuG").classList.add("d-none");
-    document.querySelector("#repertoryDirTribuT").classList.remove("d-none");
+  document.querySelector(".list-repertoryDirTribuT").classList.add("text-primary");
+  document.querySelector(".list-repertoryDirTribuG").classList.remove("text-primary");
+  document.querySelector("#repertoryDirTribuG").classList.add("d-none");
+  document.querySelector("#repertoryDirTribuT").classList.remove("d-none");
 }
 
 function showRepertoryDirTribuG() {
@@ -4768,109 +4951,109 @@ function setDirForImage(e) {
  * @param {string} data source
  */
 function setPhotoAfterUpload(data) {
-    swal("Voulez-vous definir cette photo comme photo de profile?", {
-        buttons: {
-        cancel: "Non, pas maintenant",
-        confirm: {
-            text: "Oui, accepter",
-            value: "confirm",
-        },
-        },
-    }).then((value) => {
-        switch (value) {
-        case "confirm": {
-            fetch(
-            new Request("/user/profil/update/avatar", {
-                method: "POST",
-                headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-            )
-            .then((x) => x.json())
-            .then((response) => {
-                // console.log(response)
+  swal("Voulez-vous definir cette photo comme photo de profile?", {
+    buttons: {
+      cancel: "Non, pas maintenant",
+      confirm: {
+        text: "Oui, accepter",
+        value: "confirm",
+      },
+    },
+  }).then((value) => {
+    switch (value) {
+      case "confirm": {
+        fetch(
+          new Request("/user/profil/update/avatar", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+        )
+          .then((x) => x.json())
+          .then((response) => {
+            // console.log(response)
 
-                if (response.success) {
-                swal({
-                    title: "Modifié",
-                    text: response.message,
-                    icon: "success",
-                    button: "OK",
-                }).then((r) => {
-                    location.reload();
-                });
-                }
-            });
-            break;
-        }
+            if (response.success) {
+              swal({
+                title: "Modifié",
+                text: response.message,
+                icon: "success",
+                button: "OK",
+              }).then((r) => {
+                location.reload();
+              });
+            }
+          });
+        break;
+      }
 
-        default: {
-            fetch(
-            new Request("/user/profil/add/photo", {
-                method: "POST",
-                headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-            )
-            .then((x) => x.json())
-            .then((response) => {
-                // console.log(response)
+      default: {
+        fetch(
+          new Request("/user/profil/add/photo", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+        )
+          .then((x) => x.json())
+          .then((response) => {
+            // console.log(response)
 
-                if (response.success) {
-                swal({
-                    title: "Téléchargé",
-                    text: response.message,
-                    icon: "success",
-                    button: "OK",
-                });
-                }
-            });
-        }
-        }
-    });
+            if (response.success) {
+              swal({
+                title: "Téléchargé",
+                text: response.message,
+                icon: "success",
+                button: "OK",
+              });
+            }
+          });
+      }
+    }
+  });
 }
 /**
  * Function set gallery images on JS
  * @constructor
  */
 function setGallerieImageV2() {
-    let modalZoom = document.getElementById("modalZoom");
+  let modalZoom = document.getElementById("modalZoom");
 
-    // Get the image and insert it inside the modal - use its "alt" text as a caption
-    let imgFullSecreen = document.getElementById("imgFullSecreen");
-    // let captionText = document.getElementById("captionZoom");
+  // Get the image and insert it inside the modal - use its "alt" text as a caption
+  let imgFullSecreen = document.getElementById("imgFullSecreen");
+  // let captionText = document.getElementById("captionZoom");
 
-    document.querySelectorAll(".fancybox > img").forEach((fancy) => {
-        let url = fancy.src;
+  document.querySelectorAll(".fancybox > img").forEach((fancy) => {
+    let url = fancy.src;
 
-        fancy.onclick = function () {
-        document.querySelector("body").classList.add("modal-open");
-        document.querySelector("body").style =
-            "overflow: scroll; padding-right: 19px;";
-        modalZoom.style.display = "block";
-        imgFullSecreen.src = url;
-        imgFullSecreen.style = " width:60%";
-        //height : 100%;
-        };
-    });
+    fancy.onclick = function () {
+      document.querySelector("body").classList.add("modal-open");
+      document.querySelector("body").style =
+        "overflow: scroll; padding-right: 19px;";
+      modalZoom.style.display = "block";
+      imgFullSecreen.src = url;
+      imgFullSecreen.style = " width:60%";
+      //height : 100%;
+    };
+  });
 
-    // Get the <span> element that closes the modal
-    let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
+  // Get the <span> element that closes the modal
+  let spanCloseZoom = document.getElementsByClassName("closeZoom")[0];
 
-    // When the user clicks on <span> (x), close the modal
-    if (spanCloseZoom) {
-        spanCloseZoom.onclick = function () {
-        modalZoom.style.display = "none";
-        document.querySelector("body").classList.remove("modal-open");
-        document.querySelector("body").style = "";
-        };
-    }
+  // When the user clicks on <span> (x), close the modal
+  if (spanCloseZoom) {
+    spanCloseZoom.onclick = function () {
+      modalZoom.style.display = "none";
+      document.querySelector("body").classList.remove("modal-open");
+      document.querySelector("body").style = "";
+    };
+  }
 }
 
 /**
@@ -4882,31 +5065,31 @@ function setGallerieImageV2() {
  * @param {int} invite_to
  */
 function saveInvitationStory(table_trib, email) {
-    fetch("/tribu/invitation/save_story/" + table_trib, {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            email: email,
-        }),
-    })
-        .then((r) => r.json())
-        .then((res) => {
-        if (res.status == "ok") {
-            swal({
-            text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
-            icon: "info",
-            });
-        } else if (res.status == "!ok") {
-            swal({
-            text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
-            icon: "warning",
-            });
-        }
-        // console.log(res);
+  fetch("/tribu/invitation/save_story/" + table_trib, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: email,
+    }),
+  })
+    .then((r) => r.json())
+    .then((res) => {
+      if (res.status == "ok") {
+        swal({
+          text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
+          icon: "info",
         });
+      } else if (res.status == "!ok") {
+        swal({
+          text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+          icon: "warning",
+        });
+      }
+      // console.log(res);
+    });
 }
 
 /**
@@ -4917,15 +5100,15 @@ function saveInvitationStory(table_trib, email) {
  * @param {in} id
  */
 function updateInvitationStory(table, is_valid, email) {
-    fetch("/tribu/invitation/update_story/" + table + "/" + is_valid + "/" + email )
-        .then((resp) => resp.json())
-        .then((result) => {
-            // swal({
-            //     text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
-            //     icon: "success",
-            // });
-            console.log(result);
-        });
+  fetch("/tribu/invitation/update_story/" + table + "/" + is_valid + "/" + email)
+    .then((resp) => resp.json())
+    .then((result) => {
+      // swal({
+      //     text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+      //     icon: "success",
+      // });
+      console.log(result);
+    });
 }
 
 /**
@@ -4936,39 +5119,39 @@ function updateInvitationStory(table, is_valid, email) {
  * store :function.js
  */
 function arrangeSetingApparitionMobile() {
-    if (screen.width < 991) {
-        const allForms = Array.from(
-            document.querySelectorAll(".form-inscription-tomm-js")
-        );
+  if (screen.width < 991) {
+    const allForms = Array.from(
+      document.querySelectorAll(".form-inscription-tomm-js")
+    );
 
-        const allFormsSorted = allForms.sort(function (a, b) {
-            return parseInt(a.dataset.rank) - parseInt(b.dataset.rank);
-        });
+    const allFormsSorted = allForms.sort(function (a, b) {
+      return parseInt(a.dataset.rank) - parseInt(b.dataset.rank);
+    });
 
-        console.log(allFormsSorted);
+    console.log(allFormsSorted);
 
-        let allFormsSortedCloned = [];
+    let allFormsSortedCloned = [];
 
-        for (let i = 0; i < allFormsSorted.length; i++) {
-            allFormsSortedCloned[i] = allFormsSorted[i].cloneNode(true);
-        }
-
-        console.log(allFormsSortedCloned);
-
-        const container = document.querySelector(".content-inscription-setting-tomm-js");
-
-        for (let i = 0; i < allFormsSorted.length; i++) {
-            container.removeChild(allForms[i]);
-        }
-
-        const referenceNode = document.querySelector(".btn_submit_for_rank_inscription_js");
-
-        for (let i = 0; i < allFormsSortedCloned.length; i++) {
-            container.insertBefore(allFormsSortedCloned[i], referenceNode);
-        }
-
-        return true;
+    for (let i = 0; i < allFormsSorted.length; i++) {
+      allFormsSortedCloned[i] = allFormsSorted[i].cloneNode(true);
     }
+
+    console.log(allFormsSortedCloned);
+
+    const container = document.querySelector(".content-inscription-setting-tomm-js");
+
+    for (let i = 0; i < allFormsSorted.length; i++) {
+      container.removeChild(allForms[i]);
+    }
+
+    const referenceNode = document.querySelector(".btn_submit_for_rank_inscription_js");
+
+    for (let i = 0; i < allFormsSortedCloned.length; i++) {
+      container.insertBefore(allFormsSortedCloned[i], referenceNode);
+    }
+
+    return true;
+  }
 }
 
 /**
@@ -4978,11 +5161,11 @@ function arrangeSetingApparitionMobile() {
  * cette fonction se trouve dans function.js
  */
 function showMoreInformation() {
-    swal(
-        "Cher et Chère partisan.",
-        "Cette page est en cours de rédaction, merci de votre compréhension.",
-        "info"
-    );
+  swal(
+    "Cher et Chère partisan.",
+    "Cette page est en cours de rédaction, merci de votre compréhension.",
+    "info"
+  );
 }
 
 /**
@@ -4991,35 +5174,35 @@ function showMoreInformation() {
  * utiliser dans app.js
  *
  */
-function detectInactivity(idle=300) {
-    window.addEventListener('load', () => { resetTimer(idle) });
-    document.addEventListener('mousemove', () => { resetTimer(idle) });
-    document.addEventListener('keyup', () => { resetTimer(idle) });
-    document.addEventListener('scrollend', () => { resetTimer(idle) });
-    document.addEventListener('pointerup', () => { resetTimer(idle) });
+function detectInactivity(idle = 300) {
+  window.addEventListener('load', () => { resetTimer(idle) });
+  document.addEventListener('mousemove', () => { resetTimer(idle) });
+  document.addEventListener('keyup', () => { resetTimer(idle) });
+  document.addEventListener('scrollend', () => { resetTimer(idle) });
+  document.addEventListener('pointerup', () => { resetTimer(idle) });
 }
 
 function sendHeartBeat() {
-    //heartBeat();
-    window.addEventListener('load', () => { heartBeat(), console.log('load') });
-    //document.addEventListener('mousemove', () => { heartBeat(), console.log('moove') });
-    //document.addEventListener('keyup', () => { heartBeat(), console.log('keyup') });
-    document.addEventListener('scrollend', () => { heartBeat(), console.log('scroll') });
-    document.addEventListener('pointerup', () => { heartBeat(), console.log('pointerup') });
+  //heartBeat();
+  window.addEventListener('load', () => { heartBeat(), console.log('load') });
+  //document.addEventListener('mousemove', () => { heartBeat(), console.log('moove') });
+  //document.addEventListener('keyup', () => { heartBeat(), console.log('keyup') });
+  document.addEventListener('scrollend', () => { heartBeat(), console.log('scroll') });
+  document.addEventListener('pointerup', () => { heartBeat(), console.log('pointerup') });
 }
 async function relaeseIdle() {
-    const  p = await getUserIdle();
-    const timeToLogOut = JSON.parse(p).idle
-    detectInactivity(timeToLogOut);
+  const p = await getUserIdle();
+  const timeToLogOut = JSON.parse(p).idle
+  detectInactivity(timeToLogOut);
 }
 
 function getUserIdle() {
-    return new Promise((resolve, reject) => {
-      fetch("/user/idle").then((r) => {
-         if(r.ok)
-          resolve(r.text())
-       })
-    }) 
+  return new Promise((resolve, reject) => {
+    fetch("/user/idle").then((r) => {
+      if (r.ok)
+        resolve(r.text())
+    })
+  })
 }
 
 function resetTimer(idle=300) {
@@ -5041,36 +5224,36 @@ function resetTimer(idle=300) {
 }
 
 function prelogout() {
-    swal(
-        "Du à une inactivité de votre part et pour des raisons de sécurité nous allons vous déconnecter.",
-        {
-        buttons: {
-            continuer: {
-            text: "continuer",
-            value: "continue",
-            },
-            deconnecter: {
-            text: "deconnecter",
-            value: "exit",
-            },
+  swal(
+    "Du à une inactivité de votre part et pour des raisons de sécurité nous allons vous déconnecter.",
+    {
+      buttons: {
+        continuer: {
+          text: "continuer",
+          value: "continue",
         },
-        }
-    ).then(function (value) {
-        switch (value) {
-        case "continue": {
-            resetTimer();
-            break;
-        }
-        case "exit": {
-            location.href = "/deconnexion";
-            break;
-        }
-        default: {
-            resetTimer();
-            break;
-        }
-        }
-    });
+        deconnecter: {
+          text: "deconnecter",
+          value: "exit",
+        },
+      },
+    }
+  ).then(function (value) {
+    switch (value) {
+      case "continue": {
+        resetTimer();
+        break;
+      }
+      case "exit": {
+        location.href = "/deconnexion";
+        break;
+      }
+      default: {
+        resetTimer();
+        break;
+      }
+    }
+  });
 }
 
 /**
@@ -5080,15 +5263,15 @@ function prelogout() {
  * location function.js
  */
 function heartBeat() {
-  
-    heartBeatTimer = setTimeout(() => {
-        fetch("/user/heartBeat").then((response, error) => {
-        if (response.status === 200 && response.ok) {
-        } else {
-            console.log(error);
-        }
-        });
-    }, 60000);
+
+  heartBeatTimer = setTimeout(() => {
+    fetch("/user/heartBeat").then((response, error) => {
+      if (response.status === 200 && response.ok) {
+      } else {
+        console.log(error);
+      }
+    });
+  }, 60000);
 }
 
 /**
@@ -5097,76 +5280,76 @@ function heartBeat() {
  * location function.js
  */
 function updateLocation(event) {
-    const selectElement = event.target;
-    const listActions = [5, 10, 20, 30, 1];
-    if (selectElement != null && selectElement instanceof HTMLElement) {
-        let actionstr = selectElement.options[selectElement.selectedIndex].value;
-        action = parseInt(actionstr);
-        if (/[0-9]/.test(actionstr)) {
-            if (listActions.includes(action)) {
-                let idle = 300;
-                //on coverti les valeur en seconde pour le bon fonctionnement da la procedure en base donner
-                if (action === 1) {
-                    idle = 60 * 60;
-                } else {
-                    idle = action * 60;
-                }
-                fetch(`/user/up/idle/${idle}`, { method: "GET" }).then((response) => {
-                    if (response.status === 200 && response.ok) {
-                        let tmp = "";
-                        if (action === 1) {
-                            tmp = "1 heure";
-                        } else {
-                            tmp = action + " minute";
-                        }
-                        new swal(
-                            "Bonjour cher et chère Fan",
-                            "Vous avez modifié(e) votre délai de déconnexion automatique sur " +
-                                tmp,
-                            "info"
-                        );
-                    }
-                });
-            }
+  const selectElement = event.target;
+  const listActions = [5, 10, 20, 30, 1];
+  if (selectElement != null && selectElement instanceof HTMLElement) {
+    let actionstr = selectElement.options[selectElement.selectedIndex].value;
+    action = parseInt(actionstr);
+    if (/[0-9]/.test(actionstr)) {
+      if (listActions.includes(action)) {
+        let idle = 300;
+        //on coverti les valeur en seconde pour le bon fonctionnement da la procedure en base donner
+        if (action === 1) {
+          idle = 60 * 60;
+        } else {
+          idle = action * 60;
         }
+        fetch(`/user/up/idle/${idle}`, { method: "GET" }).then((response) => {
+          if (response.status === 200 && response.ok) {
+            let tmp = "";
+            if (action === 1) {
+              tmp = "1 heure";
+            } else {
+              tmp = action + " minute";
+            }
+            new swal(
+              "Bonjour cher et chère Fan",
+              "Vous avez modifié(e) votre délai de déconnexion automatique sur " +
+              tmp,
+              "info"
+            );
+          }
+        });
+      }
     }
+  }
 }
 
 
-function msgErrorAlertAvis(e){
-    if (e.message == "note sup à 4") {
-        
-        new swal("Attention !","la note que vous aviez donnés est supérieur à 4 !", "warning") .then((value) => {
-            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
-        })
-    } else if(e.message == "non numerique") {
-        new swal("Attention !","la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
-            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
-        })
-    }else if(e.message == "note not found" ){ /// veulliez saisir un note de 0 à 4
-        new swal("Attention !","Veulliez saisir un note de 0 à 4", "warning").then((value) => {
-            document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
-        })
-    }else if(e.message == "no content"){
-        new swal("Attention !","Veulliez saisir un note et un petit message ou annuler cette action.", "warning")
-    }else {
-        console.log(e)
-    }
+function msgErrorAlertAvis(e) {
+  if (e.message == "note sup à 4") {
+
+    new swal("Attention !", "la note que vous aviez donnés est supérieur à 4 !", "warning").then((value) => {
+      document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+    })
+  } else if (e.message == "non numerique") {
+    new swal("Attention !", "la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
+      document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+    })
+  } else if (e.message == "note not found") { /// veulliez saisir un note de 0 à 4
+    new swal("Attention !", "Veulliez saisir un note de 0 à 4", "warning").then((value) => {
+      document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
+    })
+  } else if (e.message == "no content") {
+    new swal("Attention !", "Veulliez saisir un note et un petit message ou annuler cette action.", "warning")
+  } else {
+    console.log(e)
+  }
 }
 
-function mustBeInferior4(value,target, isThrowException) {
-    regex=/[^0-9,\.]+/
-    if (parseFloat(value) > 4.00) {
-        target.style = "border:2px solid red;"
-        msgFlash("doit être inférieur ou égale à 4", target)
-        if(isThrowException)
-           throw new Error("note sup à 4")
-    } else if (regex.test(value)) {
-        target.style = "border:2px solid red;"
-        msgFlash("veulliez saisir un type numerique", target)
-        if(isThrowException)
-           throw new Error("non numerique")
-    }
+function mustBeInferior4(value, target, isThrowException) {
+  regex = /[^0-9,\.]+/
+  if (parseFloat(value) > 4.00) {
+    target.style = "border:2px solid red;"
+    msgFlash("doit être inférieur ou égale à 4", target)
+    if (isThrowException)
+      throw new Error("note sup à 4")
+  } else if (regex.test(value)) {
+    target.style = "border:2px solid red;"
+    msgFlash("veulliez saisir un type numerique", target)
+    if (isThrowException)
+      throw new Error("non numerique")
+  }
 }
 
 function msgFlash(msg,target) {
@@ -5174,7 +5357,6 @@ function msgFlash(msg,target) {
     div.classList.add("flash-msg-ERREUR")
     div.innerHTML= msg
     target.parentNode.insertBefore(div,target.nextSibling)
-    
 }
 
 /**
@@ -5183,451 +5365,450 @@ function msgFlash(msg,target) {
  * @ou dans mytribuT.js
  */
 function showGolf(tableGolfPastilled) {
-  // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
-
-  if (document.querySelector("li.listNavBarTribu > a.active")) {
-    document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-  }
-
-  if (document.querySelector("li.listNavBarTribu.golfNotHide > a")) {
-    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
-  }
-  let golfContainer = ""
-  if (document.querySelector("#tribu_t_conteuneur")) {
-    golfContainer = document.querySelector("#tribu_t_conteuneur")
-
-    golfContainer.innerHTML = `
-                                <div class="row mt-3 p-3">
-                                    <div class="col-12">
-                                        <div id="form_past"></div>
-                                        <div class="g-3">
-                                            <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
-                                            </div>
-                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
-                                            </div>
-                                        </div>
-                                    </div>
-                                `
- 
-
-
-  fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
-    .then(response => response.json())
-    .then(data => {
-      if (data.length > 0) {
-        let imgTbt = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
-        let tr = ""
-        let i = 0
-        const action = "create"
-        const text1 = "Notez"
-
-        for (const item of data) {
-          console.log(item)
-          if (item.isPastilled) {
-            i++
-            let nbrAvis = item.nbrAvis
-            let note = item.globalNote ? item.globalNote : 0
-            let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
-            tr += `<tr id="golf_${item.id_golf}">
-                      <td class="d-flex bd-highlight align-items-center" >
-                          <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
-                          ${imgTbt}
-                          </div>
-                          <span class="ms-3" style="font-size:12pt;"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
-                      </td>
-                      <td class="data-note-${item.id}">${note}/4</td>
-                      <td>
-                      <span>
-                          <a  style="font-size:smaller cursor: pointer;text-decoration:none;" class="btn btn-sm bg_orange data-avis-${item.id}" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${item.id}', 'golf')"> ${nbrAvis} Avis</a>
-                          </span>
-                          </td>
-                          <td>
-                          <button class="btn btn-primary"  onclick="openPopupAction('${item.id}','${item.denomination_f}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
-                          </td>
-                  </tr>`
-                  // <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
-                  // <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}",'${text1}', '${action}' )'><i class="fas fa-plus"></i> Plus</button>
-                      
-          }
-        }
-
-        if (i > 0) {
-
-          golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
-                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom de golf</th>
-                                                <th>Note</th>
-                                                <th>Avis</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${tr}
-                                        </tbody>
-                                    </table>`
-
-          $('#table_golf_pastilled').DataTable({
-            "language": {
-              url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+    // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+  
+    if (document.querySelector("li.listNavBarTribu > a.active")) {
+      document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+    }
+  
+    if (document.querySelector("li.listNavBarTribu.golfNotHide > a")) {
+      document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+    }
+    let golfContainer = ""
+    if (document.querySelector("#tribu_t_conteuneur")) {
+      golfContainer = document.querySelector("#tribu_t_conteuneur")
+  
+      golfContainer.innerHTML = `
+                                  <div class="row mt-3 p-3">
+                                      <div class="col-12">
+                                          <div id="form_past"></div>
+                                          <div class="g-3">
+                                              <div class="input-group mb-3">
+                                                  <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+                                                  <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+                                                  <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+                                              </div>
+                                              <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+                                              </div>
+                                          </div>
+                                      </div>
+                                  `
+   
+  
+  
+    fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
+      .then(response => response.json())
+      .then(data => {
+        if (data.length > 0) {
+          let imgTbt = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
+          let tr = ""
+          let i = 0
+          const action = "create"
+          const text1 = "Notez"
+  
+          for (const item of data) {
+            console.log(item)
+            if (item.isPastilled) {
+              i++
+              let nbrAvis = item.nbrAvis
+              let note = item.globalNote ? item.globalNote : 0
+              let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+              tr += `<tr id="golf_${item.id_golf}">
+                        <td class="d-flex bd-highlight align-items-center" >
+                            <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+                            ${imgTbt}
+                            </div>
+                            <span class="ms-3" style="font-size:12pt;"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
+                        </td>
+                        <td class="data-note-${item.id}">${note}/4</td>
+                        <td>
+                        <span>
+                            <a  style="font-size:smaller cursor: pointer;text-decoration:none;" class="btn btn-sm bg_orange data-avis-${item.id}" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${item.id}', 'golf')"> ${nbrAvis} Avis</a>
+                            </span>
+                            </td>
+                            <td>
+                            <button class="btn btn-primary"  onclick="openPopupAction('${item.id}','${item.denomination_f}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
+                            </td>
+                    </tr>`
+                    // <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
+                    // <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}",'${text1}', '${action}' )'><i class="fas fa-plus"></i> Plus</button>
+                        
             }
-          });
+          }
+  
+          if (i > 0) {
+  
+            golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+                                      <table id="table_golf_pastilled" class="ta" style="width:100%">
+                                          <thead>
+                                              <tr>
+                                                  <th>Nom de golf</th>
+                                                  <th>Note</th>
+                                                  <th>Avis</th>
+                                                  <th>Action</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              ${tr}
+                                          </tbody>
+                                      </table>`
+  
+            $('#table_golf_pastilled').DataTable({
+              "language": {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+              }
+            });
+          } else {
+            golfContainer.style.textAlign = "center"
+            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+          }
+  
+  
         } else {
           golfContainer.style.textAlign = "center"
           golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
         }
-
-
-      } else {
-        golfContainer.style.textAlign = "center"
-        golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-      }
-
-      golfContainer.classList.add("bg-white");
-      golfContainer.classList.add("p-2");
-      golfContainer.style.display = "block"
-
-    })
-  }
+  
+        golfContainer.classList.add("bg-white");
+        golfContainer.classList.add("p-2");
+        golfContainer.style.display = "block"
+  
+      })
+    }
 }
 
 /**
  * @author nantenaina
  */
 function pastilleGolf(element, table_tribu_t) {
-  let id = element.dataset.id
-  let name = element.dataset.name
-  let tbl = element.dataset.tbname
-  let data = {
-    id: id,
-    name: name,
-    tbl: tbl
-  }
-  let request = new Request("/user/tribu_t/pastille/golf", {
-    method: "POST",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-
-  fetch(request)
-    .then(response => response.json())
-    .then(message => {
-
-      new swal("Succès !", "Golf pastillé avec succès", "success")
-        .then((value) => {
-          element.classList = "btn btn-secondary ms-1"
-          element.textContent = "Pastillé"
-          element.setAttribute("disabled", true)
-          showGolf(tbl)
-          if (document.querySelector("#tribu_t_conteuneur")) {
-            document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-          }
-
-        });
-
-      if (message.id_golf) {
-        fetch(`/golf/pastilled/checking/${message.id_golf}`)
-          .then(response => response.json())
-          .then(datas => {
-
-            let logoPath = ""
-            let i = 0
-            let countIsPastilled = 0;
-            for (data of datas) {
-              i += 500
-              if (data.isPastilled === true) {
-                countIsPastilled++;
-              }
-              if (data['logo_path'] != "") {
-                if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
-                  logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data['logo_path']}" alt="">`
-                }
-
-              } else {
-                if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
-                  logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`
-                }
-              }
-
-              if (document.querySelector('.logo-pastille-golf-tomm-js')) {
-                document.querySelector('.logo-pastille-golf-tomm-js').style.width = i + 'px';
-              }
-
-
-            }
-
-            if (countIsPastilled > 4) {
-              if (document.querySelector(".length-pastille-plus")) {
-                document.querySelector(".length-pastille-plus").remove()
-              }
-              document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`
-
-            } else {
-              // document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
-              if (document.querySelector(".length-pastille-plus")) {
-                document.querySelector(".length-pastille-plus").remove()
-              }
-            }
-            document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath
-            
-          })
-      }
-
+    let id = element.dataset.id
+    let name = element.dataset.name
+    let tbl = element.dataset.tbname
+    let data = {
+      id: id,
+      name: name,
+      tbl: tbl
+    }
+    let request = new Request("/user/tribu_t/pastille/golf", {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
     })
-    .catch(error => console.log(error))
-  if (document.querySelector(".modal-pastille-golf-tomm-js")) {
-    document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
-  }
-
-  // getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, id)
-  // fecthGolfAction(id, "for_me")
-  // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", id)
-
+  
+    fetch(request)
+      .then(response => response.json())
+      .then(message => {
+  
+        new swal("Succès !", "Golf pastillé avec succès", "success")
+          .then((value) => {
+            element.classList = "btn btn-secondary ms-1"
+            element.textContent = "Pastillé"
+            element.setAttribute("disabled", true)
+            showGolf(tbl)
+            if (document.querySelector("#tribu_t_conteuneur")) {
+              document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
+            }
+  
+          });
+  
+        if (message.id_golf) {
+          fetch(`/golf/pastilled/checking/${message.id_golf}`)
+            .then(response => response.json())
+            .then(datas => {
+  
+              let logoPath = ""
+              let i = 0
+              let countIsPastilled = 0;
+              for (data of datas) {
+                i += 500
+                if (data.isPastilled === true) {
+                  countIsPastilled++;
+                }
+                if (data['logo_path'] != "") {
+                  if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
+                    logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data['logo_path']}" alt="">`
+                  }
+  
+                } else {
+                  if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
+                    logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`
+                  }
+                }
+  
+                if (document.querySelector('.logo-pastille-golf-tomm-js')) {
+                  document.querySelector('.logo-pastille-golf-tomm-js').style.width = i + 'px';
+                }
+  
+  
+              }
+  
+              if (countIsPastilled > 4) {
+                if (document.querySelector(".length-pastille-plus")) {
+                  document.querySelector(".length-pastille-plus").remove()
+                }
+                document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`
+  
+              } else {
+                // document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
+                if (document.querySelector(".length-pastille-plus")) {
+                  document.querySelector(".length-pastille-plus").remove()
+                }
+              }
+              document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath
+              
+            })
+        }
+  
+      })
+      .catch(error => console.log(error))
+    if (document.querySelector(".modal-pastille-golf-tomm-js")) {
+      document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
+    }
+  
+    // getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, id)
+    // fecthGolfAction(id, "for_me")
+    // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", id)
+  
 }
 
 
 function depastilleGolf(selector) {
-  let id = selector.dataset.id
-  let name = selector.dataset.name
-  let tbl = selector.dataset.tbname
-  let data = {
-    id: id,
-    name: name,
-    tbl: tbl
-  }
-
-  let request = new Request("/user/tribu_t/depastille/golf", {
-    method: "POST",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-
-  fetch(request)
-    .then(response => response.json())
-    .then(message => {
-      new swal("Succès !", "Golf dépastillé avec succès", "success")
-        .then((value) => {
-          $("#detailOptionGolf").modal("hide")
-          if (document.querySelector("#golf_" + id)) {
-            document.querySelector("#golf_" + id).remove()
-          }
-        });
-      if (message.id_golf) {
-        fetch(`/golf/pastilled/checking/${message.id_golf}`)
-          .then(response => response.json())
-          .then(datas => {
-            let countIsPastilled = 0;
-            for (data of datas) {
-              if (data.isPastilled === true) {
-                countIsPastilled++;
+    let id = selector.dataset.id
+    let name = selector.dataset.name
+    let tbl = selector.dataset.tbname
+    let data = {
+      id: id,
+      name: name,
+      tbl: tbl
+    }
+  
+    let request = new Request("/user/tribu_t/depastille/golf", {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+  
+    fetch(request)
+      .then(response => response.json())
+      .then(message => {
+        new swal("Succès !", "Golf dépastillé avec succès", "success")
+          .then((value) => {
+            $("#detailOptionGolf").modal("hide")
+            if (document.querySelector("#golf_" + id)) {
+              document.querySelector("#golf_" + id).remove()
+            }
+          });
+        if (message.id_golf) {
+          fetch(`/golf/pastilled/checking/${message.id_golf}`)
+            .then(response => response.json())
+            .then(datas => {
+              let countIsPastilled = 0;
+              for (data of datas) {
+                if (data.isPastilled === true) {
+                  countIsPastilled++;
+                }
+                if (data['isPastilled'] != true) {
+                  if (document.querySelector(`.logo_path_${data['table_name']}_tomm_js`)) {
+                    document.querySelector(`.logo_path_${data['table_name']}_tomm_js`).remove()
+                  }
+  
+                }
               }
-              if (data['isPastilled'] != true) {
-                if (document.querySelector(`.logo_path_${data['table_name']}_tomm_js`)) {
-                  document.querySelector(`.logo_path_${data['table_name']}_tomm_js`).remove()
+  
+              if (countIsPastilled <= 4) {
+                
+                if (document.querySelector(".length-pastille-plus")) {
+                  document.querySelector(".length-pastille-plus").remove()
+                }
+  
+              }else {
+                document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`
+                if (document.querySelector(".length-pastille-plus")) {
+                  document.querySelector(".length-pastille-plus").remove()
+                }
+              }
+              
+            })
+        }
+  
+      })
+      .catch(error => console.log(error))
+    // fecthGolfAction(id, "cancel")
+  
+  
+    if (document.querySelector(".modal-pastille-golf-tomm-js")) {
+      document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
+    }
+  
+}
+  
+  /**
+   * @author Tomm
+   * @action get list tribu T pastiller avec golf
+   * @ou dans detail.js
+   */
+function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
+    fetch(`/golf/pastilled/checking/${id_golf}`)
+        .then(response => response.json())
+        .then(datas => {
+            let listTibuTPast = ""
+            let monGolf = ""
+            if (datas.length == 0) {
+                listTibuTPast = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
+            }
+            datas.forEach(data => {
+
+                if (data['logo_path'] != "") { 
+                    logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
+                } else {
+                    logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
+                }
+                if (data.isPastilled == true) {
+                    listTibuTPast += `
+                                <tr>
+                                    <td>${logoPath}</td>
+                                    <td>${data.name_tribu_t_muable}</td>
+                                    <td>
+                                        <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                                    </td>
+                                </tr>
+                            `
+
+                } else {
+                    listTibuTPast += `
+                                <tr>
+                                    <td>${logoPath}</td>
+                                    <td>${data.name_tribu_t_muable}</td>
+                                    <td>
+                                        <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
+                                    </td>
+                                </tr>
+                            `
                 }
 
-              }
+
+            })
+            let modalPastillGolf = `
+                    <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
+                        <div class="modal-pastille-golf">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header mb-4">
+                                        <h5 class="modal-title">Tribu T pastiller</h5>
+                                        <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
+                                    </div>
+                                    <hr>
+                                    <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Logo</th>
+                                                    <th scope="col">Tribu T</th>
+                                                    <th scope="col">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${listTibuTPast}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `
+
+            if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
+                document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
             }
-
-            if (countIsPastilled <= 4) {
-              
-              if (document.querySelector(".length-pastille-plus")) {
-                document.querySelector(".length-pastille-plus").remove()
-              }
-
-            }else {
-              document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`
-              if (document.querySelector(".length-pastille-plus")) {
-                document.querySelector(".length-pastille-plus").remove()
-              }
-            }
-            
-          })
-      }
-
     })
-    .catch(error => console.log(error))
-  // fecthGolfAction(id, "cancel")
-
-
-  if (document.querySelector(".modal-pastille-golf-tomm-js")) {
-    document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
-  }
-
 }
 
 /**
  * @author Tomm
- * @action get list tribu T pastiller avec golf
- * @ou dans detail.js
+ * @action close modal pastill golf
+ * @ou dans le fuction.js
  */
-function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
-  fetch(`/golf/pastilled/checking/${id_golf}`)
-    .then(response => response.json())
-    .then(datas => {
-      let listTibuTPast = ""
-      let monGolf = ""
-      if (datas.length == 0) {
-        listTibuTPast = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
-      }
-      datas.forEach(data => {
-
-        if (data['logo_path'] != "") { 
-          logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
-        } else {
-          logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
-        }
-        if (data.isPastilled == true) {
-          listTibuTPast += `
-                        <tr>
-                            <td>${logoPath}</td>
-                            <td>${data.name_tribu_t_muable}</td>
-                            <td>
-                                <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
-                            </td>
-                        </tr>
-                    `
-
-        } else {
-          listTibuTPast += `
-                        <tr>
-                            <td>${logoPath}</td>
-                            <td>${data.name_tribu_t_muable}</td>
-                            <td>
-                                <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
-                            </td>
-                        </tr>
-                    `
-
-        }
-
-
-      })
-      let modalPastillGolf = `
-            <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
-                <div class="modal-pastille-golf">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header mb-4">
-                                <h5 class="modal-title">Tribu T pastiller</h5>
-                                <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
-                            </div>
-                            <hr>
-                            <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Logo</th>
-                                            <th scope="col">Tribu T</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${listTibuTPast}
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `
-
-      if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
-        document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
-      }
-    })
-}
-
-  /**
-   * @author Tomm
-   * @action close modal pastill golf
-   * @ou dans le fuction.js
-   */
-  function closePastillGolf(id_golf) {
+function closePastillGolf(id_golf) {
     document.querySelector(".modal-pastille-golf-tomm-js").remove()
     //.select_action_golf_tomm_js
     document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0
 }
-  
+    
 /**
  * @author tomm
  * @action get list des pastill
  * @ou details_golf.html.twig
  */
 function isPastilledList(id_golf, name_golf) {
-  fetch(`/golf/pastilled/checking/${id_golf}`)
-    .then(response => response.json())
-    .then(datas => {
-      let listTibuTPast = ""
-      for (let data of datas) {
-        if (data['logo_path'] != "") {
-          logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
-        } else {
-          logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
+    fetch(`/golf/pastilled/checking/${id_golf}`)
+      .then(response => response.json())
+      .then(datas => {
+        let listTibuTPast = ""
+        for (let data of datas) {
+          if (data['logo_path'] != "") {
+            logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
+          } else {
+            logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
+          }
+          if (data['isPastilled'] == true) {
+  
+            listTibuTPast += `
+                                      <tr>
+                                          <td>${logoPath}</td>
+                                          <td>${data.name_tribu_t_muable}</td>
+                                          <td>
+                                              <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                                          </td>
+                                      </tr>
+                                  `
+          }
         }
-        if (data['isPastilled'] == true) {
-
-          listTibuTPast += `
-                                    <tr>
-                                        <td>${logoPath}</td>
-                                        <td>${data.name_tribu_t_muable}</td>
-                                        <td>
-                                            <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
-                                        </td>
-                                    </tr>
-                                `
+  
+        let modalPastillGolf = `
+                          <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
+                              <div class="modal-pastille-golf">
+                                  <div class="modal-dialog">
+                                      <div class="modal-content">
+                                          <div class="modal-header mb-4">
+                                              <h5 class="modal-title">les listes de mon golf</h5>
+                                              <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
+                                          </div>
+                                          <hr>
+                                          <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
+                                              <table class="table table-striped">
+                                                  <thead>
+                                                      <tr>
+                                                          <th scope="col">Logo</th>
+                                                          <th scope="col">Tribu T</th>
+                                                          <th scope="col">Action</th>
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                      ${listTibuTPast}
+                                                  </tbody>
+                                              </table>
+                                          </div>
+                                          
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          `
+  
+        if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
+          document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
         }
-      }
-
-      let modalPastillGolf = `
-                        <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
-                            <div class="modal-pastille-golf">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header mb-4">
-                                            <h5 class="modal-title">les listes de mon golf</h5>
-                                            <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
-                                        </div>
-                                        <hr>
-                                        <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Logo</th>
-                                                        <th scope="col">Tribu T</th>
-                                                        <th scope="col">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    ${listTibuTPast}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        `
-
-      if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
-        document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
-      }
-    })
-}
-
+      })
+  }
+  
 /**
  * @author tomm
  * @action fetch les action du golf
@@ -5635,158 +5816,712 @@ function isPastilledList(id_golf, name_golf) {
  */
 function fecthGolfAction(goldID, action, selectElement) {
 
+    if (selectElement != null && selectElement instanceof HTMLElement) {
+        selectElement = selectElement.parentElement;
+        let url = ""
+        switch (action) {
+            case "finished": {
+            url = '/user/setGolf/finished'
+            break;
+            }
+            case "todo": {
+            url = '/user/setGolf/todo'
+            break;
+            }
+            // case "for_me":{
+            //     url = '/user/setGolf/for_me'
+            //     break;
+            // }
+            case "none": {
+            url = '/user/setGolf/none'
+            break;
+            }
+            case "remake": {
+            url = "/user/setGolf/remake"
+            break;
+            }
+            default: {
+            url = '/user/setGolf/unfinished'
+            break;
+            }
+    
+        }
+  
+        const request = new Request(url, {
+            body: JSON.stringify({
+                golfID: goldID,
+            })
+        })
 
-  if (selectElement != null && selectElement instanceof HTMLElement) {
-    selectElement = selectElement.parentElement;
-    let url = ""
-    switch (action) {
-      case "finished": {
-        url = '/user/setGolf/finished'
-        brerak;
-      }
-      case "todo": {
-        url = '/user/setGolf/todo'
-        break;
-      }
-      // case "for_me":{
-      //     url = '/user/setGolf/for_me'
-      //     break;
-      // }
-      case "none": {
-        url = '/user/setGolf/none'
-        break;
-      }
-      case "remake": {
-        url = "/user/setGolf/remake"
-        break;
-      }
-      default: {
-        url = '/user/setGolf/unfinished'
-        break;
-      }
+        fetch(request)
+        .then(response => response.json())
+        .then(response => {
+            if (response.success) {
+                if (action === "finished") {
+                    new swal("Bravo !", "Vous avez marqué ce golf comme fait !", "success")
+                    .then((value) => {
+                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                        selectElement.innerHTML = `
+                                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+                                    `
+                        }
 
+                        if (document.querySelector(".golf_status_jheo_js")) {
+                        document.querySelector(".golf_status_jheo_js").innerText = "FAIT"
+                        }
+                    });
+
+                } else if (action === "todo") {
+
+                    new swal("Bravo !", "Vous avez marqué ce golf comme à faire !", "success")
+                    .then((value) => {
+                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                        selectElement.innerHTML = `
+                                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+                                    `
+                        }
+
+                        if (document.querySelector(".golf_status_jheo_js")) {
+                        document.querySelector(".golf_status_jheo_js").innerText = "A FAIRE"
+                        }
+                    });
+
+                } else if (action === "none") {
+
+                    new swal("Bravo !", "Vous avez choisi de ne rien faire avec ce golf.", "success")
+                    .then((value) => {
+                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                        selectElement.innerHTML = `
+                                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+                                    `
+                        }
+
+                        if (document.querySelector(".golf_status_jheo_js")) {
+                        document.querySelector(".golf_status_jheo_js").innerText = ""
+                        }
+                    });
+
+                } else if (action === "remake") {
+                    new swal("Bravo !", "Vous avez marqué ce golf comme à refaire.", "success")
+                    .then((value) => {
+                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                        selectElement.innerHTML = `
+                                        Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+                                    `
+                        }
+
+                        if (document.querySelector(".golf_status_jheo_js")) {
+                        document.querySelector(".golf_status_jheo_js").innerText = "A REFAIRE"
+                        }
+                    });
+                } else {
+
+                    new swal("Info !", "Vous venez d'annuler votre choix !", "success")
+                    .then((value) => {
+                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                        selectElement.innerHTML = `
+                                    <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+                                    <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${goldID}" onchange="executeActionForPastGolf(event,'${goldID}')">
+                                        <option value="0">Aucun</option>
+                                        <option value="1">A faire</option>
+                                        <option value="2">Fait</option>
+                                        <option value="3">A refaire</option>
+                                    </select>
+                                    `
+                        }
+
+                        if (document.querySelector(".golf_status_jheo_js")) {
+                        document.querySelector(".golf_status_jheo_js").innerText = ""
+                        }
+
+                        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
+                    })
+
+                }
+
+                // else if (action === "for_me") {
+                //   new swal("Bravo !", "Vous avez marqué ce golf comme Mon Golf !", "success")
+                //     .then((value) => {
+                //       if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                //         selectElement.innerHTML = `
+                //                       Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+                //                   `
+                //       }
+
+                //       if (document.querySelector(".golf_status_jheo_js")) {
+                //         document.querySelector(".golf_status_jheo_js").innerText = "MON GOLF"
+                //       }
+                //     });
+
+                // } 
+            }
+        })
+    } else {
+        new swal("Bonjour", "Oups!! ", "info")
     }
+  // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
+}
 
-    const request = new Request(url, {
+/**
+ * @author Elie
+ * @constructor pastille resto into tribu G
+ * @param {node} e element of node
+ * @param {boolean} type oui si pastille, non si depastille
+ * @param {integer} id id_restaurant
+ * @param {string} name nom resto
+ */
+function pastilleForTribuG(e, type, id, name) {
+
+    const data = {
+      name: name,
+      id: id,
+      tbl: document.querySelector("#my_tribu_g").textContent.trim()
+    }
+    // For pastille
+    if (type == true) {
+        fetch("/user/tribu_g/pastille/resto", {
+            body: JSON.stringify(data)
+        }).then(r => r.json())
+        .then(res => {
+            if (res.status == "ok") {
+                swal({
+                    title: "Bravo!",
+                    text: "Restaurant pastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+
+                e.classList = "btn btn-success ms-1"
+                e.innerText = "Pastillé"
+                document.querySelector("#fetch_resto_tribug_jheo_js").click()
+            }
+        })
+
+    }else { // For depastille
+        fetch("/user/tribu_g/depastille/resto", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(r => r.json())
+        .then(res => {
+            if (res.status == "ok") {
+                swal({
+                    title: "Bravo!",
+                    text: "Restaurant dépastillé avec succès dans votre tribu G.",
+                    icon: "success",
+                });
+
+                e.classList = "btn btn-success ms-1"
+                e.innerText = "Dépastillé"
+            }
+        })
+    }
+}
+
+
+
+
+/**
+* @author Elie
+* @constructor pastille resto into tribu G
+* @param {node} e element of node
+* @param {boolean} type oui si pastille, non si depastille
+* @param {integer} id id_restaurant
+* @param {string} name nom resto
+*/
+function pastilleGolfForTribuG(e, type, id, name) {
+
+  const data = {
+    name: name,
+    id: id,
+    tbl: document.querySelector("#my_tribu_g").textContent.trim()
+  }
+  // For pastille
+  if (type == true) {
+
+    fetch("/user/tribu_g/pastille/golf", {
       method: "POST",
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        golfID: goldID,
-      })
-    })
+      body: JSON.stringify(data)
+    }).then(r => r.json())
+      .then(res => {
+        if (res.status == "ok") {
+          swal({
+            title: "Bravo!",
+            text: "Golf pastillé avec succès dans votre tribu G.",
+            icon: "success",
+          });
 
-    fetch(request)
-      .then(response => response.json())
-      .then(response => {
-        if (response.success) {
-          if (action === "finished") {
-            new swal("Bravo !", "Vous avez marqué ce golf comme fait !", "success")
-              .then((value) => {
-                if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                  selectElement.innerHTML = `
-                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                            `
-                }
-
-                if (document.querySelector(".golf_status_jheo_js")) {
-                  document.querySelector(".golf_status_jheo_js").innerText = "FAIT"
-                }
-              });
-
-          }
-          // else if (action === "for_me") {
-          //   new swal("Bravo !", "Vous avez marqué ce golf comme Mon Golf !", "success")
-          //     .then((value) => {
-          //       if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-          //         selectElement.innerHTML = `
-          //                       Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-          //                   `
-          //       }
-
-          //       if (document.querySelector(".golf_status_jheo_js")) {
-          //         document.querySelector(".golf_status_jheo_js").innerText = "MON GOLF"
-          //       }
-          //     });
-
-          // } 
-          else if (action === "todo") {
-
-            new swal("Bravo !", "Vous avez marqué ce golf comme à faire !", "success")
-              .then((value) => {
-                if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                  selectElement.innerHTML = `
-                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                            `
-                }
-
-                if (document.querySelector(".golf_status_jheo_js")) {
-                  document.querySelector(".golf_status_jheo_js").innerText = "A FAIRE"
-                }
-              });
-
-          } else if (action === "none") {
-
-            new swal("Bravo !", "Vous avez choisi de ne rien faire avec ce golf.", "success")
-              .then((value) => {
-                if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                  selectElement.innerHTML = `
-                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                            `
-                }
-
-                if (document.querySelector(".golf_status_jheo_js")) {
-                  document.querySelector(".golf_status_jheo_js").innerText = ""
-                }
-              });
-
-          } else if (action === "remake") {
-            new swal("Bravo !", "Vous avez marqué ce golf comme à refaire.", "success")
-              .then((value) => {
-                if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                  selectElement.innerHTML = `
-                                Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                            `
-                }
-
-                if (document.querySelector(".golf_status_jheo_js")) {
-                  document.querySelector(".golf_status_jheo_js").innerText = "A REFAIRE"
-                }
-              });
-          } else {
-
-            new swal("Info !", "Vous venez d'annuler votre choix !", "success")
-              .then((value) => {
-                if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                  selectElement.innerHTML = `
-                            <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
-                            <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${goldID}" onchange="executeActionForPastGolf(event,'${goldID}')">
-                                <option value="0">Aucun</option>
-                                <option value="1">A faire</option>
-                                <option value="2">Fait</option>
-                                <option value="3">A refaire</option>
-                            </select>
-                            `
-                }
-
-                if (document.querySelector(".golf_status_jheo_js")) {
-                  document.querySelector(".golf_status_jheo_js").innerText = ""
-                }
-
-                OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
-              })
-
-          }
+          e.classList = "btn btn-success ms-1"
+          e.innerText = "Pastillé"
         }
       })
-  } else {
-    new swal("Bonjour", "Oups!! ", "info")
   }
-  // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
+  // For depastille
+  else {
+    fetch("/user/tribu_g/depastille/golf", {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(r => r.json())
+      .then(res => {
+        if (res.status == "ok") {
+          swal({
+            title: "Bravo!",
+            text: "Golf dépastillé avec succès dans votre tribu G.",
+            icon: "success",
+          });
 
+          e.classList = "btn btn-success ms-1"
+          e.innerText = "Dépastillé"
+        }
+      })
+  }
+}
+
+/**
+ * Update 25-10-2023 : deplacement de myTribuT.js vers function.js
+ * Utilisé dans tribu G et T
+ * @constructor : Ouverture de modal detail resto
+ * @param {*} nom_resto 
+ * @param {*} adresse 
+ * @param {*} nom_dep 
+ * @param {*} id_dep 
+ * @param {*} id_restaurant 
+ */
+function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
+
+  fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
+    .then(response => response.text())
+    .then(result => {
+
+      $("#modalDetailResto").modal("show")
+
+      document.querySelector("#restoModalLabel").innerHTML = `
+      <div>
+      <h1 class="modal-title fs-5">${nom_resto}</h1>
+      <span>${adresse.toLowerCase()}</span>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      `
+
+      document.querySelector("#elie-resto-detail").innerHTML = result
+    })
+}
+
+/**
+* Update 25-10-2023 : deplacement de myTribuT.js vers function.js
+* Utilisé dans tribu G et T
+* @constructor Fonction d'ouverture d'un evenement
+* @author elie
+* @param {int} id : id resto
+* @param {string} nom : nom de resto
+* @param {string} adresse : adresse de resto
+* @param {string} action : action à faire pour le resto
+*/
+function openOnEvent(id, nom, adresse, action) {
+
+  document.querySelector("#nomEtabEvent").value = nom
+
+  document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
+
+  let date = new Date();
+  let currentDate = date.toISOString().substring(0, 10);
+
+  document.getElementById('eventStart').value = currentDate;
+  document.getElementById('eventEnd').value = currentDate;
+  document.getElementById('timeStart').value = '00:00';
+  document.getElementById('timeEnd').value = '23:00';
+
+}
+
+/**
+* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+* Utilisé dans tribu G et T
+* @constructor
+* @param {*} val 
+* @param {*} localisation 
+*/
+function findResto(val, localisation = "") {
+
+  const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
+    method: 'GET'
+  })
+
+  document.querySelector("#result_resto_past").style.display = "block;"
+
+
+  document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+  document.querySelector("#elie-restou").innerHTML =
+    `<div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+      </div>
+      </div>`
+
+
+  fetch(request).then(response => response.json()).then(data => {
+
+    let jsons = data.results[0]
+
+    jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
+
+    let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+      <thead>
+          <tr>
+              <th>Nom de restaurant</th>
+              <th>Type</th>
+              <th>Adresse</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody>`
+
+    let foot_table = `</tbody>
+      </table>`
+
+    let body_table = "";
+
+    if (jsons.length > 0) {
+
+
+      for (let json of jsons) {
+
+        const name = json.denominationF;
+        const dep = json.dep;
+        const depName = json.depName;
+        const commune = json.commune;
+        const codePost = json.codpost;
+        const nomvoie = json.nomvoie;
+        const numvoie = json.numvoie;
+        const typevoie = json.typevoie;
+        // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+        const adresse = json.add;
+        const bar = json.bar != "0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : ''
+        const boulangerie = json.boulangerie != "0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
+        const brasserie = json.brasserie != "0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
+        const cafe = json.cafe != "0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : ''
+        const cuisineMonde = json.cuisineMonde != "0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : ''
+        const fastFood = json.fastFood != "0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : ''
+        const creperie = json.creperie != "0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : ''
+        const salonThe = json.salonThe != "0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : ''
+        const pizzeria = json.pizzeria != "0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : ''
+
+        let oncl = `pastillerPast(this, ${json.id},'${name}')`
+        if (window.location.href.includes("/user/account")) {
+          const tbly = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
+          oncl = `pastilleForTribuG(this, true,${json.id},'${name}')`
+        }
+
+        body_table += `
+                              <tr>
+                                  <td>${name}</td>
+                                  <td>
+                                      <!--<div class="type-resto" onclick="showTypeResto(event)"> <span>Type de restauration</span> <i class="fa-solid fa-greater-than"></i></div>-->
+                                      <div class="d-flex bd-highlight">
+                                          <div class="">${boulangerie}</div>
+                                          <div class="">${bar}</div>
+                                          <div class="">${brasserie}</div>
+                                          <div class="">${cafe}</div>
+                                          <div class="">${cuisineMonde}</div>
+                                          <div class="">${fastFood}</div>
+                                          <div class="">${creperie}</div>
+                                          <div class="">${salonThe}</div>
+                                          <div class="">${pizzeria}</div>
+                                      </div>
+                                  </td>
+                                  <td>${adresse}</td>
+                                  <td class="d-flex bd-highlight">
+                                      <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
+                                      <button class="btn btn-primary ms-1" onclick="${oncl}">Pastillez</button>
+                                  </td>
+                              </tr>
+                          `
+      }
+
+      document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
+
+      // new DataTable('#resto-a-pastiller-list');
+      $('#resto-a-pastiller-list').DataTable({
+        "language": {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+        }
+      });
+
+    } else {
+      document.querySelector("#elie-restou").style.display = "block"
+      document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
+    }
+  })
 
 }
 
 
+
+/**
+* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+* Utilisé dans tribu G et T
+* @constructor
+*/
+function listResto() {
+
+  document.querySelector("#elie-restou").innerHTML = ""
+  let inputName = document.querySelector("#resto-rech").value;
+  let adresse = document.querySelector("#resto-rech-ou").value;
+  if (adresse.trim() != "" || inputName.trim() != "") {
+    if ((document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active"))
+      || (document.querySelector("#fetch_golf_tribug_jheo_js") && document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active"))) {
+      findGolf(inputName, adresse)
+    } else if (document.querySelector(".restoNotHide > a") && document.querySelector(".restoNotHide > a").classList.contains("active")) {
+      findResto(inputName, adresse)
+    } else {
+      findResto(inputName, adresse)
+    }
+
+    $("#modalForExtension").modal("show")
+  } else {
+
+    swal({
+      // title: "Succès",
+      text: "Champ invalide!",
+      icon: "error",
+      button: "Ok",
+    });
+
+  }
+}
+
+
+/**
+* Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
+* @author elie
+* @constructor Fonction d'ouverture de note de resto pastillé
+* @localisation : myTribuT.js
+* @utilisation dans le template tribuT.html.twig
+* @param {int} id_pastille : id resto
+* @param {string} action : action à faire pour le bouton
+*/
+function openOnNote(id_pastille, action) {
+
+  document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
+
+  document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+}
+
+
+/**
+* Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
+* @author elie
+* @constructor : fonction de parametrage d'id resto dans un template
+* @localisation : myTribuT.js
+* @utilisation dans le template tribuT.html.twig
+* @param {element} params : element ou le fonction se place
+* @param {int} id_pastille : id resto
+*/
+function setSendNote(params, id_pastille) {
+
+  const action = params.getAttribute("data-action")
+
+  const avis = params.parentElement.previousElementSibling.querySelector("#message-text")
+  const note = params.parentElement.previousElementSibling.querySelector("#text-note")
+
+  if (action == "create") {
+
+    if (parseFloat(note.value) > 4) {
+      swal({
+        title: "Erreur de saisie de note!",
+        text: "Une note doit être inférieur ou égale à 4",
+        icon: "error",
+        button: "Ok",
+      });
+
+    } else {
+
+      if (window.location.href.includes("/user/account")) {
+
+        sendNoteTribuG(parseFloat(note.value), avis.value, id_pastille)
+
+      } else {
+
+        sendNote(parseFloat(note.value), avis.value, id_pastille)
+
+      }
+    }
+
+  }
+
+}
+
+/**
+* @author Elie
+* @constructor Envoie de paramettre de la mise à jour de note dans le template
+* @param {*} params 
+* @param {*} id 
+* @param {*} note 
+* @param {*} commentaire 
+* @param {*} id_resto 
+*/
+function setUpdateNote(params, id, note, commentaire, id_resto) {
+  
+  $('#modalAvisRestaurant').modal('show')
+
+  document.querySelector("#text-note").value = note
+  document.querySelector("#message-text").value = commentaire
+  document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "update")
+
+  if (window.location.href.includes("/user/account")) {
+
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "updateNoteTribuG(" + id + ", " + id_resto + ")")
+
+  } else {
+
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "updateNote(" + id + ", " + id_resto + ")")
+
+  }
+
+}
+
+/**
+ * @constructor keyup detect for input
+ * @author Elie
+ * @param {*} target 
+ */
+function detectNumber(target) {
+
+  note = target.value.replace(/,/g, ".");
+
+  try {
+    mustBeInferior4(note, document.querySelector("#text-note"), true)
+  } catch (e) {
+    msgErrorAlertAvis(e)
+  }
+
+  setTimeout(() => {
+    target.style = "border:2px solid black;";
+    document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
+      i.remove()
+      target.value = ""
+    });
+  }, 2000);
+
+}
+
+
+/**
+* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+* Utilisé dans tribu G et T
+* @constructor
+*/
+function findGolf() {
+
+  document.querySelector("#elie-restou").innerHTML = ""
+  let inputName = document.querySelector("#golf-rech").value;
+  let adresse = document.querySelector("#golf-rech-ou").value;
+  if (adresse.trim() != "" || inputName.trim() != "") {
+
+    const request = new Request(`/api/search/golf?cles0=${inputName}&cles1=${adresse}`, {
+      method: 'GET'
+    })
+
+    document.querySelector("#result_resto_past").style.display = "block;"
+
+
+    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
+    document.querySelector("#elie-restou").innerHTML =
+      `<div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+      </div>
+      </div>`
+
+
+    fetch(request).then(response => response.json()).then(data => {
+
+      let jsons = data.results[0]
+
+      document.querySelector("#extModalLabel").innerText = jsons.length + " golf trouvés" 
+
+      let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Nom de golf</th>
+                <th>Adresse</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+      <tbody>`
+
+      let foot_table = `</tbody></table>`
+
+      let body_table = "";
+
+      if (jsons.length > 0) {
+
+
+        for (let json of jsons) {
+
+          console.log(json);
+
+          const name = json.nom.toUpperCase();
+          const dep = json.departement;
+          const depName = json.depName;
+          const commune = json.nom_commune;
+          const codePost = json.cp;
+
+          const adresse = json.adresse;
+         
+          let oncl = `pastillerPast(this, ${json.id},'${name}')`
+          if (window.location.href.includes("/user/account")) {
+            const tbly = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
+            oncl = `pastilleGolfForTribuG(this, true,${json.id},'${name}')`
+          }
+
+          body_table += `
+                              <tr>
+                                  <td>${name}</td>
+                                  
+                                  <td>${adresse}</td>
+                                  <td class="d-flex bd-highlight">
+                                      <button class="btn btn-info" onclick="openDetailGolf('${name}', '${adresse}', '${depName}','${codePost}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
+                                      <button class="btn btn-primary ms-1" onclick="${oncl}">Pastillez</button>
+                                  </td>
+                              </tr>
+                          `
+        }
+
+        document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
+
+        // new DataTable('#resto-a-pastiller-list');
+        $('#resto-a-pastiller-list').DataTable({
+          "language": {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+          }
+        });
+
+      } else {
+        document.querySelector("#elie-restou").style.display = "block"
+        document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun golf qui correspond au recherche de " + document.querySelector("#golf-rech").value + "</div>"
+      }
+    })
+
+    $("#modalForExtension").modal("show")
+  } else {
+
+    swal({
+      // title: "Succès",
+      text: "Champ invalide!",
+      icon: "error",
+      button: "Ok",
+    });
+
+  }
+
+}

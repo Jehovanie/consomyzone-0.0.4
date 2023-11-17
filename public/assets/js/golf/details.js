@@ -242,6 +242,8 @@ function executeActionForPastGolf(event,goldID){
    
 
 // }
+// }
+
 
 function executeActionForPastMonGolf(goldID, golfName, golfAdress) {
     setMonGolf(goldID, golfName, golfAdress)

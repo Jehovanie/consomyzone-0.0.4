@@ -2497,3 +2497,8 @@ textarea {
 .swal-modal{
     z-index: 1;
 }
+.logo_path_pastille{
+    width: 50px;
+    height: 50px;
+    clip-path: circle();
+}

@@ -24,8 +24,8 @@ use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
-use App\Service\StringTraitementService;
 use App\Form\PublicationType;
+use App\Service\AgendaService;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -34,17 +34,18 @@ use App\Repository\UserRepository;
 
 use App\Service\RequestingService;
 use App\Service\NotificationService;
+use App\Service\PDOConnexionService;
 use App\Repository\BddRestoRepository;
-use App\Repository\DepartementRepository;
-use App\Service\AgendaService;
+use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\DepartementRepository;
 
 use function PHPUnit\Framework\assertFalse;
 
 use Symfony\Component\Filesystem\Filesystem;
 
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -58,8 +59,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -222,6 +223,39 @@ class TributTController extends AbstractController
             $response=new Response();
             return $response->setStatusCode(500);
         }
+    }
+
+    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    public function checkedIfRestaurantIsPastilled(
+        $id_golf,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        SerializerInterface $serializerInterface
+    ) {
+        $arrayTribu = [];
+        if ($this->getUser()) {
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            // $pdoService = new PDOConnexionService();
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+                        
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                    }
+                    
+                }
+            }
+        }
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
     }
 
     #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
@@ -2730,39 +2764,6 @@ class TributTController extends AbstractController
         }
 
        
-    }
-
-
-    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
-    public function checkedIfRestaurantIsPastilled(
-        $id_golf,
-        UserRepository $userRepository,
-        Tribu_T_Service $tribu_T_Service,
-        SerializerInterface $serializerInterface
-    ) {
-        $arrayTribu = [];
-        if ($this->getUser()) {
-
-            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
-
-            foreach ($tribu_t_owned as $key) {
-                $tableTribu = $key["table_name"];
-                $logo_path = $key["logo_path"];
-                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
-                $tableExtension = $tableTribu . "_golf";
-
-                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
-                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
-                    } else {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
-                    }
-                }
-            }
-        }
-
-        $datas = $serializerInterface->serialize($arrayTribu, 'json');
-        return new JsonResponse($datas, 200, [], true);
     }
 
 }

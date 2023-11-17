@@ -427,7 +427,8 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function getIdRestoOnTableExtension($table, $idResto){
-
+        
+        // $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto");
         $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
 
         $statement->execute();
@@ -1405,19 +1406,35 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
-    public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
-        $values=array(":id_restaurant"=>$idResto,
-            ":id_user"=>$idUser,
-            ":note"=>$note,
-            ":commentaire"=>$commentaire
-        );
-        $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
-                  "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
-        $stmt = $this->getPDO()->prepare($sql);
+    // public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
+    //     $values=array(":id_restaurant"=>$idResto,
+    //         ":id_user"=>$idUser,
+    //         ":note"=>$note,
+    //         ":commentaire"=>$commentaire
+    //     );
+    //     $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
+    //               "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    //     $stmt = $this->getPDO()->prepare($sql);
 
-        return $stmt->execute($values);
+    //     return $stmt->execute($values);
             
-    }
+    // }
+
+    public function sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire)
+  {
+    $values = array(
+      ":id_restaurant" => $idResto,
+      ":id_user" => $idUser,
+      ":note" => $note,
+      ":commentaire" => $commentaire
+    );
+    $sql = "INSERT INTO " . $tableName . "(extensionId,userId,note,commentaire)" .
+      "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    $stmt = $this->getPDO()->prepare($sql);
+
+    return $stmt->execute($values);
+  }
+    
 
     public function upCommentRestoPastilled($tableName,  $note, $commentaire,$idRestoComment, $my_id)
     {
@@ -1427,7 +1444,7 @@ class Tribu_T_Service extends PDOConnexionService
             ":idRestoComment"=> $idRestoComment,
             ":my_id" => $my_id
         );
-        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id_resto_comment=:idRestoComment and id_user=:my_id";
+        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id=:idRestoComment and userId=:my_id";
         $stmt = $this->getPDO()->prepare($sql);
 
         return $stmt->execute($values);
@@ -2015,8 +2032,30 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+    /**
+     * @author Tomm 
+     * @action get list tribu t pastille
+     * @ou golfControlleur
+     */
+    public function checkIfCurrentGolfPastilled($tableNameExtension, int $golf, $isPastilled)
+    {
+
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $golf AND isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if (is_array($result)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
      public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
-        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE extensionId = :resto_id";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->bindParam(":isPastilled", $isPastilled);
         $stmt->bindParam(":resto_id", $resto_id);
@@ -2137,30 +2176,30 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
-    /**
-     * @author Tomm
-     * 
-     * @param string $tableNameExtension: le nom de la table extension
-     * 
-     * @param int $idResto: l'extension
-     * @return number $result: 0 or if(not exists) else positive number
-     */
-    public function checkIfCurrentGolfPastilled($tableNameExtension, int $idGolf, $isPastilled)
-    {
+    // /**
+    //  * @author Tomm
+    //  * 
+    //  * @param string $tableNameExtension: le nom de la table extension
+    //  * 
+    //  * @param int $idResto: l'extension
+    //  * @return number $result: 0 or if(not exists) else positive number
+    //  */
+    // public function checkIfCurrentGolfPastilled($tableNameExtension, int $idGolf, $isPastilled)
+    // {
 
 
-        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idGolf AND isPastilled = $isPastilled");
+    //     $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idGolf AND isPastilled = $isPastilled");
 
-        $statement->execute();
+    //     $statement->execute();
 
-        $result = $statement->fetch();
+    //     $result = $statement->fetch();
 
-        if (is_array($result)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    //     if (is_array($result)) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     
 

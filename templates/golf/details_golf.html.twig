@@ -150,6 +150,22 @@
                 {% else %}
                     <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalActif()">Donner votre avis</button>
                 {% endif %}
+
+                {% if (app.user and app.user.type!='Type') %}
+                    <button style="font-size:smaller" type="button" class="btn btn-sm btn-success" onclick='showPastillGolfTribuT("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>
+                        Pastiller
+                    </button>
+                {% elseif ( app.user and app.user.type is same as('Type') )%}
+                    <button style="font-size:smaller" type="button" class="btn btn-sm btn-secondary" onclick="openSwalProfilUnCompleted()">
+                        Pastiller
+                    </button>
+                {% else %}
+                    <button style="font-size:smaller" type="button" class="btn btn-sm btn-secondary" onclick="openSwalActif()">
+                        Pastiller
+                    </button>
+                {% endif %}
+
+
             </div>
         </div>
 
