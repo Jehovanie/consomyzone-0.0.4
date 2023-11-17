@@ -1,54 +1,33 @@
-class MarckerClusterFerme extends MapModule {
+class MarckerClusterTabac extends MapModule {
 
     constructor(nom_dep=null,id_dep=null){
-        super(id_dep,nom_dep, "ferme")
+        super(id_dep,nom_dep, "tabac")
     }
 
-    async onInit(isAddControl=false){
+    async onInit(isAddControl){
         this.ALREADY_INIT = false;
         try{
             this.createMarkersCluster();
             this.initMap(null, null, null, isAddControl);
 
-            const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
-
-            /// if the user just did a search
-            let param = "";
-            if(getDataInSessionStorage("lastSearchPosition")){
-                const lastSearchPosition= getDataInSessionStorage("lastSearchPosition") ? JSON.parse(getDataInSessionStorage("lastSearchPosition")) : null;
-                const { minx, miny, maxx, maxy }= lastSearchPosition.position;
-                param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
-            }
- 
-            const response= await fetch(`${link}${param}`);
-            this.default_data= await response.json();
+            const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
+            const response= await fetch(link);
+            const result= await response.json();
+            this.default_data = result.data
+            
             this.data= this.default_data; 
             
-            this.bindAction()
 
-            if(getDataInSessionStorage("lastSearchPosition")){
-                clearDataInSessionStorage("lastSearchPosition")
-            }
+            this.bindAction()
         }catch(e){
             console.log(e)
         }
     }
 
-    getAlreadyInit(){
-        return this.ALREADY_INIT;
-    }
-
-    setAlreadyInit(val){
-        this.ALREADY_INIT = val;
-    }
-
-    
-
     bindAction(){
         this.addMarker(this.data);
-        this.setNumberOfMarker();
-        // this.generateAllCard();
-        this.addEventOnMap(this.map);
+        // this.setNumberOfMarker();
+        // this.addEventOnMap(this.map);
     }
 
     
@@ -110,10 +89,15 @@ class MarckerClusterFerme extends MapModule {
     }
 
     addMarker(newData){
+
         newData.forEach(item => {
-            const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
-            let title = "<span class='fw-bolder'> Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'><br>Departement: </span>" + item.departement +"." + adress;
-            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png'), id: item.id });
+            const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
+            let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+            
+            let pathIcon="assets/icon/NewIcons/tabac_black0.png";
+            let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+
+            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
             
             marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
@@ -121,12 +105,16 @@ class MarckerClusterFerme extends MapModule {
                 ////close right if this open
                 this.closeRightSide();
 
+                // hideRightSide();
+
                 this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
+                pathIcon='/assets/icon/NewIcons/tabac_red0.png';
+               
                 const icon_R = L.Icon.extend({
                     options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-                        iconSize: [32,50],
+                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
+                        iconSize: [35,55],
                         iconAnchor: [11, 30],
                         popupAnchor: [0, -20],
                         shadowSize: [68, 95],
@@ -136,9 +124,12 @@ class MarckerClusterFerme extends MapModule {
                 marker.setIcon(new icon_R);
 
                 if (this.marker_last_selected && this.marker_last_selected != marker ) {
+
+                    let pathIcon='/assets/icon/NewIcons/tabac_map.png';
+
                     const icon_B = L.Icon.extend({
                         options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-B.png",
+                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + pathIcon : this.currentUrl.origin + "/public" + pathIcon ,
                             iconSize: [32,50],
                             iconAnchor: [11, 30],
                             popupAnchor: [0, -20],
@@ -155,10 +146,9 @@ class MarckerClusterFerme extends MapModule {
 
                 
                 if (screen.width < 991) {
-                    getDetailFerme(item.departement, item.departementName, item.id)
+                    getDetailTabac(item.dep, item.nom_dep, item.id)
                 } else {
-                    // getDetailsFerme(pathDetails, true)getDetailStation
-                    getDetailFerme(item.departement, item.departementName, item.id)
+                    getDetailTabac(item.dep, item.nom_dep, item.id)
                 }
 
             })
@@ -187,54 +177,12 @@ class MarckerClusterFerme extends MapModule {
 
 
     generateAllCard(){
-        if( this.nom_dep && this.id_dep ){
-            /// mise a jour de liste
-            const parent_elements= document.querySelector(".list_result")
-            const elements= document.querySelectorAll(".element")
-            elements.forEach(element => {
-                element.parentElement.removeChild(element);
-            })
-
-            this.data.forEach(new_element => {
-                // <div class="element" id="{{station.id}}">
-                const div_new_element = document.createElement("div");
-                div_new_element.setAttribute("class", "element")
-                div_new_element.setAttribute("id", new_element.id);
-
-                // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-                const s_p = document.createElement("p");
-                s_p.innerHTML = "<span class='id_departement'>"+ new_element.nomFerme+" </span>" +  new_element.adresseFerme
-
-                // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-                const a= document.createElement("a");
-                a.setAttribute("class", "plus")
-                a.setAttribute("href", "/ferme/departement/"+ this.nom_dep +"/"+ this.id_dep +"/details/" + new_element.id )
-                a.innerText = "Voir détails";
-
-                /// integre dom under the element
-                div_new_element.appendChild(s_p);
-                div_new_element.appendChild(a);
-                
-                ///integre new element in each element.
-                parent_elements.appendChild(div_new_element);
-            })
-            
-        }
-
+      
     }
 
 
     filterByFirstLetterOnName(letter){
-        const new_data= [];
-        this.removeMarker();
-        
-        this.default_data.forEach(item => {
-            if(item.nomFerme.toLowerCase().charAt(0) === letter.toLowerCase()){
-                new_data.push(item)
-            }
-        })
-        // alert(new_data.length)
-        this.addMarker(new_data)
+       console.log(letter)
     }
 
     resetToDefaultMarkers(){
@@ -251,25 +199,11 @@ class MarckerClusterFerme extends MapModule {
     }
 
     async addPeripheriqueMarker(new_size) {
-        try {
-            const { minx, miny, maxx, maxy }= new_size;
-            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
-
-            const response = await fetch(`/getLatitudeLongitudeFerme${param}`);
-            let new_data = await response.json();
-            // console.log(new_data);
-            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
-         
-            this.addMarker(this.checkeFilterType(new_data));
-            this.default_data= this.default_data.concat(new_data);
-        } catch (e) {
-            console.log(e)
-        }
+       console.log(new_size)
     }
 
     
     checkeFilterType(data) {
         return data;
     }
-
 }
