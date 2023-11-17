@@ -5618,22 +5618,22 @@ function showGolf(tableGolfPastilled) {
             let note = item.globalNote ? item.globalNote : 0
             let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
             tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center" >
-                                <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
-                                ${imgTbt}
-                                </div>
-                                <span class="ms-3" style="font-size:12pt;"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
-                            </td>
-                            <td class="data-note-${item.id}">${note}/4</td>
-                            <td>
-                            <span>
-                                <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}">${nbrAvis} avis</a>
-                            </span>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}")'><i class="fas fa-plus"></i> Plus</button>
-                            </td>
-                        </tr>`
+                      <td class="d-flex bd-highlight align-items-center" >
+                          <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+                          ${imgTbt}
+                          </div>
+                          <span class="ms-3" style="font-size:12pt;"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
+                      </td>
+                      <td class="data-note-${item.id}">${note}/4</td>
+                      <td>
+                      <span>
+                          <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}">${nbrAvis} avis</a>
+                      </span>
+                      </td>
+                      <td>
+                          <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}")'><i class="fas fa-plus"></i> Plus</button>
+                      </td>
+                  </tr>`
 
           }
         }
@@ -5731,7 +5731,7 @@ function pastilleGolf(element, table_tribu_t) {
               }
               if (data['logo_path'] != "") {
                 if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
-                  logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="${data['logo_path']}" alt="">`
+                  logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data['logo_path']}" alt="">`
                 }
 
               } else {
@@ -5867,7 +5867,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
       datas.forEach(data => {
 
         if (data['logo_path'] != "") { 
-          logoPath = `<img class="logo_path_pastille" src="${data.logo_path}"></img>`
+          logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
         } else {
           logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
         }
@@ -5957,7 +5957,7 @@ function isPastilledList(id_golf, name_golf) {
       let listTibuTPast = ""
       for (let data of datas) {
         if (data['logo_path'] != "") {
-          logoPath = `<img class="logo_path_pastille" src="${data.logo_path}"></img>`
+          logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
         } else {
           logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
         }

@@ -1538,7 +1538,7 @@ class Tribu_T_Service extends PDOConnexionService
                             FORMAT(AVG(t2.note),2) as globalNote, 
                             COUNT(t2.id) as nbrAvis,
                             GROUP_CONCAT(t2.id) as All_id_r_com 
-                            FROM tribu_t_21_banane_golf as t1 
+                            FROM $tableGolf as t1 
                                 LEFT JOIN avisgolf  as t2
                                 ON t2.id_golf =t1.id_resto 
                     GROUP BY t1.id ) as tb1 
